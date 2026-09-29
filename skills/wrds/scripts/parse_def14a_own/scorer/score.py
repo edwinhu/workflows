@@ -26,6 +26,12 @@ Metrics, each printed with its denominator:
                                percent over non-group rows; gold = max single
                                holder percent.
   (iv)  GROUP-ROW DETECTION     share of scored filings with a flagged group row.
+  (v)   ISS DIRECTOR YARDSTICK  DIAGNOSTIC, never gated. The modern-era
+                               holder-level ruler: (a) director recall, (b) share
+                               agreement within 1% and 5%, (c) an individual-row
+                               precision PROXY. Denominators, era splits and a
+                               miss decomposition are printed. See the ISS block
+                               below for each definition and its limits.
 
 GATED vs DIAGNOSTIC. Exactly FOUR metrics gate: filing yield (parsed percent),
 holder recall vs blockw, holder precision vs blockw, group-row detection — the
@@ -108,6 +114,109 @@ def names_match(a, b):
     return len(a_long) == 1 or len(b_long) == 1
 
 
+# ---- (v) the ISS director yardstick -----------------------------------------
+# Matching is SURNAME + FIRST INITIAL, which is what ISS and a proxy table
+# reliably agree on. ISS writes "S WALTON" for S. Robson Walton and "H SCOTT JR."
+# for H. Lee Scott, Jr.; the proxy writes both out. Middle names, suffixes and
+# nicknames therefore must not participate in the key.
+ISS_SHARE_TOL = 0.01     # (b) relative, the headline band
+ISS_SHARE_TOL_WIDE = 0.05
+ISS_TRUNCATION_RATIO = 0.5  # a D&O table with < half of ISS's directors is short
+
+NAME_SUFFIX = {"JR", "SR", "II", "III", "IV", "V", "VI", "MD", "PHD", "ESQ", "CPA",
+               "DDS", "DVM", "RN", "JD", "MBA", "DR", "MR", "MRS", "MS", "MISS",
+               "RET", "USN", "USA", "USAF"}
+# Nicknames whose first INITIAL differs from the formal given name. Anything whose
+# initial already agrees (Bill/William is B/W, Tony/Anthony is T/A) needs an entry;
+# anything that shortens without changing the initial (Tom/Thomas) does not.
+NICKNAME = {
+    "BOB": "R", "BOBBY": "R", "RICK": "R", "DICK": "R", "RICKY": "R",
+    "BILL": "W", "BILLY": "W", "WILL": "W", "WILLIE": "W",
+    "JACK": "J", "JIM": "J", "JIMMY": "J", "JACKIE": "J",
+    "TONY": "A", "NED": "E", "TED": "E", "TEDDY": "E",
+    "PEGGY": "M", "POLLY": "M", "MOLLY": "M", "PEG": "M",
+    "HANK": "H", "HAL": "H", "CHUCK": "C", "SKIP": "S", "SANDY": "A",
+    "BETTY": "E", "BETSY": "E", "LIZ": "E", "BETH": "E", "BESS": "E",
+    "NANCY": "A", "KATE": "K", "KATIE": "K", "GREG": "G",
+}
+# Words that make a holder an ENTITY rather than a natural person. Used only by the
+# (c) precision proxy, to decide whether an unmatched row even LOOKS like a person.
+ENTITY_WORD = {
+    "INC", "CORP", "CORPORATION", "CO", "COMPANY", "COMPANIES", "LTD", "LIMITED",
+    "LP", "LLP", "LLC", "PLC", "NV", "SA", "AG", "AB", "GMBH", "TRUST", "TRUSTS",
+    "TRUSTEE", "TRUSTEES", "FOUNDATION", "ESTATE", "FUND", "FUNDS", "PARTNERS",
+    "PARTNERSHIP", "ASSOCIATES", "ASSOCIATION", "CAPITAL", "MANAGEMENT",
+    "MANAGEMENT'S", "ADVISORS", "ADVISERS", "ADVISORY", "GROUP", "HOLDINGS",
+    "HOLDING", "BANK", "BANCORP", "BANCSHARES", "INSURANCE", "ASSURANCE",
+    "ENTERPRISES", "INVESTMENTS", "INVESTMENT", "SECURITIES", "SERVICES",
+    "FINANCIAL", "GLOBAL", "INTERNATIONAL", "AMERICA", "AMERICAN", "NATIONAL",
+    "NA", "SYSTEMS", "PLAN", "ESOP", "KSOP", "401", "401K", "SAVINGS", "PENSION",
+    "RETIREMENT", "PROFIT", "SHARING", "FAMILY", "CHARITABLE", "ASSET", "ASSETS",
+    "RESEARCH", "EQUITY", "VENTURES", "GP", "SUBSIDIARIES", "AFFILIATES",
+    "DIRECTORS", "OFFICERS", "EXECUTIVE", "EXECUTIVES", "ALL", "NOMINEES",
+}
+
+
+def person_key(s):
+    """(surname, first-initial) for a natural-person name, or None.
+
+    Order-insensitive to the vendor's convention: ISS writes "LAST, FIRST" never,
+    always "FIRST MIDDLE LAST"; blockw writes "WALTON; JIM C." with a semicolon.
+    A semicolon or comma before the first space therefore means surname-first.
+    """
+    raw = (s or "").upper().replace("&", " AND ")
+    # "WALTON; JIM C." / "WALTON, JIM C." is surname-first; "H. LEE SCOTT, JR." is
+    # not — what follows the separator there is a suffix, which is dropped anyway.
+    for sep in (";", ","):
+        i = raw.find(sep)
+        if i <= 0:
+            continue
+        head, tail = raw[:i].strip(), raw[i + 1:].strip()
+        tail_toks = [t for t in TOKEN.findall(tail) if t not in NAME_SUFFIX]
+        if tail_toks and len(TOKEN.findall(head)) <= 3:
+            raw = tail + " " + head
+        break
+    toks = [t for t in TOKEN.findall(raw) if t not in NAME_SUFFIX and not t.isdigit()]
+    if len(toks) < 2:
+        return None
+    surname, given = toks[-1], toks[0]
+    if len(surname) < 2:
+        return None
+    init = NICKNAME.get(given, given[0])
+    return (surname, init)
+
+
+def looks_like_person(s):
+    """True when a holder name plausibly denotes a natural person.
+
+    2-5 name tokens, no entity word, no digits. Deliberately permissive: it is the
+    numerator of an UPPER BOUND on individual-row precision, not a classifier.
+    """
+    raw = (s or "").upper().replace("&", " AND ")
+    if " AND " in raw:
+        return False
+    toks = [t for t in TOKEN.findall(raw) if t not in NAME_SUFFIX]
+    if not (2 <= len(toks) <= 5):
+        return False
+    if any(t in ENTITY_WORD or t.isdigit() for t in toks):
+        return False
+    return sum(1 for t in toks if len(t) >= 2) >= 2
+
+
+def era_of(year):
+    y = int(year)
+    if y <= 2006:
+        return "2002-2006"
+    if y <= 2012:
+        return "2007-2012"
+    if y <= 2018:
+        return "2013-2018"
+    return "2019-2024"
+
+
+ISS_ERAS = ["2002-2006", "2007-2012", "2013-2018", "2019-2024"]
+
+
 def sha256_of(path):
     h = hashlib.sha256()
     with open(path, "rb") as fh:
@@ -171,6 +280,11 @@ def main():
     ap.add_argument("--lock", default=os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                                   "..", "lock.sha256"))
     ap.add_argument("--holdout", action="store_true", help="score the HOLDOUT firms instead of dev")
+    ap.add_argument("--iss-holdout", action="store_true",
+                    help="score the ISS HOLDOUT firms for the (v) block instead of ISS dev")
+    ap.add_argument("--no-iss", action="store_true", help="skip the (v) ISS block entirely")
+    ap.add_argument("--iss-miss-report", default="",
+                    help="write the per-(filing,director) ISS recall decomposition here")
     ap.add_argument("--check", action="store_true", help="exit 0 iff every gated metric clears its threshold")
     ap.add_argument("--no-verify-lock", action="store_true", help="skip the hash lock (for lock creation only)")
     ap.add_argument("--miss-report", default="", help="write the per-filing miss decomposition here")
@@ -180,6 +294,11 @@ def main():
     g = args.gold_dir
     if args.holdout and os.environ.get("GRIND_ITERATION"):
         print("REFUSED: --holdout inside a grind iteration (GRIND_ITERATION=%s). "
+              "A loop that can read the holdout has no holdout."
+              % os.environ["GRIND_ITERATION"], file=sys.stderr)
+        sys.exit(4)
+    if args.iss_holdout and os.environ.get("GRIND_ITERATION"):
+        print("REFUSED: --iss-holdout inside a grind iteration (GRIND_ITERATION=%s). "
               "A loop that can read the holdout has no holdout."
               % os.environ["GRIND_ITERATION"], file=sys.stderr)
         sys.exit(4)
@@ -195,6 +314,9 @@ def main():
             "gold/gold_factset_firmyear.tsv.gz": os.path.join(g, "gold_factset_firmyear.tsv.gz"),
             "gold/holdout.tsv": os.path.join(g, "holdout.tsv"),
         }
+        if not args.no_iss:
+            files["gold/gold_iss.tsv.gz"] = os.path.join(g, "gold_iss.tsv.gz")
+            files["gold/holdout_iss.tsv"] = os.path.join(g, "holdout_iss.tsv")
         bad = verify_lock(args.lock, files)
         if bad:
             print("LOCK MISMATCH:", file=sys.stderr)
@@ -254,6 +376,40 @@ def main():
     if not gold_filings:
         sys.exit("ERROR: no gold filings in split %s" % want_split)
 
+    # ---- (v) ISS gold -------------------------------------------------------
+    # Loaded BEFORE the parser output so the row reader can keep ISS filings too.
+    # The ISS split is independent of the blockw/factset split and has its own
+    # holdout file: the sampled ISS firms are not the blockw/factset firms.
+    iss_want = "holdout" if args.iss_holdout else "dev"
+    iss_split, iss_dir, iss_filings = {}, defaultdict(list), set()
+    n_iss_rows = n_iss_flagged = 0
+    if not args.no_iss:
+        with open(os.path.join(g, "holdout_iss.tsv")) as fh:
+            for r in csv.DictReader(fh, delimiter="\t"):
+                iss_split[r["cik"].lstrip("0") or "0"] = r["split"]
+        for r in read_tsv_gz(os.path.join(g, "gold_iss.tsv.gz")):
+            cik = r["cik"].lstrip("0") or "0"
+            if iss_split.get(cik) != iss_want:
+                continue
+            key = (cik, r["accession"])
+            iss_filings.add(key)
+            n_iss_rows += 1
+            if r["any_flag"] == "1":
+                n_iss_flagged += 1
+                continue
+            pk = person_key(r["director_name"])
+            iss_dir[key].append({
+                "name": r["director_name"], "pk": pk,
+                "shares": fnum(r["num_of_shares"]), "pct": fnum(r["pcnt_ctrl_votingpower"]),
+                "year": int(r["gold_year"]), "era": era_of(r["gold_year"]),
+                "table": r["iss_table"],
+            })
+        print("[in ] gold iss (%s): %d firms (%d %s), %d filings, %d director rows "
+              "(%d flagged and EXCLUDED, %d usable)" % (
+                  iss_want, len(iss_split),
+                  sum(1 for v in iss_split.values() if v == iss_want), iss_want,
+                  len(iss_filings), n_iss_rows, n_iss_flagged, n_iss_rows - n_iss_flagged))
+
     # ---- parser output ------------------------------------------------------
     man = {}
     for r in read_tsv_gz(args.manifest):
@@ -264,20 +420,27 @@ def main():
     print("[in ] parser manifest rows matching gold filings: %d" % len(man))
 
     parsed = defaultdict(list)
-    n_rows_read = 0
+    n_rows_read = n_iss_parsed_rows = 0
     for r in read_tsv_gz(args.rows):
         cik = r["cik"].lstrip("0") or "0"
         key = (cik, r["accession"])
-        if key not in gold_filings:
+        in_gold, in_iss = key in gold_filings, key in iss_filings
+        if not (in_gold or in_iss):
             continue
-        n_rows_read += 1
+        n_rows_read += 1 if in_gold else 0
+        n_iss_parsed_rows += 1 if in_iss else 0
         parsed[key].append({
             "name": r["holder_name"], "key": name_key(r["holder_name"]),
             "pct": fnum(r["percent"]), "marker": r["percent_marker"],
             "group": r["is_group_row"] == "1", "inst": r["is_institution"] == "1",
             "cls": r["share_class"], "kind": r["table_kind"],
+            # (v) only
+            "shares": fnum(r["shares"]), "tix": r["table_index"],
+            "pk": person_key(r["holder_name"]),
         })
     print("[in ] parser ownership rows in gold filings: %d" % n_rows_read)
+    if not args.no_iss:
+        print("[in ] parser ownership rows in ISS %s filings: %d" % (iss_want, n_iss_parsed_rows))
 
     # ---- (i) filing yield ---------------------------------------------------
     scored = sorted(gold_filings)
@@ -377,6 +540,174 @@ def main():
     print("\n== (iv) GROUP-ROW DETECTION (denominator = %d filings with a parsed percent) ==" % len(has_pct))
     print("  filings with a flagged D&O group row [gated]: %d (%.2f%%)" % (n_grp, 100 * grp_rate))
 
+    # ---- (v) ISS DIRECTOR YARDSTICK — DIAGNOSTIC, NEVER GATED ---------------
+    #
+    # (a) DIRECTOR RECALL. Denominator = non-flagged ISS director rows whose filing
+    #     is in the ISS split. Numerator = rows whose (surname, first initial) key
+    #     matches at least one parsed row in the SAME filing. Names only: a share
+    #     count that disagrees is still a found director.
+    # (b) SHARE AGREEMENT. Denominator = matched rows where BOTH sides state a
+    #     share count. Numerator = |parsed/iss - 1| <= 1% (and <= 5%). Both sides
+    #     are AS-REPORTED counts at the record date, so this is a like-for-like
+    #     comparison, unlike the percent (percent-of-class vs voting power).
+    # (c) PRECISION PROXY — an UPPER BOUND, not precision. Denominator = parsed
+    #     non-group, non-institution rows in ISS-split filings whose name looks
+    #     like a natural person. Numerator = rows that either match an ISS director
+    #     OR sit in a table that already carries >=1 matched ISS director. The
+    #     second arm is the officer allowance: the proxy's table legitimately lists
+    #     executive officers (and retired/departed insiders, and family members who
+    #     are not directors) whom ISS does not carry at all, and ISS's universe is
+    #     S&P 1500 directors only. A person-shaped row inside the very table whose
+    #     directors were matched is therefore PLAUSIBLY an officer rather than a
+    #     parse error. It cannot distinguish a real officer from a person-shaped
+    #     mis-parse in that table, which is exactly why it is a bound and why it is
+    #     reported alongside the blockw precision that IS gated.
+    iss_metrics = {}
+    if not args.no_iss and iss_dir:
+        def era_box():
+            return {"den": 0, "hit": 0, "sh_den": 0, "sh1": 0, "sh5": 0,
+                    "c_den": 0, "c_iss": 0, "c_off": 0}
+        eras = {e: era_box() for e in ISS_ERAS}
+        tot = era_box()
+        iss_causes = defaultdict(int)
+        cause_examples = defaultdict(list)
+        iss_detail = []
+
+        for k in sorted(iss_filings):
+            dirs = iss_dir.get(k, [])
+            if not dirs:
+                continue
+            prows = parsed.get(k, [])
+            era = dirs[0]["era"]
+            # tables that carry at least one matched ISS director
+            dir_keys = {d["pk"] for d in dirs if d["pk"]}
+            matched_tables = {p["tix"] for p in prows if p["pk"] and p["pk"] in dir_keys}
+            n_person_rows = sum(1 for p in prows
+                                if not p["group"] and not p["inst"] and looks_like_person(p["name"]))
+            truncated = bool(prows) and n_person_rows < ISS_TRUNCATION_RATIO * len(dirs)
+
+            for d in dirs:
+                for box in (eras[era], tot):
+                    box["den"] += 1
+                hits = [p for p in prows if d["pk"] and p["pk"] == d["pk"]]
+                if hits:
+                    for box in (eras[era], tot):
+                        box["hit"] += 1
+                    psh = [p["shares"] for p in hits if p["shares"] is not None]
+                    if psh and d["shares"] and d["shares"] > 0:
+                        for box in (eras[era], tot):
+                            box["sh_den"] += 1
+                        rel = min(abs(v / d["shares"] - 1.0) for v in psh)
+                        if rel <= ISS_SHARE_TOL:
+                            for box in (eras[era], tot):
+                                box["sh1"] += 1
+                        if rel <= ISS_SHARE_TOL_WIDE:
+                            for box in (eras[era], tot):
+                                box["sh5"] += 1
+                        cause = "ok" if rel <= ISS_SHARE_TOL_WIDE else "name_found_shares_off"
+                    elif psh:
+                        cause = "ok"
+                    else:
+                        cause = "name_found_no_share_count_parsed"
+                elif not prows:
+                    cause = "no_table"
+                elif truncated:
+                    cause = "table_truncated"
+                else:
+                    cause = "name_not_found"
+                iss_causes[cause] += 1
+                if len(cause_examples[cause]) < 5 and k[1] not in [
+                        a for _, a in cause_examples[cause]]:
+                    cause_examples[cause].append((k[0], k[1]))
+                iss_detail.append((k[0], k[1], era, d["name"], cause,
+                                   "" if d["shares"] is None else "%d" % round(d["shares"]),
+                                   len(prows), n_person_rows, len(dirs)))
+
+            for p in prows:
+                if p["group"] or p["inst"] or not looks_like_person(p["name"]):
+                    continue
+                for box in (eras[era], tot):
+                    box["c_den"] += 1
+                if p["pk"] and p["pk"] in dir_keys:
+                    for box in (eras[era], tot):
+                        box["c_iss"] += 1
+                elif p["tix"] in matched_tables:
+                    for box in (eras[era], tot):
+                        box["c_off"] += 1
+
+        def rate(n, d):
+            return (n / d) if d else 0.0
+
+        print("\n== (v) ISS DIRECTOR YARDSTICK (%s split) — DIAGNOSTIC, NOT GATED ==" % iss_want)
+        print("  ISS filings in split: %d ; with >=1 usable director row: %d" % (
+            len(iss_filings), sum(1 for k in iss_filings if iss_dir.get(k))))
+        print("  (a) director recall  [DIAGNOSTIC]: %d / %d non-flagged ISS director rows = %.2f%%" % (
+            tot["hit"], tot["den"], 100 * rate(tot["hit"], tot["den"])))
+        print("  (b) share agreement  [DIAGNOSTIC]: within 1%%  %d / %d matched rows with both counts = %.2f%%" % (
+            tot["sh1"], tot["sh_den"], 100 * rate(tot["sh1"], tot["sh_den"])))
+        print("                                     within 5%%  %d / %d = %.2f%%" % (
+            tot["sh5"], tot["sh_den"], 100 * rate(tot["sh5"], tot["sh_den"])))
+        print("  (c) precision proxy  [DIAGNOSTIC]: %d / %d parsed person-shaped non-group non-institution rows = %.2f%%" % (
+            tot["c_iss"] + tot["c_off"], tot["c_den"],
+            100 * rate(tot["c_iss"] + tot["c_off"], tot["c_den"])))
+        print("        of which matched an ISS director : %d (%.2f%%)" % (
+            tot["c_iss"], 100 * rate(tot["c_iss"], tot["c_den"])))
+        print("        of which allowed as an officer   : %d (%.2f%%)" % (
+            tot["c_off"], 100 * rate(tot["c_off"], tot["c_den"])))
+        print("  (c) is an UPPER BOUND: the officer arm cannot separate a real executive")
+        print("      officer from a person-shaped mis-parse inside the same table.")
+
+        print("\n  -- by era (denominators shown) --")
+        print("  %-11s %19s %19s %19s" % ("era", "(a) recall", "(b) within 1%", "(c) proxy"))
+        for e in ISS_ERAS:
+            b = eras[e]
+            print("  %-11s %7.2f%% (%5d) %7.2f%% (%5d) %7.2f%% (%5d)" % (
+                e, 100 * rate(b["hit"], b["den"]), b["den"],
+                100 * rate(b["sh1"], b["sh_den"]), b["sh_den"],
+                100 * rate(b["c_iss"] + b["c_off"], b["c_den"]), b["c_den"]))
+        print("  %-11s %7.2f%% (%5d) %7.2f%% (%5d) %7.2f%% (%5d)" % (
+            "ALL", 100 * rate(tot["hit"], tot["den"]), tot["den"],
+            100 * rate(tot["sh1"], tot["sh_den"]), tot["sh_den"],
+            100 * rate(tot["c_iss"] + tot["c_off"], tot["c_den"]), tot["c_den"]))
+        print("  -- (b) within 5%% by era --")
+        for e in ISS_ERAS:
+            b = eras[e]
+            print("  %-11s %7.2f%% (%5d)" % (e, 100 * rate(b["sh5"], b["sh_den"]), b["sh_den"]))
+
+        print("\n  -- (a) MISS DECOMPOSITION (denominator = %d non-flagged ISS director rows) --" % tot["den"])
+        for c in sorted(iss_causes, key=lambda c: (-iss_causes[c], c)):
+            print("  %-36s %6d (%5.2f%%)   e.g. %s" % (
+                c, iss_causes[c], 100 * iss_causes[c] / tot["den"],
+                ", ".join(a for _, a in cause_examples[c])))
+        print("  `ok` and `name_found_shares_off` are both (a) HITS: (a) is a name-only")
+        print("  recall, so a found director with a wrong share count is not an (a) miss.")
+
+        iss_metrics = {
+            "iss_split": iss_want,
+            "iss_filings": len(iss_filings),
+            "iss_director_rows_total": n_iss_rows,
+            "iss_director_rows_flagged": n_iss_flagged,
+            "iss_director_recall": rate(tot["hit"], tot["den"]),
+            "iss_director_rows_scored": tot["den"],
+            "iss_share_agreement_1pct": rate(tot["sh1"], tot["sh_den"]),
+            "iss_share_agreement_5pct": rate(tot["sh5"], tot["sh_den"]),
+            "iss_share_comparable_rows": tot["sh_den"],
+            "iss_individual_precision_proxy": rate(tot["c_iss"] + tot["c_off"], tot["c_den"]),
+            "iss_individual_candidate_rows": tot["c_den"],
+            "iss_individual_matched_director": tot["c_iss"],
+            "iss_individual_allowed_officer": tot["c_off"],
+            "iss_miss_causes": dict(sorted(iss_causes.items())),
+            "iss_by_era": {e: dict(eras[e]) for e in ISS_ERAS},
+        }
+        if args.iss_miss_report:
+            iss_detail.sort()
+            with open(args.iss_miss_report, "w") as fh:
+                fh.write("cik\taccession\tera\tdirector_name\tcause\tiss_shares"
+                         "\tn_parsed_rows\tn_person_rows\tn_iss_directors\n")
+                for row in iss_detail:
+                    fh.write("\t".join(str(x) for x in row) + "\n")
+            print("[out] %s: %d rows" % (args.iss_miss_report, len(iss_detail)))
+
     # ---- miss decomposition -------------------------------------------------
     causes = defaultdict(int)
     detail = []
@@ -443,6 +774,7 @@ def main():
         "mad_largest_pp": l_mad,
         "miss_causes": dict(sorted(causes.items())),
     }
+    metrics.update(iss_metrics)
     if args.json_out:
         with open(args.json_out, "w") as fh:
             json.dump(metrics, fh, indent=2, sort_keys=True)
@@ -457,6 +789,10 @@ def main():
         "group_pct_agreement_factset": grp_agree,
         "largest_block_agreement_factset": lrg_agree,
     }
+    for nm in ("iss_director_recall", "iss_share_agreement_1pct",
+               "iss_share_agreement_5pct", "iss_individual_precision_proxy"):
+        if nm in iss_metrics:
+            values[nm] = iss_metrics[nm]
     # GATED = exactly the keys in thresholds["minimums"]. Every other metric is
     # diagnostic: printed with its denominator, never able to change the exit code.
     gated_names = list(thresholds["minimums"])

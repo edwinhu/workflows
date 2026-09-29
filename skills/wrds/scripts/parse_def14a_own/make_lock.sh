@@ -15,7 +15,8 @@ GOLD="${GOLD_DIR:-/data/def14a_own/gold}"
   for f in scorer/score.py thresholds.json; do
     printf '%s  %s\n' "$(sha256sum "$HERE/$f" | cut -d' ' -f1)" "$f"
   done
-  for f in gold_blockw.tsv.gz gold_factset.tsv.gz gold_factset_firmyear.tsv.gz holdout.tsv; do
+  for f in gold_blockw.tsv.gz gold_factset.tsv.gz gold_factset_firmyear.tsv.gz holdout.tsv \
+           gold_iss.tsv.gz holdout_iss.tsv; do
     printf '%s  gold/%s\n' "$(sha256sum "$GOLD/$f" | cut -d' ' -f1)" "$f"
   done
 } > "$HERE/lock.sha256"

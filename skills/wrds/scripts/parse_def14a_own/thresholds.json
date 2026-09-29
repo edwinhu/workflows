@@ -41,6 +41,11 @@
   },
   "diagnostics": [
     "group_pct_agreement_factset",
-    "largest_block_agreement_factset"
-  ]
+    "largest_block_agreement_factset",
+    "iss_director_recall",
+    "iss_share_agreement_1pct",
+    "iss_share_agreement_5pct",
+    "iss_individual_precision_proxy"
+  ],
+  "_iss_diagnostics": "Added 2026-09-29 with the ISS directors gold set (gold_iss.tsv.gz, 2002-2024). The four ISS metrics are DIAGNOSTIC and appear under `diagnostics`, NOT under `minimums`: nothing about them can change check.sh's exit code. See GRIND_PLAN.md section 8 for the measured baseline and the PROPOSED (not applied) gating argument."
 }

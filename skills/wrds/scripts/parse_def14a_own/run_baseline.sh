@@ -11,9 +11,15 @@
 #   DEF14A_WORK  local work dir         (default /data/def14a_own/work)
 #   GOLD_DIR     gold sets              (default /data/def14a_own/gold)
 #   WRDS_HOST    ssh alias              (default wrds)
+#   DEF14A_FILELIST  which filelist under $GOLD_DIR to submit
+#                    (default gold_filelist.tsv; gold_filelist_all.tsv adds the
+#                     ISS-linked filings written by gold/sample_gold_iss.py)
 #
 # The gold filelist (dev AND holdout filings — the parser sees both, the SCORER
 # sees dev only) is $GOLD_DIR/gold_filelist.tsv, written by gold/make_holdout.py.
+# Extending it is additive: score.py keys on (cik, accession) and ignores rows for
+# filings that are not in the gold set it is scoring, so a superset filelist leaves
+# every existing metric unchanged.
 
 set -euo pipefail
 
@@ -22,6 +28,7 @@ ROOT="${DEF14A_ROOT:-/scratch/nyu/eddyhu/parse_def14a_own}"
 WORK="${DEF14A_WORK:-/data/def14a_own/work}"
 GOLD="${GOLD_DIR:-/data/def14a_own/gold}"
 HOST="${WRDS_HOST:-wrds}"
+FILELIST="${DEF14A_FILELIST:-gold_filelist.tsv}"
 
 # The grind --gate watches this marker: while a round is in flight it is absent,
 # the loop records a `wait` and spends no model call.
@@ -36,7 +43,8 @@ echo "== stage =="
 ssh "$HOST" "mkdir -p $ROOT/{bin,filelists/shards,out,logs,sge}"
 scp -q "$HERE"/sge/* "$HOST:$ROOT/sge/"
 scp -q "$HERE/parse_def14a_own_go/parse_def14a_own_go" "$HOST:$ROOT/bin/"
-scp -q "$GOLD/gold_filelist.tsv" "$HOST:$ROOT/filelists/filelist_gold.tsv"
+echo "filelist: $GOLD/$FILELIST ($(wc -l < "$GOLD/$FILELIST") filings)"
+scp -q "$GOLD/$FILELIST" "$HOST:$ROOT/filelists/filelist_gold.tsv"
 ssh "$HOST" "chmod +x $ROOT/sge/*.sh $ROOT/bin/parse_def14a_own_go; echo gold > $ROOT/filelists/buckets.txt; rm -f $ROOT/out/*"
 
 echo "== sizes (compute node) =="
@@ -63,7 +71,7 @@ rm -f "$WORK"/out/*
 scp -q "$HOST:$ROOT/out/*.tsv.gz" "$WORK/out/"
 ROWS=$(zcat "$WORK"/out/*[0-9].tsv.gz | grep -vc '^accession' || true)
 MAN=$(zcat "$WORK"/out/*.manifest.tsv.gz | grep -vc '^accession' || true)
-FILES_IN=$(wc -l < "$GOLD/gold_filelist.tsv")
+FILES_IN=$(wc -l < "$GOLD/$FILELIST")
 echo "ownership rows=$ROWS manifest rows=$MAN filelist rows=$FILES_IN"
 if [[ "$MAN" != "$FILES_IN" ]]; then
     echo "ERROR: manifest rows ($MAN) != filings submitted ($FILES_IN)" >&2
