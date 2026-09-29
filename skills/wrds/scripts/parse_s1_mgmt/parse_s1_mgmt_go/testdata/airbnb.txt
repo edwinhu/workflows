@@ -1,0 +1,273 @@
+<SEC-DOCUMENT>0001193125-20-315318.txt : 20201211
+<SEC-HEADER>0001193125-20-315318.hdr.sgml : 20201211
+<ACCEPTANCE-DATETIME>20201211060936
+ACCESSION NUMBER:		0001193125-20-315318
+CONFORMED SUBMISSION TYPE:	424B4
+PUBLIC DOCUMENT COUNT:		73
+FILED AS OF DATE:		20201211
+DATE AS OF CHANGE:		20201211
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Airbnb, Inc.
+		CENTRAL INDEX KEY:			0001559720
+		STANDARD INDUSTRIAL CLASSIFICATION:	SERVICES-TO DWELLINGS & OTHER BUILDINGS [7340]
+		IRS NUMBER:				263051428
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		424B4
+		SEC ACT:		1933 Act
+		SEC FILE NUMBER:	333-250118
+		FILM NUMBER:		201382182
+
+	BUSINESS ADDRESS:	
+		STREET 1:		888 BRANNAN ST.
+		CITY:			SAN FRANCISCO
+		STATE:			CA
+		ZIP:			94103
+		BUSINESS PHONE:		415.800.5959
+
+	MAIL ADDRESS:	
+		STREET 1:		888 BRANNAN ST.
+		CITY:			SAN FRANCISCO
+		STATE:			CA
+		ZIP:			94103
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>424B4
+<SEQUENCE>1
+<FILENAME>d81668d424b4.htm
+<DESCRIPTION>424B4
+<TEXT>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; line-height:12pt; font-size:18pt; font-family:arial"><B><A NAME="toc81668_12"></A>Management </B></P>
+<P STYLE="margin-top:18pt; margin-bottom:0pt; line-height:12pt; font-size:10pt; font-family:arial"><B>Executive Officers and Directors </B></P> <P STYLE="margin-top:4pt; margin-bottom:0pt; line-height:12pt; font-size:8.5pt; font-family:arial">The
+following table provides information regarding our executive officers and directors as of the date of this prospectus: </P> <P STYLE="font-size:9pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:arial; font-size:7pt" ALIGN="center">
+
+
+<TR>
+
+<TD WIDTH="24%"></TD>
+
+<TD VALIGN="bottom" WIDTH="2%"></TD>
+<TD WIDTH="3%"></TD>
+
+<TD VALIGN="bottom" WIDTH="2%"></TD>
+<TD WIDTH="69%"></TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="4"></TD>
+<TD HEIGHT="4" COLSPAN="2"></TD>
+<TD HEIGHT="4" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:arial; font-size:7pt">
+<TD VALIGN="bottom" NOWRAP STYLE="padding-bottom:3pt ;BORDER-BOTTOM:1px solid #000000"><B>Name&nbsp;&nbsp;&nbsp;&nbsp;</B></TD>
+<TD VALIGN="bottom" STYLE=" BORDER-BOTTOM:1px solid #000000">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right" STYLE="padding-bottom:3pt ;BORDER-BOTTOM:1px solid #000000"><B>Age</B></TD>
+<TD VALIGN="bottom" STYLE=" BORDER-BOTTOM:1px solid #000000">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="padding-bottom:3pt ;BORDER-BOTTOM:1px solid #000000"><B>Position</B></TD></TR>
+
+
+<TR BGCOLOR="#dddddd" STYLE="page-break-inside:avoid ; font-family:arial; font-size:7pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:7pt; font-family:arial"><I>Executive&nbsp;Officers:</I></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:arial; font-size:7pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:7pt; font-family:arial">Brian Chesky<SUP STYLE="font-size:85%; vertical-align:top">(4)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">39</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Chief Executive Officer, Head of Community, <FONT STYLE="white-space:nowrap">Co-Founder,</FONT> and Chairman of the Board</TD></TR>
+<TR BGCOLOR="#dddddd" STYLE="page-break-inside:avoid ; font-family:arial; font-size:7pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:7pt; font-family:arial">Joseph Gebbia<SUP STYLE="font-size:85%; vertical-align:top">(4)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">39</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Chairman of Samara and Airbnb.org, <FONT STYLE="white-space:nowrap">Co-Founder,</FONT> and Director</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:arial; font-size:7pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:7pt; font-family:arial">Nathan&nbsp;Blecharczyk<SUP STYLE="font-size:85%; vertical-align:top">(4)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">37</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Chief Strategy Officer, Chairman of Airbnb China, <FONT STYLE="white-space:nowrap">Co-Founder,</FONT> and Director</TD></TR>
+<TR BGCOLOR="#dddddd" STYLE="page-break-inside:avoid ; font-family:arial; font-size:7pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:7pt; font-family:arial">Dave Stephenson</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">53</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Chief Financial Officer</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:arial; font-size:7pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:7pt; font-family:arial">Aristotle Balogh</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">56</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Chief Technology Officer</TD></TR>
+<TR BGCOLOR="#dddddd" STYLE="page-break-inside:avoid ; font-family:arial; font-size:7pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:7pt; font-family:arial">Catherine Powell</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">53</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Global Head of Hosting</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:arial; font-size:7pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:7pt; font-family:arial"><I><FONT STYLE="white-space:nowrap">Non-Employee&nbsp;Directors:</FONT></I></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"></TD></TR>
+<TR BGCOLOR="#dddddd" STYLE="page-break-inside:avoid ; font-family:arial; font-size:7pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:7pt; font-family:arial">Angela Ahrendts<SUP STYLE="font-size:85%; vertical-align:top">(2)(4)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">60</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Director</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:arial; font-size:7pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:7pt; font-family:arial">Kenneth Chenault<SUP STYLE="font-size:85%; vertical-align:top">(2)(3)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">69</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Director</TD></TR>
+<TR BGCOLOR="#dddddd" STYLE="page-break-inside:avoid ; font-family:arial; font-size:7pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:7pt; font-family:arial">Belinda Johnson<SUP STYLE="font-size:85%; vertical-align:top">(4)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">53</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Director</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:arial; font-size:7pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:7pt; font-family:arial">Jeffrey Jordan<SUP STYLE="font-size:85%; vertical-align:top">(1)(3)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">61</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Director</TD></TR>
+<TR BGCOLOR="#dddddd" STYLE="page-break-inside:avoid ; font-family:arial; font-size:7pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:7pt; font-family:arial">Alfred Lin<SUP STYLE="font-size:85%; vertical-align:top">(1)(2)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">48</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Director</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:arial; font-size:7pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:7pt; font-family:arial">Ann Mather<SUP STYLE="font-size:85%; vertical-align:top">(1)(3)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">60</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Director</TD></TR>
+</TABLE> <P STYLE="line-height:8.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1px solid #000000;width:11%">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:arial; font-size:7pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="2%" VALIGN="top" ALIGN="left"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; line-height:12pt; font-size:7pt; font-family:arial">(1)</P></TD>
+<TD ALIGN="left" VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; line-height:12pt; font-size:7pt; font-family:arial" ALIGN="left">Member of the audit, risk and compliance committee. </P></TD></TR></TABLE>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:arial; font-size:7pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="2%" VALIGN="top" ALIGN="left"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; line-height:12pt; font-size:7pt; font-family:arial">(2)</P></TD>
+<TD ALIGN="left" VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; line-height:12pt; font-size:7pt; font-family:arial" ALIGN="left">Member of the leadership development, belonging and compensation committee. </P></TD></TR></TABLE>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:arial; font-size:7pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="2%" VALIGN="top" ALIGN="left"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; line-height:12pt; font-size:7pt; font-family:arial">(3)</P></TD>
+<TD ALIGN="left" VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; line-height:12pt; font-size:7pt; font-family:arial" ALIGN="left">Member of the nominating and corporate governance committee. </P></TD></TR></TABLE>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:arial; font-size:7pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="2%" VALIGN="top" ALIGN="left"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; line-height:12pt; font-size:7pt; font-family:arial">(4)</P></TD>
+<TD ALIGN="left" VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; line-height:12pt; font-size:7pt; font-family:arial" ALIGN="left">Member of the stakeholder committee. </P></TD></TR></TABLE>
+<P STYLE="margin-top:9pt; margin-bottom:0pt; line-height:12pt; font-size:8.5pt; font-family:arial"><B><I>Executive Officers </I></B></P> <P STYLE="margin-top:4pt; margin-bottom:0pt; line-height:12pt; font-size:8.5pt; font-family:arial"><B>Brian
+Chesky</B><B>.</B> Mr.&nbsp;Chesky <FONT STYLE="white-space:nowrap">co-founded</FONT> our company in 2008 and serves as our Chief Executive Officer and Head of Community. He is also a member of our board of directors. Mr.&nbsp;Chesky received a
+Bachelor of Fine Arts in Industrial Design from the Rhode Island School of Design. We believe that Mr.&nbsp;Chesky is qualified to serve as a member of our board of directors because of the perspective and experience he brings as our <FONT
+STYLE="white-space:nowrap">co-founder,</FONT> Chief Executive Officer, and Head of Community. </P> <P STYLE="margin-top:9pt; margin-bottom:0pt; line-height:12.0pt; font-size:8.5pt; font-family:arial"><B>Joseph Gebbia</B><B>.</B><I>
+</I>Mr.&nbsp;Gebbia <FONT STYLE="white-space:nowrap">co-founded</FONT> our company in 2008 and serves as our Chairman of Samara and Airbnb.org. He is also a member of our board of directors. He leads Samara, our
+<FONT STYLE="white-space:nowrap">in-house</FONT> design and innovation studio. Mr.&nbsp;Gebbia received dual degrees in Graphic Design and Industrial Design from the Rhode Island School of Design, where he currently serves on the institution&#146;s
+Board of Trustees. We believe that Mr.&nbsp;Gebbia is qualified to serve as a member of our board of directors because of the perspective and experience he brings as our <FONT STYLE="white-space:nowrap">co-founder</FONT> and Chairman of Samara and
+Airbnb.org. </P> <P STYLE="margin-top:9pt; margin-bottom:0pt; line-height:12.0pt; font-size:8.5pt; font-family:arial"><B>Nathan Blecharczyk</B><B>.</B> Mr.&nbsp;Blecharczyk <FONT STYLE="white-space:nowrap">co-founded</FONT> our company in 2008 and
+serves as our Chief Strategy Officer and Chairman of Airbnb China. He is also a member of our board of directors. Mr.&nbsp;Blecharczyk received a Bachelor of Arts in Computer Science from Harvard University and held several engineering positions
+before <FONT STYLE="white-space:nowrap">co-founding</FONT> Airbnb. We believe that Mr.&nbsp;Blecharczyk is qualified to serve as a member of our board of directors because of the perspective and experience he brings as our <FONT
+STYLE="white-space:nowrap">co-founder</FONT> and Chief Strategy Officer. </P> <P STYLE="margin-top:9pt; margin-bottom:0pt; line-height:12pt; font-size:8.5pt; font-family:arial"><B>Dave Stephenson</B><B>.</B> Mr.&nbsp;Stephenson has served as our
+Chief Financial Officer since January 2019. Prior to joining Airbnb, Mr.&nbsp;Stephenson spent 17 years at Amazon.com, Inc. (&#147;Amazon&#148;), a publicly-held global </P>
+ <p STYLE="margin-top:0pt;margin-bottom:0pt ; font-size:8pt">&nbsp;</P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:8pt; font-family:arial" ALIGN="right"><FONT COLOR="#a5a5a5">259 </FONT></P>
+
+
+</DIV></Center>
+
+
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+<h5 align="left"><a href="#toc">Table of Contents</a></h5>
+
+
+<Center><DIV STYLE="width:8.5in" align="left">
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; line-height:12pt; font-size:8.5pt; font-family:arial">
+technology company, where he was most recently Vice President and Chief Financial Officer of their Worldwide Consumer Organization from June 2015 to December 2018. Before that, from September
+2013 to June 2015, Mr.&nbsp;Stephenson was the Chief Financial Officer of Amazon&#146;s International Consumer business and led finance across many areas of the company. Mr.&nbsp;Stephenson served as President and Chief Financial Officer of Big Fish
+Games, Inc., a gaming company, from September 2011 to September 2013. Mr.&nbsp;Stephenson received a Bachelor of Science in Industrial and Management Engineering from Montana State University and a Master of Business Administration from the
+University of Iowa. </P> <P STYLE="margin-top:9pt; margin-bottom:0pt; line-height:12pt; font-size:8.5pt; font-family:arial"><B>Aristotle Balogh</B><B>.</B> Mr.&nbsp;Balogh has served as our Chief Technology Officer since November 2018. Prior to
+joining Airbnb, Mr.&nbsp;Balogh was Vice President of Engineering at Alphabet Inc. (formerly known as Google, Inc.), a publicly-held global technology company, from June 2011 to November 2018, where he was most notably responsible for the data and
+serving systems behind Google Search. Prior to that, from February 2008 to July 2010, Mr.&nbsp;Balogh served as Executive Vice President and Chief Technology Officer of Yahoo! Inc., a digital information platform. Mr.&nbsp;Balogh received a Bachelor
+of Science in Electrical Engineering and Computer Science and a Master of Science in Engineering in Electrical and Computer Engineering from Johns Hopkins University.<B> </B></P>
+<P STYLE="margin-top:9pt; margin-bottom:0pt; line-height:12pt; font-size:8.5pt; font-family:arial"><B>Catherine Powell</B><B>.</B> Ms. Powell has served as our Global Head of Hosting since July 2020 and previously served as our Head of Experiences
+since January 2020. Prior to joining Airbnb, Ms. Powell spent 15 years at the Walt Disney Company (&#147;Disney&#148;) where she held multiple roles from June 2004 to December 2019, including President, Disney Park Western Region from March 2018 to
+December 2019 and Pr&#233;sidente, Disneyland Paris from July 2016 to December 2018. Prior to joining Disney, Ms. Powell worked for BBC Worldwide in various roles from January 1997 to June 2004. Ms. Powell received a Master in Arts in Philosophy,
+Politics, Economics from Oxford University. </P> <P STYLE="margin-top:9pt; margin-bottom:0pt; line-height:12pt; font-size:8.5pt; font-family:arial"><B><I><FONT STYLE="white-space:nowrap">Non-Employee</FONT> Directors </I></B></P>
+<P STYLE="margin-top:4pt; margin-bottom:0pt; line-height:12pt; font-size:8.5pt; font-family:arial"><B>Angela Ahrendts</B><B>.</B> Ms.&nbsp;Ahrendts joined our board of directors in May 2019. Ms.&nbsp;Ahrendts served as Senior Vice President, Retail
+at Apple Inc. (&#147;Apple&#148;), a publicly-held technology company, from May 2014 to May 2019. Prior to joining Apple, Ms.&nbsp;Ahrendts served as a director and Chief Executive Officer of Burberry plc, a global luxury fashion company, from
+July&nbsp;2006 to April 2014. Ms.&nbsp;Ahrendts also previously served as Executive Vice President at Liz Claiborne Inc. and President of Donna Karan International, both then publicly-held global fashion companies. Ms.&nbsp;Ahrendts has served as a
+director of the Ralph Lauren Corporation, a publicly-held fashion company, since August&nbsp;2018. Ms. Ahrendts has served as a director of WPP plc, a publicly-held creative transformation company with expertise in communications, experience,
+commerce and technology, since June 2020. Ms.&nbsp;Ahrendts also serves on <FONT STYLE="white-space:nowrap">non-profits</FONT> boards, including Sa&iuml;d Business School at the University of Oxford, The HOW Institute for Society, and Charity:
+Water. Ms.&nbsp;Ahrendts received a Bachelor of Arts in Marketing and Merchandising from Ball State University. We believe that Ms.&nbsp;Ahrendts is qualified to serve as a member of our board of directors because of her extensive experience
+advising technology companies and other public companies as both a director and executive. </P> <P STYLE="margin-top:9pt; margin-bottom:0pt; line-height:12pt; font-size:8.5pt; font-family:arial"><B>Kenneth Chenault</B><B>.</B> Mr.&nbsp;Chenault
+joined our board of directors in January 2018. Since February 2018, Mr.&nbsp;Chenault serves as Chairman and Managing Director of General Catalyst, a venture capital firm. Mr.&nbsp;Chenault served as Chairman and Chief Executive Officer of American
+Express Company, a publicly-held diversified financial services company, from April 2001 through January 2018. Prior to that, he held roles of increasing responsibility at American Express Company, including President of the U.S. division of
+American Express Travel Related Services Company, Inc. in 1993, Vice Chairman of the American Express Company in 1995 and President and Chief Operating Officer in 1997. Mr.&nbsp;Chenault has served on the board of directors of Berkshire Hathaway
+Inc., a publicly-held multinational conglomerate holding company, since </P>
+ <p STYLE="margin-top:0pt;margin-bottom:0pt ; font-size:8pt">&nbsp;</P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:8pt; font-family:arial" ALIGN="right"><FONT COLOR="#a5a5a5">260 </FONT></P>
+
+
+</DIV></Center>
+
+
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+<h5 align="left"><a href="#toc">Table of Contents</a></h5>
+
+
+<Center><DIV STYLE="width:8.5in" align="left">
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; line-height:12pt; font-size:8.5pt; font-family:arial">
+May&nbsp;2020. Mr.&nbsp;Chenault also served on the board of directors of International Business Machines Corporation, a publicly-held multinational technology company, from October 1998 to
+February 2019, The Procter&nbsp;&amp; Gamble Company, a publicly-held global consumer goods company, from April 2008 to February 2019, and Facebook, Inc., a publicly-held global technology company, from February 2018 to May 2020. Mr.&nbsp;Chenault
+received a Bachelor of Arts in history from Bowdoin College and a Juris Doctor from Harvard Law School. We believe that Mr.&nbsp;Chenault is qualified to serve as a member of our board of directors because of his extensive experience advising public
+companies as both a director and executive. </P> <P STYLE="margin-top:9pt; margin-bottom:0pt; line-height:12pt; font-size:8.5pt; font-family:arial"><B>Belinda Johnson</B><B>.</B> Ms.&nbsp;Johnson served as our Chief Operating Officer from February
+2018 through March 2020. Ms.&nbsp;Johnson held several roles at our company since joining in 2011, including General Counsel from December 2011 to July 2015 and Chief Business Affairs and Legal Officer from July 2015 to January 2018. Prior to
+joining Airbnb, she was Senior Vice President and Deputy General Counsel at Yahoo! Inc., a digital information platform, and served as General Counsel and Corporate Secretary to Broadcast.com, an internet broadcasting company. Ms.&nbsp;Johnson
+currently serves on the Board of Directors of PayPal Holdings, Inc., a publicly-held technology platform and digital payments company. Ms.&nbsp;Johnson received a Bachelor of Arts and Juris Doctor from the University of Texas. Ms.&nbsp;Johnson
+joined our board of directors in March 2020. We believe that Ms.&nbsp;Johnson is qualified to serve as a member of our board of directors because of the perspective and experience she brings as our former Chief Operating Officer. </P>
+<P STYLE="margin-top:9pt; margin-bottom:0pt; line-height:12.0pt; font-size:8.5pt; font-family:arial"><B>Jeffrey Jordan</B><B>.</B> Mr. Jordan joined our board of directors in August 2011. Mr. Jordan serves as the managing partner of Andreessen
+Horowitz, a venture capital firm, which he joined as a general partner in July 2011. Prior to that, Mr. Jordan served as the Chief Executive Officer of OpenTable, Inc., the online restaurant-reservation service company, from 2007 to 2011. From 2004
+to 2006, Mr. Jordan served as President of PayPal, Inc., a digital payments company, which was then owned by eBay, Inc. For five years prior to that, Mr. Jordan served as Senior Vice President and General Manager for eBay North America. From 1998 to
+1999, Mr.&nbsp;Jordan served as Chief Financial Officer for Hollywood Entertainment Corporation, a video rental company, and then President of its subsidiary, Reel.com. Previously, Mr.&nbsp;Jordan served in various capacities at The Walt Disney
+Company for eight years, most recently as Senior Vice President and Chief Financial Officer of the Disney Store Worldwide. Before that he worked for The Boston Consulting Group. Mr.&nbsp;Jordan served as a member of the boards of directors of
+OpenTable, Inc. from 2007 until 2013, Pinterest, Inc. since 2011, and Accolade, Inc. since 2016. He is a member of the board of directors for several private companies including Maplebear Inc. (d/b/a Instacart) and OfferUp, Inc. Mr.&nbsp;Jordan
+received a Bachelor of Arts from Amherst College and a Master of Business Administration from the Stanford Graduate School of Business. We believe that Mr.&nbsp;Jordan is qualified to serve as a member of our board of directors because of his
+significant managerial experience at global technology companies. </P> <P STYLE="margin-top:9pt; margin-bottom:0pt; line-height:12.0pt; font-size:8.5pt; font-family:arial"><B>Alfred Lin</B><B>.</B> Mr.&nbsp;Lin joined our board of directors in
+November 2012. Since October 2010, Mr.&nbsp;Lin has been a partner at Sequoia Capital Operations LLC (&#147;Sequoia&#148;), a venture capital firm. He represents Sequoia on our board as well as several other privately-held companies, including
+DoorDash, a food-delivery and local logistics platform, since 2014, and Houzz Inc., an online home designs and furnishings platform, since 2011. From 1996 to 1998, he served as Vice President of Finance and Administration of LinkExchange, a banner
+advertising exchange acquired by Microsoft Corporation (&#147;Microsoft&#148;). From June 1999 to December 2014, he served as <FONT STYLE="white-space:nowrap">Co-Founder</FONT> and General Manager at Venture Frogs, LLC, a seed fund that invested in
+companies such as Ask Jeeves, OpenTable, Inc., Tellme Networks, Inc., and Zappos.com Inc. (&#147;Zappos&#148;). From January 2001 to June 2005, he served as Vice President of Finance and Business Development of Tellme Networks, a voice recognition
+services and platform company acquired by Microsoft. From January 2005 to December 2010, he served as Chairman of the Board and Chief Operating Officer of Zappos, an online retailer acquired by Amazon.com, Inc. Mr.&nbsp;Lin holds a Bachelor of Arts
+in Applied Mathematics from Harvard University and a Master of Science in Statistics from Stanford University. We believe that Mr.&nbsp;Lin is qualified to serve as a member of our </P>
+ <p STYLE="margin-top:0pt;margin-bottom:0pt ; font-size:8pt">&nbsp;</P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:8pt; font-family:arial" ALIGN="right"><FONT COLOR="#a5a5a5">261 </FONT></P>
+
+
+</DIV></Center>
+
+
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+<h5 align="left"><a href="#toc">Table of Contents</a></h5>
+
+
+<Center><DIV STYLE="width:8.5in" align="left">
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; line-height:12.0pt; font-size:8.5pt; font-family:arial">
+board of directors because of his extensive experience in the venture capital industry, his business and leadership experience, and his knowledge of scaling technology companies. </P>
+<P STYLE="margin-top:9pt; margin-bottom:0pt; line-height:12pt; font-size:8.5pt; font-family:arial"><B>Ann Mather</B><B>.</B> Ms.&nbsp;Mather joined our board of directors in August 2018. From September&nbsp;1999 to April&nbsp;2004, Ms.&nbsp;Mather
+served as Executive Vice President and Chief Financial Officer of Pixar, Inc., a computer animation studio, which was acquired by The Walt Disney Company in May&nbsp;2006. Ms.&nbsp;Mather has served on the board of directors of Arista Networks,
+Inc., a publicly-held computer networking company, since 2013, Alphabet Inc. (the successor issuer to, and parent holding company of, Google, Inc.), a publicly-held global technology company, since 2005, Glu Mobile Inc., a publicly-held publisher of
+mobile games, since 2005, and Netflix, Inc., a publicly-held global TV and movie streaming company, since 2010. Ms.&nbsp;Mather is an independent trustee to the Dodge&nbsp;&amp; Cox Funds board of trustees. Ms.&nbsp;Mather received a Master of Arts
+from Cambridge University. We believe that Ms.&nbsp;Mather is qualified to serve as a member of our board of directors because of her extensive experience advising the boards of global technology companies. </P>

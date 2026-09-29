@@ -1,0 +1,287 @@
+<SEC-DOCUMENT>0001193125-17-068848.txt : 20170303
+<SEC-HEADER>0001193125-17-068848.hdr.sgml : 20170303
+<ACCEPTANCE-DATETIME>20170303090111
+ACCESSION NUMBER:		0001193125-17-068848
+CONFORMED SUBMISSION TYPE:	424B4
+PUBLIC DOCUMENT COUNT:		41
+FILED AS OF DATE:		20170303
+DATE AS OF CHANGE:		20170303
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Snap Inc
+		CENTRAL INDEX KEY:			0001564408
+		STANDARD INDUSTRIAL CLASSIFICATION:	SERVICES-COMPUTER PROGRAMMING, DATA PROCESSING, ETC. [7370]
+		IRS NUMBER:				455452795
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		424B4
+		SEC ACT:		1933 Act
+		SEC FILE NUMBER:	333-215866
+		FILM NUMBER:		17661604
+
+	BUSINESS ADDRESS:	
+		STREET 1:		63 MARKET STREET
+		CITY:			VENICE
+		STATE:			CA
+		ZIP:			90291
+		BUSINESS PHONE:		(310) 399-3339
+
+	MAIL ADDRESS:	
+		STREET 1:		63 MARKET STREET
+		CITY:			VENICE
+		STATE:			CA
+		ZIP:			90291
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	Snapchat Inc
+		DATE OF NAME CHANGE:	20121211
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>424B4
+<SEQUENCE>1
+<FILENAME>d270216d424b4.htm
+<DESCRIPTION>424B4
+<TEXT>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B><A NAME="rom270216_12"></A>MANAGEMENT </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman"><B>Executive Officers and Directors </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify">The following table sets forth information for our directors and executive officers, and their ages as of December&nbsp;31,
+2016. </P> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" ALIGN="center">
+
+
+<TR>
+<TD WIDTH="39%"></TD>
+<TD VALIGN="bottom" WIDTH="2%"></TD>
+<TD></TD>
+<TD></TD>
+<TD></TD>
+<TD VALIGN="bottom" WIDTH="2%"></TD>
+<TD WIDTH="55%"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="bottom" NOWRAP STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman"><B>Name</B></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" COLSPAN="2" ALIGN="center" STYLE="border-bottom:1.00pt solid #000000"><B>Age</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman"><B>Position</B></P></TD></TR>
+
+
+<TR BGCOLOR="#cceeff" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><I>Executive Officers:</I></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Evan Spiegel</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">26</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"> <P ALIGN="justify" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Co-Founder, Chief Executive Officer, and Director</P></TD></TR>
+<TR BGCOLOR="#cceeff" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Robert Murphy</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">28</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"> <P ALIGN="justify" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Co-Founder, Chief Technology Officer, and Director</P></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Imran Khan</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">39</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"> <P ALIGN="justify" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Chief Strategy Officer</P></TD></TR>
+<TR BGCOLOR="#cceeff" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Andrew Vollero</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">50</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"> <P ALIGN="justify" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Chief Financial Officer</P></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Chris Handman</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">44</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"> <P ALIGN="justify" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">General Counsel</P></TD></TR>
+<TR BGCOLOR="#cceeff" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Timothy Sehn</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">36</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"> <P ALIGN="justify" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Senior Vice President of Engineering</P></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Steven Horowitz</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">49</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"> <P ALIGN="justify" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Vice President of Engineering</P></TD></TR>
+<TR BGCOLOR="#cceeff" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><I>Non-Employee Directors:</I></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Michael Lynton<SUP STYLE="font-size:85%; vertical-align:top"></SUP><SUP
+STYLE="font-size:85%; vertical-align:top">(1)(2)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">57</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"> <P ALIGN="justify" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Director and Chairman of the Board</P></TD></TR>
+<TR BGCOLOR="#cceeff" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Joanna Coles<SUP STYLE="font-size:85%; vertical-align:top"></SUP><SUP
+STYLE="font-size:85%; vertical-align:top">(2)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">54</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"> <P ALIGN="justify" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Director</P></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">A.G. Lafley<SUP STYLE="font-size:85%; vertical-align:top">(1)(2)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">69</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"> <P ALIGN="justify" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Director</P></TD></TR>
+<TR BGCOLOR="#cceeff" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Mitchell Lasky</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">54</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"> <P ALIGN="justify" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Director</P></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Stanley Meresman<SUP STYLE="font-size:85%; vertical-align:top">(3)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">70</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"> <P ALIGN="justify" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Director</P></TD></TR>
+<TR BGCOLOR="#cceeff" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Scott D. Miller<SUP STYLE="font-size:85%; vertical-align:top">(1)(3)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">64</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"> <P ALIGN="justify" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Director</P></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Christopher Young<SUP STYLE="font-size:85%; vertical-align:top">(3)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">44</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"> <P ALIGN="justify" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Director</P></TD></TR>
+</TABLE> <P STYLE="line-height:8.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1px solid #000000;width:10%">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="4%" VALIGN="top" ALIGN="left">(1)</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="justify" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Member of the compensation committee. </P></TD></TR></TABLE>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="4%" VALIGN="top" ALIGN="left">(2)</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="justify" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Member of the nominating and corporate governance committee. </P></TD></TR></TABLE>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="4%" VALIGN="top" ALIGN="left">(3)</TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="justify" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt">Member of the audit committee. </P></TD></TR></TABLE>
+<P STYLE="margin-top:18pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman"><B>Executive Officers </B></P>
+<P STYLE="margin-top:6pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><I>Evan Spiegel. </I>Mr.&nbsp;Spiegel is our co-founder and has served as our Chief Executive Officer and a member of our board
+of directors since May 2012. We believe that Mr.&nbsp;Spiegel is qualified to serve as a member of our board based on the perspective and experience he brings as our co-founder and Chief Executive Officer.<I> </I></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><I>Robert Murphy</I>. Mr.&nbsp;Murphy is our co-founder and has served as our Chief Technology Officer and a member of our
+board of directors since May 2012. Mr.&nbsp;Murphy holds a B.S. in Mathematical and Computational Science from Stanford University. We believe that Mr.&nbsp;Murphy is qualified to serve as a member of our board of directors based on the perspective
+and experience he brings as our co-founder and Chief Technology Officer.<I> </I></P> <P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><I>Imran Khan. </I>Mr.&nbsp;Khan has
+served as our Chief Strategy Officer since January 2015. From May 2011 to January 2015, Mr.&nbsp;Khan served as a Managing Director in the Investment Banking Division at Credit Suisse. From March 2004 to May 2011, Mr.&nbsp;Khan was an Equity Analyst
+at J.P. Morgan Securities Inc. Mr.&nbsp;Khan holds a B.S.B.A. in Finance and Economics from the University of Denver.<I> </I></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><I>Andrew Vollero</I>. Mr.&nbsp;Vollero has served as our Chief Financial Officer since February 2016 and previously served as
+our Vice President, Finance since August 2015. From September 2000 to August 2015, Mr.&nbsp;Vollero<I> </I>was employed at Mattel, Inc., a toy manufacturing company, where he served as the Senior Vice President,<I> </I>Corporate Strategy,
+Development&nbsp;&amp; Investor Relations from September 2005 to August 2015 and Division CFO, Senior Vice President, Finance and Strategy from September 2000 to September 2005. Mr.&nbsp;Vollero holds a B.A. in Mathematics and Economics from Yale
+University and a Master of Science in Management from Oxford University.<I> </I></P>
+ <p STYLE="margin-top:0pt;margin-bottom:0pt ; font-size:8pt">&nbsp;</P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center">129 </P>
+
+
+<p Style='page-break-before:always'>
+<HR  SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+<h5 align="left"><a href="#toc">Table of Contents</a></h5>
+
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><I>Chris Handman</I>. Mr.&nbsp;Handman has served as our General Counsel since
+May 2014. From March 2000 to April 2014, Mr.&nbsp;Handman was a partner in the Supreme Court and Appellate Litigation group at Hogan Lovells LLP in Washington, D.C. Earlier in his career, Mr.&nbsp;Handman served as a law clerk for Judge Patricia M.
+Wald of the U.S. Court of Appeals for the D.C. Circuit and Judge Colleen Kollar-Kotelly of the U.S. District Court for the District of Columbia. Mr.&nbsp;Handman holds a J.D. from Yale Law School and a B.A. in both Political Science and
+International Relations from American University.<I> </I></P> <P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><I>Timothy Sehn</I>. Mr.&nbsp;Sehn has served as our Senior Vice
+President of Engineering since September 2013. Prior to joining Snap Inc., Mr.&nbsp;Sehn was employed at Amazon.com, Inc., an e-commerce company, from September 2003 to September 2013, where he held various positions, including as Director of
+Software Development from September 2010 to September 2013. Mr.&nbsp;Sehn holds a B.A.Sc. from the University of Waterloo. </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><I>Steven Horowitz. </I>Mr.&nbsp;Horowitz has served as our Vice President of Engineering since January 2015. Prior to joining
+Snap Inc., Mr.&nbsp;Horowitz served as Senior Vice President of Software Engineering at Motorola Mobility, LLC, formerly a Google company, from December 2012 through January 2015. From January 2009 through November 2012, Mr.&nbsp;Horowitz served as
+Chief Technology Officer for Quotient Technology, Inc., a consumer technologies company. Prior to that he worked at Google, Microsoft, and Apple. Mr.&nbsp;Horowitz holds a B.A. from the University of Michigan, Ann Arbor. Mr.&nbsp;Horowitz is also a
+member of the board of directors of Quotient Technology, Inc. </P> <P STYLE="margin-top:18pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman"><B>Non-Employee Directors </B></P>
+<P STYLE="margin-top:6pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><I>Michael Lynton</I>. Mr.&nbsp;Lynton has served on our board of directors since April 2013 and has been Chairman of our board
+of directors since September 2016. Mr.&nbsp;Lynton served as Chief Executive Officer of Sony Entertainment Inc., an international entertainment company, from April 2012 until February 2017, and has served as Chairman and Chief Executive Officer of
+Sony Pictures Entertainment since January 2004. Mr.&nbsp;Lynton has also served as a member of the board of directors of Ares Management, L.P. since 2014. Mr.&nbsp;Lynton holds a B.A. in History and Literature from Harvard College and an M.B.A. from
+Harvard Business School. We believe that Mr.&nbsp;Lynton is qualified to serve as a member of our board of directors and Chairman due to his extensive leadership experience.<I> </I></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><I>Joanna Coles.</I> Ms.&nbsp;Coles has served on our board of directors since December 2015. Ms.&nbsp;Coles was appointed
+Chief Content Officer of Hearst Magazines in September 2016, overseeing editorial for Hearst&#146;s 300 titles globally. Prior to that she was Editor-in-Chief of Cosmopolitan, a role she started in September 2012. She edited Marie Claire magazine
+from April 2006 to September 2012. Ms.&nbsp;Coles worked for The Times of London from September 1998 to September 2001 and served as New York Bureau Chief for The Guardian from 1997 to 1998. She is on the board of Women Entrepreneurs New York City,
+an initiative to encourage female entrepreneurship, with a focus on underserved communities. Ms.&nbsp;Coles holds a B.A. in English and American literature from the University of East Anglia. We believe that Ms.&nbsp;Coles is qualified to serve as a
+member of our board of directors due to her extensive experience working with content providers and advertisers. </P> <P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><I>A.G.
+Lafley</I>. Mr.&nbsp;Lafley has served on our board of directors since July 2016. Mr.&nbsp;Lafley has held various positions within The Procter&nbsp;&amp; Gamble Company since 1977 and served as its President, Chief Executive Officer, and as a
+member of the board of directors from June 2000 until June 2009 and again from May 2013 to June 2016. He also served as Chairman of the Board from July 2002 to January 2010. From April 2010 to May 2013, Mr.&nbsp;Lafley served as a consultant and as
+a Senior Adviser at Clayton, Dubilier&nbsp;&amp; Rice, LLC, a private equity firm. Mr.&nbsp;Lafley holds an A.B. from Hamilton College and an M.B.A. from Harvard Business School. We believe that Mr.&nbsp;Lafley is qualified to serve as a member of
+our board of directors due to his extensive leadership experience.<I> </I></P> <P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><I>Mitchell Lasky</I>. Mr.&nbsp;Lasky has
+served on our board of directors since December 2012. Mr.&nbsp;Lasky has been a partner at Benchmark, a venture capital firm, since April 2007. From November 2000 to February 2006,<I> </I></P>
+ <p STYLE="margin-top:0pt;margin-bottom:0pt ; font-size:8pt">&nbsp;</P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center">130 </P>
+
+
+<p Style='page-break-before:always'>
+<HR  SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+<h5 align="left"><a href="#toc">Table of Contents</a></h5>
+
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><I>
+</I>Mr.&nbsp;Lasky served as Chief Executive Officer of JAMDAT Mobile, Inc., a publicly traded mobile games company, and served as<I> </I>Executive Vice President, Mobile&nbsp;&amp; Online at
+Electronic Arts, a video game company, after it acquired<I> </I>JAMDAT in February 2006, until April 2007. Mr.&nbsp;Lasky holds a B.A. in History and Literature from Harvard<I> </I>College and a J.D. from the University of Virginia School of Law. We
+believe Mr.&nbsp;Lasky is qualified to serve as a member of our board of directors due to his extensive experience with social media and technology companies, as well as his experience as a venture capitalist investing in technology companies.<I>
+</I></P> <P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><I>Stanley Meresman</I>. Mr.&nbsp;Meresman has served on our board of directors since July 2015. During the last ten
+years, Mr.&nbsp;Meresman has served on the boards of directors of various public and private companies, including service as chair of the audit committee for some of these companies. He currently serves on the board of directors, and as chair of the
+audit committee, of Palo Alto Networks, Inc. He served as a member of the board of directors of LinkedIn Corporation from October 2010 to December 2016, Zynga Inc. from June 2011 to June 2015, Meru Networks, Inc. from September 2010 to May 2013, and
+Riverbed Technology, Inc. from March 2005 to May 2012. From January 2004 to December 2004, Mr.&nbsp;Meresman was a Venture Partner with Technology Crossover Ventures, a private equity firm, and was General Partner and Chief Operating Officer of
+Technology Crossover Ventures from November 2001 to December 2003. During the four years before joining Technology Crossover Ventures, Mr.&nbsp;Meresman was a private investor and board member and advisor to several technology companies. From 1989
+to 1997, Mr.&nbsp;Meresman served as the Senior Vice President and Chief Financial Officer of Silicon Graphics, Inc. Mr.&nbsp;Meresman holds a B.S. in Industrial Engineering and Operations Research from the University of California, Berkeley and an
+M.B.A. from the Stanford Graduate School of Business. We believe that Mr.&nbsp;Meresman is qualified to serve as a member of our board of directors and chair of our audit committee due to his background as a member of the board and chair of the
+audit committee of other public companies and his financial and accounting expertise from his prior extensive experience as chief financial officer of two publicly traded companies.<I> </I></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><I>Scott D. Miller</I>. Mr.&nbsp;Miller has served on our board of directors since October 2016. Mr.&nbsp;Miller is a founder
+and Chief Executive Officer of G100 Companies, which operates G100 Network and SSA &amp; Company. Before joining G100 Companies in March 2004, Mr.&nbsp;Miller was employed at Hyatt Hotels Corporation, a global hospitality company, where he served as
+non-executive vice chairman from August 2003 to December 2004, president from January 1999 to August 2003, and executive vice president from September 1997 to July 2003. Mr.&nbsp;Miller currently serves on the board of directors of QTS Realty Trust,
+Inc. and served on the boards of Affinion Group, Inc. from 2011 to 2013, AXA Equitable Life Insurance Company from 2002 to 2012, Orbitz Worldwide, Inc. from 2003 to 2004, and NAVTEQ corporation from 2002 to 2006. He also serves on several private
+company boards. Mr.&nbsp;Miller holds a B.S. in Human Biology from Stanford University and an M.B.A. from the University of Chicago. We believe that Mr.&nbsp;Miller is qualified to serve as a member of our board of directors due to his extensive
+leadership experience. </P> <P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><I>Christopher Young</I>. Mr.&nbsp;Young has served on our board of directors since October 2016.
+Since October 2014, Mr.&nbsp;Young has served as Senior Vice President and General Manager, Intel Security Group at Intel Corporation, a multinational technology company. From November 2011 to September 2014, Mr.&nbsp;Young served as Senior Vice
+President, Security&nbsp;&amp; Government Group at Cisco Systems, Inc. a technology networking company. From August 2010 to October 2011, Mr.&nbsp;Young served as Senior Vice President&nbsp;&amp; General Manager, End User Computing at VMware, Inc.,
+a software company. From January 2011 to August 2016, Mr.&nbsp;Young served on the board of directors of Rapid7, Inc., a security software company. Mr.&nbsp;Young holds a B.A. in Public Policy from Princeton University and an M.B.A. from Harvard
+Business School. We believe that Mr.&nbsp;Young is qualified to serve as a member of our board of directors due to his extensive experience with technology companies. </P>
