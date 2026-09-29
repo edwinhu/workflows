@@ -844,8 +844,21 @@ func textStickyLabels(clean []string, block []int) map[int]string {
 		return nil
 	}
 	lo, hi := block[0], block[len(block)-1]
-	// Look a little above the first row: the first label sits just over it.
-	if lo -= 12; lo < 0 {
+	// Look above the first row: the label sits over it, and in a fund proxy that
+	// breaks its per-class pages there can be a page footer, a page number and a
+	// repeated column header in between. The scan stops at the previous TABLE
+	// ROW, which is the end of the block before this one, so a label can never
+	// be taken from above another table's rows.
+	stop := lo - 40
+	if stop < 0 {
+		stop = 0
+	}
+	for lo--; lo > stop; lo-- {
+		if _, _, ok := parseTextRow(clean[lo]); ok {
+			break
+		}
+	}
+	if lo < 0 {
 		lo = 0
 	}
 	byIndent := map[int]string{}
@@ -880,6 +893,33 @@ func textStickyLabels(clean []string, block []int) map[int]string {
 	}
 	if !found {
 		return nil
+	}
+	// The ENCLOSING label may be further up than the window above: a fund proxy
+	// writes the fund once at indent 0 and then runs its share classes over
+	// several pages, each of which is a block of its own. Walk up for a label
+	// written at a SHALLOWER indent than anything this block found, and prefix
+	// it. Only a shallower indent is accepted, so a sibling label of the same
+	// rank can never be borrowed.
+	minInd := -1
+	for _, k := range indents {
+		if minInd < 0 || k < minInd {
+			minInd = k
+		}
+	}
+	if minInd > 0 {
+		for ln := lo - 1; ln >= 0 && ln > lo-200; ln-- {
+			t := strings.TrimSpace(clean[ln])
+			if t == "" || reTextValueish.MatchString(t) || !reTextStickyLabel.MatchString(t) {
+				continue
+			}
+			if ind := len(clean[ln]) - len(strings.TrimLeft(clean[ln], " ")); ind < minInd {
+				enc := strings.TrimRight(t, ":")
+				for k, v := range out {
+					out[k] = enc + " | " + v
+				}
+				break
+			}
+		}
 	}
 	return out
 }
