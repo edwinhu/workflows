@@ -976,6 +976,10 @@ func (c *compacted) looksLikeOwnership(tableText string) bool {
 
 var reAddrLine = regexp.MustCompile(`(?i)^(\d|P\.?\s?O\.?\s+box|one\s+\w+\s+(street|plaza|place|way|center|centre|avenue)|c/o\b|[\w\s]+,\s*[A-Z]{2}\s+\d{5})`)
 
+// A name cell that is nothing but a parenthesised qualifier continues the
+// holder named on the row above.
+var reParenOnlyName = regexp.MustCompile(`^\s*\([^()]*\)\s*$`)
+
 // holderName takes the first line of a 5% holder's cell when the lines that
 // follow are the mailing address EDGAR proxies put under the name.
 func holderName(cell string) string {
@@ -1124,6 +1128,16 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 		if lbl := c.seriesRowLabel(c.rows[i]); lbl != "" {
 			lastSeries = lbl
 		}
+		// A holder whose row carries no number of its own — the name alone,
+		// with the percent on the qualifier row under it — falls inside the
+		// header block, so the walk below would lose the name it continues.
+		if nc < len(c.rows[i]) {
+			if nm := dropAddress(holderName(c.rows[i][nc])); nm != "" &&
+				hasWords(nm, 1) && !reSkipName.MatchString(nm) && !isAddressLine(nm) &&
+				!reParenOnlyName.MatchString(nm) {
+				lastName = nm
+			}
+		}
 	}
 	for i := c.nHeader; i < len(c.rows); i++ {
 		r := c.rows[i]
@@ -1172,7 +1186,10 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 		name = dropAddress(name)
 		// A 5% holder is often laid out over two grid rows: the name alone,
 		// then the address with the numbers beside it.
-		if reAddrLine.MatchString(name) && lastName != "" {
+		// ... and the second row may be a parenthesised qualifier rather than an
+		// address ("(Vanguard Variable Annuity)"), which cleanHolderName later
+		// strips to nothing, leaving a row with no holder at all.
+		if (reAddrLine.MatchString(name) || reParenOnlyName.MatchString(name)) && lastName != "" {
 			name = lastName
 		} else if name != "" {
 			lastName = name
