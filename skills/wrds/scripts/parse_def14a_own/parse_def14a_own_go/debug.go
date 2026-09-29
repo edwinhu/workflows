@@ -14,9 +14,12 @@ func DebugFile(path string, maxTables int) {
 	raw, err := os.ReadFile(path)
 	must(err)
 	body := PrimaryDocument(string(raw))
-	fmt.Printf("bytes=%d isHTML=%v\n", len(body), IsHTML(body))
+	// The debug view must see exactly what the pipeline sees: the declared
+	// fund / series names are per-filing context the extractor reads.
+	base := Row{series: SeriesNames(string(raw))}
+	fmt.Printf("bytes=%d isHTML=%v series=%d\n", len(body), IsHTML(body), len(base.series))
 	if !IsHTML(body) {
-		rows, seen, used := ExtractText(body, Row{})
+		rows, seen, used := ExtractText(body, base)
 		fmt.Printf("text path: blocks_seen=%d used=%d rows=%d\n", seen, used, len(rows))
 		for i, r := range rows {
 			if i > 40 {
@@ -38,7 +41,7 @@ func DebugFile(path string, maxTables int) {
 			}
 			continue
 		}
-		c := compact(it.Grid)
+		c := compactWith(it.Grid, base)
 		c.analyze()
 		okOwn := c.looksLikeOwnership(it.Text)
 		if !okOwn && !reOwnCue.MatchString(it.Text) {
@@ -60,7 +63,7 @@ func DebugFile(path string, maxTables int) {
 		for i := 0; i < len(c.rows) && i < 6; i++ {
 			fmt.Printf("    row%d: %q\n", i, c.rows[i])
 		}
-		rows := ExtractGrid(it.Grid, it.Text, Row{}, it.Pos)
+		rows := ExtractGrid(it.Grid, it.Text, base, it.Pos)
 		fmt.Printf("    -> %d rows\n", len(rows))
 		for i, r := range rows {
 			if i > 8 {

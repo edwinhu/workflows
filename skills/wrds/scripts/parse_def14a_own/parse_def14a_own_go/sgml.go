@@ -18,7 +18,41 @@ var (
 	reType      = regexp.MustCompile(`(?i)<TYPE>([^\n<]*)`)
 	reHasTR     = regexp.MustCompile(`(?i)<tr[\s>]`)
 	reHasTag    = regexp.MustCompile(`(?i)<(html|body|div|p|font|table)[\s>]`)
+	reSeriesTag = regexp.MustCompile(`(?i)<SERIES-NAME>([^\n<]*)`)
+	reNotAlnum  = regexp.MustCompile(`[^a-z0-9]+`)
 )
+
+// SeriesNames returns the distinct fund / series names the filing's SGML header
+// declares, in document order. A registered investment company files one proxy
+// covering many series and tags each of them here; an operating company
+// declares none. It is the only place a fund-family proxy states, in structured
+// form, which funds its repeated per-fund ownership tables belong to.
+func SeriesNames(raw string) []string {
+	end := len(raw)
+	if i := reDocOpen.FindStringIndex(raw); i != nil {
+		end = i[0]
+	}
+	seen := map[string]bool{}
+	var out []string
+	for _, m := range reSeriesTag.FindAllStringSubmatch(raw[:end], -1) {
+		n := strings.TrimSpace(m[1])
+		if len(n) < 6 {
+			continue
+		}
+		k := NormLabel(n)
+		if k == "" || seen[k] {
+			continue
+		}
+		seen[k] = true
+		out = append(out, n)
+	}
+	return out
+}
+
+// NormLabel folds a label to the form the series matcher compares on.
+func NormLabel(s string) string {
+	return strings.TrimSpace(reNotAlnum.ReplaceAllString(strings.ToLower(s), " "))
+}
 
 type span struct{ lo, hi int }
 
