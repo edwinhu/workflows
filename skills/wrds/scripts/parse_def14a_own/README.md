@@ -339,9 +339,15 @@ ceilings, and score.py reads both from the locked thresholds file. The duplicate
 round (`GRIND_PLAN.md` §9) added a fourth ruler — `gold/sample_full.tsv`, a fixed
 year-stratified sample of the whole archive (8,250 filings, ~250 per filing year
 1994-2026, seed 20260929, gold-linked filings excluded) — and three gates over it:
-`sample_dup_excess_same_table_rate` ≤ 0.01, `sample_dup_excess_same_table_rate_max_year`
-≤ 0.02, and `sample_yield_worst_year_margin` ≥ 0.0 (a per-year no-regression floor
-recorded in `_sample_yield_floor_by_year`). `run_baseline.sh` therefore submits
+a duplicate-rate ceiling pooled ≤ 0.01, the same ceiling per year ≤ 0.02, and
+`sample_yield_worst_year_margin` ≥ 0.0 (a per-year no-regression floor
+recorded in `_sample_yield_floor_by_year`). **The duplicate ceilings were REDEFINED
+later the same day** (`GRIND_PLAN.md` §10): they now key on the IDENTICAL ROW —
+`sample_dup_excess_identical_row_rate` and `_max_year`, same 0.01 / 0.02 — because
+the earlier key, `(accession, cik, holder_name, share_class)` within one
+`table_kind`, counted one holder listed once per managed account with distinct
+shares and percent as duplicates. `sample_dup_excess_same_table_rate` and
+`_max_year` are kept as DIAGNOSTICS. `run_baseline.sh` therefore submits
 `gold/round_filelist.tsv` (gold ∪ ISS ∪ sample, 21,128 filings) and score.py exits
 **2** if the output does not cover the sample.
 
