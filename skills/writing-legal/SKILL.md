@@ -1,6 +1,6 @@
 ---
 name: writing-legal
-description: "ALWAYS load BEFORE drafting, revising or grading LAW REVIEW prose — 'write the article', 'draft this Part', 'revise my note', 'polish the law review piece', 'does this sound like a law review article', 'edit my seminar paper', 'is this Part well written', 'should I write This Article or This paper', 'do I cross-reference by Part or Section', 'is pursuant to legalese'. Covers T14 flagship articles, student notes, seminar papers and any legal scholarship carrying footnotes and Bluebook short forms. This skill carries ONLY what is additional to the base register: load `writing-general` alongside it — the diction, tic, vindicated-phrase and formatting rules live there and are assumed here. Do NOT load this for a finance or accounting journal submission (use `writing-econ`) or for a comment letter, memo, brief or professional email (`writing-general` alone) — importing a law review rule into either of those makes the prose worse."
+description: "ALWAYS load BEFORE drafting, revising or grading LAW REVIEW prose — 'write the article', 'draft this Part', 'revise my note', 'polish the law review piece', 'does this sound like a law review article', 'edit my seminar paper', 'is this Part well written', 'should I write This Article or This paper', 'do I cross-reference by Part or Section', 'how do I transition between Parts', 'the sections don't connect', 'is pursuant to legalese'. Covers T14 flagship articles, student notes, seminar papers and any legal scholarship carrying footnotes and Bluebook short forms. This skill carries ONLY what is additional to the base register: load `writing-general` alongside it — the diction, tic, vindicated-phrase and formatting rules live there and are assumed here. Do NOT load this for a finance or accounting journal submission (use `writing-econ`) or for a comment letter, memo, brief or professional email (`writing-general` alone) — importing a law review rule into either of those makes the prose worse."
 user-invocable: false
 ---
 
@@ -50,6 +50,67 @@ first. Rates written `n/M` are hits per million sentences.
 - **Small caps** for journal names in citations.
 - **Three body Parts is the default** — Background, the Argument with counterarguments folded in, the
   Prescription. Splitting into four or five Parts is an exception you reach, not a starting point.
+
+## Boundaries: the objection hinge
+
+**Every Part and Section boundary is a hinge. The reader crosses the heading already holding a
+reasonable objection, plus a commitment that the next unit answers it and a statement of what the
+answer is.** This is a brief's discipline carried into an Article, and the source is Bebchuk &
+Kastiel, *Controllers Unbound* (2026). **Copy its structure, not its sentences.** The prose is
+brief-like rather than good. A variant of "it might be argued" carries six boundaries (III.A, III.B.1, VIII.A–D), and
+"We would like to stress" and "ten times(!)" appear too. Build the hinge the
+way the table shows, then write each sentence to the `writing-general` rules. A hinge has two
+halves, and a boundary missing either half has no transition:
+
+1. **The objection**, stated the way a reasonable reader would state it, without attribution:
+   `It might be argued, however, that…`, `Some might question our conclusions on the grounds
+   that…`. Concede the part that is true (`We fully agree with this proposition.`). Say who holds
+   the view in a footnote, never at the hinge.
+2. **The promise, and it names the answer, not the topic.** Write `As explained below, however,
+   SB 21 leaves public investors vulnerable to partial freezeouts`, never `We now turn to partial
+   freezeouts`. Bebchuk's `as we now explain` and `the question to which we now turn` are his
+   idiolect, at 0.00/M and 0.18/M in the law corpus. Use the form, not the phrase.
+
+**Measured** with `ai-tic`'s `fp-check.sh` triage (line-level, so absolute rates undercount phrases
+that wrap across lines; the law/finance ratio is like for like). The law corpus averages about 850
+sentences per article.
+
+| phrase | law | finance | what it tells you |
+|---|---|---|---|
+| `it might be argued` | **52.7/M** | 6.5/M | The objection voice is legal register, 8× the finance rate |
+| `some might question / argue / object` | **11.7/M** | 2.1/M | 5.7× |
+| `one might argue` · `it could be argued` | 39.4 · 35.4/M | 22.4 · 19.0/M | Under 2×, so these forms are shared rather than marked |
+| all four objection openers | ~139/M | ~50/M | About **one every eight law articles**. Bebchuk's six in one Article is roughly 50× the norm |
+| `as explained below, however` | **2.7/M** | 0.46/M | The answer-naming promise is law-marked (5.9×) |
+| `we (now) turn to` | 24.5/M | **140.8/M** | The topic-only promise is finance register (5.8×) |
+| `the next section` · `in this section` | 56 · 137/M | **377 · 1,165/M** | Finance signposts by Section, 7–8× the law rate |
+| `this Part` · `the next Part` | **598 · 53/M** | 31 · 2.4/M | Law signposts by Part |
+| `thus far` | 158/M | 123/M | Shared, and safe for lifting an assumption |
+
+| boundary | the move in *Controllers Unbound* |
+|---|---|
+| Section → Section (hinge closes the unit) | III.A ends: "It might be argued, however, that fiduciary duties and norms … generally lead directors who are independent … to oppose decisions that would adversely affect public investors. Whether this is in fact the case is the question to which we now turn." III.B's first sentence answers it: controllers "should commonly be able to have in place at least two independent directors that tend to go along." |
+| Subsection → subsection | III.B.1 ends: "It might nonetheless be argued that … Independent directors are moral agents and might elect 'to do the right thing.' We fully agree with this proposition. However, as we now explain, the constraint this places on controlling shareholders is far weaker than it may appear given controllers' power to select, and reselect as needed …" |
+| Part → Part by lifting an assumption (hinge opens the unit) | Part V opens: "Thus far, the discussion has examined the rules governing controlled companies taking the existence and number of such companies as given. An important conclusion of our analysis, however, is that SB 21 … will also have a major impact on the incidence and nature of control blocks." VI.B uses the same move. |
+| An objection Part, in the roadmap and its opener | Intro: "Some might question our conclusions on the grounds that … various mechanisms could provide substitute protections. Part VIII addresses such objections." The Part VIII opener ends with the verdict first: "these four 'mechanisms,' will fail to adequately make up for the weakening of controller constraints." |
+| A rebuttal Section's opener | VIII.A: "One might argue that controllers could be partially deterred … However, as explained below, … the expected decline in the market value of the controller's block rarely discourages the controller …, and almost never does it in dual-class controlled companies." The objection comes in sentence one and the verdict in sentence two. |
+| A Section with no natural objection | IV.D: "The drafters of SB 21 accepted that controller-favoring freezeouts raise especially serious concerns … As explained below, however, SB 21 leaves public investors vulnerable to … 'partial freezeouts.'" The concession stands in for the objection. |
+
+- **The promise is a debt.** The first paragraph of the next unit must deliver the proposition the
+  promise named, and deliver that exact one. A hinge that promises Y and then delivers Y′ is worse
+  than no hinge.
+- **Cross-references are directional and numbered:** `In Part II above`, `As Part V below will
+  further detail`, `as explained in Section B`.
+- **Grading TRANSITION on a legal draft** (`writing/references/writing-checks.md`) means quoting
+  both halves at every boundary. If either half is missing, report a finding.
+
+| About to | Why wrong | Do instead |
+|---|---|---|
+| End a unit on `In sum, …` and open the next with its topic | Nothing is handed forward. It is the one boundary in *Controllers Unbound* without a hinge: VI.A and VI.B end on the same "In sum" paragraph, word for word | End on the objection the next unit answers, or open the next unit by lifting an assumption (`Thus far … taking X as given. However, …`) |
+| Write `We now turn to X` / `The next section examines X` | The promise names only a topic, so the reader has no claim to test the next unit against. It is also the finance register's signpost: `we turn to` runs at 140.8/M in finance and 24.5/M in law | `As explained below, however, [answer]`, or `Part V shows that [answer]` |
+| Open a Section with `This Section discusses X` | Meta-commentary with no claim | `In this Section, we explain that [claim]`, or objection + `however` |
+| Reuse one objection formula (`It might be argued`) at boundary after boundary | This is Bebchuk's tic, not his method. The law corpus uses the four objection openers together about once every eight articles | Use a formula for at most one or two hinges per Article. Elsewhere state the objection as a plain claim (`Fiduciary duties might seem to restrain these directors.`) or use a concession (`The drafters accepted that …`) |
+| Attribute the hinge objection to a named scholar in the body | Turns the boundary into a literature review | Keep the voice impersonal at the hinge and put the name in the footnote |
 
 ## Volokh, run through the law corpus
 
