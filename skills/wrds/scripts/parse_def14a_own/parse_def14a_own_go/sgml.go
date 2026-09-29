@@ -93,6 +93,24 @@ func MatchSeries(set map[string]string, cell string) string {
 			return v
 		}
 	}
+	// The fund may be named INSIDE a family heading: "Vanguard Variable
+	// Insurance Fund - Balanced Portfolio (1991)" states the declared series
+	// "Balanced Portfolio" between a family prefix and a launch year. The
+	// longest window that is a declared name wins, so a family name that is
+	// itself declared never beats the fund it introduces.
+	if len(f) <= 16 {
+		for width := len(f) - 1; width >= 2; width-- {
+			for lo := 0; lo+width <= len(f); lo++ {
+				w := strings.Join(f[lo:lo+width], " ")
+				if len(w) < 6 {
+					continue
+				}
+				if v := set[w]; v != "" {
+					return v
+				}
+			}
+		}
+	}
 	return ""
 }
 
