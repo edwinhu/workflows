@@ -1443,3 +1443,94 @@ func TestASCIIFundAndClassLabelLines(t *testing.T) {
 		t.Errorf("want the class label on at least two of the holder's rows, got %v", seen)
 	}
 }
+
+// An award / plan-benefits table repeats the SAME people as the ownership table
+// with a different share count and no percent of its own, so the directors are
+// emitted twice on one exact key. The share column says what the shares ARE —
+// "Option Shares", "Number of Shares Underlying SSAR/Option Grants" — and never
+// that they are OWNED, which is what separates it from a genuine ownership table
+// that happens to state no percent (J&J's directors table: common shares,
+// deferred units, options, total).
+const awardTableHTML = `<html><body>
+<p>Security Ownership of Certain Beneficial Owners and Management</p>
+<table>
+<tr><th>Name of Beneficial Owner</th><th>Shares Beneficially Owned</th><th colspan="2">Percent of Class</th></tr>
+<tr><td>Jeffrey H. Burbank</td><td>1,200,000</td><td>4.1</td><td>%</td></tr>
+<tr><td>Joseph E. Turk, Jr.</td><td>400,000</td><td>1.4</td><td>%</td></tr>
+<tr><td>All directors and executive officers as a group (9 persons)</td><td>2,000,000</td><td>6.8</td><td>%</td></tr>
+</table>
+<p>Approval of the amendment to the equity incentive plan. The shares beneficially owned by our named executive officers are shown above.</p>
+<table>
+<tr><th>Name</th><th colspan="2">Option Shares</th></tr>
+<tr><td>Jeffrey H. Burbank</td><td></td><td>767,955</td></tr>
+<tr><td>Joseph E. Turk, Jr.</td><td></td><td>290,808</td></tr>
+<tr><td>All directors and executive officers as a group (9 persons)</td><td></td><td>1,500,000</td></tr>
+</table></body></html>`
+
+func TestAwardTableIsNotOwnership(t *testing.T) {
+	rows := run(t, awardTableHTML)
+	n := 0
+	for _, r := range rows {
+		if r.HolderName == "Jeffrey H. Burbank" {
+			n++
+		}
+	}
+	if n != 1 {
+		t.Errorf("Jeffrey H. Burbank emitted %d times, want 1: %v", n, holderNames(rows))
+	}
+	if r := find(rows, "Jeffrey H. Burbank", ""); r == nil || r.Shares == nil || *r.Shares != 1200000 {
+		t.Errorf("the ownership row was lost or replaced: %+v", r)
+	}
+}
+
+// The control: a genuine ownership table with NO percent column at all. Its
+// share columns say the shares are owned, so it must still be read.
+const noPercentOwnershipHTML = `<html><body>
+<p>Security Ownership of Certain Beneficial Owners and Management</p>
+<table>
+<tr><th>Name</th><th>Common Shares Owned</th><th>Deferred Units</th><th>Total Shares Beneficially Owned</th></tr>
+<tr><td>Mary A. Roe</td><td>12,000</td><td>3,000</td><td>15,000</td></tr>
+<tr><td>John Q. Public</td><td>8,000</td><td>1,000</td><td>9,000</td></tr>
+<tr><td>All directors and executive officers as a group (11 persons)</td><td>60,000</td><td>9,000</td><td>69,000</td></tr>
+</table></body></html>`
+
+func TestNoPercentOwnershipTableStillRead(t *testing.T) {
+	rows := run(t, noPercentOwnershipHTML)
+	if r := find(rows, "Mary A. Roe", ""); r == nil || r.Shares == nil || *r.Shares != 15000 {
+		t.Fatalf("no-percent ownership table lost: %+v (%v)", r, holderNames(rows))
+	}
+}
+
+// An ADDITIVE ownership table spells the arithmetic out in columns of its own:
+// record shares + savings-plan shares + deferred shares + option shares = total,
+// then the percent. A lone "+" matches the star / footnote marker pattern, so
+// each glue column voted itself a PERCENT column and the row was emitted once
+// per component pair — four identical-key rows per holder.
+const additiveGlueHTML = `<html><body>
+<p>Security Ownership of Certain Beneficial Owners and Management</p>
+<table>
+<tr><td>Name</td><td>Record &amp; Street Name Shares(1)</td><td>+</td><td>Savings Plan Shares(2)</td><td>+</td><td>Deferred Stock Shares(3)</td><td>+</td><td>Stock Option Shares(4)</td><td>=</td><td>Total Beneficial Ownership</td><td>Percent of Class</td></tr>
+<tr><td>W.N. Avrin</td><td>15,038</td><td></td><td>7,168</td><td></td><td>2,143</td><td></td><td>141,329</td><td></td><td>165,678</td><td>0.4</td></tr>
+<tr><td>D.M. Drillock</td><td>37,719</td><td></td><td>25,160</td><td></td><td>14,165</td><td></td><td>120,815</td><td></td><td>197,859</td><td>0.4</td></tr>
+<tr><td>S.D. Fleming</td><td>17,272</td><td></td><td>49,420</td><td></td><td>62,040</td><td></td><td>333,352</td><td></td><td>462,084</td><td>1.0</td></tr>
+</table></body></html>`
+
+func TestAdditiveGlueColumnsAreNotPercents(t *testing.T) {
+	rows := run(t, additiveGlueHTML)
+	n := 0
+	for _, r := range rows {
+		if r.HolderName == "W.N. Avrin" {
+			n++
+		}
+	}
+	if n != 1 {
+		t.Errorf("W.N. Avrin emitted %d times, want 1: %v", n, holderNames(rows))
+	}
+	r := find(rows, "W.N. Avrin", "")
+	if r == nil || r.Shares == nil || *r.Shares != 165678 {
+		t.Errorf("want the TOTAL column as the share count: %+v", r)
+	}
+	if r == nil || r.Percent == nil || *r.Percent != 0.4 {
+		t.Errorf("percent wrong: %+v", r)
+	}
+}
