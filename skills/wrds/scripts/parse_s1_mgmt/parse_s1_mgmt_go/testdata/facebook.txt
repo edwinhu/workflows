@@ -1,0 +1,318 @@
+<SEC-DOCUMENT>0001193125-12-240111.txt : 20120518
+<SEC-HEADER>0001193125-12-240111.hdr.sgml : 20120518
+<ACCEPTANCE-DATETIME>20120518163200
+ACCESSION NUMBER:		0001193125-12-240111
+CONFORMED SUBMISSION TYPE:	424B4
+PUBLIC DOCUMENT COUNT:		26
+FILED AS OF DATE:		20120518
+DATE AS OF CHANGE:		20120518
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Facebook Inc
+		CENTRAL INDEX KEY:			0001326801
+		STANDARD INDUSTRIAL CLASSIFICATION:	SERVICES-COMPUTER PROGRAMMING, DATA PROCESSING, ETC. [7370]
+		IRS NUMBER:				201665019
+
+	FILING VALUES:
+		FORM TYPE:		424B4
+		SEC ACT:		1933 Act
+		SEC FILE NUMBER:	333-179287
+		FILM NUMBER:		12855943
+
+	BUSINESS ADDRESS:	
+		STREET 1:		1601 WILLOW ROAD
+		CITY:			MENLO PARK
+		STATE:			CA
+		ZIP:			94025
+		BUSINESS PHONE:		650-618-7714
+
+	MAIL ADDRESS:	
+		STREET 1:		1601 WILLOW ROAD
+		CITY:			MENLO PARK
+		STATE:			CA
+		ZIP:			94025
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>424B4
+<SEQUENCE>1
+<FILENAME>d287954d424b4.htm
+<DESCRIPTION>FILED PURSUANT TO RULE 424(B)(4)
+<TEXT>
+<P STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b"><B><A NAME="toc287954_12"></A>MANAGEMENT </B></FONT></P>
+<P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b"><B>Executive Officers and Directors </B></FONT></P>
+<P STYLE="margin-top:0px;margin-bottom:-6px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%" ALIGN="justify"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">The following table provides
+information regarding our executive officers and directors as of March 31, 2012: </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE" ALIGN="center">
+
+
+<TR>
+<TD WIDTH="32%"></TD>
+<TD VALIGN="bottom" WIDTH="2%"></TD>
+<TD></TD>
+<TD></TD>
+<TD></TD>
+<TD VALIGN="bottom" WIDTH="2%"></TD>
+<TD WIDTH="62%"></TD></TR>
+<TR>
+<TD VALIGN="bottom" NOWRAP> <P STYLE="border-bottom:1px solid #32406b;width:20pt"><FONT STYLE="font-family:Times New Roman" SIZE="1" COLOR="#32406b"><B>Name</B></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" COLSPAN="2" ALIGN="center" STYLE="border-bottom:1px solid #32406b"><FONT STYLE="font-family:Times New Roman" SIZE="1" COLOR="#32406b"><B>Age</B></FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" NOWRAP> <P STYLE="border-bottom:1px solid #32406b;width:35pt"><FONT STYLE="font-family:Times New Roman" SIZE="1" COLOR="#32406b"><B>Position(s)</B></FONT></P></TD></TR>
+
+
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">Mark Zuckerberg</FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">27</FONT></TD>
+<TD NOWRAP VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">Chairman and CEO</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">Sheryl K. Sandberg</FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">42</FONT></TD>
+<TD NOWRAP VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">Chief Operating Officer</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">David A. Ebersman</FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">42</FONT></TD>
+<TD NOWRAP VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">Chief Financial Officer</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">David B. Fischer</FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">39</FONT></TD>
+<TD NOWRAP VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">Vice President, Marketing and Business Partnerships</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">Mike Schroepfer</FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">37</FONT></TD>
+<TD NOWRAP VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">Vice President of Engineering</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">Theodore W. Ullyot</FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">44</FONT></TD>
+<TD NOWRAP VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">Vice President, General Counsel, and Secretary</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">Marc L. Andreessen</FONT><FONT STYLE="font-family:Times New Roman" SIZE="1" COLOR="#32406b"><SUP
+STYLE="vertical-align:baseline; position:relative; bottom:.8ex">(1)</SUP></FONT><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b"></FONT><FONT STYLE="font-family:Times New Roman" SIZE="1" COLOR="#32406b"><SUP
+STYLE="vertical-align:baseline; position:relative; bottom:.8ex">(3)</SUP></FONT><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b"></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">40</FONT></TD>
+<TD NOWRAP VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">Director</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">Erskine B. Bowles</FONT><FONT STYLE="font-family:Times New Roman" SIZE="1" COLOR="#32406b"><SUP
+STYLE="vertical-align:baseline; position:relative; bottom:.8ex">(1)</SUP></FONT><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b"></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">66</FONT></TD>
+<TD NOWRAP VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">Director</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">James W. Breyer</FONT><FONT STYLE="font-family:Times New Roman" SIZE="1" COLOR="#32406b"><SUP
+STYLE="vertical-align:baseline; position:relative; bottom:.8ex">(2)</SUP></FONT><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b"></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">50</FONT></TD>
+<TD NOWRAP VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">Director</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">Donald E. Graham*</FONT><FONT STYLE="font-family:Times New Roman" SIZE="1" COLOR="#32406b"><SUP
+STYLE="vertical-align:baseline; position:relative; bottom:.8ex">(2)</SUP></FONT><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b"></FONT><FONT STYLE="font-family:Times New Roman" SIZE="1" COLOR="#32406b"><SUP
+STYLE="vertical-align:baseline; position:relative; bottom:.8ex">(3)</SUP></FONT><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b"></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">66</FONT></TD>
+<TD NOWRAP VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">Director</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">Reed Hastings</FONT><FONT STYLE="font-family:Times New Roman" SIZE="1" COLOR="#32406b"><SUP
+STYLE="vertical-align:baseline; position:relative; bottom:.8ex">(3)</SUP></FONT><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b"></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">51</FONT></TD>
+<TD NOWRAP VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">Director</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">Peter A. Thiel</FONT><FONT STYLE="font-family:Times New Roman" SIZE="1" COLOR="#32406b"><SUP
+STYLE="vertical-align:baseline; position:relative; bottom:.8ex">(1)</SUP></FONT><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b"></FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">44</FONT></TD>
+<TD NOWRAP VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">Director</FONT></TD></TR>
+</TABLE> <P STYLE="line-height:8px;margin-top:0px;margin-bottom:2px;border-bottom:0.5pt solid #32406b;width:10%">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR>
+<TD WIDTH="2%" VALIGN="top" ALIGN="left"><FONT STYLE="font-family:Times New Roman" SIZE="1" COLOR="#32406b">*</FONT></TD>
+<TD WIDTH="1%" VALIGN="top"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="justify"><FONT STYLE="font-family:Times New Roman" SIZE="1" COLOR="#32406b">Lead Independent Director. </FONT></P></TD></TR></TABLE>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR>
+<TD WIDTH="2%" VALIGN="top" ALIGN="left"><FONT STYLE="font-family:Times New Roman" SIZE="1" COLOR="#32406b">(1)</FONT></TD>
+<TD WIDTH="1%" VALIGN="top"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="justify"><FONT STYLE="font-family:Times New Roman" SIZE="1" COLOR="#32406b">Member of the audit committee. </FONT></P></TD></TR></TABLE>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR>
+<TD WIDTH="2%" VALIGN="top" ALIGN="left"><FONT STYLE="font-family:Times New Roman" SIZE="1" COLOR="#32406b">(2)</FONT></TD>
+<TD WIDTH="1%" VALIGN="top"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="justify"><FONT STYLE="font-family:Times New Roman" SIZE="1" COLOR="#32406b">Member of the compensation committee. </FONT></P></TD></TR></TABLE>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR>
+<TD WIDTH="2%" VALIGN="top" ALIGN="left"><FONT STYLE="font-family:Times New Roman" SIZE="1" COLOR="#32406b">(3)</FONT></TD>
+<TD WIDTH="1%" VALIGN="top"><FONT SIZE="1">&nbsp;</FONT></TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="justify"><FONT STYLE="font-family:Times New Roman" SIZE="1" COLOR="#32406b">Member of the governance committee. </FONT></P></TD></TR></TABLE>
+<P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%" ALIGN="justify"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b"><I>Mark Zuckerberg </I>is our
+founder and has served as our CEO and as a member of our board of directors since July 2004. Mr.&nbsp;Zuckerberg has served as Chairman of our board of directors since January 2012. Mr. Zuckerberg attended Harvard University where he studied
+computer science. We believe that Mr.&nbsp;Zuckerberg should serve as a member of our board of directors due to the perspective and experience he brings as our founder, Chairman, and CEO, and as our largest and controlling stockholder. </FONT></P>
+<P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%" ALIGN="justify"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b"><I>Sheryl K. Sandberg</I> has
+served as our Chief Operating Officer since March 2008. From November 2001 to March 2008, Ms.&nbsp;Sandberg served in various positions at Google, Inc., most recently as Vice President, Global Online Sales&nbsp;&amp; Operations. Ms.&nbsp;Sandberg
+also is a former Chief of Staff of the U.S. Treasury Department and previously served as a consultant with McKinsey&nbsp;&amp; Company, a management consulting company, and as an economist with The World Bank. In addition to serving as our Chief
+Operating Officer, Ms.&nbsp;Sandberg has been a member of the board of directors of the Walt Disney Company since December 2009. Ms.&nbsp;Sandberg holds an A.B. in economics from Harvard University and an M.B.A. from Harvard Business School.
+</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%" ALIGN="justify"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b"><I>David A.
+Ebersman </I>has served as our Chief Financial Officer since September 2009. Prior to joining us, Mr.&nbsp;Ebersman served in various positions at Genentech, Inc., a biotechnology company, including as its Chief Financial Officer from March 2005 and
+as an Executive Vice President from January 2006 until April 2009, following Genentech&#146;s acquisition by F. Hoffmann-La Roche Ltd. in March 2009. Prior to joining Genentech, Mr.&nbsp;Ebersman was a research analyst at Oppenheimer&nbsp;&amp;
+Company, Inc., an investment company. In addition to serving as our Chief Financial Officer, Mr.&nbsp;Ebersman has been a member of the board of directors of Ironwood Pharmaceuticals, Inc. since July 2009. Mr.&nbsp;Ebersman holds an A.B. in
+economics and international relations from Brown University. </FONT></P>
+ <p STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P>
+<P STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">108 </FONT></P>
+
+
+<p Style='page-break-before:always'>
+<HR  SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+<h5 align="left"><a href="#toc">Table of Contents</a></h5>
+
+ <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%" ALIGN="justify"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b"><I>David B. Fischer</I> joined us in April 2010 and serves
+as our Vice President, Marketing and Business Partnerships. From July 2002 to March 2010, Mr.&nbsp;Fischer served in various positions at Google, including most recently as its Vice President, Global Online Sales&nbsp;&amp; Operations. Prior to
+joining Google, Mr.&nbsp;Fischer served as Deputy Chief of Staff of the U.S. Treasury Department and was an associate editor at the U.S. News World Report, L.P., a news magazine company. Mr.&nbsp;Fischer holds a B.A. in government from Cornell
+University and an M.B.A. from the Stanford University Graduate School of Business. </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%" ALIGN="justify"><FONT
+STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b"><I>Mike Schroepfer </I>has served as our Vice President of Engineering since September 2008. From December 2005 to August 2008, Mr.&nbsp;Schroepfer served as Vice President of Engineering
+at Mozilla Corporation, an Internet company. Prior to Mozilla, Mr.&nbsp;Schroepfer served in various positions at Sun Microsystems, Inc., an information technology company, including as Chief Technology Officer of its data center automation
+division. He also co-founded CenterRun, Inc., a developer of application provisioning software, which was acquired by Sun Microsystems. In addition to serving as our Vice President of Engineering, Mr.&nbsp;Schroepfer has been a member of the board
+of directors of Ancestry.com Inc. since January 2011. Mr.&nbsp;Schroepfer holds a B.S. and an M.S. in computer science from Stanford University. </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P>
+<P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%" ALIGN="justify"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b"><I>Theodore W. Ullyot</I> has served as our Vice President, General Counsel, and Secretary since October
+2008. From May 2008 to October 2008, Mr.&nbsp;Ullyot was a partner at Kirkland&nbsp;&amp; Ellis LLP, a law firm. From October 2005 to April 2008, Mr.&nbsp;Ullyot served as Executive Vice President and General Counsel of ESL Investments, Inc., a
+private investment firm. Prior to joining ESL Investments, Mr.&nbsp;Ullyot served in the federal executive branch under President George W. Bush, including as Chief of Staff at the U.S. Justice Department and as a Deputy Assistant to the President.
+Earlier in his career, Mr.&nbsp;Ullyot was an associate general counsel at AOL Time Warner, Inc. and served as a law clerk for U.S. Supreme Court Justice Antonin Scalia and for Judge Michael Luttig of the U.S. Court of Appeals for the Fourth
+Circuit. Mr.&nbsp;Ullyot holds an A.B. in History from Harvard University and a J.D. from the University of Chicago. </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P>
+<P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%" ALIGN="justify"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b"><I>Marc L. Andreessen </I>has served as a member of our board of directors since June 2008.
+Mr.&nbsp;Andreessen is a co-founder and has been a General Partner of Andreessen Horowitz, a venture capital firm, since July 2009. Previously, Mr.&nbsp;Andreessen co-founded and served as the Chairman of the board of directors of Opsware, Inc.
+(formerly known as Loudcloud Inc.), a software company. He also served as Chief Technology Officer of America Online, Inc., an Internet services company. Mr.&nbsp;Andreessen was a co-founder of Netscape Communications Corporation, a software
+company, serving in various positions, including Chief Technology Officer and Executive Vice President of Products. In addition to serving on our board of directors, Mr.&nbsp;Andreessen currently serves as a member of the boards of directors of eBay
+Inc. and the Hewlett-Packard Company. Mr.&nbsp;Andreessen holds a B.S. in computer science from the University of Illinois at Urbana-Champaign. We believe that Mr.&nbsp;Andreessen should serve as a member of our board of directors due to his
+extensive experience as an Internet entrepreneur, venture capitalist, and technologist. </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P>
+<P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%" ALIGN="justify"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b"><I>Erskine B. Bowles</I> has served as a member of our board of directors since September 2011.
+Mr.&nbsp;Bowles is President Emeritus of the University of North Carolina and served as President from January 2006 through December 2010. Mr.&nbsp;Bowles has also been a Senior Advisor of BDT Capital Partners, LLC, a private investment firm, since
+January 2012. From February 2010 until December 2010, he served as Co-Chair of the National Commission on Fiscal Responsibility and Reform. Mr.&nbsp;Bowles has been a Senior Advisor since 2001 and was Managing Director from 1999 to 2001 of Carousel
+Capital LLC, a private investment firm. He was also a partner of Forstmann Little&nbsp;&amp; Co., an investment firm, from 1999 to 2001. Mr.&nbsp;Bowles began his career in corporate finance at Morgan Stanley and subsequently helped found and
+ultimately served as Chairman and Chief Executive Officer of Bowles Hollowell Connor&nbsp;&amp; Co., an investment banking firm. He also was a founder of Kitty Hawk Capital, a venture capital firm. Mr.&nbsp;Bowles served as White House Chief of
+Staff from 1996 to 1998 and Deputy White House Chief of Staff from 1994 to 1995. In addition to serving on our board of directors, Mr.&nbsp;Bowles currently serves as a member of the boards of directors of Morgan Stanley, Belk, Inc., and Norfolk
+Southern Corporation. Mr.&nbsp;Bowles also served as a member of the board of directors of General Motors Company from June 2005 to April 2009 and Cousins Properties Incorporated from August 2003 to May 2012.
+</FONT></P>
+ <p STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P>
+<P STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">109 </FONT></P>
+
+
+<p Style='page-break-before:always'>
+<HR  SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+<h5 align="left"><a href="#toc">Table of Contents</a></h5>
+
+ <P STYLE="margin-top:0px;margin-bottom:0px" ALIGN="justify"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b">
+Mr.&nbsp;Bowles holds a B.S. in business from the University of North Carolina at Chapel Hill and an M.B.A. from Columbia University Graduate School of Business. We believe that Mr.&nbsp;Bowles
+should serve as a member of our board of directors due to his extensive experience in the financial services industry and academia as well as his distinguished public service. </FONT></P>
+<P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%" ALIGN="justify"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b"><I>James W. Breyer </I>has
+served as a member of our board of directors since April 2005. Mr.&nbsp;Breyer has been a Partner of Accel Partners, a venture capital firm, since 1987, and currently serves as President of Accel Management Co. Inc. Mr.&nbsp;Breyer is also the
+founder and has been the Chief Executive Officer of Breyer Capital, an investment firm, since July 2006. Mr.&nbsp;Breyer is also a co-founder and has been co-lead on the strategic investment committee since inception of the IDG-Accel China Funds. In
+addition to serving on our board of directors, Mr.&nbsp;Breyer currently serves as a member of the boards of directors of Brightcove Inc., Dell, Inc., News Corporation, Prosper Marketplace, Inc., and Wal-Mart Stores, Inc., where he is the
+lead/presiding independent director. Mr.&nbsp;Breyer previously served as a member of the board of directors of Marvel Entertainment Inc. from June 2006 to December 2009 and RealNetworks, Inc. from October 1995 to June 2008. Mr.&nbsp;Breyer holds a
+B.S. in interdisciplinary studies from Stanford University and an M.B.A. from Harvard University. We believe that Mr.&nbsp;Breyer should serve as a member of our board of directors due to his extensive experience with social media and technology
+companies, as a venture capitalist, and as one of our early investors. </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%" ALIGN="justify"><FONT
+STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b"><I>Donald E. Graham </I>has served as a member of our board of directors since March 2009. Mr.&nbsp;Graham has served as the Chief Executive Officer of The Washington Post Company, an
+education and media company, since 1991 and as Chairman of its board of directors since 1993. Mr.&nbsp;Graham holds an A.B. in English history and literature from Harvard University. We believe that Mr.&nbsp;Graham should serve as a member of our
+board of directors due to his extensive experience in the media industry, including serving in a variety of senior leadership roles with The Washington Post Company. </FONT></P>
+<P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%" ALIGN="justify"><FONT STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b"><I>Reed Hastings </I>has
+served as a member of our board of directors since June 2011. Mr.&nbsp;Hastings has served as the Chief Executive Officer and Chairman of the board of directors of Netflix, Inc., a provider of an Internet subscription service for movies and
+television shows, since 1999. Prior to Netflix, Mr.&nbsp;Hastings served as Chief Executive Officer of Technology Network, a political service organization for the technology industry. Mr.&nbsp;Hastings served as Chief Executive Officer of Pure
+Atria Software, a maker of software development tools, from 1991 until it was acquired by Rational Software Corporation, a software company, in 1997. In addition to serving on our board of directors, Mr.&nbsp;Hastings currently serves as a member of
+the board of directors of Microsoft Corporation. Mr.&nbsp;Hastings holds a B.A. in mathematics from Bowdoin College and an M.S.C.S. in computer science from Stanford University. We believe that Mr.&nbsp;Hastings should serve as a member of our board
+of directors due to his extensive experience with technology companies. </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%" ALIGN="justify"><FONT
+STYLE="font-family:Times New Roman" SIZE="2" COLOR="#32406b"><I>Peter A. Thiel </I>has served as a member of our board of directors since April 2005. Since 2005, Mr.&nbsp;Thiel has been a Partner of Founders Fund, a venture capital firm.
+Mr.&nbsp;Thiel has also served as President of Clarium Capital Management, LLC, a global macro investment manager, since 2002. In 1998, Mr.&nbsp;Thiel co-founded PayPal, Inc., an online payment company, where he served as Chief Executive Officer,
+President and as Chairman of its board of directors from 2000 until its acquisition by eBay in 2002. Prior to that, Mr.&nbsp;Thiel worked for Credit Suisse, an investment firm, and Sullivan&nbsp;&amp; Cromwell LLP, a law firm. Mr.&nbsp;Thiel holds a
+B.A. in Philosophy from Stanford University and a J.D. from Stanford Law School. We believe that Mr.&nbsp;Thiel should serve as a member of our board of directors due to his extensive experience as an entrepreneur and venture capitalist, and as one
+of our early investors. </FONT></P>

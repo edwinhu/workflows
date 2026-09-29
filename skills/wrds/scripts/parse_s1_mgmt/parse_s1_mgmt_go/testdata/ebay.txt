@@ -1,0 +1,225 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ P34bSTwG2lIi1mgPS0ycPwInAU3cAxByvli8abUtef5KpfpUf12RbqD7NFzLRzhJ
+ wA57dB8odly+Mmg2lec7Cg==
+
+<SEC-DOCUMENT>0001012870-98-002475.txt : 19980928
+<SEC-HEADER>0001012870-98-002475.hdr.sgml : 19980928
+ACCESSION NUMBER:		0001012870-98-002475
+CONFORMED SUBMISSION TYPE:	424B4
+PUBLIC DOCUMENT COUNT:		1
+FILED AS OF DATE:		19980925
+SROS:			NASD
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			EBAY INC
+		CENTRAL INDEX KEY:			0001065088
+		STANDARD INDUSTRIAL CLASSIFICATION:	SERVICES-BUSINESS SERVICES, NEC [7389]
+		IRS NUMBER:				770430924
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		424B4
+		SEC ACT:		
+		SEC FILE NUMBER:	333-59097
+		FILM NUMBER:		98714572
+
+	BUSINESS ADDRESS:	
+		STREET 1:		2005 HAMILTON AVE
+		STREET 2:		STE 350
+		CITY:			SAN JOSE
+		STATE:			CA
+		ZIP:			95125
+
+	MAIL ADDRESS:	
+		STREET 1:		2005 HAMILTON AVE
+		STREET 2:		STE 350
+		CITY:			SAN JOSE
+		STATE:			CA
+		ZIP:			95125
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>424B4
+<SEQUENCE>1
+<DESCRIPTION>FINAL PROSPECTUS
+<TEXT>
+                                  MANAGEMENT
+ 
+EXECUTIVE OFFICERS AND DIRECTORS
+ 
+  The following table sets forth certain information regarding the executive
+officers and directors of the Company:
+ 
+<TABLE>
+<CAPTION>
+   NAME                   AGE                           POSITION
+   ----                   ---                           --------
+<S>                       <C> <C>
+Pierre M. Omidyar.......   31 Founder, Chairman of the Board and a director
+Margaret C. Whitman.....   42 President, Chief Executive Officer and a director
+Gary F. Bengier.........   43 Chief Financial Officer and Vice President Operations
+Michael R. Jacobson.....   44 Vice President, Legal Affairs, General Counsel and Secretary
+Jeffrey S. Skoll........   33 Vice President Strategic Planning and Analysis
+Brian T. Swette.........   43 Senior Vice President of Marketing
+Steven P. Westly........   42 Vice President Marketing and Business Development
+Michael K. Wilson.......   41 Vice President Product Development and Site Operations
+Scott D. Cook (1).......   45 Director
+Robert C. Kagle (1)(2)..   42 Director
+Howard D. Schultz (2)...   45 Director
+</TABLE>
+- --------
+(1) Member of the Audit Committee.
+(2) Member of the Compensation Committee.
+ 
+  Pierre M. Omidyar founded the Company as a sole proprietorship in September
+1995. He has been a director and Chairman of the Board since the Company's
+incorporation in May 1996 and also served as its Chief Executive Officer,
+Chief Financial Officer and President from inception to February 1998,
+November 1997 and August 1996, respectively. Prior to founding eBay, Mr.
+Omidyar was a developer services engineer at General Magic, a mobile
+communication platform company from December 1994 to July 1996. Mr. Omidyar
+co-founded Ink Development Corp. (later renamed eShop) in May 1991 and served
+as a software engineer there from May 1991 to September 1994. Prior to co-
+founding Ink, Mr. Omidyar was a developer for Claris, a subsidiary of Apple
+Computer, and for other Macintosh-oriented software development companies. Mr.
+Omidyar holds a B.S. degree in Computer Science from Tufts University.
+ 
+  Margaret C. Whitman has served as President and Chief Executive Officer of
+the Company since February 1998 and a director since March 1998. From January
+1997 to February 1998, she was General Manager of the Preschool Division of
+Hasbro Inc., a toy company. From February 1995 to December 1997, Ms. Whitman
+was employed by FTD, Inc. ("FTD"), a floral products company, most recently as
+President, Chief Executive Officer and a director. From October 1992 to
+February 1995, Ms. Whitman was employed by The Stride Rite Corporation, in
+various capacities, including President, Stride Rite Children's Group and
+Executive Vice President, Product Development, Marketing & Merchandising, Keds
+Division. From May 1989 to October 1992, Ms. Whitman was employed by The Walt
+Disney Company ("Disney"), an entertainment company, most recently as Senior
+Vice President, Marketing, Disney Consumer Products. Before joining Disney,
+Ms. Whitman was at Bain & Co., a consulting firm, most recently as a Vice
+President. Ms. Whitman holds an A.B. degree in Economics from Princeton
+University and an M.B.A. degree from the Harvard Business School.
+ 
+  Gary F. Bengier has served as Chief Financial Officer and Vice President
+Operations of the Company since November 1997. From February 1997 to October
+1997, Mr. Bengier was Vice President and Chief Financial Officer of VXtreme,
+Inc. a developer of Internet video streaming products. Prior to that time, Mr.
+Bengier was Corporate Controller at Compass Design Automation, a publisher of
+electronic circuit design software, from February 1993 to February 1997. Mr.
+Bengier has also held senior financial positions at Kenetech Corp., an energy
+services company, and Qume Corp., a computer peripherals company, where he
+participated in numerous debt and equity financing transactions. Prior to
+joining Qume in 1989, Mr. Bengier spent six years at Bio-Rad Laboratories and
+ 
+                                      53
+<PAGE>
+ 
+held varied financial management roles. Mr. Bengier also spent several years
+as a management consultant for Touche Ross & Co. Mr. Bengier holds a B.B.A.
+degree in Computer Science and Operations Research from Kent State University
+and an M.B.A. degree from the Harvard Business School.
+ 
+  Michael R. Jacobson has served as the Company's Vice President, General
+Counsel and Secretary since August 1998. From 1986 to August 1998, Mr.
+Jacobson was a partner with the law firm of Cooley Godward LLP, specializing
+in securities law, mergers and acquisitions and other transactions. Mr.
+Jacobson has an A.B. degree in Economics from Harvard College and a J.D.
+degree from Stanford University.
+ 
+  Jeffrey S. Skoll has served as the Company's Vice President Strategic
+Planning and Analysis since February 1998, its President from August 1996 to
+February 1998 and as a director from December 1996 to March 1998. From July
+1995 to July 1996, Mr. Skoll served as Channel Marketing Manager for Knight-
+Ridder Information Inc., an online information services company and from
+September 1993 to July 1995 was a student at the Stanford Graduate School of
+Business. Prior to that time, Mr. Skoll was President of Skoll Engineering, a
+systems consulting firm that he founded, from September 1987 to August 1993.
+Mr. Skoll also co-founded Micros on the Move Ltd., a computer rentals company,
+as an adjunct to Skoll Engineering in 1990. Mr. Skoll has a B.a.S.C. degree in
+Electrical Engineering from the University of Toronto and an M.B.A. degree
+from the Stanford Graduate School of Business.
+ 
+  Brian T. Swette has served as the Company's Senior Vice President of
+Marketing since August 1998. From 1981 to June 1998, Mr. Swette was employed
+by Pepsi-Cola Beverages, a global beverage company, in various capacities
+including Executive Vice President and Chief Marketing Officer--Global
+Beverages from March 1996 to June 1998, Executive Vice President Marketing--
+North America from September 1994 to March 1996, Senior Vice President and
+General Manager of New Business from February 1992 to September 1994, Senior
+Vice President Marketing and Strategy--North America from 1990 to 1991, Vice
+President North Latin America--General Manager from 1986 to 1989, Director of
+Marketing Planning and Development--Pepsi International from 1984 to 1986 and
+Country Manager--Brazil from 1981 to 1984. Before joining Pepsi-Cola
+Beverages, Mr. Swette worked in various capacities for Proctor & Gamble from
+1977 to 1981. Mr. Swette holds a B.S. degree in Economics from Arizona State
+University.
+ 
+  Steven P. Westly has served as the Company's Vice President Marketing and
+Business Development since August 1997. From July 1996 to August 1997, Mr.
+Westly was Vice President, Business Development of WhoWhere?, an Internet
+directory and Web-based email company. Prior to that time, Mr. Westly was
+Director of Sales for Netcom, an Internet service provider, from August 1995
+to July 1996 and was Deputy Director of Office of Economic Development, City
+of San Jose, California, from April 1991 to August 1995. Before joining the
+Office of Economic Development, Mr. Westly served as President of Codd and
+Date International, a relational database consulting firm, from January 1990
+to March 1992 and was the Managing Director of Bridgemere Capital, an
+investment banking firm, from 1987 to 1990. Mr. Westly holds a B.A. degree in
+History from Stanford University and an M.B.A. degree from the Stanford
+Graduate School of Business.
+ 
+  Michael K. Wilson has served as the Company's Vice President Product
+Development and Site Operations since January 1997. From October 1995 to
+January 1997, Mr. Wilson was Vice President of WELL Engaged, L.L.C., a wholly-
+owned subsidiary of The Well, a software company. Prior to that time, Mr.
+Wilson was an engineer for daVinci Time and Space, a television company, from
+February 1995 to October 1995, an engineer for eShop, a software company, from
+February 1992 to August 1994 and a Director of Mainframe Engineering for
+Neuron Data, an engineering company, from 1987 to 1991. Before joining Neuron
+Data, Mr. Wilson worked in several capacities at Oracle Corporation from 1982
+to 1987, Chevron from 1979 to 1983, and Macy's, a retailer, from 1975 to 1979.
+ 
+  Scott D. Cook has served as a director of the Company since June 1998. Mr.
+Cook is the founder of Intuit Inc. ("Intuit") and has been a director of
+Intuit, a financial software developer, since March
+ 
+                                      54
+<PAGE>
+ 
+1984 and its Chairman of the Board since March 1993. From March 1984 to April
+1994, Mr. Cook served as President and Chief Executive Officer of Intuit. Mr.
+Cook also serves on the board of directors of Amazon.com and Broderbund
+Software, Inc. Mr. Cook holds a Bachelor of Arts degree in Economics and
+Mathematics from the University of Southern California and an M.B.A. degree
+from the Harvard Business School.
+ 
+  Robert C. Kagle has served as a director of the Company since June 1997. Mr.
+Kagle has been a Member of Benchmark Capital Management Co., L.L.C.
+("Benchmark"), the General Partner of Benchmark Capital Partners, L.P. and
+Benchmark Founders' Fund, L.P., since its founding in May 1995. Mr. Kagle also
+has been a General Partner of Technology Venture Investors since January 1984.
+Mr. Kagle holds a B.S. degree in Electrical and Mechanical Engineering from
+the General Motors Institute (renamed Kettering University in January 1998)
+and an M.B.A. degree from the Stanford Graduate School of Business.
+ 
+  Howard D. Schultz has served as a director of the Company since June 1998.
+Mr. Schultz is the founder of Starbucks Corp ("Starbucks"), a provider of
+gourmet coffee, and has been its Chairman of the Board and Chief Executive
+Officer since its inception in 1985. From 1985 to June 1994, Mr. Schultz was
+also President of Starbucks. Mr. Schultz was the director of Retail Operations
+and Marketing for Starbucks Coffee Company, a predecessor to Starbucks from
+September 1982 to December 1985 and was the Chairman of the Board, Chief
+Executive Officer and President of Il Giornale Coffee Company, a predecessor
+to Starbucks, from January 1986 to July 1987. Mr. Schultz is also one of two
+founding members of Maveron LLC, a company providing advisory services to
+consumer-based businesses, and is one of two members of a limited liability
+company that serves as a general partner of its affiliated venture capital
+fund, Maveron Equity Partners, L.P. (together, "Maveron").
