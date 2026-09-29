@@ -25,6 +25,9 @@
 #   farm.sh --tasks tasks.json --cwd /repo   # JSON array; one row or many, run in parallel
 #   farm.sh --workflow /abs/wf.js --args /abs/args.json --out /abs/result.json
 #   farm.sh --provider claude|codex|gemini
+#   farm.sh --no-cron                        # --workflow: skip the hourly heartbeat printout
+#                                            # (--tasks never prints one)
+#   WORK_LOOP_INTERVAL_MINUTES=30            # heartbeat period, whole minutes (default 60)
 #
 set -uo pipefail
 
@@ -38,9 +41,11 @@ You MUST actually perform this work with real tool calls. Do not simulate, summa
 # Exit 2 is "you called me wrong" -- distinct from 1, "the delegation failed".
 refuse() { printf '%s\n' "$*" >&2; exit 2; }
 
-PROVIDER=claude CWD=$PWD TASKS= WORKFLOW= ARGSFILE= OUT= ; EXPECT=()
+PROVIDER=claude CWD=$PWD TASKS= WORKFLOW= ARGSFILE= OUT= CRON=1 ; EXPECT=()
 while [ $# -gt 0 ]; do
   case "$1" in
+    --no-cron)  CRON=0; shift ;;
+    --cron)     CRON=1; shift ;;   # accepted no-op alias -- the cron is the default
     --provider) PROVIDER="${2:?--provider needs a value}"; shift 2 ;;
     --cwd)      CWD="${2:?--cwd needs a value}";           shift 2 ;;
     --tasks)    TASKS="${2:?--tasks needs a value}";       shift 2 ;;
@@ -272,6 +277,59 @@ if [ -n "$TASKS" ]; then
   wait
   out=$(jq -s '.' "$dir"/*.json); rm -rf "$dir"
 else
+  # ------------------------------------------------------ the hourly heartbeat (--workflow only)
+  #
+  # THE WAKE is the `farm-runs` plugin monitor: it watches every run this session launches and
+  # wakes the session on DONE and on a run that dies. THE CRON IS THE BACKSTOP, on by default
+  # (--no-cron opts out): a cron survives --resume/--continue and a monitor that died or was never
+  # armed. Same shape, interval knob and minute-7 offset as work-dispatch.sh, because it is one
+  # heartbeat -- two env vars that can disagree about one cadence is a bug generator.
+  #
+  # --tasks prints nothing: a row is a STEP, the monitor already reports it, and an hourly clock
+  # per row is a wake for nothing.
+  #
+  # PRINTED BEFORE THE RUN. --workflow has no foreground phase -- run_one blocks for the whole
+  # 20-60 minutes -- so an instruction printed afterwards arrives when the thing it backstops is
+  # already over. A caller that DETACHES us (setsid nohup ... > log) never sees it on either side;
+  # that caller creates the cron itself at launch (farm-out/SKILL.md).
+  if [ "$CRON" = 1 ]; then
+    cron_minutes=${WORK_LOOP_INTERVAL_MINUTES:-60}
+    case "$cron_minutes" in ''|*[!0-9]*|0) cron_minutes=60 ;; esac
+    # Minute 7 rather than 0 or 30: every fleet-wide "hourly" lands on the same instant otherwise.
+    if [ "$cron_minutes" -lt 60 ]; then
+      cron_expr="7-59/$cron_minutes * * * *"
+    elif [ "$cron_minutes" -lt 120 ]; then
+      cron_expr="7 * * * *"
+    else
+      cron_expr="7 */$(( cron_minutes / 60 )) * * *"
+    fi
+    # The run's own directory names it -- for a work dispatch that is the run id, which is what the
+    # session needs to find its way back. The script name is the fallback when --out sits loose.
+    cron_label=$(basename -- "$(dirname -- "$OUT")")
+    case "$cron_label" in ''|.|/) cron_label=$(basename -- "$WORKFLOW" .js) ;; esac
+    # A NUDGE, not the goal: everything else is already in the run dir and the args.
+    cat <<CRONMSG
+
+======================================================================
+REQUIRED, THIS TURN: ARM THE HEARTBEAT POLL WITH THE CronCreate TOOL.
+The farm-runs monitor is the primary wake; this cron is the backstop --
+it survives --resume/--continue and a monitor that died or never armed.
+CronCreate is a model tool -- no shell, including this one, can call it.
+Call it now, before your next action, with exactly:
+
+  cron:      $cron_expr
+  recurring: true
+  durable:   false
+  prompt:    and? (farm $cron_label)
+
+Then say which job id it returned. If CronCreate is unavailable, say so
+in one line rather than proceeding as though the poll were armed.
+======================================================================
+CRONMSG
+  else
+    echo "wake: --no-cron, so the farm-runs monitor is the ONLY wake -- it watches this run and wakes this session when it finishes or dies. It does not survive --resume/--continue; drop --no-cron for the hourly backstop."
+  fi
+
   # The child calls the Workflow tool; we never run the script ourselves. The long
   # instruction is not padding: Workflow returns a task id IMMEDIATELY and keeps running
   # in the background, so a child that ends its turn there takes the whole run down.
