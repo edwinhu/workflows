@@ -2330,3 +2330,30 @@ func TestPercentHeadersTieAndSharesHeadersDiffer(t *testing.T) {
 		}
 	}
 }
+
+// A 5% holder's name-and-address cell wraps the NAME over two lines before the
+// address begins. holderName returned line ONE as soon as any later line looked
+// like an address, so the holder came out as "State of" and "Zesiger Capital",
+// which is both wrong and collides with every other holder truncated the same
+// way.
+const wrappedNameCellHTML = `<html><body>
+<p>Security Ownership of Certain Beneficial Owners and Management</p>
+<table>
+<tr><th>Name and Address of Beneficial Owner</th><th>Shares Beneficially Owned (1)</th><th>Percentage Beneficially Owned (1)</th></tr>
+<tr><td>State of<br>Wisconsin Investment Board (2)<br>P.O. Box 7842<br>Madison, WI 53707</td><td>9,365,182</td><td>18.2</td></tr>
+<tr><td>Zesiger Capital<br>Group LLC (3)<br>320 Park Avenue, 30th Floor<br>New York, NY 10022</td><td>8,308,200</td><td>16.1</td></tr>
+<tr><td>Ashford Capital<br>Management, Inc. (5)<br>1 Walkers Mill Road<br>Wilmington, DE 19807-2317</td><td>3,197,500</td><td>6.2</td></tr>
+</table></body></html>`
+
+func TestWrappedNameCellKeepsTheWholeName(t *testing.T) {
+	rows := ScreenRows(run(t, wrappedNameCellHTML))
+	got := map[string]bool{}
+	for _, r := range rows {
+		got[r.HolderName] = true
+	}
+	for _, w := range []string{"State of Wisconsin Investment Board", "Zesiger Capital Group LLC", "Ashford Capital Management, Inc"} {
+		if !got[w] {
+			t.Errorf("want holder %q, got %v", w, got)
+		}
+	}
+}
