@@ -110,6 +110,12 @@ type compacted struct {
 	// so the caller keeps handing the ORIGINAL headed table on rather than a
 	// copy of itself.
 	inherited bool
+	// carryClass is the last value seen in each header-chosen class column,
+	// handed to the NEXT table of the same shape. A fund-family proxy repeats
+	// the whole table with its headers once per page and writes the fund only on
+	// the row it changes, so the first rows of every table but the first carry a
+	// blank fund that belongs to the table before.
+	carryClass []string
 }
 
 // compact drops columns that never hold anything but $ ( ) % and whitespace —
@@ -852,6 +858,21 @@ func (c *compacted) inheritHeaders(prev *compacted) bool {
 	return true
 }
 
+// sameShape reports whether two tables are the same table repeated: identical
+// column count and identical column headers. A fund-family proxy prints its
+// holder table once per page that way.
+func (c *compacted) sameShape(prev *compacted) bool {
+	if prev == nil || len(prev.roles) != len(c.roles) || len(c.roles) == 0 {
+		return false
+	}
+	for j := range c.roles {
+		if c.roles[j].header != prev.roles[j].header {
+			return false
+		}
+	}
+	return true
+}
+
 // hasHeaderCues reports whether any column carries a header that says what the
 // column IS. A continuation table has none: what looks like its header row is a
 // wrapped address fragment, not a heading.
@@ -909,6 +930,11 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 	var out []Row
 	lastName, lastSeries := "", ""
 	lastClass := make([]string, len(c.hdrClassCols))
+	// The same table repeated on the next page continues the fund it ended on.
+	if (c.inherited || c.sameShape(prev)) && len(prev.carryClass) == len(lastClass) {
+		copy(lastClass, prev.carryClass)
+	}
+	defer func() { c.carryClass = lastClass }()
 	// The first fund's label row sits in the header block, above the column
 	// headings, so the walk below would never see it.
 	for i := 0; i < c.nHeader && i < len(c.rows); i++ {
