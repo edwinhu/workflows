@@ -54,17 +54,24 @@ missing. Never relay a delegated summary you did not verify.
 **2. Every delegated prompt carries the anti-simulation clause.** The runners
 append it automatically. Do not hand-roll a delegation that skips it.
 
-## A dispatch you will not wait on arms a Monitor
+## One watcher per SESSION, not one per dispatch
 
-**Before the turn ends, arm a `Monitor` on that row's `--expect` path** (`persistent: true`,
-command `test -s <expect>`). Every row already carries `--expect`, so the command is derived, not
-invented. Nothing else can arm it — a script makes no tool calls, a hook only returns text, and the
-sealed personas hold no `Monitor` — so an unarmed background row finishes silently and whatever you
-chained after it never happens. Measured 2026-09-10: nine backgrounded dispatches in one session,
-four unmonitored, and all four surfaced only because the user asked.
+**Do NOT arm a per-dispatch `Monitor`.** The `farm-runs` plugin monitor (`monitors/monitors.json`,
+`when: always` → `scripts/farm-monitor.sh`, exits with its session since v6.27.3) watches every farm
+run and grind loop this session launches, and wakes YOU — not the user — on `DONE` and on a run whose
+process is gone with no verdict (`GONE`). Nine backgrounded dispatches, four unmonitored, all four
+surfaced only when the user asked (2026-09-10): one watcher covers them all. If it was stopped,
+`/reload-plugins` restarts it.
 
-**The Monitor wakes YOU, not the user.** A row is a STEP, usually a small one. Do not send a
-notification when one finishes.
+**Arm a task-specific wait ONLY when a run's finish must trigger a follow-up action** — a wake is
+not your next step. Background that step: `until test -s <expect>; do sleep 20; done; <next step>`.
+Never with an unbracketed `pgrep -f`; the v6.26.3 guard denies a pattern matching its own checker.
+
+**A `--workflow` run prints an hourly `CronCreate` backstop** — it survives `--resume`/`--continue`
+and a dead monitor (`--no-cron` opts out; `--tasks` prints none). Arm it the turn you see it. When
+you launch that run DETACHED (`setsid nohup … > log`) the printout lands in the log, not in front of
+you, so create the cron yourself at launch: `7 * * * *`, recurring, non-durable, prompt
+`and? (farm <run-dir name>)`.
 
 ## Pick the shape first: sealed worker, or orchestrator
 
