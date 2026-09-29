@@ -19,6 +19,7 @@ import { spawnSync } from 'node:child_process'
 import { mkdtempSync, rmSync, writeFileSync, readFileSync, chmodSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { grindEnv } from './grind-test-env'
 
 const GRIND = `${import.meta.dir}/grind.sh`
 
@@ -42,7 +43,7 @@ function script(dir: string, name: string, body: string): string {
  *  test then observes under that name was set by grind.sh, not inherited. */
 function envWithoutMarker(): Record<string, string> {
   const e: Record<string, string> = {}
-  for (const [k, v] of Object.entries(process.env)) {
+  for (const [k, v] of Object.entries(grindEnv())) {
     if (k === 'FARM_OUT_CHILD' || v === undefined) continue
     e[k] = v
   }

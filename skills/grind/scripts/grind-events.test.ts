@@ -17,6 +17,7 @@ import { spawnSync } from 'node:child_process'
 import { mkdtempSync, rmSync, writeFileSync, readFileSync, readdirSync, existsSync, chmodSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { grindEnv } from './grind-test-env'
 
 const GRIND = `${import.meta.dir}/grind.sh`
 const MONITOR = `${import.meta.dir}/../../farm-out/scripts/farm-monitor.sh`
@@ -42,7 +43,7 @@ function script(dir: string, name: string, bodyText: string): string {
 /** A run whose TMPDIR and session are its own, so the event directory holds only this run. */
 function sandbox(prefix: string) {
   const d = workdir(prefix)
-  const env = { ...process.env, TMPDIR: d, CLAUDE_CODE_SESSION_ID: SESSION }
+  const env = grindEnv({ TMPDIR: d, CLAUDE_CODE_SESSION_ID: SESSION })
   return { d, env, eventDir: join(d, 'farm-events', SESSION) }
 }
 

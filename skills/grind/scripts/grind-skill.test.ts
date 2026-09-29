@@ -17,6 +17,7 @@ import { describe, expect, test } from 'bun:test'
 import { spawnSync } from 'node:child_process'
 import { existsSync, readFileSync, statSync } from 'node:fs'
 import { join, resolve } from 'node:path'
+import { grindEnv } from './grind-test-env'
 
 const SKILL_DIR = resolve(import.meta.dir, '..')
 const SKILL_MD = join(SKILL_DIR, 'SKILL.md')
@@ -34,7 +35,7 @@ function tocBang(md: string): string | undefined {
 
 /** Subcommands the script itself dispatches on, taken from its own usage output. */
 function implementedSubcommands(): string[] {
-  const r = spawnSync('bash', [GRIND], { encoding: 'utf8', timeout: 30_000 })
+  const r = spawnSync('bash', [GRIND], { encoding: 'utf8', timeout: 30_000, env: grindEnv() })
   const usage = `${r.stdout}${r.stderr}`
   return ['run', 'append', 'floors', 'status', 'tail', 'stop'].filter(s =>
     new RegExp(`(^|\\s)${s}(\\s|$)`, 'm').test(usage),
