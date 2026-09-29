@@ -150,6 +150,11 @@ func ExtractHTML(body string, base Row) ([]Row, int, int) {
 		text   string
 		series string
 	}
+	// The compacted form of the last ACCEPTED table and the item it sat at, so a
+	// header-less continuation of it can inherit its columns. Held across
+	// headings, because a fund-family proxy puts a heading between per-fund
+	// tables; the adjacency window below is what keeps it a continuation.
+	var prev *compacted
 	consider := func(startIdx int, kind string) {
 		misses := 0
 		var got []tres
@@ -170,7 +175,7 @@ func ExtractHTML(body string, base Row) ([]Row, int, int) {
 			}
 			tablesSeen++
 			considered++
-			rows := ExtractGrid(it.Grid, it.Text, base, it.Pos)
+			rows, cg := ExtractGrid(it.Grid, it.Text, base, it.Pos, prev)
 			if len(rows) == 0 {
 				misses++
 				if misses >= 6 && len(got) > 0 {
@@ -180,6 +185,12 @@ func ExtractHTML(body string, base Row) ([]Row, int, int) {
 			}
 			used[it.Pos] = true
 			tablesUsed++
+			// Keep handing on the table that HAS the headers, not a
+			// continuation that borrowed them, so a run of header-less
+			// continuations all inherit from the same headed table.
+			if !cg.inherited {
+				prev = cg
+			}
 			got = append(got, tres{rows, it.Text, seriesAt[k]})
 		}
 		for _, g := range got {
@@ -213,7 +224,7 @@ func ExtractHTML(body string, base Row) ([]Row, int, int) {
 	// Fallback: no heading located the table, so accept any table whose own
 	// text carries the ownership cue.
 	if len(out) == 0 {
-		for _, it := range items {
+		for fi, it := range items {
 			if it.Kind != "table" || used[it.Pos] {
 				continue
 			}
@@ -221,15 +232,21 @@ func ExtractHTML(body string, base Row) ([]Row, int, int) {
 				continue
 			}
 			tablesSeen++
-			rows := ExtractGrid(it.Grid, it.Text, base, it.Pos)
+			rows, cg := ExtractGrid(it.Grid, it.Text, base, it.Pos, prev)
 			if len(rows) == 0 {
 				continue
 			}
 			used[it.Pos] = true
 			tablesUsed++
+			if !cg.inherited {
+				prev = cg
+			}
 			kd := tableKind("combined", rows, it.Text)
 			for i := range rows {
 				rows[i].TableKind = kd
+				if !rows[i].seriesLocal && !namesSeries(sset, rows[i].classHint) {
+					rows[i].classHint = withSeries(seriesAt[fi], rows[i].classHint)
+				}
 			}
 			out = append(out, rows...)
 		}
