@@ -59,8 +59,8 @@ var (
 	// directors table (common shares, deferred units, options, total) from a
 	// fund-family table with one column per fund.
 	reComponentCol = regexp.MustCompile(`(?i)total|option|deferred|restricted|unvested|underlying|exercisab|\bunits?\b|\bsole\b|shared|voting|disposit|investment\s+power|\bdirect|\bindirect|aggregate|percent|\bplan\b|award|\bvested\b|\bheld\b|\bother\b`)
-	reHdrShares = regexp.MustCompile(`(?i)shares|amount|number|beneficially\s+owned|ownership|aggregate`)
-	reHdrClass  = regexp.MustCompile(`(?i)\bclass\s+[a-d]\b|common\s+stock|series\s+[a-z0-9]+\s+(?:common|preferred)|preferred\s+stock|ordinary\s+shares|\bclass\s+[a-d]$`)
+	reHdrShares    = regexp.MustCompile(`(?i)shares|amount|number|beneficially\s+owned|ownership|aggregate`)
+	reHdrClass     = regexp.MustCompile(`(?i)\bclass\s+[a-d]\b|common\s+stock|series\s+[a-z0-9]+\s+(?:common|preferred)|preferred\s+stock|ordinary\s+shares|\bclass\s+[a-d]$`)
 	// reHdrNameCol matches the header of the column that names the HOLDER.
 	// "Title of Class" is deliberately absent: it heads a class column, and a
 	// proxy that puts one to the left of the holder column otherwise has its
