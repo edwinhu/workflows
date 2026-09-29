@@ -1,0 +1,253 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ OEnSmNxlR/X4WElO/jeUS/p+CIke4HrTR/y6qr6U/LS7KKl2CDhBbWkHPTstL4Jl
+ zhDZqHn8J1JUUpMcxK+oiQ==
+
+<SEC-DOCUMENT>0001012870-02-002475.txt : 20020523
+<SEC-HEADER>0001012870-02-002475.hdr.sgml : 20020523
+<ACCEPTANCE-DATETIME>20020523172051
+ACCESSION NUMBER:		0001012870-02-002475
+CONFORMED SUBMISSION TYPE:	424B4
+PUBLIC DOCUMENT COUNT:		4
+FILED AS OF DATE:		20020523
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			NETFLIX INC
+		CENTRAL INDEX KEY:			0001065280
+		STANDARD INDUSTRIAL CLASSIFICATION:	SERVICES-VIDEO TAPE RENTAL [7841]
+		IRS NUMBER:				770467272
+		STATE OF INCORPORATION:			C4
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		424B4
+		SEC ACT:		1933 Act
+		SEC FILE NUMBER:	333-83878
+		FILM NUMBER:		02661366
+
+	BUSINESS ADDRESS:	
+		STREET 1:		970 UNIVERSITY AVENUE
+		STREET 2:		.
+		CITY:			LOS GATOS
+		STATE:			CA
+		ZIP:			95032
+		BUSINESS PHONE:		4083993700
+
+	MAIL ADDRESS:	
+		STREET 1:		970 UNIVERSITY AVENUE
+		CITY:			LOS GATOS
+		STATE:			CA
+		ZIP:			95032-7606
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	NETFLIX COM INC
+		DATE OF NAME CHANGE:	20000229
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>424B4
+<SEQUENCE>1
+<FILENAME>d424b4.htm
+<DESCRIPTION>FILE PURSUANT TO RULE 424B(4)
+<TEXT>
+<DIV ALIGN="center"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000"><B>
+<A NAME="TX202_11"></A>MANAGEMENT </B></FONT></DIV> <DIV><FONT SIZE="1">&nbsp;</FONT></DIV> <DIV><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000"><B>Executive Officers, Directors and Key Employees </B></FONT></DIV> <DIV><FONT
+SIZE="1">&nbsp;</FONT></DIV> <DIV STYLE="text-indent:7%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">The following table sets forth certain information with respect to our executive officers, directors and key employees as of May 22, 2002.
+</FONT></DIV> <DIV><FONT SIZE="1">&nbsp;</FONT></DIV> <DIV>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE">
+
+<TR>
+<TD VALIGN="bottom" WIDTH="37%"> <DIV><FONT FACE="Times New Roman" SIZE="1" COLOR="#000000"><B>Name</B></FONT></DIV> <HR NOSHADE WIDTH="30" ALIGN="left" COLOR="#000000"></TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="center"> <DIV ALIGN="center"><FONT FACE="Times New Roman" SIZE="1" COLOR="#000000"><B>Age</B></FONT></DIV> <HR NOSHADE COLOR="#000000"></TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="center"> <DIV ALIGN="center"><FONT FACE="Times New Roman" SIZE="1" COLOR="#000000"><B>Position</B></FONT></DIV> <HR NOSHADE WIDTH="45" COLOR="#000000"></TD> </TR>
+<TR>
+<TD VALIGN="top" WIDTH="37%"> <DIV STYLE="margin-left:2%; text-indent:-2%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000"><B>Executive Officers and Directors</B></FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD> <FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD> <FONT SIZE="1">&nbsp;</FONT></TD> </TR>
+<TR BGCOLOR="#cceeff">
+<TD VALIGN="top" WIDTH="37%"> <DIV STYLE="margin-left:6%; text-indent:-2%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Reed Hastings</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right" WIDTH="5%"> <DIV ALIGN="right"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">41</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" WIDTH="57%"> <DIV><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Chief&nbsp;Executive&nbsp;Officer,&nbsp;President&nbsp;and&nbsp;Chairman&nbsp;of&nbsp;the&nbsp;Board</FONT></DIV> </TD> </TR>
+<TR>
+<TD VALIGN="top" WIDTH="37%"> <DIV STYLE="margin-left:6%; text-indent:-2%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">W. Barry McCarthy, Jr.&nbsp;</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right" WIDTH="5%"> <DIV ALIGN="right"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">48</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" WIDTH="57%"> <DIV><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Chief Financial Officer and Secretary</FONT></DIV> </TD> </TR>
+<TR BGCOLOR="#cceeff">
+<TD VALIGN="top" WIDTH="37%"> <DIV STYLE="margin-left:6%; text-indent:-2%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Thomas R. Dillon</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right" WIDTH="5%"> <DIV ALIGN="right"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">58</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" WIDTH="57%"> <DIV><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Vice President of Operations</FONT></DIV> </TD> </TR>
+<TR>
+<TD VALIGN="top" WIDTH="37%"> <DIV STYLE="margin-left:6%; text-indent:-2%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Leslie J. Kilgore</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right" WIDTH="5%"> <DIV ALIGN="right"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">36</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" WIDTH="57%"> <DIV><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Vice President of Marketing</FONT></DIV> </TD> </TR>
+<TR BGCOLOR="#cceeff">
+<TD VALIGN="top" WIDTH="37%"> <DIV STYLE="margin-left:6%; text-indent:-2%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Timothy M. Haley(1)(2)</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right" WIDTH="5%"> <DIV ALIGN="right"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">47</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" WIDTH="57%"> <DIV><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Director</FONT></DIV> </TD> </TR>
+<TR>
+<TD VALIGN="top" WIDTH="37%"> <DIV STYLE="margin-left:6%; text-indent:-2%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Jay C. Hoag(2)</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right" WIDTH="5%"> <DIV ALIGN="right"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">44</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" WIDTH="57%"> <DIV><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Director</FONT></DIV> </TD> </TR>
+<TR BGCOLOR="#cceeff">
+<TD VALIGN="top" WIDTH="37%"> <DIV STYLE="margin-left:6%; text-indent:-2%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">A. Robert Pisano(1)</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right" WIDTH="5%"> <DIV ALIGN="right"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">59</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" WIDTH="57%"> <DIV><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Director</FONT></DIV> </TD> </TR>
+<TR>
+<TD VALIGN="top" WIDTH="37%"> <DIV STYLE="margin-left:6%; text-indent:-2%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Michael N. Schuh(1)</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right" WIDTH="5%"> <DIV ALIGN="right"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">58</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" WIDTH="57%"> <DIV><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Director</FONT></DIV> </TD> </TR>
+<TR BGCOLOR="#cceeff">
+<TD VALIGN="top" WIDTH="37%"> <DIV STYLE="margin-left:6%; text-indent:-2%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Richard N. Barton</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right" WIDTH="5%"> <DIV ALIGN="right"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">35</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" WIDTH="57%"> <DIV><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Director</FONT></DIV> </TD> </TR>
+<TR>
+<TD VALIGN="top" WIDTH="37%"> <DIV STYLE="margin-left:6%; text-indent:-2%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Michael Ramsay</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right" WIDTH="5%"> <DIV ALIGN="right"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">52</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" WIDTH="57%"> <DIV><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Director</FONT></DIV> </TD> </TR>
+<TR>
+<TD HEIGHT="8"> </TD> </TR>
+<TR>
+<TD VALIGN="top" WIDTH="37%"> <DIV STYLE="margin-left:2%; text-indent:-2%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000"><B>Key Employees</B></FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD> <FONT SIZE="1">&nbsp;</FONT></TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD> <FONT SIZE="1">&nbsp;</FONT></TD> </TR>
+<TR BGCOLOR="#cceeff">
+<TD VALIGN="top" WIDTH="37%"> <DIV STYLE="margin-left:6%; text-indent:-2%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Marc B. Randolph</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right" WIDTH="5%"> <DIV ALIGN="right"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">44</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" WIDTH="57%"> <DIV><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Vice President of New Markets</FONT></DIV> </TD> </TR>
+<TR>
+<TD VALIGN="top" WIDTH="37%"> <DIV STYLE="margin-left:6%; text-indent:-2%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Neil Hunt</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right" WIDTH="5%"> <DIV ALIGN="right"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">40</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" WIDTH="57%"> <DIV><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Vice President of E-Commerce</FONT></DIV> </TD> </TR>
+<TR BGCOLOR="#cceeff">
+<TD VALIGN="top" WIDTH="37%"> <DIV STYLE="margin-left:6%; text-indent:-2%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">J. Mitchell Lowe</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right" WIDTH="5%"> <DIV ALIGN="right"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">49</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" WIDTH="57%"> <DIV><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Vice President of Business Development</FONT></DIV> </TD> </TR>
+<TR>
+<TD VALIGN="top" WIDTH="37%"> <DIV STYLE="margin-left:6%; text-indent:-2%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Patricia J. McCord</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right" WIDTH="5%"> <DIV ALIGN="right"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">48</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" WIDTH="57%"> <DIV><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Vice President of Human Resources</FONT></DIV> </TD> </TR>
+<TR BGCOLOR="#cceeff">
+<TD VALIGN="top" WIDTH="37%"> <DIV STYLE="margin-left:6%; text-indent:-2%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Michael Osier</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right" WIDTH="5%"> <DIV ALIGN="right"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">39</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" WIDTH="57%"> <DIV><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Vice President of IT Operations</FONT></DIV> </TD> </TR>
+<TR>
+<TD VALIGN="top" WIDTH="37%"> <DIV STYLE="margin-left:6%; text-indent:-2%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Ted Sarandos</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right" WIDTH="5%"> <DIV ALIGN="right"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">37</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" WIDTH="57%"> <DIV><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Vice President of Content Acquisition</FONT></DIV> </TD> </TR>
+<TR BGCOLOR="#cceeff">
+<TD VALIGN="top" WIDTH="37%"> <DIV STYLE="margin-left:6%; text-indent:-2%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">David Hyman</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="right" WIDTH="5%"> <DIV ALIGN="right"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">36</FONT></DIV> </TD>
+<TD VALIGN="bottom" WIDTH="3%"><FONT FACE="Times New Roman" SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" WIDTH="57%"> <DIV><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">General Counsel</FONT></DIV> </TD> </TR>
+ </TABLE> </DIV> <HR NOSHADE WIDTH="10%" COLOR="#000000" ALIGN="left">
+<TABLE CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR>
+<TD WIDTH="3%" VALIGN="top" ALIGN="left"><DIV><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">(1)</FONT></DIV></TD>
+<TD WIDTH="1%" VALIGN="top"><DIV><FONT SIZE="1">&nbsp;</FONT></DIV></TD>
+<TD ALIGN="left" VALIGN="top"><DIV><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Member of the audit committee. </FONT></DIV> </TD></TR></TABLE>
+<TABLE CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR>
+<TD WIDTH="3%" VALIGN="top" ALIGN="left"><DIV><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">(2)</FONT></DIV></TD>
+<TD WIDTH="1%" VALIGN="top"><DIV><FONT SIZE="1">&nbsp;</FONT></DIV></TD>
+<TD ALIGN="left" VALIGN="top"><DIV><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">Member of the compensation committee. </FONT></DIV> </TD></TR></TABLE> <DIV><FONT SIZE="1">&nbsp;</FONT></DIV> <DIV STYLE="text-indent:7%"><FONT
+FACE="Times New Roman" SIZE="2" COLOR="#000000"><I>Reed Hastings</I> has served as our Chief Executive Officer since September 1998, our President since July 1999 and Chairman of the Board since inception. Mr. Hastings also currently serves as
+President of the California State Board of Education. From June 1998 to July 1999, Mr. Hastings served as Chief Executive Officer of Technology Network, a political service organization for the technology industry. Mr. Hastings served as Chief
+Executive Officer of Pure Atria Software, a maker of software development tools, from its inception in October 1991 until it was acquired by Rational Software Corporation, a software development company, in August 1997. Mr. Hastings holds an
+M.S.C.S. degree from Stanford University and a B.A. from Bowdoin College. </FONT></DIV> <DIV><FONT SIZE="1">&nbsp;</FONT></DIV> <DIV STYLE="text-indent:7%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000"><I>W. Barry McCarthy, Jr</I>. has
+served as our Chief Financial Officer since April 1999 and our Secretary since May 1999. From January 1993 to December 1999, Mr. McCarthy was Senior Vice President and Chief Financial Officer of Music Choice, a music programming service distributed
+over direct broadcast satellite and cable systems. From June 1990 to December 1992, Mr. McCarthy was Managing Partner of BMP Partners, a financial consulting and advisory firm. From 1982 to 1990, Mr. McCarthy was an Associate, Vice President and
+Director with Credit Suisse First Boston, an investment banking firm. Mr. McCarthy holds an M.B.A. from The Wharton School of Business at the University of Pennsylvania and a B.A. from Williams College. </FONT></DIV> <DIV><FONT
+SIZE="1">&nbsp;</FONT></DIV> <DIV STYLE="text-indent:7%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000"><I>Thomas R. Dillon</I> has served as our Vice President of Operations since April 1999. From January 1998 to April 1999, Mr. Dillon
+served as Chief Information Officer at Candescent Technologies Corp., a manufacturer of flat panel displays. From May 1987 to December 1997, he served as Chief Information Officer of Seagate Technology, a maker of computer peripherals. Mr. Dillon
+currently serves on the board of directors of Tricord Systems, Inc., a designer, developer and marketer of server appliances. Mr. Dillon holds a B.S. from the University of Colorado. </FONT></DIV> <P></P>
+ <DIV ALIGN="center"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">50 </FONT></DIV>
+
+
+<p Style='page-break-before:always'>
+<HR  SIZE="3" COLOR="#CCEEFF" WIDTH="100%" ALIGN="CENTER">
+ <DIV><FONT SIZE="1">&nbsp;</FONT></DIV> <DIV STYLE="text-indent:7%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000"><I>Leslie J. Kilgore</I> has served as our Vice President of Marketing since
+March 2000. From February 1999 to March 2000, Ms. Kilgore served as a Director of Marketing for Amazon.com, an Internet retailer. Ms. Kilgore served as a brand manager for The Procter &amp; Gamble Company, a manufacturer and marketer of consumer
+products, from August 1992 to February 1999. Ms. Kilgore holds an M.B.A. from the Stanford University Graduate School of Business and a B.S. from The Wharton School of Business at the University of Pennsylvania. </FONT></DIV> <DIV><FONT
+SIZE="1">&nbsp;</FONT></DIV> <DIV STYLE="text-indent:7%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000"><I>Timothy M. Haley</I> has served as one of our directors since June 1998. Mr. Haley is a co-founder of Redpoint Ventures, a venture
+capital firm, and has been a Managing Director of the firm since November 1999. Mr. Haley has been a Managing Director of Institutional Venture Partners, a venture capital firm, since February 1998. From June 1986 to February 1998, Mr. Haley was the
+President of Haley Associates, an executive recruiting firm in the high technology industry. Mr. Haley currently serves on the Board of Directors of several private companies. Mr. Haley holds a B.A. from Santa Clara University. </FONT></DIV>
+<DIV><FONT SIZE="1">&nbsp;</FONT></DIV> <DIV STYLE="text-indent:7%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000"><I>Jay C. Hoag</I> has served as one of our directors since June 1999. Since June 1995, Mr. Hoag has been a General Partner at
+Technology Crossover Ventures, a venture capital firm. Mr. Hoag serves on the board of directors of EXE Technologies, Inc., eLoyalty Corporation, Expedia, Inc. and several private companies. Mr.&nbsp;Hoag holds an M.B.A. from the University of
+Michigan and a B.A. from Northwestern University. </FONT></DIV> <DIV><FONT SIZE="1">&nbsp;</FONT></DIV> <DIV STYLE="text-indent:7%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000"><I>A. Robert Pisano</I> has served as one of our directors
+since April 2000. Since September 2001, Mr. Pisano has been the National Executive Director and Chief Executive Officer of the Screen Actors Guild. From August 1993 to April 1999, Mr. Pisano served as Executive Vice President, and the Vice Chairman
+and Director of Metro-Goldwyn-Mayer Inc., a motion picture and television studio. Mr. Pisano holds an LL.B. from the Boalt Hall School of Law at the University of California, Berkeley and a B.A. from San Jose State University. </FONT></DIV>
+<DIV><FONT SIZE="1">&nbsp;</FONT></DIV> <DIV STYLE="text-indent:7%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000"><I>Michael N. Schuh</I> has served as one of our directors since February 1999. From August 1998 to the present, Mr. Schuh has
+served as a member of Foundation Capital, a venture capital firm. Prior to joining Foundation Capital, Mr. Schuh was a founder and Chief Executive Officer of Intrinsa Corporation, a supplier of productivity solutions for software development
+organizations from 1994 to 1998. Mr. Schuh serves on the board of directors of several private companies. Mr. Schuh holds a B.S.E.E. from the University of Maryland. </FONT></DIV> <DIV><FONT SIZE="1">&nbsp;</FONT></DIV> <DIV
+STYLE="text-indent:7%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000"><I>Richard N. Barton </I>has served as one of our directors since May 2002. Mr. Barton founded Expedia, Inc., a leading provider of travel planning services, in 1994 and
+has been its President, Chief Executive Officer and director since September 1999. Mr. Barton serves on the board of directors of Ticketmaster. Mr. Barton holds a B.S. in industrial engineering from Stanford University. </FONT></DIV> <DIV><FONT
+SIZE="1">&nbsp;</FONT></DIV> <DIV STYLE="text-indent:7%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000"><I>Michael Ramsay </I>has served as one of our directors since May 2002. Mr. Ramsay has been the Chairman of the Board of Directors, Chief
+Executive Officer and President of TiVo Inc., a provider of personal television services, since its inception in August 1997. From April 1996 to July 1997, Mr. Ramsay was the Senior Vice President of the Silicon Desktop Group for Silicon Graphics,
+Inc., a manufacturer of advanced graphics computers. Mr. Ramsay holds a B.S. in Electrical Engineering from the University of Edinburgh, Scotland. </FONT></DIV> <DIV><FONT SIZE="1">&nbsp;</FONT></DIV> <DIV STYLE="text-indent:7%"><FONT
+FACE="Times New Roman" SIZE="2" COLOR="#000000"><I>Marc B. Randolph</I> has served as our Vice President of New Markets since December 2001, as our President from October 1998 to July 1999, as our Executive Producer from July 1999 to November 2001,
+as our President and Chief Executive Officer from August 1997 to September 1998 and as a member of our board of directors from inception to February 2002. From October 1996 to August 1997, Mr. Randolph served as Vice President of Marketing for
+IntegrityQA, a maker of software development tools, and its successor, Pure Atria Software. Mr. Randolph holds a B.A. from Hamilton College. </FONT></DIV> <DIV><FONT SIZE="1">&nbsp;</FONT></DIV> <DIV STYLE="text-indent:7%"><FONT
+FACE="Times New Roman" SIZE="2" COLOR="#000000"><I>Neil Hunt</I> has served as our Vice President of E-Commerce since January 1999. From August 1997 to January 1999, Mr. Hunt served as a Director of Engineering of Rational Software Corporation, and
+from April 1992 to August 1997, in various engineering roles for its predecessor, Pure Atria Software. Mr. Hunt holds a Ph.D. from the University of Aberdeen, U.K and a B.S. from the University of Durham, U.K. </FONT></DIV> <P></P>
+ <DIV ALIGN="center"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000">51 </FONT></DIV>
+
+
+<p Style='page-break-before:always'>
+<HR  SIZE="3" COLOR="#CCEEFF" WIDTH="100%" ALIGN="CENTER">
+ <DIV><FONT SIZE="1">&nbsp;</FONT></DIV> <DIV STYLE="text-indent:7%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000"><I>J. Mitchell Lowe</I> has served as our Vice President of Business Development
+since February 1998 and was a consultant to Netflix from October 1997 to February 1998. Mr. Lowe is a founder of and served as Chief Executive Officer and director of Interaction, Inc., a video rental chain, from January 1984 to June 2000.
+Mr.&nbsp;Lowe served on the Board of Directors of the Video Software Dealers Association from 1991 to 1998 and as its Chairman of the Board from 1996 to 1997. </FONT></DIV> <DIV><FONT SIZE="1">&nbsp;</FONT></DIV> <DIV STYLE="text-indent:7%"><FONT
+FACE="Times New Roman" SIZE="2" COLOR="#000000"><I>Patricia J. McCord</I> has served as our Vice President of Human Resources since November 1998. From January 1998 to November 1998, Ms. McCord was a principal of Patty McCord Consulting, consulting
+various startup businesses. From June 1994 to July 1997, Ms. McCord served as Director of Human Resources at Rational Software Corporation and Pure Atria Software. </FONT></DIV> <DIV><FONT SIZE="1">&nbsp;</FONT></DIV> <DIV
+STYLE="text-indent:7%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000"><I>Michael Osier</I> has served as our Vice President of IT Operations since March 2000. From July 1997 to March 2000, Mr. Osier served as Director of Enterprise Operations
+for Quantum Corporation, a supplier of tape drives. From March 1995 to July 1997 Mr. Osier served as Senior Manager for Conner Peripherals, a storage company and Seagate Technologies. </FONT></DIV> <DIV><FONT SIZE="1">&nbsp;</FONT></DIV> <DIV
+STYLE="text-indent:7%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000"><I>Ted Sarandos</I> has served as our Vice President of Content Acquisitions since March 2000. From May&nbsp;1999 to March 2000, Mr. Sarandos served as Vice President of
+Product and Merchandising at Video City, a video rental company. From 1993 to May 1999, Mr. Sarandos served as Western Regional Director of Sales and Operations for ETD, a video rental company. </FONT></DIV> <DIV><FONT SIZE="1">&nbsp;</FONT></DIV>
+<DIV STYLE="text-indent:7%"><FONT FACE="Times New Roman" SIZE="2" COLOR="#000000"><I>David Hyman</I> has served as our general counsel since February 2002. From August 1999 to February&nbsp;2002, Mr. Hyman served as General Counsel and Senior
+Corporate Counsel for Webvan Group, Inc., an Internet retailer. From November 1995 to August 1999, Mr. Hyman served as an associate at Morrison &amp; Foerster LLP, a law firm. Mr.&nbsp;Hyman holds a J.D. from the University of Virginia School of Law
+and a B.A. from the University of Virginia. </FONT></DIV>

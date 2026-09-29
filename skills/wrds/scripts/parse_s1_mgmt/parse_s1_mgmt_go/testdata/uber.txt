@@ -1,0 +1,514 @@
+<SEC-DOCUMENT>0001193125-19-144716.txt : 20190513
+<SEC-HEADER>0001193125-19-144716.hdr.sgml : 20190513
+<ACCEPTANCE-DATETIME>20190513060715
+ACCESSION NUMBER:		0001193125-19-144716
+CONFORMED SUBMISSION TYPE:	424B4
+PUBLIC DOCUMENT COUNT:		52
+FILED AS OF DATE:		20190513
+DATE AS OF CHANGE:		20190513
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Uber Technologies, Inc
+		CENTRAL INDEX KEY:			0001543151
+		STANDARD INDUSTRIAL CLASSIFICATION:	SERVICES-PREPACKAGED SOFTWARE [7372]
+		IRS NUMBER:				452647441
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		424B4
+		SEC ACT:		1933 Act
+		SEC FILE NUMBER:	333-230812
+		FILM NUMBER:		19816806
+
+	BUSINESS ADDRESS:	
+		STREET 1:		1455 MARKET ST., 4TH FLOOR
+		CITY:			SAN FRANCISCO
+		STATE:			CA
+		ZIP:			94103
+		BUSINESS PHONE:		415-986-2104
+
+	MAIL ADDRESS:	
+		STREET 1:		1455 MARKET ST., 4TH FLOOR
+		CITY:			SAN FRANCISCO
+		STATE:			CA
+		ZIP:			94103
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>424B4
+<SEQUENCE>1
+<FILENAME>d647752d424b4.htm
+<DESCRIPTION>424B4
+<TEXT>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B><A NAME="toc647752_12"></A>MANAGEMENT </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman"><B>Executive Officers and Directors </B></P> <P STYLE="margin-top:6pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman">The
+following table sets forth information for our directors and executive officers as of March&nbsp;31, 2019. </P> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" ALIGN="center">
+
+
+<TR>
+<TD WIDTH="32%"></TD>
+<TD VALIGN="bottom" WIDTH="2%"></TD>
+<TD></TD>
+<TD></TD>
+<TD></TD>
+<TD VALIGN="bottom" WIDTH="2%"></TD>
+<TD WIDTH="62%"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="bottom" NOWRAP> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; border-bottom:1.00pt solid #000000; display:table-cell; font-size:8pt; font-family:Times New Roman; "><B>Name</B></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" COLSPAN="2" NOWRAP> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; border-bottom:1.00pt solid #000000; display:table-cell; font-size:8pt; font-family:Times New Roman; "><B>Age</B></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; border-bottom:1.00pt solid #000000; display:table-cell; font-size:8pt; font-family:Times New Roman; "><B>Position</B></P></TD></TR>
+
+
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR BGCOLOR="#cceeff" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><I>Executive Officers:</I></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"></TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="8"></TD>
+<TD HEIGHT="8" COLSPAN="4"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Dara Khosrowshahi</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">49</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Chief Executive Officer and Director</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="8"></TD>
+<TD HEIGHT="8" COLSPAN="4"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD></TR>
+<TR BGCOLOR="#cceeff" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Nelson Chai</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">53</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Chief Financial Officer</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="8"></TD>
+<TD HEIGHT="8" COLSPAN="4"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Manik Gupta</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">42</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Chief Product Officer</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="8"></TD>
+<TD HEIGHT="8" COLSPAN="4"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD></TR>
+<TR BGCOLOR="#cceeff" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Barney Harford</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">47</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Chief Operating Officer</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="8"></TD>
+<TD HEIGHT="8" COLSPAN="4"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Jill Hazelbaker</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">37</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Senior Vice President, Communications and Public Policy</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="8"></TD>
+<TD HEIGHT="8" COLSPAN="4"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD></TR>
+<TR BGCOLOR="#cceeff" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Nikki Krishnamurthy</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">47</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Senior Vice President and Chief People Officer</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="8"></TD>
+<TD HEIGHT="8" COLSPAN="4"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Thuan Pham</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">51</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Chief Technology Officer</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="8"></TD>
+<TD HEIGHT="8" COLSPAN="4"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD></TR>
+<TR BGCOLOR="#cceeff" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Tony West</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">53</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Chief Legal Officer and Corporate Secretary</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="16"></TD>
+<TD HEIGHT="16" COLSPAN="4"></TD>
+<TD HEIGHT="16" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><I><FONT STYLE="white-space:nowrap">Non-Employee</FONT> Directors:</I></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"></TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="8"></TD>
+<TD HEIGHT="8" COLSPAN="4"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD></TR>
+<TR BGCOLOR="#cceeff" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Ronald Sugar<SUP STYLE="font-size:85%; vertical-align:top">(1)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">70</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Chairperson of the Board of Directors</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="8"></TD>
+<TD HEIGHT="8" COLSPAN="4"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Ursula Burns<SUP STYLE="font-size:85%; vertical-align:top">(1)(2)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">60</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Director</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="8"></TD>
+<TD HEIGHT="8" COLSPAN="4"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD></TR>
+<TR BGCOLOR="#cceeff" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Garrett Camp</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">40</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Director</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="8"></TD>
+<TD HEIGHT="8" COLSPAN="4"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Matt Cohler<SUP STYLE="font-size:85%; vertical-align:top">(2)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">42</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Director</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="8"></TD>
+<TD HEIGHT="8" COLSPAN="4"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD></TR>
+<TR BGCOLOR="#cceeff" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Ryan Graves<SUP STYLE="font-size:85%; vertical-align:top">(3)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">35</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Director</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="8"></TD>
+<TD HEIGHT="8" COLSPAN="4"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Arianna Huffington<SUP STYLE="font-size:85%; vertical-align:top">(3)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">68</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Director</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="8"></TD>
+<TD HEIGHT="8" COLSPAN="4"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD></TR>
+<TR BGCOLOR="#cceeff" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Travis Kalanick</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">42</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Director</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="8"></TD>
+<TD HEIGHT="8" COLSPAN="4"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Wan Ling Martello<SUP STYLE="font-size:85%; vertical-align:top">(1)(2)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">60</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Director</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="8"></TD>
+<TD HEIGHT="8" COLSPAN="4"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD></TR>
+<TR BGCOLOR="#cceeff" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">H.E. Yasir <FONT STYLE="white-space:nowrap">Al-Rumayyan</FONT></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">49</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Director</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="8"></TD>
+<TD HEIGHT="8" COLSPAN="4"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">John Thain<SUP STYLE="font-size:85%; vertical-align:top">(2)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">63</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Director</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="8"></TD>
+<TD HEIGHT="8" COLSPAN="4"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD></TR>
+<TR BGCOLOR="#cceeff" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">David Trujillo<SUP STYLE="font-size:85%; vertical-align:top">(1)(3)</SUP></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="right">43</TD>
+<TD NOWRAP VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Director</TD></TR>
+</TABLE> <P STYLE="line-height:8.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1px solid #000000;width:10%">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:8pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">(1)</TD>
+<TD ALIGN="left" VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; font-size:8pt; font-family:Times New Roman; " ALIGN="left">Member of the Nominating and Governance Committee. </P></TD></TR></TABLE>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:8pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">(2)</TD>
+<TD ALIGN="left" VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; font-size:8pt; font-family:Times New Roman; " ALIGN="left">Member of the Audit Committee. </P></TD></TR></TABLE>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:8pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="3%" VALIGN="top" ALIGN="left">(3)</TD>
+<TD ALIGN="left" VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; font-size:8pt; font-family:Times New Roman; " ALIGN="left">Member of the Compensation Committee. </P></TD></TR></TABLE>
+<P STYLE="margin-top:18pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman"><B>Executive Officers </B></P> <P STYLE="margin-top:6pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman"><B><I>Dara
+Khosrowshahi.</I></B> Mr.&nbsp;Khosrowshahi has served as our Chief Executive Officer and as a member of our board of directors since September 2017. Prior to joining Uber, Mr.&nbsp;Khosrowshahi served as President and Chief Executive Officer of
+Expedia, Inc., an online travel company, from August 2005 to August 2017. From August 1998 to August 2005, Mr.&nbsp;Khosrowshahi served in several senior management roles at IAC/InterActiveCorp, a media and internet company, including Chief
+Executive Officer of IAC Travel, a division of IAC/InterActiveCorp, from January 2005 to August 2005, Executive Vice President and Chief Financial Officer of </P>
+ <p STYLE="margin-top:0pt;margin-bottom:0pt ; font-size:8pt">&nbsp;</P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center">209 </P>
+
+</DIV></Center>
+
+
+<p Style='page-break-before:always'>
+<HR  SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+<h5 align="left"><a href="#toc">Table of Contents</a></h5>
+
+
+<Center><DIV STYLE="width:8.5in" align="left">
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman">
+IAC/InterActiveCorp from January 2002 to January 2005, and as IAC/InterActiveCorp&#146;s Executive Vice President, Operations and Strategic Planning, from July 2000 to January 2002.
+Mr.&nbsp;Khosrowshahi worked at Allen&nbsp;&amp; Company LLC from 1991 to 1998, where he served as Vice President from 1995 to 1998. Mr.&nbsp;Khosrowshahi currently serves on the board of directors of Expedia Group. Mr.&nbsp;Khosrowshahi previously
+served as a member of the supervisory board of trivago, N.V., a global hotel search company, from December 2016 to September 2017, and previously served on the board of directors for the following companies: The New York Times Company, a news and
+media company, from May 2015 to September 2017, and TripAdvisor, Inc., an online travel company, from December 2011 to February 2013. </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman">Mr.&nbsp;Khosrowshahi was selected to serve on our board of directors based on the perspective and experience he brings as our Chief Executive
+Officer, as a former leader of Expedia, a global company, his innovation, technology, and high-growth experience, consumer and digital experience, and his financial expertise. </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman"><B><I>Nelson Chai.</I></B> Nelson Chai has served as our Chief Financial Officer since September 2018. Prior to joining Uber, Mr.&nbsp;Chai
+served as President and Chief Executive Officer of The Warranty Group, a provider of warranty solutions and underwriting services, from January 2017 to July 2018. From June 2010 to December 2015, Mr.&nbsp;Chai served in various senior management
+roles at CIT Group, Inc., a financial services company, including President from August 2011 to December 2015 and Chairman of CIT Bank NA from January 2014 to July 2015. Prior to CIT Group, Mr.&nbsp;Chai held senior management positions at Bank of
+America Corporation and Merrill Lynch&nbsp;&amp; Co., a financial services company, including Executive Vice President and Chief Financial Officer of Merrill Lynch&nbsp;&amp; Co. from December 2007 to February 2008. Mr.&nbsp;Chai served as Executive
+Vice President and Chief Financial Officer of NYSE Euronext, Inc. and its predecessor company NYSE Group, Inc. from January 2006 to December 2007. Mr.&nbsp;Chai has served on the board of directors of Thermo Fisher Scientific Inc., a biotechnology
+product development company, since December 2010, where he serves as chair of the audit committee and is a member of the nominating and governance committee. Mr.&nbsp;Chai serves on the Board of Overseers for the School of Arts and Sciences at the
+University of Pennsylvania. </P> <P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman"><B><I>Manik Gupta. </I></B>Mr. Gupta has served as our Chief Product Officer since November 2018. From March
+2018 to November 2018, Mr. Gupta served as our Interim Head of Product&nbsp;and Vice President, Product, Maps and Marketplace.&nbsp;Prior to that, he served as Senior Director, Product, Maps and Marketplace from September 2017 to March 2018. Mr.
+Gupta joined Uber in November 2015 as Director, Product Management, Maps. Prior to joining Uber, Mr.&nbsp;Gupta served as Director, Product Management, Google Maps at Google Inc., a technology company, from December 2014 to November 2015. From June
+2008 to December 2014, Mr. Gupta served in a variety of Product leadership roles within Google Maps across Asia and the United States. Prior to Google Mr. Gupta was a Project Manager at Hewlett Packard, a multinational enterprise information
+technology company, from June 2003 to April 2007. Prior to that, Mr. Gupta founded BuyItTogether.com, an e-commerce startup, where he served as the founding head of engineering and held various technical leadership roles from June 1999 to April
+2003. Mr. Gupta is currently a member of the Technology Advisory Panel for Singapore Telecommunications Limited, a leading Asian communications technology group based in Singapore.</P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman"><B><I>Barney Harford</I></B><I></I><B>.</B><I></I><B><I></I></B> Mr.&nbsp;Harford has served as our Chief Operating Officer since January
+2018. From October 2017 to December 2017, Mr.&nbsp;Harford served as a Senior Advisor to our Chief Executive Officer. From December 2015 to December 2017, Mr.&nbsp;Harford served on the board of directors of several private companies, including as
+Chairman of Lola.com, an online corporate travel management service. From January 2009 to November 2015, Mr.&nbsp;Harford served as Chief Executive Officer and on the board of directors of Orbitz Worldwide, a global online travel company. Prior to
+joining Orbitz Worldwide Inc., Mr.&nbsp;Harford served in a variety of roles at Expedia, Inc. from 1999 to 2006 including as President of Expedia Asia Pacific from 2004 to 2006. Prior to Expedia, Mr.&nbsp;Harford was a strategy consultant with The
+Kalchas Group, a strategy consultancy firm, from September 1994 to November 1997. Mr.&nbsp;Harford currently serves on the board of directors of United Continental Holdings, Inc. </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman"><B><I>Jill Hazelbaker.</I></B> Ms.&nbsp;Hazelbaker has served as our Senior Vice President, Communications and Public Policy since April 2017.
+From November 2015 to April 2017, Ms.&nbsp;Hazelbaker served as our Vice President, </P>
+ <p STYLE="margin-top:0pt;margin-bottom:0pt ; font-size:8pt">&nbsp;</P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center">210 </P>
+
+</DIV></Center>
+
+
+<p Style='page-break-before:always'>
+<HR  SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+<h5 align="left"><a href="#toc">Table of Contents</a></h5>
+
+
+<Center><DIV STYLE="width:8.5in" align="left">
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman">
+Communications and Public Policy. Prior to joining Uber, Ms.&nbsp;Hazelbaker served as Vice President, Communications and Public Policy of Snap Inc., a social media company, from October 2014 to
+October 2015. From January 2010 until October 2014, Ms.&nbsp;Hazelbaker held senior Communications and Public Policy roles at Google, in the United States and Europe, where she was most recently Senior Director of Communications and Public Policy
+from March 2013 to October 2014. Prior to joining Google, Ms.&nbsp;Hazelbaker served as Press Secretary to Mayor Michael Bloomberg&#146;s <FONT STYLE="white-space:nowrap">re-election</FONT> campaign in New York City from January 2009 to December
+2009 and as the Communications Director for Senator John McCain&#146;s U.S. presidential campaign from June 2007 to November 2008. </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman"><B><I>Nikki Krishnamurth</I></B><B>y</B><B>.</B> Ms.&nbsp;Krishnamurthy has served as our Chief People Officer since October 2018. Prior to
+joining Uber, Ms.&nbsp;Krishnamurthy served as Chief People Officer of Expedia from May 2016 to June 2018. From March 2013 to May 2016, Ms.&nbsp;Krishnamurthy served as Vice President of Expedia Local Expert, a branch of Expedia that provides online
+concierge services, and prior to that, she held the role of Vice President of Human Resources for Expedia from December 2009 to March 2013. Prior to that, Ms.&nbsp;Krishnamurthy was Principal HR Consultant for Washington Mutual Card Services from
+September 2007 to September 2009. </P> <P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman"><B><I>Thuan Pham</I></B><I></I><B>.</B><I></I><B> </B>Mr.&nbsp;Pham has served as our Chief Technology
+Officer since April 2013. Prior to joining Uber, Mr.&nbsp;Pham was Vice President of R&amp;D at VMware, Inc., a cloud computing and platform virtualization software and services company, from December 2004 to April 2013. </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman"><B><I>Tony Wes</I></B><B></B><B><I>t</I></B><B></B><I></I><B>.</B><I></I><B></B><B><I></I></B><B> </B>Mr.&nbsp;West has served as our Chief
+Legal Officer and Corporate Secretary since November 2017. Prior to joining Uber, Mr.&nbsp;West served as Executive Vice President, Government Affairs, General Counsel and Corporate Secretary from November 2014 to November 2017 at PepsiCo Inc., a
+food and beverage company. Prior to joining PepsiCo, Mr.&nbsp;West served as Associate Attorney General of the United States from March 2012 to September 2014, after previously serving as the Assistant Attorney General for the Civil Division in the
+U.S. Department of Justice from April 2009 to March 2012. From November 2001 to April 2009, Mr.&nbsp;West was a partner at Morrison&nbsp;&amp; Foerster LLP. He also served as Special Assistant Attorney General at the California Department of Justice
+from 1999 to 2001 and, prior to that, as an Assistant United States Attorney in the Northern District of California. </P> <P STYLE="margin-top:18pt; margin-bottom:0pt; margin-left:4%; font-size:10pt; font-family:Times New Roman"><B><I><FONT
+STYLE="white-space:nowrap">Non-Employee</FONT> Directors </I></B></P> <P STYLE="margin-top:6pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman"><B><I>Ronald Sugar</I></B><I></I><B>.</B><I></I> Dr.&nbsp;Sugar has
+served as the Chairperson of our board of directors since July 2018. Dr.&nbsp;Sugar was Chairman of the board of directors and Chief Executive Officer of Northrop Grumman Corporation, a global aerospace and defense company, from 2003 until his
+retirement in 2010 and President and Chief Operating Officer from 2001 until 2003. He was President and Chief Operating Officer of Litton Industries, Inc. from 2000 until the company was acquired by Northrop Grumman Corporation in 2001. He was
+earlier Chief Financial Officer of TRW Inc. Dr.&nbsp;Sugar is also an adviser to Ares Management LLC, Bain&nbsp;&amp; Company, Northrop Grumman Corporation, and Singapore&#146;s Temasek Investment Company. Dr.&nbsp;Sugar is a trustee of the
+University of Southern California, board of visitors member of the University of California, Los Angeles Anderson School of Management, past Chairman of the Aerospace Industries Association, and a member of the National Academy of Engineering.
+Dr.&nbsp;Sugar has been a director of Amgen Inc. since 2010, Apple Inc. since 2010, Air Lease Corporation since 2010, and Chevron Corporation since 2005. </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman">Dr.&nbsp;Sugar was selected to serve on our board of directors because of his experience as the leader of a global company, particularly as
+Chairman of the Board and Chief Executive Officer of Northrop Grumman Corporation, his innovation, technology and high-growth experience, consumer and digital experience, particularly his experience on Apple&#146;s board of directors, and his
+financial expertise. </P> <P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman"><B><I>Ursula Burns</I></B><I></I><B>.</B><I></I> Ms.&nbsp;Burns has served on our board of directors since September
+2017. Ms. Burns has served as the Chairman and Chief Executive Officer of VEON, Ltd., an international telecommunications and technology company, since December 2018. She served as the Chairman of VEON, Ltd. from July 2017 to
+</P>
+ <p STYLE="margin-top:0pt;margin-bottom:0pt ; font-size:8pt">&nbsp;</P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center">211 </P>
+
+</DIV></Center>
+
+
+<p Style='page-break-before:always'>
+<HR  SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+<h5 align="left"><a href="#toc">Table of Contents</a></h5>
+
+
+<Center><DIV STYLE="width:8.5in" align="left">
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman">
+March 2018, and as Executive Chairman from March 2018 to December 2018. Ms.&nbsp;Burns served as Chairman of Xerox Corporation, a print technology and work solutions company, from July 2009 to
+May 2017, and Chief Executive Officer of Xerox Corporation from July 2009 to December 2016, prior to which she advanced through many engineering and management positions after joining the company in 1980. U.S. President Barack Obama appointed
+Ms.&nbsp;Burns to help lead the White House national program on Science, Technology, Engineering and Math (STEM) from 2009 to 2016, and she served as chair of the President&#146;s Export Council from 2015 to 2016 after service as vice chair from
+2010 to 2015. Ms.&nbsp;Burns currently serves on the board of directors of VEON, Ltd., Nestl&eacute; S.A., and Exxon Mobil Corporation. Ms.&nbsp;Burns previously served on the board of directors of American Express Company from January 2004 to May
+2018 and Xerox Corporation from April 2007 to May 2017. </P> <P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman">Ms.&nbsp;Burns was selected to serve on our board of directors because of her
+experience as the leader of a global company, particularly her experience as Chairman and Chief Executive Officer of Xerox, her technology and digital experience, and her financial expertise. </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman"><B><I>Garrett Camp</I></B><I></I><B>.</B><I></I> Mr.&nbsp;Camp <FONT STYLE="white-space:nowrap">co-founded</FONT> Uber and has served on our
+board of directors since July 2010. Mr.&nbsp;Camp formed Expa.com, a startup studio that works with founders to develop and launch new products, in late 2013. Prior to that, Mr.&nbsp;Camp served as Chief Executive Officer of StumbleUpon, a website
+discovery engine, from November 2001 to May 2012. Mr.&nbsp;Camp currently serves on the board of directors of several private companies, including Mix.com, Spot.com, and Haus.com. </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman">Mr.&nbsp;Camp was selected to serve on our board of directors because of his experience as one of the
+<FONT STYLE="white-space:nowrap">co-founders</FONT> and early leaders of our company, and as such, his extensive knowledge of our business, his innovation, technology, and high-growth experience, and his consumer and digital experience. </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman"><B><I>Matt Cohler</I></B><I></I><B>.</B><I></I> Mr.&nbsp;Cohler has served on our board of directors since June 2017. Mr.&nbsp;Cohler has been
+a partner at Benchmark Capital (&#147;Benchmark&#148;), a venture capital firm, since 2008. Prior to joining Benchmark, Mr.&nbsp;Cohler was Vice President of Product Management at Facebook, Inc., a social media company, from 2005 to June 2008, and
+Special Adviser until 2012. Prior to Facebook, Mr.&nbsp;Cohler was Vice President and General Manager at LinkedIn, a professional network, from 2003 to 2005. Mr.&nbsp;Cohler currently serves on the boards of several private companies, including
+Asana, Inc. since 2009, Quora, Inc. since 2010, ResearchGate Corporation since 2010, and 1stdibs, Inc., a vertical online marketplace, since 2011. Mr.&nbsp;Cohler previously served on the board of directors of several companies, including Domo, Inc.
+from 2011 to 2019, Tinder from 2014 to 2017, Edmodo, Inc. from 2011 to 2018, Duo Security, Inc. from 2013 to 2018, and Instagram from 2011 until its acquisition by Facebook in 2012. </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman">Mr.&nbsp;Cohler was selected to serve on our board of directors because of his extensive experience with technology, high-growth, consumer and
+digital companies, as highlighted by his experience at Facebook, LinkedIn, and Tinder, as well as his financial expertise as a Partner at Benchmark. </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman"><B><I>Ryan Graves</I></B><I></I><B>.</B><I></I> Mr.&nbsp;Graves has served on our board of directors since July 2010. Mr.&nbsp;Graves is the
+founder and Chief Executive Officer of Saltwater Capital, an investment firm. Mr.&nbsp;Graves served as our Senior Vice President of Global Operations from September 2015 to September 2017, and as our Vice President of Operations from November 2011
+to September 2015. From July 2010 to November 2010, Mr.&nbsp;Graves served as our Chief Executive Officer. From March 2010 to July 2010, Mr. Graves served as our Vice President Operations. Mr.&nbsp;Graves serves on the board of directors of Charity
+Global, Inc., a non-profit organization. </P> <P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman">Mr.&nbsp;Graves was selected to serve on our board of directors because of his experience as one
+of the early leaders of our company, and as such, his innovation, technology, and high-growth experience, as well as his consumer and digital experience. </P>
+ <p STYLE="margin-top:0pt;margin-bottom:0pt ; font-size:8pt">&nbsp;</P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center">212 </P>
+
+</DIV></Center>
+
+
+<p Style='page-break-before:always'>
+<HR  SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+<h5 align="left"><a href="#toc">Table of Contents</a></h5>
+
+
+<Center><DIV STYLE="width:8.5in" align="left">
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman"><B><I>Arianna Huffington</I></B><B>.</B> Ms.&nbsp;Huffington has served on our board of
+directors since April 2016. Ms.&nbsp;Huffington is Chief Executive Officer of Thrive Global, a corporate and consumer well-being and productivity platform she founded in September 2016. Ms.&nbsp;Huffington founded The Huffington Post, a news and
+blog site, in May 2005. AOL acquired The Huffington Post in February 2011 and Ms.&nbsp;Huffington served as President and <FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">Editor-in-Chief</FONT></FONT> of The Huffington Post Media
+Group from February 2011 to August 2016. Ms.&nbsp;Huffington serves on the board of directors of Onex Corporation, a private equity company, and on the boards of directors of the following <FONT STYLE="white-space:nowrap">non-profits:</FONT>
+Berggruen Institute, Global Citizen, and JUST Capital. Ms.&nbsp;Huffington previously served on the board of directors of El PA&Iacute;S and PRISA from 2011 to 2018 and The Center for Public Integrity from 2011 to 2018. </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman">Ms.&nbsp;Huffington was selected to serve on our board of directors because of her experience as the President and Editor in Chief of the
+Huffington Post, a global company, as well as her extensive consumer and digital experience, including as President of Thrive Global, and her digital experience. </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman"><B><I>Travis Kalanick</I></B><I></I><B>.</B><I></I> Mr.&nbsp;Kalanick <FONT STYLE="white-space:nowrap">co-founded</FONT> Uber and has served
+on our board of directors since July 2010. Since March 2018, Mr.&nbsp;Kalanick has served as Chief Executive Officer of City Storage Systems LLC, a company focused on redeveloping real estate assets to fuel urban job creation and neighborhood
+rejuvenation. From November 2010 to June 2017, Mr.&nbsp;Kalanick served as our Chief Executive Officer. Prior to Uber, Mr.&nbsp;Kalanick founded Red Swoosh, a networking software company, and served as its Chief Executive Officer from January 2001
+to April 2007, when the company was acquired by Akamai Technologies. Mr.&nbsp;Kalanick currently serves on the board of directors of Kareo, Inc., City Storage Systems LLC, and StyleSeat Inc. </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman">Mr.&nbsp;Kalanick was selected to serve on our board of directors because of his experience as one of the
+<FONT STYLE="white-space:nowrap">co-founders</FONT> and early leaders of our company, and as such, his extensive knowledge of our business, and his innovation, technology, and high-growth experience, as well as his consumer and digital experience.
+</P> <P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman"><B><I>Wan Ling Martello</I></B><I></I><B>.</B><I></I> Ms.&nbsp;Martello has served on our board of directors since June 2017.
+Ms.&nbsp;Martello served as Executive Vice President and Chief Executive Officer of the Asia, Oceania, and sub-Saharan Africa regions at Nestl&eacute; S.A.,<I> </I>a Swiss multinational food and beverage company, from May 2015 to December 2018. From
+April 2012 to May 2015, Ms.&nbsp;Martello served as Nestl&eacute;&#146;s global Chief Financial Officer, and from November 2011 to April 2012 she served as Nestle&#146;s Executive Vice President of Finance and Control. From November 2005 to November
+2011, Ms. Martello was a senior executive at Walmart Stores, Inc., a retail corporation, where she served as Executive Vice President, Chief Operating Officer for Global eCommerce, and Senior Vice President, Chief Financial Officer &amp; Strategy
+for Walmart International. Prior to Walmart, Ms. Martello was a President, U.S.A., at NCH Marketing Services, Inc., a marketing services company, from 1998 to 2005. Prior to NCH Marketing, Ms. Martello held various positions at Borden Foods and at
+Kraft Inc. (now known as the Kraft Heinz Company). Ms.&nbsp;Martello has served on the board of directors of Alibaba Group since September 2015. </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman">Ms.&nbsp;Martello was selected to serve on our board of directors because of her experience as a senior executive of Nestl&eacute;, a global
+company, her consumer experience as a director of Alibaba, her financial expertise as the Chief Financial Officer at Nestl&eacute;, and her global experience. </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman"><B><I>H.E. Yasir <FONT STYLE="white-space:nowrap">Al-Rumayyan</FONT></I></B><I></I><B>.</B><I></I> His Excellency Yasir <FONT
+STYLE="white-space:nowrap">Al-Rumayyan</FONT> has served on our board of directors since June 2016. H.E. Yasir <FONT STYLE="white-space:nowrap">Al-Rumayyan</FONT> has been a managing director at The Public Investment Fund, a sovereign wealth fund
+owned by Saudi Arabia, since September 2015. Prior to The Public Investment Fund, H.E. Yasir <FONT STYLE="white-space:nowrap">Al-Rumayyan</FONT> held the position of Chief Executive Officer at Saudi Fransi Capital, a financial services company, from
+January 2011 to February 2015. From April 2008 to December 2010, His Excellency Yasir <FONT STYLE="white-space:nowrap">Al-Rumayyan</FONT> served as Director of Corporate Finance of the Capital Market Authority of Saudi Arabia. H.E. Yasir <FONT
+STYLE="white-space:nowrap">Al-Rumayyan</FONT> currently serves on the board of directors of The Public Investment Fund of Saudi Arabia, Saudi Aramco, Saudi Industrial Development Fund, Saudi Decision Support Center, Sanabil Investments, Arm Limited,
+and SoftBank Group Corp. H.E. Yasir <FONT STYLE="white-space:nowrap">Al-Rumayyan</FONT> previously served on the board of directors of Saudi Fransi Capital from January 2011 to February 2015 and Tadawul, the Saudi Stock Exchange, from February 2014
+to January 2015. </P>
+ <p STYLE="margin-top:0pt;margin-bottom:0pt ; font-size:8pt">&nbsp;</P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center">213 </P>
+
+</DIV></Center>
+
+
+<p Style='page-break-before:always'>
+<HR  SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+<h5 align="left"><a href="#toc">Table of Contents</a></h5>
+
+
+<Center><DIV STYLE="width:8.5in" align="left">
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman">H.E. Yasir <FONT STYLE="white-space:nowrap">Al-Rumayyan</FONT> was selected to serve on our
+board of directors because of his financial expertise, particularly in his roles at The Public Investment Fund, his extensive government, policy and regulatory experience highlighted by his time at the Saudi Stock Exchange, and his extensive
+experience in the Middle East. </P> <P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman"><B><I>John Thain</I></B><I></I><B>.</B><I></I> Mr.&nbsp;Thain has served on our board of directors since
+September 2017. Mr. Thain is the founding partner of Pine Island Capital Partners LLC, a private investment firm, and has served as Chairman since October 2017. Mr.&nbsp;Thain served as Chairman and Chief Executive Officer of CIT Group, from
+February 2010 until March 2016, and as Chairman of CIT Group until May 2016. In January 2009, prior to joining CIT Group, Mr.&nbsp;Thain was President of Global Banking, Securities and Wealth Management for Bank of America. From December 2007 to
+January 2009, prior to its merger with Bank of America, Mr.&nbsp;Thain was Chairman and Chief Executive Officer of Merrill Lynch&nbsp;&amp; Co., Inc. From June 2006 to December 2007, Mr.&nbsp;Thain served as Chief Executive Officer and a director of
+NYSE Euronext, Inc. following the NYSE Group and Euronext N.V. merger. Mr.&nbsp;Thain joined the New York Stock Exchange in January 2004, serving as Chief Executive Officer and a director. From June 2003 through January 2004, Mr.&nbsp;Thain was the
+President and Chief Operating Officer of The Goldman Sachs Group Inc., and from May 1999 through June 2003 he was President and <FONT STYLE="white-space:nowrap">Co-Chief</FONT> Operating Officer. From December 1994 to March 1999, Mr.&nbsp;Thain
+served as Chief Financial Officer and Head of Operations, Technology and Finance, and from July 1995 to September 1997 he was also <FONT STYLE="white-space:nowrap">Co-Chief</FONT> Executive Officer for European operations for The Goldman Sachs
+Group, L.P. Mr.&nbsp;Thain currently serves on the board of directors of Enjoy Technology, Inc., and he currently serves on the Supervisory Board of Deutsche Bank AG. Mr.&nbsp;Thain previously served on the board of directors of Goldman Sachs Group
+Inc. from 1998 to January 2004. </P> <P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman">Mr.&nbsp;Thain was selected to serve on our board of directors because of his experience as Chief
+Executive Officer of several global companies and his financial expertise from his roles at CIT Group, Merrill Lynch, and NYSE Euronext. </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman"><B><I>David I. Trujillo</I></B><I></I><B>.</B><I></I> Mr.&nbsp;Trujillo has served on our board of directors since June 2017.
+Mr.&nbsp;Trujillo is a Partner of TPG, a private equity firm, and leads TPG&#146;s Internet, Digital Media and Communications investing efforts across TPG Capital and TPG Growth. He is also Managing Partner of TPG Tech Adjacencies and Integrated
+Media Co. Prior to joining TPG in 2006, Mr.&nbsp;Trujillo was with GTCR, a Chicago-based private equity fund, from 1998 through 2005. Mr.&nbsp;Trujillo is currently a Director of AXS (in partnership with AEG), Calm, Cirque du Soleil, Creative
+Artists Agency, Ipsy, RCN Communications (recently acquiring both Grande Communications and Wave Broadband), RentPath, Univision Communications, and Vice Media. Mr.&nbsp;Trujillo led TPG&#146;s growth investments in Airbnb and Spotify.
+Mr.&nbsp;Trujillo previously served on the boards of Layer3 TV (sold to <FONT STYLE="white-space:nowrap">T-Mobile</FONT> in 2018), Lynda.com (sold to LinkedIn in 2015), Fenwal Therapeutics (sold to Fresenius SE in 2012). </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman">Mr.&nbsp;Trujillo was selected to serve on our board of directors, having led TPG&#146;s investment in the Company in 2013, and because of his
+extensive experience in technology, high-growth, consumer, and digital companies, such as Airbnb and Spotify, as well as his financial expertise as a Partner of TPG. </P>

@@ -1,0 +1,292 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ A2a4zLqu5Fye7kRe8EnEypgmroDH6JlzYZ1rK8rsrPVCfUzTpVNYyrZX6osILsxl
+ FsR+6xLwYUzcVt4s43scaA==
+
+<SEC-DOCUMENT>0001193125-04-143377.txt : 20040819
+<SEC-HEADER>0001193125-04-143377.hdr.sgml : 20040819
+<ACCEPTANCE-DATETIME>20040819061951
+ACCESSION NUMBER:		0001193125-04-143377
+CONFORMED SUBMISSION TYPE:	424B4
+PUBLIC DOCUMENT COUNT:		36
+FILED AS OF DATE:		20040819
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Google Inc.
+		CENTRAL INDEX KEY:			0001288776
+		IRS NUMBER:				770493581
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		424B4
+		SEC ACT:		1933 Act
+		SEC FILE NUMBER:	333-114984
+		FILM NUMBER:		04985199
+
+	BUSINESS ADDRESS:	
+		STREET 1:		1600 AMPHITHEATRE PARKWAY
+		CITY:			MOUNTAIN VIEW
+		STATE:			CA
+		ZIP:			94043
+		BUSINESS PHONE:		650 623 4000
+
+	MAIL ADDRESS:	
+		STREET 1:		1600 AMPHITHEATRE PARKWAY
+		CITY:			MOUNTAIN VIEW
+		STATE:			CA
+		ZIP:			94043
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>424B4
+<SEQUENCE>1
+<FILENAME>d424b4.htm
+<DESCRIPTION>FINAL PROSPECTUS
+<TEXT>
+<P STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2"><B>
+<A NAME="toc59330_14"></A>MANAGEMENT </B></FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT FACE="Times New Roman" SIZE="2"><B>Executive Officers and Directors
+</B></FONT></P> <P STYLE="margin-top:0px;margin-bottom:-6px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%"><FONT FACE="Times New Roman" SIZE="2">Our executive officers and directors, and their ages and
+positions as of June 30, 2004 are as follows: </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" ALIGN="center">
+
+<TR>
+<TD WIDTH="36%"></TD>
+<TD VALIGN="bottom" WIDTH="3%"></TD>
+<TD WIDTH="2%"></TD>
+<TD VALIGN="bottom" WIDTH="3%"></TD>
+<TD WIDTH="56%"></TD></TR>
+<TR>
+<TD VALIGN="bottom"> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT FACE="Times New Roman" SIZE="1"><B>Name</B></FONT></P><HR WIDTH="30" SIZE="1" NOSHADE ALIGN="left" COLOR="#000000"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="center"><FONT FACE="Times New Roman" SIZE="1"><B>Age</B></FONT><BR><HR SIZE="1" NOSHADE COLOR="#000000"></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom" ALIGN="center"> <P STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="1"><B>Position</B></FONT></P><HR SIZE="1" NOSHADE COLOR="#000000"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT FACE="Times New Roman" SIZE="2">Eric Schmidt</FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT FACE="Times New Roman" SIZE="2">49</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT FACE="Times New Roman" SIZE="2">Chairman of the Executive Committee, Chief Executive Officer and Director</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT FACE="Times New Roman" SIZE="2">Sergey Brin</FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT FACE="Times New Roman" SIZE="2">30</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT FACE="Times New Roman" SIZE="2">President of Technology, Assistant Secretary and Director</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT FACE="Times New Roman" SIZE="2">Larry Page</FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT FACE="Times New Roman" SIZE="2">31</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT FACE="Times New Roman" SIZE="2">President of Products, Assistant Secretary and Director</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT FACE="Times New Roman" SIZE="2">Omid Kordestani</FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT FACE="Times New Roman" SIZE="2">40</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT FACE="Times New Roman" SIZE="2">Senior Vice President of Worldwide Sales and Field Operations</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT FACE="Times New Roman" SIZE="2">Wayne Rosing</FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT FACE="Times New Roman" SIZE="2">57</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT FACE="Times New Roman" SIZE="2">Vice President of Engineering</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT FACE="Times New Roman" SIZE="2">David C. Drummond</FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT FACE="Times New Roman" SIZE="2">41</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT FACE="Times New Roman" SIZE="2">Vice President of Corporate Development, Secretary and General Counsel</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT FACE="Times New Roman" SIZE="2">George Reyes</FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT FACE="Times New Roman" SIZE="2">50</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT FACE="Times New Roman" SIZE="2">Vice President and Chief Financial Officer</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT FACE="Times New Roman" SIZE="2">Jonathan J. Rosenberg</FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT FACE="Times New Roman" SIZE="2">42</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT FACE="Times New Roman" SIZE="2">Vice President of Product Management</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT FACE="Times New Roman" SIZE="2">Shona L. Brown</FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT FACE="Times New Roman" SIZE="2">38</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT FACE="Times New Roman" SIZE="2">Vice President of Business Operations</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT FACE="Times New Roman" SIZE="2">L. John Doerr</FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT FACE="Times New Roman" SIZE="2">53</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT FACE="Times New Roman" SIZE="2">Director</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT FACE="Times New Roman" SIZE="2">John L. Hennessy</FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT FACE="Times New Roman" SIZE="2">51</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT FACE="Times New Roman" SIZE="2">Director</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT FACE="Times New Roman" SIZE="2">Arthur D. Levinson</FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT FACE="Times New Roman" SIZE="2">54</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT FACE="Times New Roman" SIZE="2">Director</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT FACE="Times New Roman" SIZE="2">Michael Moritz</FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT FACE="Times New Roman" SIZE="2">49</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT FACE="Times New Roman" SIZE="2">Director</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT FACE="Times New Roman" SIZE="2">Paul S. Otellini</FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT FACE="Times New Roman" SIZE="2">53</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT FACE="Times New Roman" SIZE="2">Director</FONT></TD></TR>
+<TR>
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR>
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em"><FONT FACE="Times New Roman" SIZE="2">K. Ram Shriram</FONT></P></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT FACE="Times New Roman" SIZE="2">47</FONT></TD>
+<TD VALIGN="bottom"><FONT SIZE="1">&nbsp;&nbsp;</FONT></TD>
+<TD VALIGN="bottom"><FONT FACE="Times New Roman" SIZE="2">Director</FONT></TD></TR>
+</TABLE> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%"><FONT FACE="Times New Roman" SIZE="2"><I>Eric Schmidt</I>
+has served as our Chief Executive Officer since July 2001 and served as Chairman of our board of directors from March 2001 to April 2004. In April 2004, Eric was named Chairman of the Executive Committee of our board of directors. Prior to joining
+us, from April 1997 to November 2001, Eric served as Chairman of the board of Novell, a computer networking company, and, from April 1997 to July 2001, as the Chief Executive Officer of Novell. From 1983 until March 1997, Eric held various positions
+at Sun Microsystems, a supplier of network computing solutions, including Chief Technology Officer from February 1994 to March 1997 and President of Sun Technology Enterprises from February 1991 until February 1994. Eric is also a director of Siebel
+Systems. Eric has a Bachelor of Science degree in electrical engineering from Princeton University, and a Masters degree and Ph.D. in computer science from the University of California at Berkeley. </FONT></P> <P
+STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%"><FONT FACE="Times New Roman" SIZE="2"><I>Sergey Brin</I>, one of our founders, has served as a member of our board
+of directors since our inception in September 1998 and as our President of Technology since July 2001. From September 1998 to July 2001, Sergey served as our President. Sergey holds a Masters degree in computer science from Stanford University, a
+Bachelor of Science degree with high honors in mathematics and computer science from the University of Maryland at College Park and is currently on leave from the Ph.D. program in computer science at Stanford University. </FONT></P> <P
+STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%"><FONT FACE="Times New Roman" SIZE="2"><I>Larry Page</I>, one of our founders, has served as a member of our board
+of directors since our inception in September 1998 and as our President of Products since July 2001. From September 1998 to July 2001, Larry served as our Chief Executive Officer and from September 1998 to July 2002 as our Chief Financial Officer.
+Larry holds a Masters degree in computer science from Stanford University, a Bachelor of Science degree with high honors in engineering, with a concentration in computer engineering, from the University of Michigan and is currently on leave from the
+Ph.D. program in computer science at Stanford University. </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P>
+ <P STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2">87 </FONT></P>
+
+
+<p Style='page-break-before:always'>
+<HR  SIZE="3" COLOR="#999999" WIDTH="100%" ALIGN="CENTER">
+<h5 align="left"><a href="#toc">Table of Contents</a></h5>
+
+ <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%"><FONT FACE="Times New Roman" SIZE="2"><I>Omid Kordestani </I>has served as our Senior Vice President of Worldwide Sales and Field Operations
+since May 1999. Prior to joining us, from 1995 to 1999, Omid served as Vice President of Business Development at Netscape, an Internet software and services company. Omid holds a Masters of Business Administration degree from Stanford University and
+a Bachelor of Science degree in electrical engineering from San Jose State University. </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%"><FONT
+FACE="Times New Roman" SIZE="2"><I>Wayne Rosing</I> has served as our Vice President of Engineering since November 2000. From November&nbsp;1996 to April 2000, Wayne served as Chief Technology Officer and Vice President of Engineering at Caere
+Corporation, an optical character recognition software company. From 1985 to 1994, Wayne served in various executive engineering positions at Sun Microsystems. From 1992 to 1994, Wayne headed the team that developed the technology base for Java as
+the president of FirstPerson, and, from 1990 through 1991, was President of Sun Microsystems Laboratories, both subsidiaries of Sun Microsystems. From 1985 to 1990, Wayne was a Vice President of Engineering at Sun Microsystems and, from 1980 to
+1985, he was director of engineering for the Apple Computer Lisa and Apple II divisions. Prior to 1980, he held management positions at Digital Equipment Corporation and Data General. </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT
+SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%"><FONT FACE="Times New Roman" SIZE="2"><I>David C. Drummond</I> has served as our Vice President of Corporate Development, Secretary and General Counsel since
+February 2002. Prior to joining us, from July 1999 to February 2002, David served as Chief Financial Officer of SmartForce, an educational software applications company. Prior to that, David was a partner at the law firm of Wilson Sonsini Goodrich
+&amp; Rosati, our outside counsel. David holds a J.D. from Stanford University and a Bachelor of Arts degree in history from Santa Clara University. On July&nbsp;20, 2004, David was advised by the staff of the SEC that it intends to recommend that
+the SEC bring a civil injunction action against David, alleging violation of federal securities laws, including the anti-fraud provisions. The SEC&#146;s recommendation arises out of David&#146;s prior employment as Chief Financial Officer of
+SmartForce, and involves certain disclosure and accounting issues relating to SmartForce&#146;s financial statements. None of the allegations involve Google. The staff of the SEC has, in accordance with its customary practices, offered David the
+opportunity to make a Wells Submission setting forth why David believes that such action should not be brought. David intends to make this submission. </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P
+STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%"><FONT FACE="Times New Roman" SIZE="2"><I>George Reyes</I> has served as our Chief Financial Officer since July 2002. Prior to joining us, George served as Interim Chief Financial Officer for
+ONI Systems, a provider of optical networking equipment, from February&nbsp;2002 until June 2002. From April 1999 to September 2001, George served as Vice President and Treasurer of Sun Microsystems, a supplier of networking computing solutions, and
+as Vice President, Corporate Controller of Sun Microsystems from April 1994 to April 1999. George is also a director of BEA Systems, an application infrastructure software company, and Symantec, an information security company. George holds a
+Masters of Business Administration degree from Santa Clara University and a Bachelor of Arts degree in accounting from the University of South Florida. </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P
+STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%"><FONT FACE="Times New Roman" SIZE="2"><I>Jonathan J. Rosenberg</I> has served as our Vice President of Product Management since February 2002. Prior to joining us, from October 2001 to
+February 2002, Jonathan served as Vice President of Software of palmOne, a provider of handheld computer and communications solutions. From November 2000 until October 2001, Jonathan was not formally employed. From March 1996 to November 2000,
+Jonathan held various executive positions at Excite@Home, an Internet media company, most recently as its Senior Vice President of Online Products and Services. Jonathan holds a Masters of Business Administration degree from the University of
+Chicago and a Bachelor of Arts degree with honors in economics from Claremont McKenna College. </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%"><FONT
+FACE="Times New Roman" SIZE="2"><I>Shona L. Brown</I> has served as our Vice President of Business Operations since September 2003. Prior to joining us, from October 1995 to August 2003, Shona was at McKinsey &amp; Company, a management consulting
+firm where she had been a partner since December 2000. Shona holds a Ph.D. and Post-Doctorate in industrial engineering and engineering management from Stanford University, a Masters of Arts degree from Oxford University (as a Rhodes Scholar), and a
+Bachelor of Science degree in computer systems engineering from Carleton University.<I> </I></FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%"><FONT
+FACE="Times New Roman" SIZE="2"><I>L. John Doerr</I> has served as a member of our board of directors since May 1999. John has been a General Partner of Kleiner Perkins Caufield &amp; Byers, a venture capital firm, since August 1980. John is also a
+director of </FONT>
+</P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P>
+ <P STYLE="margin-top:0px;margin-bottom:0px" ALIGN="center"><FONT FACE="Times New Roman" SIZE="2">88 </FONT></P>
+
+
+<p Style='page-break-before:always'>
+<HR  SIZE="3" COLOR="#999999" WIDTH="100%" ALIGN="CENTER">
+<h5 align="left"><a href="#toc">Table of Contents</a></h5>
+
+ <P STYLE="margin-top:0px;margin-bottom:0px">
+<FONT FACE="Times New Roman" SIZE="2">Amazon.com, an Internet retail company, drugstore.com, an Internet retail company, Homestore.com, a provider of real estate media and technology solutions,
+Intuit, a provider of business and financial management software, palmOne, a provider of handheld computer and communications solutions, and Sun Microsystems, a supplier of networking computing solutions. John holds a Masters of Business
+Administration degree from Harvard Business School and a Masters of Science degree in electrical engineering and computer science and a Bachelor of Science degree in electrical engineering from Rice University. </FONT></P> <P
+STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%"><FONT FACE="Times New Roman" SIZE="2"><I>John L. Hennessy</I> has served as a member of our board of directors
+since April 2004. Since September 2000, John has served as the President of Stanford University. From 1994 to August 2000, John held various positions at Stanford, including Dean of the Stanford University School of Engineering and Chair of the
+Stanford University Department of Computer Science. John has been a member of the board of directors of Cisco Systems, a networking equipment company, since January 2002 and chairman of the board of directors of Atheros Communications, a wireless
+semiconductor company since May 1998. John holds a Master&#146;s degree and Doctoral degree in computer science from the State University of New York, Stony Brook and a Bachelor of Science degree in electrical engineering from Villanova University.
+</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%"><FONT FACE="Times New Roman" SIZE="2"><I>Arthur D. Levinson </I>has served as a member of our board
+of directors since April 2004. Since 1995, Art has served as a member of the board of directors of Genentech, a biotechnology company, and has served as its Chairman and Chief Executive Officer since September 1999. Prior to 1999 Art held various
+executive positions at Genentech, including Senior Vice President of R&amp;D. Art has been a member of the board of directors of Apple Computer, a computer hardware and software company, since 2000. Art was a Postdoctoral Fellow in the Department of
+Microbiology at the University of California, San Francisco. Art holds a Ph.D. in biochemistry from Princeton University and a Bachelor of Science degree in molecular biology from the University of Washington. </FONT></P> <P
+STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%"><FONT FACE="Times New Roman" SIZE="2"><I>Michael Moritz</I> has served as a member of our board of directors since
+May 1999. Michael has been a General Partner of Sequoia Capital, a venture capital firm, since 1986. Michael has served as a member of the board of directors of Saba Software, a provider of human capital development and management solutions, since
+August 1998 and as a member of the board of directors of Flextronics International, a contract electronics manufacturer, since July 1993. Michael has also served as a member of the board of directors of RedEnvelope, an online retailer of upscale
+gifts, since July 1999 and as its Chairman of the Board since April 2003. Michael holds a Masters of Arts degree from Christ Church, University of Oxford. </FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P
+STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%"><FONT FACE="Times New Roman" SIZE="2"><I>Paul S. Otellini</I> has served as a member of our board of directors since April 2004. Paul has been a member of the board of directors of Intel, a
+semiconductor manufacturing company, and has served as its President and Chief Operating Officer since 2002. From 1974 to 2002, Paul held various positions at Intel, including Executive Vice President and General Manager of Intel Architecture Group
+and Executive Vice President and General Manager of Sales and Marketing Group. Paul holds a Master&#146;s degree from the University of California at Berkeley and a Bachelors degree in economics from the University of San Francisco. </FONT></P> <P
+STYLE="margin-top:0px;margin-bottom:0px"><FONT SIZE="1">&nbsp;</FONT></P> <P STYLE="margin-top:0px;margin-bottom:0px; text-indent:4%"><FONT FACE="Times New Roman" SIZE="2"><I>K. Ram Shriram</I> has served as a member of our board of directors since
+September 1998. Since January 2000, Ram has served as managing partner of Sherpalo, an angel venture investment company. Prior to that, from August 1998 to September 1999, Ram served as Vice President of Business Development at Amazon.com, an
+Internet retail company. Prior to that, Ram served as President at Junglee, a provider of database technology, acquired by Amazon.com in 1998. Ram was an early member of the Netscape executive team. Ram holds a Bachelor of Science degree from the
+University of Madras, India. </FONT></P>
