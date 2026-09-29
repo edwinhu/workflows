@@ -1248,6 +1248,13 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 			continue
 		}
 		grp, gn := isGroupRow(name)
+		// Two value-column pairs of ONE source row can produce records identical
+		// in every field -- a "*" in both percent columns of a two-class table
+		// whose header rows do not tell the pairs apart. The second is a second
+		// reading of the same cell: nothing distinguishes it for any consumer,
+		// and it lands on the grain key as a duplicate. Rows that differ in ANY
+		// value are kept, since those are distinct holdings.
+		emitted := map[string]bool{}
 		for pi, p := range ps {
 			// A STACKED cell holds one value per share class, on its own line,
 			// in every value column of the row at once. Flattening it
@@ -1337,6 +1344,12 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 				rw.ShareClass = cl
 				rw.classHint = cleanClassLabel(hint)
 				rw.Footnotes = strings.Join(uniq(allFns), ",")
+				sig := rw.HolderName + "\x00" + rw.ShareClass + "\x00" + rw.classHint +
+					"\x00" + shCell + "\x00" + pcCell + "\x00" + rw.PctMarker
+				if emitted[sig] {
+					continue
+				}
+				emitted[sig] = true
 				out = append(out, rw)
 			}
 		}
