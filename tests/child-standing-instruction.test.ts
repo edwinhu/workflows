@@ -25,6 +25,7 @@ import { spawnSync } from 'node:child_process'
 import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
+import { hermeticEnv } from './helpers/hermetic-env'
 
 const ROOT = dirname(import.meta.dir)
 const FARM = join(ROOT, 'skills', 'farm-out', 'scripts', 'farm.sh')
@@ -86,7 +87,10 @@ describe('the early-stop standing instruction reaches every unattended child pro
       encoding: 'utf8',
       cwd: d,
       timeout: 120_000,
-      env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1' },
+      // hermeticEnv pins TMPDIR to this test's own directory and drops the ambient session id, so
+      // farm.sh's START/DONE rows land in $d/farm-events instead of the caller's own event stream,
+      // which a live session's farm-runs monitor reads as real dispatches.
+      env: hermeticEnv(d, { PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1' }),
     })
 
     expect(existsSync(argvFile), `farm.sh never invoked the wrapper; stderr: ${r.stderr}`).toBe(true)
@@ -118,7 +122,7 @@ describe('the early-stop standing instruction reaches every unattended child pro
       encoding: 'utf8',
       cwd: d,
       timeout: 120_000,
-      env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1' },
+      env: hermeticEnv(d, { PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1' }),
     })
 
     expect(
@@ -155,7 +159,9 @@ describe('the early-stop standing instruction reaches every unattended child pro
         '--no-events',
         '--notify', 'none',
       ],
-      { encoding: 'utf8', cwd: d, timeout: 120_000 },
+      // --no-events already suppresses the event file; the hermetic env is the belt to that brace,
+      // so a future default that ignores the flag still cannot reach the caller's stream.
+      { encoding: 'utf8', cwd: d, timeout: 120_000, env: hermeticEnv(d) },
     )
 
     // 4 is "pass budget exhausted with the check still red" -- the loop ran its one iteration.
