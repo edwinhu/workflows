@@ -20,6 +20,10 @@ var (
 	reHasTag    = regexp.MustCompile(`(?i)<(html|body|div|p|font|table)[\s>]`)
 	reSeriesTag = regexp.MustCompile(`(?i)<SERIES-NAME>([^\n<]*)`)
 	reNotAlnum  = regexp.MustCompile(`[^a-z0-9]+`)
+	// A registered / trademark mark inside a fund name: "Vanguard(R) 500 Index
+	// Fund". Folding it to a bare "r" token would stop the name matching the
+	// <SERIES-NAME> entry that declares it.
+	reTradeMark = regexp.MustCompile(`(?i)\((?:r|tm|sm|c)\)|[®™©]`)
 )
 
 // SeriesNames returns the distinct fund / series names the filing's SGML header
@@ -51,7 +55,45 @@ func SeriesNames(raw string) []string {
 
 // NormLabel folds a label to the form the series matcher compares on.
 func NormLabel(s string) string {
+	s = reTradeMark.ReplaceAllString(s, " ")
 	return strings.TrimSpace(reNotAlnum.ReplaceAllString(strings.ToLower(s), " "))
+}
+
+// SeriesSet folds declared series names into the matcher's lookup: NormLabel ->
+// the name as written. Returns nil unless at least two are declared, since one
+// series disambiguates nothing.
+func SeriesSet(series []string) map[string]string {
+	if len(series) < 2 {
+		return nil
+	}
+	m := make(map[string]string, len(series))
+	for _, s := range series {
+		m[NormLabel(s)] = strings.Join(strings.Fields(s), " ")
+	}
+	return m
+}
+
+// MatchSeries reports which declared fund / series name a line or cell states,
+// allowing the short trailing parenthetical a proxy adds for the reader
+// ("Vanguard(R) 500 Index Fund (1976)"). "" when it names none.
+func MatchSeries(set map[string]string, cell string) string {
+	if set == nil {
+		return ""
+	}
+	n := NormLabel(cell)
+	if len(n) < 6 {
+		return ""
+	}
+	if v := set[n]; v != "" {
+		return v
+	}
+	f := strings.Fields(n)
+	for drop := 1; drop <= 2 && drop < len(f); drop++ {
+		if v := set[strings.Join(f[:len(f)-drop], " ")]; v != "" {
+			return v
+		}
+	}
+	return ""
 }
 
 type span struct{ lo, hi int }

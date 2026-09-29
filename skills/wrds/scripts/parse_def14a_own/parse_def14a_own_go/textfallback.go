@@ -220,6 +220,11 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 	var out []Row
 	blocksSeen, blocksUsed := 0, 0
 	consumed := map[int]bool{}
+	// A fund-family proxy in ASCII prints the fund's name on its own line above
+	// each per-fund holder table. Record which fund is in force at every line so
+	// a block can be labelled with it: without the fund, the same record holder
+	// of a hundred funds collapses onto one grain key.
+	seriesAt := textSeriesLabels(clean, base.series)
 
 	for i, l := range clean {
 		t := strings.TrimSpace(l)
@@ -418,8 +423,13 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 		blocksUsed++
 		blockText := hdr + " " + strings.Join(sliceLines(clean, block), " ")
 		kd := tableKind(kind, rows, blockText+" "+t)
+		fund := ""
+		if len(block) > 0 && seriesAt != nil {
+			fund = seriesAt[block[0]]
+		}
 		for k := range rows {
 			rows[k].TableKind = kd
+			rows[k].classHint = withSeries(fund, rows[k].classHint)
 		}
 		for _, rw := range rows {
 			if rw.noHolder {
@@ -759,4 +769,32 @@ func headNameAbove(clean []string, ln int, nm string) (string, bool) {
 		return "", false
 	}
 	return strings.TrimSpace(strings.Join(name, " ")), true
+}
+
+// textSeriesReach bounds how far a fund label carries, in ASCII lines: a fund's
+// holder table sits directly under its name and its bullet list.
+const textSeriesReach = 60
+
+// textSeriesLabels records, for every line, the fund / series the most recent
+// standalone label line named. nil when the filing declares fewer than two
+// series, which is every operating company.
+func textSeriesLabels(clean []string, series []string) []string {
+	set := SeriesSet(series)
+	if set == nil {
+		return nil
+	}
+	out := make([]string, len(clean))
+	cur, at := "", 0
+	for i, l := range clean {
+		t := strings.TrimSpace(l)
+		if len(t) >= 6 && len(t) <= 120 {
+			if v := MatchSeries(set, t); v != "" {
+				cur, at = v, i
+			}
+		}
+		if cur != "" && i-at <= textSeriesReach {
+			out[i] = cur
+		}
+	}
+	return out
 }

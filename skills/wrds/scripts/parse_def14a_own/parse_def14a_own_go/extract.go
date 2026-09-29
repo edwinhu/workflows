@@ -60,7 +60,7 @@ var (
 	// reHdrClassCol matches the header of a ROW-LEVEL column stating which
 	// class, series or fund the row's holding is in. Anchored at the head of
 	// the header so "Percentage of Fund" is not read as a fund column.
-	reHdrClassCol = regexp.MustCompile(`(?i)^\s*(?:title\s+of\s+(?:class|series)|class\s+of\s+(?:stock|shares|securities)|share\s+class|series|fund|portfolio)\b`)
+	reHdrClassCol = regexp.MustCompile(`(?i)^\s*(?:title\s+of\s+(?:class|series)|class\s+of\s+(?:stock|shares|securities)|share\s+class|class|series|fund|portfolio)\s*(?:\||$)`)
 	// A footnote reference trailing a column header: "... of stock (2)".
 	reHdrFootnote = regexp.MustCompile(`\s*\(\d{1,2}\)\s*$`)
 	// A column of MONEY, not of shares. A fund-family proxy's trustee table
@@ -90,11 +90,13 @@ type compacted struct {
 	pctFlag []bool
 	nHeader int
 	roles   []colRole
-	// hdrClassCol is the class column chosen by its HEADER (repoint below),
-	// as opposed to one chosen by its values matching reClassVal. Its label is
-	// carried on Row.classHint rather than Row.ShareClass so that no existing
-	// screen decision changes: the layout screen reads ShareClass.
-	hdrClassCol int
+	// hdrClassCols are the class columns chosen by their HEADER (repoint
+	// below), as opposed to one chosen by its values matching reClassVal. A
+	// fund table states BOTH the fund and the class in columns of their own and
+	// needs both to identify the holding. Their labels are carried on
+	// Row.classHint rather than Row.ShareClass so that no existing screen
+	// decision changes: the layout screen reads ShareClass.
+	hdrClassCols []int
 	// series is the set of fund / series names the filing's SGML header
 	// declares, folded by NormLabel. A column whose cells are those names is
 	// the fund column of a fund-family proxy, whatever its header says.
@@ -223,7 +225,7 @@ func compact(g *Grid) *compacted {
 		}
 		rows[i] = r
 	}
-	return &compacted{rows: rows, pctFlag: pctFlag, hdrClassCol: -1}
+	return &compacted{rows: rows, pctFlag: pctFlag}
 }
 
 // compactWith is compact plus the per-filing context the role vote reads: the
@@ -231,12 +233,7 @@ func compact(g *Grid) *compacted {
 // nothing to disambiguate, so the set is left nil.
 func compactWith(g *Grid, base Row) *compacted {
 	c := compact(g)
-	if len(base.series) >= 2 {
-		c.series = make(map[string]string, len(base.series))
-		for _, s := range base.series {
-			c.series[NormLabel(s)] = strings.Join(strings.Fields(s), " ")
-		}
-	}
+	c.series = SeriesSet(base.series)
 	return c
 }
 
@@ -331,7 +328,7 @@ func (c *compacted) analyze() {
 			// A fund-family proxy lists the fund in a column of its own; the
 			// holder column is the next one along.
 			c.roles[j].role = "class"
-			c.hdrClassCol = j
+			c.hdrClassCols = append(c.hdrClassCols, j)
 		case classish*2 >= n && classish > 0 && bigNum == 0:
 			c.roles[j].role = "class"
 		case c.pctFlag[j] || strongPct > bigNum && strongPct > 0:
@@ -369,6 +366,18 @@ func (c *compacted) analyze() {
 		}
 	}
 	c.repoint()
+}
+
+// colFilled counts the data cells of column j that hold anything. A fund
+// table's class column holds bare letters ("A", "C"), which are not words.
+func (c *compacted) colFilled(j int) int {
+	n := 0
+	for i := c.nHeader; i < len(c.rows); i++ {
+		if j < len(c.rows[i]) && flat(c.rows[i][j]) != "" {
+			n++
+		}
+	}
+	return n
 }
 
 // colWords counts the data cells of column j that carry at least one word.
@@ -419,10 +428,9 @@ func (c *compacted) repoint() {
 		if j == nc || c.roles[j].role != "other" {
 			continue
 		}
-		if reHdrClassCol.MatchString(c.roles[j].header) && c.colWords(j) > 0 {
+		if reHdrClassCol.MatchString(c.roles[j].header) && c.colFilled(j) > 0 {
 			c.roles[j].role = "class"
-			c.hdrClassCol = j
-			break
+			c.hdrClassCols = append(c.hdrClassCols, j)
 		}
 	}
 }
@@ -431,23 +439,7 @@ func (c *compacted) repoint() {
 // a short trailing parenthetical the proxy adds for the reader ("Vanguard 500
 // Index Fund (1976)"). Returns "" when the cell names no declared series.
 func (c *compacted) matchSeries(cell string) string {
-	if c.series == nil {
-		return ""
-	}
-	n := NormLabel(cell)
-	if n == "" || len(n) < 6 {
-		return ""
-	}
-	if v := c.series[n]; v != "" {
-		return v
-	}
-	f := strings.Fields(n)
-	for drop := 1; drop <= 2 && drop < len(f); drop++ {
-		if v := c.series[strings.Join(f[:len(f)-drop], " ")]; v != "" {
-			return v
-		}
-	}
-	return ""
+	return MatchSeries(c.series, cell)
 }
 
 // seriesRowLabel reports the fund a full-width LABEL ROW inside the table names.
@@ -612,9 +604,21 @@ func (c *compacted) nameCol() int {
 	return 0
 }
 
+// classCol is the class column whose VALUES are class designations, which is
+// the one whose label goes straight onto ShareClass. The header-chosen columns
+// are handled separately, via classHint.
 func (c *compacted) classCol() int {
 	for j, r := range c.roles {
-		if r.role == "class" {
+		if r.role != "class" {
+			continue
+		}
+		hdr := false
+		for _, k := range c.hdrClassCols {
+			if k == j {
+				hdr = true
+			}
+		}
+		if !hdr {
 			return j
 		}
 	}
@@ -717,7 +721,8 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int) []Row {
 		return nil
 	}
 	var out []Row
-	lastName, lastClass, lastSeries := "", "", ""
+	lastName, lastSeries := "", ""
+	lastClass := make([]string, len(c.hdrClassCols))
 	// The first fund's label row sits in the header block, above the column
 	// headings, so the walk below would never see it.
 	for i := 0; i < c.nHeader && i < len(c.rows); i++ {
@@ -730,26 +735,28 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int) []Row {
 		// A full-width label row naming one of the filing's funds separates the
 		// funds a single table covers. It names no holder and carries no number.
 		if lbl := c.seriesRowLabel(r); lbl != "" {
-			lastSeries, lastClass = lbl, ""
+			lastSeries = lbl
+			for k := range lastClass {
+				lastClass[k] = ""
+			}
 			continue
 		}
 		// The row-level class / fund column is written once and left blank on
 		// the rows that continue the same class, so it is forward-filled —
 		// before the name checks below, which may skip this row entirely.
 		rowClass, rowHint := "", ""
-		if cc >= 0 {
+		if cc >= 0 && cc < len(r) {
+			rowClass = r[cc]
+		}
+		for k, j := range c.hdrClassCols {
 			v := ""
-			if cc < len(r) {
-				v = r[cc]
+			if j < len(r) {
+				v = flat(r[j])
 			}
-			if cc == c.hdrClassCol {
-				if fv := flat(v); fv != "" {
-					lastClass = fv
-				}
-				rowHint = lastClass
-			} else {
-				rowClass = v
+			if v != "" {
+				lastClass[k] = v
 			}
+			rowHint = withSeries(rowHint, lastClass[k])
 		}
 		if nc >= len(r) {
 			continue

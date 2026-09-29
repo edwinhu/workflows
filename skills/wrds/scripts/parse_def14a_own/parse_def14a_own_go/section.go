@@ -70,23 +70,42 @@ func tableKind(sectKind string, rows []Row, tableText string) string {
 // is nothing to disambiguate, and an operating company declares none.
 func seriesLabels(items []Item, series []string) []string {
 	out := make([]string, len(items))
-	if len(series) < 2 {
+	set := SeriesSet(series)
+	if set == nil {
 		return out
 	}
-	byNorm := make(map[string]string, len(series))
-	for _, s := range series {
-		byNorm[NormLabel(s)] = strings.Join(strings.Fields(s), " ")
-	}
-	cur := ""
+	cur, at := "", 0
 	for i, it := range items {
 		if it.Kind == "text" && len(it.Text) <= 120 {
-			if v, ok := byNorm[NormLabel(it.Text)]; ok {
-				cur = v
+			if v := MatchSeries(set, it.Text); v != "" {
+				cur, at = v, i
 			}
 		}
-		out[i] = cur
+		// A fund's table follows its name closely. Carrying a label further
+		// than that labels an unrelated table with a stale fund.
+		if cur != "" && i-at <= seriesReach {
+			out[i] = cur
+		}
 	}
 	return out
+}
+
+// seriesReach bounds how far a fund label carries from the line that states it,
+// in document items (DOM) or lines (ASCII).
+const seriesReach = 40
+
+// namesSeries reports whether a label already leads with a declared fund, in
+// which case the document-level label must not be prefixed onto it: the more
+// local one is right and the outer one may be stale.
+func namesSeries(set map[string]string, hint string) bool {
+	if set == nil || hint == "" {
+		return false
+	}
+	head := hint
+	if i := strings.Index(head, " | "); i >= 0 {
+		head = head[:i]
+	}
+	return MatchSeries(set, head) != ""
 }
 
 // withSeries puts the fund identity in front of whatever class label the table
@@ -124,6 +143,7 @@ func ExtractHTML(body string, base Row) ([]Row, int, int) {
 	tablesSeen, tablesUsed := 0, 0
 	used := map[int]bool{}
 	seriesAt := seriesLabels(items, base.series)
+	sset := SeriesSet(base.series)
 
 	type tres struct {
 		rows   []Row
@@ -177,7 +197,7 @@ func ExtractHTML(body string, base Row) ([]Row, int, int) {
 			}
 			for i := range g.rows {
 				g.rows[i].TableKind = kd
-				if !g.rows[i].seriesLocal {
+				if !g.rows[i].seriesLocal && !namesSeries(sset, g.rows[i].classHint) {
 					g.rows[i].classHint = withSeries(g.series, g.rows[i].classHint)
 				}
 			}
