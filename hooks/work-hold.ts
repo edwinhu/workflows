@@ -54,6 +54,19 @@ interface State {
   goalPrompted?: boolean
   checkFiles?: Record<string, string>
   startedAt: number      // epoch seconds
+  /**
+   * The last Stop THIS FILE processed, epoch seconds — the liveness proof for the hook itself.
+   *
+   * Absent means no Stop has reached `main()` since the hold was armed. A hold is armed by a script
+   * and enforced by a hook, and the two are registered independently: a session that started before
+   * the hook was renamed keeps its OLD Stop registration while running the CURRENT dispatch script,
+   * so it arms state that nothing evaluates. Measured 2026-09-28: a session predating v6.25 had its
+   * Stop hook pointed at the deleted `hooks/hound.ts`, so the hold sat at rounds 0 forever, never
+   * released after a PASS, and `cron-delete-guard.ts` — whose path did not change — went on refusing
+   * every `CronDelete` of the heartbeats. Nothing in the state distinguished that from a hold whose
+   * first round had not ended yet.
+   */
+  lastEvaluatedAt?: number
   ceilingMinutes: number
   maxRounds: number
   rounds: number
@@ -135,6 +148,35 @@ export function inFlight(s: { run?: string }): boolean {
   } catch {
     return true                                   // absent result.json IS the in-flight shape
   }
+}
+
+/**
+ * How long an armed hold may go unevaluated before the silence is itself the evidence.
+ *
+ * A round is one Stop, and a session working under a hold stops far more often than this; ten
+ * minutes is longer than any single turn and shorter than the shortest ceiling, so it cannot fire on
+ * a hold that was merely armed a moment ago.
+ */
+export const UNEVALUATED_AFTER_SECONDS = 600
+
+/**
+ * The version-skew diagnosis, as a sentence — or null when the hook is demonstrably running.
+ *
+ * Read by `--status` and by `cron-delete-guard.ts`, which is the OTHER half of the incident: that
+ * guard enforces an armed hold from its own unchanged path, so the two disagree about whether
+ * anything is alive. It still denies; it just stops being silent about why the hold is not moving.
+ */
+export function unevaluatedNote(
+  s: { startedAt: number; lastEvaluatedAt?: number },
+  nowSeconds: number,
+): string | null {
+  if (typeof s.lastEvaluatedAt === 'number') return null
+  const age = Math.floor((nowSeconds - s.startedAt) / 60)
+  if (age * 60 < UNEVALUATED_AFTER_SECONDS) return null
+  return (
+    `never evaluated since arm ${age}m ago — this session's Stop hook is not running work-hold.ts; ` +
+    `run /reload-plugins`
+  )
 }
 
 /**
@@ -909,6 +951,9 @@ function main(): void {
     const json = entry?.payload ?? ''
     try {
       const restored = JSON.parse(json) as State
+      // Stamped like every other path: the ledger payload is the ARM-time state, so a restore that
+      // carried it back verbatim would reinstate a hold that reads as never evaluated.
+      restored.lastEvaluatedAt = Math.floor(Date.now() / 1000)
       writeFileSync(path, JSON.stringify(restored))
       process.stdout.write(JSON.stringify({
         decision: 'block',
@@ -932,6 +977,13 @@ function main(): void {
 
   const now = Math.floor(Date.now() / 1000)
   const checkless = !s.check?.trim()
+
+  // THE LIVENESS STAMP, before any branch. Written here rather than once per exit because every exit
+  // below is a Stop this file processed — the in-flight allow, the block, and each release — and a
+  // stamp attached to only some of them would make the quietest path look like the dead hook. It
+  // costs one write per Stop, on a file this hook already rewrites on most of them.
+  s.lastEvaluatedAt = now
+  writeFileSync(path, JSON.stringify(s))
 
   /** Every release goes through here: ledger line, window restored, state gone, one message. */
   const release = (verb: string, message: string): void => {

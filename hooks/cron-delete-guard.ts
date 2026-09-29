@@ -16,7 +16,7 @@ import { appendFileSync, existsSync, readdirSync, readFileSync, statSync, writeF
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { allow, deny, denyOnCrash, parsePayload } from "./_gate_common.ts";
-import { statePath } from "./work-hold.ts";
+import { statePath, unevaluatedNote } from "./work-hold.ts";
 
 /** A cron job id as CronCreate mints them: 8 lowercase hex chars. */
 const JOB_ID = /\b[0-9a-f]{8}\b/;
@@ -181,9 +181,23 @@ const deleteId = String(((hookInput?.tool_input ?? {}) as Record<string, unknown
 // heartbeat open on a run the user had already walked away from, while saying nothing a re-arm
 // could not say. The sanctioned escape is `work-abandon.sh`, which settles the run and releases the
 // hold in one step, rather than an env var the session sets for itself.
+//
+// AN UNEVALUATED HOLD STILL DENIES, and says so with the remedy. This guard's path never changed
+// while `hooks/hound.ts` was deleted under it, so a session predating that rename enforces its hold
+// here from a hook that is running and has NOTHING evaluating the hold on the Stop side — rounds 0
+// forever, no release after a PASS, and every heartbeat delete refused. Weakening the deny would
+// hand the session an argument for deleting a live run's loop; naming the skew costs nothing and is
+// the only thing that ends the deadlock.
 const session = String(hookInput?.session_id ?? "");
 if (session && existsSync(statePath(session))) {
+  let skew: string | null = null;
+  try {
+    skew = unevaluatedNote(JSON.parse(readFileSync(statePath(session), "utf8")), Math.floor(Date.now() / 1000));
+  } catch {
+    // An unreadable state file says nothing about the hook's liveness; the deny below is unchanged.
+  }
   deny(
+    (skew ? `The hold for this session was ${skew}. Until that is fixed the hold cannot release itself, so this delete stays refused — reload, then let the hold run. ` : "") +
     "A hold is ARMED for this session, so its objective has not closed yet. The heartbeat " +
       "is what re-enters the session while the hold is working; deleting it now leaves the hold " +
       "with nothing to wake it. Let the hold release itself (the check goes green AND the " +

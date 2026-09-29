@@ -241,8 +241,14 @@ describe('a grind heartbeat is claimed by no run, and deletes anyway', () => {
 // closing, and the loop was deleted with the user's actual objective untouched. This guard now
 // reads the hold's OWN release verb out of the same per-session ledger hooks/work-hold.ts writes.
 
-/** A hold ledger for `session` under a TMPDIR the hook will look in. */
-function holdLedger(entries: [string, string][], opts: { armed?: boolean } = {}) {
+/**
+ * A hold ledger for `session` under a TMPDIR the hook will look in.
+ *
+ * `unevaluated` omits `lastEvaluatedAt`, which is the version-skew shape: a hold armed long ago that
+ * no Stop hook has ever processed. Every other fixture carries the stamp, so the skew note fires only
+ * where a test asks for it.
+ */
+function holdLedger(entries: [string, string][], opts: { armed?: boolean; unevaluated?: boolean } = {}) {
   const dir = mkdtempSync(join(tmpdir(), 'holdgate-'))
   const sid = 'gate-session'
   if (entries.length)
@@ -252,6 +258,7 @@ function holdLedger(entries: [string, string][], opts: { armed?: boolean } = {})
     writeFileSync(join(dir, `work-hold-${sid}.json`), JSON.stringify({
       check: 'false', goal: 'the estimate lands inside the published interval',
       startedAt: 1, ceilingMinutes: 720, maxRounds: 8, rounds: 0,
+      ...(opts.unevaluated ? {} : { lastEvaluatedAt: 1 }),
     }))
   return { dir, sid }
 }
@@ -298,6 +305,29 @@ describe('the hold gate: CronDelete waits on an ARMED hold, and on nothing else'
       ]))
       expect(r.decision).toBe('allow')
     }
+  })
+
+  // VERSION SKEW. A session whose Stop registration predates a rename of hooks/work-hold.ts arms a
+  // hold nothing evaluates, while THIS hook — whose path never changed — goes on enforcing it. The
+  // deadlock is total: the hold cannot release itself and the heartbeats cannot be deleted. The deny
+  // stands (weakening it hands the session an argument for stranding a live run), but it now names
+  // the cause and the one-command remedy.
+  test('an unevaluated hold still DENIES, and the reason names the skew and /reload-plugins', () => {
+    const r = guardIn(quietCwd(), '541afe58',
+      holdLedger([['armed', '{"check":"false"}']], { armed: true, unevaluated: true }))
+    expect(r.decision).toBe('deny')
+    expect(r.reason).toContain('never evaluated since arm')
+    expect(r.reason).toContain('not running work-hold.ts')
+    expect(r.reason).toContain('/reload-plugins')
+    // The original refusal is still the body of the message, not replaced by the diagnosis.
+    expect(r.reason).toContain('ARMED')
+    expect(r.reason).toContain('work-abandon.sh')
+  })
+
+  test('a hold the hook HAS evaluated says nothing about skew', () => {
+    const r = guardIn(quietCwd(), '541afe58', holdLedger([['armed', '{"check":"false"}']], { armed: true }))
+    expect(r.decision).toBe('deny')
+    expect(r.reason).not.toContain('/reload-plugins')
   })
 
   test('the override allows through the hold gate too', () => {

@@ -55,6 +55,17 @@ if s.get("run"):
     print(f"  run:     {run} ({flight})")
 print(f"  rounds:  {s.get('rounds',0)} of {s.get('maxRounds','?')} used")
 print(f"  minutes: {left} left of {s.get('ceilingMinutes','?')}")
+# IS THE HOOK EVEN RUNNING? A hold is armed by this script and enforced by hooks/work-hold.ts, and the
+# two are registered independently -- a session whose Stop registration predates a rename of that file
+# arms state nothing evaluates, and the symptom is a hold frozen at rounds 0 that never releases.
+# 600 s mirrors UNEVALUATED_AFTER_SECONDS in hooks/work-hold.ts; keep them in step.
+if "lastEvaluatedAt" in s:
+    ago = int((time.time() - s["lastEvaluatedAt"]) // 60)
+    print(f"  checked: {ago}m ago by the Stop hook")
+elif time.time() - s.get("startedAt", 0) >= 600:
+    arm = int((time.time() - s.get("startedAt", 0)) // 60)
+    print(f"  checked: never evaluated since arm {arm}m ago — this session's Stop hook is not "
+          f"running work-hold.ts; run /reload-plugins")
 rounds = (s.get("history") or [])[-3:]
 if rounds:
     print("  last:    " + "; ".join(f"round {h['round']} exit {h['exit']}" for h in rounds))
