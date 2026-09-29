@@ -1210,3 +1210,41 @@ func TestFundShareClassHeaderKeepsClassRole(t *testing.T) {
 		t.Errorf("a row was emitted with no class though the table states one: %v", seen)
 	}
 }
+
+// A per-fund holder table that runs over a page break arrives as a SECOND table
+// with no header of its own. Without the first table's headers the parser cannot
+// tell its two percent columns apart, so both of a holder's figures land on one
+// key. The continuation table must inherit the headers it is a continuation of.
+const continuationTableHTML = `<html><body>
+<p>Principal Shareholders: 5% record and beneficial ownership</p>
+<table>
+<tr><td>Fund</td><td>Name and Address</td><td>Percentage of Class and Type of Ownership</td><td>Percentage of Fund</td></tr>
+<tr><td>Acme Money Market Fund</td><td>Pershing Div of DLJ Secs Corp</td><td>91.5% Class A; Beneficial</td><td>88.9%</td></tr>
+<tr><td>Acme Money Market Fund</td><td>Citigroup Global Markets, Inc.</td><td>6.0% Class B; Beneficial</td><td>0.9%</td></tr>
+</table>
+<table>
+<tr><td>Acme SmallCap Fund</td><td>LPL Financial Services</td><td>16.3% Class A; Beneficial</td><td>4.4%</td></tr>
+<tr><td>Acme SmallCap Fund</td><td>Pershing Div of DLJ Secs Corp</td><td>11.7% Class A; Beneficial</td><td>3.1%</td></tr>
+</table></body></html>`
+
+func TestContinuationTableInheritsHeaders(t *testing.T) {
+	rows := ScreenRows(run(t, continuationTableHTML))
+	seen := map[string]int{}
+	for _, r := range rows {
+		if r.HolderName == "Pershing Div of DLJ Secs Corp" {
+			seen[r.ShareClass]++
+		}
+	}
+	if len(seen) == 0 {
+		t.Fatalf("holder lost entirely: %v", holderNames(rows))
+	}
+	for cls, k := range seen {
+		if k > 1 {
+			t.Errorf("share_class %q emitted %d times for one holder; the continuation "+
+				"table's percent columns were not told apart: %v", cls, k, seen)
+		}
+	}
+	if len(seen) != 4 {
+		t.Errorf("two funds x two percent columns = 4 keys, got %d: %v", len(seen), seen)
+	}
+}

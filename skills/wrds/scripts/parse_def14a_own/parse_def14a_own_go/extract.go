@@ -83,6 +83,11 @@ var (
 type colRole struct {
 	role   string // "name" | "shares" | "pct" | "class" | "other"
 	header string
+	// deep is the DEEPEST non-empty header cell over this column and deepAt the
+	// header row it came from. It is what tells two otherwise unlabelled value
+	// columns apart ("Total" against "combined voting power").
+	deep   string
+	deepAt int
 }
 
 type compacted struct {
@@ -101,6 +106,10 @@ type compacted struct {
 	// declares, folded by NormLabel. A column whose cells are those names is
 	// the fund column of a fund-family proxy, whatever its header says.
 	series map[string]string
+	// inherited marks a table whose columns came from the table it continues,
+	// so the caller keeps handing the ORIGINAL headed table on rather than a
+	// copy of itself.
+	inherited bool
 }
 
 // compact drops columns that never hold anything but $ ( ) % and whitespace —
@@ -278,12 +287,18 @@ func (c *compacted) analyze() {
 	c.roles = make([]colRole, ncol)
 	for j := 0; j < ncol; j++ {
 		var hdr []string
+		deep, deepAt := "", -1
 		for i := 0; i < c.nHeader && i < len(c.rows); i++ {
 			if j < len(c.rows[i]) && c.rows[i][j] != "" {
-				hdr = append(hdr, flat(c.rows[i][j]))
+				v := flat(c.rows[i][j])
+				hdr = append(hdr, v)
+				if v != "" {
+					deep, deepAt = v, i
+				}
 			}
 		}
 		c.roles[j].header = strings.Join(uniq(hdr), " | ")
+		c.roles[j].deep, c.roles[j].deepAt = deep, deepAt
 	}
 	nameCol := -1
 	for j := 0; j < ncol; j++ {
@@ -523,14 +538,10 @@ func (c *compacted) pairLabel(p pair) string {
 	if p.pct >= 0 {
 		cols = append(cols, p.pct)
 	}
-	best := ""
-	for i := 0; i < c.nHeader && i < len(c.rows); i++ {
-		for _, j := range cols {
-			if j < len(c.rows[i]) {
-				if v := flat(c.rows[i][j]); v != "" {
-					best = v
-				}
-			}
+	best, bestAt := "", -1
+	for _, j := range cols {
+		if j < len(c.roles) && c.roles[j].deepAt >= bestAt && c.roles[j].deep != "" {
+			best, bestAt = c.roles[j].deep, c.roles[j].deepAt
 		}
 	}
 	return cleanClassLabel(best)
@@ -715,12 +726,54 @@ func dropAddress(name string) string {
 	return name
 }
 
-// ExtractGrid emits one Row per (data row x class pair).
-func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int) []Row {
+// inheritHeaders gives a table with NO header row of its own the column roles of
+// the table it continues. A per-fund holder table that runs over a page break
+// arrives as a second <table> with no headings, and without them the grouping
+// column is read as the holder and the value columns cannot be told apart.
+//
+// Guarded on an exact column count match, on the previous table having had a
+// header, and on this table having none at all: any of those failing means it is
+// a new table, not a continuation.
+func (c *compacted) inheritHeaders(prev *compacted) bool {
+	if prev == nil || len(c.roles) == 0 || len(prev.roles) != len(c.roles) {
+		return false
+	}
+	if c.hasHeaderCues() || !prev.hasHeaderCues() {
+		return false
+	}
+	c.roles = append([]colRole{}, prev.roles...)
+	c.hdrClassCols = append([]int{}, prev.hdrClassCols...)
+	c.inherited = true
+	return true
+}
+
+// hasHeaderCues reports whether any column carries a header that says what the
+// column IS. A continuation table has none: what looks like its header row is a
+// wrapped address fragment, not a heading.
+func (c *compacted) hasHeaderCues() bool {
+	for _, r := range c.roles {
+		h := r.header
+		if h == "" {
+			continue
+		}
+		if reHdrNameCol.MatchString(h) || reHdrPct.MatchString(h) ||
+			reHdrShares.MatchString(h) || reHdrClassCol.MatchString(h) {
+			return true
+		}
+	}
+	return false
+}
+
+// ExtractGrid emits one Row per (data row x class pair). prev is the compacted
+// form of the previous ACCEPTED table under the same heading, used only to give
+// a header-less continuation table its predecessor's columns; it may be nil. The
+// compacted form is returned so the caller can pass it along.
+func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compacted) ([]Row, *compacted) {
 	c := compactWith(g, base)
 	c.analyze()
+	c.inheritHeaders(prev)
 	if !c.looksLikeOwnership(tableText) {
-		return nil
+		return nil, c
 	}
 	nc := c.nameCol()
 	cc := c.classCol()
@@ -745,7 +798,7 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int) []Row {
 		ps = kept
 	}
 	if len(ps) == 0 {
-		return nil
+		return nil, c
 	}
 	var out []Row
 	lastName, lastSeries := "", ""
@@ -857,5 +910,5 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int) []Row {
 			out = append(out, rw)
 		}
 	}
-	return out
+	return out, c
 }
