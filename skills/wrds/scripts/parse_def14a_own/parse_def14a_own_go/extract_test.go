@@ -1326,3 +1326,21 @@ func TestStackedCellSplitsIntoOneRowPerClass(t *testing.T) {
 		}
 	}
 }
+
+// A cell stacking a share count OVER its percent is ONE holding written on two
+// lines, not one holding per class, and must be read whole. Splitting it would
+// read the share count as a percent and lose the row.
+func TestStackedSharesOverPercentIsOneHolding(t *testing.T) {
+	for _, tc := range []struct{ in, want string }{
+		{"75,000\n3.7%", "75,000 3.7%"},                // shares over percent: read whole
+		{"33,870,629\n712,172\n631,060", "33,870,629"}, // one share count per class
+		{"25.03\n20.65\n6.56", "25.03"},                // one percent per class
+		{"A\nB\nC", "A"},                               // one class token per class
+		{"-\n10,422,766\n5,344,804", "-"},              // a dash is a missing line
+		{"The Vanguard Group\n100 Vanguard Blvd", "The Vanguard Group 100 Vanguard Blvd"},
+	} {
+		if got := stackFirst(tc.in); got != tc.want {
+			t.Errorf("stackFirst(%q) = %q, want %q", tc.in, got, tc.want)
+		}
+	}
+}
