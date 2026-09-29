@@ -17,10 +17,11 @@ var (
 	// EDGAR renders a superscript footnote mark as "(/2/)" as often as "(2)".
 	reFootnote  = regexp.MustCompile(`\(\s*/?\s*([0-9]{1,2}[a-zA-Z]?|[a-zA-Z])\s*/?\s*\)`)
 	reSharesNum = regexp.MustCompile(`^-?[0-9][0-9,\. ]*$`)
-	rePctNum    = regexp.MustCompile(`([0-9]+(?:\.[0-9]+)?)\s*%`)
-	rePctBare   = regexp.MustCompile(`^([0-9]{1,3}(?:\.[0-9]+)?)$`)
+	rePctNum    = regexp.MustCompile(`((?:[0-9]+(?:\.[0-9]+)?|\.[0-9]+))\s*%`)
+	rePctBare   = regexp.MustCompile(`^((?:[0-9]{1,3}(?:\.[0-9]+)?|\.[0-9]+))$`)
 	reLessThan  = regexp.MustCompile(`(?i)less\s+than\s+(?:one|1)\s*(?:percent|%)|under\s+1\s*%`)
 	reStar      = regexp.MustCompile(`^[\*\+#†‡]{1,2}$`)
+	reDotPct    = regexp.MustCompile(`^\.[0-9]+\s*%?$`)
 	// "As Group (15 persons)" — the article is dropped often enough in ASCII
 	// proxies that requiring it loses real group rows.
 	reGroupRow   = regexp.MustCompile(`(?i)\bas\s+an?\s+group\b|\bas\s+group\b|\bas\s+a\s+whole\b`)
@@ -111,6 +112,12 @@ func ParsePercent(s string) (val float64, ok bool, marker string, pctish bool) {
 	}
 	if reLessThan.MatchString(t) {
 		return 0, false, "<1%", true
+	}
+	// ".152%" — a sub-1% holding printed with no leading zero, in a table whose
+	// other rows read "22.691%". StripFootnotes trims the leading dot along with
+	// the dot leaders, which turns 0.152% into 152%, so it is put back here.
+	if reDotPct.MatchString(strings.TrimSpace(s)) && !strings.HasPrefix(t, ".") {
+		t = "." + t
 	}
 	// A percent of a class cannot exceed 100: a value above it is a share
 	// count, an age or a dollar figure that landed in the percent column.
