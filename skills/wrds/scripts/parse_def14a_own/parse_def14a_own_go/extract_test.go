@@ -1809,3 +1809,37 @@ func TestMatchSeriesInsideAFamilyHeading(t *testing.T) {
 		}
 	}
 }
+
+// A closed-end fund family that declares no series in its SGML header still
+// names each fund on a full-width row inside the table, ending in "Fund:". With
+// no declared series to match against, the label was ignored and one record
+// holder of a dozen funds collapsed onto one key.
+const undeclaredFundLabelRowHTML = `<html><body>
+<p>Share Ownership Over 5%</p>
+<table>
+<tr><th>Name and Address of Owner</th><th>Shares Owned</th><th>% of Outstanding Shares Owned</th></tr>
+<tr><td colspan="3">Macquarie/First Trust Global Infrastructure Fund:</td></tr>
+<tr><td>National Financial Services LLC</td><td>1,486,320</td><td>17.39%</td></tr>
+<tr><td>Morgan Stanley Smith Barney LLC</td><td>507,240</td><td>5.93%</td></tr>
+<tr><td colspan="3">First Trust Energy Income and Growth Fund:</td></tr>
+<tr><td>National Financial Services LLC</td><td>2,121,279</td><td>10.90%</td></tr>
+<tr><td>Morgan Stanley Smith Barney LLC</td><td>1,287,581</td><td>6.62%</td></tr>
+</table></body></html>`
+
+func TestUndeclaredFundLabelRow(t *testing.T) {
+	rows := ScreenRows(run(t, undeclaredFundLabelRowHTML))
+	seen := map[string]int{}
+	for _, r := range rows {
+		if r.HolderName == "National Financial Services LLC" {
+			seen[r.ShareClass]++
+		}
+	}
+	if len(seen) != 2 {
+		t.Fatalf("want one row per fund label, got %v", seen)
+	}
+	for cls, n := range seen {
+		if n > 1 || cls == "" {
+			t.Errorf("fund label not carried: %v", seen)
+		}
+	}
+}
