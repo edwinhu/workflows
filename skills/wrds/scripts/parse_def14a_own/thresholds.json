@@ -1,7 +1,31 @@
 {
-  "_about": "Pass thresholds for the parse_def14a_own grind. Locked in lock.sha256; the grind may not edit this file. Each value is argued from the 2026-09-28 baseline in GRIND_PLAN.md.",
+  "_about": "Pass thresholds for the parse_def14a_own grind. Locked in lock.sha256; the grind may not edit this file. Each value is argued from a measured baseline in GRIND_PLAN.md — the 2026-09-28 setup baseline for the first round, and the 2026-09-29 dev/holdout pair for the precision round.",
   "_gating": "EXACTLY the four keys under `minimums` gate check.sh. The two FactSet aggregate metrics under `diagnostics` are computed and printed with their denominators every round and NEVER affect the exit code: the FactSet gold is defined by a proxy window over all FactSet stakes and mixes 13F / Form 4 positions (only 21 of 2,647 linked firm-years carry a PXY marker), so a 1 pp band would reward chasing gold noise. The loop must not optimise them.",
+  "_history": [
+    {
+      "date": "2026-09-28",
+      "round": "setup / first grind",
+      "minimums": {
+        "filing_yield_parsed_percent": 0.88,
+        "holder_recall_blockw": 0.75,
+        "holder_precision_blockw": 0.75,
+        "group_row_detection_rate": 0.80
+      },
+      "holdout": {"seed": 20260928, "firms": 747, "status": "SPENT — scored once on 2026-09-29"},
+      "outcome": "all four gates cleared on the dev split of seed 20260928 (filing_yield 0.9058, recall 0.8091, precision 0.7843, group_row 0.9026); the holdout then scored precision 0.7085 vs dev 0.7843."
+    },
+    {
+      "date": "2026-09-29",
+      "round": "precision round",
+      "change": "holder_precision_blockw minimum 0.75 -> 0.82; the other three unchanged",
+      "why": "The seed-20260928 holdout scored holder_precision_blockw 0.7085 against dev 0.7843 — a 0.0759 generalisation gap, by far the widest of the four gated metrics (recall 0.7962 vs 0.8091 = 0.0129; filing_yield 0.8985 vs 0.9058 = 0.0073; group_row 0.8968 vs 0.9026 = 0.0058). At a 0.75 dev minimum the parser therefore ships at roughly 0.67-0.68 on unseen firms. Requiring 0.82 on dev targets ~0.75 on unseen firms if the same gap holds. Precision is also where the known residue sits: the journal note residue-after-all-gates-pass counts 3,286 false-positive candidate rows, with named, layout-shaped families (glued trailing addresses 550 rows, the /N/ footnote form, share-class prefix columns, forward-wrapping holder names, surviving address lines, a 100% ESOP/preferred ceiling).",
+      "holdout": {"seed": 20260929, "firms": 747, "status": "re-drawn; scored ONCE as the pre-round baseline, then off limits until the round ends"},
+      "measured_after_the_re_draw": "The seed-20260929 pre-round baseline, scored once on the unchanged parser output, came in at dev precision 0.7636 (11,669 / 15,281 candidate rows) and HOLDOUT precision 0.7899 (3,031 / 3,837) — the holdout scored 0.0263 ABOVE dev, the opposite sign to the seed-20260928 pair that motivated 0.82. Two things follow and neither is hidden. (1) Most of the 0.0759 gap on seed 20260928 was a draw effect, not overfitting; a single 747-firm draw is a noisy estimate of generalisation and one gap is not evidence of a trend. (2) The new holdout is NOT clean: 595 of its 747 firms were in the seed-20260928 DEV set and the parser was tuned against them, which biases this baseline UP. 0.82 is kept anyway, on the narrower argument that precision is simply the weakest gate (0.7636 on dev against 0.90/0.81/0.90 for the other three) and that the residual FP families in the journal are named, layout-shaped and countable — not on the generalisation-gap argument, which this measurement does not support.",
+      "guard": "recall, filing_yield and group_row stay gated at their previous values precisely so precision cannot be bought by dropping true positives: a fix that lifts precision by suppressing rows drives recall below 0.75 and the check still exits 1."
+    }
+  ],
   "_baseline_2026_09_28_dev": {
+    "_note": "the setup baseline, scored on the SPENT seed-20260928 dev split",
     "filing_yield_parsed_percent": 0.8317,
     "holder_recall_blockw": 0.6154,
     "holder_precision_blockw": 0.6336,
@@ -12,7 +36,7 @@
   "minimums": {
     "filing_yield_parsed_percent": 0.88,
     "holder_recall_blockw": 0.75,
-    "holder_precision_blockw": 0.75,
+    "holder_precision_blockw": 0.82,
     "group_row_detection_rate": 0.80
   },
   "diagnostics": [

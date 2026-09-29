@@ -21,8 +21,53 @@ bash /home/eh/projects/workflows/skills/wrds/scripts/parse_def14a_own/check.sh
 |---|---:|
 | `filing_yield_parsed_percent` | 0.88 |
 | `holder_recall_blockw` | 0.75 |
-| `holder_precision_blockw` | 0.75 |
+| `holder_precision_blockw` | **0.82** (raised 2026-09-29, see below) |
 | `group_row_detection_rate` | 0.80 |
+
+## THIS ROUND IS A PRECISION ROUND (2026-09-29)
+
+Three of the four gates already pass. **`holder_precision_blockw` is the only one
+short, and it is the only thing to work on.** The other three are there as
+guards: a "fix" that lifts precision by dropping rows will push recall under
+0.75 or filing yield under 0.88, and `check.sh` will still exit 1. You cannot
+buy precision with recall.
+
+Why 0.82 and not 0.75: the seed-20260928 holdout scored precision **0.7085**
+against dev **0.7843** — a **0.0759** gap, and the widest of the four (recall
+0.7962 vs 0.8091, filing yield 0.8985 vs 0.9058, group-row 0.8968 vs 0.9026).
+0.82 on dev is what it takes to land near 0.75 on firms nobody tuned on.
+
+### The residual false-positive families — start here, not from scratch
+
+From the journal note `residue-after-all-gates-pass` (subject `name_mismatch`),
+measured with the harness in `/data/def14a_own/work/scratch/{fp,full,pkg}.py`,
+which reproduces `score.py` precision to the digit. At that point **3,286
+candidate rows were false positives** and **2,044 gold rows still missed on
+name**. Named families, largest first:
+
+| family | evidence | note |
+|---|---|---|
+| a trailing address or date glued to a real holder name | **550 candidate rows**, e.g. `Sanford C. Bernstein Co., Inc. 767 Fifth Avenue` | strip the tail, not the row — extra tokens only ever HELP `names_match`, so a careless strip costs recall |
+| the `/N/` footnote form | `Wellington Management Company, LLP 3,786,250/1/` | `reFootnote` misses it, so the share count stays glued to the name |
+| a share-class PREFIX column | `Common Stock William P. Conlin`, `Series B Convertible Preferred State Street Bank` | `reTrailClass` only strips a TRAILING class |
+| forward-wrapping HOLDER names (not group labels) | `Common State Street Bank and`, `David M. Haig, Fred C. Weyand, Paul Mullin Ganley and` | `joinForwardLabel` exists but fires only on group rows |
+| address lines that still survive `isAddressLine` | a city with no state (`San Francisco`), a state+ZIP alone (`California 94163`) | — |
+| candidates at exactly 100% | **261** were pure FPs before the percent ceiling | the remainder are ESOP / preferred-class trustee rows and 100%-owned subsidiaries — real disclosures blockw's common-stock gold cannot match. **This is a ceiling, not a defect. Do not grind it.** |
+
+### Rules specific to this round
+
+- **A fix must not cost recall below 0.75, filing yield below 0.88 or group-row
+  below 0.80.** Report all four every time; a precision gain reported without
+  the other three is not a result.
+- **No tuning on company names.** Fix a LAYOUT CLASS. A rule keyed to
+  `Wellington`, `Sanford C. Bernstein` or any issuer name is a threshold widened
+  by another route, and it will not survive the holdout.
+- **The failing test comes first**, and it is a fixture transcribed from a real
+  filing you read with `-debug`, exercising the layout class — not the one
+  string that happens to be broken.
+- The holdout was re-drawn for this round (seed **20260929**, 747 firms) and
+  scored ONCE as the pre-round baseline. It is off limits for the rest of the
+  round by exactly the same rule as before.
 
 **Do NOT optimise the two FactSet metrics.** `group_pct_agreement_factset` and
 `largest_block_agreement_factset` are **DIAGNOSTIC**: the scorer prints them with

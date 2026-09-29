@@ -1,7 +1,9 @@
 # GRIND_PLAN — parse_def14a_own
 
-Setup only. **The grind has not been started.** Everything below was measured on
+Setup only. **The grind has not been started.** Sections 1-6 were measured on
 2026-09-28; every number is a line a command printed, with the command quoted.
+**Section 7 is a dated amendment (2026-09-29) and supersedes §1 on the holdout
+and §3 on the precision threshold.** Read it before §1.
 
 ## 1. What is being improved, and against what
 
@@ -294,3 +296,127 @@ record one `progress`, `attempt` or `floor`. It states the edit boundary above,
 the "never widen a threshold, never loosen a test" rule, the grid-not-login-node
 rule and the determinism requirement, and it hands the agent the exact `append`
 lines for the journal.
+
+---
+
+## 7. AMENDMENT — 2026-09-29, the precision round
+
+Supersedes §1 on the holdout and §3 on the precision threshold. Everything below
+is a line a command printed on 2026-09-29; the commands are quoted.
+
+### 7.1 Why there is a second round at all
+
+The first grind ran four iterations and cleared all four gates on the
+seed-20260928 dev split. The holdout was then scored **once**:
+
+| metric | dev (seed 20260928) | holdout (seed 20260928) | gap |
+|---|---:|---:|---:|
+| `filing_yield_parsed_percent` | 0.9058 | 0.8985 | 0.0073 |
+| `holder_recall_blockw` | 0.8091 | 0.7962 | 0.0129 |
+| `holder_precision_blockw` | **0.7843** | **0.7085** | **0.0759** |
+| `group_row_detection_rate` | 0.9026 | 0.8968 | 0.0058 |
+
+(`/data/def14a_own/work/metrics_dev.json` as of that run, preserved as
+`metrics_holdout_20260928_spent.json` for the holdout column.)
+
+Precision was the only metric with a material generalisation gap, and at a 0.75
+dev floor the parser ships around 0.67-0.68 on unseen firms. The journal note
+`residue-after-all-gates-pass` also says the remaining precision defects are
+**named and layout-shaped**, not exhausted: 3,286 FP candidate rows, with 550 in
+the glued-trailing-address family alone.
+
+### 7.2 The holdout was re-drawn — the old one is spent
+
+A holdout that has been scored is no longer a holdout. The seed-20260928 split
+is preserved for provenance and is never scored again:
+
+```
+/data/def14a_own/gold/holdout_20260928_spent.tsv   sha256 d901aa5f10cc6592…
+/data/def14a_own/gold/holdout_20260928_spent.json
+/data/def14a_own/work/metrics_holdout_20260928_spent.json
+```
+
+```
+$ python3 gold/make_holdout.py --seed 20260929
+[in ] blockw: 20336 rows, 7321 filings, 1930 ciks
+[in ] factset: 2647 rows, 2647 filings, 2130 ciks
+[split] seed=20260929 firms=3733 -> holdout=747 (20.0%) dev=2986
+[out] /data/def14a_own/gold/gold_filelist.tsv: 9968 filings (7955 dev, 2013 holdout)
+[out] /data/def14a_own/gold/holdout.json holdout.tsv sha256=a3a51ea6c90b9f9d09ae922580f77722df5458481ba9111000d0c4e60984e838
+EXIT=0
+```
+
+**No new grid round was needed for the split.** `gold_filelist.tsv` is the union
+of dev and holdout and does not depend on which firms fall where; its sha256 is
+`ef22ccd662ac043c5d45e10e5bdf5cc076204e9d011fce5a9bd921c9051ab1f5` before and
+after the re-draw, so the parser output on disk already covers all 9,968
+filings. The scorer's manifest counts confirm it: 7,955 dev + 2,013 holdout =
+9,968.
+
+**The re-drawn holdout is not clean, and this is the one caveat that matters.**
+Of its 747 firms, **152 were in the seed-20260928 holdout and 595 were in the
+seed-20260928 DEV set** — the parser has already been tuned against those 595.
+The pre-round holdout number in §7.4 is therefore biased upward and is a
+*baseline for the round*, not a clean generalisation estimate. The only clean
+read the project will ever get again is the seed-20260928 holdout in §7.1.
+
+### 7.3 Thresholds
+
+| metric | old minimum | new minimum |
+|---|---:|---:|
+| `filing_yield_parsed_percent` | 0.88 | 0.88 (unchanged) |
+| `holder_recall_blockw` | 0.75 | 0.75 (unchanged) |
+| `holder_precision_blockw` | 0.75 | **0.82** |
+| `group_row_detection_rate` | 0.80 | 0.80 (unchanged) |
+
+The three unchanged gates are the guard: a "precision fix" that suppresses rows
+drives recall under 0.75 and `check.sh` still exits 1, so precision cannot be
+bought with recall. The FactSet pair stays diagnostic, for the reason in §3.
+
+### 7.4 Pre-round baseline, on the NEW split, on unchanged parser output
+
+`bash check.sh` — **exit 1**, as expected, precision short:
+
+| metric | dev (seed 20260929) | numerator / denominator | vs 0.82 / other minima |
+|---|---:|---|---|
+| `filing_yield_parsed_percent` | **0.9001** | 7,160 / 7,955 gold-linked dev filings | PASS |
+| `holder_recall_blockw` | **0.8066** | 11,268 / 13,969 gold holder rows ≥5% | PASS |
+| `holder_precision_blockw` | **0.7636** | 11,669 / 15,281 parsed non-group rows ≥5% | **FAIL** |
+| `group_row_detection_rate` | **0.9024** | 6,461 / 7,160 filings with a parsed percent | PASS |
+| `group_pct_agreement_factset` | 0.2280 | 417 / 1,829 comparable firm-years | diagnostic |
+| `largest_block_agreement_factset` | 0.2387 | 479 / 2,007 comparable firm-years | diagnostic |
+
+`score.py --holdout` scored **once**, exit 0, written to
+`/data/def14a_own/work/metrics_holdout_pre_20260929.json`:
+
+| metric | holdout (seed 20260929) | numerator / denominator |
+|---|---:|---|
+| `filing_yield_parsed_percent` | **0.9215** | 1,855 / 2,013 |
+| `holder_recall_blockw` | **0.8068** | 2,935 / 3,638 |
+| `holder_precision_blockw` | **0.7899** | 3,031 / 3,837 |
+| `group_row_detection_rate` | **0.8981** | 1,666 / 1,855 |
+| `group_pct_agreement_factset` | 0.2579 | 123 / 477 |
+| `largest_block_agreement_factset` | 0.2618 | 133 / 508 |
+
+**The finding that cuts against §7.1, stated rather than buried.** On the new
+split the holdout scored precision **0.7899 against dev 0.7636** — 0.0263
+*above* dev, the opposite sign to the 0.0759 gap that motivated raising the
+threshold. Most of that first gap was a draw effect: one 747-firm draw is a
+noisy estimate of generalisation, and two draws with opposite signs are not a
+trend. The upward bias described in §7.2 (595 previously-dev firms) pushes this
+number the same way. **0.82 is retained, but on the narrower argument** that
+precision is the weakest of the four gates by 4 pp and that the residual FP
+families are named, layout-shaped and countable — not on the
+generalisation-gap argument, which this measurement does not support.
+
+### 7.5 Guards re-verified after the re-lock
+
+```
+$ bash make_lock.sh                       # EXIT=0, 6 files, holdout.tsv -> a3a51ea6…
+$ sha256sum -c …                          # all six OK, exit 0
+$ bash check.sh                           # [lock] verified over 6 files; CHECK_EXIT=1
+$ GRIND_ITERATION=1 python3 scorer/score.py --holdout …
+REFUSED: --holdout inside a grind iteration (GRIND_ITERATION=1). A loop that can read the holdout has no holdout.
+REFUSAL_EXIT=4       # and no --json-out file was written
+$ ls /data/def14a_own/work/out/round-ready   # present, the output is current
+```
