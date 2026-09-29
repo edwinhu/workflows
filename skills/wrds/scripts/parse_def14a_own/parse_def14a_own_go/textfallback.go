@@ -3,6 +3,7 @@ package main
 import (
 	"regexp"
 	"strings"
+	"unicode"
 )
 
 // Pre-2001 plain-text (.txt / <PRE> / <TABLE> with <S><C> column markers)
@@ -10,12 +11,12 @@ import (
 // into one cell; column structure lives in the whitespace instead.
 
 var (
-	reTxtTag     = regexp.MustCompile(`(?i)</?(TABLE|CAPTION|S|C|PRE|PAGE|FN)[^>]*>`)
-	reAnyTag     = regexp.MustCompile(`<[^>]*>`)
+	reTxtTag = regexp.MustCompile(`(?i)</?(TABLE|CAPTION|S|C|PRE|PAGE|FN)[^>]*>`)
+	reAnyTag = regexp.MustCompile(`<[^>]*>`)
 	// The numeric tail must START with a number, $, ( or *, so the split lands
 	// at the last text-to-number boundary: "Dr.  Paula Stern   300   *" is one
 	// name and one tail, not the name "Dr." and a tail beginning "Paula".
-	reTxtRow = regexp.MustCompile(`^\s*(\S.*?\S)\s{2,}([\$\(\*0-9][\$\(\)0-9,\.\*\-\s%a-zA-Z]{0,79})$`)
+	reTxtRow     = regexp.MustCompile(`^\s*(\S.*?\S)\s{2,}([\$\(\*0-9][\$\(\)0-9,\.\*\-\s%a-zA-Z]{0,79})$`)
 	reBigNum     = regexp.MustCompile(`[0-9][0-9,]{2,}`)
 	rePctTok     = regexp.MustCompile(`([0-9]{1,3}(?:\.[0-9]+)?)\s*%|(\*)|(?:^|\s)([0-9]{1,2}\.[0-9])(?:\s|$)`)
 	reDotLeader  = regexp.MustCompile(`\.{3,}`)
@@ -222,7 +223,9 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 			}
 			// A group row wraps: "All current executive officers and directors"
 			// / " as a group (17 persons)....  356,679,528  24.7%".
-			if reWrapCont.MatchString(nm) && ln > 0 {
+			if joined, ok := joinWrappedLabel(clean, ln, nm); ok {
+				nm = joined
+			} else if reWrapCont.MatchString(nm) && ln > 0 {
 				prev := strings.TrimSpace(clean[ln-1])
 				if prev != "" && !reBigNum.MatchString(prev) && len(prev) < 90 {
 					nm = strings.TrimSpace(prev + " " + nm)
@@ -401,4 +404,73 @@ func classLabelsFromHeader(hdr string) []string {
 		out = append(out, norm(m))
 	}
 	return uniq(out)
+}
+
+// --- wrapped group labels -------------------------------------------------
+//
+// In an ASCII proxy the group label routinely wraps, leaving only its tail on
+// the line that carries the numbers:
+//
+//	All directors and officers as a group (16
+//	  persons, consisting of 11 officers and 5
+//	  non-employee directors)                   6,152,000       1.7%
+//
+// parseTextRow sees the holder name "non-employee directors)", which no group
+// pattern matches, so the filing scores as group_row_missing even though the
+// row was read correctly.
+
+var (
+	// A name that can only be the TAIL of a wrapped label. Anchoring on this
+	// is what stops a prose lead-in ending "...as a group:" from being glued
+	// onto the first real 5% holder underneath it.
+	reContFrag = regexp.MustCompile(`(?i)^(as\s+an?\s+group\b|as\s+group\b|and\s+|as\s+a\s+|those\s+|persons?\b|people\b|individuals?\b|above\b|including\b|consisting\b|\()`)
+	// A share count, as distinct from the "(16" of a wrapped "(16 persons".
+	reShareLike = regexp.MustCompile(`[0-9][0-9]{3,}|[0-9],[0-9]`)
+)
+
+func isContinuationFragment(nm string) bool {
+	if nm == "" {
+		return false
+	}
+	if reContFrag.MatchString(nm) {
+		return true
+	}
+	if strings.Count(nm, ")") > strings.Count(nm, "(") {
+		return true // "persons)", "above)" — the opening paren is a line up
+	}
+	r := []rune(nm)[0]
+	return unicode.IsLower(r)
+}
+
+// joinWrappedLabel walks back over the contiguous non-tabular lines above ln
+// and returns the shortest rejoined label that reads as a group row. It
+// returns false unless the numeric row's own name is continuation-shaped AND
+// the rejoined label is a group row, so it can only ever convert a fragment
+// into the group row it belongs to.
+func joinWrappedLabel(clean []string, ln int, nm string) (string, bool) {
+	if !isContinuationFragment(nm) {
+		return "", false
+	}
+	var pre []string
+	for k := ln - 1; k >= 0 && len(pre) < 3; k-- {
+		p := strings.TrimSpace(clean[k])
+		if p == "" || len(p) > 90 || reShareLike.MatchString(p) {
+			break
+		}
+		if _, _, ok := parseTextRow(clean[k]); ok {
+			break // a table row of its own, not a wrapped label line
+		}
+		pre = append([]string{p}, pre...)
+		if g, _ := isGroupRow(strings.Join(append(append([]string{}, pre...), nm), " ")); g {
+			break // shortest join that reads as the group row
+		}
+	}
+	if len(pre) == 0 {
+		return "", false
+	}
+	joined := strings.TrimSpace(strings.Join(append(pre, nm), " "))
+	if g, _ := isGroupRow(joined); !g {
+		return "", false
+	}
+	return joined, true
 }

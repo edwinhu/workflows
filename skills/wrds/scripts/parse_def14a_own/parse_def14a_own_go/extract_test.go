@@ -173,6 +173,180 @@ func TestASCIITable(t *testing.T) {
 	}
 }
 
+// Real ASCII group-label wraps, one per filing, transcribed from the archive.
+// In every one the numeric line carries only the TAIL of the label, so the row
+// is parsed but never flagged as the group row.
+var asciiWrapCases = []struct {
+	name    string   // the filing it came from
+	lines   []string // the wrapped group row, as it appears in the proxy
+	wantPct float64
+	wantN   int
+}{
+	{
+		// 0000899243-01-000692 (cik 941548): four-line label, tail "above)".
+		name: "four-line-above",
+		lines: []string{
+			"  All directors, the director nominee",
+			"   and executive officers as a group",
+			"   (16 persons including those named",
+			"   above)                                   1,288,900          3.9%",
+		},
+		wantPct: 3.9, wantN: 16,
+	},
+	{
+		// 0000912057-00-012766 (cik 102729): "As Group", with no "a".
+		name: "as-group-no-article",
+		lines: []string{
+			"All Executive Officers and Directors",
+			"  As Group (15 persons)                     8,934,656         38.3%",
+		},
+		wantPct: 38.3, wantN: 15,
+	},
+	{
+		// 0000950135-01-000352 (cik 6281): tail "non-employee directors)".
+		name: "three-line-nonemployee",
+		lines: []string{
+			"All directors and officers as a group (16",
+			"  persons, consisting of 11 officers and 5",
+			"  non-employee directors)                   6,152,000          1.7%",
+		},
+		wantPct: 1.7, wantN: 16,
+	},
+	{
+		// 0000912057-00-013742 (cik 52827): tail "(15 persons)".
+		name: "three-line-paren-persons",
+		lines: []string{
+			"Directors and executive",
+			"  officers as a group",
+			"  (15 persons)                                428,019          1.6%",
+		},
+		wantPct: 1.6, wantN: 15,
+	},
+	{
+		// 0000950135-99-002820 (cik 875404): tail "persons)".
+		name: "two-line-persons",
+		lines: []string{
+			"All executive officers and directors as a group (9",
+			"  persons)                                  2,560,902         11.4%",
+		},
+		wantPct: 11.4, wantN: 9,
+	},
+	{
+		// 0000950134-98-002658 (cik 71824): tail "those named above (41 persons)".
+		name: "two-line-those-named-above",
+		lines: []string{
+			"All directors and executive officers as a group, including",
+			"  those named above (41 persons)              991,192          5.2%",
+		},
+		wantPct: 5.2, wantN: 41,
+	},
+}
+
+func TestASCIIGroupRowWrap(t *testing.T) {
+	for _, tc := range asciiWrapCases {
+		t.Run(tc.name, func(t *testing.T) {
+			body := `
+                    SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS
+
+<TABLE>
+<CAPTION>
+Name of Beneficial Owner                     Shares Owned      Percent of Class
+<S>                                          <C>               <C>
+FMR Corp.                                      8,093,000         15.0%
+Massachusetts Financial Services Co.           4,114,000          7.6%
+Jane Q. Director                                  25,030            *
+` + strings.Join(tc.lines, "\n") + `
+</TABLE>
+` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 250)
+
+			rows := run(t, body)
+			var g *Row
+			for i := range rows {
+				if rows[i].IsGroupRow {
+					g = &rows[i]
+				}
+			}
+			if g == nil {
+				t.Fatalf("no group row flagged; parsed rows: %+v", holderNames(rows))
+			}
+			if g.Percent == nil || *g.Percent != tc.wantPct {
+				t.Errorf("group percent = %v, want %v", g.Percent, tc.wantPct)
+			}
+			if g.GroupN != tc.wantN {
+				t.Errorf("group n_persons = %d, want %d", g.GroupN, tc.wantN)
+			}
+			// The named 5% holders must survive the wrap join untouched.
+			if r := find(rows, "FMR Corp", ""); r == nil || r.IsGroupRow {
+				t.Errorf("FMR Corp row lost or mis-flagged as group: %+v", r)
+			}
+		})
+	}
+}
+
+// A prose lead-in that ends "...as a group:" sits directly above the first
+// holder row. Joining it onto that row would flag a real 5% holder as the
+// group row and delete it from the holder metrics.
+func TestASCIIGroupWrapDoesNotSwallowFirstHolder(t *testing.T) {
+	body := `
+                    SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS
+
+<TABLE>
+<CAPTION>
+Name of Beneficial Owner                     Shares Owned      Percent of Class
+<S>                                          <C>               <C>
+The following sets forth the shares held by all
+directors and executive officers as a group:
+FMR Corp.                                      8,093,000         15.0%
+Massachusetts Financial Services Co.           4,114,000          7.6%
+Jane Q. Director                                  25,030            *
+</TABLE>
+` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 250)
+
+	rows := run(t, body)
+	for _, r := range rows {
+		if r.IsGroupRow {
+			t.Fatalf("prose lead-in flagged a holder as the group row: %q", r.HolderName)
+		}
+	}
+	if r := find(rows, "FMR Corp", ""); r == nil {
+		t.Fatalf("FMR Corp row missing: %+v", holderNames(rows))
+	}
+}
+
+func holderNames(rows []Row) []string {
+	out := make([]string, 0, len(rows))
+	for _, r := range rows {
+		out = append(out, r.HolderName)
+	}
+	return out
+}
+
+func TestGroupRowPhrasing(t *testing.T) {
+	yes := map[string]int{
+		"All executive officers and directors As Group (15 persons)":                                15,
+		"All directors and executive officers as a group (12 persons)":                              12,
+		"Directors and executive officers as a group  (15 persons)":                                 15,
+		"All directors and officers as a group (16 persons, consisting)":                            16,
+		"All directors and executive officers as a group, including those named above (41 persons)": 41,
+	}
+	for name, n := range yes {
+		g, got := isGroupRow(name)
+		if !g || got != n {
+			t.Errorf("isGroupRow(%q) = %v %d, want true %d", name, g, got, n)
+		}
+	}
+	for _, name := range []string{
+		"Group Vice President and General Counsel",
+		"Greencore Group plc",
+		"FMR Corp.",
+		"The Goldman Sachs Group, Inc.",
+	} {
+		if g, _ := isGroupRow(name); g {
+			t.Errorf("isGroupRow(%q) = true, want false", name)
+		}
+	}
+}
+
 func TestPrimaryDocument(t *testing.T) {
 	raw := "<SEC-DOCUMENT>x\n<DOCUMENT>\n<TYPE>DEF 14A\n<TEXT>\nBODY-ONE\n</TEXT>\n</DOCUMENT>\n" +
 		"<DOCUMENT>\n<TYPE>GRAPHIC\n<TEXT>\nJUNK\n</TEXT>\n</DOCUMENT>"
