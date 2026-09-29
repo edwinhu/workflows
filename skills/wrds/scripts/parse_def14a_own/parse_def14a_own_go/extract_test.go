@@ -1961,3 +1961,34 @@ func TestFundHeadingAboveTable(t *testing.T) {
 		}
 	}
 }
+
+// A fund-family 5% table states the CLASS inside the percent cell itself --
+// "6.0% Class B; Beneficial" -- with one row per holder per class of a fund. The
+// class was dropped, so one record holder of three classes of one fund collapsed
+// onto one key.
+const classInPercentCellHTML = `<html><body>
+<p>Beneficial Owners of More than 5% of a Class of each Fund</p>
+<table>
+<tr><th>Fund</th><th>Name and Address</th><th>Percentage of Class and Type of Ownership</th><th>Percentage of Fund</th></tr>
+<tr><td>ING Classic Money Market Fund</td><td>State Street Bk &amp; Tr Co Cust IRA</td><td>91.5% Class A; Beneficial</td><td>88.9%</td></tr>
+<tr><td>ING Classic Money Market Fund</td><td>State Street Bk &amp; Tr Co Cust IRA</td><td>6.0% Class B; Beneficial</td><td>0.0%</td></tr>
+<tr><td>ING Classic Money Market Fund</td><td>State Street Bk &amp; Tr Co Cust IRA</td><td>12.1% Class C; Beneficial</td><td>0.1%</td></tr>
+</table></body></html>`
+
+func TestClassInsideThePercentCell(t *testing.T) {
+	rows := ScreenRows(run(t, classInPercentCellHTML))
+	seen := map[string]int{}
+	for _, r := range rows {
+		if strings.HasPrefix(r.HolderName, "State Street") {
+			seen[r.ShareClass]++
+		}
+	}
+	if len(seen) < 3 {
+		t.Fatalf("want a key per class named in the percent cell, got %v", seen)
+	}
+	for cls, n := range seen {
+		if n > 1 {
+			t.Errorf("share_class %q emitted %d times: %v", cls, n, seen)
+		}
+	}
+}
