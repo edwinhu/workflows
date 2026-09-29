@@ -452,6 +452,14 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 			// columns -- two or more different labels over this row's cells --
 			// which is exactly the multi-class shape and nothing else.
 			colClass := make([]string, n)
+			// One holding out of SEVERAL value columns: a fund complex states one
+			// FUND per share column and, with no percent anywhere, textTokens
+			// keeps only the last column. The row is one holding and the header
+			// says WHICH, positionally -- take the label even though there is
+			// only one cell to label.
+			if n == 1 && len(commaNums(rest)) > 1 && cells[0].lo >= 0 {
+				colClass[0] = textColLabel(hdrRows, restStart+cells[0].lo, restStart+cells[0].hi)
+			}
 			if n > 1 {
 				distinct := map[string]bool{}
 				for k := 0; k < n; k++ {
@@ -1022,7 +1030,7 @@ var (
 	// A label that distinguishes one value column from another: a class or
 	// series, or the combined / total / voting-power column a multi-class table
 	// adds beside them.
-	reColLabelKeep = regexp.MustCompile(`(?i)\bclass\s+[a-d0-9]\b|\bcommon\s+stock\b|\bpreferred\b|\bordinary\s+shares\b|\bseries\s+[a-z0-9]+\b|\bvoting\s+power\b|\bcombined\b|\btotal\b|\bdepositary\b|\bunits?\b`)
+	reColLabelKeep = regexp.MustCompile(`(?i)\bclass\s+[a-d0-9]\b|\bcommon\s+stock\b|\bpreferred\b|\bordinary\s+shares\b|\bseries\s+[a-z0-9]+\b|\bvoting\s+power\b|\bcombined\b|\btotal\b|\bdepositary\b|\bunits?\b|\bfund\b|\btrust\b|\bportfolio\b`)
 	// Header text that is only the shape of the column, never its identity.
 	reColLabelDrop = regexp.MustCompile(`(?i)^(?:number|percent|percentage|amount|shares?|no\.?|of\s+shares|of\s+class|%)[\s.():0-9]*$`)
 	// A preposition left at the head of a label whose first words were the
@@ -1106,13 +1114,26 @@ func textColLabel(hdr [][]hdrGroup, lo, hi int) string {
 	if lo < 0 || len(hdr) == 0 {
 		return ""
 	}
-	var parts []string
+	// The label is assembled from EVERY group over the column, top to bottom,
+	// because it routinely wraps across the header lines ("Putnam Investment" /
+	// "Grade Municipal" / "Trust") and names the fund only as a whole. Groups
+	// that state the column's SHAPE rather than its identity are dropped, and
+	// the assembled label must itself read as a class or fund -- that test is
+	// what stops an ordinary column header from becoming one.
+	var all []string
 	for _, line := range hdr {
-		best, bestOv := -1, 0
+		// The value column is RIGHT-aligned and its header sits over it but
+		// need not overlap it, so a group one or two characters short of the
+		// column still labels it. Overlap wins; nearness is the tie-break.
+		best, bestOv, bestGap := -1, 0, 1<<30
 		for k, g := range line {
 			ov := min(g.hi, hi) - max(g.lo, lo)
-			if ov > bestOv {
-				best, bestOv = k, ov
+			gap := max(g.lo-hi, lo-g.hi)
+			switch {
+			case ov > bestOv:
+				best, bestOv, bestGap = k, ov, 0
+			case bestOv == 0 && gap >= 0 && gap <= 4 && gap < bestGap:
+				best, bestGap = k, gap
 			}
 		}
 		if best < 0 {
@@ -1122,12 +1143,10 @@ func textColLabel(hdr [][]hdrGroup, lo, hi int) string {
 		if reRuleLine.MatchString(t) || reColLabelDrop.MatchString(t) {
 			continue
 		}
-		if !reColLabelKeep.MatchString(t) {
-			continue
-		}
-		parts = append(parts, t)
+		all = append(all, t)
 	}
-	if len(parts) == 0 {
+	parts := all
+	if len(parts) == 0 || !reColLabelKeep.MatchString(strings.Join(parts, " ")) {
 		return ""
 	}
 	// The label wraps mid-phrase ("PERCENTAGE" / "OF COMBINED" / "VOTING
