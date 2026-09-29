@@ -4,6 +4,7 @@ import (
 	"math"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -50,7 +51,162 @@ func ScreenRows(rows []Row) []Row {
 			out = append(out, r)
 		}
 	}
+	return screenNames(out)
+}
+
+var (
+	// The name cell absorbed a complete amount/percent column pair. A table that
+	// carries several issuers or classes side by side repeats that pair, and the
+	// FIRST one -- the one inside the name cell -- is the registrant's own class;
+	// whatever percent the row reported came from a column further right.
+	reScreenPair = regexp.MustCompile(`^(.*?)[\s,]+(\d[\d,]{2,})\s+(\.?\d{1,3}(?:\.\d+)?)\s*%?$`)
+	// A number at the head of the name cell: the cell was empty and the share
+	// count slid into it, or the cell holds a street address.
+	reScreenLeadNum = regexp.MustCompile(`^\(?\$?\d[\d,]{2,}`)
+	// A cell that is nothing but a postal address: a numbered street line, a
+	// city/state/ZIP line, or the state and ZIP alone at the foot of the stub.
+	screenState = `Alabama|Alaska|Arizona|Arkansas|California|Colorado|Connecticut|Delaware|Florida|Georgia|` +
+		`Hawaii|Idaho|Illinois|Indiana|Iowa|Kansas|Kentucky|Louisiana|Maine|Maryland|Massachusetts|Michigan|` +
+		`Minnesota|Mississippi|Missouri|Montana|Nebraska|Nevada|New\s+Hampshire|New\s+Jersey|New\s+Mexico|` +
+		`New\s+York|North\s+Carolina|North\s+Dakota|Ohio|Oklahoma|Oregon|Pennsylvania|Rhode\s+Island|` +
+		`South\s+Carolina|South\s+Dakota|Tennessee|Texas|Utah|Vermont|Virginia|Washington|West\s+Virginia|` +
+		`Wisconsin|Wyoming|D\.?C\.?|A[LKZR]|C[AOT]|DE|FL|GA|HI|I[ADLN]|K[SY]|LA|M[ADEINOST]|N[CDEHJMVY]|` +
+		`O[HKR]|P[AR]|RI|S[CD]|T[NX]|UT|V[AT]|W[AIVY]`
+	screenStreet = `street|st|avenue|ave|road|rd|boulevard|blvd|drive|dr|lane|ln|place|pl|plaza|way|parkway|` +
+		`pkwy|highway|hwy|circle|court|ct|square|sq|building|bldg|tower|center|centre|floor|fl|broadway|park|` +
+		`row|terrace|walk|wharf|americas`
+	reScreenStreetFull = regexp.MustCompile(`(?i)^\(?(?:\d{1,6}[a-z]?|one|two|three|four|five|six|seven|eight|` +
+		`nine|ten)\s+[\w.,'&\-/ ]*?\b(?:` + screenStreet + `)\b\.?,?(?:\s.*)?$`)
+	reScreenCityStZip = regexp.MustCompile(`^\(?[A-Z][A-Za-z.\-' ]{0,40},?\s+(?:` + screenState + `)[,.]?\s*\d{5}(?:-\d{4})?\s*$`)
+	reScreenStateZip  = regexp.MustCompile(`^\(?(?:` + screenState + `)[,.]?\s+\d{5}(?:-\d{4})?\s*$`)
+	// The lead-in sentence's tail, or a parenthetical, in the name column.
+	reScreenProseTail = regexp.MustCompile(`(?i)\b(?:are\s+the\s+holders|of\s+which|exchange\s+act|` +
+		`approximately|respectively|may\s+be\s+deemed|and\s+related\s+persons)\b|^includes?\b`)
+	// An initialism ("U.S. Trust", "A.G. Edwards") identifies a holder even when
+	// every spelled-out word in the name is a corporate form.
+	reScreenInitialism = regexp.MustCompile(`\b(?:[A-Za-z]\.){2,}`)
+	reScreenWord       = regexp.MustCompile(`[A-Za-z]{2,}`)
+	// The words a wrapped name cell's tail is made of.
+	screenFormWords = map[string]bool{
+		"JR": true, "SR": true, "II": true, "III": true, "IV": true, "MD": true, "PHD": true,
+		"ESQ": true, "CPA": true, "INC": true, "INCORPORATED": true, "CORP": true, "CORPORATION": true,
+		"CO": true, "COMPANY": true, "COMPANIES": true, "LTD": true, "LIMITED": true, "LP": true,
+		"LLP": true, "LLC": true, "PLC": true, "NA": true, "TRUST": true, "TRUSTS": true, "THE": true,
+		"AND": true, "ET": true, "AL": true, "GROUP": true, "HOLDINGS": true, "HOLDING": true,
+		"PARTNERS": true, "PARTNERSHIP": true, "ASSOCIATES": true, "MANAGEMENT": true,
+	}
+	// An institution can be one word ("AMVESCAP", "Pensioenfonds"); a natural
+	// person cannot be one bare surname with no initial and no punctuation.
+	reScreenInstWord = regexp.MustCompile(`(?i)\b(?:inc|corp|corporation|co|company|companies|ltd|lp|llp|llc|` +
+		`plc|trust|bank|group|fund|funds|partners|partnership|associates|management|capital|advisors|advisers|` +
+		`holdings?|plan|association|foundation|systems?|international|board)\b`)
+)
+
+// screenNames runs the row rules that read only the name cell and the percent,
+// after the table rules above: it repairs a name cell that absorbed the numeric
+// columns, drops a cell that names no holder, and emits one row per holding.
+// Group rows are never touched.
+func screenNames(rows []Row) []Row {
+	out := make([]Row, 0, len(rows))
+	seen := map[string]bool{}
+	for _, r := range rows {
+		if r.IsGroupRow {
+			out = append(out, r)
+			continue
+		}
+		screenRepairPair(&r)
+		if screenNoHolder(strings.TrimSpace(r.HolderName)) {
+			continue
+		}
+		// A registrant that files a DEF 14A has public voting shareholders, so a
+		// single non-group holder of exactly 100.00% of a class is never the
+		// common stock the proxy solicits: it is another class, or a total.
+		if r.Percent != nil && *r.Percent == 100.0 {
+			continue
+		}
+		// One holder, one row per filing. The 5% table and the D&O table
+		// routinely disclose the same holding, and both reach the output.
+		if r.Percent != nil {
+			sig := screenFold(r.HolderName) + "|" + strconv.FormatFloat(*r.Percent, 'f', -1, 64)
+			if seen[sig] {
+				continue
+			}
+			seen[sig] = true
+		}
+		out = append(out, r)
+	}
 	return out
+}
+
+// screenRepairPair moves an absorbed amount/percent pair out of the name cell
+// and onto the row, where the extractor should have put it.
+func screenRepairPair(r *Row) {
+	m := reScreenPair.FindStringSubmatch(strings.TrimSpace(r.HolderName))
+	if m == nil {
+		return
+	}
+	head := strings.TrimSpace(m[1])
+	if len(reScreenWord.FindAllString(head, -1)) == 0 {
+		return
+	}
+	pct, err := strconv.ParseFloat(m[3], 64)
+	if err != nil || pct > 100 {
+		return
+	}
+	shares, err := strconv.ParseFloat(strings.ReplaceAll(m[2], ",", ""), 64)
+	if err != nil {
+		return
+	}
+	r.HolderName, r.Percent, r.Shares = head, &pct, &shares
+}
+
+// screenNoHolder reports whether a name cell names no holder at all.
+func screenNoHolder(name string) bool {
+	switch {
+	case reScreenLeadNum.MatchString(name):
+		return true
+	case reScreenStreetFull.MatchString(name), reScreenCityStZip.MatchString(name),
+		reScreenStateZip.MatchString(name):
+		return true
+	case reScreenProseTail.MatchString(name):
+		return true
+	}
+	// Nothing but corporate-form words: the tail of a wrapped name cell.
+	if !reScreenInitialism.MatchString(name) {
+		words := reScreenWord.FindAllString(strings.ToUpper(name), -1)
+		if len(words) > 0 {
+			all := true
+			for _, w := range words {
+				if !screenFormWords[w] {
+					all = false
+					break
+				}
+			}
+			if all {
+				return true
+			}
+		}
+	}
+	// A lone bare surname: the tail of a wrapped name column.
+	if !strings.ContainsAny(name, "0123456789.&/") {
+		if w := reScreenWord.FindAllString(name, -1); len(w) == 1 && w[0] == name &&
+			!reScreenInstWord.MatchString(name) {
+			return true
+		}
+	}
+	return false
+}
+
+// screenFold folds a holder name to its letters and digits, so the same holder
+// written with different punctuation in two tables collapses to one row.
+func screenFold(s string) string {
+	var b strings.Builder
+	for _, c := range strings.ToUpper(s) {
+		if (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') {
+			b.WriteRune(c)
+		}
+	}
+	return b.String()
 }
 
 func screenTables(rows []Row) map[int]*screenTable {
