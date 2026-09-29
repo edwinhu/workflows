@@ -316,11 +316,28 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 		stickyAt := textStickyLabels(clean, block)
 		var rows []Row
 		lastHolder := ""
+		// The class column's last value, forward-filled over the rows that leave
+		// it blank. Local to the block, which is one fund's table.
+		lastColClass := ""
 		for _, ln := range block {
 			consumed[ln] = true
 			name, rest, ok := parseTextRow(clean[ln])
 			if !ok {
 				continue
+			}
+			// An ASCII fund table puts the share CLASS in a column of its own,
+			// written once and left blank on the rows that continue it. The row
+			// splits at the first wide gap before a number, so the class arrives
+			// glued to the front of the holder's name -- read it off the RAW
+			// half, where the gap between the columns is still there.
+			leadClass := ""
+			if m := reLeadClassCol.FindStringSubmatch(name); m != nil {
+				leadClass = norm(strings.TrimRight(m[1], ": "))
+				lastColClass = leadClass
+				name = strings.TrimSpace(m[2])
+			} else if lastColClass != "" {
+				// the column is written once and left blank under it
+				leadClass = lastColClass
 			}
 			nm, fns := StripFootnotes(name)
 			// An ASCII "Title of class" column sits inside the name half,
@@ -416,7 +433,10 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 				case len(classes) == 1:
 					rw.ShareClass = classes[0]
 				}
-				rw.classHint = stickyAt[ln]
+				// The class column composes with the fund the block is under
+				// rather than replacing it: ShareClass alone would make one
+				// holder of Investor Shares of a hundred funds one key.
+				rw.classHint = withSeries(stickyAt[ln], leadClass)
 				if rw.Shares == nil && rw.Percent == nil && rw.PctMarker == "" {
 					continue
 				}
@@ -809,6 +829,10 @@ func textSeriesLabels(clean []string, series []string) []string {
 // a fund or a portfolio and nothing else. Such a line carries no number, so it
 // is never a holder row; it says which class or fund the rows under it belong
 // to. Anchored on the trailing noun so a prose sentence cannot match.
+// A share CLASS written in a column of its own at the head of an ASCII row,
+// separated from the holder name by the gap between the columns.
+var reLeadClassCol = regexp.MustCompile(`(?i)^((?:[A-Z][\w.&/-]*\s+){0,3}(?:shares|class\s+[a-z0-9]+|series\s+[a-z0-9]+))\s*:\s{2,}(\S.*)$`)
+
 var reTextStickyLabel = regexp.MustCompile(`(?i)^[A-Z0-9][\w.,'&()/ -]{0,58}?\b(?:class|classes|shares|portfolio|fund|series|trust)\s*:?$`)
 
 // textStickyLabels maps every line of a block to the label in force at it. A
