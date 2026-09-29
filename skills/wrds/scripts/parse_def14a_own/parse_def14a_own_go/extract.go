@@ -59,16 +59,17 @@ var (
 	// directors table (common shares, deferred units, options, total) from a
 	// fund-family table with one column per fund.
 	reComponentCol = regexp.MustCompile(`(?i)total|option|deferred|restricted|unvested|underlying|exercisab|\bunits?\b|\bsole\b|shared|voting|disposit|investment\s+power|\bdirect|\bindirect|aggregate|percent|\bplan\b|award|\bvested\b|\bheld\b|\bother\b`)
-	reHdrShares    = regexp.MustCompile(`(?i)shares|amount|number|beneficially\s+owned|ownership|aggregate`)
-	reHdrClass     = regexp.MustCompile(`(?i)\bclass\s+[a-d]\b|common\s+stock|series\s+[a-z0-9]+\s+(?:common|preferred)|preferred\s+stock|ordinary\s+shares|\bclass\s+[a-d]$`)
+	// The words that name a POWER or a component of one holding rather than a
+	// class of stock: such columns decompose a single holding between them.
+	reSharePowerCol = regexp.MustCompile(`(?i)\bsole\b|shared|voting|disposit|investment\s+power|\bdirect\b|\bindirect\b`)
+
+	reHdrShares = regexp.MustCompile(`(?i)shares|amount|number|beneficially\s+owned|ownership|aggregate`)
+	reHdrClass  = regexp.MustCompile(`(?i)\bclass\s+[a-d]\b|common\s+stock|series\s+[a-z0-9]+\s+(?:common|preferred)|preferred\s+stock|ordinary\s+shares|\bclass\s+[a-d]$`)
 	// reHdrNameCol matches the header of the column that names the HOLDER.
 	// "Title of Class" is deliberately absent: it heads a class column, and a
 	// proxy that puts one to the left of the holder column otherwise has its
 	// class labels read as holder names.
 	reHdrNameCol = regexp.MustCompile(`(?i)\bname\b|beneficial\s+owner|stockholder|shareholder|\bholder`)
-	// reHdrClassCol matches the header of a ROW-LEVEL column stating which
-	// class, series or fund the row's holding is in. Anchored at the head of
-	// the header so "Percentage of Fund" is not read as a fund column.
 	// A row-level column stating which ISSUER the holding is in. A proxy has one
 	// issuer, so such a column exists exactly when several are listed side by
 	// side -- a fund complex's trustee table, or a holding-company group -- and
@@ -78,6 +79,9 @@ var (
 	reHdrIssuerCol = regexp.MustCompile(`(?i)^\s*(?:company|companies|issuer|entity|registrant|` +
 		`name\s+of\s+(?:company|issuer|entity|registrant))\b`)
 
+	// reHdrClassCol matches the header of a ROW-LEVEL column stating which
+	// class, series or fund the row's holding is in. Anchored at the head of
+	// the header so "Percentage of Fund" is not read as a fund column.
 	reHdrClassCol = regexp.MustCompile(`(?i)^\s*(?:title\s+of\s+(?:class|series)|class\s+of\s+(?:stock|shares|securities)|share\s+class|series|fund|portfolio)\b|^\s*class\s*(?:\||$)`)
 	// A footnote reference trailing a column header: "... of stock (2)".
 	reHdrFootnote = regexp.MustCompile(`\s*\(\d{1,2}\)\s*$`)
@@ -96,9 +100,6 @@ var (
 	// The table must look like an ownership table, not an equity-comp-plan or
 	// compensation table that also carries share counts.
 	reOwnCue = regexp.MustCompile(`(?i)beneficial|percent\s*(?:age)?\s*of\s*(?:class|shares|common|outstanding)|amount\s+and\s+nature|%\s*of\s*class|shares\s+owned|owned\s+of\s+record|as\s+a\s+group|principal\s+(?:stock|share)holders`)
-	// Compensation, option-grant and pay-ratio tables also carry names, share
-	// counts and percents. "Percent of total options granted" is the one that
-	// slips past the ownership cue, so the option-grant vocabulary is listed.
 	// An OPTION-DETAIL or share-PURCHASE table: it names the same people as the
 	// ownership table and repeats "Shares Owned" beside its own columns, so
 	// reCompCue's "unless it also reads as ownership" escape lets it through.
@@ -109,6 +110,9 @@ var (
 		`average\s+option\s+price|net\s+shares\s+from\s+\S+\s+options|` +
 		`average\s+purchase\s+price|average\s+discount`)
 
+	// Compensation, option-grant and pay-ratio tables also carry names, share
+	// counts and percents. "Percent of total options granted" is the one that
+	// slips past the ownership cue, so the option-grant vocabulary is listed.
 	reCompCue = regexp.MustCompile(`(?i)equity\s+compensation\s+plan|weighted[- ]average\s+exercise\s+price|securities\s+remaining\s+available|option\s+awards|stock\s+awards|salary|bonus|summary\s+compensation|options?\s+granted|exercise\s+price|expiration\s+date|grant\s+date\s+present\s+value|all\s+other\s+compensation|long[- ]term\s+incentive|individual\s+grants|realizable\s+value`)
 )
 
@@ -802,17 +806,28 @@ func (c *compacted) splitTiedLabels(ps []pair, out []string, at func(pair, int) 
 // that inherited its columns is labelled too.
 func (c *compacted) pairLabels(ps []pair) []string {
 	out := make([]string, len(ps))
-	at := func(p pair, i int) string {
-		for _, j := range []int{p.pct, p.shares} {
-			if j < 0 || j >= len(c.roles) || i >= len(c.roles[j].hdrCells) {
-				continue
+	// Two readers of one header row. The PERCENT column's cell is preferred --
+	// it is the one a multi-class header usually names the class in -- but when
+	// both percent columns are headed the same ("Percent of / Class") and it is
+	// the SHARES columns that differ, reading the percent cell alone labels
+	// every pair identically and the holdings collapse onto one key.
+	reader := func(order []int) func(pair, int) string {
+		return func(p pair, i int) string {
+			cols := []int{p.pct, p.shares}
+			for _, which := range order {
+				j := cols[which]
+				if j < 0 || j >= len(c.roles) || i >= len(c.roles[j].hdrCells) {
+					continue
+				}
+				if v := c.roles[j].hdrCells[i]; v != "" {
+					return v
+				}
 			}
-			if v := c.roles[j].hdrCells[i]; v != "" {
-				return v
-			}
+			return ""
 		}
-		return ""
 	}
+	at := reader([]int{0, 1})
+	atShares := reader([]int{1, 0})
 	nh := 0
 	for _, r := range c.roles {
 		if len(r.hdrCells) > nh {
@@ -820,19 +835,29 @@ func (c *compacted) pairLabels(ps []pair) []string {
 		}
 	}
 	for i := nh - 1; i >= 0; i-- {
-		vals := make([]string, len(ps))
-		distinct := map[string]bool{}
-		for k, p := range ps {
-			vals[k] = at(p, i)
-			if vals[k] != "" {
-				distinct[vals[k]] = true
+		for _, rd := range []func(pair, int) string{at, atShares} {
+			vals := make([]string, len(ps))
+			distinct := map[string]bool{}
+			power := false
+			for k, p := range ps {
+				vals[k] = rd(p, i)
+				if vals[k] != "" {
+					distinct[vals[k]] = true
+					if reSharePowerCol.MatchString(vals[k]) {
+						power = true
+					}
+				}
 			}
-		}
-		if len(distinct) >= 2 {
+			// A shares header that names a POWER or a holding's components
+			// (sole / shared / voting / dispositive / direct) distinguishes
+			// parts of one holding, not two classes.
+			if len(distinct) < 2 || power {
+				continue
+			}
 			for k := range vals {
 				out[k] = cleanClassLabel(vals[k])
 			}
-			c.splitTiedLabels(ps, out, at, nh, i)
+			c.splitTiedLabels(ps, out, rd, nh, i)
 			return out
 		}
 	}
