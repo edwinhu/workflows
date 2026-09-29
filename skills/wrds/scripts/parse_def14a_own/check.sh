@@ -10,8 +10,14 @@
 #   DEF14A_WORK   where the fetched shard output lives (default below)
 #   GOLD_DIR      the gold sets (default /data/def14a_own/gold)
 #
-# Exit codes: 0 all metrics pass, 1 a metric is short, 2 no output to score,
-#             3 the hash lock does not verify.
+# Exit codes: 0 all metrics pass, 1 a metric is short, 2 no output to score OR
+#             the parser output does not cover the ISS gold filings (score.py
+#             refuses to compute the gated iss_director_recall over a partial
+#             denominator), 3 the hash lock does not verify.
+#
+# FIVE metrics gate as of 2026-09-29 — the keys under `minimums` in
+# thresholds.json, which now include `iss_director_recall`. This script never
+# names them; score.py reads the gated set from the locked thresholds file.
 
 set -uo pipefail
 

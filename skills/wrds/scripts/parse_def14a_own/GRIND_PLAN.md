@@ -423,12 +423,14 @@ $ ls /data/def14a_own/work/out/round-ready   # present, the output is current
 
 ---
 
-## 8. AMENDMENT — 2026-09-29, a MODERN-ERA yardstick (ISS directors). **PROPOSED, NOT APPLIED.**
+## 8. AMENDMENT — 2026-09-29, a MODERN-ERA yardstick (ISS directors). **ITEM 1 ADOPTED 2026-09-29; ITEMS 2-4 STAND AS WRITTEN.**
 
-Adds a third gold set and four **DIAGNOSTIC** metrics. `thresholds.json`'s
-`minimums` are **unchanged**; all four new metrics sit under `diagnostics` and
-cannot move `check.sh`'s exit code. §8.5 is a *proposal* about gating them and is
-deliberately not implemented. Every number below is a line a command printed on
+Adds a third gold set and four metrics. As first written (earlier on 2026-09-29)
+all four were **DIAGNOSTIC** and `minimums` was unchanged; §8.5 was a *proposal*.
+**Item 1 of that proposal was ADOPTED later the same day** — see §8.5A — so
+`iss_director_recall` is now a **GATED** metric and the gated count is **five**.
+Items 2, 3 and 4 were not adopted: (b) and (c) remain diagnostic and the ISS
+split remains its own file. Every number below is a line a command printed on
 2026-09-29; the commands are quoted.
 
 ### 8.1 Why
@@ -533,9 +535,10 @@ By era — and the era table is the whole argument:
 | 2013-2018 | 86.56% (5,409) | 85.69% (4,577) | 96.51% (8,575) | 3.36% | 10.95% |
 | 2019-2024 | 88.83% (4,949) | **54.02%** (4,287) | 98.23% (8,537) | **40.42%** | 5.55% |
 
-**PROPOSAL.**
+**PROPOSAL.** (Item 1 **ADOPTED 2026-09-29**, with the two-step in §8.5A; items
+2, 3 and 4 stand as written and were **not** adopted.)
 
-1. **GATE (a) `iss_director_recall` at 0.82.** It is stable across all four eras
+1. **GATE (a) `iss_director_recall` at 0.82.** — **ADOPTED 2026-09-29.** It is stable across all four eras
    (82.8-88.8%), its denominator is large, and its misses are parser-shaped: 670
    `table_truncated` + 304 `no_table` + 1,605 `name_not_found` = 2,579 of 19,586.
    0.82 sits just below the weakest era, so no era can be traded against another;
@@ -560,7 +563,48 @@ By era — and the era table is the whole argument:
    gate.
 
 Applying (1) would require a re-lock and a fresh `_history` entry in
-`thresholds.json`. Neither was done.
+`thresholds.json`. Both were done on 2026-09-29 — see §8.5A.
+
+### 8.5A ADOPTION of item 1 — 2026-09-29, in TWO STEPS
+
+Item 1 above is **ADOPTED**. `iss_director_recall` moved out of `diagnostics` and
+into `minimums`, so **five** metrics now gate `check.sh`. The adoption is
+deliberately two-step, and the second step is not optional:
+
+| step | when | `iss_director_recall` minimum | what it is |
+|---|---|---:|---|
+| **1** | **now**, the ISS round | **0.90** | a ROUND TARGET, 0.0317 above the 0.8683 baseline. `check.sh` exits 1 until the parser closes the gap. |
+| **2** | when the round ends | **0.82** | the PERMANENT no-regression floor argued in item 1 — just below the weakest era (2002-2006 at 0.8281). |
+
+**0.90 is not a floor and must not be left in place.** A floor is a value an
+honest later change cannot fall through; 0.90 is above every era's current recall
+and would make the gate unreachable for a change that legitimately trades a
+little ISS recall for something else. Step 2 is what item 1 actually argued for;
+step 1 is the round's target, aimed at the two largest parser-shaped miss causes
+in §8.6 — `name_not_found` (1,605 rows, 8.19%) and `table_truncated` (670, 3.42%),
+with `no_table` (304, 1.55%) and `name_found_no_share_count_parsed` (390, 1.99%)
+behind them. Together those are 2,969 rows against 19,586, so closing roughly two
+thirds of `name_not_found` + `table_truncated` reaches 0.90.
+
+Items 2, 3 and 4 are **unchanged and not adopted**: `iss_share_agreement_1pct`,
+`iss_share_agreement_5pct` and `iss_individual_precision_proxy` stay under
+`diagnostics`, and `holdout_iss.tsv` stays a separate split file.
+
+Guards that came with the adoption:
+
+- The four existing minimums are byte-for-byte unchanged (0.88 / 0.75 / 0.82 /
+  0.80), so ISS recall cannot be bought by flooding tables with rows — a change
+  that lifts recall by emitting more candidates drives `holder_precision_blockw`
+  under 0.82 and `check.sh` still exits 1.
+- `score.py` aborts with **exit 2** when the parser output does not cover the ISS
+  gold filings, and refuses `--no-iss` while the metric is gated. A gated recall
+  over a denominator the round itself chose is not a measurement.
+- `run_baseline.sh` now defaults to `gold_filelist_all.tsv` and asserts, before
+  submitting, that the filelist covers **both** `gold_filelist.tsv` and
+  `gold_iss_filelist.tsv`; it also re-creates `out/round-ready` even when the
+  scorer reports a gated metric short.
+- Re-locked: `thresholds.json` and `scorer/score.py` hashes changed in
+  `lock.sha256`; the six gold hashes did not.
 
 ### 8.6 (a) miss decomposition, denominator 19,586 non-flagged ISS director rows
 

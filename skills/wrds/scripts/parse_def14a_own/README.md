@@ -237,13 +237,21 @@ rows) is pulled by running `pull_def14a_index.py` with `--start 2002-01-01 --end
 2025-12-31` into a scratch dir and renaming. The original index is left alone so
 gold sets (a) and (b) stay reproducible.
 
-**The ISS metrics are DIAGNOSTIC.** They print with their denominators, by era, on
-every scoring run and cannot change `check.sh`'s exit code — see `GRIND_PLAN.md`
-§8, which also carries the (unapplied) proposal about gating them. Run the grid
-pass over the extended filelist with `DEF14A_FILELIST=gold_filelist_all.tsv bash
-run_baseline.sh`; that filelist is a superset of `gold_filelist.tsv`, and because
-`score.py` keys on `(cik, accession)` the existing gold round is unaffected
-(verified: all four gated metrics byte-identical before and after).
+**`iss_director_recall` is GATED as of 2026-09-29** (`GRIND_PLAN.md` §8.5A) at
+**0.90** for the ISS round, to be reset to the permanent floor **0.82** when the
+round ends. The gated count is therefore **five**. The other three ISS metrics —
+`iss_share_agreement_1pct`, `_5pct` and `iss_individual_precision_proxy` — stay
+DIAGNOSTIC: they print with their denominators, by era, on every scoring run and
+cannot change `check.sh`'s exit code.
+
+**Every round parses BOTH gold filelists.** `run_baseline.sh` defaults to
+`gold_filelist_all.tsv` and refuses to submit a filelist that does not cover both
+`gold_filelist.tsv` and `gold_iss_filelist.tsv`; `score.py` exits 2 if the parser
+output does not cover the ISS gold filings, so a gated recall is never computed
+over a denominator the round chose for itself. The union filelist is a superset
+of `gold_filelist.tsv`, and because `score.py` keys on `(cik, accession)` the
+existing gold round is unaffected (verified: the four pre-existing gated metrics
+byte-identical before and after — 0.8921 / 0.7873 / 0.8304 / 0.9067).
 
 `scorer/score_test.py` (11 tests, stdlib) covers the ISS surname + first-initial
 matcher, the natural-person test and the era buckets. Run it after any edit to

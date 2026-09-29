@@ -26,21 +26,33 @@ Metrics, each printed with its denominator:
                                percent over non-group rows; gold = max single
                                holder percent.
   (iv)  GROUP-ROW DETECTION     share of scored filings with a flagged group row.
-  (v)   ISS DIRECTOR YARDSTICK  DIAGNOSTIC, never gated. The modern-era
-                               holder-level ruler: (a) director recall, (b) share
-                               agreement within 1% and 5%, (c) an individual-row
-                               precision PROXY. Denominators, era splits and a
-                               miss decomposition are printed. See the ISS block
-                               below for each definition and its limits.
+  (v)   ISS DIRECTOR YARDSTICK  The modern-era holder-level ruler: (a) director
+                               recall, (b) share agreement within 1% and 5%,
+                               (c) an individual-row precision PROXY.
+                               (a) `iss_director_recall` is GATED when
+                               thresholds.json lists it under `minimums` — it was
+                               adopted as a gate on 2026-09-29. (b) and (c) are
+                               DIAGNOSTIC and never gated. Denominators, era
+                               splits and a miss decomposition are printed. See
+                               the ISS block below for each definition and its
+                               limits.
 
-GATED vs DIAGNOSTIC. Exactly FOUR metrics gate: filing yield (parsed percent),
-holder recall vs blockw, holder precision vs blockw, group-row detection — the
-keys under `minimums` in thresholds.json. The two FactSet aggregate metrics in
-(iii) are computed and printed with their denominators every run and NEVER affect
-the exit code, because the FactSet gold is defined by a proxy window over all
-FactSet stakes and mixes 13F / Form 4 positions (only 21 of 2,647 linked
-firm-years carry a PXY marker); a 1 pp band over that gold would reward chasing
-gold noise.
+GATED vs DIAGNOSTIC. The gated set is EXACTLY the keys under `minimums` in
+thresholds.json — nothing in this file hard-codes it, and no metric outside that
+set can change the exit code. Since 2026-09-29 that is FIVE metrics: filing yield
+(parsed percent), holder recall vs blockw, holder precision vs blockw, group-row
+detection, and ISS director recall. The two FactSet aggregate metrics in (iii)
+are computed and printed with their denominators every run and NEVER affect the
+exit code, because the FactSet gold is defined by a proxy window over all FactSet
+stakes and mixes 13F / Form 4 positions (only 21 of 2,647 linked firm-years carry
+a PXY marker); a 1 pp band over that gold would reward chasing gold noise. The
+ISS share-agreement pair and the ISS precision proxy are diagnostic for the
+reasons recorded in thresholds.json `_history`.
+
+When `iss_director_recall` is gated, the ISS gold filings MUST be covered by the
+parser output: scoring a recall on a partial denominator would silently reward a
+round that simply parsed fewer ISS filings. Missing ISS manifest coverage, and
+`--no-iss`, are both hard errors (exit 2) rather than a quietly smaller gold.
 
 Splits: dev by default; `--holdout` scores the held-out firms and REFUSES while
 GRIND_ITERATION is set in the environment, because a loop that can read the
@@ -304,6 +316,15 @@ def main():
         sys.exit(4)
 
     thresholds = json.load(open(args.thresholds))
+    # The gated set is the keys under `minimums`, and nothing else. ISS recall is
+    # gated iff thresholds.json says so, so this file never has to be edited to
+    # move it in or out of the gate.
+    iss_gated = "iss_director_recall" in thresholds["minimums"]
+    if iss_gated and args.no_iss:
+        print("ERROR: --no-iss but thresholds.json gates iss_director_recall. "
+              "A gated metric cannot be switched off from the command line.",
+              file=sys.stderr)
+        sys.exit(2)
 
     if not args.no_verify_lock:
         files = {
@@ -412,12 +433,39 @@ def main():
 
     # ---- parser output ------------------------------------------------------
     man = {}
+    iss_man = set()
     for r in read_tsv_gz(args.manifest):
         cik = r["cik"].lstrip("0") or "0"
         key = (cik, r["accession"])
         if key in gold_filings:
             man[key] = r
+        if key in iss_filings:
+            iss_man.add(key)
     print("[in ] parser manifest rows matching gold filings: %d" % len(man))
+
+    # ISS coverage, checked BEFORE anything is scored. A recall computed over the
+    # ISS filings that happen to be in the output is a recall over a denominator
+    # the parser chose, which is exactly the number a gate must not be allowed to
+    # read. With the gate on, partial coverage is fatal; with it off, it is a
+    # printed warning, because the metric is only diagnostic then.
+    if not args.no_iss:
+        n_iss_covered = len(iss_man)
+        n_iss_filings = len(iss_filings)
+        print("[in ] parser manifest rows matching ISS %s filings: %d / %d (%.2f%%)" % (
+            iss_want, n_iss_covered, n_iss_filings,
+            100 * n_iss_covered / n_iss_filings if n_iss_filings else 0.0))
+        if n_iss_covered < n_iss_filings:
+            missing = sorted(iss_filings - iss_man)
+            msg = ("ISS COVERAGE SHORT: %d of %d ISS %s gold filings have no manifest row. "
+                   "Re-run the grid pass over the union filelist "
+                   "(DEF14A_FILELIST=gold_filelist_all.tsv bash run_baseline.sh). "
+                   "First 5 missing (cik, accession): %s" % (
+                       n_iss_filings - n_iss_covered, n_iss_filings, iss_want,
+                       ", ".join("%s/%s" % k for k in missing[:5])))
+            if iss_gated:
+                print("ERROR: " + msg, file=sys.stderr)
+                sys.exit(2)
+            print("WARNING: " + msg, file=sys.stderr)
 
     parsed = defaultdict(list)
     n_rows_read = n_iss_parsed_rows = 0
@@ -638,11 +686,13 @@ def main():
         def rate(n, d):
             return (n / d) if d else 0.0
 
-        print("\n== (v) ISS DIRECTOR YARDSTICK (%s split) — DIAGNOSTIC, NOT GATED ==" % iss_want)
+        iss_a_tag = "gated" if iss_gated else "DIAGNOSTIC"
+        print("\n== (v) ISS DIRECTOR YARDSTICK (%s split) — (a) %s, (b) and (c) DIAGNOSTIC ==" % (
+            iss_want, "GATED" if iss_gated else "DIAGNOSTIC"))
         print("  ISS filings in split: %d ; with >=1 usable director row: %d" % (
             len(iss_filings), sum(1 for k in iss_filings if iss_dir.get(k))))
-        print("  (a) director recall  [DIAGNOSTIC]: %d / %d non-flagged ISS director rows = %.2f%%" % (
-            tot["hit"], tot["den"], 100 * rate(tot["hit"], tot["den"])))
+        print("  (a) director recall  [%s]: %d / %d non-flagged ISS director rows = %.2f%%" % (
+            iss_a_tag, tot["hit"], tot["den"], 100 * rate(tot["hit"], tot["den"])))
         print("  (b) share agreement  [DIAGNOSTIC]: within 1%%  %d / %d matched rows with both counts = %.2f%%" % (
             tot["sh1"], tot["sh_den"], 100 * rate(tot["sh1"], tot["sh_den"])))
         print("                                     within 5%%  %d / %d = %.2f%%" % (
@@ -669,7 +719,7 @@ def main():
             "ALL", 100 * rate(tot["hit"], tot["den"]), tot["den"],
             100 * rate(tot["sh1"], tot["sh_den"]), tot["sh_den"],
             100 * rate(tot["c_iss"] + tot["c_off"], tot["c_den"]), tot["c_den"]))
-        print("  -- (b) within 5%% by era --")
+        print("  -- (b) within 5% by era --")
         for e in ISS_ERAS:
             b = eras[e]
             print("  %-11s %7.2f%% (%5d)" % (e, 100 * rate(b["sh5"], b["sh_den"]), b["sh_den"]))

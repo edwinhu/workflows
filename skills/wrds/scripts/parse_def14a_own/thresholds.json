@@ -1,6 +1,6 @@
 {
   "_about": "Pass thresholds for the parse_def14a_own grind. Locked in lock.sha256; the grind may not edit this file. Each value is argued from a measured baseline in GRIND_PLAN.md — the 2026-09-28 setup baseline for the first round, and the 2026-09-29 dev/holdout pair for the precision round.",
-  "_gating": "EXACTLY the four keys under `minimums` gate check.sh. The two FactSet aggregate metrics under `diagnostics` are computed and printed with their denominators every round and NEVER affect the exit code: the FactSet gold is defined by a proxy window over all FactSet stakes and mixes 13F / Form 4 positions (only 21 of 2,647 linked firm-years carry a PXY marker), so a 1 pp band would reward chasing gold noise. The loop must not optimise them.",
+  "_gating": "EXACTLY the keys under `minimums` gate check.sh — FIVE of them since 2026-09-29, when `iss_director_recall` was added. Everything under `diagnostics` is computed and printed with its denominator every round and NEVER affects the exit code. That includes the two FactSet aggregate metrics (the FactSet gold is defined by a proxy window over all FactSet stakes and mixes 13F / Form 4 positions — only 21 of 2,647 linked firm-years carry a PXY marker — so a 1 pp band would reward chasing gold noise) and the two ISS share-agreement metrics plus the ISS precision proxy (see `_iss_diagnostics`). The loop must not optimise any of them.",
   "_history": [
     {
       "date": "2026-09-28",
@@ -22,6 +22,16 @@
       "holdout": {"seed": 20260929, "firms": 747, "status": "re-drawn; scored ONCE as the pre-round baseline, then off limits until the round ends"},
       "measured_after_the_re_draw": "The seed-20260929 pre-round baseline, scored once on the unchanged parser output, came in at dev precision 0.7636 (11,669 / 15,281 candidate rows) and HOLDOUT precision 0.7899 (3,031 / 3,837) — the holdout scored 0.0263 ABOVE dev, the opposite sign to the seed-20260928 pair that motivated 0.82. Two things follow and neither is hidden. (1) Most of the 0.0759 gap on seed 20260928 was a draw effect, not overfitting; a single 747-firm draw is a noisy estimate of generalisation and one gap is not evidence of a trend. (2) The new holdout is NOT clean: 595 of its 747 firms were in the seed-20260928 DEV set and the parser was tuned against them, which biases this baseline UP. 0.82 is kept anyway, on the narrower argument that precision is simply the weakest gate (0.7636 on dev against 0.90/0.81/0.90 for the other three) and that the residual FP families in the journal are named, layout-shaped and countable — not on the generalisation-gap argument, which this measurement does not support.",
       "guard": "recall, filing_yield and group_row stay gated at their previous values precisely so precision cannot be bought by dropping true positives: a fix that lifts precision by suppressing rows drives recall below 0.75 and the check still exits 1."
+    },
+    {
+      "date": "2026-09-29",
+      "round": "ISS director-recall round",
+      "change": "iss_director_recall ADDED to `minimums` at 0.90 FOR THIS ROUND ONLY; the four existing gates unchanged (filing_yield 0.88, holder_recall_blockw 0.75, holder_precision_blockw 0.82, group_row_detection_rate 0.80). iss_director_recall is removed from `diagnostics`; iss_share_agreement_1pct / _5pct and iss_individual_precision_proxy stay DIAGNOSTIC.",
+      "two_step": "STEP 1 (now, this round): 0.90, a ROUND TARGET aimed at the two largest parser-shaped miss causes measured on ISS-dev — name_not_found 1,605 rows (8.19%) and table_truncated 670 rows (3.42%), with no_table 304 (1.55%) and name_found_no_share_count_parsed 390 (1.99%) behind them. Baseline is 0.8683 (17,007 / 19,586 non-flagged ISS director rows), so 0.90 is 0.0317 of headroom and check.sh exits 1 until the parser closes it. STEP 2 (after the round ends): reset iss_director_recall to the PERMANENT no-regression floor 0.82 — the value proposed in GRIND_PLAN.md section 8, item 1, which sits just below the weakest era (2002-2006 at 0.8281) so no era can be traded against another. The 0.90 is a target to grind against, NOT a permanent floor, and leaving it in place after the round would make the gate unreachable by a later honest parser change.",
+      "why": "The four pre-existing gates are pre-2002 (blockw 1996-2001) or firm-level and diagnostic (FactSet). Without a gated ISS metric, 2002-2024 — the majority of the corpus and every modern layout family — is validated by nothing holder-level. iss_director_recall is the only one of the three ISS metrics whose misses are parser-shaped rather than gold-shaped, and it is stable across eras (82.81 / 88.31 / 86.56 / 88.83).",
+      "not_gated": "(b) iss_share_agreement_* stays diagnostic: the median parsed/ISS ratio is exactly 1.0000 in every era and the 2019-2024 collapse is 40.42% UPWARD against 5.55% downward, driven by the proxy's beneficial-ownership total including 60-day options and deferred units that ISS's num_of_shares excludes. A two-sided band would pay the loop to strip an add-on the proxy is right to report. (c) iss_individual_precision_proxy stays diagnostic: 0.9726 with 37.92% of the numerator from the officer-allowance arm is an upper bound, and gating an upper bound rewards loosening the bound.",
+      "guard": "The four existing gates stay at their values precisely so ISS recall cannot be bought by flooding tables with rows: a change that lifts ISS recall by emitting more candidate rows drives holder_precision_blockw below 0.82 and check.sh still exits 1. check.sh also fails loudly when the parser output does not cover the ISS gold filings, so a round run against the blockw-only filelist cannot score ISS recall on a partial denominator.",
+      "holdout": {"split_file": "holdout_iss.tsv", "seed": 20260930, "firms": 385, "filings": 741, "status": "scored ONCE as the pre-round baseline on 2026-09-29 (metrics_iss_holdout_pre_20260929.json), then off limits until the round ends"}
     }
   ],
   "_baseline_2026_09_28_dev": {
@@ -37,15 +47,15 @@
     "filing_yield_parsed_percent": 0.88,
     "holder_recall_blockw": 0.75,
     "holder_precision_blockw": 0.82,
-    "group_row_detection_rate": 0.80
+    "group_row_detection_rate": 0.80,
+    "iss_director_recall": 0.90
   },
   "diagnostics": [
     "group_pct_agreement_factset",
     "largest_block_agreement_factset",
-    "iss_director_recall",
     "iss_share_agreement_1pct",
     "iss_share_agreement_5pct",
     "iss_individual_precision_proxy"
   ],
-  "_iss_diagnostics": "Added 2026-09-29 with the ISS directors gold set (gold_iss.tsv.gz, 2002-2024). The four ISS metrics are DIAGNOSTIC and appear under `diagnostics`, NOT under `minimums`: nothing about them can change check.sh's exit code. See GRIND_PLAN.md section 8 for the measured baseline and the PROPOSED (not applied) gating argument."
+  "_iss_diagnostics": "Added 2026-09-29 with the ISS directors gold set (gold_iss.tsv.gz, 2002-2024). THREE of the four ISS metrics remain DIAGNOSTIC under `diagnostics` — iss_share_agreement_1pct, iss_share_agreement_5pct, iss_individual_precision_proxy — and nothing about them can change check.sh's exit code. The fourth, iss_director_recall, was ADOPTED as a gate later the same day (GRIND_PLAN.md section 8 item 1, ADOPTED 2026-09-29) and now sits under `minimums` at 0.90 for the ISS round, to be reset to the permanent floor 0.82 when the round ends. See the 2026-09-29 `ISS director-recall round` entry in `_history` for the two-step."
 }

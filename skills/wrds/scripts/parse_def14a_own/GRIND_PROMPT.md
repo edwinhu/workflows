@@ -15,29 +15,118 @@ The loop ends when this exits 0, and nothing else ends it:
 bash /home/eh/projects/workflows/skills/wrds/scripts/parse_def14a_own/check.sh
 ```
 
-**Exactly FOUR metrics gate** — the keys under `minimums` in `thresholds.json`:
+**Exactly FIVE metrics gate** — the keys under `minimums` in `thresholds.json`:
 
 | gated metric | threshold |
 |---|---:|
 | `filing_yield_parsed_percent` | 0.88 |
 | `holder_recall_blockw` | 0.75 |
-| `holder_precision_blockw` | **0.82** (raised 2026-09-29, see below) |
+| `holder_precision_blockw` | **0.82** (raised 2026-09-29) |
 | `group_row_detection_rate` | 0.80 |
+| `iss_director_recall` | **0.90** (added 2026-09-29 — THIS round's target) |
 
-## THIS ROUND IS A PRECISION ROUND (2026-09-29)
+## THIS ROUND IS AN ISS DIRECTOR-RECALL ROUND (2026-09-29)
 
-Three of the four gates already pass. **`holder_precision_blockw` is the only one
-short, and it is the only thing to work on.** The other three are there as
-guards: a "fix" that lifts precision by dropping rows will push recall under
-0.75 or filing yield under 0.88, and `check.sh` will still exit 1. You cannot
-buy precision with recall.
+**`iss_director_recall` is the only gate short, and it is the only thing to work
+on.** Baseline on ISS-dev, printed by `score.py` on unchanged parser output:
 
-Why 0.82 and not 0.75: the seed-20260928 holdout scored precision **0.7085**
-against dev **0.7843** — a **0.0759** gap, and the widest of the four (recall
-0.7962 vs 0.8091, filing yield 0.8985 vs 0.9058, group-row 0.8968 vs 0.9026).
-0.82 on dev is what it takes to land near 0.75 on firms nobody tuned on.
+```
+(a) director recall [gated]: 17007 / 19586 non-flagged ISS director rows = 86.83%
+```
 
-### The residual false-positive families — start here, not from scratch
+0.8683 against a 0.90 minimum — **0.0317**, about **620 director rows**. The
+other four gates are guards: a "fix" that lifts ISS recall by emitting more
+candidate rows will push `holder_precision_blockw` under 0.82, and `check.sh`
+will still exit 1. **You cannot buy ISS recall with blockw precision.**
+
+The ISS gold is `gold_iss.tsv.gz`: one row per (company, meeting, director) from
+ISS/RiskMetrics Directors, 2002-2024, linked to the DEF 14A the meeting belongs
+to. It is the only holder-level ruler that covers the modern era at all — blockw
+is 1996-2001. Rows flagged by the 100x `num_of_shares` defect detector are
+excluded from the denominator; 1,659 of 21,245 ISS-dev rows are flagged.
+
+### Where the 2,579 missing rows are — start here, not from scratch
+
+Miss decomposition printed by the scorer, denominator **19,586** non-flagged ISS
+director rows in the 2,259 ISS-dev filings. `ok` (12,968) and
+`name_found_shares_off` (3,649) are both **hits** — (a) is a name-only recall.
+The three miss causes, largest first, plus the one non-miss cause worth reading:
+
+| cause | rows | share of 19,586 | what it means | example accessions |
+|---|---:|---:|---|---|
+| `name_not_found` | **1,605** | 8.19% | the filing parsed a table, it is not short, and the director's name is not among the parsed rows | `0001193125-19-097303` Waters 2019 · `0001047469-07-007359` Estée Lauder 2007 · `0001047469-13-009333` Estée Lauder 2013 · `0000950152-05-002111` Lexmark 2005 · `0001144204-08-016722` LCA-Vision 2008 |
+| `table_truncated` | **670** | 3.42% | rows exist but the filing's person-shaped row count is under half its ISS director count — a short table, not a name failure | `0001000229-17-000042` Core Labs 2017 (1 parsed row, 0 person rows, 8 ISS directors) · `0001193125-18-092158` Graham Holdings 2018 · `0001193125-23-077360` Graham Holdings 2023 (6 rows, 4 person, 9 directors) · `0000930413-02-001113` MONY 2002 · `0001206774-05-000564` Xerox 2005 (3 rows, 0 person, 9 directors) |
+| `no_table` | **304** | 1.55% | the filing parsed to zero ownership rows | `0000950123-09-005010` Navigant 2009 · `0001193125-10-059627` Qwest 2010 · `0001042046-04-000021` American Financial 2004 · `0001308179-20-000107` Mondelez 2020 · `0001113169-02-000001` T. Rowe Price 2002 |
+| `name_found_no_share_count_parsed` | 390 | 1.99% | **already a hit** for (a) — the name matched but no share count was parsed. Fixing it moves (b), which is DIAGNOSTIC. Do not spend the round here. | `0000950152-05-002111` Lexmark 2005 · `0000950134-08-004455` CARBO Ceramics 2008 · `0000950123-11-033213` Sealed Air 2011 · `0001308179-23-000452` Iron Mountain 2023 · `0000950123-11-028696` Forrester 2011 |
+
+`name_not_found` + `table_truncated` + `no_table` = **2,579 (13.17%)**, exactly
+`1 − 0.8683`. Closing roughly two thirds of the first two reaches 0.90.
+
+The per-filing detail is `$DEF14A_WORK/miss_iss_dev.tsv`, written by every
+scoring run: one row per ISS director with its cause, and with `n_parsed_rows`,
+`n_person_rows` and `n_iss_directors` so a `table_truncated` filing can be read
+without re-deriving anything.
+
+Recall by era, so a fix is not traded between them:
+
+| era | recall | denominator |
+|---|---:|---:|
+| 2002-2006 | 82.81% | 4,009 |
+| 2007-2012 | 88.31% | 5,219 |
+| 2013-2018 | 86.56% | 5,409 |
+| 2019-2024 | 88.83% | 4,949 |
+
+2002-2006 is the weakest and is where the ASCII / early-HTML families live.
+
+### Rules specific to THIS round
+
+- **Fix a LAYOUT CLASS, with the failing test first.** Read 5-10 filings for the
+  cause with `-debug`, transcribe a fixture from one into
+  `parse_def14a_own_go/extract_test.go`, watch `go test ./...` go red, then fix
+  it. **No tuning on company names.** A rule keyed to `Waters`, `Graham
+  Holdings`, `Estée Lauder` or any other issuer is a threshold widened by
+  another route and will not survive the ISS holdout.
+- **NEVER strip the 60-day option / deferred-unit add-on to make share counts
+  match ISS.** The proxy's beneficial-ownership total INCLUDES options
+  exercisable within 60 days and deferred units by rule; ISS's `num_of_shares`
+  excludes them. The parser's total is the right one. Measured: the median
+  `parsed / ISS` ratio is exactly 1.0000 in every era, and 2019-2024's share
+  disagreement is 40.42% of matched rows parsing LARGER against 5.55% smaller —
+  e.g. `0001558370-21-002589` (Hawaiian Electric 2021) adds a constant **+3,664**
+  to every director, and `0001206774-22-000746` (Aflac 2022) has the same shape.
+  That is a definitional gap in the gold, not a parser defect. It is exactly why
+  `iss_share_agreement_1pct` / `_5pct` are DIAGNOSTIC — dropping the add-on would
+  move a diagnostic up while making the parser wrong about the proxy's own
+  disclosed total.
+- **No gate may fall below its threshold.** Report all five every time, each with
+  its denominator. An ISS-recall gain reported without the other four is not a
+  result, and `check.sh` exits 1 if any one of them is short.
+- `iss_individual_precision_proxy` is DIAGNOSTIC and is an UPPER bound (0.9726,
+  with 37.92% of its numerator from the officer-allowance arm). Read it as a
+  regression detector — if it falls while ISS recall rises, the fix is flooding
+  the management table with non-people. Never optimise it.
+- The ISS holdout (`holdout_iss.tsv`, 385 firms / 741 filings) was scored ONCE as
+  the pre-round baseline and is off limits for the rest of the round.
+  `score.py --iss-holdout` refuses while `GRIND_ITERATION` is set (exit 4).
+- **Every round parses BOTH gold filelists.** `run_baseline.sh` defaults to
+  `gold_filelist_all.tsv` and asserts coverage of `gold_filelist.tsv` and
+  `gold_iss_filelist.tsv` before submitting; `score.py` exits 2 if the output does
+  not cover the ISS gold filings. Do not work around either — a gated recall over
+  a denominator the round chose for itself is not a measurement.
+- **0.90 is this round's TARGET, not the permanent floor.** When the round ends
+  the minimum is reset to **0.82**, the no-regression floor argued in
+  `GRIND_PLAN.md` §8 item 1 and recorded in `thresholds.json` `_history`. That
+  reset is not yours to make from inside an iteration — you may not edit
+  `thresholds.json` at all.
+
+## CARRIED OVER FROM THE PRECISION ROUND (2026-09-29) — GUARD, NOT TARGET
+
+`holder_precision_blockw` passes at 0.8304 against 0.82. It is a guard this
+round. The named false-positive families below are the ones that were being
+worked; if a fix for ISS recall re-opens one of them, precision will fall through
+0.82 and `check.sh` will exit 1.
+
+### The residual false-positive families
 
 From the journal note `residue-after-all-gates-pass` (subject `name_mismatch`),
 measured with the harness in `/data/def14a_own/work/scratch/{fp,full,pkg}.py`,
@@ -56,18 +145,11 @@ name**. Named families, largest first:
 
 ### Rules specific to this round
 
-- **A fix must not cost recall below 0.75, filing yield below 0.88 or group-row
-  below 0.80.** Report all four every time; a precision gain reported without
-  the other three is not a result.
-- **No tuning on company names.** Fix a LAYOUT CLASS. A rule keyed to
-  `Wellington`, `Sanford C. Bernstein` or any issuer name is a threshold widened
-  by another route, and it will not survive the holdout.
-- **The failing test comes first**, and it is a fixture transcribed from a real
-  filing you read with `-debug`, exercising the layout class — not the one
-  string that happens to be broken.
-- The holdout was re-drawn for this round (seed **20260929**, 747 firms) and
-  scored ONCE as the pre-round baseline. It is off limits for the rest of the
-  round by exactly the same rule as before.
+- These families are **not this round's target.** Do not pick an iteration's
+  subject from this table; pick it from the ISS miss decomposition above. The
+  table is here so a regression in precision can be recognised for what it is.
+- The blockw/factset holdout (seed **20260929**, 747 firms) was scored once as
+  that round's pre-round baseline and stays off limits, exactly as before.
 
 **Do NOT optimise the two FactSet metrics.** `group_pct_agreement_factset` and
 `largest_block_agreement_factset` are **DIAGNOSTIC**: the scorer prints them with
@@ -88,8 +170,9 @@ one moving.
 | `sge/*` when the run shape itself is wrong | `lock.sha256` |
 | | anything under `/data/def14a_own/gold/` |
 
-`check.sh` verifies `lock.sha256` over the scorer, the thresholds and the four
-gold files before it scores anything, and exits 3 if any of them moved. Editing
+`check.sh` verifies `lock.sha256` over the scorer, the thresholds and the six
+gold files (including `gold_iss.tsv.gz` and `holdout_iss.tsv`) before it scores
+anything, and exits 3 if any of them moved. Editing
 the ruler instead of the thing being measured is the failure this lock exists to
 catch; it will be caught, and the iteration will have been wasted.
 
@@ -100,11 +183,14 @@ it and do not read `/data/def14a_own/gold/holdout.tsv` for anything except the
 
 ## The loop for one iteration
 
-1. **Read the current miss decomposition** — `$DEF14A_WORK/miss_dev.tsv`, written
-   by the last scoring run, one row per gold-linked dev filing with its cause.
-   Pick the LARGEST cause that is not floored and not exhausted.
+1. **Read the current miss decomposition.** This round that is
+   `$DEF14A_WORK/miss_iss_dev.tsv` — one row per ISS director in an ISS-dev
+   filing, with its cause and the filing's parsed/person/ISS-director counts.
+   (`$DEF14A_WORK/miss_dev.tsv` is the blockw/factset one, one row per
+   gold-linked dev filing; it is the guard, not the target.) Pick the LARGEST
+   cause that is not floored and not exhausted.
 2. **Look at actual filings.** Pick 5-10 filings with that cause from
-   `miss_dev.tsv` and read them:
+   `miss_iss_dev.tsv` and read them:
    `parse_def14a_own_go/parse_def14a_own_go -debug /wrds/sec/archives/<relpath>`
    (locally: the same binary against a copy under `$DEF14A_WORK/samples/`).
    A fix written without reading the filings is a guess.
