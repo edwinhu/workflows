@@ -20,8 +20,8 @@ under `maximums` (ceilings) in `thresholds.json`:
 
 | gated metric | kind | threshold |
 |---|---|---:|
-| `sample_dup_excess_same_table_rate` | ceiling | **≤ 0.01** — THIS round's target |
-| `sample_dup_excess_same_table_rate_max_year` | ceiling | **≤ 0.02** — THIS round's target |
+| `sample_dup_excess_identical_row_rate` | ceiling | **≤ 0.01** — THIS round's target |
+| `sample_dup_excess_identical_row_rate_max_year` | ceiling | **≤ 0.02** — THIS round's target |
 | `sample_yield_worst_year_margin` | floor | **≥ 0.0** — the per-year no-regression guard |
 | `filing_yield_parsed_percent` | floor | 0.88 |
 | `holder_recall_blockw` | floor | 0.75 |
@@ -49,16 +49,30 @@ output does not cover the sample.
 The per-year table is printed every round under `== (vi) FULL-ARCHIVE SAMPLE ==`
 and written to `$DEF14A_WORK/sample_by_year.tsv`.
 
-### What the duplicate metric is, exactly
+### What the duplicate metric is, exactly — REDEFINED 2026-09-29 by the operator
 
-The documented grain is one row per **(filing, holder row × share class)**, so the
-exact key is `(accession, cik, holder_name, share_class)`. For a key group of `n`
-rows the excess is `n-1`, and it decomposes exactly:
+**A duplicate is an IDENTICAL ROW.** The gated key is
 
 ```
-n - 1  =  Σ over table_kind (n_in_kind - 1)      SAME table_kind   [GATED]
-       +  (n_distinct_table_kinds - 1)           CROSS table_kind  [REPORTED]
+(accession, cik, table_kind, holder_name, share_class, shares, percent)
 ```
+
+and the metric counts excess COPIES, `n-1` per group. `shares` and `percent` are
+compared as the parser emitted them; `table_index` is deliberately NOT in the key,
+so one row emitted out of two tables of the same kind still counts.
+
+**The earlier definition — excess on `(accession, cik, holder_name, share_class)`
+within one `table_kind` — is now a DIAGNOSTIC** (`sample_dup_excess_same_table_rate`
+and `_max_year`, printed beside the gated pair every round). It counted
+legitimately distinct rows as duplicates: one holder listed once per managed
+account, each row with its OWN shares and percent, collapses onto that key.
+AllianceBernstein 2018 was 264 of that year's 304 excess rows, and 620 of 4,352
+across the sample. Two journal floors —
+`one-record-holder-many-accounts-one-fund-class` and
+`sample_dup_excess_same_table_rate_max_year-2018-unreachable` — recorded that the
+old 2018 ceiling was unreachable without deleting true rows. **Both are SUPERSEDED**:
+they were defects in the metric, not in the parser, and the new key admits no such
+floor. Do not re-diagnose them, and do not work the diagnostic down.
 
 **Cross-`table_kind` excess is legitimate and is NEVER gated.** A director who is
 also a 5% holder is listed in the 5% holders table AND the management table and
@@ -99,7 +113,12 @@ the wrong fix even where no gate catches it.
 - **Never collapse two rows that carry different values.** 59,969 of the
   within-one-table excess rows have DIFFERING `shares`. Those are distinct
   holdings whose class label is missing; merging them loses data and lowers no
-  gate that matters.
+  gate that matters. Since the 2026-09-29 redefinition they are not duplicates at
+  all — a row with different `shares` or `percent` cannot enter the gated count,
+  so populating `share_class` for them buys the gate nothing. Read the mechanism
+  table below with that in mind: the rows the GATED metric now counts are the ones
+  that repeat EVERY field, which is M3 (a non-ownership table attached once per
+  fund, same trustees, same numbers) and the genuinely re-emitted row.
 - **No gate may regress.** Report all eight every time with denominators. The
   per-year yield floor (`sample_yield_worst_year_margin`) exists so that
   duplicate cleanliness cannot be bought by dropping rows in one era: each year's

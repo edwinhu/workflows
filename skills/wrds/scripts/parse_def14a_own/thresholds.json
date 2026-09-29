@@ -1,6 +1,6 @@
 {
   "_about": "Pass thresholds for the parse_def14a_own grind. Locked in lock.sha256; the grind may not edit this file. Each value is argued from a measured baseline in GRIND_PLAN.md — the 2026-09-28 setup baseline for the first round, and the 2026-09-29 dev/holdout pair for the precision round.",
-  "_gating": "EXACTLY the keys under `minimums` (floors, value >= threshold) plus the keys under `maximums` (ceilings, value <= threshold) gate check.sh — EIGHT of them since 2026-09-29, when the duplicate-row round added `sample_yield_worst_year_margin` to `minimums` and `sample_dup_excess_same_table_rate` / `_max_year` to `maximums`. Before that: FIVE, all floors. Everything under `diagnostics` is computed and printed with its denominator every round and NEVER affects the exit code. That includes the two FactSet aggregate metrics (the FactSet gold is defined by a proxy window over all FactSet stakes and mixes 13F / Form 4 positions — only 21 of 2,647 linked firm-years carry a PXY marker — so a 1 pp band would reward chasing gold noise) and the two ISS share-agreement metrics plus the ISS precision proxy (see `_iss_diagnostics`). The loop must not optimise any of them.",
+  "_gating": "EXACTLY the keys under `minimums` (floors, value >= threshold) plus the keys under `maximums` (ceilings, value <= threshold) gate check.sh — EIGHT of them since 2026-09-29, when the duplicate-row round added `sample_yield_worst_year_margin` to `minimums` and a duplicate-rate pair to `maximums`. That pair was redefined later the same day (see the last `_history` entry): it is now `sample_dup_excess_identical_row_rate` / `_max_year`, at the same 0.01 / 0.02, and the `sample_dup_excess_same_table_rate` / `_max_year` it replaced are DIAGNOSTIC. Before the duplicate round: FIVE gates, all floors. Everything under `diagnostics` is computed and printed with its denominator every round and NEVER affects the exit code. That includes the two FactSet aggregate metrics (the FactSet gold is defined by a proxy window over all FactSet stakes and mixes 13F / Form 4 positions — only 21 of 2,647 linked firm-years carry a PXY marker — so a 1 pp band would reward chasing gold noise) and the two ISS share-agreement metrics plus the ISS precision proxy (see `_iss_diagnostics`). The loop must not optimise any of them.",
   "_history": [
     {
       "date": "2026-09-28",
@@ -101,6 +101,17 @@
         "excluded": "every accession in gold_filelist_all.tsv",
         "submitted_as": "gold/round_filelist.tsv, 21,128 filings"
       }
+    },
+    {
+      "date": "2026-09-29",
+      "round": "DUPLICATE-ROW round — the gated metric is REDEFINED mid-round (operator decision)",
+      "change": "`maximums` now gates `sample_dup_excess_identical_row_rate` <= 0.01 and `sample_dup_excess_identical_row_rate_max_year` <= 0.02. The two keys it replaces, `sample_dup_excess_same_table_rate` and `_max_year`, move to `diagnostics` and are still computed and printed every round. THE THRESHOLD VALUES ARE UNCHANGED (0.01 pooled, 0.02 worst year) and so is every other gate and floor: the six `minimums` are byte-for-byte as they were (0.88 / 0.75 / 0.82 / 0.80 / 0.82 / 0.0) and `_sample_yield_floor_by_year` is untouched. Gated count stays EIGHT. Implemented in scorer/score.py as the `DupExcess` class, one streaming accumulator for all five counters, covered by scorer/score_test.py::DupExcessCounters.",
+      "old_definition": "excess rows sharing (accession, cik, holder_name, share_class) WITHIN one table_kind.",
+      "new_definition": "excess copies of an IDENTICAL ROW: same (accession, cik, table_kind, holder_name, share_class, shares, percent). `shares` and `percent` are compared as the parser emitted them, because a row emitted twice by one parse emits byte-identical numbers. table_index is deliberately OUT of the key, so one row emitted from two tables of the same kind still counts as a duplicate.",
+      "why": "The old key counted legitimately distinct rows as duplicates. One holder listed once per managed account, each row carrying its OWN shares and percent, collapses onto (holder, class, kind) — AllianceBernstein's 2018 proxy is the type case: 264 of that year's 304 remaining excess rows, and 620 of the 4,352 excess rows remaining across the sample. Two journal floors had already been recorded against exactly this, `one-record-holder-many-accounts-one-fund-class` and `sample_dup_excess_same_table_rate_max_year-2018-unreachable`: the loop had proved the 2018 ceiling unreachable WITHOUT deleting true rows, which is a defect in the metric and not in the parser. An identical row is a duplicate under any reading, so the new key admits no such floor. BOTH journal floors are superseded by this entry.",
+      "kept_as_diagnostic": "`sample_dup_excess_same_table_rate` and `_max_year` are reported alongside the gated pair every round, so the redefinition is visible in the printout and in metrics_dev.json rather than being a silently easier gate. The per-year table prints dup_ident and dup_same side by side, and sample_by_year.tsv carries both.",
+      "guard": "Unchanged, and it still binds: the identical-row ceilings can be cleared by suppressing rows, and suppression drives holder_recall_blockw under 0.75, iss_director_recall under 0.82, filing_yield_parsed_percent under 0.88, or a single sample year's yield under its recorded floor. Widening the duplicate definition does not touch that argument — it only stops the ceiling from PAYING for suppression of rows that were never duplicates.",
+      "re_baselined": "Re-locked with make_lock.sh and re-baselined with one full round of run_baseline.sh at HEAD on 2026-09-29; the measured old-vs-new per-year rates are recorded in the GRIND_PLAN.md amendment of the same date and in the journal note `operator-dup-metric-identical-row`."
     }
   ],
   "_baseline_2026_09_28_dev": {
@@ -121,8 +132,8 @@
     "sample_yield_worst_year_margin": 0.0
   },
   "maximums": {
-    "sample_dup_excess_same_table_rate": 0.01,
-    "sample_dup_excess_same_table_rate_max_year": 0.02
+    "sample_dup_excess_identical_row_rate": 0.01,
+    "sample_dup_excess_identical_row_rate_max_year": 0.02
   },
   "_sample_yield_floor_by_year": {
     "1994": 0.703,
@@ -167,6 +178,8 @@
     "iss_share_agreement_5pct",
     "iss_individual_precision_proxy",
     "sample_dup_excess_total_rate",
+    "sample_dup_excess_same_table_rate",
+    "sample_dup_excess_same_table_rate_max_year",
     "sample_dup_excess_cross_table_rate",
     "sample_dup_excess_same_table_index_rate",
     "sample_filing_yield_parsed_percent",
