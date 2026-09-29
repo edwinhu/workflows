@@ -1534,3 +1534,91 @@ func TestAdditiveGlueColumnsAreNotPercents(t *testing.T) {
 		t.Errorf("percent wrong: %+v", r)
 	}
 }
+
+// The control: components of ONE holding, no percent column. "Total" names one of
+// them, so the table is still one row per holder.
+func TestComponentColumnsStayOneRow(t *testing.T) {
+	rows := run(t, noPercentOwnershipHTML)
+	n := 0
+	for _, r := range rows {
+		if r.HolderName == "Mary A. Roe" {
+			n++
+		}
+	}
+	if n != 1 {
+		t.Errorf("component columns emitted %d rows for one holder, want 1: %v", n, holderNames(rows))
+	}
+}
+
+// A percent column whose header cell IS the "%" sign and whose data cells are
+// only markers ("*") is a percent column of its own. Read as the bare "%" glyph
+// column that trails a value, it flagged the NUMBER column to its left as a
+// percent, so every class's share count was paired as a percent and the holder
+// was emitted once per column with a colliding label.
+const pctHeaderGlyphHTML = `<html><body>
+<p>Security Ownership of Certain Beneficial Owners and Management</p>
+<table>
+<tr><td></td><td colspan="2">Class A Common Stock Beneficially Owned</td><td colspan="2">Class B Common Stock Beneficially Owned</td></tr>
+<tr><td>Name of Beneficial Owner</td><td>Number</td><td>%</td><td>Number</td><td>%</td></tr>
+<tr><td>FI Station Investor LLC</td><td>42,199</td><td>*</td><td>22,613,985</td><td>48.2</td></tr>
+<tr><td>Fertitta Business Management LLC</td><td>10,127</td><td>*</td><td>28,198,618</td><td>60.1</td></tr>
+<tr><td>FBM Sub 1 LLC</td><td>-</td><td>*</td><td>6,000,000</td><td>12.8</td></tr>
+</table></body></html>`
+
+func TestPercentHeaderGlyphIsItsOwnColumn(t *testing.T) {
+	rows := run(t, pctHeaderGlyphHTML)
+	var got []Row
+	for _, r := range rows {
+		if r.HolderName == "FI Station Investor LLC" {
+			got = append(got, r)
+		}
+	}
+	if len(got) != 2 {
+		t.Fatalf("want one row per class, got %d: %+v", len(got), got)
+	}
+	cls := map[string]bool{}
+	for _, r := range got {
+		cls[r.ShareClass] = true
+	}
+	if len(cls) != 2 {
+		t.Errorf("the two class rows share a label: %v", cls)
+	}
+	for _, r := range got {
+		if r.Shares == nil {
+			t.Errorf("the Number column was not read as a share count: %+v", r)
+		}
+	}
+}
+
+// A multi-class table states the CLASS one header row up and the QUANTITY one
+// row down: "Series A", "Series B", then "Series A and Series B" over BOTH a
+// share-number pair and a combined-VOTES pair. The class row alone gives the
+// last two pairs one label, so two distinct holdings landed on one key.
+const tiedPairLabelHTML = `<html><body>
+<p>Security Ownership of Certain Beneficial Owners and Management</p>
+<table>
+<tr><td colspan="9">Shares of Common Stock Beneficially Owned And Percentage of Outstanding Shares</td></tr>
+<tr><td></td><td colspan="2"></td><td colspan="2"></td><td colspan="4">Combined</td></tr>
+<tr><td></td><td colspan="2">Series A</td><td colspan="2">Series B</td><td colspan="2">Series A and Series B</td><td colspan="2">Series A and Series B</td></tr>
+<tr><td>Name</td><td>Number</td><td>Percent</td><td>Number</td><td>Percent</td><td>Number</td><td>Percent</td><td>Votes</td><td>Percent</td></tr>
+<tr><td>James M. Moroney III</td><td>179,037</td><td>1.1</td><td>602,019</td><td>24.3</td><td>781,056</td><td>3.5</td><td>6,199,227</td><td>14.0</td></tr>
+<tr><td>Robert W. Decherd</td><td>467,100</td><td>2.4</td><td>1,548,000</td><td>62.3</td><td>2,015,100</td><td>9.0</td><td>15,947,100</td><td>36.1</td></tr>
+</table></body></html>`
+
+func TestTiedPairLabelsAreSplit(t *testing.T) {
+	rows := ScreenRows(run(t, tiedPairLabelHTML))
+	cls := map[string]int{}
+	for _, r := range rows {
+		if r.HolderName == "James M. Moroney III" {
+			cls[r.ShareClass]++
+		}
+	}
+	if len(cls) == 0 {
+		t.Fatalf("holder lost: %v", holderNames(rows))
+	}
+	for c, n := range cls {
+		if n > 1 {
+			t.Errorf("share_class %q emitted %d times for one holder: %v", c, n, cls)
+		}
+	}
+}

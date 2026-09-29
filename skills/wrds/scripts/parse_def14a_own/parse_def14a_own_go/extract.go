@@ -49,7 +49,7 @@ type Row struct {
 }
 
 var (
-	reHdrPct    = regexp.MustCompile(`(?i)percent|%|of\s+class|of\s+outstanding`)
+	reHdrPct = regexp.MustCompile(`(?i)percent|%|of\s+class|of\s+outstanding`)
 	// The arithmetic glue of an additive table: a column holding nothing but a
 	// bare "+" or "=" between the component columns it adds up.
 	reArithGlue = regexp.MustCompile(`^\s*[+=]\s*$`)
@@ -77,7 +77,7 @@ var (
 	// counted. Read only where the table has no percent column (see
 	// looksLikeOwnership).
 	reHdrOwnedShares = regexp.MustCompile(`(?i)\bowned\b|\bowns\b|ownership|\bheld\b|\bholdings?\b|beneficial|\bvot(?:ing|es)\b|\binterest\b`)
-	reSkipName = regexp.MustCompile(`(?i)^(name|names?\s+(and\s+address\s+)?of\s+.*|(name\s+of\s+)?beneficial\s+owners?|title\s+of\s+class|total|subtotal|directors?|non-?employee\s+directors?|executive\s+officers?|named\s+executive\s+officers?|nominees?|continuing\s+directors?|other\s+executive\s+officers?|5%\s+.*|principal\s+.*holders?|common\s+stock|class\s+[a-d].*)$`)
+	reSkipName       = regexp.MustCompile(`(?i)^(name|names?\s+(and\s+address\s+)?of\s+.*|(name\s+of\s+)?beneficial\s+owners?|title\s+of\s+class|total|subtotal|directors?|non-?employee\s+directors?|executive\s+officers?|named\s+executive\s+officers?|nominees?|continuing\s+directors?|other\s+executive\s+officers?|5%\s+.*|principal\s+.*holders?|common\s+stock|class\s+[a-d].*)$`)
 	// The table must look like an ownership table, not an equity-comp-plan or
 	// compensation table that also carries share counts.
 	reOwnCue = regexp.MustCompile(`(?i)beneficial|percent\s*(?:age)?\s*of\s*(?:class|shares|common|outstanding)|amount\s+and\s+nature|%\s*of\s*class|shares\s+owned|owned\s+of\s+record|as\s+a\s+group|principal\s+(?:stock|share)holders`)
@@ -199,7 +199,12 @@ func compact(g *Grid) *compacted {
 			if !reOnlyPunct.MatchString(flat(c)) {
 				junk = false
 			}
-			if strings.Contains(c, "%") {
+			// Only a "%" in a DATA row is the glyph that trails the value in the
+			// column to the left. A "%" in the HEADER block is that column's own
+			// name: "Number | %" over each class, whose data cells may be nothing
+			// but "*" markers. Flagging its left neighbour turns the class's
+			// share count into a percent.
+			if strings.Contains(c, "%") && i >= hdrEnd {
 				sawPct = true
 			}
 		}
@@ -621,6 +626,65 @@ func cleanClassLabel(s string) string {
 	return s
 }
 
+// splitTiedLabels separates two pairs that the chosen header row gives the SAME
+// name. A multi-class table often states the class one row up and the QUANTITY
+// one row down — "Series A and Series B" over both a share Number column and a
+// Votes column — so two distinct holdings land on one key. Any other header row
+// that tells the tied pairs apart is composed onto their labels.
+func (c *compacted) splitTiedLabels(ps []pair, out []string, at func(pair, int) string, nh, used int) {
+	// The distinguishing word may sit over the SHARE column ("Number" against
+	// "Votes") while `at` prefers the percent column, so each header row is tried
+	// from both sides.
+	atShares := func(p pair, i int) string {
+		if p.shares < 0 || p.shares >= len(c.roles) || i >= len(c.roles[p.shares].hdrCells) {
+			return ""
+		}
+		return c.roles[p.shares].hdrCells[i]
+	}
+	for step := 0; step < 2*nh; step++ {
+		i := nh - 1 - step/2
+		read := at
+		if step%2 == 1 {
+			read = atShares
+		}
+		if i == used && step%2 == 0 {
+			continue
+		}
+		tied := map[string][]int{}
+		for k, v := range out {
+			tied[v] = append(tied[v], k)
+		}
+		anyTied := false
+		for _, ks := range tied {
+			if len(ks) > 1 {
+				anyTied = true
+			}
+		}
+		if !anyTied {
+			return
+		}
+		for _, ks := range tied {
+			if len(ks) < 2 {
+				continue
+			}
+			vals := map[int]string{}
+			seen := map[string]bool{}
+			for _, k := range ks {
+				vals[k] = cleanClassLabel(read(ps[k], i))
+				seen[vals[k]] = true
+			}
+			if len(seen) < 2 {
+				continue
+			}
+			for _, k := range ks {
+				if vals[k] != "" {
+					out[k] = withSeries(out[k], vals[k])
+				}
+			}
+		}
+	}
+}
+
 // pairLabels names each (shares, percent) column pair from the header row that
 // DISTINGUISHES it from its siblings. The deepest header row is usually the
 // column TYPE ("Shares Held", "As % of shares outstanding"), identical over
@@ -662,6 +726,7 @@ func (c *compacted) pairLabels(ps []pair) []string {
 			for k := range vals {
 				out[k] = cleanClassLabel(vals[k])
 			}
+			c.splitTiedLabels(ps, out, at, nh, i)
 			return out
 		}
 	}
@@ -967,6 +1032,16 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 		return nil, c
 	}
 	plabels := c.pairLabels(ps)
+	// A class-shaped header that SPANS every pair ("Shares of Common Stock
+	// Beneficially Owned and Percentage of Outstanding Shares" over a Series A, a
+	// Series B and a combined-votes pair) names the security, not the column, so
+	// it cannot tell the pairs apart: the pair labels have to compose with it.
+	clTells := false
+	for _, p := range ps {
+		if c.classLabel(p) != c.classLabel(ps[0]) {
+			clTells = true
+		}
+	}
 	var out []Row
 	lastName, lastSeries := "", ""
 	lastClass := make([]string, len(c.hdrClassCols))
@@ -1097,11 +1172,21 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 					cl = rowClass
 				}
 				// Several value column pairs per holder row and no class-shaped
-				// header over them: the header row that tells the pairs apart
-				// names them, and it composes with a fund label rather than
-				// replacing it.
+				// header that TELLS THEM APART: the header row that distinguishes
+				// the pairs names them, and it composes with a fund label rather
+				// than replacing it.
 				if cl == "" && len(ps) > 1 {
 					hint = withSeries(hint, plabels[pi])
+				} else if !clTells && len(ps) > 1 && plabels[pi] != "" &&
+					!reScreenNonCommon.MatchString(cl) {
+					// The spanning label names the security for EVERY pair, so it
+					// cannot be the key. It moves onto the hint composed with the
+					// label that does distinguish them, and ScreenRows copies the
+					// composition onto ShareClass after the drop rules have run —
+					// which is why cl is cleared only when it was not itself
+					// deciding a screen.
+					hint = withSeries(cl, withSeries(hint, plabels[pi]))
+					cl = ""
 				}
 				if lastSeries != "" {
 					hint = withSeries(lastSeries, hint)
