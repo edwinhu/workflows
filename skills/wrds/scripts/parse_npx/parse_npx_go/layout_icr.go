@@ -1265,6 +1265,24 @@ func icrResolveFundShared(ix *issSeriesIndex, name string) string {
 			hdrOnlyID = id
 		}
 	}
+	// And the displacement is symmetric. What may take an inexact header answer
+	// away from it is an EXACT dictionary hit -- the registrant's dictionary
+	// spelling this banner as printed, which issBannerDeclaredExact reads off
+	// the outer ix because issDeclAliases has folded those names in. A
+	// dictionary TOLERANCE rung is a guess of exactly the same kind as the
+	// header's near miss, and it is the weaker of the two: the header's guess
+	// is anchored on a name THIS filing declares for THIS period, while the
+	// dictionary's is anchored on whatever else the registrant ever named.
+	// TIAA-CREF's 20200630 report heads four sections `TC Quant Large-Cap Value
+	// Fund` and the like -- its own declared `TIAA-CREF Quant Large-Cap Value
+	// Fund` with the house prefix swapped, inexact by that prefix alone -- and
+	// each has a same-CIK sibling whose name is the banner minus `Quant`. Let a
+	// tolerance rung run and it drops the one discriminating token and stamps
+	// the sibling (family MISLINK30). Nothing the dictionary spells inexactly
+	// outranks the header, so return the header's answer.
+	if hdrOnlyID != "" && !issBannerDeclaredExact(ix, name) {
+		return hdrOnlyID
+	}
 	if id := icrResolveFundVintage(ix, ix.byName, name); id != "" {
 		// Its own first rung is the exact route; every rung after it cuts the
 		// printed name. An INEXACT answer of this registrant's own does not
