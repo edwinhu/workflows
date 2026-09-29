@@ -309,6 +309,11 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 			continue
 		}
 		classes := classLabelsFromHeader(hdr)
+		// A fund-family proxy in ASCII writes the fund and the share class on
+		// LABEL LINES of their own between the holder rows, indented to show
+		// which contains which. Those lines carry no number so they are not
+		// block rows at all and the identity was simply lost.
+		stickyAt := textStickyLabels(clean, block)
 		var rows []Row
 		lastHolder := ""
 		for _, ln := range block {
@@ -411,6 +416,7 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 				case len(classes) == 1:
 					rw.ShareClass = classes[0]
 				}
+				rw.classHint = stickyAt[ln]
 				if rw.Shares == nil && rw.Percent == nil && rw.PctMarker == "" {
 					continue
 				}
@@ -798,3 +804,60 @@ func textSeriesLabels(clean []string, series []string) []string {
 	}
 	return out
 }
+
+// reTextStickyLabel matches an ASCII LABEL LINE: a line naming a share class,
+// a fund or a portfolio and nothing else. Such a line carries no number, so it
+// is never a holder row; it says which class or fund the rows under it belong
+// to. Anchored on the trailing noun so a prose sentence cannot match.
+var reTextStickyLabel = regexp.MustCompile(`(?i)^[A-Z0-9][\w.,'&()/ -]{0,58}?\b(?:class|classes|shares|portfolio|fund|series|trust)\s*:?$`)
+
+// textStickyLabels maps every line of a block to the label in force at it. A
+// label written at a SMALLER indent contains the ones written further in, so a
+// fund line resets the class line under it and the two compose. Returns nil when
+// no label line is found, which is every ordinary proxy.
+func textStickyLabels(clean []string, block []int) map[int]string {
+	if len(block) == 0 {
+		return nil
+	}
+	lo, hi := block[0], block[len(block)-1]
+	// Look a little above the first row: the first label sits just over it.
+	if lo -= 12; lo < 0 {
+		lo = 0
+	}
+	byIndent := map[int]string{}
+	var indents []int
+	out := map[int]string{}
+	found := false
+	for ln := lo; ln <= hi && ln < len(clean); ln++ {
+		t := strings.TrimSpace(clean[ln])
+		if t != "" && !reTextDigit.MatchString(t) && reTextStickyLabel.MatchString(t) {
+			ind := len(clean[ln]) - len(strings.TrimLeft(clean[ln], " "))
+			var keep []int
+			for _, k := range indents {
+				if k < ind {
+					keep = append(keep, k)
+				} else {
+					delete(byIndent, k)
+				}
+			}
+			byIndent[ind] = strings.TrimRight(t, ":")
+			indents = append(keep, ind)
+			found = true
+			continue
+		}
+		if len(indents) == 0 {
+			continue
+		}
+		parts := make([]string, 0, len(indents))
+		for _, k := range indents {
+			parts = append(parts, byIndent[k])
+		}
+		out[ln] = strings.Join(parts, " | ")
+	}
+	if !found {
+		return nil
+	}
+	return out
+}
+
+var reTextDigit = regexp.MustCompile(`[0-9]`)
