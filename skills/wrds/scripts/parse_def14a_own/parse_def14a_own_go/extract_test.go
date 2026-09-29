@@ -1713,3 +1713,46 @@ func TestPerFundColumnsAndInteriorHeader(t *testing.T) {
 		t.Errorf("fund columns mislabelled: %v", vals)
 	}
 }
+
+// A multi-security company writes ONE 5% table per class, and the only thing
+// that says which class a table is about is a short heading line above it. The
+// directors are listed under every one of them with no holding, so without the
+// heading the same name lands on the same empty key once per class.
+const classHeadingPerTableHTML = `<html><body>
+<p>Beneficial Ownership</p>
+<p>Series N Preferred Stock</p>
+<table>
+<tr><th>Name and Address of Beneficial Owner</th><th>Amount and Nature of Beneficial Ownership</th><th colspan="2">Percentage Owned</th></tr>
+<tr><td>Crestview Capital Master, LLC</td><td>1,021,269</td><td>51.2</td><td>%</td></tr>
+<tr><td>SF Capital Partners Ltd</td><td>477,731</td><td>23.9</td><td>%</td></tr>
+<tr><td>Jeffrey Hendrickson</td><td>&#8212;</td><td>*</td><td></td></tr>
+</table>
+<p>Beneficial Ownership</p>
+<p>Series P Preferred Stock</p>
+<table>
+<tr><th>Name and Address of Beneficial Owner</th><th>Amount and Nature of Beneficial Ownership</th><th colspan="2">Percentage Owned</th></tr>
+<tr><td>Gryphon Master Fund, L.P.</td><td>265,319</td><td>49.9</td><td>%</td></tr>
+<tr><td>GSSF Master Fund, LP</td><td>133,659</td><td>24.8</td><td>%</td></tr>
+<tr><td>Jeffrey Hendrickson</td><td>&#8212;</td><td>*</td><td></td></tr>
+</table></body></html>`
+
+func TestClassHeadingLabelsItsTable(t *testing.T) {
+	rows := ScreenRows(run(t, classHeadingPerTableHTML))
+	seen := map[string]int{}
+	for _, r := range rows {
+		if r.HolderName == "Jeffrey Hendrickson" {
+			seen[r.ShareClass]++
+		}
+	}
+	if len(seen) == 0 {
+		t.Fatalf("holder lost: %v", holderNames(rows))
+	}
+	for cls, n := range seen {
+		if n > 1 {
+			t.Errorf("share_class %q emitted %d times for one holder: %v", cls, n, seen)
+		}
+		if !strings.Contains(cls, "Series") {
+			t.Errorf("share_class %q does not name the class heading above the table: %v", cls, seen)
+		}
+	}
+}
