@@ -295,10 +295,22 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 					nm = strings.TrimSpace(prev + " " + nm)
 				}
 			}
-			if nm != "" && !reClassOnly.MatchString(nm) {
+			// A name that is nothing but a postal address, with no head to
+			// recover above it, carries no holder: emitting it invents one.
+			// The row still counts toward the block's two-row floor.
+			noHolder := isAddressLine(nm)
+			if nm != "" && !noHolder && !reClassOnly.MatchString(nm) {
 				lastHolder = nm
 			}
 			grp, gn := isGroupRow(nm)
+			// The group label can wrap FORWARD, leaving the person count on a
+			// line BELOW the numbers: "All directors" / "and executive officers"
+			// / "as a group (11 persons".
+			if grp && gn == 0 {
+				if joined, n, ok := joinForwardLabel(clean, ln, nm); ok {
+					nm, gn = joined, n
+				}
+			}
 			cells := textTokens(rest)
 			// One ASCII line is one holding unless it carries two COMPLETE
 			// (shares + percent) pairs, which is what a genuine two-class row
@@ -324,6 +336,7 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 				rw.HolderName = nm
 				rw.IsGroupRow = grp
 				rw.GroupN = gn
+				rw.noHolder = noHolder
 				rw.Parser = "text_table"
 				rw.Footnotes = strings.Join(fns, ",")
 				if cells[k].shares != nil {
@@ -358,7 +371,12 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 		for k := range rows {
 			rows[k].TableKind = kd
 		}
-		out = append(out, rows...)
+		for _, rw := range rows {
+			if rw.noHolder {
+				continue
+			}
+			out = append(out, rw)
+		}
 	}
 	return out, blocksSeen, blocksUsed
 }
@@ -516,6 +534,7 @@ func joinWrappedLabel(clean []string, ln int, nm string) (string, bool) {
 		return "", false
 	}
 	var pre []string
+	best := ""
 	for k := ln - 1; k >= 0 && len(pre) < 3; k-- {
 		p := strings.TrimSpace(clean[k])
 		if p == "" || len(p) > 90 || reShareLike.MatchString(p) {
@@ -525,18 +544,55 @@ func joinWrappedLabel(clean []string, ln int, nm string) (string, bool) {
 			break // a table row of its own, not a wrapped label line
 		}
 		pre = append([]string{p}, pre...)
-		if g, _ := isGroupRow(strings.Join(append(append([]string{}, pre...), nm), " ")); g {
-			break // shortest join that reads as the group row
+		cand := strings.TrimSpace(strings.Join(append(append([]string{}, pre...), nm), " "))
+		g, n := isGroupRow(cand)
+		if !g {
+			continue
+		}
+		if best == "" {
+			best = cand // shortest join that reads as the group row
+		}
+		if n > 0 {
+			return cand, true // keep walking only until the person count is in
 		}
 	}
-	if len(pre) == 0 {
+	if best == "" {
 		return "", false
 	}
-	joined := strings.TrimSpace(strings.Join(append(pre, nm), " "))
-	if g, _ := isGroupRow(joined); !g {
-		return "", false
+	return best, true
+}
+
+// joinForwardLabel walks FORWARD over the contiguous non-tabular lines below a
+// group row and returns the label with its continuation appended, plus the
+// person count once one appears:
+//
+//	All directors                        775,973      10.80%
+//	and executive officers
+//	as a group (11 persons
+//	including those named above)
+//
+// It fires only on a row already read as a group row, and stops at the first
+// line that is a table row of its own, so it can never reach a real holder.
+func joinForwardLabel(clean []string, ln int, nm string) (string, int, bool) {
+	parts := []string{nm}
+	for k := ln + 1; k < len(clean) && k <= ln+5; k++ {
+		p := strings.TrimSpace(clean[k])
+		if p == "" || len(p) > 90 || reShareLike.MatchString(p) || isAddressLine(p) {
+			break
+		}
+		if _, _, ok := parseTextRow(clean[k]); ok {
+			break
+		}
+		if reHdrLineCue.MatchString(p) || reSkipName.MatchString(p) {
+			break
+		}
+		parts = append(parts, p)
+		joined := strings.TrimSpace(strings.Join(parts, " "))
+		if g, n := isGroupRow(joined); g && n > 0 {
+			return joined, n, true
+		}
 	}
-	return joined, true
+	return "", 0, false
 }
 
 // --- name-and-address blocks ---------------------------------------------
@@ -560,14 +616,35 @@ var (
 	reStreetLine = regexp.MustCompile(`(?i)^(\d{1,6}[a-z]?|one|two|three|four|five|six|seven|eight|nine|ten)\s+\S.*\b(street|st|avenue|ave|road|rd|boulevard|blvd|drive|dr|lane|ln|place|pl|plaza|way|parkway|pkwy|highway|hwy|circle|court|ct|square|sq|building|bldg|tower|center|centre|floor|fl|broadway|park|row|terrace|walk|wharf)\b\.?,?$`)
 	reBoxLine    = regexp.MustCompile(`(?i)^(p\.?\s*o\.?\s+box\b|post\s+office\s+box\b|c/o\b|suite\s+\d|\d+(st|nd|rd|th)\s+floor\b)`)
 	reCityZip    = regexp.MustCompile(`^[A-Za-z][A-Za-z.\-' ]{1,40},\s+([A-Z]{2}|[A-Z][a-z]+(\s+[A-Z][a-z]+)?)\.?\s+\d{5}(-\d{4})?$`)
+	// "Greenwich, Connecticut" / "Boston, MA" — the same city line with the ZIP
+	// left off. A two-letter abbreviation that is also an English word ("Co",
+	// "In", "Or") is excluded: "Capital Research and Management Co" is a
+	// holder, not a city.
+	reCityState = regexp.MustCompile(`^[A-Z][A-Za-z.\-' ]{1,40},\s+(?:Alabama|Alaska|Arizona|Arkansas|California|` +
+		`Colorado|Connecticut|Delaware|Florida|Georgia|Hawaii|Idaho|Illinois|Indiana|Iowa|Kansas|Kentucky|` +
+		`Louisiana|Maine|Maryland|Massachusetts|Michigan|Minnesota|Mississippi|Missouri|Montana|Nebraska|` +
+		`Nevada|New\s+Hampshire|New\s+Jersey|New\s+Mexico|New\s+York|North\s+Carolina|North\s+Dakota|Ohio|` +
+		`Oklahoma|Oregon|Pennsylvania|Rhode\s+Island|South\s+Carolina|South\s+Dakota|Tennessee|Texas|Utah|` +
+		`Vermont|Virginia|Washington|West\s+Virginia|Wisconsin|Wyoming|` +
+		`A[LKZR]|C[AT]|DC|FL|GA|HI|I[AL]|K[SY]|M[ADINOST]|N[CDHJMVY]|O[HK]|PA|RI|S[CD]|T[NX]|UT|V[AT]|W[AIVY])\.?$`)
+	// A city/state/ZIP with a second address glued on: "Kirkland, WA 98033 &
+	// One Microsoft Way". Still nothing but address.
+	reCityZipIn = regexp.MustCompile(`^[A-Z][A-Za-z.\-' ]{1,40},\s+[A-Z][A-Za-z ]{1,20}\s+\d{5}(-\d{4})?\b`)
 	// A bare corporate suffix: all that is left of a name whose head wrapped.
 	reBareSuffix = regexp.MustCompile(`(?i)^[\(,]?\s*(inc|inc\.|corp|corp\.|corporation|incorporated|company|co|co\.|l\.?\s?p\.?|llc|l\.l\.c\.|llp|ltd|ltd\.|limited|n\.?\s?a\.?|trust|plc|s\.a\.|n\.v\.|a\.g\.|partners|holdings|associates|management)\s*[\.,]?\s*\)?$`)
 	// "- --------------------" separator rules between holders.
 	reRuleLine = regexp.MustCompile(`^[-=_\s\.\*]+$`)
+	// A line INSIDE a name-and-address cell that opens with a street number:
+	// "2365 Carillion Point", "6410 Poplar Avenue, Suite 900". Used only on the
+	// walk-back, where the numeric row has already been read as an address, so
+	// a holder actually named "100 Fifth Avenue Associates" is never touched.
+	reNumLedLine = regexp.MustCompile(`^\d{1,6}[A-Za-z]?\s+[A-Za-z]`)
 )
 
 func isAddressLine(s string) bool {
-	return reStreetLine.MatchString(s) || reBoxLine.MatchString(s) || reCityZip.MatchString(s)
+	s = strings.TrimSpace(s)
+	return reStreetLine.MatchString(s) || reBoxLine.MatchString(s) || reCityZip.MatchString(s) ||
+		reCityState.MatchString(s) || reCityZipIn.MatchString(s)
 }
 
 // headNameAbove walks back from the numeric row at ln over the address and
@@ -606,7 +683,7 @@ func headNameAbove(clean []string, ln int, nm string) (string, bool) {
 		if p == "" {
 			break
 		}
-		if isAddressLine(p) {
+		if isAddressLine(p) || reNumLedLine.MatchString(p) {
 			continue // an address line is never part of the name
 		}
 		// A share-shaped number outside an address line means this is not a

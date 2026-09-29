@@ -702,3 +702,208 @@ func TestASCIIProseLeadInDoesNotGrabCompensationTable(t *testing.T) {
 		}
 	}
 }
+
+// --- collective (group) labels that carry no "as a group" -----------------
+//
+// The D&O aggregate row is written a dozen ways and most of them never say
+// "as a group": the label wraps and the phrase lands on a line the numbers are
+// not on, or the proxy simply writes "All directors" / "(24 Persons)". Every
+// positive below is transcribed from a dev filing that emitted the fragment as
+// a NON-group holder row, which is a false positive in the holder set AND a
+// missing group row for the same filing.
+func TestCollectiveLabelsAreGroupRows(t *testing.T) {
+	yes := []string{
+		"All directors",                                    // 0000703799-00-000022
+		"All directors and executive officers",              // 0000011199-96 / many
+		"All executive officers and",                        // 0000103872-00-000184
+		"Directors and executive officers",                  // 0000057528-96-001104
+		"ALL DIRECTORS AND EXECUTIVE OFFICERS",              // 0000094328-00-000012
+		"(24 Persons)",                                      // 0000094328-00-000012
+		"Directors (22 persons,",                            // 0000899681-97-000161
+		"those listed above)",                               // 0000899681-96-000050
+		"Group (18 persons)",                                // 0000025445-96-000246
+		"Group (7 in number)",                               // 0000700612-98-000005
+		"officers",                                          // 0000912057-97-014579
+		"All nominees, directors and named officers as a",    // 0000950128-98-000652
+		"Non-Executive Director Group (6 persons)",           // 0000892569-98-001409
+		"(28 persons, including those named above)",          // 0000950124-00-001884
+		"All directors, directors emeritus and",              // 0000050863-97-000028
+		"Executive Officers and Directors",                   // 0000912057-96-021732
+	}
+	for _, name := range yes {
+		if g, _ := isGroupRow(name); !g {
+			t.Errorf("isGroupRow(%q) = false, want true", name)
+		}
+	}
+	// Real holders whose names brush against the collective vocabulary. Every
+	// one of these is a scored TRUE POSITIVE in the dev set, so flagging it as
+	// a group row would delete a real holding.
+	no := []string{
+		"FMR Corp.",
+		"The Goldman Sachs Group, Inc.",
+		"Trustees of General Electric Pension Trust",
+		"Royce Group",
+		"The Capital Group",
+		"Baron Capital Group",
+		"Wellington Management Group",
+		"Zacchello Family Group",
+		"Management, Inc",
+		"Directors Investment Group, Inc.",
+		"Richard M. Schulze Founder, Chairman, Chief Executive Officer and Director",
+		"Employees' Savings Plan of Panhandle Eastern Corporation",
+		"Group Vice President and General Counsel",
+		"First Manhattan Co.",
+		"Officer's Trust of the Ekco Group, Inc",
+	}
+	for _, name := range no {
+		if g, _ := isGroupRow(name); g {
+			t.Errorf("isGroupRow(%q) = true, want false", name)
+		}
+	}
+}
+
+// The group label wraps FORWARD: the numbers sit on the first line and the rest
+// of the label runs BELOW it. Transcribed from 0000703799-00-000022 (cik
+// 703799), which emitted holder "All directors" at 10.8% with no group flag and
+// no person count.
+var asciiGroupForwardWrap = `
+         VOTING SECURITIES AND PRINCIPAL HOLDERS THEREOF
+
+<TABLE>
+<CAPTION>
+               Name and                         Amount and
+              Address of                        Nature of
+ Title of     Beneficial                        Beneficial        Percent
+  Class         Owner                           Ownership         of Class
+ --------     ----------                        ----------        --------
+<S>          <C>                                <C>                 <C>
+             Quaker Capital                       807,351 (2)       11.91%
+               Management Corporation
+             1300 Arrott Building
+             401 Wood Street
+             Pittsburgh, PA 15222
+
+             Arthur Zankel                        171,463 (8)          2.52%
+             437 Madison Avenue
+             New York, NY 10022
+
+             All directors                        775,973             10.80%
+             and executive officers
+             as a group (11 persons
+             including those
+             named above)
+</TABLE>
+` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 250)
+
+func TestASCIIGroupLabelWrapsForward(t *testing.T) {
+	rows := run(t, asciiGroupForwardWrap)
+	var g *Row
+	for i := range rows {
+		if rows[i].IsGroupRow {
+			g = &rows[i]
+		}
+	}
+	if g == nil {
+		t.Fatalf("forward-wrapped group label not flagged; parsed: %v", holderNames(rows))
+	}
+	if g.Percent == nil || *g.Percent != 10.8 {
+		t.Errorf("group percent = %v, want 10.8", g.Percent)
+	}
+	if g.GroupN != 11 {
+		t.Errorf("group_n_persons = %d, want 11 (the count is on a line below)", g.GroupN)
+	}
+	if r := find(rows, "Arthur Zankel", ""); r == nil || r.Percent == nil || *r.Percent != 2.52 {
+		t.Errorf("the holder above the group row: %+v", r)
+	}
+	for _, r := range rows {
+		if strings.Contains(r.HolderName, "Madison") || strings.Contains(r.HolderName, "New York") {
+			t.Errorf("address line emitted as a holder: %q", r.HolderName)
+		}
+	}
+}
+
+// A name-and-address cell whose city line carries no ZIP, or carries a ZIP plus
+// a second address glued on. Transcribed from 0000916641-00-000488 (cik
+// 1025361) and 0000100166-96-000005 (cik 100166): both emitted the city line as
+// the holder name.
+var asciiCityLineNoZip = `
+                  SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS
+
+<TABLE>
+<CAPTION>
+Name and Address of Beneficial Owner            Number of Shares   Percent
+<S>                                             <C>                <C>
+Cascade Investment LLC & William H. Gates
+ III
+ 2365 Carillion Point
+ Kirkland, WA 98033 & One Microsoft Way
+ Redmond, WA 98052.......................       2,562,900(f)        8.21%
+
+Sound Shore Management, Inc. 8 Sound Shore Drive
+  Greenwich, Connecticut..........................     1,772,600(6)            5.95
+</TABLE>
+` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 250)
+
+func TestASCIICityLineWithoutZipIsNotAHolder(t *testing.T) {
+	rows := run(t, asciiCityLineNoZip)
+	if r := find(rows, "Cascade Investment LLC & William H. Gates III", ""); r == nil ||
+		r.Percent == nil || *r.Percent != 8.21 {
+		t.Errorf("Cascade/Gates head not recovered: %+v (parsed %v)", r, holderNames(rows))
+	}
+	for _, r := range rows {
+		for _, bad := range []string{"Redmond", "Greenwich, Connecticut", "Kirkland"} {
+			if r.HolderName == bad || strings.HasPrefix(r.HolderName, bad) {
+				t.Errorf("address line emitted as a holder: %q", r.HolderName)
+			}
+		}
+	}
+}
+
+// A percent of a class cannot exceed 100. When a column role is misread the
+// share count lands in the percent slot ("5,509" -> 5509, a director's age ->
+// 119), which is never a holding. Transcribed from 0000912057-01-003040-shaped
+// director tables in the dev set.
+func TestPercentOverOneHundredIsNotAPercent(t *testing.T) {
+	for _, s := range []string{"119", "436", "5509", "1,886", "119.4%"} {
+		if v, ok, _, _ := ParsePercent(s); ok {
+			t.Errorf("ParsePercent(%q) = %v, want not-a-percent (over 100)", s, v)
+		}
+	}
+	for _, tc := range []struct {
+		in   string
+		want float64
+	}{{"100", 100}, {"100.0%", 100}, {"99.9%", 99.9}, {"8.21", 8.21}} {
+		v, ok, _, _ := ParsePercent(tc.in)
+		if !ok || v != tc.want {
+			t.Errorf("ParsePercent(%q) = %v %v, want %v true", tc.in, v, ok, tc.want)
+		}
+	}
+}
+
+// A row whose name is only a postal address and whose head cannot be recovered
+// carries no holder at all; emitting it is a false holder. The table below puts
+// the address line FIRST, so there is nothing above it to recover.
+var asciiOrphanAddressRow = `
+                  PRINCIPAL STOCKHOLDERS
+
+<TABLE>
+<CAPTION>
+Name and Address of Beneficial Owner            Number of Shares   Percent
+<S>                                             <C>                <C>
+  Boston, MA 02110...............................    1,918,000        6.43%
+  Wayne, PA......................................    1,772,600        5.10%
+Mark B. Logan....................................      183,382        5.40%
+</TABLE>
+` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 250)
+
+func TestOrphanAddressRowIsDropped(t *testing.T) {
+	rows := run(t, asciiOrphanAddressRow)
+	if r := find(rows, "Mark B. Logan", ""); r == nil || r.Percent == nil || *r.Percent != 5.4 {
+		t.Fatalf("real holder lost: %+v (parsed %v)", r, holderNames(rows))
+	}
+	for _, r := range rows {
+		if strings.HasPrefix(r.HolderName, "Boston") || strings.HasPrefix(r.HolderName, "Wayne") {
+			t.Errorf("orphan address row emitted as a holder: %q", r.HolderName)
+		}
+	}
+}

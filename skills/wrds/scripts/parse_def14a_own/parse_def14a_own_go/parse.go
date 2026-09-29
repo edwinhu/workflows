@@ -9,6 +9,10 @@ import (
 
 // Cell-level parsing: share counts, percents, footnote markers, group rows.
 
+// The largest percent of a class a holder can own. Anything above it came from
+// the wrong column.
+const pctCeiling = 100.0
+
 var (
 	// EDGAR renders a superscript footnote mark as "(/2/)" as often as "(2)".
 	reFootnote  = regexp.MustCompile(`\(\s*/?\s*([0-9]{1,2}[a-zA-Z]?|[a-zA-Z])\s*/?\s*\)`)
@@ -19,7 +23,7 @@ var (
 	reStar      = regexp.MustCompile(`^[\*\+#†‡]{1,2}$`)
 	// "As Group (15 persons)" — the article is dropped often enough in ASCII
 	// proxies that requiring it loses real group rows.
-	reGroupRow   = regexp.MustCompile(`(?i)\bas\s+an?\s+group\b|\bas\s+group\b`)
+	reGroupRow   = regexp.MustCompile(`(?i)\bas\s+an?\s+group\b|\bas\s+group\b|\bas\s+a\s+whole\b`)
 	reGroupN     = regexp.MustCompile(`(?i)\(\s*([0-9]{1,3})\s+(?:persons?|people|individuals?|directors?|officers?|in\s+number)`)
 	reAlphaWords = regexp.MustCompile(`[A-Za-z]{2,}`)
 	reShareUnit  = regexp.MustCompile(`(?i)\s*(?:shares?|sh\.?|common\s+shares?|units?)\s*$`)
@@ -108,13 +112,15 @@ func ParsePercent(s string) (val float64, ok bool, marker string, pctish bool) {
 	if reLessThan.MatchString(t) {
 		return 0, false, "<1%", true
 	}
+	// A percent of a class cannot exceed 100: a value above it is a share
+	// count, an age or a dollar figure that landed in the percent column.
 	if m := rePctNum.FindStringSubmatch(t); m != nil {
 		v, err := strconv.ParseFloat(m[1], 64)
-		return v, err == nil, "", true
+		return v, err == nil && v <= pctCeiling, "", true
 	}
 	if m := rePctBare.FindStringSubmatch(strings.TrimSuffix(t, "%")); m != nil {
 		v, err := strconv.ParseFloat(m[1], 64)
-		return v, err == nil, "", true
+		return v, err == nil && v <= pctCeiling, "", true
 	}
 	if t == "-" || t == "--" || t == "" {
 		return 0, false, "none", true
@@ -122,8 +128,48 @@ func ParsePercent(s string) (val float64, ok bool, marker string, pctish bool) {
 	return 0, false, "", false
 }
 
+// --- collective (D&O aggregate) labels ------------------------------------
+//
+// Most D&O aggregate rows never say "as a group". The label wraps, so the line
+// carrying the numbers holds only a fragment ("All directors", "(24 Persons)",
+// "Directors (22 persons,", "those listed above)"), or the proxy simply writes
+// "Directors and executive officers". Read as holders these are false 5%
+// holders AND the filing then has no group row at all.
+//
+// The STRONG patterns name a count of persons or a group phrase outright and
+// stand on their own. The WEAK patterns are collective nouns, which a real
+// holder's name can also carry ("Royce Group", "Trustees of General Electric
+// Pension Trust"), so an entity word anywhere in the name vetoes them.
+var (
+	collNoun = `(?:directors?|director\s+nominees?|nominees?|executive\s+officers?|officers?|persons?|people|individuals?)`
+
+	reGroupCount = regexp.MustCompile(`(?i)\(\s*(?:[0-9]{1,3}|one|two|three|four|five|six|seven|eight|nine|ten|` +
+		`eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty)[\s,a-z]*\s+` +
+		`(?:persons?|people|individuals?|directors?|officers?|in\s+number)`)
+	reGroupAbove = regexp.MustCompile(`(?i)those\s+(?:listed|named)\s+above|including\s+those\s+(?:listed|named)`)
+	reGroupFrag  = regexp.MustCompile(`(?i)^\(?\s*(?:[0-9]{1,3}\s+)?(?:persons?|people|individuals?)\s*\)`)
+
+	reCollAll  = regexp.MustCompile(`(?i)\ball\s+(?:\w+[\s,]+){0,4}?` + collNoun + `\b`)
+	reCollBoth = regexp.MustCompile(`(?i)\b(?:directors|nominees)\b[^,]{0,40}\bofficers\b|` +
+		`\bofficers\b[^,]{0,40}\b(?:directors|nominees)\b`)
+	reCollLead = regexp.MustCompile(`(?i)^(?:common\s+stock\s+|common\s+)?(?:all\s+|current\s+|the\s+)*` +
+		`(?:non-?executive\s+)?(?:` + collNoun + `)\b`)
+
+	// An entity word: this name denotes a firm, a trust or a plan, not a class
+	// of natural persons.
+	reEntityWord = regexp.MustCompile(`(?i)\b(inc|incorporated|corp|corporation|co|company|companies|llc|` +
+		`l\.l\.c|llp|lp|l\.p|ltd|limited|plc|trust|trusts|plan|plans|fund|funds|bank|banks|associates|` +
+		`partners|partnership|holdings|capital|management|advisors|advisers|n\.a|savings|pension)\b\.?`)
+)
+
 func isGroupRow(name string) (bool, int) {
-	if !reGroupRow.MatchString(name) {
+	strong := reGroupRow.MatchString(name) || reGroupCount.MatchString(name) ||
+		reGroupAbove.MatchString(name) || reGroupFrag.MatchString(name)
+	grp := strong
+	if !grp && !reEntityWord.MatchString(name) {
+		grp = reCollAll.MatchString(name) || reCollBoth.MatchString(name) || reCollLead.MatchString(name)
+	}
+	if !grp {
 		return false, 0
 	}
 	n := 0
