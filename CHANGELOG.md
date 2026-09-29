@@ -49,6 +49,12 @@
 - **Review moved to the skill's Phase 5, after the goal clears**, with the two rules the episode actually taught: deliver first, because a PASS means the suite is green and not that the real claim holds; and never block delivery on the TUI. Work that cannot be undone — a one-way migration, a deletion — is still worth reviewing before shipping, but that is now a judgement the orchestrator makes out loud with the user, not a gate imposed on every run.
 - **The goal's wall-clock ceiling is denominated in minutes, default 10** (`CRAFT_GOAL_MAX_MINUTES`; `CRAFT_GOAL_MAX_HOURS` still honoured and converted). It bounds how long a session may WAIT, not how long it may work — the Stop hook gates stopping, never working — and an hours-scale default bought nothing but hours spent sitting on an absent human.
 
+## [6.28.1] - 2026-09-28
+
+### Fixed
+
+- **The public privacy scanner no longer fails on an UNTRACKED binary.** The candidate capture deliberately includes untracked files (`git ls-files --others --exclude-standard`) so that a private string in a file someone is about to `git add` is caught before it lands — that stays, and untracked TEXT is still scanned. But an untracked *binary* has no index representation at all, so it fell into `classifyBinary`'s "no reviewed index counterpart" branch and was reported as `unreviewed-binary`. Nothing untracked can reach a `git push`, so there is nothing to guard: it is now skipped, logged as `public privacy scan skipped <path> (worktree): untracked binary — not publishable until staged`. `git add` gives it an index entry and the `unreviewed-binary` finding appears there, unchanged. Observed on the v6.28.0 release run, where a local Go build under `skills/wrds/scripts/parse_def14a_own/` — another session's live working tree — turned the whole suite red.
+
 ## [6.28.0] - 2026-09-28
 
 Five fixes from a bug report filed by the `secreg` session after a `lecture-repeat-detection` run — a
