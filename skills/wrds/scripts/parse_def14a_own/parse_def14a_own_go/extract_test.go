@@ -1843,3 +1843,44 @@ func TestUndeclaredFundLabelRow(t *testing.T) {
 		}
 	}
 }
+
+// An ASCII fund table puts the share CLASS in a column of its own, written once
+// and left blank on the rows that continue it. The row splits at the first wide
+// gap before a number, so the class was glued to the holder's name and the class
+// identity was lost: one record holder of two classes of one fund collapsed.
+var asciiLeadingClassColumn = `
+                    PRINCIPAL SHAREHOLDERS
+
+- ------------------------------- ---------------------------- -------------------
+Title of Class                  Name and Address of          Percent of Class
+                                Shareholder
+- ------------------------------- ---------------------------- -------------------
+Investor Shares:                Charles Schwab & Co. Inc.    11.01%
+- ------------------------------- ---------------------------- -------------------
+                                National Financial Services  6.47%
+- ------------------------------- ---------------------------- -------------------
+Admiral Shares:                 Charles Schwab & Co. Inc.    10.32%
+- ------------------------------- ---------------------------- -------------------
+                                National Financial Services  8.20%
+` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 250)
+
+func TestASCIILeadingClassColumn(t *testing.T) {
+	rows := ScreenRows(run(t, asciiLeadingClassColumn))
+	seen := map[string]int{}
+	for _, r := range rows {
+		if strings.HasPrefix(r.HolderName, "Charles Schwab") {
+			seen[r.ShareClass]++
+		}
+	}
+	if len(seen) != 2 {
+		t.Fatalf("want one row per share class, got %v (%v)", seen, holderNames(rows))
+	}
+	for cls, n := range seen {
+		if n > 1 {
+			t.Errorf("share_class %q emitted %d times: %v", cls, n, seen)
+		}
+		if !strings.Contains(cls, "Shares") {
+			t.Errorf("share_class %q does not name the class column: %v", cls, seen)
+		}
+	}
+}
