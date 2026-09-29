@@ -1,0 +1,388 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ Q6+kXWbkl0u5ClFreRuAmgsTJfpvEvkh2QTsQRwjINdHNR3vB9a4c59ttnhAKMFo
+ fPUArxjl+D3w7L7iiLdQ7g==
+
+<SEC-DOCUMENT>0001135428-10-000369.txt : 20100831
+<SEC-HEADER>0001135428-10-000369.hdr.sgml : 20100831
+<ACCEPTANCE-DATETIME>20100831170734
+ACCESSION NUMBER:		0001135428-10-000369
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20100630
+FILED AS OF DATE:		20100831
+DATE AS OF CHANGE:		20100831
+EFFECTIVENESS DATE:		20100831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SEI INSTITUTIONAL INVESTMENTS TRUST
+		CENTRAL INDEX KEY:			0000939934
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-07257
+		FILM NUMBER:		101050618
+
+	BUSINESS ADDRESS:	
+		STREET 1:		1 FREEDOM VALLEY DRIVE
+		CITY:			OAK
+		STATE:			PA
+		ZIP:			19456
+		BUSINESS PHONE:		610 676-3097
+
+	MAIL ADDRESS:	
+		STREET 1:		1 FREEDOM VALLEY DRIVE
+		CITY:			OAK
+		STATE:			PA
+		ZIP:			19456
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000006761
+<SERIES-NAME>SIIT INTERNATIONAL EQUITY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018350
+<CLASS-CONTRACT-NAME>SIIT INTERNATIONAL EQUITY FUND - CLASS A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000006762
+<SERIES-NAME>SIIT LONG DURATION FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018351
+<CLASS-CONTRACT-NAME>SIIT LONG DURATION FUND - CLASS A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000006763
+<SERIES-NAME>SIIT HIGH YIELD BOND FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018352
+<CLASS-CONTRACT-NAME>SIIT HIGH YIELD BOND FUND - CLASS A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000006764
+<SERIES-NAME>SIIT EMERGING MARKETS DEBT FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018353
+<CLASS-CONTRACT-NAME>SIIT EMERGING MARKETS DEBT FUND - CLASS A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000006765
+<SERIES-NAME>SIIT WORLD EQUITY EX-US
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018354
+<CLASS-CONTRACT-NAME>SIIT WORLD EQUITY EX-US - CLASS A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000006766
+<SERIES-NAME>SIIT CORE FIXED INCOME
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018355
+<CLASS-CONTRACT-NAME>SIIT CORE FIXED INCOME - CLASS A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000006767
+<SERIES-NAME>SIIT LARGE CAP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018356
+<CLASS-CONTRACT-NAME>SIIT LARGE CAP FUND - CLASS A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000006768
+<SERIES-NAME>SIIT LARGE CAP INDEX FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018357
+<CLASS-CONTRACT-NAME>SIIT LARGE CAP INDEX FUND - CLASS A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000006769
+<SERIES-NAME>SIIT LARGE CAP DISCIPLINED EQUITY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018358
+<CLASS-CONTRACT-NAME>SIIT LARGE CAP DISCIPLINED EQUITY FUND - CLASS A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000006770
+<SERIES-NAME>SIIT SMALL MID CAP EQUITY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018359
+<CLASS-CONTRACT-NAME>SIIT SMALL MID CAP EQUITY FUND - CLASS A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000006772
+<SERIES-NAME>SIIT SMALL CAP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018361
+<CLASS-CONTRACT-NAME>SIIT SMALL CAP FUND - CLASS A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000010543
+<SERIES-NAME>SIIT LARGE CAP DIVERSIFIED ALPHA FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000029091
+<CLASS-CONTRACT-NAME>SIIT LARGE CAP DIVERSIFIED ALPHA FUND - CLASS A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000010881
+<SERIES-NAME>SIIT EMERGING MARKETS EQUITY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000030145
+<CLASS-CONTRACT-NAME>SIIT EMERGING MARKETS EQUITY FUND - CLASS A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000010882
+<SERIES-NAME>SIIT GLOBAL EQUITY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000030146
+<CLASS-CONTRACT-NAME>SIIT GLOBAL EQUITY FUND - CLASS A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000013605
+<SERIES-NAME>SIIT U.S. Managed Volatility Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000036888
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000013606
+<SERIES-NAME>SIIT Real Return Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000036889
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000014581
+<SERIES-NAME>SIIT Enhanced LIBOR Opportunities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000039813
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000019597
+<SERIES-NAME>SIIT Screened World Equity Ex-US Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000054521
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000026677
+<SERIES-NAME>SIIT Strategic U.S. Large Cap Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080075
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000027147
+<SERIES-NAME>SIIT Dynamic Asset Allocation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000081914
+<CLASS-CONTRACT-NAME>SIIT Dynamic Asset Allocation Fund - Class A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000029561
+<SERIES-NAME>SIIT Enhanced Low Duration Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000090718
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>siit_npx.txt
+<TEXT>
+
+
+                                 UNITED STATES
+
+                       SECURITIES and EXCHANGE COMMISSION
+
+                              WASHINGTON, DC 20549
+
+                                   FORM N-PX
+
+                    ANNUAL REPORT of PROXY VOTING RECORD of
+                    REGISTERED MANAGEMENT INVESTMENT COMPANY
+
+                      SEI INSTITUTIONAL INVESTMENTS TRUST
+
+
+
+                 Investment Company Act File Number: 811-07257
+
+                                   REGISTRANT
+                      SEI Institutional Investments Trust
+                            One Freedom Valley Drive
+                                 Oaks, PA 19456
+                                 (800) 225-5734
+
+
+                               AGENT FOR SERVICE
+                             CT Corporation System
+                               101 Federal Street
+                                Boston, MA 02110
+
+
+                        Date of Fiscal Year End: May 31
+
+            Date of Reporting Period: July 1, 2009 to June 30, 2010
+
+
+                                       1
+
+<PAGE>
+                                NON-VOTING FUNDS
+
+                           EMERGING MARKETS DEBT FUND
+No votes have been cast on securities by this fund during the reporting
+period.
+
+                          EMERGING MARKETS EQUITY FUND
+No votes have been cast on securities by this fund during the reporting
+period.
+
+                               GLOBAL EQUITY FUND
+No votes have been cast on securities by this fund during the reporting
+period.
+
+                                REAL RETURN FUND
+No votes have been cast on securities by this fund during the reporting
+period.
+
+<PAGE>
+
+
+<TABLE>
+<PAGE>
+
+
+
+                             WORLD EQUITY EX-US FUND
+ Proposal                                                    Proposed by Mgt. Position Registrant Voted
+3I GROUP PLC
+ Issuer: G88473148
+ Meeting Date: 8-Jul-09   Meeting Type: Annual
+ 1.   Accept Financial Statements and Statutory Reports       Management    For          Voted - For
+ 2.   Approve Remuneration Report                             Management    For          Voted - For
+ 3.   Re-elect Michael Queen as Director                      Management    For          Voted - For
+ 4.   Elect Richard Meddings as Director                      Management    For          Voted - For
+ 5.   Re-elect Christine Morin-Postel as Director             Management    For          Voted - For
+ 6.   Re-elect Oliver Stocken as Director                     Management    For          Voted - For
+ 7.   Elect Julia Wilson as Director                          Management    For          Voted - For
+ 8.   Reappoint Ernst & Young LLP as Auditors of the
+       Company                                                Management    For          Voted - For
+ 9.   Authorise Board to Fix Remuneration of Auditors         Management    For          Voted - For
+ 10.  Authorise Company and Subsidiaries to Make EU
+       Political Donations to Political Parties or
+       Independent Election Candidates up to GBP 20,000,
+       to Political Org. Other Than Political Parties up
+       to GBP 20,000 and Incur EU Political Expenditure up
+       to GBP 20,000                                          Management    For          Voted - For
+ 11.  Authorise Issue of Equity or Equity-Linked
+       Securities with Pre-emptive Rights up to Aggregate
+       Nominal Amount of GBP 102,800,000                      Management    For          Voted - For
+ 12.  Subject to the Passing of Resolution 11, Authorise
+       Issue of Equity or Equity-Linked Securities without
+       Pre-emptive Rights up to Aggregate Nominal Amount
+       of GBP 35,500,000                                      Management    For          Voted - For
+ 13.  Authorise 96,000,000 Ordinary Shares for Market
+       Purchase                                               Management    For          Voted - For
+ 14.  Authorise 9,305,993 B Shares for Market Purchase        Management    For          Voted - For
+ 15.  Approve That a General Meeting Other Than an Annual
+       General Meeting May Be Called on Not Less Than 14
+       Clear Days' Notice                                     Management    For          Voted - For
+77 BANK LTD.
+ Issuer: J71348106 Ticker: 8341
+ Meeting Date: 29-Jun-10  Meeting Type: Annual
+ 1.   Approve Allocation of Income, with a Final Dividend
+       of JPY 3.5                                             Management    For          Voted - For
+ 2.1. Elect Director Hiroshi Kamata                           Management    For          Voted - For
+ 2.2. Elect Director Teruhiko Ujiie                           Management    For          Voted - For
+ 2.3. Elect Director Yoshiaki Nagayama                        Management    For          Voted - For
+ 2.4. Elect Director Kimitsugu Nagao                          Management    For          Voted - For
+ 2.5. Elect Director Masayuki Yamada                          Management    For          Voted - For
+ 2.6. Elect Director Mitsutaka Kambe                          Management    For          Voted - For
+ 2.7. Elect Director Tetsuya Fujishiro                        Management    For          Voted - For
+ 2.8. Elect Director Isamu Suzuki                             Management    For          Voted - For
+ 2.9. Elect Director Kenichi Hotta                            Management    For          Voted - For
+ 2.10. Elect Director Masatake Hase                           Management    For          Voted - For
+                                                           2461
+
+
+</TABLE>
+
+<PAGE>
+Signatures
+
+Pursuant to the requirements of the Investment Company Act of 1940, the
+registrant has duly caused this report to be signed on its behalf by the
+undersigned, thereunto duly authorized.
+
+By: /s/ Robert A. Nesher
+
+President
+
+Date: August 27, 2010
+
+3045
+
+
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

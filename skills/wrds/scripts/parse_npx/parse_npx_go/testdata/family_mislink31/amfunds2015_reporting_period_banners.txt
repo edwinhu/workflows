@@ -1,0 +1,3297 @@
+<SEC-DOCUMENT>0000051931-15-000675.txt : 20150827
+<SEC-HEADER>0000051931-15-000675.hdr.sgml : 20150827
+<ACCEPTANCE-DATETIME>20150827163010
+ACCESSION NUMBER:		0000051931-15-000675
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20150630
+FILED AS OF DATE:		20150827
+DATE AS OF CHANGE:		20150827
+EFFECTIVENESS DATE:		20150827
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			AMERICAN FUNDS INSURANCE SERIES
+		CENTRAL INDEX KEY:			0000729528
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-03857
+		FILM NUMBER:		151079093
+
+	BUSINESS ADDRESS:	
+		STREET 1:		333 S HOPE ST - 55TH FL (MICG)
+		CITY:			LOS ANGELES
+		STATE:			CA
+		ZIP:			90071
+		BUSINESS PHONE:		213-486-9200
+
+	MAIL ADDRESS:	
+		STREET 1:		333 S HOPE ST - 55TH FL (MICG)
+		CITY:			LOS ANGELES
+		STATE:			CA
+		ZIP:			90071
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	AMERICAN FUND INSURANCE SERIES
+		DATE OF NAME CHANGE:	20010829
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	AMERICAN VARIABLE INSURANCE SERIES
+		DATE OF NAME CHANGE:	19920703
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	AMERICAN PATHWAY FUND
+		DATE OF NAME CHANGE:	19880531
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000008786
+<SERIES-NAME>Global Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023903
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023904
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121502
+<CLASS-CONTRACT-NAME>Class 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000008787
+<SERIES-NAME>High-Income Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023905
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023906
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023907
+<CLASS-CONTRACT-NAME>Class 3
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121503
+<CLASS-CONTRACT-NAME>Class 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000008788
+<SERIES-NAME>U.S. Government/AAA-Rated Securities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023908
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023909
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023910
+<CLASS-CONTRACT-NAME>Class 3
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121504
+<CLASS-CONTRACT-NAME>Class 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000008789
+<SERIES-NAME>Cash Management Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023911
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023912
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023913
+<CLASS-CONTRACT-NAME>Class 3
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121505
+<CLASS-CONTRACT-NAME>Class 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000008790
+<SERIES-NAME>Global Small Capitalization Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023914
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023915
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121506
+<CLASS-CONTRACT-NAME>Class 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000008791
+<SERIES-NAME>Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023916
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023917
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023918
+<CLASS-CONTRACT-NAME>Class 3
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121507
+<CLASS-CONTRACT-NAME>Class 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000008792
+<SERIES-NAME>International Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023919
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023920
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023921
+<CLASS-CONTRACT-NAME>Class 3
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121508
+<CLASS-CONTRACT-NAME>Class 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000008793
+<SERIES-NAME>New World Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023922
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023923
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121509
+<CLASS-CONTRACT-NAME>Class 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000008794
+<SERIES-NAME>Blue Chip Income and Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023924
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023925
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121510
+<CLASS-CONTRACT-NAME>Class 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000008795
+<SERIES-NAME>Growth-Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023926
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023927
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023928
+<CLASS-CONTRACT-NAME>Class 3
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121511
+<CLASS-CONTRACT-NAME>Class 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000008796
+<SERIES-NAME>Asset Allocation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023929
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023930
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023931
+<CLASS-CONTRACT-NAME>Class 3
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121512
+<CLASS-CONTRACT-NAME>Class 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000008797
+<SERIES-NAME>Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023932
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023933
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121513
+<CLASS-CONTRACT-NAME>Class 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000013710
+<SERIES-NAME>Global Growth and Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000037623
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000037624
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121514
+<CLASS-CONTRACT-NAME>Class 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000013796
+<SERIES-NAME>Global Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000037827
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000037828
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121515
+<CLASS-CONTRACT-NAME>Class 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000023461
+<SERIES-NAME>International Growth and Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000068980
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000068981
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121516
+<CLASS-CONTRACT-NAME>Class 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000031859
+<SERIES-NAME>Global Balanced Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099201
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099202
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121517
+<CLASS-CONTRACT-NAME>Class 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000031860
+<SERIES-NAME>Mortgage Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099203
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099204
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121518
+<CLASS-CONTRACT-NAME>Class 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000038240
+<SERIES-NAME>Managed Risk Asset Allocation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000117906
+<CLASS-CONTRACT-NAME>Class P1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000117907
+<CLASS-CONTRACT-NAME>Class P2
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000040664
+<SERIES-NAME>Corporate Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000126051
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000126052
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000126053
+<CLASS-CONTRACT-NAME>Class 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000040665
+<SERIES-NAME>Managed Risk Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000126054
+<CLASS-CONTRACT-NAME>Class P1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000126055
+<CLASS-CONTRACT-NAME>Class P2
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000040666
+<SERIES-NAME>Managed Risk International Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000126056
+<CLASS-CONTRACT-NAME>Class P1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000126057
+<CLASS-CONTRACT-NAME>Class P2
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000040667
+<SERIES-NAME>Managed Risk Blue Chip Income and Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000126058
+<CLASS-CONTRACT-NAME>Class P1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000126059
+<CLASS-CONTRACT-NAME>Class P2
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000040668
+<SERIES-NAME>Managed Risk Growth-Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000126060
+<CLASS-CONTRACT-NAME>Class P1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000126061
+<CLASS-CONTRACT-NAME>Class P2
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000045163
+<SERIES-NAME>Capital Income Builder
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000140604
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000140605
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000140606
+<CLASS-CONTRACT-NAME>Class 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000048970
+<SERIES-NAME>Portfolio Series - American Funds Global Growth Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154330
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154331
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154332
+<CLASS-CONTRACT-NAME>Class 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000048971
+<SERIES-NAME>Portfolio Series - American Funds Growth and Income Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154333
+<CLASS-CONTRACT-NAME>Class 1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154334
+<CLASS-CONTRACT-NAME>Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154335
+<CLASS-CONTRACT-NAME>Class 4
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000048972
+<SERIES-NAME>Portfolio Series - American Funds Managed Risk Global Allocation Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154336
+<CLASS-CONTRACT-NAME>Class P1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154337
+<CLASS-CONTRACT-NAME>Class P2
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000048973
+<SERIES-NAME>Portfolio Series - American Funds Managed Risk Growth Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154338
+<CLASS-CONTRACT-NAME>Class P2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154339
+<CLASS-CONTRACT-NAME>Class P1
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000729528
+<SERIES-ID>S000048974
+<SERIES-NAME>Portfolio Series - American Funds Managed Risk Growth and Income Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154340
+<CLASS-CONTRACT-NAME>Class P1
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000154341
+<CLASS-CONTRACT-NAME>Class P2
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>afis_npx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+     <TITLE></TITLE>
+</HEAD>
+<BODY STYLE="font: 10pt Times New Roman, Times, Serif">
+
+<P STYLE="margin: 0">&nbsp;</P>
+
+<P STYLE="margin: 0"></P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">UNITED STATES</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">SECURITIES AND EXCHANGE COMMISSION</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">Washington, D.C. 20549</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">FORM N&#45;PX</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">Annual Report of Proxy Voting Record
+of</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">Registered Management Investment Company</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">Investment Company Act File Number: 811-03857</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center"><B>American Funds Insurance Series</B></P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">(Exact Name of Registrant as Specified
+in Charter)</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">333 South Hope Street</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">Los Angeles, California 90071</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">(Address of Principal Executive Offices)</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">Registrant's telephone number, including
+area code: (213) 486-9200</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">Date of fiscal year end: December 31</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">Date of reporting period: July 1, 2014
+- June 30, 2015</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center"><B><I>Steven I. Koszalka</I></B></P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center"><B><I>American Funds Insurance Series</I></B></P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center"><I>333 South Hope Street</I></P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center"><I>Los Angeles, California 90071</I></P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center"><I>(Name and Address of Agent for Service)</I></P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">&nbsp;&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center">&nbsp;</P>
+
+
+<!-- Field: Page; Sequence: 1 -->
+    <DIV STYLE="margin-bottom: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <DIV STYLE="page-break-before: always; margin-top: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <!-- Field: /Page -->
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: justify"><B></B></P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: justify"><B></B></P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: justify"></P>
+
+<table border="0" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse; font: 10pt Arial, Helvetica, Sans-Serif">
+<tr style="vertical-align: bottom">
+    <td colspan="8" style="font-weight: bold">Fund Name : International Fund<br>
+<br>
+Reporting Period : July 01, 2014 - June 30, 2015</td></tr>
+<tr style="vertical-align: top">
+    <td colspan="8" dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td style="border-top: black 1pt solid; width: 28%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 12%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 25%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 1%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 9%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 8%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 8%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 9%">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr" style="font-weight: bold">AEON Financial Service Co., Ltd.</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Ticker</td>
+    <td dir="ltr" style="font-weight: bold">Security ID:</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td colspan="2" dir="ltr" style="font-weight: bold">Meeting Date</td>
+    <td colspan="2" dir="ltr" style="font-weight: bold">Meeting Status</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">8570</td>
+    <td dir="ltr">CINS J0021H107</td>
+    <td dir="ltr">&nbsp;</td>
+    <td colspan="2" dir="ltr">06/24/2015</td>
+    <td colspan="2" dir="ltr">Voted</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Meeting Type</td>
+    <td dir="ltr" style="font-weight: bold">Country of Trade</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Annual</td>
+    <td dir="ltr">Japan</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Issue No.</td>
+    <td dir="ltr" style="font-weight: bold">Description</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Proponent</td>
+    <td dir="ltr" style="font-weight: bold">Mgmt Rec</td>
+    <td dir="ltr" style="font-weight: bold">Vote Cast</td>
+    <td dir="ltr" style="font-weight: bold">For/Agnst Mgmt</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1</td>
+    <td dir="ltr">Non-Voting Meeting Note</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">2</td>
+    <td dir="ltr">Elect Akinori Yamashita</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">3</td>
+    <td dir="ltr">Elect Masao Mizuno</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">4</td>
+    <td dir="ltr">Elect Takamitsu Moriyama</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">5</td>
+    <td dir="ltr">Elect Hideki Wakabayashi</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">6</td>
+    <td dir="ltr">Elect Takashi Kiyonaga</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">7</td>
+    <td dir="ltr">Elect Masaaki Mangetsu</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">8</td>
+    <td dir="ltr">Elect Yasuhiro Kasai</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">9</td>
+    <td dir="ltr">Elect Tsunekazu Haraguchi</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">10</td>
+    <td dir="ltr">Elect Hiroyuki Watanabe</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">11</td>
+    <td dir="ltr">Elect Motonari Ohtsuru</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">12</td>
+    <td dir="ltr">Elect Junya Hakoda</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">13</td>
+    <td dir="ltr">Elect Hideaki Shiraishi as Statutory Auditor</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">14</td>
+    <td dir="ltr">Directors' Fees</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr>
+    <td style="vertical-align: bottom">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td></tr>
+<tr style="vertical-align: bottom">
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr" style="font-weight: bold">AIA Group Limited</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Ticker</td>
+    <td dir="ltr" style="font-weight: bold">Security ID:</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td colspan="2" dir="ltr" style="font-weight: bold">Meeting Date</td>
+    <td colspan="2" dir="ltr" style="font-weight: bold">Meeting Status</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1299</td>
+    <td dir="ltr">CINS Y002A1105</td>
+    <td dir="ltr">&nbsp;</td>
+    <td colspan="2" dir="ltr">05/08/2015</td>
+    <td colspan="2" dir="ltr">Voted</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Meeting Type</td>
+    <td dir="ltr" style="font-weight: bold">Country of Trade</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Annual</td>
+    <td dir="ltr">Hong Kong</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Issue No.</td>
+    <td dir="ltr" style="font-weight: bold">Description</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Proponent</td>
+    <td dir="ltr" style="font-weight: bold">Mgmt Rec</td>
+    <td dir="ltr" style="font-weight: bold">Vote Cast</td>
+    <td dir="ltr" style="font-weight: bold">For/Agnst Mgmt</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1</td>
+    <td dir="ltr">Non-Voting Meeting Note</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">2</td>
+    <td dir="ltr">Non-Voting Meeting Note</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">3</td>
+    <td dir="ltr">Accounts and Reports</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">4</td>
+    <td dir="ltr">Allocation of Profits/Dividends</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">5</td>
+    <td dir="ltr">Elect Lawrence LAU Juen-Yee</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">6</td>
+    <td dir="ltr">Elect CHOW Chung Kong</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">7</td>
+    <td dir="ltr">Elect John B Harrison</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">8</td>
+    <td dir="ltr">Appointment of Auditor and Authority to Set Fees</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">9</td>
+    <td dir="ltr">Authority to Issue Shares w/o Preemptive Rights</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">10</td>
+    <td dir="ltr">Authority to Repurchase Shares</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">11</td>
+    <td dir="ltr">Authority to Issue Shares under Restricted Share Unit Scheme</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr>
+    <td style="vertical-align: bottom">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td></tr>
+<tr style="vertical-align: bottom">
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td></tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse; font: 10pt Arial, Helvetica, Sans-Serif">
+<tr style="vertical-align: bottom">
+    <td colspan="8" style="font-weight: bold">Fund Name : Blue Chip Income and Growth Fund<br>
+<br>
+Reporting Period : July 01, 2014 - June 30, 2015</td></tr>
+<tr style="vertical-align: top">
+    <td colspan="8" dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td style="border-top: black 1pt solid; width: 28%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 12%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 25%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 1%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 9%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 8%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 8%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 9%">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr" style="font-weight: bold">Abbott Laboratories</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Ticker</td>
+    <td dir="ltr" style="font-weight: bold">Security ID:</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td colspan="2" dir="ltr" style="font-weight: bold">Meeting Date</td>
+    <td colspan="2" dir="ltr" style="font-weight: bold">Meeting Status</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">ABT</td>
+    <td dir="ltr">CUSIP 002824100</td>
+    <td dir="ltr">&nbsp;</td>
+    <td colspan="2" dir="ltr">04/24/2015</td>
+    <td colspan="2" dir="ltr">Voted</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Meeting Type</td>
+    <td dir="ltr" style="font-weight: bold">Country of Trade</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Annual</td>
+    <td dir="ltr">United States</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Issue No.</td>
+    <td dir="ltr" style="font-weight: bold">Description</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Proponent</td>
+    <td dir="ltr" style="font-weight: bold">Mgmt Rec</td>
+    <td dir="ltr" style="font-weight: bold">Vote Cast</td>
+    <td dir="ltr" style="font-weight: bold">For/Agnst Mgmt</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1.1</td>
+    <td dir="ltr">Elect Robert J. Alpern</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1.2</td>
+    <td dir="ltr">Elect Roxanne S. Austin</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1.3</td>
+    <td dir="ltr">Elect Sally E. Blount</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1.4</td>
+    <td dir="ltr">Elect W. James Farrell</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1.5</td>
+    <td dir="ltr">Elect Edward M. Liddy</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1.6</td>
+    <td dir="ltr">Elect Nancy McKinstry</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1.7</td>
+    <td dir="ltr">Elect Phebe N. Novakovic</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1.8</td>
+    <td dir="ltr">Elect William A. Osborn</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1.9</td>
+    <td dir="ltr">Elect Samuel C. Scott III</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1.10</td>
+    <td dir="ltr">Elect Glenn F. Tilton</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1.11</td>
+    <td dir="ltr">Elect Miles D. White</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">2</td>
+    <td dir="ltr">Ratification of Auditor</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">3</td>
+    <td dir="ltr">Advisory Vote on Executive Compensation</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">4</td>
+    <td dir="ltr">Shareholder Proposal Regarding Genetically Modified Ingredients</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">ShrHoldr</td>
+    <td dir="ltr">Against</td>
+    <td dir="ltr">Against</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">5</td>
+    <td dir="ltr">Shareholder Proposal Regarding Independent Board Chairman&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">ShrHoldr</td>
+    <td dir="ltr">Against</td>
+    <td dir="ltr">Against</td>
+    <td dir="ltr">For</td></tr>
+<tr>
+    <td style="vertical-align: bottom">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td></tr>
+<tr style="vertical-align: bottom">
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr" style="font-weight: bold">AbbVie Inc.</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Ticker</td>
+    <td dir="ltr" style="font-weight: bold">Security ID:</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td colspan="2" dir="ltr" style="font-weight: bold">Meeting Date</td>
+    <td colspan="2" dir="ltr" style="font-weight: bold">Meeting Status</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">ABBV</td>
+    <td dir="ltr">CUSIP 00287Y109</td>
+    <td dir="ltr">&nbsp;</td>
+    <td colspan="2" dir="ltr">05/08/2015</td>
+    <td colspan="2" dir="ltr">Voted</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Meeting Type</td>
+    <td dir="ltr" style="font-weight: bold">Country of Trade</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Annual</td>
+    <td dir="ltr">United States</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Issue No.</td>
+    <td dir="ltr" style="font-weight: bold">Description</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Proponent</td>
+    <td dir="ltr" style="font-weight: bold">Mgmt Rec</td>
+    <td dir="ltr" style="font-weight: bold">Vote Cast</td>
+    <td dir="ltr" style="font-weight: bold">For/Agnst Mgmt</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1.1</td>
+    <td dir="ltr">Elect Roxanne S. Austin</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1.2</td>
+    <td dir="ltr">Elect Richard A. Gonzalez</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1.3</td>
+    <td dir="ltr">Elect Glenn F. Tilton</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">2</td>
+    <td dir="ltr">Ratification of Auditor</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">3</td>
+    <td dir="ltr">Advisory Vote on Executive Compensation</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr>
+    <td style="vertical-align: bottom">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td></tr>
+<tr style="vertical-align: bottom">
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td></tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse; font: 10pt Arial, Helvetica, Sans-Serif">
+<tr style="vertical-align: bottom">
+    <td colspan="8" style="font-weight: bold">Fund Name : Global Growth and Income Fund<br>
+<br>
+Reporting Period : July 01, 2014 - June 30, 2015</td></tr>
+<tr style="vertical-align: top">
+    <td colspan="8" dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td style="border-top: black 1pt solid; width: 28%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 12%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 25%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 1%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 9%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 8%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 8%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 9%">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr" style="font-weight: bold">Abertis Infraestructuras</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Ticker</td>
+    <td dir="ltr" style="font-weight: bold">Security ID:</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td colspan="2" dir="ltr" style="font-weight: bold">Meeting Date</td>
+    <td colspan="2" dir="ltr" style="font-weight: bold">Meeting Status</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">ABE</td>
+    <td dir="ltr">CINS E0003D111</td>
+    <td dir="ltr">&nbsp;</td>
+    <td colspan="2" dir="ltr">03/24/2015</td>
+    <td colspan="2" dir="ltr">Voted</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Meeting Type</td>
+    <td dir="ltr" style="font-weight: bold">Country of Trade</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Ordinary</td>
+    <td dir="ltr">Spain</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Issue No.</td>
+    <td dir="ltr" style="font-weight: bold">Description</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Proponent</td>
+    <td dir="ltr" style="font-weight: bold">Mgmt Rec</td>
+    <td dir="ltr" style="font-weight: bold">Vote Cast</td>
+    <td dir="ltr" style="font-weight: bold">For/Agnst Mgmt</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1</td>
+    <td dir="ltr">Non-Voting Meeting Note</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">2</td>
+    <td dir="ltr">Non-Voting Meeting Note</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">3</td>
+    <td dir="ltr">Accounts and Reports</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">4</td>
+    <td dir="ltr">Allocation of Profits/Dividends</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">5</td>
+    <td dir="ltr">Ratification of Board Acts</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">6</td>
+    <td dir="ltr">Capitalization of Reserves for Bonus Issue</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">7</td>
+    <td dir="ltr">Amendments to Articles Regarding Company Address</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">8</td>
+    <td dir="ltr">Amendments to Article 3 bis</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">9</td>
+    <td dir="ltr">Amendments to Article 4</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">10</td>
+    <td dir="ltr">Amendments to Articles 12, 14, 15, 17, 20, 21, 22, 23, 24, 25</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">11</td>
+    <td dir="ltr">Amendments to Articles 5, 6, 13, 16, 18</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">12</td>
+    <td dir="ltr">Approve Amended Articles of Association</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">13</td>
+    <td dir="ltr">Amendments to General Meeting Regualtions</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">14</td>
+    <td dir="ltr">Approve Amended General Meeting Regulations</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">15</td>
+    <td dir="ltr">Non-Voting Agenda Item</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">16</td>
+    <td dir="ltr">Ratification of Co-option of Juan-Miguel Villar Mir (Grupo Villar Mir)</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">17</td>
+    <td dir="ltr">Elect Francisco Reynes Massanet</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">18</td>
+    <td dir="ltr">Elect Miguel Angel Gutierrez Mendez</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">19</td>
+    <td dir="ltr">Appointment of Auditor</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">20</td>
+    <td dir="ltr">Remuneration Report</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">21</td>
+    <td dir="ltr">Authorization of Legal Formalities</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr>
+    <td style="vertical-align: bottom">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td></tr>
+<tr style="vertical-align: bottom">
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr" style="font-weight: bold">AIA Group Limited</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Ticker</td>
+    <td dir="ltr" style="font-weight: bold">Security ID:</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td colspan="2" dir="ltr" style="font-weight: bold">Meeting Date</td>
+    <td colspan="2" dir="ltr" style="font-weight: bold">Meeting Status</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1299</td>
+    <td dir="ltr">CINS Y002A1105</td>
+    <td dir="ltr">&nbsp;</td>
+    <td colspan="2" dir="ltr">05/08/2015</td>
+    <td colspan="2" dir="ltr">Voted</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Meeting Type</td>
+    <td dir="ltr" style="font-weight: bold">Country of Trade</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Annual</td>
+    <td dir="ltr">Hong Kong</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Issue No.</td>
+    <td dir="ltr" style="font-weight: bold">Description</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Proponent</td>
+    <td dir="ltr" style="font-weight: bold">Mgmt Rec</td>
+    <td dir="ltr" style="font-weight: bold">Vote Cast</td>
+    <td dir="ltr" style="font-weight: bold">For/Agnst Mgmt</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1</td>
+    <td dir="ltr">Non-Voting Meeting Note</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">2</td>
+    <td dir="ltr">Non-Voting Meeting Note</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">3</td>
+    <td dir="ltr">Accounts and Reports</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">4</td>
+    <td dir="ltr">Allocation of Profits/Dividends</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">5</td>
+    <td dir="ltr">Elect Lawrence LAU Juen-Yee</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">6</td>
+    <td dir="ltr">Elect CHOW Chung Kong</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">7</td>
+    <td dir="ltr">Elect John B Harrison</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">8</td>
+    <td dir="ltr">Appointment of Auditor and Authority to Set Fees</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">9</td>
+    <td dir="ltr">Authority to Issue Shares w/o Preemptive Rights</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">Against</td>
+    <td dir="ltr">Against</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">10</td>
+    <td dir="ltr">Authority to Repurchase Shares</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">11</td>
+    <td dir="ltr">Authority to Issue Shares under Restricted Share Unit Scheme</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr>
+    <td style="vertical-align: bottom">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td></tr>
+<tr style="vertical-align: bottom">
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td></tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse; font: 10pt Arial, Helvetica, Sans-Serif">
+<tr style="vertical-align: bottom">
+    <td colspan="8" style="font-weight: bold">Fund Name : International Growth and Income Fund<br>
+<br>
+Reporting Period : July 01, 2014 - June 30, 2015</td></tr>
+<tr style="vertical-align: top">
+    <td colspan="8" dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td style="border-top: black 1pt solid; width: 28%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 12%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 25%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 1%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 9%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 8%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 8%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 9%">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr" style="font-weight: bold">AA Plc</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Ticker</td>
+    <td dir="ltr" style="font-weight: bold">Security ID:</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td colspan="2" dir="ltr" style="font-weight: bold">Meeting Date</td>
+    <td colspan="2" dir="ltr" style="font-weight: bold">Meeting Status</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">AA.</td>
+    <td dir="ltr">CINS G0013T104</td>
+    <td dir="ltr">&nbsp;</td>
+    <td colspan="2" dir="ltr">06/09/2015</td>
+    <td colspan="2" dir="ltr">Voted</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Meeting Type</td>
+    <td dir="ltr" style="font-weight: bold">Country of Trade</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Annual</td>
+    <td dir="ltr">United Kingdom</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Issue No.</td>
+    <td dir="ltr" style="font-weight: bold">Description</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Proponent</td>
+    <td dir="ltr" style="font-weight: bold">Mgmt Rec</td>
+    <td dir="ltr" style="font-weight: bold">Vote Cast</td>
+    <td dir="ltr" style="font-weight: bold">For/Agnst Mgmt</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1</td>
+    <td dir="ltr">Accounts and Reports</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">2</td>
+    <td dir="ltr">Appointment of Auditor</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">3</td>
+    <td dir="ltr">Authority to Set Auditor's Fees</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">4</td>
+    <td dir="ltr">Elect Bob Mackenzie</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">5</td>
+    <td dir="ltr">Elect Martin Clarke</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">6</td>
+    <td dir="ltr">Elect Nick Hewitt</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">7</td>
+    <td dir="ltr">Elect John L. Leach</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">8</td>
+    <td dir="ltr">Elect Andrew Miller</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">9</td>
+    <td dir="ltr">Elect Andrew Blowers</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">10</td>
+    <td dir="ltr">Elect Simon J. Breakwell</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">11</td>
+    <td dir="ltr">Remuneration Report (Advisory)</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">12</td>
+    <td dir="ltr">Remuneration Policy (Binding)</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">13</td>
+    <td dir="ltr">Authorisation of Political Donations</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">14</td>
+    <td dir="ltr">Authority to Issue Shares w/ Preemptive Rights</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">Against</td>
+    <td dir="ltr">Against</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">15</td>
+    <td dir="ltr">Authority to Issue Shares w/o Preemptive Rights</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">16</td>
+    <td dir="ltr">Authority to Repurchase Shares</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">17</td>
+    <td dir="ltr">Authority to Set General Meeting Notice Period at 14 Days</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">18</td>
+    <td dir="ltr">Performance Share Plan</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr>
+    <td style="vertical-align: bottom">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td></tr>
+<tr style="vertical-align: bottom">
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr" style="font-weight: bold">Advanced Information Service Inc.</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Ticker</td>
+    <td dir="ltr" style="font-weight: bold">Security ID:</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td colspan="2" dir="ltr" style="font-weight: bold">Meeting Date</td>
+    <td colspan="2" dir="ltr" style="font-weight: bold">Meeting Status</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">ADVANC</td>
+    <td dir="ltr">CINS Y0014U183</td>
+    <td dir="ltr">&nbsp;</td>
+    <td colspan="2" dir="ltr">03/24/2015</td>
+    <td colspan="2" dir="ltr">Voted</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Meeting Type</td>
+    <td dir="ltr" style="font-weight: bold">Country of Trade</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Annual</td>
+    <td dir="ltr">Thailand</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Issue No.</td>
+    <td dir="ltr" style="font-weight: bold">Description</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Proponent</td>
+    <td dir="ltr" style="font-weight: bold">Mgmt Rec</td>
+    <td dir="ltr" style="font-weight: bold">Vote Cast</td>
+    <td dir="ltr" style="font-weight: bold">For/Agnst Mgmt</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1</td>
+    <td dir="ltr">Non-Voting Meeting Note</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">2</td>
+    <td dir="ltr">Matters To Be Informed</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">3</td>
+    <td dir="ltr">Meeting Minutes</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">4</td>
+    <td dir="ltr">Results of Operations</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">5</td>
+    <td dir="ltr">Accounts and Reports</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">6</td>
+    <td dir="ltr">Allocation of Profits/Dividends</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">7</td>
+    <td dir="ltr">Appointment of Auditor and Authority to Set Fees</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">8</td>
+    <td dir="ltr">Elect Allen LEW Yoong Keong</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">9</td>
+    <td dir="ltr">Elect Somchai Lertsutiwong</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">10</td>
+    <td dir="ltr">Elect YEK Boon Seng</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">11</td>
+    <td dir="ltr">Elect Preeya Danchaivijit</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">12</td>
+    <td dir="ltr">Directors' Fees</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">13</td>
+    <td dir="ltr">Prohibition of Business Dominance by Foreigners</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">14</td>
+    <td dir="ltr">Issuance of Warrants w/o Preemptive Rights</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">15</td>
+    <td dir="ltr">Issuance of Shares w/o Preemptive Rights</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">16</td>
+    <td dir="ltr">Somchai Lertsutiwong</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">17</td>
+    <td dir="ltr">Sumiwol Kaewkoon</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">18</td>
+    <td dir="ltr">Pong-amorn Nimpoonsawat</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">19</td>
+    <td dir="ltr">Vilaseinee Puddhikarant</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">20</td>
+    <td dir="ltr">Kriengsak Wanichnatee</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">21</td>
+    <td dir="ltr">Walan Norasetpakdi</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">22</td>
+    <td dir="ltr">Weerawat Kiattipongthaworn</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">23</td>
+    <td dir="ltr">Issara Dejakaisaya</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">24</td>
+    <td dir="ltr">Bussaya Satirapipatkul</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">25</td>
+    <td dir="ltr">Pratthana Leelapanang</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">26</td>
+    <td dir="ltr">Transaction of Other Business</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">Abstain</td>
+    <td dir="ltr">Against</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">27</td>
+    <td dir="ltr">Non-Voting Meeting Note</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td></tr>
+<tr>
+    <td style="vertical-align: bottom">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td></tr>
+<tr style="vertical-align: bottom">
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td></tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse; font: 10pt Arial, Helvetica, Sans-Serif">
+<tr style="vertical-align: bottom">
+    <td colspan="8" style="font-weight: bold">Fund Name : Asset Allocation Fund<br>
+<br>
+Reporting Period : July 01, 2014 - June 30, 2015</td></tr>
+<tr style="vertical-align: bottom">
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td style="border-top: black 1pt solid; width: 28%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 12%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 25%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 1%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 9%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 8%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 8%">&nbsp;</td>
+    <td style="border-top: black 1pt solid; width: 9%">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr" style="font-weight: bold">AAC Technologies Holdings Inc.</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Ticker</td>
+    <td dir="ltr" style="font-weight: bold">Security ID:</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td colspan="2" dir="ltr" style="font-weight: bold">Meeting Date</td>
+    <td colspan="2" dir="ltr" style="font-weight: bold">Meeting Status</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">2018</td>
+    <td dir="ltr">CINS G2953R114</td>
+    <td dir="ltr">&nbsp;</td>
+    <td colspan="2" dir="ltr">05/18/2015</td>
+    <td colspan="2" dir="ltr">Voted</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Meeting Type</td>
+    <td dir="ltr" style="font-weight: bold">Country of Trade</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Annual</td>
+    <td dir="ltr">Cayman Islands</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Issue No.</td>
+    <td dir="ltr" style="font-weight: bold">Description</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Proponent</td>
+    <td dir="ltr" style="font-weight: bold">Mgmt Rec</td>
+    <td dir="ltr" style="font-weight: bold">Vote Cast</td>
+    <td dir="ltr" style="font-weight: bold">For/Agnst Mgmt</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1</td>
+    <td dir="ltr">Non-Voting Meeting Note</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">2</td>
+    <td dir="ltr">Non-Voting Meeting Note</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td>
+    <td dir="ltr">N/A</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">3</td>
+    <td dir="ltr">Accounts and Reports</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">4</td>
+    <td dir="ltr">Allocation of Profits/Dividends</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">5</td>
+    <td dir="ltr">Elect Benjamin PAN Zhengmin</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">6</td>
+    <td dir="ltr">Elect KOH Boon Hwee</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">7</td>
+    <td dir="ltr">Elect Carmen CHANG I-Hua</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">8</td>
+    <td dir="ltr">Directors' Fees</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">9</td>
+    <td dir="ltr">Appointment of Auditor and Authority to Set Fees</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">10</td>
+    <td dir="ltr">Authority to Issue Shares w/o Preemptive Rights</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">Against</td>
+    <td dir="ltr">Against</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">11</td>
+    <td dir="ltr">Authority to Repurchase Shares</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">12</td>
+    <td dir="ltr">Authority to Issue Repurchased Shares</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">Against</td>
+    <td dir="ltr">Against</td></tr>
+<tr>
+    <td style="vertical-align: bottom">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td></tr>
+<tr style="vertical-align: bottom">
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr" style="font-weight: bold">ACE Limited</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Ticker</td>
+    <td dir="ltr" style="font-weight: bold">Security ID:</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td colspan="2" dir="ltr" style="font-weight: bold">Meeting Date</td>
+    <td colspan="2" dir="ltr" style="font-weight: bold">Meeting Status</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">ACE</td>
+    <td dir="ltr">CUSIP H0023R105</td>
+    <td dir="ltr">&nbsp;</td>
+    <td colspan="2" dir="ltr">05/21/2015</td>
+    <td colspan="2" dir="ltr">Voted</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Meeting Type</td>
+    <td dir="ltr" style="font-weight: bold">Country of Trade</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Annual</td>
+    <td dir="ltr">United States</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Issue No.</td>
+    <td dir="ltr" style="font-weight: bold">Description</td>
+    <td dir="ltr" style="font-weight: bold">&nbsp;</td>
+    <td dir="ltr" style="font-weight: bold">Proponent</td>
+    <td dir="ltr" style="font-weight: bold">Mgmt Rec</td>
+    <td dir="ltr" style="font-weight: bold">Vote Cast</td>
+    <td dir="ltr" style="font-weight: bold">For/Agnst Mgmt</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">1</td>
+    <td dir="ltr">Accounts and Reports</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">2</td>
+    <td dir="ltr">Allocation of Profits</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">3</td>
+    <td dir="ltr">Dividends from Reserves</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">4</td>
+    <td dir="ltr">Ratification of Board Acts</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">5</td>
+    <td dir="ltr">Appointment of Statutory Auditor</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">6</td>
+    <td dir="ltr">Appointment of Auditor</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">7</td>
+    <td dir="ltr">Appointment of Special Auditor</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">8</td>
+    <td dir="ltr">Elect Evan G. Greenberg</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">9</td>
+    <td dir="ltr">Elect Robert M. Hernandez</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">10</td>
+    <td dir="ltr">Elect Michael G. Atieh</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">11</td>
+    <td dir="ltr">Elect Mary A. Cirillo</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">12</td>
+    <td dir="ltr">Elect Michael P. Connors</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">13</td>
+    <td dir="ltr">Elect John A. Edwardson</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">14</td>
+    <td dir="ltr">Elect Peter Menikoff</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">15</td>
+    <td dir="ltr">Elect Leo F. Mullin</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">16</td>
+    <td dir="ltr">Elect Kimberly Ross</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">17</td>
+    <td dir="ltr">Elect Robert W. Scully</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">18</td>
+    <td dir="ltr">Elect Eugene B. Shanks, Jr.</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">19</td>
+    <td dir="ltr">Elect Theodore Shasta</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">20</td>
+    <td dir="ltr">Elect David H. Sidwell</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">21</td>
+    <td dir="ltr">Elect Olivier Steimer</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">22</td>
+    <td dir="ltr">Elect Evan G. Greenberg as chairman of the board</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">23</td>
+    <td dir="ltr">Elect Michael P. Connors</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">24</td>
+    <td dir="ltr">Elect Mary A. Cirillo</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">25</td>
+    <td dir="ltr">Elect John A. Edwardson</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">26</td>
+    <td dir="ltr">Elect Robert M. Hernandez</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">27</td>
+    <td dir="ltr">Election Of Homburger Ag As Independent Proxy</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">28</td>
+    <td dir="ltr">Amendments to Articles Relating to VeguV (General Amendments)</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">29</td>
+    <td dir="ltr">Amendments to Articles Relating to VeguV (Compensation Provisions)</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">30</td>
+    <td dir="ltr">Compensation of the Board until the Next AGM</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">31</td>
+    <td dir="ltr">Executive Compensation</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">32</td>
+    <td dir="ltr">Advisory Vote on Executive Compensation</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">Mgmt</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">For</td></tr>
+<tr style="vertical-align: top">
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">33</td>
+    <td dir="ltr">Additional or Miscellanious Proposals</td>
+    <td dir="ltr">&nbsp;</td>
+    <td dir="ltr">ShrHoldr</td>
+    <td dir="ltr">For</td>
+    <td dir="ltr">Abstain</td>
+    <td dir="ltr">Against</td></tr>
+<tr>
+    <td style="vertical-align: bottom">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td>
+    <td dir="ltr" style="vertical-align: top">&nbsp;</td></tr>
+<tr style="vertical-align: bottom">
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td></tr>
+<tr style="vertical-align: top">
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td>
+    <td style="border-top: black 1pt solid">&nbsp;</td></tr>
+</table>
+</table>
+
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: justify"></P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font-size: 10pt; width: 100%">
+<TR STYLE="vertical-align: top">
+    <TD STYLE="width: 100%; font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Fund Name : Corporate Bond Fund</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Reporting Period : July 1, 2014 &ndash; June 30, 2015</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif">The fund did not hold any voting securities and accordingly did not vote any proxies during the reporting period.</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Fund Name : Global Bond Fund</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Reporting Period : July 1, 2014 &ndash; June 30, 2015</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif">The fund did not hold any voting securities and accordingly did not vote any proxies during the reporting period.</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Fund Name : Mortgage Fund</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Reporting Period : July 1, 2014 &ndash; June 30, 2015</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif">The fund did not hold any voting securities and accordingly did not vote any proxies during the reporting period.</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Fund Name : U.S. Government/AAA-Rated Securities Fund</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Reporting Period : July 1, 2014 &ndash; June 30, 2015</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif">The fund did not hold any voting securities and accordingly did not vote any proxies during the reporting period.</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Fund Name : Cash Management Fund</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Reporting Period : July 1, 2014 &ndash; June 30, 2015</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif">The fund did not hold any voting securities and accordingly did not vote any proxies during the reporting period.</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Fund Name : Managed Risk Growth Fund</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Reporting Period : July 1, 2014 &ndash; June 30, 2015</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif">The fund did not hold any voting securities and accordingly did not vote any proxies during the reporting period.</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Fund Name : Managed Risk International Fund</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Reporting Period : July 1, 2014 &ndash; June 30, 2015</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif">The fund did not hold any voting securities and accordingly did not vote any proxies during the reporting period.</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Fund Name : Managed Risk Blue Chip Income and Growth Fund</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Reporting Period : July 1, 2014 &ndash; June 30, 2015</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif">The fund did not hold any voting securities and accordingly did not vote any proxies during the reporting period.</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Fund Name : Managed Risk Growth-Income Fund</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Reporting Period : July 1, 2014 &ndash; June 30, 2015</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif">The fund did not hold any voting securities and accordingly did not vote any proxies during the reporting period.</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Fund Name : Managed Risk Asset Allocation Fund</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Reporting Period : July 1, 2014 &ndash; June 30, 2015</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif">The fund did not hold any voting securities and accordingly did not vote any proxies during the reporting period.</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Fund Name : Portfolio Series &ndash; Global Growth Portfolio</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Reporting Period : July 1, 2014 &ndash; June 30, 2015</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif">The portfolio did not hold any voting securities and accordingly did not vote any proxies during the reporting period.</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Fund Name : Portfolio Series &ndash; Growth and Income Portfolio</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Reporting Period : July 1, 2014 &ndash; June 30, 2015</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif">The portfolio did not hold any voting securities and accordingly did not vote any proxies during the reporting period.</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Fund Name : Portfolio Series &ndash; Managed Risk Growth Portfolio</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Reporting Period : July 1, 2014 &ndash; June 30, 2015</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif">The portfolio did not hold any voting securities and accordingly did not vote any proxies during the reporting period.</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Fund Name : Portfolio Series &ndash; Managed Risk Growth and Income Portfolio</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Reporting Period : July 1, 2014 &ndash; June 30, 2015</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif">The portfolio did not hold any voting securities and accordingly did not vote any proxies during the reporting period.</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Fund Name : Portfolio Series &ndash; Managed Risk Global Allocation Portfolio</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif"><B>Reporting Period : July 1, 2014 &ndash; June 30, 2015</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font-family: AvenirNext LT Com Regular,sans-serif">The portfolio did not hold any voting securities and accordingly did not vote any proxies during the reporting period.</FONT></TD></TR>
+</TABLE>
+
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: justify"></P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: justify"></P>
+
+<!-- Field: Page; Sequence: 3 -->
+    <DIV STYLE="margin-bottom: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <DIV STYLE="page-break-before: always; margin-top: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <!-- Field: /Page -->
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: justify"><B>&nbsp;</B></P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin-top: 0; margin-bottom: 0; text-align: left"><B>SIGNATURE</B></P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: center"><B>&nbsp;</B></P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: justify">Pursuant to the requirements of the
+Investment Company Act of 1940, the registrant has duly caused this report to be signed on its behalf by the undersigned, thereunto
+duly authorized.</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: justify">AMERICAN FUNDS INSURANCE SERIES</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: justify">(Registrant)</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: justify">&nbsp;</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font-size: 10pt; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+    <TD STYLE="width: 100%; font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif">By <U>/s/ Michael J. Downer</U></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>
+        <P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-indent: 15.65pt">Michael J. Downer, Executive Vice President
+        and</P>
+        <P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-indent: 15.65pt">Principal Executive Officer</P></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10pt Times New Roman, Times, Serif"><FONT STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif">Date: August 27, 2015</FONT></TD></TR>
+</TABLE>
+<P STYLE="font: 10pt AvenirNext LT Com Regular,sans-serif; margin: 0; text-align: justify"></P>
+
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
