@@ -1622,3 +1622,45 @@ func TestTiedPairLabelsAreSplit(t *testing.T) {
 		}
 	}
 }
+
+// A target-date fund's name carries the YEAR, and the sticky-label scan rejected
+// any line holding a digit, so every dated portfolio of a fund family lost its
+// fund identity and its record holders collapsed onto one key per class.
+var asciiDatedFundLabels = `
+                            PRINCIPAL SHAREHOLDERS
+
+                                           PERCENTAGE OF
+FUND/                                      OUTSTANDING
+CLASS      SHAREHOLDER                     SHARES OWNED OF RECORD
+LIVESTRONG 2015 Portfolio
+- --------------------------------------------------------------------------------
+  Investor Class
+           The Chase Manhattan Bank NA     7%
+           JPMorgan Chase Bank Trustee     37%
+LIVESTRONG 2025 Portfolio
+- --------------------------------------------------------------------------------
+  Investor Class
+           The Chase Manhattan Bank NA     12%
+           JPMorgan Chase Bank Trustee     26%
+` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 250)
+
+func TestASCIIDatedFundLabelLines(t *testing.T) {
+	rows := ScreenRows(run(t, asciiDatedFundLabels))
+	seen := map[string]int{}
+	for _, r := range rows {
+		if strings.HasPrefix(r.HolderName, "JPMorgan Chase") {
+			seen[r.ShareClass]++
+		}
+	}
+	if len(seen) == 0 {
+		t.Fatalf("holder lost: %v", holderNames(rows))
+	}
+	for cls, n := range seen {
+		if n > 1 {
+			t.Errorf("share_class %q emitted %d times for one holder: %v", cls, n, seen)
+		}
+		if !strings.Contains(cls, "2015") && !strings.Contains(cls, "2025") {
+			t.Errorf("share_class %q does not name the dated fund: %v", cls, seen)
+		}
+	}
+}
