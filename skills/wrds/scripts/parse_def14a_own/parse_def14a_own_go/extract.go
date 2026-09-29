@@ -69,6 +69,15 @@ var (
 	// reHdrClassCol matches the header of a ROW-LEVEL column stating which
 	// class, series or fund the row's holding is in. Anchored at the head of
 	// the header so "Percentage of Fund" is not read as a fund column.
+	// A row-level column stating which ISSUER the holding is in. A proxy has one
+	// issuer, so such a column exists exactly when several are listed side by
+	// side -- a fund complex's trustee table, or a holding-company group -- and
+	// the issuer is then part of the grain, exactly like a class. Consulted only
+	// for a column that is NOT the name column, so a stub headed "Company" in a
+	// table whose holders are companies is untouched.
+	reHdrIssuerCol = regexp.MustCompile(`(?i)^\s*(?:company|companies|issuer|entity|registrant|` +
+		`name\s+of\s+(?:company|issuer|entity|registrant))\b`)
+
 	reHdrClassCol = regexp.MustCompile(`(?i)^\s*(?:title\s+of\s+(?:class|series)|class\s+of\s+(?:stock|shares|securities)|share\s+class|series|fund|portfolio)\b|^\s*class\s*(?:\||$)`)
 	// A footnote reference trailing a column header: "... of stock (2)".
 	reHdrFootnote = regexp.MustCompile(`\s*\(\d{1,2}\)\s*$`)
@@ -522,7 +531,9 @@ func (c *compacted) repoint() {
 		if j == nc || c.roles[j].role != "other" {
 			continue
 		}
-		if reHdrClassCol.MatchString(c.roles[j].header) && c.colFilled(j) > 0 {
+		isClassCol := reHdrClassCol.MatchString(c.roles[j].header) ||
+			(nc >= 0 && reHdrIssuerCol.MatchString(c.roles[j].header))
+		if isClassCol && c.colFilled(j) > 0 {
 			c.roles[j].role = "class"
 			c.hdrClassCols = append(c.hdrClassCols, j)
 		}
