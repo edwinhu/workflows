@@ -10,7 +10,8 @@ import (
 // Cell-level parsing: share counts, percents, footnote markers, group rows.
 
 var (
-	reFootnote  = regexp.MustCompile(`\(\s*([0-9]{1,2}[a-zA-Z]?|[a-zA-Z])\s*\)`)
+	// EDGAR renders a superscript footnote mark as "(/2/)" as often as "(2)".
+	reFootnote  = regexp.MustCompile(`\(\s*/?\s*([0-9]{1,2}[a-zA-Z]?|[a-zA-Z])\s*/?\s*\)`)
 	reSharesNum = regexp.MustCompile(`^-?[0-9][0-9,\. ]*$`)
 	rePctNum    = regexp.MustCompile(`([0-9]+(?:\.[0-9]+)?)\s*%`)
 	rePctBare   = regexp.MustCompile(`^([0-9]{1,3}(?:\.[0-9]+)?)$`)
