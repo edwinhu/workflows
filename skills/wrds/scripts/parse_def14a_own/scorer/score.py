@@ -41,13 +41,17 @@ Metrics, each printed with its denominator:
                                ~250 filings per filing year 1994-2026, every
                                gold-linked filing excluded). Three families of
                                number, all reported per year with denominators:
-                               (a) DUPLICATE EXCESS on the exact key
-                               (accession, cik, holder_name, share_class), split
-                               into same-`table_kind` excess (over-emission — the
-                               GATED one) and cross-`table_kind` excess (the same
-                               holder listed in the 5% table AND the management
-                               table, which the document really does do — REPORTED,
-                               never gated); (b) parsed-percent filing yield per
+                               (a) DUPLICATE EXCESS. The GATED key since
+                               2026-09-29 is the IDENTICAL ROW — (accession, cik,
+                               table_kind, holder_name, share_class, shares,
+                               percent) — counting excess copies. The looser key
+                               (accession, cik, holder_name, share_class) and its
+                               same-/cross-`table_kind` split are still computed
+                               and printed, now DIAGNOSTIC: same-kind counted one
+                               holder listed once per managed account, each row
+                               carrying its own shares and percent, as duplicates,
+                               and those rows are distinct facts;
+                               (b) parsed-percent filing yield per
                                year, gated as a NO-REGRESSION floor against the
                                per-year values recorded in thresholds.json
                                `_sample_yield_floor_by_year`; (c) group-row rate
@@ -59,8 +63,9 @@ thresholds.json — nothing in this file hard-codes it, and no metric outside th
 two sets can change the exit code. Since 2026-09-29 that is EIGHT metrics: filing
 yield (parsed percent), holder recall vs blockw, holder precision vs blockw,
 group-row detection, ISS director recall, the sample's worst-year yield margin,
-and two ceilings on the sample's same-table duplicate excess rate (pooled and
-worst year). The two FactSet aggregate metrics in (iii)
+and two ceilings on the sample's IDENTICAL-ROW duplicate excess rate (pooled and
+worst year; the same-table pair they replaced on 2026-09-29 is now diagnostic).
+The two FactSet aggregate metrics in (iii)
 are computed and printed with their denominators every run and NEVER affect the
 exit code, because the FactSet gold is defined by a proxy window over all FactSet
 stakes and mixes 13F / Form 4 positions (only 21 of 2,647 linked firm-years carry
@@ -293,6 +298,74 @@ def fnum(s):
         return float(s)
     except ValueError:
         return None
+
+
+class DupExcess:
+    """Excess-copy counters for the (vi) sample duplicate metrics.
+
+    ONE streaming accumulator, so the definition scorer/score_test.py exercises is
+    the definition main() scores. Rows are added with the filing key (cik,
+    accession); every counter is excess COPIES, i.e. (n - 1) summed over groups.
+
+      excess_identical  (holder, cls, table_kind, shares, percent)   [GATED]
+      excess_same_table (holder, cls, table_kind, table_index)       diagnostic
+      excess_same_kind  (holder, cls, table_kind)                    diagnostic
+      excess_total      (holder, cls)                                diagnostic
+      excess_cross_kind (distinct table_kinds - 1) per (holder, cls) diagnostic
+
+    `excess_identical` is the gated definition as of 2026-09-29. The earlier gated
+    measure was `excess_same_kind`, which counts a holder listed MANY TIMES in one
+    table with DIFFERENT shares and percent as duplicates — AllianceBernstein's
+    2018 proxy lists one holder once per managed account, 264 of that year's 304
+    excess rows. Those rows are distinct facts and gating them paid the loop to
+    delete disclosure. `shares` and `percent` are compared as the parser emitted
+    them: a row emitted twice by one parse emits byte-identical numbers.
+    """
+
+    NAMES = ("excess_total", "excess_same_kind", "excess_cross_kind",
+             "excess_same_table", "excess_identical")
+
+    def __init__(self):
+        self.whole = defaultdict(int)
+        self.kind = defaultdict(int)
+        self.table = defaultdict(int)
+        self.ident = defaultdict(int)
+
+    def add(self, fkey, r):
+        h, c, k = r["holder_name"], r["share_class"], r["table_kind"]
+        self.whole[(fkey, h, c)] += 1
+        self.kind[(fkey, h, c, k)] += 1
+        self.table[(fkey, h, c, k, r["table_index"])] += 1
+        self.ident[(fkey, h, c, k, r["shares"], r["percent"])] += 1
+
+    def excess(self):
+        """-> {filing key: {counter name: excess copies}}; filings with none omitted."""
+        out = {}
+
+        def box(fkey):
+            b = out.get(fkey)
+            if b is None:
+                b = out[fkey] = {n: 0 for n in self.NAMES}
+            return b
+
+        for kt, n in self.whole.items():
+            if n > 1:
+                box(kt[0])["excess_total"] += n - 1
+        n_kinds = defaultdict(int)
+        for kt, n in self.kind.items():
+            n_kinds[kt[:3]] += 1
+            if n > 1:
+                box(kt[0])["excess_same_kind"] += n - 1
+        for kt, nk in n_kinds.items():
+            if nk > 1:
+                box(kt[0])["excess_cross_kind"] += nk - 1
+        for kt, n in self.table.items():
+            if n > 1:
+                box(kt[0])["excess_same_table"] += n - 1
+        for kt, n in self.ident.items():
+            if n > 1:
+                box(kt[0])["excess_identical"] += n - 1
+        return out
 
 
 def verify_lock(lock_path, files):
@@ -561,18 +634,14 @@ def main():
                 sys.exit(2)
             print("WARNING: " + msg, file=sys.stderr)
 
-    # Per-year sample accumulators. The duplicate counters are exact-key GROUP
-    # counts, accumulated as dicts keyed by the exact key so the decomposition
+    # Per-year sample accumulators. Every duplicate counter comes from DupExcess
+    # (see its docstring): the decomposition
     #   excess_total = excess_same_table_kind + excess_cross_table_kind
-    # holds by construction: within a key group, (n - 1) splits into
-    # sum_over_kinds(n_in_kind - 1) and (n_kinds - 1).
+    # still holds by construction, and `excess_identical` is the GATED one.
     def sample_box():
-        return {"filings": 0, "rows": 0, "with_pct": 0, "with_group": 0,
-                "excess_total": 0, "excess_same_kind": 0, "excess_cross_kind": 0,
-                "excess_same_table": 0}
-    sample_keys = defaultdict(int)                          # (key, holder, cls) -> n
-    sample_kind = defaultdict(int)                          # (key, holder, cls, kind) -> n
-    sample_tbl = defaultdict(int)                           # (key, holder, cls, kind, tix) -> n
+        return dict({"filings": 0, "rows": 0, "with_pct": 0, "with_group": 0},
+                    **{n: 0 for n in DupExcess.NAMES})
+    dup = DupExcess()
     sample_has_pct = set()
     sample_has_group = set()
     sample_n_rows = defaultdict(int)
@@ -583,12 +652,8 @@ def main():
         cik = r["cik"].lstrip("0") or "0"
         key = (cik, r["accession"])
         if key in sample_year:
-            holder, cls = r["holder_name"], r["share_class"]
-            kind, tix = r["table_kind"], r["table_index"]
             sample_n_rows[key] += 1
-            sample_keys[(key, holder, cls)] += 1
-            sample_kind[(key, holder, cls, kind)] += 1
-            sample_tbl[(key, holder, cls, kind, tix)] += 1
+            dup.add(key, r)
             if r["percent"] != "":
                 sample_has_pct.add(key)
             if r["is_group_row"] == "1":
@@ -881,19 +946,23 @@ def main():
 
     # ---- (vi) FULL-ARCHIVE SAMPLE -------------------------------------------
     #
-    # (a) DUPLICATE EXCESS on the documented exact key
-    #     (accession, cik, holder_name, share_class). For one key group of n rows
-    #     the excess is n-1, and it decomposes EXACTLY:
-    #         n - 1  =  Σ_kinds (n_in_kind - 1)      "same table_kind"   [GATED]
-    #                +  (n_distinct_kinds - 1)       "cross table_kind"  [REPORTED]
-    #     The cross-kind part is what the DOCUMENT does: a director who is also a
-    #     5% holder is listed in the 5% table AND the management table, and both
-    #     rows are real. It is reported with its denominator and never gated —
-    #     gating it would pay the loop to suppress a legitimate disclosure.
-    #     The same-kind part is over-emission, and is reported twice: the whole of
-    #     it (the gated number) and the sub-part that repeats inside ONE
-    #     table_index, which is the strictest possible reading of "the same row
-    #     emitted twice".
+    # (a) DUPLICATE EXCESS. The GATED key since 2026-09-29 is the IDENTICAL ROW —
+    #     (accession, cik, table_kind, holder_name, share_class, shares, percent) —
+    #     counting excess copies, n-1 per group. A row that repeats every field is
+    #     the same row emitted twice under any reading; table_index is deliberately
+    #     OUT of the key, so one row emitted from two tables of one kind still
+    #     counts.
+    #     The looser key (accession, cik, holder_name, share_class) is still
+    #     computed and printed, now DIAGNOSTIC, with its exact decomposition:
+    #         n - 1  =  Σ_kinds (n_in_kind - 1)      "same table_kind"
+    #                +  (n_distinct_kinds - 1)       "cross table_kind"
+    #     Neither part is gated any more, and for different reasons. Cross-kind is
+    #     what the DOCUMENT does: a director who is also a 5% holder is listed in
+    #     the 5% table AND the management table, and both rows are real. Same-kind
+    #     counts one holder listed once per managed account — each row with its own
+    #     shares and percent — as duplicates; that is the AllianceBernstein 2018
+    #     shape, 264 of that year's 304 excess rows, and gating it paid the loop to
+    #     delete distinct facts. See DupExcess and thresholds.json `_history`.
     # (b) PARSED-PERCENT YIELD per year — the same definition as (i), on the
     #     sample instead of the gold set. Gated as a NO-REGRESSION FLOOR per year:
     #     the floors live in thresholds.json `_sample_yield_floor_by_year` and were
@@ -916,36 +985,25 @@ def main():
                 # numerator either, or the rate exceeds 1.
                 box["with_group"] += 1 if (key in sample_has_group
                                            and key in sample_has_pct) else 0
-        for (key, _h, _c), n in sample_keys.items():
-            if n > 1:
-                for box in (sb[sample_year[key]], stot):
-                    box["excess_total"] += n - 1
-        n_kinds = defaultdict(int)
-        for (key, h, c, _k), n in sample_kind.items():
-            n_kinds[(key, h, c)] += 1
-            if n > 1:
-                for box in (sb[sample_year[key]], stot):
-                    box["excess_same_kind"] += n - 1
-        for (key, _h, _c), nk in n_kinds.items():
-            if nk > 1:
-                for box in (sb[sample_year[key]], stot):
-                    box["excess_cross_kind"] += nk - 1
-        for (key, _h, _c, _k, _t), n in sample_tbl.items():
-            if n > 1:
-                for box in (sb[sample_year[key]], stot):
-                    box["excess_same_table"] += n - 1
+        for fkey, ex in dup.excess().items():
+            for box in (sb[sample_year[fkey]], stot):
+                for nm, v in ex.items():
+                    box[nm] += v
 
         def srate(n, d):
             return (n / d) if d else 0.0
 
+        dup_ident = srate(stot["excess_identical"], stot["rows"])
         dup_same = srate(stot["excess_same_kind"], stot["rows"])
         dup_cross = srate(stot["excess_cross_kind"], stot["rows"])
         dup_1tbl = srate(stot["excess_same_table"], stot["rows"])
         yields = {y: srate(sb[y]["with_pct"], sb[y]["filings"]) for y in syears}
         grouprate = {y: srate(sb[y]["with_group"], sb[y]["with_pct"]) for y in syears}
+        dup_ident_y = {y: srate(sb[y]["excess_identical"], sb[y]["rows"]) for y in syears}
         dup_same_y = {y: srate(sb[y]["excess_same_kind"], sb[y]["rows"]) for y in syears}
         dup_cross_y = {y: srate(sb[y]["excess_cross_kind"], sb[y]["rows"]) for y in syears}
         dup_1tbl_y = {y: srate(sb[y]["excess_same_table"], sb[y]["rows"]) for y in syears}
+        worst_ident_year = max(syears, key=lambda y: dup_ident_y[y])
         worst_dup_year = max(syears, key=lambda y: dup_same_y[y])
 
         floors = {int(k): float(v)
@@ -957,33 +1015,45 @@ def main():
         print("\n== (vi) FULL-ARCHIVE SAMPLE (seed 20260929, %d filings, %d filing years) ==" % (
             stot["filings"], len(syears)))
         print("  parser rows in sample filings: %d" % stot["rows"])
-        print("  (a) duplicate excess on (accession, cik, holder_name, share_class),")
-        print("      denominator = %d parsed rows in sample filings:" % stot["rows"])
+        print("  (a) duplicate excess, denominator = %d parsed rows in sample filings." % stot["rows"])
+        print("      IDENTICAL ROW is the GATED definition since 2026-09-29:")
+        print("      (accession, cik, table_kind, holder_name, share_class, shares, percent)")
+        print("      excess IDENTICAL ROWS       [GATED]       : %6d (%6.3f%%)" % (
+            stot["excess_identical"], 100 * dup_ident))
+        print("      -- and on the looser key (accession, cik, holder_name, share_class),")
+        print("         all DIAGNOSTIC since 2026-09-29 --")
         print("      excess TOTAL                              : %6d (%6.3f%%)" % (
             stot["excess_total"], 100 * srate(stot["excess_total"], stot["rows"])))
-        print("      of it, SAME table_kind      [GATED]       : %6d (%6.3f%%)" % (
+        print("      of it, SAME table_kind      [DIAGNOSTIC]  : %6d (%6.3f%%)" % (
             stot["excess_same_kind"], 100 * dup_same))
         print("        of THAT, inside ONE table_index         : %6d (%6.3f%%)" % (
             stot["excess_same_table"], 100 * dup_1tbl))
-        print("      of it, CROSS table_kind     [REPORTED]    : %6d (%6.3f%%)" % (
+        print("      of it, CROSS table_kind     [DIAGNOSTIC]  : %6d (%6.3f%%)" % (
             stot["excess_cross_kind"], 100 * dup_cross))
         print("      cross-kind is the 5%-table AND management-table listing the same")
         print("      holder; the document really does that, so it is never gated.")
+        print("      same-kind counts one holder listed once per managed account with")
+        print("      DIFFERENT shares and percent as duplicates, which it is not — that")
+        print("      is why the gate moved to the identical-row key.")
         print("  (b) parsed-percent yield, pooled: %d / %d = %.4f" % (
             stot["with_pct"], stot["filings"], srate(stot["with_pct"], stot["filings"])))
         print("  (c) group-row rate, pooled      : %d / %d = %.4f" % (
             stot["with_group"], stot["with_pct"], srate(stot["with_group"], stot["with_pct"])))
 
         print("\n  -- by filing year --")
-        print("  %-5s %7s %8s %9s %9s %9s %9s %9s %9s" % (
-            "year", "filings", "rows", "dup_same", "dup_1tbl", "dup_x", "yield",
-            "floor", "grouprow"))
+        print("  %-5s %7s %8s %10s %9s %9s %9s %9s %9s %9s" % (
+            "year", "filings", "rows", "dup_ident", "dup_same", "dup_1tbl", "dup_x",
+            "yield", "floor", "grouprow"))
         for y in syears:
-            print("  %-5d %7d %8d %8.3f%% %8.3f%% %8.3f%% %9.4f %9s %9.4f" % (
-                y, sb[y]["filings"], sb[y]["rows"], 100 * dup_same_y[y],
+            print("  %-5d %7d %8d %9.3f%% %8.3f%% %8.3f%% %8.3f%% %9.4f %9s %9.4f" % (
+                y, sb[y]["filings"], sb[y]["rows"], 100 * dup_ident_y[y],
+                100 * dup_same_y[y],
                 100 * dup_1tbl_y[y], 100 * dup_cross_y[y], yields[y],
                 ("%.4f" % floors[y]) if y in floors else "n/a", grouprate[y]))
-        print("  worst dup_same year: %d at %.3f%%" % (worst_dup_year, 100 * dup_same_y[worst_dup_year]))
+        print("  worst dup_ident year [GATED]: %d at %.3f%%" % (
+            worst_ident_year, 100 * dup_ident_y[worst_ident_year]))
+        print("  worst dup_same  year [DIAG ]: %d at %.3f%%" % (
+            worst_dup_year, 100 * dup_same_y[worst_dup_year]))
         if worst_margin is None:
             print("  yield floors: NOT RECORDED in thresholds.json "
                   "`_sample_yield_floor_by_year` — run score.py --record-sample-floors once")
@@ -993,7 +1063,12 @@ def main():
         sample_metrics = {
             "sample_filings": stot["filings"],
             "sample_rows": stot["rows"],
+            # GATED since 2026-09-29: the identical-row key.
+            "sample_dup_excess_identical_row_rate": dup_ident,
+            "sample_dup_excess_identical_row_rate_max_year": dup_ident_y[worst_ident_year],
+            "sample_dup_excess_identical_row_worst_year": worst_ident_year,
             "sample_dup_excess_total_rate": srate(stot["excess_total"], stot["rows"]),
+            # DIAGNOSTIC since 2026-09-29; these two were the gated pair before.
             "sample_dup_excess_same_table_rate": dup_same,
             "sample_dup_excess_same_table_rate_max_year": dup_same_y[worst_dup_year],
             "sample_dup_excess_same_table_worst_year": worst_dup_year,
@@ -1003,6 +1078,7 @@ def main():
             "sample_group_row_rate": srate(stot["with_group"], stot["with_pct"]),
             "sample_yield_by_year": {str(y): yields[y] for y in syears},
             "sample_group_row_rate_by_year": {str(y): grouprate[y] for y in syears},
+            "sample_dup_identical_row_rate_by_year": {str(y): dup_ident_y[y] for y in syears},
             "sample_dup_same_table_rate_by_year": {str(y): dup_same_y[y] for y in syears},
             "sample_dup_cross_table_rate_by_year": {str(y): dup_cross_y[y] for y in syears},
             "sample_dup_same_table_index_rate_by_year": {str(y): dup_1tbl_y[y] for y in syears},
@@ -1015,14 +1091,17 @@ def main():
 
         if args.sample_report:
             with open(args.sample_report, "w") as fh:
-                fh.write("year\tfilings\trows\texcess_total\texcess_same_table_kind"
+                fh.write("year\tfilings\trows\texcess_identical_row"
+                         "\tdup_identical_row_rate"
+                         "\texcess_total\texcess_same_table_kind"
                          "\texcess_same_table_index\texcess_cross_table_kind"
                          "\tdup_same_table_rate\tdup_cross_table_rate"
                          "\tfilings_with_parsed_percent\tyield_parsed_percent\tyield_floor"
                          "\tfilings_with_group_row\tgroup_row_rate\n")
                 for y in syears:
-                    fh.write("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%.6f\t%.6f\t%d\t%.6f\t%s\t%d\t%.6f\n" % (
-                        y, sb[y]["filings"], sb[y]["rows"], sb[y]["excess_total"],
+                    fh.write("%d\t%d\t%d\t%d\t%.6f\t%d\t%d\t%d\t%d\t%.6f\t%.6f\t%d\t%.6f\t%s\t%d\t%.6f\n" % (
+                        y, sb[y]["filings"], sb[y]["rows"],
+                        sb[y]["excess_identical"], dup_ident_y[y], sb[y]["excess_total"],
                         sb[y]["excess_same_kind"], sb[y]["excess_same_table"],
                         sb[y]["excess_cross_kind"], dup_same_y[y], dup_cross_y[y],
                         sb[y]["with_pct"], yields[y],

@@ -760,6 +760,10 @@ and carries filings up to 151.7 MB.
 
 ### 9.5 Thresholds — fixed BEFORE the loop
 
+> **SUPERSEDED IN PART by §10 (2026-09-29).** The two ceilings named in the table
+> below are DIAGNOSTIC now; the gate moved to the identical-row key at the same
+> 0.01 / 0.02. The arguments for the VALUES stand and are why §10 kept them.
+
 `thresholds.json` gains a `maximums` block; `score.py` gates `minimums` as floors
 and `maximums` as ceilings, and nothing else.
 
@@ -793,3 +797,178 @@ The fix does **not** move the five existing gates. Scored over the panel, post-f
 same command gave 0.8856 / 0.7797 / 0.8296 / 0.9082 / 0.9131.) `csv.field_size_limit`
 was also raised: a mis-roled table can put a whole paragraph in `holder_name` and
 the 128 KiB default aborted the scorer outright.
+
+## 10. AMENDMENT — 2026-09-29, the gated DUPLICATE METRIC is REDEFINED (operator decision, mid-round)
+
+### 10.1 The change
+
+`maximums` gates two new keys, at the **same thresholds**:
+
+| metric | kind | threshold | status |
+|---|---|---:|---|
+| `sample_dup_excess_identical_row_rate` | ceiling | **0.01** | GATED as of this amendment |
+| `sample_dup_excess_identical_row_rate_max_year` | ceiling | **0.02** | GATED as of this amendment |
+| `sample_dup_excess_same_table_rate` | — | — | was gated at 0.01, now **DIAGNOSTIC** |
+| `sample_dup_excess_same_table_rate_max_year` | — | — | was gated at 0.02, now **DIAGNOSTIC** |
+
+Everything else is untouched: the six `minimums` (0.88 / 0.75 / 0.82 / 0.80 / 0.82
+/ 0.0) and all 33 entries of `_sample_yield_floor_by_year` are byte-for-byte as
+they were, and the gated count stays **eight**.
+
+**Old definition.** Excess rows sharing `(accession, cik, holder_name,
+share_class)` within one `table_kind`.
+
+**New definition.** Excess COPIES of an **identical row**:
+
+```
+(accession, cik, table_kind, holder_name, share_class, shares, percent)
+```
+
+`shares` and `percent` compare as the parser emitted them — a row emitted twice by
+one parse emits byte-identical numbers. `table_index` is deliberately **out** of
+the key, so one row emitted from two tables of the same kind still counts.
+
+### 10.2 Why — the old key counted distinct rows as duplicates
+
+One holder listed once per managed account, each row carrying its **own** shares
+and percent, collapses onto `(holder, class, kind)`. AllianceBernstein's 2018 proxy
+is the type case: **264 of that year's 304 remaining excess rows**, and **620 of
+the 4,352** excess rows remaining across the whole sample.
+
+The loop had already proved this from the inside. Two journal floors were recorded
+against exactly this shape —
+
+- `one-record-holder-many-accounts-one-fund-class`
+- `sample_dup_excess_same_table_rate_max_year-2018-unreachable`
+
+— the second of which says the 2018 ceiling could not be reached **without
+deleting true rows**. A gate that can only be cleared by deleting true rows is a
+defect in the metric, not in the parser. An identical row is a duplicate under any
+reading, so the new key admits no such floor. **Both floors are superseded by this
+section** and by the journal note `operator-dup-metric-identical-row`.
+
+### 10.3 The old measure is kept, as a diagnostic
+
+`sample_dup_excess_same_table_rate` and `_max_year` are still computed and printed
+every round, beside the gated pair, so the redefinition is visible rather than
+being a silently easier gate:
+
+- `== (vi) FULL-ARCHIVE SAMPLE ==` prints the identical-row excess as `[GATED]` and
+  the total / same-kind / same-table_index / cross-kind decomposition as
+  `[DIAGNOSTIC]`;
+- the per-year table prints `dup_ident` and `dup_same` side by side, and names the
+  worst year for each;
+- `sample_by_year.tsv` gains `excess_identical_row` and `dup_identical_row_rate`;
+- `metrics_dev.json` carries both, and `thresholds.json.diagnostics` lists the two
+  demoted keys explicitly.
+
+### 10.4 Implementation and test
+
+`scorer/score.py` grows a `DupExcess` class: **one** streaming accumulator feeding
+all five counters, so the definition the unit test exercises is the definition
+`main()` scores. `scorer/score_test.py::DupExcessCounters` covers the decision
+directly — the AllianceBernstein shape (one holder, nine accounts, distinct shares
+and percent) is **not** a duplicate while the old measure calls it eight; an exact
+repeat **is** one; three exact copies are two excess; an exact repeat across
+`table_index` still counts; a cross-`table_kind` listing does not; the Liberty
+Media multi-series shape with `share_class=""` and distinct shares does not; same
+shares with different percent does not; and identical rows in two different filings
+do not.
+
+### 10.5 The guard is unchanged and still binds
+
+The identical-row ceilings can still be cleared by suppressing rows, and
+suppression drives `holder_recall_blockw` under 0.75, `iss_director_recall` under
+0.82, `filing_yield_parsed_percent` under 0.88, or one sample year's yield under
+its recorded floor. Widening the duplicate definition does not touch that argument.
+It only stops the ceiling from **paying** for the suppression of rows that were
+never duplicates.
+
+### 10.6 RE-BASELINE — measured 2026-09-29, one full round at HEAD (commit 4c1c94f1)
+
+Commands, in order, all exit 0:
+
+```bash
+python3 scorer/score_test.py                      # 19 tests OK
+bash make_lock.sh                                 # scorer/score.py + thresholds.json rehashed
+env -u GRIND_ITERATION bash run_baseline.sh        # 83 shards, 336,807 ownership rows, 21,128 manifest rows
+bash check.sh                                     # CHECK PASS: all 8 gated metrics clear
+```
+
+The round parsed the identical filelist as the pre-change round (`round_filelist.tsv`,
+21,128 filings; 127,744 parser rows in the 8,250 sample filings) and reproduced the
+OLD counters to the row in every year — so the table below isolates the definition
+change and nothing else.
+
+**Gated metrics after the change — `check.sh` exit 0:**
+
+| gated metric | value | threshold | |
+|---|---:|---:|---|
+| `filing_yield_parsed_percent` | 0.8931 | ≥ 0.8800 | PASS |
+| `holder_recall_blockw` | 0.7870 | ≥ 0.7500 | PASS |
+| `holder_precision_blockw` | 0.8299 | ≥ 0.8200 | PASS |
+| `group_row_detection_rate` | 0.9029 | ≥ 0.8000 | PASS |
+| `iss_director_recall` | 0.9022 | ≥ 0.8200 | PASS |
+| `sample_yield_worst_year_margin` | 0.0010 | ≥ 0.0000 | PASS |
+| `sample_dup_excess_identical_row_rate` | **0.0025** | ≤ 0.0100 | **PASS** |
+| `sample_dup_excess_identical_row_rate_max_year` | **0.0117** (2006) | ≤ 0.0200 | **PASS** |
+
+The two demoted keys, now diagnostic: `sample_dup_excess_same_table_rate` 0.0192 and
+`_max_year` 0.0647 (2018) — the values that were FAILING as gates immediately before
+this change. So the round that was stuck is now green, and the number that was stuck
+is still printed.
+
+**Old vs new, per filing year, denominator = parser rows in that year's sample filings:**
+
+| year | rows | OLD `dup_same_table_rate` | excess (old) | NEW `dup_identical_row_rate` | excess (new) | rows no longer counted |
+|---:|---:|---:|---:|---:|---:|---:|
+| 1994 | 2839 | 2.5009% | 71 | 0.2466% | 7 | 64 |
+| 1995 | 2419 | 1.7363% | 42 | 0.1654% | 4 | 38 |
+| 1996 | 2279 | 3.4226% | 78 | 0.2633% | 6 | 72 |
+| 1997 | 2535 | 3.9053% | 99 | 0.5917% | 15 | 84 |
+| 1998 | 2597 | 3.2345% | 84 | 0.0770% | 2 | 82 |
+| 1999 | 2653 | 1.6208% | 43 | 0.0754% | 2 | 41 |
+| 2000 | 2744 | 2.7697% | 76 | 0.3644% | 10 | 66 |
+| 2001 | 2872 | 2.6114% | 75 | 0.4526% | 13 | 62 |
+| 2002 | 2821 | 2.2687% | 64 | 0.4608% | 13 | 51 |
+| 2003 | 3126 | 0.8317% | 26 | 0.0640% | 2 | 24 |
+| 2004 | 3167 | 1.4525% | 46 | 0.1895% | 6 | 40 |
+| 2005 | 2837 | 1.6567% | 47 | 0.1762% | 5 | 42 |
+| 2006 | 3327 | 4.2381% | 141 | 1.1722% | 39 | 102 |
+| 2007 | 4759 | 2.7737% | 132 | 0.3362% | 16 | 116 |
+| 2008 | 4560 | 1.4254% | 65 | 0.7237% | 33 | 32 |
+| 2009 | 5931 | 1.5849% | 94 | 0.1517% | 9 | 85 |
+| 2010 | 4145 | 0.7961% | 33 | 0.1930% | 8 | 25 |
+| 2011 | 4437 | 0.9015% | 40 | 0.1803% | 8 | 32 |
+| 2012 | 6009 | 0.6823% | 41 | 0.0666% | 4 | 37 |
+| 2013 | 3436 | 1.1932% | 41 | 0.0873% | 3 | 38 |
+| 2014 | 3510 | 0.6838% | 24 | 0.0285% | 1 | 23 |
+| 2015 | 4346 | 1.4956% | 65 | 0.5522% | 24 | 41 |
+| 2016 | 4231 | 0.8981% | 38 | 0.0945% | 4 | 34 |
+| 2017 | 5720 | 1.9231% | 110 | 0.1049% | 6 | 104 |
+| 2018 | 4639 | 6.4669% | 300 | 0.0431% | 2 | 298 |
+| 2019 | 4183 | 1.6017% | 67 | 0.4542% | 19 | 48 |
+| 2020 | 5063 | 1.1456% | 58 | 0.0790% | 4 | 54 |
+| 2021 | 3542 | 1.7787% | 63 | 0.2823% | 10 | 53 |
+| 2022 | 4885 | 0.8598% | 42 | 0.0614% | 3 | 39 |
+| 2023 | 3968 | 2.4950% | 99 | 0.0756% | 3 | 96 |
+| 2024 | 5971 | 2.1939% | 131 | 0.1172% | 7 | 124 |
+| 2025 | 4276 | 1.7306% | 74 | 0.3976% | 17 | 57 |
+| 2026 | 3917 | 0.9957% | 39 | 0.2808% | 11 | 28 |
+| **pooled** | **127744** | **1.9163%** | **2448** | **0.2474%** | **316** | **2132** |
+
+**Reading.** 2,132 of the 2,448 same-kind excess rows (87.1%) were never duplicates:
+they differ in `shares` or `percent`. The effect is largest exactly where the old gate
+was most stuck — **2018 goes 300 excess (6.467%) to 2 (0.043%)**, which is the
+measurement behind retiring the `…_max_year-2018-unreachable` floor: the year was
+unreachable because the metric was counting one holder's many managed accounts, not
+because the parser emitted 300 copies. 2023 (99 → 3), 2024 (131 → 7) and 2017 (110 → 6)
+behave the same way. The worst year is now 2006 at 1.172%, still inside the 2.0%
+ceiling, and the pooled rate 0.247% is inside the 1.0% ceiling with room.
+
+**Honest limitation.** The gate is now SLACK: every gated metric passes at HEAD, so the
+duplicate ceilings no longer drive the round. That is the operator's decision taken to
+its conclusion, not an accident of it — the ceilings were driving work against rows
+that should not be deleted. The 316 identical rows that remain are real over-emission
+and are the honest residue; whether to tighten 0.01 toward that residue is a threshold
+question for a future round and is NOT decided here.
