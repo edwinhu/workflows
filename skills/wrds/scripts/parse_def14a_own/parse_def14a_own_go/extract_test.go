@@ -2226,3 +2226,72 @@ func TestASCIIFundNamedOverTheShareColumn(t *testing.T) {
 		}
 	}
 }
+
+// A fund complex's record-holder exhibit writes the holder's name across the
+// lines BELOW its percent: the omnibus account's own portfolio is on the
+// continuation lines and is the only thing that tells five otherwise identical
+// rows of one fund and one class apart. parseTextRow reads line one, so the same
+// truncated name repeated five times collapses onto one grain key.
+const asciiWrappedHolderTail = `
+This exhibit lists those persons who, as of March 15, 2007, owned of record or
+beneficially 5% or more of the outstanding shares of any Class of a Fund.
+
+                                             PERCENTAGE OF       PERCENTAGE OF
+                                             OUTSTANDING         OUTSTANDING
+FUND/                                        SHARES OWNED        SHARES OWNED
+CLASS       SHAREHOLDER                      OF RECORD           BENEFICIALLY(1)
+- --------------------------------------------------------------------------------
+NT Large Company Value
+- --------------------------------------------------------------------------------
+  Institutional Class
+            American Century Serv Corp       35%                 35%
+            LIVESTRONG(TM)
+            2025 Portfolio
+            NT Large Company
+            Value Omnibus
+            Kansas City, Missouri
+
+            American Century Serv Corp       23%                 23%
+            LIVESTRONG(TM)
+            2015 Portfolio
+            NT Large Company
+            Value Omnibus
+            Kansas City, Missouri
+
+            American Century Serv Corp       20%                 20%
+            LIVESTRONG(TM)
+            2035 Portfolio
+            NT Large Company
+            Value Omnibus
+            Kansas City, Missouri
+`
+
+func TestASCIIWrappedHolderNameTail(t *testing.T) {
+	rows := ScreenRows(run(t, asciiWrappedHolderTail))
+	keys := map[string]int{}
+	for _, r := range rows {
+		keys[r.HolderName+"\x00"+r.ShareClass]++
+	}
+	if len(rows) < 3 {
+		t.Fatalf("want the three record holders, got %d rows: %+v", len(rows), rows)
+	}
+	for k, n := range keys {
+		if n > 1 {
+			t.Errorf("key %q emitted %d times; the portfolio on the continuation lines was dropped", k, n)
+		}
+	}
+	// The portfolio belongs to the HOLDER, not to a class label carried down
+	// from the row above: each row's own continuation lines must reach its name.
+	want := []string{"2025 Portfolio", "2015 Portfolio", "2035 Portfolio"}
+	for _, w := range want {
+		hit := false
+		for _, r := range rows {
+			if strings.Contains(r.HolderName, w) {
+				hit = true
+			}
+		}
+		if !hit {
+			t.Errorf("no holder name carries %q", w)
+		}
+	}
+}

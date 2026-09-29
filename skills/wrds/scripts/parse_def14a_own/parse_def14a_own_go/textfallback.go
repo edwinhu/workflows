@@ -351,6 +351,7 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 		// which contains which. Those lines carry no number so they are not
 		// block rows at all and the identity was simply lost.
 		stickyAt := textStickyLabels(clean, block)
+		tailAt := textNameTails(clean, block)
 		// The header lines above the block, split into column groups with their
 		// character spans, so a class stated over ONE (shares, percent) pair can
 		// be attached to that pair and to no other.
@@ -400,6 +401,15 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 			nm = strings.TrimSpace(nm)
 			if nm == "" || !hasWords(nm, 1) || reSkipName.MatchString(nm) {
 				continue
+			}
+			// The holder's name continues on the lines BELOW the numbers, and
+			// that continuation is the only thing telling two otherwise
+			// identical rows apart. Never on a group row: the group label is
+			// followed by whatever prose closes the table.
+			if tl := tailAt[ln]; tl != "" {
+				if grp, _ := isGroupRow(nm); !grp {
+					nm = strings.TrimSpace(nm + " " + tl)
+				}
 			}
 			// A group row wraps: "All current executive officers and directors"
 			// / " as a group (17 persons)....  356,679,528  24.7%".
@@ -1184,4 +1194,68 @@ func textMoneyBlock(clean []string, block []int) bool {
 		}
 	}
 	return rows > 0 && money*2 >= rows
+}
+
+// textNameTails returns, for each block row, the continuation of its holder NAME
+// written on the lines BELOW the numbers. A fund complex's record-holder exhibit
+// writes an omnibus account over five lines -- the intermediary, then the
+// portfolio the account belongs to, then the city -- and the portfolio is the
+// only thing that tells five otherwise identical rows of one fund and one class
+// apart. It fires ONLY for a name that repeats inside the block, which is
+// exactly when the continuation is load-bearing, and never on an ordinary table.
+func textNameTails(clean []string, block []int) map[int]string {
+	rowAt := map[int]bool{}
+	for _, ln := range block {
+		rowAt[ln] = true
+	}
+	names := map[string]int{}
+	raw := map[int]string{}
+	tail := map[int]string{}
+	for i, ln := range block {
+		nm, _, ok := parseTextRow(clean[ln])
+		if !ok {
+			continue
+		}
+		nm, _ = StripFootnotes(nm)
+		nm = strings.TrimSpace(reDotLeader.ReplaceAllString(nm, " "))
+		if nm == "" {
+			continue
+		}
+		raw[ln] = nm
+		names[nm]++
+		stop := ln + 6
+		if i+1 < len(block) && block[i+1] < stop {
+			stop = block[i+1]
+		}
+		if stop > len(clean) {
+			stop = len(clean)
+		}
+		var parts []string
+		for k := ln + 1; k < stop && len(parts) < 4; k++ {
+			t := strings.TrimSpace(clean[k])
+			if t == "" || rowAt[k] || len(t) > 60 {
+				break
+			}
+			if reRuleLine.MatchString(t) || isAddressLine(t) || reTextValueish.MatchString(t) {
+				break
+			}
+			// A GROUP label under the last holder of the table is the next row's
+			// name, not this holder's tail: gluing it on both invents a holder
+			// and hides a group row.
+			if g, _ := isGroupRow(t); g {
+				break
+			}
+			parts = append(parts, t)
+		}
+		if len(parts) > 0 {
+			tail[ln] = strings.Join(parts, " ")
+		}
+	}
+	out := map[int]string{}
+	for ln, t := range tail {
+		if names[raw[ln]] >= 2 {
+			out[ln] = t
+		}
+	}
+	return out
 }
