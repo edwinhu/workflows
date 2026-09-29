@@ -60,7 +60,7 @@ var (
 	// reHdrClassCol matches the header of a ROW-LEVEL column stating which
 	// class, series or fund the row's holding is in. Anchored at the head of
 	// the header so "Percentage of Fund" is not read as a fund column.
-	reHdrClassCol = regexp.MustCompile(`(?i)^\s*(?:title\s+of\s+(?:class|series)|class\s+of\s+(?:stock|shares|securities)|share\s+class|class|series|fund|portfolio)\s*(?:\||$)`)
+	reHdrClassCol = regexp.MustCompile(`(?i)^\s*(?:title\s+of\s+(?:class|series)|class\s+of\s+(?:stock|shares|securities)|share\s+class|series|fund|portfolio)\b|^\s*class\s*(?:\||$)`)
 	// A footnote reference trailing a column header: "... of stock (2)".
 	reHdrFootnote = regexp.MustCompile(`\s*\(\d{1,2}\)\s*$`)
 	// A column of MONEY, not of shares. A fund-family proxy's trustee table
@@ -373,11 +373,38 @@ func (c *compacted) analyze() {
 func (c *compacted) colFilled(j int) int {
 	n := 0
 	for i := c.nHeader; i < len(c.rows); i++ {
-		if j < len(c.rows[i]) && flat(c.rows[i][j]) != "" {
-			n++
+		if j >= len(c.rows[i]) || isSpanRow(c.rows[i]) {
+			continue
 		}
+		v := flat(c.rows[i][j])
+		// A colspan fragment holding only "$", "(", "%" or a footnote marker
+		// states no class, however its header reads.
+		if v == "" || reOnlyPunct.MatchString(v) || reHdrFootnote.MatchString("x"+v) {
+			continue
+		}
+		n++
 	}
 	return n
+}
+
+// isSpanRow reports whether a row is one label repeated across the table by
+// colspan expansion — a sub-heading ("Board Members who are not interested
+// persons of the Funds"), not data. Every column looks filled on such a row.
+func isSpanRow(r []string) bool {
+	first, n := "", 0
+	for _, cell := range r {
+		v := flat(cell)
+		if v == "" {
+			continue
+		}
+		n++
+		if first == "" {
+			first = v
+		} else if v != first {
+			return false
+		}
+	}
+	return n >= 2
 }
 
 // colWords counts the data cells of column j that carry at least one word.
