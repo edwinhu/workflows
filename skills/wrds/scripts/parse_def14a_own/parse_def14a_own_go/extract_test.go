@@ -1151,3 +1151,33 @@ func TestSeriesLabellingOffWithoutTwoSeries(t *testing.T) {
 		}
 	}
 }
+
+// A fund table states BOTH the fund and the share class, in two columns of
+// their own, and needs both to identify the holding: one broker is a 5% record
+// holder of class A and class C of the same fund, and of several funds.
+const fundAndClassColumnsHTML = `<html><body>
+<p>Principal shareholders: 5% record ownership of each fund</p>
+<table>
+<tr><td>Fund</td><td>Class</td><td>Name</td><td>Location</td><td>Number of Shares of Class</td><td>% of Class</td></tr>
+<tr><td>AB Value Fund</td><td>A</td><td>Pershing LLC</td><td>Jersey City, NJ</td><td>195,416</td><td>16.71%</td></tr>
+<tr><td></td><td>C</td><td>Pershing LLC</td><td>Jersey City, NJ</td><td>71,452</td><td>6.11%</td></tr>
+<tr><td>AB Select US Equity</td><td>A</td><td>Pershing LLC</td><td>Jersey City, NJ</td><td>54,234</td><td>7.73%</td></tr>
+</table></body></html>`
+
+func TestFundAndClassColumnsBothReachShareClass(t *testing.T) {
+	rows := ScreenRows(run(t, fundAndClassColumnsHTML))
+	seen := map[string]int{}
+	for _, r := range rows {
+		if r.HolderName == "Pershing LLC" {
+			seen[r.ShareClass]++
+		}
+	}
+	if len(seen) != 3 {
+		t.Fatalf("one broker, three (fund, class) holdings, want 3 distinct share_class, got %v", seen)
+	}
+	for cls, k := range seen {
+		if k != 1 {
+			t.Errorf("share_class %q emitted %d times: %v", cls, k, seen)
+		}
+	}
+}
