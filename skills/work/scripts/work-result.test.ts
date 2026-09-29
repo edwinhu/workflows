@@ -179,6 +179,90 @@ describe('work-result.sh accepts a well-formed gate return', () => {
   })
 })
 
+/**
+ * THE WORKFLOW TOOL'S ENVELOPE.
+ *
+ * `farm.sh --workflow` puts a model in the return path: the child calls the Workflow tool and copies
+ * "the returned object" to --out. The TOOL result is an envelope — {summary, agentCount, logs,
+ * totalTokens, result, …} — whose `result` is the script's own return, and a child that takes the tool
+ * result literally writes the envelope. Observed 2026-09-28 (secreg, .work/0928-already-answered):
+ * a complete and correct FAIL verdict sat under `.result` and this script refused it as
+ * "missing required key: overallPass" — a real verdict reported as could-not-run, the one code a
+ * caller cannot act on. farm.sh's prompt now names the envelope; the reader stays tolerant because the
+ * writer is a model and the shape is unambiguous.
+ */
+describe('work-result.sh unwraps the Workflow tool envelope', () => {
+  /** The observed shape: envelope keys at the top, the gate return one level down. */
+  const wrapped = (inner: Record<string, unknown>) => ({
+    summary: 'work loop core: sequential plan-bound implementation',
+    agentCount: 18,
+    logs: ['gate: FAIL — all 2 tasks judged this run'],
+    totalTokens: 4_000_000,
+    totalToolCalls: 900,
+    workflowProgress: {},
+    result: inner,
+  })
+
+  test('a wrapped PASS adjudicates and exits 0, exactly like the bare shape', () => {
+    const r = runJson(wrapped(valid()))
+    expect(r.code).toBe(0)
+    expect(r.stdout).toContain('PASS')
+  })
+
+  test('a wrapped FAIL exits 1 — the verdict it carried was real, not malformed', () => {
+    const r = runJson(wrapped(validFail()))
+    expect(r.code).toBe(1)
+    expect(r.stdout).toContain('FAIL')
+  })
+
+  test('the unwrap is announced on stderr, naming the envelope keys — a silent reshape hides the defect', () => {
+    const r = runJson(wrapped(valid()))
+    expect(r.stderr).toContain('unwrapped the Workflow tool envelope')
+    expect(r.stderr).toContain('agentCount')
+    expect(r.stdout).not.toContain('agentCount')     // the envelope never reaches the report
+  })
+
+  // The adjudication is the whole point of this script and must run on the UNWRAPPED object, not be
+  // skipped because the mechanical array is one level down.
+  test('mechanical claims inside the envelope are still re-run, and a fabricated pass is refused', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'work-result-wrapped-'))
+    scratch.push(dir)
+    const file = join(dir, 'result.json')
+    writeFileSync(file, JSON.stringify(wrapped({
+      ...valid(),
+      mechanical: [{ name: 'the-check', exitCode: 0, output: 'ok' }],
+    }), null, 2))
+    writeFileSync(join(dir, 'args.json'), JSON.stringify({
+      projectDir: dir, mechanicalChecks: [{ name: 'the-check', cmd: 'exit 3' }],
+    }, null, 2))
+    const r = runOn(file)
+    expect(r.code).toBe(2)
+    expect(r.stderr).toContain('claimed PASS does not reproduce')
+  })
+
+  // The discriminator is "no gate keys at the top, all of them one level down". A top level that
+  // ALREADY carries them is a gate return whose own `result` field means something else, and it must
+  // be read as-is.
+  test('a bare gate return carrying its own `result` key is NOT unwrapped', () => {
+    const r = runJson({ ...valid(), result: { overallPass: false, verdict: 'FAIL' } })
+    expect(r.code).toBe(0)
+    expect(r.stdout).toContain('PASS')
+    expect(r.stderr).not.toContain('unwrapped')
+  })
+
+  test('an envelope whose `result` is not a gate return is still refused, naming the real keys', () => {
+    const r = runJson(wrapped({ notes: 'the workflow threw' } as Record<string, unknown>))
+    expect(r.code).toBe(2)
+    expect(r.stderr).toContain('missing required key')
+  })
+
+  test('an envelope whose `result` is a string is refused, not treated as an object', () => {
+    const r = runJson({ summary: 's', agentCount: 1, logs: [], result: 'PASS' })
+    expect(r.code).toBe(2)
+    expect(r.stderr).toContain('missing required key: overallPass')
+  })
+})
+
 describe('work-result.sh refuses a missing required key', () => {
   for (const key of REQUIRED) {
     test(`missing ${key} exits non-zero`, () => {

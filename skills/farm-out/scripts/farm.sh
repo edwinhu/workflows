@@ -283,7 +283,7 @@ $(cat "$ARGSFILE")"
 CRITICAL — Workflow returns IMMEDIATELY with a task id and then keeps running in the background. If you end your turn at that point the session exits and the entire run is destroyed. You MUST NOT end your turn until the workflow has actually returned. It may take 20-60 minutes.
 After calling Workflow, stay alive by polling: run \`sleep 120\` via Bash, then check whether it finished (ToolSearch for \"select:TaskList,TaskGet,TaskOutput\" and use those, or read the workflow transcript directory named in the Workflow result). Repeat for as long as it takes. Never emit a final text message while the workflow is still running.
 
-When it returns, write the returned object to $OUT as a single JSON document using the Write tool — verbatim, no commentary, no summarising. If Workflow throws, write {\"error\": \"<exact error text>\"} to that same path. Do not retry with invented arguments." "" "" "${EXPECT[@]:-}" "$OUT")
+When it returns, write the SCRIPT'S OWN RETURN VALUE to $OUT as a single JSON document using the Write tool — verbatim, no commentary, no summarising. The Workflow tool wraps it: the tool result is an envelope {summary, agentCount, logs, totalTokens, result, …} and the script's return value is the object under its \`result\` key. Write THAT object, unwrapped, as the whole document. Do not write the envelope, and do not add a \`result\` key of your own. If Workflow throws, write {\"error\": \"<exact error text>\"} to that same path. Do not retry with invented arguments." "" "" "${EXPECT[@]:-}" "$OUT")
   # Non-empty is not structured: a child that wrote its summary would pass the artifact
   # check and hand prose to the caller as the workflow's return value.
   if printf '%s' "$out" | jq -e '.ok' >/dev/null 2>&1; then

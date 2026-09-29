@@ -69,6 +69,25 @@ if printf '%s' "$SLURP" | jq -e '.[0] | (type == "object") and (.abandoned == tr
   exit 1
 fi
 
+# THE WORKFLOW TOOL'"'"'S ENVELOPE, UNWRAPPED RATHER THAN REFUSED. The child that transcribes the run is
+# told to write "the returned object"; the Workflow TOOL hands it {summary, agentCount, logs, result,
+# …} whose `result` is the workflow script'"'"'s own return, and a child that takes the tool result
+# literally writes the envelope. Observed 2026-09-28 in a farm.sh --workflow run: a complete, correct
+# FAIL verdict sat under `.result` and this script refused it as "missing required key: overallPass" —
+# a real verdict reported as could-not-run, which is the one code a caller cannot act on. The prompt in
+# farm.sh now names the envelope explicitly; this stays tolerant because the writer is a model and the
+# envelope is unambiguous — no gate keys at the top, all of them one level down.
+if printf '%s' "$SLURP" | jq -e '
+  .[0] as $r
+  | ($r | type) == "object"
+    and (($r | has("overallPass")) | not)
+    and (($r.result // null) | type) == "object"
+    and ($r.result | has("overallPass"))' >/dev/null 2>&1; then
+  printf 'work-result.sh: unwrapped the Workflow tool envelope — the gate return was nested under .result (top level: %s)\n' \
+    "$(printf '%s' "$SLURP" | jq -r '.[0] | keys | join(", ")')" >&2
+  SLURP=$(printf '%s' "$SLURP" | jq '[ .[0].result ]')
+fi
+
 PROBLEMS=$(printf '%s' "$SLURP" | jq -r --argjson contract "$CONTRACT" --argjson optional "$OPTIONAL" '
   .[0] as $r
   | if ($r | type) != "object" then
