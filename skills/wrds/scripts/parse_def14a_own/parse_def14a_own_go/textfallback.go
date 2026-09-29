@@ -28,7 +28,34 @@ var (
 	reWrapCont   = regexp.MustCompile(`(?i)^(as\s+a\s+group|and\s+|as\s+a\s+)`)
 	reTrailClass = regexp.MustCompile(`(?i)\s+(class\s+[a-d](?:\s+common(?:\s+stock)?)?|common\s+stock|common|series\s+[a-z0-9]+(?:\s+\w+)?|preferred(?:\s+stock)?|ordinary\s+shares)$`)
 	reClassOnly  = regexp.MustCompile(`(?i)^(class\s+[a-d](?:\s+common(?:\s+stock)?)?|common\s+stock|common|series\s+[a-z0-9]+(?:\s+\w+)?|preferred(?:\s+stock)?|ordinary\s+shares)$`)
+
+	// Many ASCII proxies give the 5% table no heading at all: the anchor is the
+	// sentence that introduces it ("The following persons are known by the
+	// Company to be the beneficial owners of / more than 5% of its Common
+	// Stock"). Both halves must be present -- an ownership word AND a
+	// quantified five-percent phrase -- and because the sentence wraps, the
+	// test runs over the anchor line joined with the one below it.
+	reOwnerWord   = regexp.MustCompile(`(?i)beneficial|owner|owns|owned|owning|holder|holds|voting\s+power|investment\s+power`)
+	reFivePercent = regexp.MustCompile(`(?i)(?:more\s+than|at\s+least|greater\s+than|in\s+excess\s+of)\s*(?:5|five)\s*(?:%|per\s?cent)|(?:5|five)\s*(?:%|per\s?cent)\s+or\s+more`)
+	// A heading the DOM-path anchor misses because a company name sits between
+	// "ownership of" and the class ("OWNERSHIP OF SUNDSTRAND COMMON STOCK").
+	reOwnHeadingLoose = regexp.MustCompile(`(?i)ownership\s+of\s+(?:\S+\s+){0,3}(?:common|capital|voting|ordinary)\s+(?:stock|shares)`)
 )
+
+// textAnchor reports whether the ASCII scan should try to find a table under
+// line i. It is the DOM path's heading test widened with the two shapes that
+// only appear in plain text: a loose ownership heading, and a prose lead-in
+// sentence read across the line break it wraps at.
+func textAnchor(clean []string, i int, t string) bool {
+	if reOwnHeading.MatchString(t) || reOwnHeadingLoose.MatchString(t) {
+		return true
+	}
+	ctx := t
+	if i+1 < len(clean) {
+		ctx += " " + strings.TrimSpace(clean[i+1])
+	}
+	return reOwnerWord.MatchString(ctx) && reFivePercent.MatchString(ctx)
+}
 
 // maxLinesSinceRow caps the combined run of blank and non-row lines between
 // two table rows. A four-line address plus its blank separator is five;
@@ -156,7 +183,7 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 		if len(t) < 6 || len(t) > 200 || reTOCish.MatchString(t) {
 			continue
 		}
-		if !reOwnHeading.MatchString(t) {
+		if !textAnchor(clean, i, t) {
 			continue
 		}
 		kind := sectionKind(t)
@@ -200,7 +227,13 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 				block = append(block, j)
 				nonRowRun, sinceRow = 0, 0
 			} else if len(block) > 0 {
-				nonRowRun++
+				// A holder's postal address is not prose: it does not count
+				// toward the run of non-row lines that ends the table. Only
+				// sinceRow caps it, so a c/o line plus a firm, a tower, a
+				// street and a city/zip cannot separate two holders forever.
+				if !isAddressLine(lt) {
+					nonRowRun++
+				}
 				sinceRow++
 				if nonRowRun > 6 || sinceRow >= maxLinesSinceRow {
 					break

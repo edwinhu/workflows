@@ -585,3 +585,120 @@ func TestASCIIAddressRejoinDoesNotEatTheHeader(t *testing.T) {
 		}
 	}
 }
+
+// ---------------------------------------------------------------------------
+// The 5% table announced by a PROSE LEAD-IN rather than a heading.
+// Transcribed from 0000105418-00-000012 (Weis Markets), whose table sits under
+// the sentence "The following persons are known by the Company to be the
+// beneficial owners of / more than 5% of its Common Stock" -- the sentence
+// wraps, so the ownership cue and the 5% cue land on different lines.
+var asciiProseLeadIn = `<TYPE>DEF 14A
+<TEXT>
+41,690,907.  The presence, in person or by proxy, of at least 20,845,454 shares
+will constitute a quorum.
+
+        The following persons are known by the Company to be the beneficial owners of
+more than 5% of its Common Stock, which is its only class of voting securities,
+on April 28, 2000.  Information contained in the table and footnotes below were
+derived from filings made with the Securities and Exchange Commission by the
+beneficial owners.
+
+              Name and Address                 Amount and Nature          Percent
+                     of                          of Beneficial              of
+              Beneficial Owner                     Ownership               Class
+ -------------------------------     ------------------     -------
+        Robert F. Weis                       12,761,411    (1)         30.6
+                c/o Weis Markets, Inc.
+                1000 South Second Street
+                Sunbury, PA 17801-0471
+
+        Janet C. Weis                         8,132,411    (2)         19.5
+                43 South Fifth Street
+                Sunbury, PA 17801-0471
+
+        Weis Family Holdings, L.P.            8,087,773    (3)         19.4
+                919 North Market Street, Suite 200
+                Wilmington, DE 19801
+` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 250)
+
+func TestASCIIProseLeadInAnchorsTheTable(t *testing.T) {
+	rows := run(t, asciiProseLeadIn)
+	// "L.P." arrives as "L.P": StripFootnotes trims trailing punctuation from
+	// every holder name, which is pre-existing normalisation, not this defect.
+	for _, want := range []string{"Robert F. Weis", "Janet C. Weis", "Weis Family Holdings, L.P"} {
+		r := find(rows, want, "")
+		if r == nil {
+			t.Fatalf("holder %q not found; parsed: %v", want, holderNames(rows))
+		}
+		if r.Percent == nil {
+			t.Errorf("holder %q parsed with no percent", want)
+		}
+	}
+}
+
+// A long address block between two holders must not end the table. Transcribed
+// from 0001036050-99-000736 (CDI Corp): eight non-row lines -- a wrapped name,
+// a c/o line, a firm, a tower, a street and a city/zip -- separate the first
+// holder from the second, which the flat six-line non-row limit could not span.
+var asciiLongAddressBlock = `<TYPE>DEF 14A
+<TEXT>
+             PRINCIPAL SHAREHOLDERS AND MANAGEMENT STOCK OWNERSHIP
+
+  As of February 15, 1999, the following persons and entities were known by
+the Company to be beneficial owners of more than 5% of the outstanding CDI
+Stock.
+
+                                              Number of Shares   Percentage of
+            Name and Address of                 of CDI Stock      Outstanding
+             Beneficial Owner                Owned Beneficially*   CDI Stock
+            -------------------              ------------------- -------------
+Donald W. Garrison, Lawrence C. Karlson,         5,672,488(1)        29.4%
+Joseph A. Teti, Jr. and Barton J. Winokur,
+as Trustees of various trusts for the
+   benefit of Walter R. Garrison's children
+   c/o Paul Wm. Putney, Esquire
+   Dechert Price & Rhoads
+   4000 Bell Atlantic Tower
+   1717 Arch Street
+   Philadelphia, PA 19103
+Walter R. Garrison                               1,765,105(2)         9.2%
+   1717 Arch Street, 35th Floor
+   Philadelphia, PA 19103-2768
+` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 250)
+
+func TestASCIILongAddressBlockDoesNotEndTable(t *testing.T) {
+	rows := run(t, asciiLongAddressBlock)
+	r := find(rows, "Walter R. Garrison", "")
+	if r == nil {
+		t.Fatalf("second holder lost across an eight-line address block; parsed: %v", holderNames(rows))
+	}
+	if r.Percent == nil || *r.Percent < 9.1 || *r.Percent > 9.3 {
+		t.Errorf("Walter R. Garrison percent = %v, want 9.2", r.Percent)
+	}
+}
+
+// The prose-lead-in anchor must not fire on ordinary 5% prose that has no
+// table under it: a Section 16 / quorum paragraph followed by the summary
+// compensation table must still yield nothing.
+var asciiFivePctProseNoTable = `<TYPE>DEF 14A
+<TEXT>
+Each person who beneficially owns more than 5% of the Company's common stock
+is required to file reports under Section 16(a), and the Company believes all
+such reports were filed on time during the last fiscal year.
+
+                           SUMMARY COMPENSATION TABLE
+
+    Name and Principal Position        Year      Salary ($)      Bonus ($)
+    ---------------------------        ----      ----------      ---------
+    Jane Q. Executive, CEO             1999         550,000        275,000
+    John R. Officer, CFO               1999         310,000        120,000
+` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 250)
+
+func TestASCIIProseLeadInDoesNotGrabCompensationTable(t *testing.T) {
+	rows := run(t, asciiFivePctProseNoTable)
+	for _, x := range rows {
+		if strings.Contains(x.HolderName, "Executive") || strings.Contains(x.HolderName, "Officer") {
+			t.Errorf("compensation row parsed as ownership: %q", x.HolderName)
+		}
+	}
+}
