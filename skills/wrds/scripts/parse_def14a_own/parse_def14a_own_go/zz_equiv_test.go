@@ -43,3 +43,32 @@ func TestScreenNameDecisionsDump(t *testing.T) {
 			strconv.FormatFloat(*r.Percent, 'f', -1, 64))
 	}
 }
+
+// TestCleanHolderNameDump is the same kind of harness for the name cleanup: it
+// writes cleanHolderName's output for every name in a file so the Go rules can
+// be compared line for line against the python simulation they were measured
+// with. Skipped in a normal run.
+func TestCleanHolderNameDump(t *testing.T) {
+	in, out := os.Getenv("CLEAN_DUMP_IN"), os.Getenv("CLEAN_DUMP_OUT")
+	if in == "" || out == "" {
+		t.Skip("no CLEAN_DUMP_IN/OUT")
+	}
+	f, err := os.Open(in)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	w, err := os.Create(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer w.Close()
+	sc := bufio.NewScanner(f)
+	sc.Buffer(make([]byte, 1<<20), 1<<20)
+	for sc.Scan() {
+		fmt.Fprintf(w, "%s\t%s\n", sc.Text(), cleanHolderName(sc.Text()))
+	}
+	if err := sc.Err(); err != nil {
+		t.Fatal(err)
+	}
+}

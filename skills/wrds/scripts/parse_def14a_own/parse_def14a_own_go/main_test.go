@@ -189,7 +189,7 @@ func TestProcessSyntheticProxy(t *testing.T) {
 <tr><td>Name of Beneficial Owner</td><td>Shares Beneficially Owned</td><td>Percent of Class</td></tr>
 <tr><td>Walton Enterprises, L.P.</td><td>1,707,772,848</td><td>38.1%</td></tr>
 <tr><td>The Vanguard Group, Inc.</td><td>120,000,000</td><td>5.4%</td></tr>
-<tr><td>Jane Q. Director (1)</td><td>12,345</td><td>*</td></tr>
+<tr><td>Jane Q. Public (1)</td><td>12,345</td><td>*</td></tr>
 <tr><td>Directors and executive officers as a group (14 persons)</td><td>1,750,000,000</td><td>40.1%</td></tr>
 </table>
 <p>* Less than 1%.</p>
@@ -229,7 +229,11 @@ func TestProcessSyntheticProxy(t *testing.T) {
 	if g := byName["Directors and executive officers as a group (14 persons)"]; !g.IsGroupRow || g.GroupN != 14 {
 		t.Errorf("group row: IsGroupRow=%v GroupN=%d", g.IsGroupRow, g.GroupN)
 	}
-	if r := byName["Jane Q. Director"]; r.PctMarker != "*" || r.Footnotes != "1" {
+	// Named "Public", not the pun "Director": the screen now strips a trailing
+	// role clause from a holder cell, so a synthetic surname that IS a role word
+	// would test the cleaner rather than the footnote/marker plumbing this case
+	// is about.
+	if r := byName["Jane Q. Public"]; r.PctMarker != "*" || r.Footnotes != "1" {
 		t.Errorf("star/footnote row wrong: %+v", r)
 	}
 	if !reInst.MatchString("The Vanguard Group, Inc.") {
