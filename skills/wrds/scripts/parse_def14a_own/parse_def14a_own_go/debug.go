@@ -63,7 +63,7 @@ func DebugFile(path string, maxTables int) {
 		for i := 0; i < len(c.rows) && i < 6; i++ {
 			fmt.Printf("    row%d: %q\n", i, c.rows[i])
 		}
-		rows := ExtractGrid(it.Grid, it.Text, base, it.Pos)
+		rows, _ := ExtractGrid(it.Grid, it.Text, base, it.Pos, nil)
 		fmt.Printf("    -> %d rows\n", len(rows))
 		for i, r := range rows {
 			if i > 8 {
