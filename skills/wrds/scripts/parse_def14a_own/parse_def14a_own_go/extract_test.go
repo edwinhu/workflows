@@ -2387,3 +2387,49 @@ func TestNameAndCityOnOneLine(t *testing.T) {
 		}
 	}
 }
+
+// A fund complex's per-fund section names the fund in a heading line and then
+// says, in a bullet of prose, "A series of Vanguard Wellington Fund" -- the
+// PARENT registrant, which is itself a declared series name and sits CLOSER to
+// the table than the heading does. seriesLabels took it, so dozens of funds were
+// all labelled with the parent and one record holder of each collapsed onto one
+// grain key.
+const seriesOfParentHTML = `<html><body>
+<p>Vanguard Short-Term Tax-Exempt Bond ETF</p>
+<p>A series of Vanguard Wellington Fund (FYE 11/30).</p>
+<p>Shareholders with more than 5% record and/or beneficial ownership of the noted class of this fund's shares:</p>
+<table>
+<tr><td>Title of Class</td><td>Name and Address of Shareholder</td><td>Percent of Class</td></tr>
+<tr><td>ETF Shares</td><td>Charles Schwab &amp; Co., Inc.</td><td>41.26%</td></tr>
+<tr><td>ETF Shares</td><td>National Financial Services LLC</td><td>17.35%</td></tr>
+</table>
+<p>Vanguard Ultra-Short Tax-Exempt Bond ETF</p>
+<p>A series of Vanguard Wellington Fund (FYE 11/30).</p>
+<p>Shareholders with more than 5% record and/or beneficial ownership of the noted class of this fund's shares:</p>
+<table>
+<tr><td>Title of Class</td><td>Name and Address of Shareholder</td><td>Percent of Class</td></tr>
+<tr><td>ETF Shares</td><td>Charles Schwab &amp; Co., Inc.</td><td>38.48%</td></tr>
+<tr><td>ETF Shares</td><td>National Financial Services LLC</td><td>12.91%</td></tr>
+</table></body></html>`
+
+func TestASeriesOfParentIsNotTheFund(t *testing.T) {
+	base := Row{Accession: "acc", CIK: "cik", Company: "Co", FilingDate: "2024-01-01",
+		series: []string{"Vanguard Wellington Fund", "Vanguard Short-Term Tax-Exempt Bond ETF",
+			"Vanguard Ultra-Short Tax-Exempt Bond ETF"}}
+	raw, _, _ := ExtractHTML(seriesOfParentHTML, base)
+	rows := ScreenRows(raw)
+	seen := map[string]int{}
+	for _, r := range rows {
+		if strings.HasPrefix(r.HolderName, "Charles Schwab") {
+			seen[r.ShareClass]++
+		}
+	}
+	if len(seen) != 2 {
+		t.Fatalf("the two funds must carry two share_class values, got %v", seen)
+	}
+	for cls := range seen {
+		if strings.Contains(cls, "WELLINGTON") || strings.Contains(cls, "Wellington") {
+			t.Errorf("the PARENT registrant was taken for the fund: %q", cls)
+		}
+	}
+}
