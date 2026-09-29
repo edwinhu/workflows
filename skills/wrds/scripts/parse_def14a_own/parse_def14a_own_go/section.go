@@ -59,6 +59,12 @@ func tableKind(sectKind string, rows []Row, tableText string) string {
 	}
 }
 
+// A line that names the PARENT registrant a fund belongs to, not the fund: "A
+// series of Vanguard Wellington Fund (FYE 11/30)." The parent is itself a
+// declared series name and this sentence sits CLOSER to the table than the fund's
+// own heading does, so taking it labels dozens of funds with one name.
+var reSeriesOfParent = regexp.MustCompile(`(?i)^\W*(?:a|each|is\s+a|are)\s+(?:separate\s+)?(?:series|portfolio|class)\s+of\b`)
+
 // seriesLabels walks the document once and records, for every item, the most
 // recent text chunk that IS one of the fund / series names the SGML header
 // declared. A fund-family proxy repeats the same ownership table once per fund
@@ -76,7 +82,7 @@ func seriesLabels(items []Item, series []string) []string {
 	}
 	cur, at := "", 0
 	for i, it := range items {
-		if it.Kind == "text" && len(it.Text) <= 120 {
+		if it.Kind == "text" && len(it.Text) <= 120 && !reSeriesOfParent.MatchString(it.Text) {
 			if v := MatchSeries(set, it.Text); v != "" {
 				cur, at = v, i
 			}
