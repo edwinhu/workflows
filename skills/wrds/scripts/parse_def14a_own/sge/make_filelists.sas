@@ -24,11 +24,32 @@
  * Run it with the run_sas.sh wrapper — SAS lives on the compute nodes, not on
  * the login host:
  *   qsub -pe onenode 2 -l m_mem_free=8G sge/run_sas.sh sge/make_filelists.sas
+ *
+ * Range and output directory are overridable via -sysparm "OUTDIR|D0|D1", e.g.
+ *   qsub ... sge/run_sas.sh sge/make_filelists.sas \
+ *     "/scratch/nyu/eddyhu/def14a_full/filelists|01JAN1994|31DEC2026"
+ * With no sysparm the defaults below reproduce the gold-linked 1996-2021 run.
  */
 
 %let OUTDIR = /scratch/nyu/eddyhu/parse_def14a_own/filelists;
-%let D0 = '01JAN1996'd;
-%let D1 = '31DEC2021'd;
+%let DD0 = 01JAN1996;
+%let DD1 = 31DEC2021;
+
+%macro _sysparm;
+  %local sp;
+  %let sp = %qsysfunc(getoption(sysparm));
+  %if %length(&sp) %then %do;
+    %let OUTDIR = %scan(&sp, 1, %str(|));
+    %let DD0    = %scan(&sp, 2, %str(|));
+    %let DD1    = %scan(&sp, 3, %str(|));
+  %end;
+%mend;
+%_sysparm;
+
+%let D0 = "&DD0."d;
+%let D1 = "&DD1."d;
+%put NOTE: make_filelists OUTDIR=&OUTDIR D0=&DD0 D1=&DD1;
+
 %let FORMS = 'DEF 14A';   /* DEFA14A is a supplement; DEFM14A is a merger proxy */
 
 libname secsas '/wrds/sec/sasdata' access=readonly;
@@ -51,7 +72,10 @@ data _null_;
   length fn $200;
   fn = cats("&OUTDIR/filelist_", bucket, ".tsv");
   file dummy filevar=fn lrecl=400;
-  put relpath '09'x cikint '09'x accession '09'x form '09'x fdate yymmdd10.;
+  /* +(-1) cancels the blank SAS list-output puts after every item. Without it
+     every field carries a trailing space and the relpath does not stat. */
+  put relpath +(-1) '09'x cikint +(-1) '09'x accession +(-1) '09'x
+      form +(-1) '09'x fdate yymmdd10.;
 run;
 
 proc sql;
@@ -69,8 +93,10 @@ run;
 data _null_;
   set cnt;
   file "&OUTDIR/counts.tsv";
+  /* No +(-1) on a quoted literal — PUT writes it with no trailing blank, so
+     backing up one column would eat the last character. */
   if _n_ = 1 then put "bucket" '09'x "n_filings";
-  put bucket '09'x n_filings;
+  put bucket +(-1) '09'x n_filings;
 run;
 
 proc sql;
