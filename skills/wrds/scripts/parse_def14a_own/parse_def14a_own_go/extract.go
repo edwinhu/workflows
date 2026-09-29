@@ -308,10 +308,16 @@ func (c *compacted) analyze() {
 			if j >= len(c.rows[i]) {
 				continue
 			}
-			cell := stackFirst(c.rows[i][j])
+			cell := flat(c.rows[i][j])
 			if cell == "" {
 				continue
 			}
+			// A STACKED cell holds one value per class on its own line. Its
+			// MAGNITUDE must be read from one line, since the concatenation is
+			// an impossible number — but the "%" / "*" / "less than" marks are
+			// read from the whole cell, which is where the proxy may have put
+			// the single "%" that belongs to all of its lines.
+			val := stackFirst(c.rows[i][j])
 			n++
 			if hasWords(cell, 2) {
 				words++
@@ -319,10 +325,10 @@ func (c *compacted) analyze() {
 			if strings.Contains(cell, "%") || reStar.MatchString(cell) || reLessThan.MatchString(cell) {
 				strongPct++
 			}
-			if v, ok := ParseShares(cell); ok && (v >= 1000 || strings.Contains(cell, ",")) {
+			if v, ok := ParseShares(val); ok && (v >= 1000 || strings.Contains(val, ",")) {
 				bigNum++
 			}
-			if _, _, _, pi := ParsePercent(cell); pi {
+			if _, _, _, pi := ParsePercent(val); pi {
 				pctish++
 			}
 			if reClassVal.MatchString(cell) {
@@ -537,8 +543,19 @@ func stackFirst(raw string) string {
 	if len(lines) < 2 {
 		return flat(raw)
 	}
+	pct, comma, first := 0, 0, 0
 	for _, l := range lines {
-		if l == "-" || len(l) <= 4 {
+		if l == "-" {
+			continue
+		}
+		first++
+		if strings.Contains(l, "%") {
+			pct++
+		}
+		if strings.Contains(l, ",") {
+			comma++
+		}
+		if len(l) <= 4 {
 			continue
 		}
 		if _, ok := ParseShares(l); ok {
@@ -547,6 +564,12 @@ func stackFirst(raw string) string {
 		if _, _, _, pi := ParsePercent(l); pi {
 			continue
 		}
+		return flat(raw)
+	}
+	// The lines must be the SAME KIND of value. A cell stacking a share count
+	// over its percent ("75,000" / "3.7%") is one holding written on two lines,
+	// not one holding per class, and must be read whole.
+	if first == 0 || (pct != 0 && pct != first) || (comma != 0 && comma != first) {
 		return flat(raw)
 	}
 	return lines[0]
