@@ -1,8 +1,9 @@
 #!/bin/bash
 #
-# make_lock.sh — write lock.sha256 over the ruler: the scorer, the thresholds and
-# the four gold files. score.py verifies it before it scores anything, so a loop
-# that edits the scorer or widens a threshold is caught rather than believed.
+# make_lock.sh — write lock.sha256 over the ruler: the scorer, the thresholds, the
+# six gold files and the fixed full-archive sample filelist. score.py verifies it
+# before it scores anything, so a loop that edits the scorer, widens a threshold or
+# re-draws the sample it is scored on is caught rather than believed.
 #
 # Run this ONLY when the gold sets or the scoring definition change on purpose,
 # never from inside a grind iteration.
@@ -16,7 +17,7 @@ GOLD="${GOLD_DIR:-/data/def14a_own/gold}"
     printf '%s  %s\n' "$(sha256sum "$HERE/$f" | cut -d' ' -f1)" "$f"
   done
   for f in gold_blockw.tsv.gz gold_factset.tsv.gz gold_factset_firmyear.tsv.gz holdout.tsv \
-           gold_iss.tsv.gz holdout_iss.tsv; do
+           gold_iss.tsv.gz holdout_iss.tsv sample_full.tsv; do
     printf '%s  gold/%s\n' "$(sha256sum "$GOLD/$f" | cut -d' ' -f1)" "$f"
   done
 } > "$HERE/lock.sha256"

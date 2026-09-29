@@ -36,12 +36,31 @@ Metrics, each printed with its denominator:
                                splits and a miss decomposition are printed. See
                                the ISS block below for each definition and its
                                limits.
+  (vi)  FULL-ARCHIVE SAMPLE   A fixed, year-stratified sample of the whole
+                               archive (`gold/sample_full.tsv`, seed 20260929,
+                               ~250 filings per filing year 1994-2026, every
+                               gold-linked filing excluded). Three families of
+                               number, all reported per year with denominators:
+                               (a) DUPLICATE EXCESS on the exact key
+                               (accession, cik, holder_name, share_class), split
+                               into same-`table_kind` excess (over-emission — the
+                               GATED one) and cross-`table_kind` excess (the same
+                               holder listed in the 5% table AND the management
+                               table, which the document really does do — REPORTED,
+                               never gated); (b) parsed-percent filing yield per
+                               year, gated as a NO-REGRESSION floor against the
+                               per-year values recorded in thresholds.json
+                               `_sample_yield_floor_by_year`; (c) group-row rate
+                               per year, reported.
 
-GATED vs DIAGNOSTIC. The gated set is EXACTLY the keys under `minimums` in
-thresholds.json — nothing in this file hard-codes it, and no metric outside that
-set can change the exit code. Since 2026-09-29 that is FIVE metrics: filing yield
-(parsed percent), holder recall vs blockw, holder precision vs blockw, group-row
-detection, and ISS director recall. The two FactSet aggregate metrics in (iii)
+GATED vs DIAGNOSTIC. The gated set is EXACTLY the keys under `minimums` (a floor,
+val >= thr) plus the keys under `maximums` (a ceiling, val <= thr) in
+thresholds.json — nothing in this file hard-codes it, and no metric outside those
+two sets can change the exit code. Since 2026-09-29 that is EIGHT metrics: filing
+yield (parsed percent), holder recall vs blockw, holder precision vs blockw,
+group-row detection, ISS director recall, the sample's worst-year yield margin,
+and two ceilings on the sample's same-table duplicate excess rate (pooled and
+worst year). The two FactSet aggregate metrics in (iii)
 are computed and printed with their denominators every run and NEVER affect the
 exit code, because the FactSet gold is defined by a proxy window over all FactSet
 stakes and mixes 13F / Form 4 positions (only 21 of 2,647 linked firm-years carry
@@ -77,6 +96,13 @@ import os
 import re
 import sys
 from collections import defaultdict
+
+# Some filings emit a holder_name longer than csv's 128 KiB default field limit —
+# an entire paragraph swallowed into the name column by a mis-roled table. Reading
+# them must not abort the scorer: the row is scored (and counted against precision)
+# like any other. Found 2026-09-29 reading the full-archive panel, where the
+# default limit raised `_csv.Error: field larger than field limit (131072)`.
+csv.field_size_limit(1 << 24)
 
 PCT_TOL_HOLDER = 0.5     # (ii) percentage points
 PCT_TOL_AGG = 1.0        # (iii) percentage points
@@ -237,13 +263,24 @@ def sha256_of(path):
     return h.hexdigest()
 
 
+# EVERY TSV this scorer reads — the parser's rows and manifest, and all six gold
+# files — is written with a bare `"\t".join(...)` (Go: strings.Join; Python: the
+# gold builders), so NOTHING in this project is quoted. csv's default QUOTE_MINIMAL
+# reader therefore mis-reads any field that BEGINS with a double quote: a holder
+# name like "Independent" Directors1 swallows the following tabs and newlines and
+# two rows become one. Measured 2026-09-29 on the full-archive panel: 114,686 rows
+# read against 115,061 rows actually present in the sample filings — 375 rows lost
+# and their neighbours corrupted. QUOTE_NONE is the only correct reader here.
+TSV = {"delimiter": "\t", "quoting": csv.QUOTE_NONE}
+
+
 def read_tsv_gz(pattern):
     """Rows from every file matching `pattern`, as dicts. Header per file."""
     n_files = 0
     for path in sorted(glob.glob(pattern)):
         n_files += 1
         with gzip.open(path, "rt") as fh:
-            for r in csv.DictReader(fh, delimiter="\t"):
+            for r in csv.DictReader(fh, **TSV):
                 yield r
     if n_files == 0:
         sys.exit("ERROR: no files matched %s" % pattern)
@@ -297,6 +334,18 @@ def main():
     ap.add_argument("--no-iss", action="store_true", help="skip the (v) ISS block entirely")
     ap.add_argument("--iss-miss-report", default="",
                     help="write the per-(filing,director) ISS recall decomposition here")
+    ap.add_argument("--sample-filelist", default="",
+                    help="the fixed full-archive sample filelist "
+                         "(default <gold-dir>/sample_full.tsv); '' after --gold-dir resolution")
+    ap.add_argument("--no-sample", action="store_true", help="skip the (vi) full-archive sample block")
+    ap.add_argument("--sample-report", default="",
+                    help="write the per-year sample table here as TSV")
+    ap.add_argument("--record-sample-floors", default="",
+                    help="write the measured per-year sample yields MINUS the slack as a "
+                         "thresholds.json `_sample_yield_floor_by_year` fragment. Run ONCE, "
+                         "by a human, to set the no-regression floors; never from a loop.")
+    ap.add_argument("--sample-floor-slack", type=float, default=0.005,
+                    help="the per-year no-regression slack subtracted by --record-sample-floors")
     ap.add_argument("--check", action="store_true", help="exit 0 iff every gated metric clears its threshold")
     ap.add_argument("--no-verify-lock", action="store_true", help="skip the hash lock (for lock creation only)")
     ap.add_argument("--miss-report", default="", help="write the per-filing miss decomposition here")
@@ -319,7 +368,15 @@ def main():
     # The gated set is the keys under `minimums`, and nothing else. ISS recall is
     # gated iff thresholds.json says so, so this file never has to be edited to
     # move it in or out of the gate.
-    iss_gated = "iss_director_recall" in thresholds["minimums"]
+    gate_floor = dict(thresholds["minimums"])
+    gate_ceiling = dict(thresholds.get("maximums", {}))
+    sample_gated = any(n.startswith("sample_") for n in list(gate_floor) + list(gate_ceiling))
+    if sample_gated and args.no_sample:
+        print("ERROR: --no-sample but thresholds.json gates a sample_* metric. "
+              "A gated metric cannot be switched off from the command line.",
+              file=sys.stderr)
+        sys.exit(2)
+    iss_gated = "iss_director_recall" in gate_floor
     if iss_gated and args.no_iss:
         print("ERROR: --no-iss but thresholds.json gates iss_director_recall. "
               "A gated metric cannot be switched off from the command line.",
@@ -338,6 +395,8 @@ def main():
         if not args.no_iss:
             files["gold/gold_iss.tsv.gz"] = os.path.join(g, "gold_iss.tsv.gz")
             files["gold/holdout_iss.tsv"] = os.path.join(g, "holdout_iss.tsv")
+        if not args.no_sample:
+            files["gold/sample_full.tsv"] = args.sample_filelist or os.path.join(g, "sample_full.tsv")
         bad = verify_lock(args.lock, files)
         if bad:
             print("LOCK MISMATCH:", file=sys.stderr)
@@ -349,7 +408,7 @@ def main():
     want_split = "holdout" if args.holdout else "dev"
     split = {}
     with open(os.path.join(g, "holdout.tsv")) as fh:
-        for r in csv.DictReader(fh, delimiter="\t"):
+        for r in csv.DictReader(fh, **TSV):
             split[r["cik"].lstrip("0") or "0"] = r["split"]
     print("[in ] holdout.tsv: %d firms (%d %s)" % (
         len(split), sum(1 for v in split.values() if v == want_split), want_split))
@@ -406,7 +465,7 @@ def main():
     n_iss_rows = n_iss_flagged = 0
     if not args.no_iss:
         with open(os.path.join(g, "holdout_iss.tsv")) as fh:
-            for r in csv.DictReader(fh, delimiter="\t"):
+            for r in csv.DictReader(fh, **TSV):
                 iss_split[r["cik"].lstrip("0") or "0"] = r["split"]
         for r in read_tsv_gz(os.path.join(g, "gold_iss.tsv.gz")):
             cik = r["cik"].lstrip("0") or "0"
@@ -431,9 +490,26 @@ def main():
                   sum(1 for v in iss_split.values() if v == iss_want), iss_want,
                   len(iss_filings), n_iss_rows, n_iss_flagged, n_iss_rows - n_iss_flagged))
 
+    # ---- (vi) the fixed full-archive sample ---------------------------------
+    # Keyed on (cik, accession) like everything else; the YEAR is the sample
+    # filelist's own filing date, never the parser's `proxy_year`, so a parser
+    # change cannot move a filing between year buckets and move the metric with it.
+    sample_year = {}
+    if not args.no_sample:
+        spath = args.sample_filelist or os.path.join(g, "sample_full.tsv")
+        with open(spath) as fh:
+            for line in fh:
+                f = line.rstrip("\n").split("\t")
+                if len(f) < 5:
+                    continue
+                sample_year[(f[1].lstrip("0") or "0", f[2])] = int(f[4][:4])
+        print("[in ] sample %s: %d filings, %d filing years" % (
+            spath, len(sample_year), len(set(sample_year.values()))))
+
     # ---- parser output ------------------------------------------------------
     man = {}
     iss_man = set()
+    sample_man = set()
     for r in read_tsv_gz(args.manifest):
         cik = r["cik"].lstrip("0") or "0"
         key = (cik, r["accession"])
@@ -441,6 +517,8 @@ def main():
             man[key] = r
         if key in iss_filings:
             iss_man.add(key)
+        if key in sample_year:
+            sample_man.add(key)
     print("[in ] parser manifest rows matching gold filings: %d" % len(man))
 
     # ISS coverage, checked BEFORE anything is scored. A recall computed over the
@@ -467,11 +545,54 @@ def main():
                 sys.exit(2)
             print("WARNING: " + msg, file=sys.stderr)
 
+    if not args.no_sample:
+        n_s_cov, n_s = len(sample_man), len(sample_year)
+        print("[in ] parser manifest rows matching SAMPLE filings: %d / %d (%.2f%%)" % (
+            n_s_cov, n_s, 100 * n_s_cov / n_s if n_s else 0.0))
+        if n_s_cov < n_s:
+            missing = sorted(set(sample_year) - sample_man)
+            msg = ("SAMPLE COVERAGE SHORT: %d of %d sample filings have no manifest row. "
+                   "Re-run the grid pass over the round filelist "
+                   "(DEF14A_FILELIST=round_filelist.tsv bash run_baseline.sh). "
+                   "First 5 missing (cik, accession): %s" % (
+                       n_s - n_s_cov, n_s, ", ".join("%s/%s" % k for k in missing[:5])))
+            if sample_gated:
+                print("ERROR: " + msg, file=sys.stderr)
+                sys.exit(2)
+            print("WARNING: " + msg, file=sys.stderr)
+
+    # Per-year sample accumulators. The duplicate counters are exact-key GROUP
+    # counts, accumulated as dicts keyed by the exact key so the decomposition
+    #   excess_total = excess_same_table_kind + excess_cross_table_kind
+    # holds by construction: within a key group, (n - 1) splits into
+    # sum_over_kinds(n_in_kind - 1) and (n_kinds - 1).
+    def sample_box():
+        return {"filings": 0, "rows": 0, "with_pct": 0, "with_group": 0,
+                "excess_total": 0, "excess_same_kind": 0, "excess_cross_kind": 0,
+                "excess_same_table": 0}
+    sample_keys = defaultdict(int)                          # (key, holder, cls) -> n
+    sample_kind = defaultdict(int)                          # (key, holder, cls, kind) -> n
+    sample_tbl = defaultdict(int)                           # (key, holder, cls, kind, tix) -> n
+    sample_has_pct = set()
+    sample_has_group = set()
+    sample_n_rows = defaultdict(int)
+
     parsed = defaultdict(list)
     n_rows_read = n_iss_parsed_rows = 0
     for r in read_tsv_gz(args.rows):
         cik = r["cik"].lstrip("0") or "0"
         key = (cik, r["accession"])
+        if key in sample_year:
+            holder, cls = r["holder_name"], r["share_class"]
+            kind, tix = r["table_kind"], r["table_index"]
+            sample_n_rows[key] += 1
+            sample_keys[(key, holder, cls)] += 1
+            sample_kind[(key, holder, cls, kind)] += 1
+            sample_tbl[(key, holder, cls, kind, tix)] += 1
+            if r["percent"] != "":
+                sample_has_pct.add(key)
+            if r["is_group_row"] == "1":
+                sample_has_group.add(key)
         in_gold, in_iss = key in gold_filings, key in iss_filings
         if not (in_gold or in_iss):
             continue
@@ -758,6 +879,166 @@ def main():
                     fh.write("\t".join(str(x) for x in row) + "\n")
             print("[out] %s: %d rows" % (args.iss_miss_report, len(iss_detail)))
 
+    # ---- (vi) FULL-ARCHIVE SAMPLE -------------------------------------------
+    #
+    # (a) DUPLICATE EXCESS on the documented exact key
+    #     (accession, cik, holder_name, share_class). For one key group of n rows
+    #     the excess is n-1, and it decomposes EXACTLY:
+    #         n - 1  =  Σ_kinds (n_in_kind - 1)      "same table_kind"   [GATED]
+    #                +  (n_distinct_kinds - 1)       "cross table_kind"  [REPORTED]
+    #     The cross-kind part is what the DOCUMENT does: a director who is also a
+    #     5% holder is listed in the 5% table AND the management table, and both
+    #     rows are real. It is reported with its denominator and never gated —
+    #     gating it would pay the loop to suppress a legitimate disclosure.
+    #     The same-kind part is over-emission, and is reported twice: the whole of
+    #     it (the gated number) and the sub-part that repeats inside ONE
+    #     table_index, which is the strictest possible reading of "the same row
+    #     emitted twice".
+    # (b) PARSED-PERCENT YIELD per year — the same definition as (i), on the
+    #     sample instead of the gold set. Gated as a NO-REGRESSION FLOOR per year:
+    #     the floors live in thresholds.json `_sample_yield_floor_by_year` and were
+    #     recorded at HEAD minus a slack, so a round may not buy duplicate
+    #     cleanliness by dropping rows in any single year.
+    # (c) GROUP-ROW RATE per year — reported, so a regression is visible.
+    sample_metrics = {}
+    if not args.no_sample and sample_year:
+        syears = sorted(set(sample_year.values()))
+        sb = {y: sample_box() for y in syears}
+        stot = sample_box()
+        for key, y in sample_year.items():
+            for box in (sb[y], stot):
+                box["filings"] += 1
+                box["rows"] += sample_n_rows.get(key, 0)
+                box["with_pct"] += 1 if key in sample_has_pct else 0
+                # (c)'s denominator is `with_pct`, matching (iv), so its numerator
+                # must be the INTERSECTION — a filing with a group row but no
+                # parsed percent is not in the denominator and cannot be in the
+                # numerator either, or the rate exceeds 1.
+                box["with_group"] += 1 if (key in sample_has_group
+                                           and key in sample_has_pct) else 0
+        for (key, _h, _c), n in sample_keys.items():
+            if n > 1:
+                for box in (sb[sample_year[key]], stot):
+                    box["excess_total"] += n - 1
+        n_kinds = defaultdict(int)
+        for (key, h, c, _k), n in sample_kind.items():
+            n_kinds[(key, h, c)] += 1
+            if n > 1:
+                for box in (sb[sample_year[key]], stot):
+                    box["excess_same_kind"] += n - 1
+        for (key, _h, _c), nk in n_kinds.items():
+            if nk > 1:
+                for box in (sb[sample_year[key]], stot):
+                    box["excess_cross_kind"] += nk - 1
+        for (key, _h, _c, _k, _t), n in sample_tbl.items():
+            if n > 1:
+                for box in (sb[sample_year[key]], stot):
+                    box["excess_same_table"] += n - 1
+
+        def srate(n, d):
+            return (n / d) if d else 0.0
+
+        dup_same = srate(stot["excess_same_kind"], stot["rows"])
+        dup_cross = srate(stot["excess_cross_kind"], stot["rows"])
+        dup_1tbl = srate(stot["excess_same_table"], stot["rows"])
+        yields = {y: srate(sb[y]["with_pct"], sb[y]["filings"]) for y in syears}
+        grouprate = {y: srate(sb[y]["with_group"], sb[y]["with_pct"]) for y in syears}
+        dup_same_y = {y: srate(sb[y]["excess_same_kind"], sb[y]["rows"]) for y in syears}
+        dup_cross_y = {y: srate(sb[y]["excess_cross_kind"], sb[y]["rows"]) for y in syears}
+        dup_1tbl_y = {y: srate(sb[y]["excess_same_table"], sb[y]["rows"]) for y in syears}
+        worst_dup_year = max(syears, key=lambda y: dup_same_y[y])
+
+        floors = {int(k): float(v)
+                  for k, v in (thresholds.get("_sample_yield_floor_by_year") or {}).items()}
+        margins = {y: yields[y] - floors[y] for y in syears if y in floors}
+        worst_margin = min(margins.values()) if margins else None
+        worst_margin_year = min(margins, key=lambda y: margins[y]) if margins else None
+
+        print("\n== (vi) FULL-ARCHIVE SAMPLE (seed 20260929, %d filings, %d filing years) ==" % (
+            stot["filings"], len(syears)))
+        print("  parser rows in sample filings: %d" % stot["rows"])
+        print("  (a) duplicate excess on (accession, cik, holder_name, share_class),")
+        print("      denominator = %d parsed rows in sample filings:" % stot["rows"])
+        print("      excess TOTAL                              : %6d (%6.3f%%)" % (
+            stot["excess_total"], 100 * srate(stot["excess_total"], stot["rows"])))
+        print("      of it, SAME table_kind      [GATED]       : %6d (%6.3f%%)" % (
+            stot["excess_same_kind"], 100 * dup_same))
+        print("        of THAT, inside ONE table_index         : %6d (%6.3f%%)" % (
+            stot["excess_same_table"], 100 * dup_1tbl))
+        print("      of it, CROSS table_kind     [REPORTED]    : %6d (%6.3f%%)" % (
+            stot["excess_cross_kind"], 100 * dup_cross))
+        print("      cross-kind is the 5%-table AND management-table listing the same")
+        print("      holder; the document really does that, so it is never gated.")
+        print("  (b) parsed-percent yield, pooled: %d / %d = %.4f" % (
+            stot["with_pct"], stot["filings"], srate(stot["with_pct"], stot["filings"])))
+        print("  (c) group-row rate, pooled      : %d / %d = %.4f" % (
+            stot["with_group"], stot["with_pct"], srate(stot["with_group"], stot["with_pct"])))
+
+        print("\n  -- by filing year --")
+        print("  %-5s %7s %8s %9s %9s %9s %9s %9s %9s" % (
+            "year", "filings", "rows", "dup_same", "dup_1tbl", "dup_x", "yield",
+            "floor", "grouprow"))
+        for y in syears:
+            print("  %-5d %7d %8d %8.3f%% %8.3f%% %8.3f%% %9.4f %9s %9.4f" % (
+                y, sb[y]["filings"], sb[y]["rows"], 100 * dup_same_y[y],
+                100 * dup_1tbl_y[y], 100 * dup_cross_y[y], yields[y],
+                ("%.4f" % floors[y]) if y in floors else "n/a", grouprate[y]))
+        print("  worst dup_same year: %d at %.3f%%" % (worst_dup_year, 100 * dup_same_y[worst_dup_year]))
+        if worst_margin is None:
+            print("  yield floors: NOT RECORDED in thresholds.json "
+                  "`_sample_yield_floor_by_year` — run score.py --record-sample-floors once")
+        else:
+            print("  worst yield margin vs floor: %+.4f in %d" % (worst_margin, worst_margin_year))
+
+        sample_metrics = {
+            "sample_filings": stot["filings"],
+            "sample_rows": stot["rows"],
+            "sample_dup_excess_total_rate": srate(stot["excess_total"], stot["rows"]),
+            "sample_dup_excess_same_table_rate": dup_same,
+            "sample_dup_excess_same_table_rate_max_year": dup_same_y[worst_dup_year],
+            "sample_dup_excess_same_table_worst_year": worst_dup_year,
+            "sample_dup_excess_same_table_index_rate": dup_1tbl,
+            "sample_dup_excess_cross_table_rate": dup_cross,
+            "sample_filing_yield_parsed_percent": srate(stot["with_pct"], stot["filings"]),
+            "sample_group_row_rate": srate(stot["with_group"], stot["with_pct"]),
+            "sample_yield_by_year": {str(y): yields[y] for y in syears},
+            "sample_group_row_rate_by_year": {str(y): grouprate[y] for y in syears},
+            "sample_dup_same_table_rate_by_year": {str(y): dup_same_y[y] for y in syears},
+            "sample_dup_cross_table_rate_by_year": {str(y): dup_cross_y[y] for y in syears},
+            "sample_dup_same_table_index_rate_by_year": {str(y): dup_1tbl_y[y] for y in syears},
+            "sample_rows_by_year": {str(y): sb[y]["rows"] for y in syears},
+            "sample_filings_by_year": {str(y): sb[y]["filings"] for y in syears},
+        }
+        if worst_margin is not None:
+            sample_metrics["sample_yield_worst_year_margin"] = worst_margin
+            sample_metrics["sample_yield_worst_year"] = worst_margin_year
+
+        if args.sample_report:
+            with open(args.sample_report, "w") as fh:
+                fh.write("year\tfilings\trows\texcess_total\texcess_same_table_kind"
+                         "\texcess_same_table_index\texcess_cross_table_kind"
+                         "\tdup_same_table_rate\tdup_cross_table_rate"
+                         "\tfilings_with_parsed_percent\tyield_parsed_percent\tyield_floor"
+                         "\tfilings_with_group_row\tgroup_row_rate\n")
+                for y in syears:
+                    fh.write("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%.6f\t%.6f\t%d\t%.6f\t%s\t%d\t%.6f\n" % (
+                        y, sb[y]["filings"], sb[y]["rows"], sb[y]["excess_total"],
+                        sb[y]["excess_same_kind"], sb[y]["excess_same_table"],
+                        sb[y]["excess_cross_kind"], dup_same_y[y], dup_cross_y[y],
+                        sb[y]["with_pct"], yields[y],
+                        ("%.6f" % floors[y]) if y in floors else "", sb[y]["with_group"],
+                        grouprate[y]))
+            print("[out] %s: %d year rows" % (args.sample_report, len(syears)))
+
+        if args.record_sample_floors:
+            frag = {"_sample_yield_floor_by_year": {
+                str(y): round(max(0.0, yields[y] - args.sample_floor_slack), 6) for y in syears}}
+            with open(args.record_sample_floors, "w") as fh:
+                json.dump(frag, fh, indent=2, sort_keys=True)
+                fh.write("\n")
+            print("[out] %s: per-year yield floors = measured minus %.4f" % (
+                args.record_sample_floors, args.sample_floor_slack))
+
     # ---- miss decomposition -------------------------------------------------
     causes = defaultdict(int)
     detail = []
@@ -825,6 +1106,7 @@ def main():
         "miss_causes": dict(sorted(causes.items())),
     }
     metrics.update(iss_metrics)
+    metrics.update(sample_metrics)
     if args.json_out:
         with open(args.json_out, "w") as fh:
             json.dump(metrics, fh, indent=2, sort_keys=True)
@@ -843,27 +1125,41 @@ def main():
                "iss_share_agreement_5pct", "iss_individual_precision_proxy"):
         if nm in iss_metrics:
             values[nm] = iss_metrics[nm]
-    # GATED = exactly the keys in thresholds["minimums"]. Every other metric is
+    for nm, v in sample_metrics.items():
+        if isinstance(v, float):
+            values[nm] = v
+    # GATED = exactly the keys in thresholds["minimums"] (floors, val >= thr) plus
+    # thresholds["maximums"] (ceilings, val <= thr). Every other metric is
     # diagnostic: printed with its denominator, never able to change the exit code.
-    gated_names = list(thresholds["minimums"])
+    gated_names = list(gate_floor) + list(gate_ceiling)
     unknown = [n for n in gated_names if n not in values]
     if unknown:
-        sys.exit("ERROR: thresholds.json gates unknown metric(s): %s" % ", ".join(sorted(unknown)))
+        sys.exit("ERROR: thresholds.json gates unknown or uncomputable metric(s): %s. "
+                 "A gated per-year yield margin needs `_sample_yield_floor_by_year` "
+                 "populated — run score.py --record-sample-floors once, by hand."
+                 % ", ".join(sorted(unknown)))
     diag_names = [n for n in thresholds.get("diagnostics", []) if n in values]
 
-    print("\n== GATED METRICS (%d; thresholds %s) ==" % (len(gated_names), os.path.abspath(args.thresholds)))
+    print("\n== GATED METRICS (%d: %d floor + %d ceiling; thresholds %s) ==" % (
+        len(gated_names), len(gate_floor), len(gate_ceiling), os.path.abspath(args.thresholds)))
     failed = []
-    for name in gated_names:
-        val, thr = values[name], thresholds["minimums"][name]
+    for name in gate_floor:
+        val, thr = values[name], gate_floor[name]
         ok = val >= thr
-        print("  %-34s %.4f  >= %.4f  %s" % (name, val, thr, "PASS" if ok else "FAIL"))
+        print("  %-42s %.4f  >= %.4f  %s" % (name, val, thr, "PASS" if ok else "FAIL"))
         if not ok:
-            failed.append("%s: %.4f < %.4f" % (name, val, thr))
+            failed.append("%s: %.4f < %.4f (floor)" % (name, val, thr))
+    for name in gate_ceiling:
+        val, thr = values[name], gate_ceiling[name]
+        ok = val <= thr
+        print("  %-42s %.4f  <= %.4f  %s" % (name, val, thr, "PASS" if ok else "FAIL"))
+        if not ok:
+            failed.append("%s: %.4f > %.4f (ceiling)" % (name, val, thr))
 
     if diag_names:
         print("\n== DIAGNOSTIC METRICS (%d; no threshold, NO effect on the exit code) ==" % len(diag_names))
         for name in diag_names:
-            print("  %-34s %.4f  (diagnostic)" % (name, values[name]))
+            print("  %-42s %.4f  (diagnostic)" % (name, values[name]))
 
     if args.check:
         if failed:

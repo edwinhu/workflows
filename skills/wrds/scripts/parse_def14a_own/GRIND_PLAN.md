@@ -677,3 +677,119 @@ holdouts.**
 | may edit | must not touch |
 |---|---|
 | (unchanged) | `gold/gold_iss.tsv.gz`, `gold/holdout_iss.tsv`, the ISS holdout by any route |
+
+---
+
+## 9. AMENDMENT — 2026-09-29, the DUPLICATE-ROW round (setup)
+
+Adds a THIRD ruler and THREE gates; the gated count goes 5 → 8. Every number
+below is a line a command printed on 2026-09-29 and the commands are quoted in
+`~/projects/r2000/scratch/def14a_dup_setup.md`.
+
+### 9.1 Why
+
+The full-archive run (207,912 DEF 14A, commit `e4e78a95`) found 261,460 exact-key
+duplicate rows on `(accession, cik, holder_name, share_class)` — **9.00%** of
+2,903,798 rows, 32.65% in 2009, ~17-20% in 2017 / 2018 / 2024 — while 248 of 250
+hand-checked holder/share/percent triples were exact. The values are right and the
+rows are over-emitted, and **not one of the five existing gates can see it**: all
+five score gold-linked filings only, and blockw (1996-2001), FactSet (2006-2021)
+and ISS (2002-2024) are vendor coverage of larger filers that never reaches
+1994-1995 or 2025-2026.
+
+### 9.2 DIAGNOSIS FIRST — the split, measured before any threshold was written
+
+duckdb over all 33 `rows_<year>.tsv.gz`. The excess decomposes exactly, because
+within one key group `n-1 = Σ_kinds(n_in_kind−1) + (n_kinds−1)`:
+
+| family | rows | % of 2,903,798 |
+|---|---:|---:|
+| excess TOTAL | 261,460 | 9.004% |
+| (i) **SAME `table_kind`** — over-emission | **244,792** | **8.430%** |
+| … of which, inside ONE `table_index` | 125,576 | 4.324% |
+| … of which, across `table_index` of the same kind | 119,216 | 4.106% |
+| (ii) **CROSS `table_kind`** — the 5% table AND the management table | 16,668 | 0.574% |
+
+Cross-kind is the legitimate case the brief named, and it is **0.574%**, so it
+explains almost none of the 9.00%. **(i) is 8.43%, far above the 1.0% gate, so the
+round is warranted** — the alternative outcome the brief asked about (i already
+below the gate) did not occur.
+
+Concentration, measured: only **21,592 of 185,111** filings with any row carry any
+same-kind excess (11.7%), and the top 1,000 filings carry **133,534 of 244,792**
+(54.6%).
+
+**Co-registrant multiplication inflates the per-year rates and is BY DESIGN.**
+1,798 accessions are filed under more than one CIK and the panel grain is
+`(cik, accession)`. Counting each accession once instead of once per CIK: 2018 is
+18,165 → **4,718**, 2024 18,332 → **4,861**, 2017 14,994 → **4,428**, 2009 48,690
+→ **30,493**. The loop is told not to "fix" this.
+
+### 9.3 Mechanisms, from `-debug` on 12 of the worst 2009 / 2018 / 2024 filings
+
+The fingerprint is decisive: **108,592 of the 125,576 within-one-table excess rows
+(86.5%) carry `share_class=""`**, and 59,969 of them carry DIFFERING `shares`. The
+rows are mostly not spurious — the **grain is broken**, because the class or series
+identity of a value column is never carried into `share_class`.
+
+| # | mechanism | example |
+|---|---|---|
+| M1 | multi-class value columns, `share_class` left empty (multi-level header names the class; `Total` and `combined voting power` columns get no label at all) | `0001193125-18-126922`, `0001258602-24-000028` |
+| M2 | a row-level `Title of Class` / `Title of Series` column roled `other` (class lost) or roled `name` (`holder_name` becomes `Admiral Shares`) | `0001104659-24-052085`, `0001683863-24-008416` |
+| M3 | non-ownership tables attached once per fund in a fund-family proxy — director COMPENSATION dollars read as `shares` — TRUE over-emission | `0000051931-09-000935`, `0000051931-18-000890` |
+| M4 | per-fund 5% record-holder tables: Schwab really is a 5% holder of 200 funds, but the fund identity is never captured | `0000719451-09-000023`, `0000932471-09-000972` |
+| M5 | the ASCII text path glues the fund-class label onto the holder name | `0000932471-09-000972` |
+
+So the fix is to **populate `share_class`** (M1, M2, M4, M5) and to **reject the
+table** (M3) — never to dedup at emit time, which would throw away a real
+per-series holding.
+
+### 9.4 The new ruler: a fixed full-archive sample
+
+`gold/sample_full_archive.py` → `gold/sample_full.tsv`, **8,250 filings, 250 per
+filing year 1994-2026**, seed `20260929` (one RNG per year, `seed*1000+year`, pool
+sorted by `(accession, cik)`), every gold-linked accession excluded, 17.46 GB.
+sha256 `1db737f5b86a64d7…`, reproduced byte-identically on a second run. It is
+covered by `lock.sha256` (now **9** files), so the loop cannot re-draw it.
+
+`round_filelist.tsv` (gold ∪ ISS ∪ sample, **21,128** filings, 32.25 GB) is what
+`run_baseline.sh` submits, and it asserts coverage of all three before submitting;
+`score.py` exits **2** if the output does not cover the sample. `submit_shards.sh`
+went to `m_mem_free=16G` / `CONCURRENCY=4` because the sample reaches 2023-2026
+and carries filings up to 151.7 MB.
+
+### 9.5 Thresholds — fixed BEFORE the loop
+
+`thresholds.json` gains a `maximums` block; `score.py` gates `minimums` as floors
+and `maximums` as ceilings, and nothing else.
+
+| metric | kind | threshold | argument |
+|---|---|---:|---|
+| `sample_dup_excess_same_table_rate` | ceiling | **0.01** | (i) is 8.43% panel-wide / 8.650% on the sample. 86.5% of it has one root cause (empty `share_class`) and 54.6% sits in 1,000 filings, so 1.0% asks for the named mechanisms and not for a suppression rule. |
+| `sample_dup_excess_same_table_rate_max_year` | ceiling | **0.02** | Pooling hides 2009 (32.2% on the sample), 2007 (24.8%), 2018 (20.1%), 2024 (14.0%). A per-year ceiling stops one clean era paying for a broken one. |
+| `sample_yield_worst_year_margin` | floor | **0.0** | margin = min over years of (yield − floor), floor = the HEAD value minus 0.005, recorded per year in `_sample_yield_floor_by_year`. This is the guard that makes the ceilings unreachable by deleting rows. |
+| the five existing gates | floor | 0.88 / 0.75 / 0.82 / 0.80 / 0.82 | unchanged, byte-for-byte |
+
+**Cross-`table_kind` excess is REPORTED, never gated**, with
+`sample_dup_excess_total_rate`, `sample_dup_excess_same_table_index_rate`,
+`sample_filing_yield_parsed_percent` and `sample_group_row_rate`, plus the per-year
+table in `$DEF14A_WORK/sample_by_year.tsv`. Gating it would pay the loop to
+suppress a disclosure the document actually makes.
+
+### 9.6 A scorer bug found and fixed during setup
+
+Every TSV in this project is written with a bare `"\t".join(...)`, so nothing is
+quoted — but `csv.DictReader`'s default `QUOTE_MINIMAL` mis-reads any field that
+BEGINS with a double quote (`"Independent" Directors1`), swallowing the following
+tabs and newlines. Measured on the panel: **114,686 rows read against 115,061
+present** in the sample filings, 375 lost plus corrupted neighbours. `score.py`
+now reads with `QUOTE_NONE`, and its counts agree with an independent duckdb pass
+to the row: 115,061 / 10,591 / 9,953 / 638 / 4,662.
+
+The fix does **not** move the five existing gates. Scored over the panel, post-fix:
+`filing_yield_parsed_percent` 0.8921, `holder_recall_blockw` 0.7871,
+`holder_precision_blockw` 0.8301, `group_row_detection_rate` 0.9067,
+`iss_director_recall` 0.9135 — the values already recorded in §8.5B. (Pre-fix the
+same command gave 0.8856 / 0.7797 / 0.8296 / 0.9082 / 0.9131.) `csv.field_size_limit`
+was also raised: a mis-roled table can put a whole paragraph in `holder_name` and
+the 128 KiB default aborted the scorer outright.

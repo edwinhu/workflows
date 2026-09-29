@@ -15,9 +15,11 @@
 #             refuses to compute the gated iss_director_recall over a partial
 #             denominator), 3 the hash lock does not verify.
 #
-# FIVE metrics gate as of 2026-09-29 — the keys under `minimums` in
-# thresholds.json, which now include `iss_director_recall`. This script never
-# names them; score.py reads the gated set from the locked thresholds file.
+# EIGHT metrics gate as of 2026-09-29 — the keys under `minimums` (floors) plus
+# the keys under `maximums` (ceilings) in thresholds.json, which now include
+# `iss_director_recall`, `sample_yield_worst_year_margin` and the two duplicate-rate
+# ceilings. This script never names them; score.py reads the gated set from the
+# locked thresholds file.
 
 set -uo pipefail
 
@@ -40,5 +42,7 @@ exec python3 "$HERE/scorer/score.py" \
     --thresholds "$HERE/thresholds.json" \
     --lock "$HERE/lock.sha256" \
     --miss-report "$WORK/miss_dev.tsv" \
+    --iss-miss-report "$WORK/miss_iss_dev.tsv" \
+    --sample-report "$WORK/sample_by_year.tsv" \
     --json-out "$WORK/metrics_dev.json" \
     --check

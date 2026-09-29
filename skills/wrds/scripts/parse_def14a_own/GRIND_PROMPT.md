@@ -15,17 +15,109 @@ The loop ends when this exits 0, and nothing else ends it:
 bash /home/eh/projects/workflows/skills/wrds/scripts/parse_def14a_own/check.sh
 ```
 
-**Exactly FIVE metrics gate** — the keys under `minimums` in `thresholds.json`:
+**Exactly EIGHT metrics gate** — the keys under `minimums` (floors) plus the keys
+under `maximums` (ceilings) in `thresholds.json`:
 
-| gated metric | threshold |
-|---|---:|
-| `filing_yield_parsed_percent` | 0.88 |
-| `holder_recall_blockw` | 0.75 |
-| `holder_precision_blockw` | **0.82** (raised 2026-09-29) |
-| `group_row_detection_rate` | 0.80 |
-| `iss_director_recall` | **0.90** (added 2026-09-29 — THIS round's target) |
+| gated metric | kind | threshold |
+|---|---|---:|
+| `sample_dup_excess_same_table_rate` | ceiling | **≤ 0.01** — THIS round's target |
+| `sample_dup_excess_same_table_rate_max_year` | ceiling | **≤ 0.02** — THIS round's target |
+| `sample_yield_worst_year_margin` | floor | **≥ 0.0** — the per-year no-regression guard |
+| `filing_yield_parsed_percent` | floor | 0.88 |
+| `holder_recall_blockw` | floor | 0.75 |
+| `holder_precision_blockw` | floor | 0.82 |
+| `group_row_detection_rate` | floor | 0.80 |
+| `iss_director_recall` | floor | 0.82 |
 
-## THIS ROUND IS AN ISS DIRECTOR-RECALL ROUND (2026-09-29)
+## THIS ROUND IS A DUPLICATE-ROW ROUND (2026-09-29)
+
+**The two duplicate ceilings are the only gates short, and the duplicate defect is
+the only thing to work on.** Everything from `## CARRIED OVER` down is a GUARD:
+those five floors pass today and a "fix" that breaks one of them still exits 1.
+
+### The ruler is new: a fixed full-archive sample
+
+`gold/sample_full.tsv` — **8,250 filings, ~250 per FILING year 1994-2026**, seed
+`20260929`, drawn from the full-archive manifests with every gold-linked filing
+excluded. It exists because all five older gates read gold-linked filings only,
+and the gold sets are vendor coverage of larger filers that never reaches
+1994-1995 or 2025-2026. It is covered by `lock.sha256`: you may not edit it, and
+`run_baseline.sh` submits `round_filelist.tsv` (gold ∪ ISS ∪ sample, 21,128
+filings) and asserts the coverage before it submits. `score.py` exits **2** if the
+output does not cover the sample.
+
+The per-year table is printed every round under `== (vi) FULL-ARCHIVE SAMPLE ==`
+and written to `$DEF14A_WORK/sample_by_year.tsv`.
+
+### What the duplicate metric is, exactly
+
+The documented grain is one row per **(filing, holder row × share class)**, so the
+exact key is `(accession, cik, holder_name, share_class)`. For a key group of `n`
+rows the excess is `n-1`, and it decomposes exactly:
+
+```
+n - 1  =  Σ over table_kind (n_in_kind - 1)      SAME table_kind   [GATED]
+       +  (n_distinct_table_kinds - 1)           CROSS table_kind  [REPORTED]
+```
+
+**Cross-`table_kind` excess is legitimate and is NEVER gated.** A director who is
+also a 5% holder is listed in the 5% holders table AND the management table and
+both rows are real. Measured on the sample: 638 rows, 0.554%. **Do not suppress
+it.** A fix that makes cross-kind excess fall is a fix that deleted a real
+disclosure, and `holder_recall_blockw` / `iss_director_recall` will say so.
+
+### Where the 9,953 same-kind excess rows come from — the mechanisms, named
+
+Measured on the whole 2,903,798-row panel and then read with `-debug` on 12 of the
+worst 2009 / 2018 / 2024 filings. **86.5% of the within-one-table excess carries
+`share_class=""`.** That is the whole story: the class or series identity of a
+value column is never carried into `share_class`, so rows that ARE distinct
+collapse onto one exact key.
+
+| mechanism | evidence | example accessions |
+|---|---|---|
+| **M1 — multi-class value columns, `share_class` left empty.** A multi-level header names the class over each `(shares, percent)` column pair; the parser pairs them into N rows and labels none, or labels only some (the `Total` and `combined voting power` columns get nothing). | 108,592 of 125,576 within-one-table excess rows have `share_class=""` | `0001193125-18-126922` A. H. Belo 2018 (4 class columns, 4 rows/holder, all `class=""`) · `0001258602-24-000028` Nelnet 2024 (`Class A` and `Class B` labelled, `Total` and voting-power NOT — 2 excess rows per holder) |
+| **M2 — a row-level `Title of Class` / `Title of Series` column, mis-roled.** The column that states the class is given role `other` (so `share_class` stays empty) or, worse, role `name` (so `holder_name` becomes the class label). | Liberty Media emits 9 correct rows for John C. Malone, one per series, every one `class=""`; the Vanguard fund table emits `holder_name` = `Admiral Shares` | `0001104659-24-052085` Liberty Media 2024 (`Title of Series` → `other`) · `0001683863-24-008416` Vanguard 2024, excess 360 (`Title of Class` → `name`) |
+| **M3 — non-ownership tables attached once per fund in a fund-family proxy.** Director *compensation* tables are read as ownership and dollar compensation lands in `shares`; the same trustees repeat across dozens of per-fund tables. This is known defect 4 at scale, and it is TRUE over-emission — the rows should not exist. | `roles=[name shares shares other other other other]` over a header reading `Aggregate compensation … from the fund` | `0000051931-09-000935` American Funds 2009, excess 622 · `0000051931-18-000890` 2018, excess 336 |
+| **M4 — per-fund 5% record-holder tables.** One document, hundreds of funds, and Schwab / National Financial Services is a 5% record holder of most of them. The rows are REAL; the fund identity is simply never captured, so they collapse on the key. Fixing M1/M2 fixes this. | `0000719451-09-000023` emits 865 rows from one 748-row Fidelity table | `0000719451-09-000023` · `0000932471-09-000972` |
+| **M5 — the ASCII text path glues the fund-class label onto the holder name.** | `Investor Shares: Charles Schwab & Co`, `Admiral Shares: Bank of New York State`, and truncations (`Earle S`, `Joseph T`) | `0000932471-09-000972` (`parser=text_table`) |
+
+**The fix is to POPULATE `share_class`, not to suppress rows** (M1, M2, M4, M5),
+and to REJECT the table (M3). A dedup-at-emit rule that drops the second row keeps
+the duplicate rate down while throwing away a real per-series holding, and it is
+the wrong fix even where no gate catches it.
+
+### Rules specific to THIS round
+
+- **Fix a LAYOUT CLASS, with the failing test first.** Transcribe a fixture from
+  one of the accessions above into `parse_def14a_own_go/extract_test.go`, watch
+  `go test ./...` go red, then fix it. **No tuning on company names or filer
+  agents.** A rule keyed to `0000051931`, `Vanguard`, `Liberty Media` or
+  `American Funds` is a threshold widened by another route.
+- **Never suppress a legitimate cross-table listing.** Cross-`table_kind` excess
+  is reported, not gated, precisely so that suppressing it buys you nothing.
+- **Never collapse two rows that carry different values.** 59,969 of the
+  within-one-table excess rows have DIFFERING `shares`. Those are distinct
+  holdings whose class label is missing; merging them loses data and lowers no
+  gate that matters.
+- **No gate may regress.** Report all eight every time with denominators. The
+  per-year yield floor (`sample_yield_worst_year_margin`) exists so that
+  duplicate cleanliness cannot be bought by dropping rows in one era: each year's
+  parsed-percent yield on the sample may fall at most 0.005 below its value at
+  HEAD.
+- **Co-registrant multiplication is BY DESIGN and is not a defect.** 1,798
+  accessions are filed under more than one CIK and the panel grain is
+  `(cik, accession)`, so the same document's rows appear once per CIK. Measured:
+  2018's same-kind excess is 18,165 counting per CIK against 4,718 counting each
+  accession once. Do not "fix" it, and do not read the per-CIK number as
+  per-document over-emission.
+
+## THIS ROUND IS AN ISS DIRECTOR-RECALL ROUND (2026-09-29) — CLOSED, GUARD ONLY
+
+**The text below is the previous round and is retained as a GUARD.**
+`iss_director_recall` passes at 0.9135 against its permanent floor of 0.82 (the
+0.90 in the old table below was that round's target and was reset when it
+closed). Do not pick this round's subject from the ISS miss decomposition.
 
 **`iss_director_recall` is the only gate short, and it is the only thing to work
 on.** Baseline on ISS-dev, printed by `score.py` on unchanged parser output:
