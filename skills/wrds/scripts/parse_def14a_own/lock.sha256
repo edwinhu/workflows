@@ -1,0 +1,8 @@
+# lock.sha256 — verified by scorer/score.py before every scoring run.
+# Regenerate with make_lock.sh; never edit by hand, never from a grind iteration.
+896a93d981288a6ba7782eb7f6e0616a69d3bfc0f0d2d3886c2251f0b0de15c8  scorer/score.py
+d08cb2f94bdca0498a4606776b9e682e67b6a4b9b485e88ca1cb19966aa2049f  thresholds.json
+7f3c22b085a8baea3bb76599e23ee81eb16c0e142a808801fb3363bb41a2c592  gold/gold_blockw.tsv.gz
+629cdca3ae915e75657344ef8b53b781352caa0df7f8d254efb8a47d00510233  gold/gold_factset.tsv.gz
+721cf86c920ea1e3325ff58b0b67ad6646f4e862ebb6f999bbf01039d74722bc  gold/gold_factset_firmyear.tsv.gz
+d901aa5f10cc65924adb542829e6bca10a322940afd8027c3d48f149626db0ba  gold/holdout.tsv
