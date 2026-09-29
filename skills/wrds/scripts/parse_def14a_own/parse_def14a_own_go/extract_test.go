@@ -495,3 +495,93 @@ func TestASCIIPlusLessThanMarker(t *testing.T) {
 		t.Fatalf("group row: %+v", g)
 	}
 }
+
+// A 5% holder's name sits on the FIRST line of a name-and-address block and the
+// numbers land on the LAST line, so parseTextRow reads the city line as the
+// holder. Transcribed from 0001036050-00-000325 (cik 11860, "- ----" rules
+// between holders) and 0000950152-96-001391 (cik 701708, a P.O. Box block).
+var asciiNameAddressBlock = `
+                  SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS
+
+<TABLE>
+<CAPTION>
+Name and Address of Beneficial Owner      Number of Shares % of Class
+- ---------------------------------------------------------------------
+<S>                                       <C>              <C>
+State Street Bank and Trust Company(/1/)
+225 Franklin Street
+Boston, Massachusetts 02110                  10,446,661       7.82%
+- ---------------------------------------------------------------------
+FMR Corp.(/2/)
+82 Devonshire Street
+Boston, Massachusetts 02109                  14,608,499      11.14%
+- ---------------------------------------------------------------------
+Sanford C. Bernstein & Co.,
+Inc.
+767 Fifth Avenue
+New York, New York 10153                      7,302,860       5.60%
+- ---------------------------------------------------------------------
+Sarah Roush Werner
+  P. O. Box 611
+  Marysville, Washington 98270                2,605,763       6.66%
+</TABLE>
+` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 250)
+
+func TestASCIINameAddressBlockKeepsTheName(t *testing.T) {
+	rows := run(t, asciiNameAddressBlock)
+	for _, want := range []struct {
+		name string
+		pct  float64
+	}{
+		// Names arrive already normalised by StripFootnotes, which trims
+		// trailing " .,;:-" — hence "Corp" and "Co Inc", not "Corp." and
+		// "Co., Inc.". The assertion is on the HEAD of the address block
+		// being recovered whole, not on punctuation.
+		{"State Street Bank and Trust Company", 7.82},
+		{"FMR Corp", 11.14},
+		{"Sanford C. Bernstein & Co Inc", 5.60},
+		{"Sarah Roush Werner", 6.66},
+	} {
+		r := find(rows, want.name, "")
+		if r == nil {
+			t.Fatalf("%q missing; parsed: %v", want.name, holderNames(rows))
+		}
+		if r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("%s percent = %v, want %v", want.name, r.Percent, want.pct)
+		}
+	}
+	for _, r := range rows {
+		if strings.Contains(r.HolderName, "Boston") || strings.Contains(r.HolderName, "Marysville") ||
+			strings.Contains(r.HolderName, "Franklin Street") || strings.Contains(r.HolderName, "Devonshire") {
+			t.Errorf("address line emitted as a holder: %q", r.HolderName)
+		}
+	}
+}
+
+// The guard: a heading or a prose lead-in directly above a numeric row must
+// never be glued onto the first real holder underneath it.
+var asciiHeadingAboveRow = `
+                        PRINCIPAL STOCKHOLDERS
+
+<TABLE>
+<CAPTION>
+             BENEFICIAL OWNER                    OWNED             PERCENT
+<S>                                             <C>               <C>
+100 Fifth Avenue Associates...................   343,345(1)          11.1%
+Mark B. Logan.................................   183,382(2)           5.4%
+</TABLE>
+` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 250)
+
+func TestASCIIAddressRejoinDoesNotEatTheHeader(t *testing.T) {
+	rows := run(t, asciiHeadingAboveRow)
+	r := find(rows, "100 Fifth Avenue Associates", "")
+	if r == nil {
+		t.Fatalf("street-shaped holder name lost; parsed: %v", holderNames(rows))
+	}
+	for _, x := range rows {
+		if strings.Contains(strings.ToUpper(x.HolderName), "BENEFICIAL OWNER") ||
+			strings.Contains(strings.ToUpper(x.HolderName), "STOCKHOLDERS") {
+			t.Errorf("header glued onto a holder: %q", x.HolderName)
+		}
+	}
+}

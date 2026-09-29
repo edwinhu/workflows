@@ -254,6 +254,8 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 			// / " as a group (17 persons)....  356,679,528  24.7%".
 			if joined, ok := joinWrappedLabel(clean, ln, nm); ok {
 				nm = joined
+			} else if head, ok := headNameAbove(clean, ln, nm); ok {
+				nm = head
 			} else if reWrapCont.MatchString(nm) && ln > 0 {
 				prev := strings.TrimSpace(clean[ln-1])
 				if prev != "" && !reBigNum.MatchString(prev) && len(prev) < 90 {
@@ -502,4 +504,99 @@ func joinWrappedLabel(clean []string, ln int, nm string) (string, bool) {
 		return "", false
 	}
 	return joined, true
+}
+
+// --- name-and-address blocks ---------------------------------------------
+//
+// The 5% holder table of an ASCII proxy puts the holder on the first line of a
+// "Name and Address" cell and the numbers on the LAST line of it:
+//
+//	FMR Corp.(/2/)
+//	82 Devonshire Street
+//	Boston, Massachusetts 02109                  14,608,499      11.14%
+//
+// parseTextRow reads the holder as "Boston, Massachusetts 02109", which matches
+// no gold name, so the row is a false positive AND the real holder is a recall
+// miss. The same shape appears when only a corporate suffix wraps
+// ("Mellon Financial" / "Corporation.....1,339,369  8.8%").
+
+var (
+	// A line that can only be part of a postal address, never a holder name.
+	// The street word must END the line, so "100 Fifth Avenue Associates" —
+	// a real holder — is not read as an address.
+	reStreetLine = regexp.MustCompile(`(?i)^(\d{1,6}[a-z]?|one|two|three|four|five|six|seven|eight|nine|ten)\s+\S.*\b(street|st|avenue|ave|road|rd|boulevard|blvd|drive|dr|lane|ln|place|pl|plaza|way|parkway|pkwy|highway|hwy|circle|court|ct|square|sq|building|bldg|tower|center|centre|floor|fl|broadway|park|row|terrace|walk|wharf)\b\.?,?$`)
+	reBoxLine    = regexp.MustCompile(`(?i)^(p\.?\s*o\.?\s+box\b|post\s+office\s+box\b|c/o\b|suite\s+\d|\d+(st|nd|rd|th)\s+floor\b)`)
+	reCityZip    = regexp.MustCompile(`^[A-Za-z][A-Za-z.\-' ]{1,40},\s+([A-Z]{2}|[A-Z][a-z]+(\s+[A-Z][a-z]+)?)\.?\s+\d{5}(-\d{4})?$`)
+	// A bare corporate suffix: all that is left of a name whose head wrapped.
+	reBareSuffix = regexp.MustCompile(`(?i)^[\(,]?\s*(inc|inc\.|corp|corp\.|corporation|incorporated|company|co|co\.|l\.?\s?p\.?|llc|l\.l\.c\.|llp|ltd|ltd\.|limited|n\.?\s?a\.?|trust|plc|s\.a\.|n\.v\.|a\.g\.|partners|holdings|associates|management)\s*[\.,]?\s*\)?$`)
+	// "- --------------------" separator rules between holders.
+	reRuleLine = regexp.MustCompile(`^[-=_\s\.\*]+$`)
+)
+
+func isAddressLine(s string) bool {
+	return reStreetLine.MatchString(s) || reBoxLine.MatchString(s) || reCityZip.MatchString(s)
+}
+
+// headNameAbove walks back from the numeric row at ln over the address and
+// bare-suffix lines of the same table cell and returns the holder name at the
+// head of that cell, with the address lines dropped. It fires only when the
+// numeric row's own name is itself an address line or a bare corporate suffix,
+// which is what keeps a heading or a prose lead-in from being glued onto the
+// first real holder beneath it.
+func headNameAbove(clean []string, ln int, nm string) (string, bool) {
+	addr, suffix := isAddressLine(nm), reBareSuffix.MatchString(nm)
+	if !addr && !suffix {
+		return "", false
+	}
+	if g, _ := isGroupRow(nm); g {
+		return "", false
+	}
+	// Lines of the cell that are part of the NAME, in document order. The
+	// numeric row's own fragment joins them only when it is a wrapped suffix;
+	// an address line is dropped outright.
+	var name []string
+	if suffix {
+		name = []string{nm}
+	}
+	nameLines := 0
+	for k, steps := ln-1, 0; k >= 0 && steps < 6; k, steps = k-1, steps+1 {
+		p := strings.TrimSpace(clean[k])
+		if p == "" || len(p) > 90 || reRuleLine.MatchString(p) {
+			break
+		}
+		if _, _, ok := parseTextRow(clean[k]); ok {
+			break // the previous holder's own numeric row
+		}
+		p = strings.TrimSpace(reDotLeader.ReplaceAllString(p, " "))
+		p, _ = StripFootnotes(p)
+		p = strings.TrimSpace(p)
+		if p == "" {
+			break
+		}
+		if isAddressLine(p) {
+			continue // an address line is never part of the name
+		}
+		// A share-shaped number outside an address line means this is not a
+		// wrapped name cell at all.
+		if reShareLike.MatchString(p) {
+			break
+		}
+		// A column header, a skip word or a line with no word in it ends the
+		// cell: this is what keeps a heading or a prose lead-in from being
+		// glued onto the first real holder beneath it.
+		if !hasWords(p, 1) || reSkipName.MatchString(p) || reHdrLineCue.MatchString(p) {
+			break
+		}
+		name = append([]string{p}, name...)
+		if !reBareSuffix.MatchString(p) {
+			nameLines++
+		}
+		if nameLines >= 3 {
+			break // a holder name does not run past three lines
+		}
+	}
+	if nameLines == 0 {
+		return "", false
+	}
+	return strings.TrimSpace(strings.Join(name, " ")), true
 }
