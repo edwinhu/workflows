@@ -51,7 +51,16 @@ func ScreenRows(rows []Row) []Row {
 			out = append(out, r)
 		}
 	}
-	return screenNames(out)
+	out = screenNames(out)
+	// A class label recovered from a column header reaches share_class only
+	// here, after every drop rule: the screens read ShareClass, so populating
+	// the grain key must not be able to change which rows survive.
+	for i := range out {
+		if out[i].ShareClass == "" && out[i].classHint != "" {
+			out[i].ShareClass = out[i].classHint
+		}
+	}
+	return out
 }
 
 var (

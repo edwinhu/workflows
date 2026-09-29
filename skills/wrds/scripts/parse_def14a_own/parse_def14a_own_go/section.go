@@ -59,6 +59,49 @@ func tableKind(sectKind string, rows []Row, tableText string) string {
 	}
 }
 
+// seriesLabels walks the document once and records, for every item, the most
+// recent text chunk that IS one of the fund / series names the SGML header
+// declared. A fund-family proxy repeats the same ownership table once per fund
+// and the fund's name stands above it as a plain heading line; without it the
+// same record holder collapses onto one grain key across dozens of real,
+// distinct per-fund disclosures.
+//
+// Only a filing declaring two or more series is labelled: with one series there
+// is nothing to disambiguate, and an operating company declares none.
+func seriesLabels(items []Item, series []string) []string {
+	out := make([]string, len(items))
+	if len(series) < 2 {
+		return out
+	}
+	byNorm := make(map[string]string, len(series))
+	for _, s := range series {
+		byNorm[NormLabel(s)] = strings.Join(strings.Fields(s), " ")
+	}
+	cur := ""
+	for i, it := range items {
+		if it.Kind == "text" && len(it.Text) <= 120 {
+			if v, ok := byNorm[NormLabel(it.Text)]; ok {
+				cur = v
+			}
+		}
+		out[i] = cur
+	}
+	return out
+}
+
+// withSeries puts the fund identity in front of whatever class label the table
+// itself yielded, so "Admiral Shares" of two different funds are two keys.
+func withSeries(series, hint string) string {
+	switch {
+	case series == "":
+		return hint
+	case hint == "":
+		return series
+	default:
+		return series + " | " + hint
+	}
+}
+
 func isHeadingChunk(t string) bool {
 	if len(t) > 200 || len(t) < 6 {
 		return false
@@ -80,10 +123,12 @@ func ExtractHTML(body string, base Row) ([]Row, int, int) {
 	var out []Row
 	tablesSeen, tablesUsed := 0, 0
 	used := map[int]bool{}
+	seriesAt := seriesLabels(items, base.series)
 
 	type tres struct {
-		rows []Row
-		text string
+		rows   []Row
+		text   string
+		series string
 	}
 	consider := func(startIdx int, kind string) {
 		misses := 0
@@ -115,7 +160,7 @@ func ExtractHTML(body string, base Row) ([]Row, int, int) {
 			}
 			used[it.Pos] = true
 			tablesUsed++
-			got = append(got, tres{rows, it.Text})
+			got = append(got, tres{rows, it.Text, seriesAt[k]})
 		}
 		for _, g := range got {
 			kd := tableKind(kind, g.rows, g.text)
@@ -132,6 +177,9 @@ func ExtractHTML(body string, base Row) ([]Row, int, int) {
 			}
 			for i := range g.rows {
 				g.rows[i].TableKind = kd
+				if !g.rows[i].seriesLocal {
+					g.rows[i].classHint = withSeries(g.series, g.rows[i].classHint)
+				}
 			}
 			out = append(out, g.rows...)
 		}

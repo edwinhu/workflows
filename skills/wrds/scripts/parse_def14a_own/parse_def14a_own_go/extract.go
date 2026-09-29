@@ -32,13 +32,44 @@ type Row struct {
 	// all — but names no holder, so it is never emitted. A row whose name is
 	// only a postal address is the case this exists for.
 	noHolder bool
+
+	// classHint is a class / series / fund label recovered from a column
+	// header rather than from a class-shaped value. It is copied onto
+	// ShareClass by ScreenRows AFTER every drop rule has run, so recovering it
+	// can populate the grain key without changing which rows are emitted.
+	classHint string
+
+	// series is per-FILING context, carried on the base Row: the fund / series
+	// names the SGML header declares. Set only for a multi-series filing.
+	series []string
+	// seriesLocal marks a row whose fund identity came from a label row INSIDE
+	// its own table, which is more specific than the document heading and must
+	// not be overwritten by it.
+	seriesLocal bool
 }
 
 var (
 	reHdrPct    = regexp.MustCompile(`(?i)percent|%|of\s+class|of\s+outstanding`)
 	reHdrShares = regexp.MustCompile(`(?i)shares|amount|number|beneficially\s+owned|ownership|aggregate`)
 	reHdrClass  = regexp.MustCompile(`(?i)\bclass\s+[a-d]\b|common\s+stock|series\s+[a-z0-9]+\s+(?:common|preferred)|preferred\s+stock|ordinary\s+shares|\bclass\s+[a-d]$`)
-	reHdrName   = regexp.MustCompile(`(?i)name|beneficial\s+owner|stockholder|shareholder|holder|director|officer|title\s+of\s+class`)
+	// reHdrNameCol matches the header of the column that names the HOLDER.
+	// "Title of Class" is deliberately absent: it heads a class column, and a
+	// proxy that puts one to the left of the holder column otherwise has its
+	// class labels read as holder names.
+	reHdrNameCol = regexp.MustCompile(`(?i)\bname\b|beneficial\s+owner|stockholder|shareholder|\bholder`)
+	// reHdrClassCol matches the header of a ROW-LEVEL column stating which
+	// class, series or fund the row's holding is in. Anchored at the head of
+	// the header so "Percentage of Fund" is not read as a fund column.
+	reHdrClassCol = regexp.MustCompile(`(?i)^\s*(?:title\s+of\s+(?:class|series)|class\s+of\s+(?:stock|shares|securities)|share\s+class|series|fund|portfolio)\b`)
+	// A footnote reference trailing a column header: "... of stock (2)".
+	reHdrFootnote = regexp.MustCompile(`\s*\(\d{1,2}\)\s*$`)
+	// A column of MONEY, not of shares. A fund-family proxy's trustee table
+	// prints compensation in dollars beside a "dollar range of fund shares
+	// owned" column, so the ownership cue matches the table and the dollars are
+	// read as a share count. The second half of the alternation is what keeps a
+	// genuine "shares beneficially owned" column out of this.
+	reHdrMoney = regexp.MustCompile(`(?i)compensation|fees\s+earned|\bsalary\b|\bbonus\b|dollar\s+(?:range|value|amount)`)
+	reHdrOwned = regexp.MustCompile(`(?i)shares?\s+(?:owned|held|beneficially)|beneficially\s+owned|percent`)
 	reSkipName  = regexp.MustCompile(`(?i)^(name|names?\s+(and\s+address\s+)?of\s+.*|(name\s+of\s+)?beneficial\s+owners?|title\s+of\s+class|total|subtotal|directors?|non-?employee\s+directors?|executive\s+officers?|named\s+executive\s+officers?|nominees?|continuing\s+directors?|other\s+executive\s+officers?|5%\s+.*|principal\s+.*holders?|common\s+stock|class\s+[a-d].*)$`)
 	// The table must look like an ownership table, not an equity-comp-plan or
 	// compensation table that also carries share counts.
@@ -59,6 +90,15 @@ type compacted struct {
 	pctFlag []bool
 	nHeader int
 	roles   []colRole
+	// hdrClassCol is the class column chosen by its HEADER (repoint below),
+	// as opposed to one chosen by its values matching reClassVal. Its label is
+	// carried on Row.classHint rather than Row.ShareClass so that no existing
+	// screen decision changes: the layout screen reads ShareClass.
+	hdrClassCol int
+	// series is the set of fund / series names the filing's SGML header
+	// declares, folded by NormLabel. A column whose cells are those names is
+	// the fund column of a fund-family proxy, whatever its header says.
+	series map[string]string
 }
 
 // compact drops columns that never hold anything but $ ( ) % and whitespace —
@@ -183,7 +223,21 @@ func compact(g *Grid) *compacted {
 		}
 		rows[i] = r
 	}
-	return &compacted{rows: rows, pctFlag: pctFlag}
+	return &compacted{rows: rows, pctFlag: pctFlag, hdrClassCol: -1}
+}
+
+// compactWith is compact plus the per-filing context the role vote reads: the
+// declared fund / series names. A filing declaring fewer than two series has
+// nothing to disambiguate, so the set is left nil.
+func compactWith(g *Grid, base Row) *compacted {
+	c := compact(g)
+	if len(base.series) >= 2 {
+		c.series = make(map[string]string, len(base.series))
+		for _, s := range base.series {
+			c.series[NormLabel(s)] = strings.Join(strings.Fields(s), " ")
+		}
+	}
+	return c
 }
 
 func rowIsData(raw []string) bool {
@@ -236,7 +290,7 @@ func (c *compacted) analyze() {
 	}
 	nameCol := -1
 	for j := 0; j < ncol; j++ {
-		words, strongPct, bigNum, pctish, classish, n := 0, 0, 0, 0, 0, 0
+		words, strongPct, bigNum, pctish, classish, seriesish, n := 0, 0, 0, 0, 0, 0, 0
 		for i := c.nHeader; i < len(c.rows); i++ {
 			if j >= len(c.rows[i]) {
 				continue
@@ -261,11 +315,23 @@ func (c *compacted) analyze() {
 			if reClassVal.MatchString(cell) {
 				classish++
 			}
+			if c.series[NormLabel(cell)] != "" {
+				seriesish++
+			}
 		}
 		hdr := c.roles[j].header
 		switch {
 		case n == 0:
 			c.roles[j].role = "other"
+		case reHdrMoney.MatchString(hdr) && !reHdrOwned.MatchString(hdr):
+			// Money, not shares. Runs before the numeric votes so a dollar
+			// column cannot be read as a share count.
+			c.roles[j].role = "other"
+		case seriesish*2 >= n && seriesish > 0 && bigNum == 0:
+			// A fund-family proxy lists the fund in a column of its own; the
+			// holder column is the next one along.
+			c.roles[j].role = "class"
+			c.hdrClassCol = j
 		case classish*2 >= n && classish > 0 && bigNum == 0:
 			c.roles[j].role = "class"
 		case c.pctFlag[j] || strongPct > bigNum && strongPct > 0:
@@ -302,6 +368,153 @@ func (c *compacted) analyze() {
 			}
 		}
 	}
+	c.repoint()
+}
+
+// colWords counts the data cells of column j that carry at least one word.
+func (c *compacted) colWords(j int) int {
+	n := 0
+	for i := c.nHeader; i < len(c.rows); i++ {
+		if j < len(c.rows[i]) && hasWords(flat(c.rows[i][j]), 1) {
+			n++
+		}
+	}
+	return n
+}
+
+// repoint fixes the two layouts where a GROUPING column stands to the left of
+// the holder column and is therefore taken for it: a fund-family proxy's "Fund"
+// column, and a "Title of Class" column. The first word-bearing column is the
+// holder only when nothing else is headed like the holder column.
+//
+// It then gives a row-level class / series / fund column the "class" role
+// whatever its values look like, so the identity of the holding reaches
+// share_class instead of collapsing distinct rows onto one key.
+func (c *compacted) repoint() {
+	isNameHdr := func(j int) bool {
+		h := c.roles[j].header
+		return reHdrNameCol.MatchString(h) && !reHdrClassCol.MatchString(h)
+	}
+	nc := -1
+	for j := range c.roles {
+		if c.roles[j].role == "name" {
+			nc = j
+			break
+		}
+	}
+	if nc >= 0 && !isNameHdr(nc) {
+		for j := range c.roles {
+			if j == nc || c.roles[j].role != "other" {
+				continue
+			}
+			if isNameHdr(j) && c.colWords(j) > 0 {
+				c.roles[j].role = "name"
+				c.roles[nc].role = "other"
+				nc = j
+				break
+			}
+		}
+	}
+	for j := range c.roles {
+		if j == nc || c.roles[j].role != "other" {
+			continue
+		}
+		if reHdrClassCol.MatchString(c.roles[j].header) && c.colWords(j) > 0 {
+			c.roles[j].role = "class"
+			c.hdrClassCol = j
+			break
+		}
+	}
+}
+
+// matchSeries reports which declared fund / series name a cell states, allowing
+// a short trailing parenthetical the proxy adds for the reader ("Vanguard 500
+// Index Fund (1976)"). Returns "" when the cell names no declared series.
+func (c *compacted) matchSeries(cell string) string {
+	if c.series == nil {
+		return ""
+	}
+	n := NormLabel(cell)
+	if n == "" || len(n) < 6 {
+		return ""
+	}
+	if v := c.series[n]; v != "" {
+		return v
+	}
+	f := strings.Fields(n)
+	for drop := 1; drop <= 2 && drop < len(f); drop++ {
+		if v := c.series[strings.Join(f[:len(f)-drop], " ")]; v != "" {
+			return v
+		}
+	}
+	return ""
+}
+
+// seriesRowLabel reports the fund a full-width LABEL ROW inside the table names.
+// A fund-family proxy that puts several funds in one table separates them with
+// such a row; without it every fund's record holders collapse onto one key.
+func (c *compacted) seriesRowLabel(r []string) string {
+	if c.series == nil {
+		return ""
+	}
+	lbl := ""
+	for _, cell := range r {
+		v := flat(cell)
+		if v == "" {
+			continue
+		}
+		if _, ok := ParseShares(v); ok {
+			return ""
+		}
+		if _, _, _, pi := ParsePercent(v); pi {
+			return ""
+		}
+		m := c.matchSeries(v)
+		if m == "" {
+			return ""
+		}
+		if lbl == "" {
+			lbl = m
+		}
+	}
+	return lbl
+}
+
+// cleanClassLabel trims a column header down to something usable as a class
+// label: one line, no trailing footnote reference.
+func cleanClassLabel(s string) string {
+	s = strings.TrimSpace(reHdrFootnote.ReplaceAllString(flat(s), ""))
+	if len(s) > 180 {
+		s = strings.TrimSpace(s[:180])
+	}
+	return s
+}
+
+// pairLabel is the fallback identity of a (shares, percent) column pair whose
+// header names no share class: the DEEPEST header cell standing over it, which
+// is the one that distinguishes it from its siblings ("Total", "Percentage of
+// combined voting power"). Used only where a table emits more than one pair per
+// holder row, which is exactly where an unlabelled pair collapses onto its
+// sibling's key.
+func (c *compacted) pairLabel(p pair) string {
+	cols := []int{}
+	if p.shares >= 0 {
+		cols = append(cols, p.shares)
+	}
+	if p.pct >= 0 {
+		cols = append(cols, p.pct)
+	}
+	best := ""
+	for i := 0; i < c.nHeader && i < len(c.rows); i++ {
+		for _, j := range cols {
+			if j < len(c.rows[i]) {
+				if v := flat(c.rows[i][j]); v != "" {
+					best = v
+				}
+			}
+		}
+	}
+	return cleanClassLabel(best)
 }
 
 type pair struct{ shares, pct int }
@@ -473,7 +686,7 @@ func dropAddress(name string) string {
 
 // ExtractGrid emits one Row per (data row x class pair).
 func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int) []Row {
-	c := compact(g)
+	c := compactWith(g, base)
 	c.analyze()
 	if !c.looksLikeOwnership(tableText) {
 		return nil
@@ -504,9 +717,40 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int) []Row {
 		return nil
 	}
 	var out []Row
-	lastName := ""
+	lastName, lastClass, lastSeries := "", "", ""
+	// The first fund's label row sits in the header block, above the column
+	// headings, so the walk below would never see it.
+	for i := 0; i < c.nHeader && i < len(c.rows); i++ {
+		if lbl := c.seriesRowLabel(c.rows[i]); lbl != "" {
+			lastSeries = lbl
+		}
+	}
 	for i := c.nHeader; i < len(c.rows); i++ {
 		r := c.rows[i]
+		// A full-width label row naming one of the filing's funds separates the
+		// funds a single table covers. It names no holder and carries no number.
+		if lbl := c.seriesRowLabel(r); lbl != "" {
+			lastSeries, lastClass = lbl, ""
+			continue
+		}
+		// The row-level class / fund column is written once and left blank on
+		// the rows that continue the same class, so it is forward-filled —
+		// before the name checks below, which may skip this row entirely.
+		rowClass, rowHint := "", ""
+		if cc >= 0 {
+			v := ""
+			if cc < len(r) {
+				v = r[cc]
+			}
+			if cc == c.hdrClassCol {
+				if fv := flat(v); fv != "" {
+					lastClass = fv
+				}
+				rowHint = lastClass
+			} else {
+				rowClass = v
+			}
+		}
 		if nc >= len(r) {
 			continue
 		}
@@ -558,10 +802,23 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int) []Row {
 				continue
 			}
 			cl := c.classLabel(p)
-			if cl == "" && cc >= 0 && cc < len(r) {
-				cl = r[cc]
+			hint := rowHint
+			if cl == "" && rowClass != "" {
+				cl = rowClass
+			}
+			// Several value column pairs per holder row and no class-shaped
+			// header over them: the pair's own deepest header is what tells
+			// them apart, and it composes with a fund label rather than
+			// replacing it.
+			if cl == "" && len(ps) > 1 {
+				hint = withSeries(hint, c.pairLabel(p))
+			}
+			if lastSeries != "" {
+				hint = withSeries(lastSeries, hint)
+				rw.seriesLocal = true
 			}
 			rw.ShareClass = cl
+			rw.classHint = cleanClassLabel(hint)
 			rw.Footnotes = strings.Join(uniq(allFns), ",")
 			out = append(out, rw)
 		}

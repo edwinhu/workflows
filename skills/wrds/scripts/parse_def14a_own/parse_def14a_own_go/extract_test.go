@@ -960,3 +960,194 @@ func TestLeadingDotPercent(t *testing.T) {
 		}
 	}
 }
+
+// ---------------------------------------------------------------------------
+// Class / series / fund identity must reach share_class.
+//
+// The documented grain is one row per (filing, holder row x share class), so a
+// value column pair whose class the parser never labels collapses onto the same
+// exact key as its sibling. Three layout classes leave share_class empty.
+
+// M1 — a multi-class table whose LAST column pairs carry no class-shaped header:
+// a "Total" column and a "combined voting power" column. Every holder therefore
+// emits four rows, two of them with share_class empty and hence duplicate.
+const multiClassTotalHTML = `<html><body>
+<p>Security Ownership of Certain Beneficial Owners and Management</p>
+<table>
+<tr><td colspan="9">Beneficial Ownership</td></tr>
+<tr><td></td><td colspan="3">Number of shares beneficially owned</td><td colspan="5">Percentage of shares beneficially owned (1)</td></tr>
+<tr><td>Name</td><td>Class A</td><td>Class B</td><td>Total</td><td>Class A</td><td>Class B</td><td>Total</td><td>Percentage of combined voting power of all classes of stock (2)</td></tr>
+<tr><td>Michael S. Dunlap</td><td>3,250,452</td><td>9,805,545</td><td>13,055,997</td><td>12.9%</td><td>92.4%</td><td>36.4%</td><td>77.1%</td></tr>
+<tr><td>Shelby J. Butterfield</td><td>510</td><td>2,693,178</td><td>2,693,688</td><td>1.2%</td><td>25.4%</td><td>7.5%</td><td>20.5%</td></tr>
+</table></body></html>`
+
+func TestMultiClassTotalColumnsGetDistinctShareClass(t *testing.T) {
+	rows := ScreenRows(run(t, multiClassTotalHTML))
+	seen := map[string]int{}
+	n := 0
+	for _, r := range rows {
+		if r.HolderName != "Michael S. Dunlap" {
+			continue
+		}
+		n++
+		seen[r.ShareClass]++
+	}
+	if n < 2 {
+		t.Fatalf("holder emitted %d rows, want the multi-class pairs: %v", n, rows)
+	}
+	for cls, k := range seen {
+		if k > 1 {
+			t.Errorf("share_class %q emitted %d times for one holder in one table; "+
+				"every value column pair must carry its own label (got %v)", cls, k, seen)
+		}
+	}
+	if seen[""] > 0 {
+		t.Errorf("a value column pair was emitted with an empty share_class: %v", seen)
+	}
+}
+
+// M2 — a row-level "Title of Class" column to the LEFT of the holder column.
+// The class label is read as the holder name and the real holder is lost.
+const titleOfClassHTML = `<html><body>
+<p>Security Ownership of Certain Beneficial Owners</p>
+<table>
+<tr><th>Title of Class</th><th>Name and Address of Shareholder</th><th>Percent of Class</th></tr>
+<tr><td>Admiral Shares</td><td>Charles Schwab &amp; Co., Inc.</td><td>9.14%</td></tr>
+<tr><td></td><td>National Financial Services LLC</td><td>5.90%</td></tr>
+<tr><td>ETF Shares</td><td>Charles Schwab &amp; Co., Inc.</td><td>17.49%</td></tr>
+<tr><td></td><td>Vanguard Marketing Corporation</td><td>12.46%</td></tr>
+</table></body></html>`
+
+func TestTitleOfClassColumnIsClassNotName(t *testing.T) {
+	rows := ScreenRows(run(t, titleOfClassHTML))
+	if r := find(rows, "Admiral Shares", ""); r != nil {
+		t.Errorf("the Title of Class cell was emitted as a holder name: %+v", r)
+	}
+	r := find(rows, "National Financial Services LLC", "")
+	if r == nil {
+		t.Fatalf("holder lost; parsed: %v", holderNames(rows))
+	}
+	if r.ShareClass != "Admiral Shares" {
+		t.Errorf("share_class = %q, want %q (forward-filled from the row above)", r.ShareClass, "Admiral Shares")
+	}
+	if s := find(rows, "Charles Schwab & Co., Inc", "ETF Shares"); s == nil {
+		t.Errorf("the two Schwab rows must differ by share_class: %v", rows)
+	}
+}
+
+// M4 — a per-fund 5% record-holder table in a fund-family proxy. The leading
+// "Fund" column is taken as the holder name, so every row of the table carries
+// the fund's name and the real record holders vanish.
+const perFundHolderHTML = `<html><body>
+<p>Principal Shareholders: beneficial ownership of record</p>
+<table>
+<tr><th>Fund</th><th>Name and Address</th><th>Percentage of Class and Type of Ownership</th><th>Percentage of Fund</th></tr>
+<tr><td>ING Classic Money Market Fund</td><td>Pershing Div of DLJ Secs Corp</td><td>91.5%</td><td>88.9%</td></tr>
+<tr><td>ING Classic Money Market Fund</td><td>Citigroup Global Markets, Inc.</td><td>6.0%</td><td>0.9%</td></tr>
+<tr><td>ING Disciplined SmallCap Fund</td><td>LPL Financial Services</td><td>16.3%</td><td>0.4%</td></tr>
+</table></body></html>`
+
+func TestPerFundColumnIsClassNotName(t *testing.T) {
+	rows := ScreenRows(run(t, perFundHolderHTML))
+	if r := find(rows, "ING Classic Money Market Fund", ""); r != nil {
+		t.Errorf("the Fund cell was emitted as a holder name: %+v", r)
+	}
+	r := find(rows, "Pershing Div of DLJ Secs Corp", "")
+	if r == nil {
+		t.Fatalf("record holder lost; parsed: %v", holderNames(rows))
+	}
+	if !strings.HasPrefix(r.ShareClass, "ING Classic Money Market Fund") {
+		t.Errorf("share_class = %q, want it to lead with the fund name", r.ShareClass)
+	}
+	// The two percent columns of one fund row are two different figures and must
+	// not collapse onto one key.
+	f := find(rows, "Pershing Div of DLJ Secs Corp", "")
+	_ = f
+	seen := map[string]int{}
+	for _, x := range rows {
+		if x.HolderName == "Pershing Div of DLJ Secs Corp" {
+			seen[x.ShareClass]++
+		}
+	}
+	for cls, k := range seen {
+		if k > 1 {
+			t.Errorf("share_class %q emitted %d times for one holder: %v", cls, k, seen)
+		}
+	}
+}
+
+// M3 — a fund-family proxy's director COMPENSATION table. It carries trustee
+// names, dollar amounts and the phrase "fund shares owned", so the ownership
+// cue matches and the dollars land in `shares`. The table is repeated once per
+// fund, so every trustee is emitted dozens of times. These rows are not
+// ownership at all and must not be emitted.
+const trusteeCompHTML = `<html><body>
+<p>Trustee compensation and ownership of fund shares</p>
+<table>
+<tr><td>Name</td><td>Aggregate compensation from Fund (inc. voluntarily deferred compensation)</td><td>Total compensation from all Funds</td><td>Dollar range of Fund shares owned</td></tr>
+<tr><td>William H. Baribault</td><td>$3,306</td><td>$390,631</td><td>None</td></tr>
+<tr><td>James G. Ellis</td><td>3,294</td><td>393,969</td><td>None</td></tr>
+<tr><td>Leonard R. Fuller</td><td>3,215</td><td>387,131</td><td>$10,001 - $50,000</td></tr>
+</table></body></html>`
+
+func TestTrusteeCompensationTableIsNotOwnership(t *testing.T) {
+	rows := ScreenRows(run(t, trusteeCompHTML))
+	if len(rows) != 0 {
+		t.Fatalf("a compensation table was read as ownership: %d rows, %v", len(rows), rows)
+	}
+}
+
+// M4, second shape — several funds in ONE table, separated by a full-width label
+// row naming the fund. The fund names come from the filing's own SGML header
+// (<SERIES-NAME>), so the label row is identifiable without guessing.
+const inTableFundLabelHTML = `<html><body>
+<p>Shareholders with more than 5% record and/or beneficial ownership</p>
+<table>
+<tr><td colspan="3">Vanguard 500 Index Fund (1976)</td></tr>
+<tr><td>Title of Class</td><td>Name and Address of Shareholder</td><td>Percent of Class</td></tr>
+<tr><td>Investor Shares</td><td>Charles Schwab &amp; Co., Inc.</td><td>8.59%</td></tr>
+<tr><td colspan="3">Vanguard Balanced Index Fund (1992)</td></tr>
+<tr><td>Investor Shares</td><td>Charles Schwab &amp; Co., Inc.</td><td>6.11%</td></tr>
+</table></body></html>`
+
+func TestInTableFundLabelRowSeparatesFunds(t *testing.T) {
+	base := Row{Accession: "acc", CIK: "cik", Company: "Co", FilingDate: "2017-01-01",
+		series: []string{"Vanguard 500 Index Fund", "Vanguard Balanced Index Fund"}}
+	raw, _, _ := ExtractHTML(inTableFundLabelHTML, base)
+	rows := ScreenRows(raw)
+	seen := map[string]int{}
+	for _, r := range rows {
+		if strings.HasPrefix(r.HolderName, "Charles Schwab") {
+			seen[r.ShareClass]++
+		}
+	}
+	if len(seen) != 2 {
+		t.Fatalf("the same holder in two funds must carry two share_class values, got %v (rows %v)", seen, rows)
+	}
+	for cls, k := range seen {
+		if k != 1 {
+			t.Errorf("share_class %q emitted %d times: %v", cls, k, seen)
+		}
+		if !strings.Contains(cls, "Index Fund") {
+			t.Errorf("share_class %q does not name the fund", cls)
+		}
+	}
+}
+
+// An operating company declares no series, so none of the fund machinery may
+// fire: one series name is not enough to disambiguate anything.
+func TestSeriesLabellingOffWithoutTwoSeries(t *testing.T) {
+	base := Row{Accession: "acc", CIK: "cik", FilingDate: "2017-01-01",
+		series: []string{"Vanguard 500 Index Fund"}}
+	a, _, _ := ExtractHTML(simpleHTML, base)
+	b, _, _ := ExtractHTML(simpleHTML, Row{Accession: "acc", CIK: "cik", FilingDate: "2017-01-01"})
+	if len(a) != len(b) {
+		t.Fatalf("row count differs with one declared series: %d vs %d", len(a), len(b))
+	}
+	for i := range a {
+		if a[i].ShareClass != b[i].ShareClass || a[i].classHint != b[i].classHint {
+			t.Errorf("row %d labelled differently: %q/%q vs %q/%q", i,
+				a[i].ShareClass, a[i].classHint, b[i].ShareClass, b[i].classHint)
+		}
+	}
+}

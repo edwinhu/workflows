@@ -254,6 +254,7 @@ func process(archiveRoot string, j job) ([]Row, Manifest) {
 	man.Bytes = len(raw)
 
 	body := PrimaryDocument(string(raw))
+	base.series = SeriesNames(string(raw))
 	var rows []Row
 	var seen, used int
 	if IsHTML(body) {
