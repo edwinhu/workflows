@@ -1,0 +1,8 @@
+accession	label	ceo_name	ceo_founder_self_described	must_founder	must_not_founder	must_vc	must_not_vc
+0001193125-04-143377	Google 2004	Eric Schmidt	0	Sergey Brin;Larry Page	Eric Schmidt	L. John Doerr;Michael Moritz
+0001193125-12-240111	Facebook 2012	Mark Zuckerberg	1	Mark Zuckerberg	Marc L. Andreessen;Erskine B. Bowles;Peter A. Thiel	Marc L. Andreessen;James W. Breyer;Peter A. Thiel	Sheryl K. Sandberg
+0001193125-17-068848	Snap 2017	Evan Spiegel	1	Evan Spiegel;Robert Murphy	Imran Khan	Mitchell Lasky	Imran Khan
+0001193125-19-144716	Uber 2019	Dara Khosrowshahi	0		Dara Khosrowshahi	Matt Cohler
+0001193125-20-315318	Airbnb 2020	Brian Chesky	1	Brian Chesky;Joseph Gebbia;Nathan Blecharczyk		Kenneth Chenault;Alfred Lin
+0001012870-98-002475	eBay 1998	Margaret C. Whitman	0	Pierre M. Omidyar	Howard D. Schultz;Scott D. Cook;Margaret C. Whitman	Robert C. Kagle
+0001012870-02-002475	Netflix 2002	Reed Hastings	0		Michael N. Schuh	Timothy M. Haley;Jay C. Hoag
