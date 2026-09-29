@@ -2134,3 +2134,95 @@ func TestASCIIDollarRangeIsNotShares(t *testing.T) {
 		t.Fatalf("a dollar-range table is not an ownership table, got %d rows: %+v", len(rows), rows)
 	}
 }
+
+// A fund proxy's independent-trustee table states, per row, WHICH COMPANY the
+// interest is in -- one row per issuer per trustee, in a "Company" column. The
+// column is roled `other`, so the issuer never reaches share_class and one
+// trustee's holdings in four different issuers collapse onto one grain key.
+const issuerColumnHTML = `<html><body>
+<p>Security Ownership of Certain Beneficial Owners and Management</p>
+<table>
+<tr><th>Name of Independent Trustee/Nominee</th><th>Name of Owner and Relationships to Trustee/Nominee</th><th>Company</th><th>Title of Class</th><th>Shares Beneficially Owned (1)</th><th>Percent of Class(2)</th></tr>
+<tr><td>Anthonie C. van Ekris</td><td>Same</td><td>LICT Corp.</td><td>Common Stock</td><td>345,600</td><td>*</td></tr>
+<tr><td>Anthonie C. van Ekris</td><td>Same</td><td>The LGL Group, Inc.</td><td>Common Stock</td><td>13,420</td><td>*</td></tr>
+<tr><td>Anthonie C. van Ekris</td><td>Same</td><td>CIBL, Inc.</td><td>Common Stock</td><td>40,560</td><td>*</td></tr>
+<tr><td>Anthony J. Colavita</td><td>Same</td><td>The LGL Group, Inc.</td><td>Common Stock</td><td>14,238</td><td>*</td></tr>
+</table></body></html>`
+
+func TestIssuerColumnReachesTheGrainKey(t *testing.T) {
+	rows := ScreenRows(run(t, issuerColumnHTML))
+	seen := map[string]int{}
+	for _, r := range rows {
+		if r.HolderName == "Anthonie C. van Ekris" {
+			seen[r.ShareClass]++
+		}
+	}
+	if len(seen) != 3 {
+		t.Fatalf("want one key per issuer, got %d: %v", len(seen), seen)
+	}
+	for cls, n := range seen {
+		if n > 1 {
+			t.Errorf("share_class %q emitted %d times: %v", cls, n, seen)
+		}
+	}
+}
+
+// A closed-end fund complex states one FUND per share column and prints the
+// table again for the next three funds. With no percent anywhere, textTokens
+// keeps only the LAST share column, so each table emits one unlabelled row per
+// trustee and the same trustee collapses onto one grain key across the tables.
+// The fund is stated over the column, positionally, and nowhere else.
+const asciiFundPerShareColumn = `
+Share Ownership by Trustees
+
+                         Number of Shares owned as of May 15, 1997 of:
+
+                     Putnam California     Putnam High      Putnam Investment
+                     Investment Grade    Yield Municipal     Grade Municipal
+Trustee              Municipal Trust         Trust               Trust
+- ------------------------------------------------------------------------------
+
+Jameson A. Baxter                  118                119                 119
+Hans H. Estin                      121                162                 161
+John A. Hill                       100                100                 100
+Elizabeth T. Kennan              229(2)             222(3)              222(3)
+- ------------------------------------------------------------------------------
+
+The Trustees of Putnam California Investment Grade Municipal Trust, Putnam
+High Yield Municipal Trust and Putnam Investment Grade Municipal Trust owned
+a total of common shares, respectively, of the funds, comprising less than one
+percent of the outstanding common shares of such funds on that date. None of
+the Trustees owns any preferred shares.
+
+Share Ownership by Trustees
+
+                            Number of Shares owned as of May 15, 1997 of:
+
+                        Putnam Investment  Putnam Investment   Putnam Managed
+                        Grade Municipal    Grade Municipal    Municipal Income
+Trustee                   Trust II           Trust III             Trust
+- ------------------------------------------------------------------------------
+
+Jameson A. Baxter                 1,227              1,457                119
+Hans H. Estin                      123                111                 161
+John A. Hill                       100               2,500                100
+Elizabeth T. Kennan              229(2)             222(3)              222(3)
+`
+
+func TestASCIIFundNamedOverTheShareColumn(t *testing.T) {
+	rows := ScreenRows(run(t, asciiFundPerShareColumn))
+	seen := map[string]int{}
+	for _, r := range rows {
+		if r.HolderName == "Jameson A. Baxter" {
+			seen[r.ShareClass]++
+		}
+	}
+	if len(seen) < 2 {
+		t.Fatalf("the two tables' funds are one key: %v", seen)
+	}
+	for cls, n := range seen {
+		if n > 1 {
+			t.Errorf("share_class %q emitted %d times: %v", cls, n, seen)
+		}
+	}
+}
