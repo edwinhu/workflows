@@ -90,6 +90,36 @@ func seriesLabels(items []Item, series []string) []string {
 	return out
 }
 
+// classHeadingLabels maps every item to the CLASS heading in force at it. A
+// multi-security company writes one 5% table per class and states the class in a
+// short line of its own above the table; the table's own column headers say
+// nothing about it, so every table's rows otherwise share one key.
+func classHeadingLabels(items []Item) []string {
+	out := make([]string, len(items))
+	cur, at := "", 0
+	for i, it := range items {
+		if it.Kind == "text" {
+			t := strings.TrimSpace(it.Text)
+			if len(t) <= 60 && len(strings.Fields(t)) <= 7 &&
+				reHdrClass.MatchString(t) && !reClassHeadingNo.MatchString(t) {
+				cur, at = strings.TrimRight(t, ":."), i
+			}
+		}
+		// The class's table follows the line that names it closely.
+		if cur != "" && i-at <= classHeadingReach {
+			out[i] = cur
+		}
+	}
+	return out
+}
+
+// A line that mentions a class but is prose about ownership, not the class
+// heading over a table.
+var reClassHeadingNo = regexp.MustCompile(`(?i)beneficial|percent|following|table|outstanding|record|holder|owner|as\s+of|\bvot`)
+
+// classHeadingReach bounds how far a class heading carries, in document items.
+const classHeadingReach = 4
+
 // seriesReach bounds how far a fund label carries from the line that states it,
 // in document items (DOM) or lines (ASCII).
 const seriesReach = 40
@@ -143,12 +173,14 @@ func ExtractHTML(body string, base Row) ([]Row, int, int) {
 	tablesSeen, tablesUsed := 0, 0
 	used := map[int]bool{}
 	seriesAt := seriesLabels(items, base.series)
+	classAt := classHeadingLabels(items)
 	sset := SeriesSet(base.series)
 
 	type tres struct {
 		rows   []Row
 		text   string
 		series string
+		class  string
 	}
 	// The compacted form of the last ACCEPTED table and the item it sat at, so a
 	// header-less continuation of it can inherit its columns. Held across
@@ -191,7 +223,7 @@ func ExtractHTML(body string, base Row) ([]Row, int, int) {
 			if !cg.inherited {
 				prev = cg
 			}
-			got = append(got, tres{rows, it.Text, seriesAt[k]})
+			got = append(got, tres{rows, it.Text, seriesAt[k], classAt[k]})
 		}
 		for _, g := range got {
 			kd := tableKind(kind, g.rows, g.text)
@@ -208,6 +240,9 @@ func ExtractHTML(body string, base Row) ([]Row, int, int) {
 			}
 			for i := range g.rows {
 				g.rows[i].TableKind = kd
+				if g.rows[i].ShareClass == "" && g.rows[i].classHint == "" {
+					g.rows[i].classHint = g.class
+				}
 				if !g.rows[i].seriesLocal && !namesSeries(sset, g.rows[i].classHint) {
 					g.rows[i].classHint = withSeries(g.series, g.rows[i].classHint)
 				}
@@ -244,6 +279,9 @@ func ExtractHTML(body string, base Row) ([]Row, int, int) {
 			kd := tableKind("combined", rows, it.Text)
 			for i := range rows {
 				rows[i].TableKind = kd
+				if rows[i].ShareClass == "" && rows[i].classHint == "" {
+					rows[i].classHint = classAt[fi]
+				}
 				if !rows[i].seriesLocal && !namesSeries(sset, rows[i].classHint) {
 					rows[i].classHint = withSeries(seriesAt[fi], rows[i].classHint)
 				}
