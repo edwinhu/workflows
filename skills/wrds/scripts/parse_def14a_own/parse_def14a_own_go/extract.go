@@ -854,8 +854,24 @@ func (c *compacted) pairLabels(ps []pair) []string {
 			if len(distinct) < 2 || power {
 				continue
 			}
-			for k := range vals {
-				out[k] = cleanClassLabel(vals[k])
+			// The label may WRAP over several header rows -- a fund name written
+			// "Arizona" / "Dividend" / "Advantage 2" down three of them names the
+			// column only as a whole, and the lowest row alone ("Advantage 2")
+			// collides with another fund in the next table. Compose the rows
+			// ABOVE this one that also differ between the pairs; a row whose
+			// value is the same for every pair names the TABLE, not the column,
+			// and is left out.
+			for k, p := range ps {
+				var parts []string
+				for above := 0; above < i; above++ {
+					v := rd(p, above)
+					if v == "" || sameForEveryPair(ps, rd, above) {
+						continue
+					}
+					parts = append(parts, v)
+				}
+				parts = append(parts, vals[k])
+				out[k] = cleanClassLabel(strings.Join(parts, " "))
 			}
 			c.splitTiedLabels(ps, out, rd, nh, i)
 			return out
@@ -870,6 +886,18 @@ func (c *compacted) pairLabels(ps []pair) []string {
 		}
 	}
 	return out
+}
+
+// sameForEveryPair reports whether header row `i` holds the same text over every
+// pair: such a row names the whole table and cannot distinguish its columns.
+func sameForEveryPair(ps []pair, rd func(pair, int) string, i int) bool {
+	first := rd(ps[0], i)
+	for _, p := range ps[1:] {
+		if rd(p, i) != first {
+			return false
+		}
+	}
+	return true
 }
 
 type pair struct{ shares, pct int }

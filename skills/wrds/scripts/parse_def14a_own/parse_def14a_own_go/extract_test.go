@@ -2433,3 +2433,44 @@ func TestASeriesOfParentIsNotTheFund(t *testing.T) {
 		}
 	}
 }
+
+// A closed-end fund complex states one FUND per share column and the fund's name
+// WRAPS over three header rows: "Arizona / Dividend / Advantage" beside "Arizona
+// / Dividend / Advantage 2". pairLabels picks the single lowest header row that
+// tells the pairs apart, so the labels became "Advantage" and "Advantage 2" --
+// and the next table in the same document, whose funds are "Pennsylvania
+// Dividend Advantage" and "Pennsylvania Premium Income 2", produced "Advantage"
+// again. Two different funds, one grain key.
+const wrappedPairLabelHTML = `<html><body>
+<p>Security Ownership of Certain Beneficial Owners and Management</p>
+<table>
+<tr><td></td><td>Floating</td><td>Floating</td><td>Arizona</td><td>Arizona</td><td>Arizona</td><td>Arizona</td></tr>
+<tr><td>Board Member</td><td>Rate</td><td>Rate</td><td>Dividend</td><td>Dividend</td><td>Dividend</td><td>Dividend</td></tr>
+<tr><td>Nominees</td><td>Income</td><td>Income</td><td>Advantage</td><td>Advantage</td><td>Advantage 2</td><td>Advantage 2</td></tr>
+<tr><td></td><td>Shares owned</td><td>Percent of Class</td><td>Shares owned</td><td>Percent of Class</td><td>Shares owned</td><td>Percent of Class</td></tr>
+<tr><td>Carole E. Stone</td><td>1,600</td><td>1.2</td><td>10,000</td><td>2.4</td><td>4,000</td><td>1.7</td></tr>
+<tr><td>Terence J. Toth</td><td>7,018</td><td>3.1</td><td>2,000</td><td>1.1</td><td>9,000</td><td>2.2</td></tr>
+</table></body></html>`
+
+func TestWrappedPairLabelKeepsTheWholeFundName(t *testing.T) {
+	rows := ScreenRows(run(t, wrappedPairLabelHTML))
+	seen := map[string]int{}
+	for _, r := range rows {
+		if r.HolderName == "Carole E. Stone" {
+			seen[r.ShareClass]++
+		}
+	}
+	if len(seen) != 3 {
+		t.Fatalf("want one key per fund column, got %d: %v", len(seen), seen)
+	}
+	got := false
+	for cls := range seen {
+		if strings.Contains(cls, "Arizona") && strings.Contains(cls, "Dividend") {
+			got = true
+		}
+	}
+	if !got {
+		t.Errorf("the fund name wrapped over three header rows was not assembled: %v", seen)
+	}
+}
+
