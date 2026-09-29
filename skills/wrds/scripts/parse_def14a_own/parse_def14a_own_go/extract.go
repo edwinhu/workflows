@@ -90,6 +90,16 @@ var (
 	// Compensation, option-grant and pay-ratio tables also carry names, share
 	// counts and percents. "Percent of total options granted" is the one that
 	// slips past the ownership cue, so the option-grant vocabulary is listed.
+	// An OPTION-DETAIL or share-PURCHASE table: it names the same people as the
+	// ownership table and repeats "Shares Owned" beside its own columns, so
+	// reCompCue's "unless it also reads as ownership" escape lets it through.
+	// These phrases describe an option or a purchase and never a holding, so
+	// they veto the table outright.
+	reOptDetailCue = regexp.MustCompile(`(?i)remaining\s+contractual\s+(?:life|term)|` +
+		`in[- ]?the[- ]?money|option\s+price\s+range|option\s+average\s+price|` +
+		`average\s+option\s+price|net\s+shares\s+from\s+\S+\s+options|` +
+		`average\s+purchase\s+price|average\s+discount`)
+
 	reCompCue = regexp.MustCompile(`(?i)equity\s+compensation\s+plan|weighted[- ]average\s+exercise\s+price|securities\s+remaining\s+available|option\s+awards|stock\s+awards|salary|bonus|summary\s+compensation|options?\s+granted|exercise\s+price|expiration\s+date|grant\s+date\s+present\s+value|all\s+other\s+compensation|long[- ]term\s+incentive|individual\s+grants|realizable\s+value`)
 )
 
@@ -965,6 +975,9 @@ func (c *compacted) classCol() int {
 // looksLikeOwnershipTable is the guard against compensation and equity-plan
 // tables, which also carry names and share counts.
 func (c *compacted) looksLikeOwnership(tableText string) bool {
+	if reOptDetailCue.MatchString(tableText) {
+		return false
+	}
 	if reCompCue.MatchString(tableText) && !reOwnCue.MatchString(tableText) {
 		return false
 	}

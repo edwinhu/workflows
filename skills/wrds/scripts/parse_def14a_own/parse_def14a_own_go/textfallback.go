@@ -338,7 +338,11 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 		// it, must read as an ownership table. Without this the scan runs on
 		// into the Summary Compensation Table.
 		body := hdr + " " + strings.Join(sliceLines(clean, block), " ")
-		if !reOwnCue.MatchString(body) || reCompCue.MatchString(body) {
+		if !reOwnCue.MatchString(body) || reCompCue.MatchString(body) ||
+			reOptDetailCue.MatchString(body) {
+			continue
+		}
+		if textMoneyBlock(clean, block) {
 			continue
 		}
 		classes := classLabelsFromHeader(hdr)
@@ -1132,4 +1136,33 @@ func textColLabel(hdr [][]hdrGroup, lo, hi int) string {
 	lbl := strings.Join(parts, " ")
 	lbl = reColLabelLead.ReplaceAllString(lbl, "")
 	return norm(cleanClassLabel(lbl))
+}
+
+// A trustee's holding in a fund family is disclosed as a DOLLAR RANGE, not a
+// share count ("Dollar Range of Shares Owned in the Funds", "$10,001 -
+// $50,000"), with one line per fund under the trustee's name. The tail parses as
+// a share count of 50,000 and the FUND becomes the holder. The values are money
+// and the block is not an ownership table at all.
+var reMoneyTail = regexp.MustCompile(`\$\s*[0-9]`)
+
+// A PERCENT anywhere in the block vetoes the veto: a real ownership table that
+// happens to price something in dollars still reports a percent of class, and
+// the per-year yield floor counts filings with a parsed percent. Only a block
+// that is money and nothing but money is dropped.
+func textMoneyBlock(clean []string, block []int) bool {
+	money, rows := 0, 0
+	for _, ln := range block {
+		_, rest, ok := parseTextRow(clean[ln])
+		if !ok {
+			continue
+		}
+		rows++
+		if strings.Contains(rest, "%") {
+			return false
+		}
+		if reMoneyTail.MatchString(rest) {
+			money++
+		}
+	}
+	return rows > 0 && money*2 >= rows
 }
