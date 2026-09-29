@@ -21,6 +21,7 @@ import { spawnSync } from 'node:child_process'
 import { mkdtempSync, rmSync, writeFileSync, readFileSync, existsSync, chmodSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { grindEnv } from './grind-test-env'
 
 const GRIND = `${import.meta.dir}/grind.sh`
 
@@ -51,13 +52,14 @@ function script(dir: string, name: string, bodyText: string): string {
 
 function append(journal: string, rec: Record<string, unknown>) {
   const r = spawnSync('bash', [GRIND, 'append', '--journal', journal, JSON.stringify(rec)], {
+    env: grindEnv(),
     encoding: 'utf8', timeout: 30_000,
   })
   if (r.status !== 0) throw new Error(`append refused: ${r.stderr}`)
 }
 
 function run(args: string[]) {
-  return spawnSync('bash', [GRIND, 'run', ...args], { encoding: 'utf8', timeout: 120_000 })
+  return spawnSync('bash', [GRIND, 'run', ...args], { encoding: 'utf8', timeout: 120_000, env: grindEnv() })
 }
 
 /**

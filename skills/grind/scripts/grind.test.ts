@@ -24,6 +24,7 @@ import { spawnSync } from 'node:child_process'
 import { mkdtempSync, rmSync, writeFileSync, readFileSync, existsSync, chmodSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { grindEnv } from './grind-test-env'
 
 const GRIND = `${import.meta.dir}/grind.sh`
 
@@ -49,7 +50,7 @@ function script(dir: string, name: string, body: string): string {
 }
 
 function grind(args: string[], cwd?: string) {
-  return spawnSync('bash', [GRIND, ...args], { encoding: 'utf8', cwd, timeout: 60_000 })
+  return spawnSync('bash', [GRIND, ...args], { encoding: 'utf8', cwd, timeout: 60_000, env: grindEnv() })
 }
 
 /** Every parseable record, in order. Unparseable lines are skipped, which is the reader contract. */

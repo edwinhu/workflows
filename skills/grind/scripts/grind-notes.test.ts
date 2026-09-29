@@ -17,6 +17,7 @@ import { spawnSync } from 'node:child_process'
 import { mkdtempSync, rmSync, writeFileSync, readFileSync, chmodSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { grindEnv } from './grind-test-env'
 
 const GRIND = `${import.meta.dir}/grind.sh`
 
@@ -42,6 +43,7 @@ function script(dir: string, name: string, bodyText: string): string {
 /** Append one record through the agent's own channel, exactly as an operator would from a shell. */
 function append(journal: string, rec: Record<string, unknown>) {
   const r = spawnSync('bash', [GRIND, 'append', '--journal', journal, JSON.stringify(rec)], {
+    env: grindEnv(),
     encoding: 'utf8', timeout: 30_000,
   })
   if (r.status !== 0) throw new Error(`append refused: ${r.stderr}`)
@@ -82,7 +84,7 @@ function loop(d: string, iters: number, extraRunner = '') {
 }
 
 function run(args: string[]) {
-  return spawnSync('bash', [GRIND, 'run', ...args], { encoding: 'utf8', timeout: 60_000 })
+  return spawnSync('bash', [GRIND, 'run', ...args], { encoding: 'utf8', timeout: 60_000, env: grindEnv() })
 }
 
 /** The GRIND_NOTES block: its header line plus the indented note lines that follow it. */

@@ -26,6 +26,7 @@ import { spawnSync } from 'node:child_process'
 import { mkdtempSync, rmSync, writeFileSync, readFileSync, existsSync, chmodSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { grindEnv } from './grind-test-env'
 
 const GRIND = `${import.meta.dir}/grind.sh`
 
@@ -49,7 +50,7 @@ function grind(args: string[], env?: Record<string, string>) {
   return spawnSync('bash', [GRIND, ...args], {
     encoding: 'utf8',
     timeout: 60_000,
-    env: { ...process.env, ...(env ?? {}) },
+    env: grindEnv(env ?? {}),
   })
 }
 

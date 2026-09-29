@@ -23,6 +23,7 @@ import { spawnSync } from 'node:child_process'
 import { mkdtempSync, rmSync, writeFileSync, readFileSync, existsSync, chmodSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
+import { grindEnv } from './grind-test-env'
 
 const GRIND = `${import.meta.dir}/grind.sh`
 const SKILL_MD = resolve(import.meta.dir, '..', 'SKILL.md')
@@ -53,7 +54,7 @@ function script(dir: string, name: string, bodyText: string): string {
 /** Append through the agent's own channel, returning the raw result so a refusal can be asserted. */
 function appendRaw(journal: string, rec: Record<string, unknown>) {
   return spawnSync('bash', [GRIND, 'append', '--journal', journal, JSON.stringify(rec)], {
-    encoding: 'utf8', timeout: 30_000,
+    encoding: 'utf8', timeout: 30_000, env: grindEnv(),
   })
 }
 
@@ -113,7 +114,7 @@ function loop(d: string, iters: number, extraRunner = '', extraArgs: string[] = 
 }
 
 function run(args: string[]) {
-  return spawnSync('bash', [GRIND, 'run', ...args], { encoding: 'utf8', timeout: 60_000 })
+  return spawnSync('bash', [GRIND, 'run', ...args], { encoding: 'utf8', timeout: 60_000, env: grindEnv() })
 }
 
 /** The GRIND_SUBJECTS block: its header line plus the indented subject lines that follow it. */
