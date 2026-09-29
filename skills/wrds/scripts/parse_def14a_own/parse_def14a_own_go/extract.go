@@ -1013,6 +1013,9 @@ func (c *compacted) looksLikeOwnership(tableText string) bool {
 
 var reAddrLine = regexp.MustCompile(`(?i)^(\d|P\.?\s?O\.?\s+box|one\s+\w+\s+(street|plaza|place|way|center|centre|avenue)|c/o\b|[\w\s]+,\s*[A-Z]{2}\s+\d{5})`)
 
+// A class designation stated inside a VALUE cell, after the number it qualifies.
+var reClassInValue = regexp.MustCompile(`(?i)\bclass\s+[a-z0-9]{1,3}\b|\bseries\s+[a-z0-9]{1,3}\b`)
+
 // A name cell that is nothing but a parenthesised qualifier continues the
 // holder named on the row above.
 var reParenOnlyName = regexp.MustCompile(`^\s*\([^()]*\)\s*$`)
@@ -1248,6 +1251,15 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 			continue
 		}
 		grp, gn := isGroupRow(name)
+		// A class stated inside one of the row's VALUE cells qualifies the whole
+		// row when no cell of a pair states one of its own.
+		rowValClass := ""
+		for _, cell := range r {
+			if m := reClassInValue.FindString(flat(cell)); m != "" {
+				rowValClass = m
+				break
+			}
+		}
 		// Two value-column pairs of ONE source row can produce records identical
 		// in every field -- a "*" in both percent columns of a two-class table
 		// whose header rows do not tell the pairs apart. The second is a second
@@ -1340,6 +1352,22 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 				if lastSeries != "" {
 					hint = withSeries(lastSeries, hint)
 					rw.seriesLocal = true
+				}
+				// The percent CELL may state the class the percent is OF:
+				// "6.0% Class B; Beneficial". One row per class of one fund
+				// otherwise lands on one key.
+				vcls := reClassInValue.FindString(flat(pcCell))
+				if vcls == "" {
+					vcls = reClassInValue.FindString(flat(shCell))
+				}
+				if vcls == "" {
+					// A second percent column of the same row — the holding as a
+					// percentage of the FUND rather than of the class — carries
+					// no class of its own, and takes the row's.
+					vcls = rowValClass
+				}
+				if vcls != "" {
+					hint = withSeries(hint, norm(vcls))
 				}
 				rw.ShareClass = cl
 				rw.classHint = cleanClassLabel(hint)
