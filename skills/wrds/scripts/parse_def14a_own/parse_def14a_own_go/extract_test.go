@@ -2295,3 +2295,38 @@ func TestASCIIWrappedHolderNameTail(t *testing.T) {
 		}
 	}
 }
+
+// A two-class table whose PERCENT columns are both headed "Percent of / Class"
+// and whose SHARES columns are what differ ("Number of Series A & C Depositary
+// Shares" against "Number of Common Shares/Units"). pairLabels reads the percent
+// column's header cell first and only falls back to the shares column when the
+// percent cell is empty, so both pairs were labelled "Class" and every holder's
+// two holdings collapsed onto one grain key.
+const pctHeadersTieSharesDifferHTML = `<html><body>
+<p>Security Ownership of Certain Beneficial Owners and Management</p>
+<table>
+<tr><td></td><td>Number of Series A &amp; C</td><td>Percent of</td><td>Number of Common</td><td>Percent of</td></tr>
+<tr><td>Name of Person</td><td>Depositary Shares</td><td>Class</td><td>Shares/Units (1)(2)</td><td>Class</td></tr>
+<tr><td>Ellen A. Rudnick</td><td>3,000</td><td></td><td>62,706</td><td></td></tr>
+<tr><td>Kathryn J. Hayley</td><td>12,000</td><td></td><td>33,572</td><td></td></tr>
+<tr><td>John V. Moran, IV</td><td>3,500</td><td></td><td>103,950</td><td></td></tr>
+<tr><td>Directors and Executive Officers as a Group (25 persons)</td><td>27,500</td><td>0.57</td><td>2,812,205</td><td>0.87</td></tr>
+</table></body></html>`
+
+func TestPercentHeadersTieAndSharesHeadersDiffer(t *testing.T) {
+	rows := ScreenRows(run(t, pctHeadersTieSharesDifferHTML))
+	seen := map[string]int{}
+	for _, r := range rows {
+		if r.HolderName == "Ellen A. Rudnick" {
+			seen[r.ShareClass]++
+		}
+	}
+	if len(seen) != 2 {
+		t.Fatalf("want one key per class column, got %d: %v", len(seen), seen)
+	}
+	for cls, n := range seen {
+		if n > 1 {
+			t.Errorf("share_class %q emitted %d times: %v", cls, n, seen)
+		}
+	}
+}
