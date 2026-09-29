@@ -61,7 +61,7 @@ interface State {
    * and enforced by a hook, and the two are registered independently: a session that started before
    * the hook was renamed keeps its OLD Stop registration while running the CURRENT dispatch script,
    * so it arms state that nothing evaluates. Measured 2026-09-28: a session predating v6.25 had its
-   * Stop hook pointed at the deleted `hooks/hound.ts`, so the hold sat at rounds 0 forever, never
+   * Stop hook pointed at a hook file that v6.25 deleted, so the hold sat at rounds 0 forever, never
    * released after a PASS, and `cron-delete-guard.ts` — whose path did not change — went on refusing
    * every `CronDelete` of the heartbeats. Nothing in the state distinguished that from a hold whose
    * first round had not ended yet.

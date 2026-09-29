@@ -33,14 +33,22 @@
 # verdict nobody could read is the vacuous pass work exists to prevent. Lenses and mechanical checks
 # judge the whole deliverable and are never narrowed.
 #
+# A LENS-ONLY FAIL still narrows. `tasksThatFlagged` is [] when no implementer, verifier or red gate
+# failed, and FULL then re-probes every red command — including the ones the last round fixed, which
+# now exit 0 and are refused as `red-not-red`, so the round cannot be dispatched at all. Each
+# surviving blocking finding is mapped to the task(s) whose `writablePaths` contain its `file`; one
+# finding that maps to nothing, or any failed mechanical check, falls back to FULL and says why.
+#
 # With --dispatch, the run directory is args.json's own directory; result.json there is rotated to
 # result-<n>.json first so a stale verdict can never be read as this run's.
 #
-# FROZEN FINDING SET + ROUND CAP, both with --dispatch. On the advance to round 2 the previous
-# verdict's surviving blocking findings are carried into `priorFindings` and `freezeFindingSet` is
-# set, ONCE: from there the loop asks whether that carried set is closed (each entry is adversarially
-# refuted every round) rather than whether this round's lenses raised anything. Fresh blocking lens
-# findings are reported as `residue` and do not gate. `maxRounds` (default 6) is a hard stop: the
+# FROZEN FINDING SET + ROUND CAP, both with --dispatch. From round 2 on, `priorFindings` is the
+# PREVIOUS VERDICT'S SURVIVORS — its blocking `findings`, which workflow.js already filtered to the
+# unrefuted, merged with still-open carried entries and deduped by lens+title+file — and
+# `freezeFindingSet` is set. So the loop asks whether that carried set is closed (each entry is
+# adversarially refuted every round) rather than whether this round's lenses raised anything, findings
+# the refuters killed drop out, and ones a later round raised are carried rather than lost. Fresh
+# blocking lens findings are reported as `residue` and do not gate. `maxRounds` (default 6) is a hard stop: the
 # dispatch that would exceed it is refused with exit 4, prints what is still open as a paste-ready
 # priorFindings block for a fresh run, and hands the run to human review.
 #
@@ -192,36 +200,75 @@ else:
 # adversarially refuted every round, kept when ambiguous — and freezeFindingSet holds fresh lens
 # findings as residue instead of gating on them.
 #
-# Set ONCE. Never re-derived: re-deriving each round from the latest verdict is the accretion this
-# exists to stop, and the set would then track the generator rather than freeze against it.
+# RE-DERIVED EVERY ROUND, from the previous verdict's SURVIVORS. It used to be set once, on the
+# advance to round 2, and never touched again — which meant a finding the round-3 refuters killed was
+# still carried into round 4 as an open gate, and blocking findings the later rounds raised were never
+# carried at all. The set was frozen against the generator and also against the evidence.
+#
+# The bound is refutation, not the calendar. `workflow.js` puts every carried finding through the same
+# adversarial refuter as a fresh lens finding and returns the survivors in `findings`, so what comes
+# back is smaller than what went out unless a finding genuinely still stands; `refuted` names the ones
+# that fell, and they drop out here. `maxRounds` is what stops the run.
 freeze_note = ""
-if dispatch == "--dispatch" and args["rounds"] >= 2 and "priorFindings" not in args:
-    carried, dropped = [], 0
+if dispatch == "--dispatch" and args["rounds"] >= 2:
+    BLOCKING = ("critical", "major")
+    # lens+title+file: the same finding re-reported by the same lens about the same file is one
+    # finding. Two lenses raising the same title about one file are two, and stay two.
+    def key(f):
+        return (f.get("lens") or "carried", f.get("title"), f.get("file") or "")
+
+    def normalise(f):
+        """A priorFindings entry, or None when workflow.js would refuse it."""
+        if not isinstance(f, dict) or f.get("severity") not in BLOCKING:
+            return None
+        # workflow.js REFUSES a priorFinding missing any of these, which would kill the run before an
+        # agent is dispatched. A malformed entry is dropped and counted, not passed on.
+        if not (f.get("title") and f.get("detail")):
+            return None
+        entry = {"title": f["title"], "severity": f["severity"], "detail": f["detail"],
+                 "lens": f.get("lens") or "carried"}
+        if f.get("file"):
+            entry["file"] = f["file"]
+        return entry
+
+    carried, dropped, was = [], 0, list(args.get("priorFindings") or [])
     if prev_result:
         try:
             with open(prev_result) as fh:
                 prev = json.load(fh)
+            # `findings` in the gate return is ALREADY the surviving pool — refuted entries are in
+            # `refuted` and never here — and it holds surviving carried findings and surviving lens
+            # findings alike, which is exactly the still-open blocking set.
+            seen = set()
             for f in prev.get("findings", []) or []:
-                if not isinstance(f, dict) or f.get("severity") not in ("critical", "major"):
+                entry = normalise(f)
+                if entry is None:
+                    if isinstance(f, dict) and f.get("severity") in BLOCKING:
+                        dropped += 1
                     continue
-                # workflow.js REFUSES a priorFinding missing any of these, which would kill the run
-                # before an agent is dispatched. A malformed entry is dropped and counted, not passed on.
-                if not (f.get("title") and f.get("detail")):
-                    dropped += 1
+                if key(entry) in seen:
                     continue
-                entry = {"title": f["title"], "severity": f["severity"], "detail": f["detail"],
-                         "lens": f.get("lens") or "carried"}
-                if f.get("file"):
-                    entry["file"] = f["file"]
+                seen.add(key(entry))
+                carried.append(entry)
+            # A carried finding the previous round never judged — the refute leg died, or the verdict
+            # predates it — is still OPEN. Only an explicit refutation removes one.
+            refuted = {key(f) for f in (prev.get("refuted") or []) if isinstance(f, dict)}
+            for f in was:
+                entry = normalise(f)
+                if entry is None or key(entry) in seen or key(entry) in refuted:
+                    continue
+                seen.add(key(entry))
                 carried.append(entry)
         except (OSError, json.JSONDecodeError) as exc:
             print(f"WARNING: previous result {prev_result} unreadable ({exc}); the finding set is NOT frozen",
                   file=sys.stderr)
             carried = None
     if carried is not None:
+        closed = len([f for f in was if normalise(f) and key(normalise(f)) not in {key(c) for c in carried}])
         args["priorFindings"] = carried
         args["freezeFindingSet"] = True
         freeze_note = (f"frozen:   {len(carried)} blocking finding(s) carried as priorFindings"
+                       + (f" ({closed} refuted last round and dropped)" if closed else "")
                        + (f" ({dropped} malformed dropped)" if dropped else "")
                        + " — fresh lens findings are residue this round, not gates")
 
@@ -314,7 +361,10 @@ fi
 if [ "$DISPATCH" = "--dispatch" ]; then
   SEL=$(WORK_SEL_STAGE="$STAGE" WORK_SEL_PREV="$PREV_RESULT" WORK_SEL_FULL="$FULL" WORK_SKILL="$SKILL" bun -e '
 import { readFileSync, writeFileSync } from "node:fs"
-const { parseArgs, taskGraph } = await import(process.env.WORK_SKILL + "/scripts/plan-lint.ts")
+// coveredBy is plan-lint’s own writablePaths containment test — the one the lint rules use to decide
+// which task delivers which artifact. Mapping a finding’s file by a second rule would scope a round
+// by a boundary the plan is not linted against.
+const { parseArgs, taskGraph, coveredBy } = await import(process.env.WORK_SKILL + "/scripts/plan-lint.ts")
 
 const stage = process.env.WORK_SEL_STAGE!
 const prevPath = process.env.WORK_SEL_PREV || ""
@@ -343,14 +393,62 @@ try {
 }
 if (!prev || typeof prev !== "object") fullRun(`previous result ${prevPath} is not a JSON object`)
 
-const flagged = prev.tasksThatFlagged
-if (!Array.isArray(flagged) || flagged.some((x: unknown) => typeof x !== "string"))
+const reported = prev.tasksThatFlagged
+if (!Array.isArray(reported) || reported.some((x: unknown) => typeof x !== "string"))
   fullRun(`previous result ${prevPath} has no readable tasksThatFlagged`)
-if (flagged.length === 0)
-  fullRun("the previous verdict flagged no task — a readOnly run, or a FAIL carried entirely by lenses or mechanical checks, which name no task to scope to")
 
 const tasks = parseArgs(args).tasks
 const byId = new Map(tasks.map(t => [t.id, t]))
+
+// ---- a lens-only FAIL, narrowed by the FILES its findings name --------------------------------
+// A FAIL carried entirely by review lenses names no task: `tasksThatFlagged` is [] because no
+// implementer, verifier or red gate failed. Selection then fell back to FULL, and FULL re-probes
+// every red command — including the ones the last round FIXED, which now exit 0 and are refused as
+// `red-not-red`. The round could not be dispatched at all, on a verdict whose findings were confined
+// to two files.
+//
+// A blocking finding names a `file`, and a task declares the paths it may write. That is the mapping,
+// and it is the only honest one available: a lens finding has no owning task, but the task whose
+// writable surface contains the file is the one that has to change for the finding to close. Closed
+// under dependents below, exactly like a flagged task.
+let flagged = reported
+let lensScoped = ""
+if (flagged.length === 0) {
+  const blocking = (Array.isArray(prev.findings) ? prev.findings : [])
+    .filter((f: any) => f && (f.severity === "critical" || f.severity === "major"))
+  // A failed mechanical check is attributable to no task and no file. Narrowing there would leave
+  // the fix outside the implementer’s reach — mechanical checks are re-run whatever the scope, so the
+  // round would fail on the same check with nobody able to touch it.
+  const mechFailed = (Array.isArray(prev.mechanicalThatFailed) ? prev.mechanicalThatFailed : []).length
+  if (!blocking.length)
+    fullRun("the previous verdict flagged no task and carries no surviving blocking finding — a readOnly run, or a FAIL there is nothing to scope from")
+  if (mechFailed)
+    fullRun(`the previous verdict flagged no task and ${mechFailed} mechanical check(s) failed — a mechanical failure is attributable to no task’s files, so the fix must not be scoped out`)
+
+  // Findings may name an absolute path while writablePaths are project-relative.
+  const root = typeof args.projectDir === "string" ? args.projectDir.replace(/\/+$/, "") + "/" : ""
+  const rel = (p: string) => (root && p.startsWith(root) ? p.slice(root.length) : p)
+
+  const owners = new Map<string, string[]>()
+  const orphan: string[] = []
+  for (const f of blocking) {
+    const file = typeof f.file === "string" && f.file.trim() ? rel(f.file.trim()) : ""
+    const owns = file ? tasks.filter(t => coveredBy(file, t.writablePaths)).map(t => t.id) : []
+    if (!owns.length) { orphan.push(`${f.lens || "?"}: ${f.title || "(untitled)"}${file ? ` (${file})` : " (names no file)"}`); continue }
+    owners.set(file, owns)
+  }
+  // ONE unmapped finding is enough to fall back: scoping to the rest would carry a task the
+  // unmapped finding may be about, and its "verified" record was earned before the fix.
+  if (orphan.length)
+    fullRun(`a lens-only FAIL, but ${orphan.length} blocking finding(s) map to no task’s writablePaths — ${orphan.join("; ")}`)
+
+  flagged = [...new Set([...owners.values()].flat())]
+  lensScoped = `  lens-only FAIL: ${blocking.length} blocking finding(s) in ${owners.size} file(s) map to ${flagged.join(", ")}`
+}
+
+if (flagged.length === 0)
+  fullRun("the previous verdict flagged no task — a readOnly run, or a FAIL carried entirely by lenses or mechanical checks, which name no task to scope to")
+
 const unknown = flagged.filter((id: string) => !byId.has(id))
 if (unknown.length) fullRun(`the previous verdict flags ${unknown.join(", ")}, absent from tasks[]`)
 if (taskGraph(tasks).cycle)
@@ -389,6 +487,7 @@ args.priorResults = { implemented: carry("implemented"), verified: carry("verifi
 
 const lines = [`selection: ${only.length} of ${tasks.length} tasks re-run — ${only.join(", ")}`,
   `  flagged by ${prevPath.replace(/^.*\//, "")}: ${pick("flagged").join(", ")}`]
+if (lensScoped) lines.push(lensScoped)
 if (pick("dependent").length) lines.push(`  + transitive dependents:  ${pick("dependent").join(", ")}`)
 if (pick("unproven").length)
   lines.push(`  + unproven if carried:    ${pick("unproven").join(", ")} (the previous verdict settles no implemented/verified/red record for them)`)
