@@ -19,12 +19,22 @@ Metrics, each printed with its denominator:
                                0.3% against a gold set that does not record it
                                would be measuring the gold set's scope.
   (iii) D&O-GROUP-% and LARGEST-BLOCK-% agreement vs FactSet, within 1.0 pp.
-                               Parser D&O group % = max percent over rows flagged
-                               is_group_row; gold = FactSet's sum of
-                               natural-person holder percents in the proxy window.
-                               Parser largest block % = max percent over non-group
-                               rows; gold = max single holder percent.
+                               DIAGNOSTIC, never gated. Parser D&O group % = max
+                               percent over rows flagged is_group_row; gold =
+                               FactSet's sum of natural-person holder percents in
+                               the proxy window. Parser largest block % = max
+                               percent over non-group rows; gold = max single
+                               holder percent.
   (iv)  GROUP-ROW DETECTION     share of scored filings with a flagged group row.
+
+GATED vs DIAGNOSTIC. Exactly FOUR metrics gate: filing yield (parsed percent),
+holder recall vs blockw, holder precision vs blockw, group-row detection — the
+keys under `minimums` in thresholds.json. The two FactSet aggregate metrics in
+(iii) are computed and printed with their denominators every run and NEVER affect
+the exit code, because the FactSet gold is defined by a proxy window over all
+FactSet stakes and mixes 13F / Form 4 positions (only 21 of 2,647 linked
+firm-years carry a PXY marker); a 1 pp band over that gold would reward chasing
+gold noise.
 
 Splits: dev by default; `--holdout` scores the held-out firms and REFUSES while
 GRIND_ITERATION is set in the environment, because a loop that can read the
@@ -353,11 +363,13 @@ def main():
     l_ok, l_n, l_med, l_mad = agg_agreement("largest", pick_largest)
     grp_agree = g_ok / g_n if g_n else 0.0
     lrg_agree = l_ok / l_n if l_n else 0.0
-    print("\n== (iii) AGGREGATE AGREEMENT vs FactSet (within %.1f pp) ==" % PCT_TOL_AGG)
-    print("  D&O group %% vs FactSet insider sum  [gated]: %d / %d comparable = %.2f%%  (median |gap| %s pp, MAD %s pp)" % (
+    print("\n== (iii) AGGREGATE AGREEMENT vs FactSet (within %.1f pp) — DIAGNOSTIC, NOT GATED ==" % PCT_TOL_AGG)
+    print("  D&O group %% vs FactSet insider sum  [DIAGNOSTIC]: %d / %d comparable = %.2f%%  (median |gap| %s pp, MAD %s pp)" % (
         g_ok, g_n, 100 * grp_agree, fmt(g_med), fmt(g_mad)))
-    print("  largest block %% vs FactSet largest  [gated]: %d / %d comparable = %.2f%%  (median |gap| %s pp, MAD %s pp)" % (
+    print("  largest block %% vs FactSet largest  [DIAGNOSTIC]: %d / %d comparable = %.2f%%  (median |gap| %s pp, MAD %s pp)" % (
         l_ok, l_n, 100 * lrg_agree, fmt(l_med), fmt(l_mad)))
+    print("  the FactSet gold is a proxy-window selection over all FactSet stakes (13F / Form 4 mixed;")
+    print("  21 of 2,647 linked firm-years carry a PXY marker), so these two never affect the exit code.")
 
     # ---- (iv) group-row detection ------------------------------------------
     n_grp = sum(1 for k in has_pct if any(p["group"] for p in parsed[k]))
@@ -437,37 +449,46 @@ def main():
             fh.write("\n")
         print("[out] %s" % args.json_out)
 
-    gated = [
-        ("filing_yield_parsed_percent", yield_pct),
-        ("holder_recall_blockw", recall),
-        ("holder_precision_blockw", precision),
-        ("group_pct_agreement_factset", grp_agree),
-        ("largest_block_agreement_factset", lrg_agree),
-        ("group_row_detection_rate", grp_rate),
-    ]
-    print("\n== THRESHOLDS (%s) ==" % os.path.abspath(args.thresholds))
+    values = {
+        "filing_yield_parsed_percent": yield_pct,
+        "holder_recall_blockw": recall,
+        "holder_precision_blockw": precision,
+        "group_row_detection_rate": grp_rate,
+        "group_pct_agreement_factset": grp_agree,
+        "largest_block_agreement_factset": lrg_agree,
+    }
+    # GATED = exactly the keys in thresholds["minimums"]. Every other metric is
+    # diagnostic: printed with its denominator, never able to change the exit code.
+    gated_names = list(thresholds["minimums"])
+    unknown = [n for n in gated_names if n not in values]
+    if unknown:
+        sys.exit("ERROR: thresholds.json gates unknown metric(s): %s" % ", ".join(sorted(unknown)))
+    diag_names = [n for n in thresholds.get("diagnostics", []) if n in values]
+
+    print("\n== GATED METRICS (%d; thresholds %s) ==" % (len(gated_names), os.path.abspath(args.thresholds)))
     failed = []
-    for name, val in gated:
-        thr = thresholds["minimums"].get(name)
-        if thr is None:
-            failed.append("%s: no threshold in %s" % (name, args.thresholds))
-            print("  %-34s %.4f   NO THRESHOLD" % (name, val))
-            continue
+    for name in gated_names:
+        val, thr = values[name], thresholds["minimums"][name]
         ok = val >= thr
         print("  %-34s %.4f  >= %.4f  %s" % (name, val, thr, "PASS" if ok else "FAIL"))
         if not ok:
             failed.append("%s: %.4f < %.4f" % (name, val, thr))
 
+    if diag_names:
+        print("\n== DIAGNOSTIC METRICS (%d; no threshold, NO effect on the exit code) ==" % len(diag_names))
+        for name in diag_names:
+            print("  %-34s %.4f  (diagnostic)" % (name, values[name]))
+
     if args.check:
         if failed:
-            print("\nCHECK FAIL (%d metric(s) short):" % len(failed))
+            print("\nCHECK FAIL (%d of %d gated metric(s) short):" % (len(failed), len(gated_names)))
             for f in failed:
                 print("  " + f)
             sys.exit(1)
-        print("\nCHECK PASS: every gated metric clears its threshold")
+        print("\nCHECK PASS: all %d gated metrics clear their thresholds" % len(gated_names))
         sys.exit(0)
     if failed:
-        print("\n(%d metric(s) below threshold; --check would exit 1)" % len(failed))
+        print("\n(%d gated metric(s) below threshold; --check would exit 1)" % len(failed))
 
 
 def fmt(v):
