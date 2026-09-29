@@ -423,7 +423,7 @@ $ ls /data/def14a_own/work/out/round-ready   # present, the output is current
 
 ---
 
-## 8. AMENDMENT — 2026-09-29, a MODERN-ERA yardstick (ISS directors). **ITEM 1 ADOPTED 2026-09-29; ITEMS 2-4 STAND AS WRITTEN.**
+## 8. AMENDMENT — 2026-09-29, a MODERN-ERA yardstick (ISS directors). **ITEM 1 ADOPTED 2026-09-29; ITEMS 2-4 STAND AS WRITTEN. ROUND CLOSED 2026-09-29 — see §8.5B for the result and the step-2 reset to 0.82.**
 
 Adds a third gold set and four metrics. As first written (earlier on 2026-09-29)
 all four were **DIAGNOSTIC** and `minimums` was unchanged; §8.5 was a *proposal*.
@@ -574,7 +574,7 @@ deliberately two-step, and the second step is not optional:
 | step | when | `iss_director_recall` minimum | what it is |
 |---|---|---:|---|
 | **1** | **now**, the ISS round | **0.90** | a ROUND TARGET, 0.0317 above the 0.8683 baseline. `check.sh` exits 1 until the parser closes the gap. |
-| **2** | when the round ends | **0.82** | the PERMANENT no-regression floor argued in item 1 — just below the weakest era (2002-2006 at 0.8281). |
+| **2** | **DONE 2026-09-29**, §8.5B | **0.82** | the PERMANENT no-regression floor argued in item 1 — just below the weakest era (2002-2006 at 0.8281). This is the value live in `minimums` now. |
 
 **0.90 is not a floor and must not be left in place.** A floor is a value an
 honest later change cannot fall through; 0.90 is above every era's current recall
@@ -606,7 +606,48 @@ Guards that came with the adoption:
 - Re-locked: `thresholds.json` and `scorer/score.py` hashes changed in
   `lock.sha256`; the six gold hashes did not.
 
-### 8.6 (a) miss decomposition, denominator 19,586 non-flagged ISS director rows
+### 8.5B RESULT — 2026-09-29, the round CLOSED and step 2 taken
+
+The ISS round ended with `check.sh` green at **iteration 7**, commit `e3864f83`.
+Step 2 of §8.5A is done: `iss_director_recall` in `minimums` is **0.82**, the
+permanent no-regression floor, not 0.90. A dated `_history` entry in
+`thresholds.json` carries the same numbers, and the file was re-locked.
+
+Dev, 2,259 ISS filings / 19,586 non-flagged director rows (`metrics_dev.json`):
+
+| gated metric | minimum | value |
+|---|---:|---:|
+| `iss_director_recall` | 0.82 (was 0.90 for the round) | **0.9135** |
+| `filing_yield_parsed_percent` | 0.88 | 0.8921 |
+| `holder_recall_blockw` | 0.75 | 0.7871 |
+| `holder_precision_blockw` | 0.82 | 0.8301 |
+| `group_row_detection_rate` | 0.80 | 0.9067 |
+
+ISS **holdout**, 741 filings / 6,759 non-flagged director rows, scored pre and
+post on the same split (`metrics_iss_holdout_pre_20260929.json`,
+`metrics_iss_holdout_post_20260929.json`):
+
+| metric | pre | post | delta |
+|---|---:|---:|---:|
+| `iss_director_recall` (GATED) | 0.8735 | **0.9130** | +0.0395 |
+| `iss_share_agreement_1pct` (diag) | 0.7666 | 0.7687 | +0.0021 |
+| `iss_individual_precision_proxy` (diag) | 0.9733 | 0.9840 | +0.0107 |
+
+**It generalised.** The holdout gained +0.0395 against +0.0452 on dev, so the
+recall was not bought from the dev split; the precision proxy rose rather than
+fell and 1% share agreement was flat, so the new hits are not person-shaped
+noise flooding the tables. 0.9130 on the holdout leaves 0.0930 of margin over
+the 0.82 floor — which is what makes 0.82 a floor and not a target.
+
+**ALL THREE HOLDOUTS ARE NOW SPENT** and must not be scored again:
+`holdout_20260928_spent.tsv` (blockw, seed 20260928), `holdout.tsv` (blockw,
+seed 20260929, spent by the precision round) and `holdout_iss.tsv` (ISS, seed
+20260930, spent by this round — scored pre AND post on 2026-09-29). A number
+from any of the three is a dev number from here on, whatever the file is called.
+A future round that wants an honest generalisation estimate must draw a fresh
+split first.
+
+### 8.6 (a) miss decomposition, denominator 19,586 non-flagged ISS director rows — PRE-ROUND
 
 | cause | rows | share | 5 example accessions |
 |---|---:|---:|---|
@@ -626,7 +667,10 @@ found director with a wrong share count is not an (a) miss. The (a) misses are
 `lock.sha256` now covers **8** files — the two new ones are `gold/gold_iss.tsv.gz`
 and `gold/holdout_iss.tsv`, so the loop cannot edit the ISS gold either.
 `score.py --iss-holdout` has the same `GRIND_ITERATION` refusal as `--holdout`
-(exit 4, no `--json-out` written). The ISS holdout has **not** been scored.
+(exit 4, no `--json-out` written). ~~The ISS holdout has **not** been scored.~~
+**Superseded 2026-09-29 (§8.5B): the ISS holdout has now been scored twice — the
+pre-round baseline and the post-round result — and is SPENT, as are both blockw
+holdouts.**
 
 ### 8.8 What the loop may and may not edit — additions to §5
 

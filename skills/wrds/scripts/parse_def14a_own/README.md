@@ -238,8 +238,9 @@ rows) is pulled by running `pull_def14a_index.py` with `--start 2002-01-01 --end
 gold sets (a) and (b) stay reproducible.
 
 **`iss_director_recall` is GATED as of 2026-09-29** (`GRIND_PLAN.md` §8.5A) at
-**0.90** for the ISS round, to be reset to the permanent floor **0.82** when the
-round ends. The gated count is therefore **five**. The other three ISS metrics —
+the permanent no-regression floor **0.82** — it was 0.90 as a round target while
+the ISS round ran, and was reset when the round closed (§8.5B, step 2). The
+gated count is therefore **five**. The other three ISS metrics —
 `iss_share_agreement_1pct`, `_5pct` and `iss_individual_precision_proxy` — stay
 DIAGNOSTIC: they print with their denominators, by era, on every scoring run and
 cannot change `check.sh`'s exit code.
@@ -264,6 +265,27 @@ mounted on the compute nodes.
 
 `score.py --holdout` refuses (exit 4) while `GRIND_ITERATION` is set. The holdout
 is scored once, by a human, after a grind ends.
+
+### Result — ISS director-recall round, 2026-09-29 (CLOSED)
+
+`check.sh` green at **iteration 7**, commit `e3864f83`. Dev (2,259 ISS filings,
+19,586 non-flagged director rows): `iss_director_recall` **0.9135**,
+`filing_yield_parsed_percent` 0.8921, `holder_recall_blockw` 0.7871,
+`holder_precision_blockw` 0.8301, `group_row_detection_rate` 0.9067.
+
+ISS holdout (741 filings, 6,759 non-flagged director rows), pre → post:
+`iss_director_recall` **0.8735 → 0.9130**, `iss_share_agreement_1pct` 0.7666 →
+0.7687 (diagnostic), `iss_individual_precision_proxy` 0.9733 → 0.9840
+(diagnostic). Post metrics:
+`/data/def14a_own/work/metrics_iss_holdout_post_20260929.json`. The +0.0395
+holdout gain against +0.0452 on dev says the recall generalised rather than
+being bought from the dev split; 0.9130 leaves 0.0930 of margin over the 0.82
+floor.
+
+**ALL THREE HOLDOUTS ARE SPENT.** `holdout_20260928_spent.tsv` and `holdout.tsv`
+(both blockw) and `holdout_iss.tsv` (ISS, scored pre and post on 2026-09-29)
+have each been scored and are dev data from here on. A future round that needs
+an honest generalisation estimate must draw a fresh split first.
 
 ## Known defects
 
