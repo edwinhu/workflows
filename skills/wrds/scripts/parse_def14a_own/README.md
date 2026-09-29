@@ -49,8 +49,10 @@ sge/
   submit_shards.sh       SGE array wrapper
   run_sas.sh             run one SAS program on a compute node
   run_python.sh          run one python3 script on a compute node
-gold/                    gold-set builders (WRDS Blockholders, FactSet) + the holdout split
+gold/                    gold-set builders (WRDS Blockholders, FactSet, ISS directors)
+                         + the holdout splits
 scorer/score.py          scores parser output against the gold sets; --check gates the grind
+scorer/score_test.py     tests for the ISS name matcher and person test (stdlib)
 thresholds.json          the locked pass thresholds
 lock.sha256              scorer + gold + thresholds hashes the scorer verifies before scoring
 check.sh                 the grind's --check
@@ -221,10 +223,31 @@ python3 gold/pull_def14a_index.py                 # DEF 14A index, metadata only
 python3 gold/build_gold_blockw.py                 # (a) WRDS Blockholders 1996-2001
 python3 gold/build_gold_factset.py --user edwin_hu  # (b) FactSet stakes 2006-2021
 python3 gold/make_holdout.py                      # 20% of FIRMS held out, seed 20260928
+python3 gold/profile_iss.py                       # (c) READ-ONLY profile of the ISS tables
+python3 gold/build_gold_iss.py                    # (c) ISS directors 2002-2024, linked
+python3 gold/sample_gold_iss.py                   # (c) sample seed 20260929 + split seed 20260930
 bash make_lock.sh                                 # hash-lock scorer + gold + thresholds
 bash run_baseline.sh                              # grid pass + score
 bash check.sh                                     # the gate: 0 pass, 1 short, 3 lock broken
 ```
+
+Gold set (c) needs a DEF 14A index that reaches past 2021, which
+`def14a_index.tsv.gz` does not; `def14a_index_iss.tsv.gz` (2002-2025, 149,759
+rows) is pulled by running `pull_def14a_index.py` with `--start 2002-01-01 --end
+2025-12-31` into a scratch dir and renaming. The original index is left alone so
+gold sets (a) and (b) stay reproducible.
+
+**The ISS metrics are DIAGNOSTIC.** They print with their denominators, by era, on
+every scoring run and cannot change `check.sh`'s exit code — see `GRIND_PLAN.md`
+§8, which also carries the (unapplied) proposal about gating them. Run the grid
+pass over the extended filelist with `DEF14A_FILELIST=gold_filelist_all.tsv bash
+run_baseline.sh`; that filelist is a superset of `gold_filelist.tsv`, and because
+`score.py` keys on `(cik, accession)` the existing gold round is unaffected
+(verified: all four gated metrics byte-identical before and after).
+
+`scorer/score_test.py` (11 tests, stdlib) covers the ISS surname + first-initial
+matcher, the natural-person test and the era buckets. Run it after any edit to
+those functions: they decide every ISS number.
 
 `factset_own` is licensed on the `edwin_hu` account only; `block_all` and
 `wrdssec` are on `eddyhu`. Never pull the filing text through SQL —

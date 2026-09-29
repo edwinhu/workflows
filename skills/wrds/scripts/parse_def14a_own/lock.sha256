@@ -1,8 +1,10 @@
 # lock.sha256 — verified by scorer/score.py before every scoring run.
 # Regenerate with make_lock.sh; never edit by hand, never from a grind iteration.
-99584b26f933febfb0b044bc788fa1a0fa32a008312de2f5c5bdf9a92f91bd7c  scorer/score.py
-ea904b4efff3f10d2fc73c730dc51c0e5ca7ac55e1ff5637f74326c37e6fc6d5  thresholds.json
+c869e99f8965beca3a8eb72463e09b81af98c4988158b0cb3093d9593370d9be  scorer/score.py
+3b398ed2f6ffb1ff2100785168356da7237c305591c172d0f9703dd40ec1c388  thresholds.json
 7f3c22b085a8baea3bb76599e23ee81eb16c0e142a808801fb3363bb41a2c592  gold/gold_blockw.tsv.gz
 629cdca3ae915e75657344ef8b53b781352caa0df7f8d254efb8a47d00510233  gold/gold_factset.tsv.gz
 721cf86c920ea1e3325ff58b0b67ad6646f4e862ebb6f999bbf01039d74722bc  gold/gold_factset_firmyear.tsv.gz
 a3a51ea6c90b9f9d09ae922580f77722df5458481ba9111000d0c4e60984e838  gold/holdout.tsv
+a67e8cf5ff93137d0c0e4009ed21dd7695f0b881ebb688cf11df25db0462277a  gold/gold_iss.tsv.gz
+3e6c0c951a4570fa9d55c3426730ea084fcaa63cac08e2c8b59bd039e7b09e2f  gold/holdout_iss.tsv

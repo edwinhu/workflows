@@ -420,3 +420,172 @@ REFUSED: --holdout inside a grind iteration (GRIND_ITERATION=1). A loop that can
 REFUSAL_EXIT=4       # and no --json-out file was written
 $ ls /data/def14a_own/work/out/round-ready   # present, the output is current
 ```
+
+---
+
+## 8. AMENDMENT — 2026-09-29, a MODERN-ERA yardstick (ISS directors). **PROPOSED, NOT APPLIED.**
+
+Adds a third gold set and four **DIAGNOSTIC** metrics. `thresholds.json`'s
+`minimums` are **unchanged**; all four new metrics sit under `diagnostics` and
+cannot move `check.sh`'s exit code. §8.5 is a *proposal* about gating them and is
+deliberately not implemented. Every number below is a line a command printed on
+2026-09-29; the commands are quoted.
+
+### 8.1 Why
+
+Both existing holder-level gates are pre-2002. `blockw` spans 1996-2001 and is
+the only gold set with a per-holder percent; the two FactSet metrics are
+firm-level, diagnostic, and agree with the parser only 22-24% of the time. So
+2002-2024 HTML proxies — the majority of the corpus and all of the modern layout
+families — were validated by nothing holder-level. ISS Directors closes that:
+a per-director share count and voting-power percent stamped with the proxy's own
+`meetingdate`.
+
+### 8.2 The gold set
+
+`gold/build_gold_iss.py` → `gold_iss_all.tsv.gz`, then `gold/sample_gold_iss.py`
+→ `gold_iss.tsv.gz` (sampled) + `holdout_iss.tsv`.
+
+| source | span | rows in | cusip |
+|---|---|---:|---|
+| `risk_directors.rmdirectors` | 2007-2024 | 255,268 | 9-char as-delivered |
+| `risk_directors.directors` (legacy, links cleanly) | 2002-2006 | 68,065 | 6-char header |
+
+Grain out: one row per (company, meeting, director). 323,238 rows after dropping
+95 byte-duplicates on `(iss_table, cusip, meetingdate, fullname)`.
+
+**What ISS does not carry, so the scorer must not read its absence as a miss:** no
+D&O group row, no non-director 5% blockholder, and no executive officer who is not
+a director (verified in `r2000/scratch/ownership_sources.md` §2, which also records
+that ISS's universe is the S&P 1500 only).
+
+### 8.3 The 100x `num_of_shares` defect is detected and flagged, never used
+
+`ownership_sources.md` §2 documents Walmart rows whose `num_of_shares` is low by
+~100x. The detector is external, because within a meeting both wrong rows agree
+with each other: CRSP `msf.shrout` at the last month-end on or before
+`meetingdate` gives shares outstanding, and the row's own
+`pcnt_ctrl_votingpower` implies a share count to compare against.
+
+```
+flag_shares_100x     pcnt >= 1.0 and shares / (pcnt/100 * shrout) < 0.05
+flag_shares_gt_out   shares > 1.05 * shrout
+flag_no_shares       num_of_shares null or 0
+```
+
+Measured over 315,873 linked rows: `flag_shares_100x` **145**, `flag_shares_gt_out`
+**67**, `flag_no_shares` **23,400**, any flag **23,612 (7.48%)**. shrout was
+unavailable for 4,598 rows (1.46%). Inspected: the flag fires on every
+`rmdirectors` Walton row 2007-2024 and on `JOHN T WALTON` 2004 (11,965,088 against
+an implied 1,700,492,547 — a 142x error), and does **not** fire on the correct
+2002/2003/2005/2006 legacy Walton rows. Flagged rows are excluded from the
+denominator of every ISS metric.
+
+### 8.4 Link rates, sample and split — printed by the builders
+
+ISS → DEF 14A, denominator 323,238 deduped ISS director rows, filing date in
+`[meetingdate-120d, meetingdate-7d]`:
+
+```
+dropped, no cusip on the ISS row     : 0 (0.00%)
+dropped, cusip not in wciklink_cusip : 2750 (0.85%)
+dropped, no DEF 14A in the window    : 4615 (1.43%)
+cusip -> >1 cik                      : 147567 rows
+of those, >1 cik with a filing in win: 42972 rows (contested)
+contested and NOT settled by coname  : 3299 rows
+LINKED director rows                 : 315873 (97.72%)
+meetings: 33516 of 34249 linked (97.86%)
+distinct DEF 14A filings linked      : 33409    distinct CIKs: 3230
+```
+
+The 3,299 contested-and-unsettled rows (1.02%) are the residual mislink risk, the
+same class as blockw's 1.6%.
+
+Sample: 3,000 of the 33,409 linked filings, stratified by ISS proxy year over
+2002-2024 (proportional + largest remainder, 109-137 per year), seed **20260929**
+→ 28,547 director rows over 1,714 firms; 2,202 rows flagged.
+
+Split at the FIRM level, seed **20260930**, with a forced core: 385 of the 1,714
+ISS firms are `holdout` in `holdout_20260928_spent.tsv` or in `holdout.tsv`, and
+all 385 go to the ISS holdout so no spent firm is scored as ISS dev. 385 is already
+**22.46%** of 1,714, above the 20% target, so the fresh draw added **0** firms.
+Result: 2,259 dev filings / 741 holdout filings.
+
+### 8.5 Baseline on ISS-dev, and the PROPOSAL
+
+`bash check.sh` → **exit 0**, the four gated metrics bit-for-bit unchanged
+(0.8921 / 0.7873 / 0.8304 / 0.9067). ISS-dev, 2,259 filings, 19,586 non-flagged
+director rows:
+
+| metric | value | numerator / denominator |
+|---|---:|---|
+| (a) `iss_director_recall` | **0.8683** | 17,007 / 19,586 non-flagged ISS director rows |
+| (b) `iss_share_agreement_1pct` | **0.7666** | 12,739 / 16,617 matched rows with both counts |
+| (b) `iss_share_agreement_5pct` | **0.7804** | 12,968 / 16,617 |
+| (c) `iss_individual_precision_proxy` | **0.9726** | 29,939 / 30,783 person-shaped rows |
+
+By era — and the era table is the whole argument:
+
+| era | (a) recall | (b) within 1% | (c) proxy | (b) parsed **>** ISS | (b) parsed **<** ISS |
+|---|---:|---:|---:|---:|---:|
+| 2002-2006 | 82.81% (4,009) | 84.74% (3,276) | 96.79% (5,677) | 3.27% | 12.00% |
+| 2007-2012 | 88.31% (5,219) | 83.20% (4,477) | 97.35% (7,994) | 1.65% | 15.14% |
+| 2013-2018 | 86.56% (5,409) | 85.69% (4,577) | 96.51% (8,575) | 3.36% | 10.95% |
+| 2019-2024 | 88.83% (4,949) | **54.02%** (4,287) | 98.23% (8,537) | **40.42%** | 5.55% |
+
+**PROPOSAL.**
+
+1. **GATE (a) `iss_director_recall` at 0.82.** It is stable across all four eras
+   (82.8-88.8%), its denominator is large, and its misses are parser-shaped: 670
+   `table_truncated` + 304 `no_table` + 1,605 `name_not_found` = 2,579 of 19,586.
+   0.82 sits just below the weakest era, so no era can be traded against another;
+   it is a no-regression floor, not a stretch. This is the one metric in the set
+   that would actually give 2002-2024 a holder-level gate.
+2. **DO NOT gate (b) `iss_share_agreement_*`.** The 2019-2024 collapse is almost
+   entirely **upward** — 40.42% of matched rows parse a LARGER count than ISS,
+   against 5.55% smaller — and the median ratio is exactly 1.0000 in every era.
+   Inspected: `0001558370-21-002589` (Hawaiian Electric) adds a constant **+3,664**
+   to every director, which is a footnote-disclosed add-on (options exercisable
+   within 60 days / deferred units) that the proxy's beneficial-ownership total
+   includes and ISS's count excludes. That is a definitional gap in the gold, not a
+   parser defect, and a 1% band would pay the loop to drop the add-on and get the
+   proxy's own total wrong. Keep it diagnostic. If a share-count gate is ever
+   wanted, the defensible form is **one-sided** (penalise only parsed < ISS), and
+   that variant must be specified and locked before it is measured, not chosen
+   after seeing this table.
+3. **DO NOT gate (c) `iss_individual_precision_proxy`.** At 0.9726 with 37.92% of
+   the numerator coming from the officer-allowance arm, it has almost no headroom
+   and cannot separate a real officer from a person-shaped mis-parse in the same
+   table. It is a sanity bound; `holder_precision_blockw` remains the precision
+   gate.
+
+Applying (1) would require a re-lock and a fresh `_history` entry in
+`thresholds.json`. Neither was done.
+
+### 8.6 (a) miss decomposition, denominator 19,586 non-flagged ISS director rows
+
+| cause | rows | share | 5 example accessions |
+|---|---:|---:|---|
+| `ok` | 12,968 | 66.21% | 0001193125-09-079686, 0001564590-22-011393, 0000950135-04-001474, 0001193125-16-526969, 0001193125-17-100897 |
+| `name_found_shares_off` | 3,649 | 18.63% | 0001047469-07-007359, 0001047469-13-009333, 0001003078-21-000251, 0001193125-08-060724, 0001193125-13-109098 |
+| `name_not_found` | 1,605 | 8.19% | 0001193125-19-097303, 0001047469-07-007359, 0001047469-13-009333, 0000950152-05-002111, 0001144204-08-016722 |
+| `table_truncated` | 670 | 3.42% | 0001000229-17-000042, 0001193125-18-092158, 0001193125-23-077360, 0000930413-02-001113, 0001206774-05-000564 |
+| `name_found_no_share_count_parsed` | 390 | 1.99% | 0000950152-05-002111, 0000950134-08-004455, 0000950123-11-033213, 0001308179-23-000452, 0000950123-11-028696 |
+| `no_table` | 304 | 1.55% | 0000950123-09-005010, 0001193125-10-059627, 0001042046-04-000021, 0001308179-20-000107, 0001113169-02-000001 |
+
+`ok` and `name_found_shares_off` are both (a) HITS: (a) is a name-only recall, so a
+found director with a wrong share count is not an (a) miss. The (a) misses are
+`no_table` + `table_truncated` + `name_not_found` = 2,579 (13.17%).
+
+### 8.7 Guards after the re-lock
+
+`lock.sha256` now covers **8** files — the two new ones are `gold/gold_iss.tsv.gz`
+and `gold/holdout_iss.tsv`, so the loop cannot edit the ISS gold either.
+`score.py --iss-holdout` has the same `GRIND_ITERATION` refusal as `--holdout`
+(exit 4, no `--json-out` written). The ISS holdout has **not** been scored.
+
+### 8.8 What the loop may and may not edit — additions to §5
+
+| may edit | must not touch |
+|---|---|
+| (unchanged) | `gold/gold_iss.tsv.gz`, `gold/holdout_iss.tsv`, the ISS holdout by any route |
