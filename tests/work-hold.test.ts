@@ -1,5 +1,5 @@
 import { describe, expect, test, setDefaultTimeout } from 'bun:test'
-import { mkdtempSync, mkdirSync, writeFileSync, existsSync, readFileSync, renameSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, writeFileSync, existsSync, readFileSync, renameSync, appendFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
@@ -632,6 +632,111 @@ describe('work-hold.sh --status', () => {
       env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: 'status-fresh' },
     })
     expect(r.stdout).not.toContain('/reload-plugins')
+  })
+})
+
+// ------------------------------------------------------------------ --disarm on every transport
+//
+// The tty read reaches only a terminal someone is sitting at. A user on Remote Control or a phone
+// could not release a hold they had already decided was finished: the remaining exits were to wait
+// out the ceiling or abandon the run. Without a tty the confirmation is the user's `permissions.ask`
+// rule `Bash(*work-hold.sh --disarm*)`, which prompts on whatever device they are on and cannot be
+// answered by this process. The ledger records WHICH confirmation happened either way.
+describe('work-hold.sh --disarm', () => {
+  const ARM = join(import.meta.dir, '..', 'skills', 'work', 'scripts', 'work-hold.sh')
+  const HOOKPATH = join(import.meta.dir, '..', 'hooks', 'work-hold.ts')
+
+  /** An armed hold under a fresh TMPDIR, ready to be released. */
+  function armed() {
+    const dir = mkdtempSync(join(tmpdir(), 'holddisarm-'))
+    const sid = `disarm-${Math.random().toString(36).slice(2)}`
+    const path = join(dir, `work-hold-${sid}.json`)
+    const state = {
+      check: 'bun test tests/x.test.ts', startedAt: Math.floor(Date.now() / 1000),
+      ceilingMinutes: 120, maxRounds: 4, rounds: 2,
+    }
+    writeFileSync(path, JSON.stringify(state))
+    writeFileSync(join(dir, `work-hold-${sid}.releases.log`),
+      `2026-09-28T00:00:00\tarmed\t${JSON.stringify(state)}\n`)
+    return { dir, sid, path, ledger: join(dir, `work-hold-${sid}.releases.log`) }
+  }
+
+  const disarm = (h: ReturnType<typeof armed>, pty = false) => {
+    const env = { ...HERMETIC_ENV, TMPDIR: h.dir, CLAUDE_CODE_SESSION_ID: h.sid, WORK_HOLD_COMPACT_WINDOW: '0' }
+    // `script` allocates a real pty, which is the only way /dev/tty opens in a test.
+    const argv = pty
+      ? ['script', ['-qec', `bash ${ARM} --disarm`, '/dev/null']]
+      : ['bash', [ARM, '--disarm']]
+    return spawnSync(argv[0] as string, argv[1] as string[], { encoding: 'utf8', env, input: pty ? 'y\n' : undefined })
+  }
+
+  test('with NO tty it releases, and records the permission-prompt verb', () => {
+    const h = armed()
+    const r = disarm(h)
+    expect(r.status).toBe(0)
+    expect(existsSync(h.path)).toBe(false)
+    expect(r.stdout).toContain('disarmed')
+    expect(readFileSync(h.ledger, 'utf8')).toContain('released by user (permission prompt)')
+    // The refusal it replaces must be gone: an agent-facing lecture where the user asked to release.
+    expect(r.stderr).not.toContain('needs the USER to confirm at a terminal')
+  })
+
+  test('with a tty the interactive confirm is unchanged, and y releases under the plain verb', () => {
+    const h = armed()
+    const r = disarm(h, true)
+    expect(r.stdout).toContain('release the hold on')   // the prompt still happened
+    expect(existsSync(h.path)).toBe(false)
+    const log = readFileSync(h.ledger, 'utf8')
+    expect(log).toContain('\treleased by user\t')
+    expect(log).not.toContain('permission prompt')
+  })
+
+  test('with a tty, declining still keeps the hold armed', () => {
+    const h = armed()
+    const env = { ...HERMETIC_ENV, TMPDIR: h.dir, CLAUDE_CODE_SESSION_ID: h.sid, WORK_HOLD_COMPACT_WINDOW: '0' }
+    const r = spawnSync('script', ['-qec', `bash ${ARM} --disarm`, '/dev/null'],
+      { encoding: 'utf8', env, input: 'n\n' })
+    expect(r.stdout).toContain('still armed')
+    expect(existsSync(h.path)).toBe(true)
+    expect(readFileSync(h.ledger, 'utf8')).toContain('\tdeclined\t')
+  })
+
+  test('an unarmed session says so rather than releasing nothing', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'holddisarm-'))
+    const r = spawnSync('bash', [ARM, '--disarm'],
+      { encoding: 'utf8', env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: 'none' } })
+    expect(r.status).toBe(0)
+    expect(r.stdout.trim()).toBe('hold: not armed')
+  })
+
+  // The hook restores a state file that vanished while the ledger's last word is `armed`. A new
+  // release verb has to land on the released side of that test, or a sanctioned release is undone on
+  // the very next Stop — and the session is trapped with no way out at all.
+  test('the new verb is a SANCTIONED release: the hook does not restore the hold after it', () => {
+    const h = armed()
+    expect(disarm(h).status).toBe(0)
+    const r = spawnSync('bun', [HOOKPATH], {
+      input: JSON.stringify({ session_id: h.sid }),
+      encoding: 'utf8', env: { ...HERMETIC_ENV, TMPDIR: h.dir },
+    })
+    expect(r.status).toBe(0)
+    expect(r.stdout.trim()).toBe('')
+    expect(existsSync(h.path)).toBe(false)
+  })
+
+  // The restore test is `verb.startsWith('armed')`, so an unknown verb reads as RELEASED. That is the
+  // safe direction — the opposite would trap a session on a ledger line nobody anticipated — and it
+  // is asserted here so a future verb cannot silently flip it.
+  test('an unrecognised verb reads as released, not as armed', () => {
+    const h = armed()
+    appendFileSync(h.ledger, `2026-09-28T00:00:01\tsome-verb-from-the-future\t${'x'}\n`)
+    rmSync(h.path)
+    const r = spawnSync('bun', [HOOKPATH], {
+      input: JSON.stringify({ session_id: h.sid }),
+      encoding: 'utf8', env: { ...HERMETIC_ENV, TMPDIR: h.dir },
+    })
+    expect(r.stdout.trim()).toBe('')
+    expect(existsSync(h.path)).toBe(false)
   })
 })
 

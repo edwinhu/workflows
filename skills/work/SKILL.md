@@ -274,7 +274,7 @@ A=${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-hold.sh
 bash $A '<CHECK>' --goal '<OBJECTIVE>' --rounds 4 --minutes 120
 bash $A --goal '<OBJECTIVE>'    # CHECK-LESS: the judge alone, and an UNAVAILABLE judge BLOCKS
 bash $A --status                # armed? check, run, rounds used, minutes left, recent exits, ledger
-bash $A --disarm                # THE USER releases it, confirming at a terminal; an agent gets exit 2
+bash $A --disarm                # THE USER releases it: a tty prompt, or the permissions.ask prompt
 ```
 
 Defaults are 4 rounds and 120 minutes; above either, the arm prints the per-wake context cost and the
@@ -283,10 +283,20 @@ through `.claude/settings.local.json`, and every release restores it (`WORK_HOLD
 opts out). Templates for the check, the nudge and an unattended brief:
 [`references/hold-templates.md`](${CLAUDE_PLUGIN_ROOT}/skills/work/references/hold-templates.md).
 
-**Release is not the session's to take.** Three layers, none sufficient alone: the tty prompt inside
-`--disarm` (a human at THAT terminal), the hook restoring a state file deleted without a sanctioned
-release, and `permissions.ask` on `*work-hold-*.json*` / `*work-hold-*.releases.log*`. The honest move
-for a gate you think is wrong is to arm the right one, not to stop.
+**Release is not the session's to take.** Three layers, none sufficient alone:
+
+| layer | reaches | the residual hole |
+|---|---|---|
+| `--disarm` — the tty prompt when there is a terminal, otherwise the `permissions.ask` rule `Bash(*work-hold.sh --disarm*)`, which prompts on phone and Remote Control too and records the verb `released by user (permission prompt)` | a human, wherever they are | the ask rule matches the command text AS WRITTEN, so a variable-indirected call slips past it — a tripwire, not a lock |
+| the hook restoring a state file deleted without a sanctioned release | a `rm` instead of an argument | the ledger must be readable |
+| `permissions.ask` on `*work-hold-*.json*` / `*work-hold-*.releases.log*` | an edit in place | same text-matching hole |
+
+The honest move for a gate you think is wrong is to arm the right one, not to stop.
+
+**A hold frozen at rounds 0 that never releases is usually version skew, not a stuck check.**
+`--status` reports `never evaluated since arm Nm ago` when no Stop has reached `hooks/work-hold.ts`
+since the arm — the session's Stop registration points somewhere else. `/reload-plugins`. Until then
+`cron-delete-guard.ts` keeps refusing the heartbeat deletes, and says the same thing in its refusal.
 
 **Done means the goal is met, not that the check is green.** The hold releases `passed-goal-met` only
 when the judge agreed; `passed-unjudged` (no goal, or the judge was unreachable with a check to fall
@@ -870,7 +880,7 @@ descope with the user rather than guessing a third time.
 | A stopping condition is a claim, not a command | "the tests in the plan pass" | a check is RUN — give it a command whose exit code is the verdict |
 | Treat a stopping condition you WROTE DOWN as binding on yourself | prose you can re-adjudicate away | only the hook blocks a stop. Measured 2026-09-02: a session wrote "I'm treating that as binding regardless" and idled three hours later. Arm it, confirm with `--status` |
 | Arm a check that already exits 0 | it holds nothing, and teaches the session the hold is noise | `work-hold.sh` refuses it; pick the check that is red now |
-| Disarm your own hold because the gate looks wrong | "this gate measures the wrong property" | that is the same sentence a session uses when the gate is merely hard. `--disarm` refuses without a tty and the hook restores a deleted state file — arm the RIGHT check, or ask the user to confirm |
+| Disarm your own hold because the gate looks wrong | "this gate measures the wrong property" | that is the same sentence a session uses when the gate is merely hard. `--disarm` prompts the USER on every transport (tty, or the `permissions.ask` rule) and the hook restores a deleted state file — arm the RIGHT check, or ask the user to confirm |
 | Arm a hold while a grind loop works the same objective | two drivers on one objective | the hold blocks this session's stop while grind's gate waits for no round in flight: each waits for the other (AGK 2026-09-27). Pick one — grind for a long loop, the hold for short work this session drives |
 | Arm a hold on YOUR OWN session to try the hook out | it then blocks your own stop until the check passes | read `tests/work-hold.test.ts`, or arm a check you can satisfy on demand |
 | End a turn with a question mark under an armed hold | offer the user a menu | at 02:00 that is a five-hour pause — answer it in one line and act. Same for "when done or blocked, notify and stop": enumerate the terminal blockers; the rest is the next task |
