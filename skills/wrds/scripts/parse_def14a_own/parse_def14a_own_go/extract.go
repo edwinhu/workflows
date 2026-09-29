@@ -26,6 +26,12 @@ type Row struct {
 	Footnotes  string   `json:"footnote_markers"`
 	Parser     string   `json:"parser"`
 	SourceFile string   `json:"source_file"`
+
+	// noHolder marks a row that is structurally part of the table — it counts
+	// toward the two-row floor that decides whether the block is a table at
+	// all — but names no holder, so it is never emitted. A row whose name is
+	// only a postal address is the case this exists for.
+	noHolder bool
 }
 
 var (
@@ -514,6 +520,11 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int) []Row {
 			lastName = name
 		}
 		if name == "" || !hasWords(name, 1) || reSkipName.MatchString(name) {
+			continue
+		}
+		// Still nothing but an address after the two recovery attempts above:
+		// the cell names no holder.
+		if isAddressLine(name) {
 			continue
 		}
 		grp, gn := isGroupRow(name)
