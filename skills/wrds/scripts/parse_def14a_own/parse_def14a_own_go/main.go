@@ -271,6 +271,10 @@ func process(archiveRoot string, j job) ([]Row, Manifest) {
 		man.Parser = "text_table"
 		rows, seen, used = ExtractText(body, base)
 	}
+	// The layout screen runs last, over both parsers' output, because several of
+	// its rules need a whole table at once. TablesSeen/TablesUsed still count
+	// what the extractor accepted; NRows counts what is actually emitted.
+	rows = ScreenRows(rows)
 	man.TablesSeen, man.TablesUsed, man.NRows = seen, used, len(rows)
 	for _, r := range rows {
 		if r.Percent != nil {
