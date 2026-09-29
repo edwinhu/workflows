@@ -96,8 +96,8 @@ Scored on **dev only** (8,027 gold-linked filings, 2,986 firms):
 | (i) filing yield, ≥1 parsed percent **[gated]** | **83.17%** | 6,676 / 8,027 |
 | (ii) holder recall vs blockw **[gated]** | **61.54%** | 8,767 / 14,246 gold holder rows ≥5% |
 | (ii) holder precision vs blockw **[gated]** | **63.36%** | 9,038 / 14,264 parsed non-group rows ≥5% |
-| (iii) D&O group % vs FactSet insider sum, ≤1 pp **[gated]** | **23.27%** | 406 / 1,745 comparable firm-years |
-| (iii) largest block % vs FactSet largest, ≤1 pp **[gated]** | **23.14%** | 463 / 2,001 comparable firm-years |
+| (iii) D&O group % vs FactSet insider sum, ≤1 pp **[diagnostic]** | **23.27%** | 406 / 1,745 comparable firm-years |
+| (iii) largest block % vs FactSet largest, ≤1 pp **[diagnostic]** | **23.14%** | 463 / 2,001 comparable firm-years |
 | (iv) group-row detection **[gated]** | **55.71%** | 3,719 / 6,676 filings with a parsed percent |
 
 Gap distributions for (iii): median |gap| **3.56 pp** and MAD **13.35 pp** for
@@ -147,7 +147,20 @@ proxy's own table lists five individual Waltons at 38.13–38.37% and no entity
 row (verified with `-debug` on `0000104169-00-000001`). No parser recovers a row
 the document does not contain.
 
-## 3. Proposed pass thresholds, and the argument for each
+## 3. Pass thresholds, and the argument for each
+
+**Exactly four metrics gate.** Filing yield (parsed percent), holder recall vs
+blockw, holder precision vs blockw, and group-row detection are the keys under
+`minimums` in `thresholds.json`, and `check.sh` exits 0 only when all four clear.
+
+**The two FactSet aggregate metrics are DIAGNOSTIC.** They are computed and
+printed with their denominators every round and never affect the exit code,
+because the FactSet gold is defined by a **proxy window over all FactSet stakes**
+and therefore mixes 13F and Form 4 positions — only **21 of 2,647** linked
+firm-years carry the PXY marker (§1). A 1 pp band over a gold set built that way
+would reward chasing gold noise rather than parser defects, so the loop is told
+not to optimise them.
+
 
 Literature bar: **Fabisik, Fahlenbrach, Stulz & Taillard** report a ~71% yield
 extracting insider ownership from proxies; **Lewellen & Lewellen** report a mean
@@ -156,16 +169,28 @@ proxy. The first is a floor this parser already clears; the second is a ceiling
 this measurement cannot reach, and the plan says why rather than pretending
 otherwise.
 
+### The four gated metrics
+
 | metric | baseline | threshold | argument |
 |---|---:|---:|---|
 | filing yield (parsed percent) | 0.8317 | **0.88** | Already 12 pp above Fabisik's 71%. The residual is 10.3% `table_found_no_percent` + 6.5% no-table. A large part of the first group is real — a proxy that states "no person is known to own more than 5%" and gives a share-count-only D&O table has no percent to parse — so 1.00 is not available. 0.88 asks for about a third of the remaining gap, which is the plain-text no-table bucket (6.07%) plus the easier half of the no-percent bucket. |
 | holder recall vs blockw | 0.6154 | **0.75** | 2,118 of the 5,076 name-unmatched rows are institutional 5% holders the parser should be reaching, and 897 more sit in filings that produced nothing. Recovering those two buckets alone is worth ~21 pp. The 308 family-entity rows and part of the 415 trust rows are not recoverable, so 0.90 would be a threshold the document text cannot satisfy. |
 | holder precision vs blockw | 0.6336 | **0.75** | Precision's denominator is parsed non-group rows ≥5% inside blockw-covered filings. Two known defects inflate it: extra tables attached to the ownership section (401(k), option tables) and multi-class rows whose percent-of-class is compared against blockw's percent-of-common. Both are parser-side and both are fixable; 0.75 pairs with recall so the loop cannot buy one with the other. |
-| D&O group % vs FactSet, ≤1 pp | 0.2327 | **0.40** | Median |gap| is already 3.56 pp, so most firm-years are close and the 1 pp band is what they miss. The 0.3 pp MAD bar from Lewellen & Lewellen compares FactSet against a *hand-read* proxy figure; here the comparison also absorbs the gold's own construction (sum over natural-person holders in a 97-day window), which cannot be driven to zero. 0.40 asks the loop to halve the failing share, not to reach the literature bar. |
-| largest block % vs FactSet, ≤1 pp | 0.2314 | **0.40** | Same argument, plus the dual-class denominator: percent-of-class vs percent-of-shares-outstanding is worth several pp on every dual-class firm and is the `aggregate_gap_multi_class_or_denominator` bucket (17.59% of filings). Emitting an explicit percent-of-outstanding alongside percent-of-class is the obvious move and is entirely within the parser. |
 | group-row detection | 0.5571 | **0.80** | The r2000 build measured **84.25%** on its 10-company, 273-filing corpus with the same code, so 0.80 is demonstrably reachable on a corpus with the same era mix; the corpus-wide 55.71% says the ASCII three-line wrap defect (known defect 1) bites much harder at scale than on ten large firms. |
 
-All six are gated. `check.sh` exits 0 only when every one clears.
+Those four, and only those four, are gated. `check.sh` exits 0 only when every
+one of them clears.
+
+### The two diagnostic metrics — printed, never gated
+
+| metric | baseline | denominator | why it is not gated |
+|---|---:|---|---|
+| D&O group % vs FactSet insider sum, ≤1 pp | 0.2327 | 406 / 1,745 comparable firm-years | Median \|gap\| 3.56 pp, MAD 13.35 pp. The gold is the sum over FactSet natural-person holders inside a 97-day proxy window, so it absorbs 13F- and Form 4-sourced positions the proxy's D&O table never reports. Lewellen & Lewellen's 0.3 pp MAD compares FactSet against a *hand-read* proxy figure; this comparison cannot reach that, and a 1 pp band would pay the loop to fit the window. |
+| largest block % vs FactSet largest, ≤1 pp | 0.2314 | 463 / 2,001 comparable firm-years | Median \|gap\| 7.38 pp, MAD 16.87 pp. Same window problem, plus the dual-class denominator (percent-of-class vs percent-of-shares-outstanding), which is the `aggregate_gap_multi_class_or_denominator` bucket at 17.59% of filings. The denominator fix is a real parser improvement and shows up in holder precision, which *is* gated — so the defect is still scored, just not through a 1 pp band on noisy gold. |
+
+Both are recomputed and printed with their denominators on every scoring run, and
+the loop's prompt tells it not to optimise them. They are there so a regression in
+the aggregates is visible, not so the loop can chase them.
 
 ## 4. Commands
 
@@ -175,8 +200,18 @@ All six are gated. `check.sh` exits 0 only when every one clears.
 bash /home/eh/projects/workflows/skills/wrds/scripts/parse_def14a_own/check.sh
 ```
 
-Exit codes: `0` every gated metric clears, `1` a metric is short, `2` no parser
-output to score, `3` the hash lock does not verify.
+Exit codes: `0` all **four** gated metrics clear, `1` one of the four is short,
+`2` no parser output to score, `3` the hash lock does not verify.
+
+The scorer prints two blocks. `== GATED METRICS (4; thresholds ...) ==` carries
+`filing_yield_parsed_percent`, `holder_recall_blockw`, `holder_precision_blockw`
+and `group_row_detection_rate`, each with `PASS`/`FAIL` against its threshold, and
+those four alone decide the exit code. `== DIAGNOSTIC METRICS (2; no threshold, NO
+effect on the exit code) ==` carries `group_pct_agreement_factset` and
+`largest_block_agreement_factset`; section (iii) above it prints both with their
+comparable-firm-year denominators and their median |gap| and MAD. The gated set is
+read from the `minimums` keys in `thresholds.json`, so it cannot drift from the
+file the lock covers.
 
 **The gate** (cheap, shell-only; while it is red no model call is spent):
 

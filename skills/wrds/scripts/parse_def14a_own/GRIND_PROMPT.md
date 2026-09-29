@@ -15,6 +15,25 @@ The loop ends when this exits 0, and nothing else ends it:
 bash /home/eh/projects/workflows/skills/wrds/scripts/parse_def14a_own/check.sh
 ```
 
+**Exactly FOUR metrics gate** — the keys under `minimums` in `thresholds.json`:
+
+| gated metric | threshold |
+|---|---:|
+| `filing_yield_parsed_percent` | 0.88 |
+| `holder_recall_blockw` | 0.75 |
+| `holder_precision_blockw` | 0.75 |
+| `group_row_detection_rate` | 0.80 |
+
+**Do NOT optimise the two FactSet metrics.** `group_pct_agreement_factset` and
+`largest_block_agreement_factset` are **DIAGNOSTIC**: the scorer prints them with
+their denominators under `== DIAGNOSTIC METRICS ==` every run and they can never
+change the exit code. The FactSet gold is a proxy-window selection over all
+FactSet stakes and mixes 13F / Form 4 positions (only 21 of 2,647 linked
+firm-years carry a PXY marker), so work aimed at a 1 pp band against it is chasing
+gold noise, not parser defects. Read them as a regression signal only; never pick
+an iteration's subject because one of them is low, and never claim progress from
+one moving.
+
 ## What you may edit, and what you may not
 
 | may edit | must not touch |

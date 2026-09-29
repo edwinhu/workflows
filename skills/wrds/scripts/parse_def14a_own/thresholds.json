@@ -1,5 +1,6 @@
 {
   "_about": "Pass thresholds for the parse_def14a_own grind. Locked in lock.sha256; the grind may not edit this file. Each value is argued from the 2026-09-28 baseline in GRIND_PLAN.md.",
+  "_gating": "EXACTLY the four keys under `minimums` gate check.sh. The two FactSet aggregate metrics under `diagnostics` are computed and printed with their denominators every round and NEVER affect the exit code: the FactSet gold is defined by a proxy window over all FactSet stakes and mixes 13F / Form 4 positions (only 21 of 2,647 linked firm-years carry a PXY marker), so a 1 pp band would reward chasing gold noise. The loop must not optimise them.",
   "_baseline_2026_09_28_dev": {
     "filing_yield_parsed_percent": 0.8317,
     "holder_recall_blockw": 0.6154,
@@ -12,8 +13,10 @@
     "filing_yield_parsed_percent": 0.88,
     "holder_recall_blockw": 0.75,
     "holder_precision_blockw": 0.75,
-    "group_pct_agreement_factset": 0.40,
-    "largest_block_agreement_factset": 0.40,
     "group_row_detection_rate": 0.80
-  }
+  },
+  "diagnostics": [
+    "group_pct_agreement_factset",
+    "largest_block_agreement_factset"
+  ]
 }
