@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [6.30.0] - 2026-09-29
+
 ### Changed
 
 - **`work`'s heartbeat cron is ON BY DEFAULT, hourly (`7 * * * *`); `--no-cron` opts out.** A cron survives `--resume`/`--continue` and a watcher that died or was never armed; the `farm-runs` monitor and background tasks do not. The tick is a few-word nudge and a tick mid-round is allowed through uncounted by the hold, so hourly is cheap. `--cron` is still accepted as a no-op alias, and `WORK_LOOP_INTERVAL_MINUTES` still sets the period (`120` → `7 */2 * * *`). With `--no-cron`, the printed wake line says the monitor is the only wake.
