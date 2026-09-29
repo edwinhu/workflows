@@ -32,6 +32,20 @@
       "not_gated": "(b) iss_share_agreement_* stays diagnostic: the median parsed/ISS ratio is exactly 1.0000 in every era and the 2019-2024 collapse is 40.42% UPWARD against 5.55% downward, driven by the proxy's beneficial-ownership total including 60-day options and deferred units that ISS's num_of_shares excludes. A two-sided band would pay the loop to strip an add-on the proxy is right to report. (c) iss_individual_precision_proxy stays diagnostic: 0.9726 with 37.92% of the numerator from the officer-allowance arm is an upper bound, and gating an upper bound rewards loosening the bound.",
       "guard": "The four existing gates stay at their values precisely so ISS recall cannot be bought by flooding tables with rows: a change that lifts ISS recall by emitting more candidate rows drives holder_precision_blockw below 0.82 and check.sh still exits 1. check.sh also fails loudly when the parser output does not cover the ISS gold filings, so a round run against the blockw-only filelist cannot score ISS recall on a partial denominator.",
       "holdout": {"split_file": "holdout_iss.tsv", "seed": 20260930, "firms": 385, "filings": 741, "status": "scored ONCE as the pre-round baseline on 2026-09-29 (metrics_iss_holdout_pre_20260929.json), then off limits until the round ends"}
+    },
+    {
+      "date": "2026-09-29",
+      "round": "ISS director-recall round — CLOSED; STEP 2 of the adoption",
+      "change": "iss_director_recall minimum 0.90 -> 0.82, the PERMANENT no-regression floor argued in GRIND_PLAN.md section 8.5 item 1 and scheduled in section 8.5A. The other four gates unchanged (filing_yield 0.88, holder_recall_blockw 0.75, holder_precision_blockw 0.82, group_row_detection_rate 0.80). The gated count stays FIVE; nothing moved between `minimums` and `diagnostics`.",
+      "why": "0.90 was a ROUND TARGET, 0.0317 above the 0.8683 ISS-dev baseline, and 8.5A said in advance that leaving it in place would make the gate unreachable by a later honest change — it sits above every era's measured recall, so a change that legitimately trades a little ISS recall for something else would fail a gate that was never a floor. 0.82 sits just below the weakest era (2002-2006 at 0.8281 on the pre-round dev decomposition), so no era can be traded against another. The step was specified before the round ran and is taken here unchanged; it is not a post-hoc loosening.",
+      "round_result": {
+        "grind": "check green at iteration 7, commit e3864f83",
+        "dev": {"iss_director_recall": 0.9135, "filing_yield_parsed_percent": 0.8921, "holder_recall_blockw": 0.7871, "holder_precision_blockw": 0.8301, "group_row_detection_rate": 0.9067, "iss_director_rows_scored": 19586, "iss_filings": 2259},
+        "iss_holdout": {"filings": 741, "director_rows_scored": 6759, "iss_director_recall_pre": 0.8735, "iss_director_recall_post": 0.9130, "iss_share_agreement_1pct_pre": 0.7666, "iss_share_agreement_1pct_post": 0.7687, "iss_individual_precision_proxy_pre": 0.9733, "iss_individual_precision_proxy_post": 0.9840, "json": "/data/def14a_own/work/metrics_iss_holdout_post_20260929.json"},
+        "reading": "The round's target was met on dev (0.9135 vs 0.90) and it GENERALISED: the untouched ISS holdout moved 0.8735 -> 0.9130, a +0.0395 gain against +0.0452 on dev, so the recall was not bought from the dev split. The precision proxy rose 0.9733 -> 0.9840 and share agreement at 1% was flat (0.7666 -> 0.7687), so the new hits are not flooding the tables with person-shaped rows. 0.9130 on the holdout leaves 0.0930 of margin above the 0.82 floor."
+      },
+      "holdouts_spent": "ALL THREE are now SPENT and may not be scored again: holdout_20260928_spent.tsv (blockw, seed 20260928), holdout.tsv (blockw, seed 20260929) and holdout_iss.tsv (ISS, seed 20260930, scored pre AND post on 2026-09-29). A future round needs a freshly drawn split; a number from any of these three is a dev number now, whatever the file is called.",
+      "guard": "The four non-ISS minimums stay at their values so ISS recall still cannot be bought by flooding tables with rows, and check.sh still exits 2 when the parser output does not cover the ISS gold filings."
     }
   ],
   "_baseline_2026_09_28_dev": {
@@ -48,7 +62,7 @@
     "holder_recall_blockw": 0.75,
     "holder_precision_blockw": 0.82,
     "group_row_detection_rate": 0.80,
-    "iss_director_recall": 0.90
+    "iss_director_recall": 0.82
   },
   "diagnostics": [
     "group_pct_agreement_factset",
@@ -57,5 +71,5 @@
     "iss_share_agreement_5pct",
     "iss_individual_precision_proxy"
   ],
-  "_iss_diagnostics": "Added 2026-09-29 with the ISS directors gold set (gold_iss.tsv.gz, 2002-2024). THREE of the four ISS metrics remain DIAGNOSTIC under `diagnostics` — iss_share_agreement_1pct, iss_share_agreement_5pct, iss_individual_precision_proxy — and nothing about them can change check.sh's exit code. The fourth, iss_director_recall, was ADOPTED as a gate later the same day (GRIND_PLAN.md section 8 item 1, ADOPTED 2026-09-29) and now sits under `minimums` at 0.90 for the ISS round, to be reset to the permanent floor 0.82 when the round ends. See the 2026-09-29 `ISS director-recall round` entry in `_history` for the two-step."
+  "_iss_diagnostics": "Added 2026-09-29 with the ISS directors gold set (gold_iss.tsv.gz, 2002-2024). THREE of the four ISS metrics remain DIAGNOSTIC under `diagnostics` — iss_share_agreement_1pct, iss_share_agreement_5pct, iss_individual_precision_proxy — and nothing about them can change check.sh's exit code. The fourth, iss_director_recall, was ADOPTED as a gate later the same day (GRIND_PLAN.md section 8 item 1, ADOPTED 2026-09-29) and sits under `minimums` at the PERMANENT floor 0.82 since the ISS round closed on 2026-09-29 (step 2 of the two-step; it was 0.90 as a round target while the round ran). See the two 2026-09-29 `ISS director-recall round` entries in `_history`."
 }
