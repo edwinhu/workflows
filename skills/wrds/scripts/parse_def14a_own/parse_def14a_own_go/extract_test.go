@@ -907,3 +907,56 @@ func TestOrphanAddressRowIsDropped(t *testing.T) {
 		}
 	}
 }
+
+// A one-row 5% table. Transcribed from 0000057131-99-000013 (cik 57131): the
+// proxy has exactly one 5% holder, laid out as a name line plus a city line
+// carrying the numbers, with the footnote rule right under it — so the block
+// scan collects ONE row and the two-row floor threw the whole table away. The
+// filing then scored table_found_no_percent even though its only 5% holder is
+// printed with a percent.
+var asciiSingleHolderTable = `<TYPE>DEF 14A
+<TEXT>
+     Table I below identifies each person known to the Company to be a
+beneficial owner of more than 5% of the Company's common shares and the number
+of common shares owned by such person as of the record date for the annual
+meeting.
+
+                                    TABLE I
+
+    Name and Address            Number of Shares          Percent of Class
+
+Monroe Bank & Trust,
+Monroe, Michigan  48161           11,859,137(1)              22.691%
+- ----------
+      (1) The shares reported are held in various trusts of which Monroe Bank &
+Trust is the trustee or a co-trustee. In such capacities, Monroe Bank & Trust
+has sole or shared investment and/or voting power over these shares.
+` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 250)
+
+func TestASCIISingleHolderTableIsKept(t *testing.T) {
+	rows := run(t, asciiSingleHolderTable)
+	r := find(rows, "Monroe Bank & Trust", "")
+	if r == nil {
+		t.Fatalf("the only 5%% holder was dropped by the two-row floor; parsed: %v", holderNames(rows))
+	}
+	if r.Percent == nil || *r.Percent != 22.691 {
+		t.Errorf("percent = %v, want 22.691", r.Percent)
+	}
+	if r.Shares == nil || *r.Shares != 11859137 {
+		t.Errorf("shares = %v, want 11859137", r.Shares)
+	}
+}
+
+// A percent written with no leading digit — ".152%", ".077%" — is what a proxy
+// prints for a sub-1% holding in a table whose other rows read "22.691%".
+func TestLeadingDotPercent(t *testing.T) {
+	for _, tc := range []struct {
+		in   string
+		want float64
+	}{{".152%", 0.152}, {".077%", 0.077}, {".5%", 0.5}} {
+		v, ok, _, _ := ParsePercent(tc.in)
+		if !ok || v != tc.want {
+			t.Errorf("ParsePercent(%q) = %v %v, want %v true", tc.in, v, ok, tc.want)
+		}
+	}
+}

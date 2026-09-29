@@ -22,7 +22,7 @@ var (
 	// EVERY row that carries one.
 	reTxtRow     = regexp.MustCompile(`^\s*(\S.*?\S)\s{2,}([\$\(\*\+#†‡0-9][\$\(\)0-9,\.\*\+#†‡\-\s%a-zA-Z]{0,79})$`)
 	reBigNum     = regexp.MustCompile(`[0-9][0-9,]{2,}`)
-	rePctTok     = regexp.MustCompile(`([0-9]{1,3}(?:\.[0-9]+)?)\s*%|(\*)|(?:^|\s)([0-9]{1,2}\.[0-9])(?:\s|$)`)
+	rePctTok     = regexp.MustCompile(`((?:[0-9]{1,3}(?:\.[0-9]+)?|\.[0-9]+))\s*%|(\*)|(?:^|\s)([0-9]{1,2}\.[0-9])(?:\s|$)`)
 	reDotLeader  = regexp.MustCompile(`\.{3,}`)
 	reHdrLineCue = regexp.MustCompile(`(?i)percent|shares|beneficial|amount|name\s+of`)
 	reWrapCont   = regexp.MustCompile(`(?i)^(as\s+a\s+group|and\s+|as\s+a\s+)`)
@@ -39,6 +39,7 @@ var (
 	reFivePercent = regexp.MustCompile(`(?i)(?:more\s+than|at\s+least|greater\s+than|in\s+excess\s+of)\s*(?:5|five)\s*(?:%|per\s?cent)|(?:5|five)\s*(?:%|per\s?cent)\s+or\s+more`)
 	// A heading the DOM-path anchor misses because a company name sits between
 	// "ownership of" and the class ("OWNERSHIP OF SUNDSTRAND COMMON STOCK").
+	reHdrPctCue       = regexp.MustCompile(`(?i)percent|%`)
 	reOwnHeadingLoose = regexp.MustCompile(`(?i)ownership\s+of\s+(?:\S+\s+){0,3}(?:common|capital|voting|ordinary)\s+(?:stock|shares)`)
 )
 
@@ -57,6 +58,48 @@ func textAnchor(clean []string, i int, t string) bool {
 	return reOwnerWord.MatchString(ctx) && reFivePercent.MatchString(ctx)
 }
 
+// soleHolderRow reports whether a one-row block is a real 5% table with a
+// single holder in it. All three conditions must hold: the anchor above it is a
+// quantified five-percent lead-in (or an ownership heading), the column header
+// names a percent, and the row's own numeric tail carries a percent. Without
+// all three a lone aligned row is usually a sentence with a number in it.
+func soleHolderRow(clean []string, anchor int, t string, header []string, ln int) bool {
+	ctx := t
+	if anchor+1 < len(clean) {
+		ctx += " " + strings.TrimSpace(clean[anchor+1])
+	}
+	if !reFivePercent.MatchString(ctx) && !reOwnHeading.MatchString(t) && !reOwnHeadingLoose.MatchString(t) {
+		return false
+	}
+	hdr := strings.Join(header, " ")
+	if !reHdrPctCue.MatchString(hdr) {
+		return false
+	}
+	nm, rest, ok := parseTextRow(clean[ln])
+	if !ok {
+		return false
+	}
+	// A director-bio line ("Walter A. Dods, Jr., 56, (1999) has been") and a
+	// sentence with a number in it also align on their own. A holder name is
+	// short and carries no age and no verb.
+	if reBioCue.MatchString(nm) || len(strings.Fields(nm)) > 8 {
+		return false
+	}
+	// The anchor promised a holder of MORE THAN 5%, so that is what the single
+	// row has to be; a lone sub-5% row is not the table the anchor named.
+	for _, h := range textTokens(rest) {
+		if h.pct != nil && *h.pct >= 5.0 {
+			return true
+		}
+	}
+	return false
+}
+
+// An age, a parenthesised year or a biography verb: this line is a director
+// profile, not a holder row.
+var reBioCue = regexp.MustCompile(`(?i),\s*[0-9]{2}\s*,|\(1[89][0-9]{2}\)|\((?:19|20)[0-9]{2}\)|` +
+	`\b(has\s+been|have\s+been|was\s+elected|since\s+(?:19|20)[0-9]{2}|retired|president\s+of)\b`)
+
 // maxLinesSinceRow caps the combined run of blank and non-row lines between
 // two table rows. A four-line address plus its blank separator is five;
 // anything past this is the table having ended.
@@ -69,7 +112,7 @@ type holding struct {
 	marker string
 }
 
-var reNumTok = regexp.MustCompile(`[0-9][0-9,]*(?:\.[0-9]+)?\s*%|[0-9][0-9,]*(?:\.[0-9]+)?|\*|(?:^|\s)[\+#†‡](?:\s|$)`)
+var reNumTok = regexp.MustCompile(`[0-9][0-9,]*(?:\.[0-9]+)?\s*%|\.[0-9]+\s*%|[0-9][0-9,]*(?:\.[0-9]+)?|\*|(?:^|\s)[\+#†‡](?:\s|$)`)
 
 // isStarMarker reports the less-than-1% glyphs as a standalone column value.
 // They are normalised to "*" downstream so consumers see one marker, not five.
@@ -241,7 +284,14 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 			}
 		}
 		block = alignedRows(clean, block)
-		if len(block) < 2 {
+		// A proxy with exactly ONE 5% holder writes a one-row table, and the
+		// footnote rule under it ends the block before a second row can join.
+		// The floor stays at two rows in general -- a lone row that lines up
+		// with nothing is usually a sentence with a number in it -- and is
+		// relaxed only when the anchor was a quantified five-percent lead-in,
+		// the header names a percent column, and the row itself carries one.
+		sole := len(block) == 1 && soleHolderRow(clean, i, t, header, block[0])
+		if len(block) == 0 || (len(block) == 1 && !sole) {
 			continue
 		}
 		blocksSeen++
@@ -362,7 +412,7 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 				rows = append(rows, rw)
 			}
 		}
-		if len(rows) < 2 {
+		if len(rows) < 2 && !(sole && len(rows) == 1) {
 			continue
 		}
 		blocksUsed++
