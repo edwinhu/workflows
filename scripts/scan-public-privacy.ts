@@ -330,6 +330,12 @@ type BinaryVerdict =
 // waved through. A STAGED change to that binary moves the unreviewed bytes into the index, where
 // this reports a finding. An unreviewed binary with no reviewed index counterpart (a new file, or
 // one whose committed bytes were repinned without review) is likewise a finding.
+//
+// The candidate deliberately captures UNTRACKED files too (`git ls-files --others`), so that a
+// private string in a file someone is about to `git add` is caught before it lands. An untracked
+// BINARY has no index representation at all: there are no staged bytes, so `git push` carries
+// nothing, and a local build artefact sitting in the tree is not a publication. It is skipped with
+// the reason logged; `git add` gives it an index entry and the finding appears there.
 function classifyBinary(
   manifest: Readonly<CandidateManifestV1>,
   path: string,
@@ -349,6 +355,9 @@ function classifyBinary(
     throw new PrivacyPolicyError(`invalid binary inventory disposition for ${path} (${representation})`);
   }
   if (representation === "worktree") {
+    if (!manifest.entries.some((entry) => entry.path === path && entry.representation === "index")) {
+      return { kind: "skip", reason: "untracked binary — not publishable until staged" };
+    }
     const staged = manifest.binaryInventory.find((item) => item.path === path && item.representation === "index");
     if (staged && ACCEPTED_BINARY_DISPOSITIONS.has(staged.disposition)) {
       return { kind: "skip", reason: "working-tree bytes differ from the reviewed index copy; only the index copy publishes" };

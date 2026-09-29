@@ -359,6 +359,41 @@ describe("public privacy scanner", () => {
     } finally { await rm(root, { recursive: true, force: true }); }
   });
 
+  // A local Go build left in the tree used to fail the whole scan as an `unreviewed-binary`, even
+  // though nothing untracked can reach a `git push`.
+  test("an untracked binary is skipped until it is staged, without hiding a text finding", async () => {
+    const root = await mkdtemp(join(tmpdir(), "privacy-untracked-binary-"));
+    try {
+      await Bun.$`git -C ${root} init -q`;
+      await Bun.$`mkdir -p ${join(root, "policy")} ${join(root, "build")}`;
+      await writeFile(join(root, "policy/public-privacy.json"), JSON.stringify(basePolicy()));
+      await writeFile(join(root, "notes.md"), "clean\n");
+      await Bun.$`git -C ${root} add .`;
+      await Bun.$`git -C ${root} -c user.name=test -c user.email=test@example.com commit -qm baseline`;
+
+      // An untracked ELF-ish build artefact, plus a private string in a tracked text file.
+      const artefact = "build/parse_go";
+      await writeFile(join(root, artefact), Buffer.from([0x7f, 0x45, 0x4c, 0x46, 0x02, 0x01, 0x00, 0x00, 0xff, 0xfe]));
+      await writeFile(join(root, "notes.md"), `${DEBT_PLUGIN}\n`);
+
+      const findings = await scanTrackedTree(root);
+      expect(findings.some((finding) => finding.path === "notes.md" && finding.match === DEBT_PLUGIN)).toBe(true);
+      expect(findings.some((finding) => finding.path === artefact)).toBe(false);
+
+      // The CLI reports the text finding (exit 1), not the exit-2 error path, and logs the skip.
+      const cli = Bun.spawnSync(["bun", join(import.meta.dir, "../scripts/scan-public-privacy.ts"), root], { stdout: "pipe", stderr: "pipe" });
+      expect(cli.stderr.toString()).not.toMatch(/public privacy scan error/);
+      expect(cli.stderr.toString()).toContain(`public privacy scan skipped ${artefact} (worktree): untracked binary — not publishable until staged`);
+      expect(cli.exitCode).toBe(1);
+
+      // Staging the same bytes puts them in what a push carries, and that is a finding.
+      await Bun.$`git -C ${root} add ${artefact}`;
+      const staged = await scanTrackedTree(root);
+      expect(staged.filter((finding) => finding.path === artefact).map((finding) => finding.ruleId)).toEqual(["unreviewed-binary"]);
+      expect(staged.some((finding) => finding.path === "notes.md" && finding.match === DEBT_PLUGIN)).toBe(true);
+    } finally { await rm(root, { recursive: true, force: true }); }
+  });
+
   test("rejects stale, substituted, and reordered candidate manifests before scanning", async () => {
     const root = await mkdtemp(join(tmpdir(), "privacy-candidate-auth-"));
     try {
