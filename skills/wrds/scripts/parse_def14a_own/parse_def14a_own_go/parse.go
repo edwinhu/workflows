@@ -10,13 +10,15 @@ import (
 // Cell-level parsing: share counts, percents, footnote markers, group rows.
 
 var (
-	reFootnote   = regexp.MustCompile(`\(\s*([0-9]{1,2}[a-zA-Z]?|[a-zA-Z])\s*\)`)
-	reSharesNum  = regexp.MustCompile(`^-?[0-9][0-9,\. ]*$`)
-	rePctNum     = regexp.MustCompile(`([0-9]+(?:\.[0-9]+)?)\s*%`)
-	rePctBare    = regexp.MustCompile(`^([0-9]{1,3}(?:\.[0-9]+)?)$`)
-	reLessThan   = regexp.MustCompile(`(?i)less\s+than\s+(?:one|1)\s*(?:percent|%)|under\s+1\s*%`)
-	reStar       = regexp.MustCompile(`^[\*\+#†‡]{1,2}$`)
-	reGroupRow   = regexp.MustCompile(`(?i)\bas\s+a\s+group\b`)
+	reFootnote  = regexp.MustCompile(`\(\s*([0-9]{1,2}[a-zA-Z]?|[a-zA-Z])\s*\)`)
+	reSharesNum = regexp.MustCompile(`^-?[0-9][0-9,\. ]*$`)
+	rePctNum    = regexp.MustCompile(`([0-9]+(?:\.[0-9]+)?)\s*%`)
+	rePctBare   = regexp.MustCompile(`^([0-9]{1,3}(?:\.[0-9]+)?)$`)
+	reLessThan  = regexp.MustCompile(`(?i)less\s+than\s+(?:one|1)\s*(?:percent|%)|under\s+1\s*%`)
+	reStar      = regexp.MustCompile(`^[\*\+#†‡]{1,2}$`)
+	// "As Group (15 persons)" — the article is dropped often enough in ASCII
+	// proxies that requiring it loses real group rows.
+	reGroupRow   = regexp.MustCompile(`(?i)\bas\s+an?\s+group\b|\bas\s+group\b`)
 	reGroupN     = regexp.MustCompile(`(?i)\(\s*([0-9]{1,3})\s+(?:persons?|people|individuals?|directors?|officers?|in\s+number)`)
 	reAlphaWords = regexp.MustCompile(`[A-Za-z]{2,}`)
 	reShareUnit  = regexp.MustCompile(`(?i)\s*(?:shares?|sh\.?|common\s+shares?|units?)\s*$`)
