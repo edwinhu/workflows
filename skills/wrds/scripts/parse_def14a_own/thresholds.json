@@ -1,0 +1,19 @@
+{
+  "_about": "Pass thresholds for the parse_def14a_own grind. Locked in lock.sha256; the grind may not edit this file. Each value is argued from the 2026-09-28 baseline in GRIND_PLAN.md.",
+  "_baseline_2026_09_28_dev": {
+    "filing_yield_parsed_percent": 0.8317,
+    "holder_recall_blockw": 0.6154,
+    "holder_precision_blockw": 0.6336,
+    "group_pct_agreement_factset": 0.2327,
+    "largest_block_agreement_factset": 0.2314,
+    "group_row_detection_rate": 0.5571
+  },
+  "minimums": {
+    "filing_yield_parsed_percent": 0.88,
+    "holder_recall_blockw": 0.75,
+    "holder_precision_blockw": 0.75,
+    "group_pct_agreement_factset": 0.40,
+    "largest_block_agreement_factset": 0.40,
+    "group_row_detection_rate": 0.80
+  }
+}
