@@ -1,6 +1,6 @@
 {
   "_about": "Pass thresholds for the parse_def14a_own grind. Locked in lock.sha256; the grind may not edit this file. Each value is argued from a measured baseline in GRIND_PLAN.md — the 2026-09-28 setup baseline for the first round, and the 2026-09-29 dev/holdout pair for the precision round.",
-  "_gating": "EXACTLY the keys under `minimums` gate check.sh — FIVE of them since 2026-09-29, when `iss_director_recall` was added. Everything under `diagnostics` is computed and printed with its denominator every round and NEVER affects the exit code. That includes the two FactSet aggregate metrics (the FactSet gold is defined by a proxy window over all FactSet stakes and mixes 13F / Form 4 positions — only 21 of 2,647 linked firm-years carry a PXY marker — so a 1 pp band would reward chasing gold noise) and the two ISS share-agreement metrics plus the ISS precision proxy (see `_iss_diagnostics`). The loop must not optimise any of them.",
+  "_gating": "EXACTLY the keys under `minimums` (floors, value >= threshold) plus the keys under `maximums` (ceilings, value <= threshold) gate check.sh — EIGHT of them since 2026-09-29, when the duplicate-row round added `sample_yield_worst_year_margin` to `minimums` and `sample_dup_excess_same_table_rate` / `_max_year` to `maximums`. Before that: FIVE, all floors. Everything under `diagnostics` is computed and printed with its denominator every round and NEVER affects the exit code. That includes the two FactSet aggregate metrics (the FactSet gold is defined by a proxy window over all FactSet stakes and mixes 13F / Form 4 positions — only 21 of 2,647 linked firm-years carry a PXY marker — so a 1 pp band would reward chasing gold noise) and the two ISS share-agreement metrics plus the ISS precision proxy (see `_iss_diagnostics`). The loop must not optimise any of them.",
   "_history": [
     {
       "date": "2026-09-28",
@@ -9,9 +9,13 @@
         "filing_yield_parsed_percent": 0.88,
         "holder_recall_blockw": 0.75,
         "holder_precision_blockw": 0.75,
-        "group_row_detection_rate": 0.80
+        "group_row_detection_rate": 0.8
       },
-      "holdout": {"seed": 20260928, "firms": 747, "status": "SPENT — scored once on 2026-09-29"},
+      "holdout": {
+        "seed": 20260928,
+        "firms": 747,
+        "status": "SPENT — scored once on 2026-09-29"
+      },
       "outcome": "all four gates cleared on the dev split of seed 20260928 (filing_yield 0.9058, recall 0.8091, precision 0.7843, group_row 0.9026); the holdout then scored precision 0.7085 vs dev 0.7843."
     },
     {
@@ -19,7 +23,11 @@
       "round": "precision round",
       "change": "holder_precision_blockw minimum 0.75 -> 0.82; the other three unchanged",
       "why": "The seed-20260928 holdout scored holder_precision_blockw 0.7085 against dev 0.7843 — a 0.0759 generalisation gap, by far the widest of the four gated metrics (recall 0.7962 vs 0.8091 = 0.0129; filing_yield 0.8985 vs 0.9058 = 0.0073; group_row 0.8968 vs 0.9026 = 0.0058). At a 0.75 dev minimum the parser therefore ships at roughly 0.67-0.68 on unseen firms. Requiring 0.82 on dev targets ~0.75 on unseen firms if the same gap holds. Precision is also where the known residue sits: the journal note residue-after-all-gates-pass counts 3,286 false-positive candidate rows, with named, layout-shaped families (glued trailing addresses 550 rows, the /N/ footnote form, share-class prefix columns, forward-wrapping holder names, surviving address lines, a 100% ESOP/preferred ceiling).",
-      "holdout": {"seed": 20260929, "firms": 747, "status": "re-drawn; scored ONCE as the pre-round baseline, then off limits until the round ends"},
+      "holdout": {
+        "seed": 20260929,
+        "firms": 747,
+        "status": "re-drawn; scored ONCE as the pre-round baseline, then off limits until the round ends"
+      },
       "measured_after_the_re_draw": "The seed-20260929 pre-round baseline, scored once on the unchanged parser output, came in at dev precision 0.7636 (11,669 / 15,281 candidate rows) and HOLDOUT precision 0.7899 (3,031 / 3,837) — the holdout scored 0.0263 ABOVE dev, the opposite sign to the seed-20260928 pair that motivated 0.82. Two things follow and neither is hidden. (1) Most of the 0.0759 gap on seed 20260928 was a draw effect, not overfitting; a single 747-firm draw is a noisy estimate of generalisation and one gap is not evidence of a trend. (2) The new holdout is NOT clean: 595 of its 747 firms were in the seed-20260928 DEV set and the parser was tuned against them, which biases this baseline UP. 0.82 is kept anyway, on the narrower argument that precision is simply the weakest gate (0.7636 on dev against 0.90/0.81/0.90 for the other three) and that the residual FP families in the journal are named, layout-shaped and countable — not on the generalisation-gap argument, which this measurement does not support.",
       "guard": "recall, filing_yield and group_row stay gated at their previous values precisely so precision cannot be bought by dropping true positives: a fix that lifts precision by suppressing rows drives recall below 0.75 and the check still exits 1."
     },
@@ -31,7 +39,13 @@
       "why": "The four pre-existing gates are pre-2002 (blockw 1996-2001) or firm-level and diagnostic (FactSet). Without a gated ISS metric, 2002-2024 — the majority of the corpus and every modern layout family — is validated by nothing holder-level. iss_director_recall is the only one of the three ISS metrics whose misses are parser-shaped rather than gold-shaped, and it is stable across eras (82.81 / 88.31 / 86.56 / 88.83).",
       "not_gated": "(b) iss_share_agreement_* stays diagnostic: the median parsed/ISS ratio is exactly 1.0000 in every era and the 2019-2024 collapse is 40.42% UPWARD against 5.55% downward, driven by the proxy's beneficial-ownership total including 60-day options and deferred units that ISS's num_of_shares excludes. A two-sided band would pay the loop to strip an add-on the proxy is right to report. (c) iss_individual_precision_proxy stays diagnostic: 0.9726 with 37.92% of the numerator from the officer-allowance arm is an upper bound, and gating an upper bound rewards loosening the bound.",
       "guard": "The four existing gates stay at their values precisely so ISS recall cannot be bought by flooding tables with rows: a change that lifts ISS recall by emitting more candidate rows drives holder_precision_blockw below 0.82 and check.sh still exits 1. check.sh also fails loudly when the parser output does not cover the ISS gold filings, so a round run against the blockw-only filelist cannot score ISS recall on a partial denominator.",
-      "holdout": {"split_file": "holdout_iss.tsv", "seed": 20260930, "firms": 385, "filings": 741, "status": "scored ONCE as the pre-round baseline on 2026-09-29 (metrics_iss_holdout_pre_20260929.json), then off limits until the round ends"}
+      "holdout": {
+        "split_file": "holdout_iss.tsv",
+        "seed": 20260930,
+        "firms": 385,
+        "filings": 741,
+        "status": "scored ONCE as the pre-round baseline on 2026-09-29 (metrics_iss_holdout_pre_20260929.json), then off limits until the round ends"
+      }
     },
     {
       "date": "2026-09-29",
@@ -40,12 +54,53 @@
       "why": "0.90 was a ROUND TARGET, 0.0317 above the 0.8683 ISS-dev baseline, and 8.5A said in advance that leaving it in place would make the gate unreachable by a later honest change — it sits above every era's measured recall, so a change that legitimately trades a little ISS recall for something else would fail a gate that was never a floor. 0.82 sits just below the weakest era (2002-2006 at 0.8281 on the pre-round dev decomposition), so no era can be traded against another. The step was specified before the round ran and is taken here unchanged; it is not a post-hoc loosening.",
       "round_result": {
         "grind": "check green at iteration 7, commit e3864f83",
-        "dev": {"iss_director_recall": 0.9135, "filing_yield_parsed_percent": 0.8921, "holder_recall_blockw": 0.7871, "holder_precision_blockw": 0.8301, "group_row_detection_rate": 0.9067, "iss_director_rows_scored": 19586, "iss_filings": 2259},
-        "iss_holdout": {"filings": 741, "director_rows_scored": 6759, "iss_director_recall_pre": 0.8735, "iss_director_recall_post": 0.9130, "iss_share_agreement_1pct_pre": 0.7666, "iss_share_agreement_1pct_post": 0.7687, "iss_individual_precision_proxy_pre": 0.9733, "iss_individual_precision_proxy_post": 0.9840, "json": "/data/def14a_own/work/metrics_iss_holdout_post_20260929.json"},
+        "dev": {
+          "iss_director_recall": 0.9135,
+          "filing_yield_parsed_percent": 0.8921,
+          "holder_recall_blockw": 0.7871,
+          "holder_precision_blockw": 0.8301,
+          "group_row_detection_rate": 0.9067,
+          "iss_director_rows_scored": 19586,
+          "iss_filings": 2259
+        },
+        "iss_holdout": {
+          "filings": 741,
+          "director_rows_scored": 6759,
+          "iss_director_recall_pre": 0.8735,
+          "iss_director_recall_post": 0.913,
+          "iss_share_agreement_1pct_pre": 0.7666,
+          "iss_share_agreement_1pct_post": 0.7687,
+          "iss_individual_precision_proxy_pre": 0.9733,
+          "iss_individual_precision_proxy_post": 0.984,
+          "json": "/data/def14a_own/work/metrics_iss_holdout_post_20260929.json"
+        },
         "reading": "The round's target was met on dev (0.9135 vs 0.90) and it GENERALISED: the untouched ISS holdout moved 0.8735 -> 0.9130, a +0.0395 gain against +0.0452 on dev, so the recall was not bought from the dev split. The precision proxy rose 0.9733 -> 0.9840 and share agreement at 1% was flat (0.7666 -> 0.7687), so the new hits are not flooding the tables with person-shaped rows. 0.9130 on the holdout leaves 0.0930 of margin above the 0.82 floor."
       },
       "holdouts_spent": "ALL THREE are now SPENT and may not be scored again: holdout_20260928_spent.tsv (blockw, seed 20260928), holdout.tsv (blockw, seed 20260929) and holdout_iss.tsv (ISS, seed 20260930, scored pre AND post on 2026-09-29). A future round needs a freshly drawn split; a number from any of these three is a dev number now, whatever the file is called.",
       "guard": "The four non-ISS minimums stay at their values so ISS recall still cannot be bought by flooding tables with rows, and check.sh still exits 2 when the parser output does not cover the ISS gold filings."
+    },
+    {
+      "date": "2026-09-29",
+      "round": "DUPLICATE-ROW round — setup",
+      "change": "Adds a THIRD ruler, the fixed full-archive sample (gold/sample_full.tsv, seed 20260929, ~250 filings per filing year 1994-2026, every gold-linked filing excluded), and THREE gates over it: `sample_yield_worst_year_margin` >= 0.0 under `minimums`, and `sample_dup_excess_same_table_rate` <= 0.01 plus `sample_dup_excess_same_table_rate_max_year` <= 0.02 under a NEW `maximums` block. The five pre-existing gates are byte-for-byte unchanged (0.88 / 0.75 / 0.82 / 0.80 / 0.82). Gated count 5 -> 8.",
+      "why": "The full-archive run of 2026-09-29 (207,912 filings, commit e4e78a95) measured 261,460 exact-key duplicate rows on (accession, cik, holder_name, share_class) = 9.00% of 2,903,798 rows, 32.65% in 2009, 19.93% in 2018, 18.75% in 2024, against 248/250 spot-checked values exact. The values are right and the rows are over-emitted, and NO existing gate can see it: all five read gold-linked filings only, and the gold sets are vendor coverage of larger filers that does not reach 1994-1995 or 2025-2026 at all.",
+      "diagnosis_before_the_threshold": "Measured on the full panel with duckdb before any threshold was written. The 261,460 excess rows decompose EXACTLY into 244,792 same-`table_kind` (8.430% of rows — over-emission) and 16,668 cross-`table_kind` (0.574% — the same holder listed in the 5% table AND the management table, which the document really does). Same-kind splits again into 125,576 inside ONE table_index (4.324%) and 119,216 across table_index of the same kind (4.106%). So (i) is 8.43%, far above the 1.0% gate, and the round is warranted. Cross-kind is REPORTED, never gated: gating it would pay the loop to suppress a legitimate disclosure.",
+      "mechanisms": "Named from -debug on 12 of the worst 2009 / 2018 / 2024 filings. (1) MULTI-CLASS VALUE COLUMNS WITH AN EMPTY share_class — 108,592 of 125,576 within-one-table excess rows (86.5%) carry share_class='' — e.g. 0001104659-24-052085 (Liberty Media) emits 9 correct rows for John C. Malone, one per series, all with share_class empty because the row-level `Title of Series` column is roled `other`; 0001258602-24-000028 (Nelnet) pairs the Total and combined-voting-power columns without a class label. (2) A `Title of Class` column taken as the NAME column — 0001683863-24-008416 emits holder_name 'Admiral Shares' / 'Investor Shares'. (3) NON-OWNERSHIP TABLES ATTACHED once per fund in fund-family proxies — 0000051931-09-000935 / -18-000890 (American Funds) read director COMPENSATION dollars as `shares` across dozens of per-fund tables. (4) The ASCII text path glues the fund-class label to the holder name — 0000932471-09-000972 emits 'Investor Shares: Charles Schwab & Co'. The unifying root cause is that the class / series identity is never carried into `share_class`, so rows that ARE distinct collapse onto one exact key. The fix is to POPULATE share_class, not to suppress rows.",
+      "guard": "The five pre-existing gates plus the new per-year yield floor are the guard: the duplicate ceilings can be cleared by suppressing rows, and suppression drives holder_recall_blockw under 0.75, iss_director_recall under 0.82, filing_yield_parsed_percent under 0.88, or a single sample year's yield under its recorded floor. A round that deletes rows to clean the key therefore still exits 1.",
+      "sample": {
+        "file": "gold/sample_full.tsv",
+        "seed": 20260929,
+        "per_year": 250,
+        "years": [
+          1994,
+          2026
+        ],
+        "filings": 8250,
+        "bytes": 17455822833,
+        "sha256": "1db737f5b86a64d76c045181eb1b6ba2b931cf28df4f2bbbdc1a9111d488d41c",
+        "excluded": "every accession in gold_filelist_all.tsv",
+        "submitted_as": "gold/round_filelist.tsv, 21,128 filings"
+      }
     }
   ],
   "_baseline_2026_09_28_dev": {
@@ -61,15 +116,61 @@
     "filing_yield_parsed_percent": 0.88,
     "holder_recall_blockw": 0.75,
     "holder_precision_blockw": 0.82,
-    "group_row_detection_rate": 0.80,
-    "iss_director_recall": 0.82
+    "group_row_detection_rate": 0.8,
+    "iss_director_recall": 0.82,
+    "sample_yield_worst_year_margin": 0.0
   },
+  "maximums": {
+    "sample_dup_excess_same_table_rate": 0.01,
+    "sample_dup_excess_same_table_rate_max_year": 0.02
+  },
+  "_sample_yield_floor_by_year": {
+    "1994": 0.703,
+    "1995": 0.711,
+    "1996": 0.779,
+    "1997": 0.799,
+    "1998": 0.823,
+    "1999": 0.871,
+    "2000": 0.847,
+    "2001": 0.823,
+    "2002": 0.871,
+    "2003": 0.847,
+    "2004": 0.803,
+    "2005": 0.815,
+    "2006": 0.855,
+    "2007": 0.835,
+    "2008": 0.827,
+    "2009": 0.767,
+    "2010": 0.819,
+    "2011": 0.863,
+    "2012": 0.871,
+    "2013": 0.819,
+    "2014": 0.851,
+    "2015": 0.847,
+    "2016": 0.855,
+    "2017": 0.871,
+    "2018": 0.791,
+    "2019": 0.871,
+    "2020": 0.871,
+    "2021": 0.827,
+    "2022": 0.863,
+    "2023": 0.843,
+    "2024": 0.899,
+    "2025": 0.863,
+    "2026": 0.903
+  },
+  "_sample_floors_note": "Per-year parsed-percent yield floors on the fixed full-archive sample (gold/sample_full.tsv, seed 20260929). Each value is the yield MEASURED AT HEAD on that year minus 0.005 of slack, recorded once by a human with `score.py --record-sample-floors`. `sample_yield_worst_year_margin` = min over years of (measured yield - floor) and is gated at 0.0, so no single year may regress by more than the slack while the duplicate gate is being closed. An EMPTY object here means the floors have not been recorded; score.py then cannot compute the gated margin and exits with a message saying so, rather than scoring a gate over a floor it invented.",
   "diagnostics": [
     "group_pct_agreement_factset",
     "largest_block_agreement_factset",
     "iss_share_agreement_1pct",
     "iss_share_agreement_5pct",
-    "iss_individual_precision_proxy"
+    "iss_individual_precision_proxy",
+    "sample_dup_excess_total_rate",
+    "sample_dup_excess_cross_table_rate",
+    "sample_dup_excess_same_table_index_rate",
+    "sample_filing_yield_parsed_percent",
+    "sample_group_row_rate"
   ],
   "_iss_diagnostics": "Added 2026-09-29 with the ISS directors gold set (gold_iss.tsv.gz, 2002-2024). THREE of the four ISS metrics remain DIAGNOSTIC under `diagnostics` — iss_share_agreement_1pct, iss_share_agreement_5pct, iss_individual_precision_proxy — and nothing about them can change check.sh's exit code. The fourth, iss_director_recall, was ADOPTED as a gate later the same day (GRIND_PLAN.md section 8 item 1, ADOPTED 2026-09-29) and sits under `minimums` at the PERMANENT floor 0.82 since the ISS round closed on 2026-09-29 (step 2 of the two-step; it was 0.90 as a round target while the round ran). See the two 2026-09-29 `ISS director-recall round` entries in `_history`."
 }

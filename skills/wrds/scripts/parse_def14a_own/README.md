@@ -51,6 +51,8 @@ sge/
   run_python.sh          run one python3 script on a compute node
 gold/                    gold-set builders (WRDS Blockholders, FactSet, ISS directors)
                          + the holdout splits
+  sample_full_archive.py the FIXED year-stratified full-archive sample (seed 20260929)
+                         and the round filelist (gold ∪ ISS ∪ sample)
 scorer/score.py          scores parser output against the gold sets; --check gates the grind
 scorer/score_test.py     tests for the ISS name matcher and person test (stdlib)
 thresholds.json          the locked pass thresholds
@@ -140,13 +142,37 @@ Panel-wide `filing_yield_parsed_percent` **0.8454** and
 under-represent 1994-1996 entirely. Full per-year table, spot checks and the
 duplicate-row diagnostic: `~/projects/r2000/scratch/def14a_full_run.md`.
 
-**Known defect 4 is bigger than it reads above.** Exact-key duplicate rows —
-same `(accession, cik, holder_name, share_class)` — are **9.00%** of the panel,
-and 32.65% in 2009, 19.93% in 2018, 18.75% in 2024. The mechanism seen in hand
-checks is an *additive* table layout (`Shares Owned + Acquirable = Total |
-Percent`) read as multiple share classes, emitting the sub-component as a second
-row with no percent. Deduplicate on that key, preferring the row with a
-non-empty `percent`, before summing `shares`.
+**Known defect 4 is bigger than it reads above, and it is a GRAIN defect, not only
+an over-emission one.** Exact-key duplicate rows — same
+`(accession, cik, holder_name, share_class)` — are **9.00%** of the panel, and
+32.65% in 2009, 19.93% in 2018, 18.75% in 2024. Diagnosed 2026-09-29 (duckdb over
+the panel, then `-debug` on 12 of the worst filings; full write-up in
+`GRIND_PLAN.md` §9 and `~/projects/r2000/scratch/def14a_dup_setup.md`):
+
+```
+excess TOTAL                                       261,460   9.004%
+  SAME table_kind  — over-emission                 244,792   8.430%
+     of which inside ONE table_index               125,576   4.324%
+  CROSS table_kind — the 5% table AND management     16,668   0.574%   (legitimate)
+```
+
+**86.5% of the within-one-table excess carries `share_class=""`.** The class or
+series identity of a value column is never written into `share_class`, so rows that
+ARE distinct collapse onto one key: a multi-level header naming the class over each
+`(shares, percent)` pair, a row-level `Title of Class` / `Title of Series` column
+roled `other` (or, worse, roled `name`, so `holder_name` becomes `Admiral Shares`),
+and fund-family proxies with one 5%-holder table per fund. A separate, genuinely
+spurious family is director COMPENSATION tables attached once per fund, with
+dollars in `shares`.
+
+**So do NOT blindly deduplicate on that key.** 59,969 of the excess rows carry
+DIFFERING `shares` — those are real per-series holdings whose label is missing, and
+dropping them loses data. Until the parser populates `share_class`: dedup only
+where the duplicate rows are byte-identical, and treat a filing with many
+same-`table_kind` duplicates (the fund-family and multi-class families above) as
+unusable for a `shares` sum. **Also note** that co-registrant copies inflate the
+per-CIK count and are by design: counting each accession once, 2018's same-kind
+excess is 4,718, not 18,165.
 
 ### The filelist carries metadata, unlike parse_13f's
 
@@ -296,7 +322,8 @@ python3 gold/make_holdout.py                      # 20% of FIRMS held out, seed 
 python3 gold/profile_iss.py                       # (c) READ-ONLY profile of the ISS tables
 python3 gold/build_gold_iss.py                    # (c) ISS directors 2002-2024, linked
 python3 gold/sample_gold_iss.py                   # (c) sample seed 20260929 + split seed 20260930
-bash make_lock.sh                                 # hash-lock scorer + gold + thresholds
+python3 gold/sample_full_archive.py               # (d) the FIXED full-archive sample, seed 20260929
+bash make_lock.sh                                 # hash-lock scorer + gold + sample + thresholds
 bash run_baseline.sh                              # grid pass + score
 bash check.sh                                     # the gate: 0 pass, 1 short, 3 lock broken
 ```
@@ -307,10 +334,20 @@ rows) is pulled by running `pull_def14a_index.py` with `--start 2002-01-01 --end
 2025-12-31` into a scratch dir and renaming. The original index is left alone so
 gold sets (a) and (b) stay reproducible.
 
+**EIGHT metrics gate as of 2026-09-29.** `minimums` are floors, `maximums` are
+ceilings, and score.py reads both from the locked thresholds file. The duplicate-row
+round (`GRIND_PLAN.md` §9) added a fourth ruler — `gold/sample_full.tsv`, a fixed
+year-stratified sample of the whole archive (8,250 filings, ~250 per filing year
+1994-2026, seed 20260929, gold-linked filings excluded) — and three gates over it:
+`sample_dup_excess_same_table_rate` ≤ 0.01, `sample_dup_excess_same_table_rate_max_year`
+≤ 0.02, and `sample_yield_worst_year_margin` ≥ 0.0 (a per-year no-regression floor
+recorded in `_sample_yield_floor_by_year`). `run_baseline.sh` therefore submits
+`gold/round_filelist.tsv` (gold ∪ ISS ∪ sample, 21,128 filings) and score.py exits
+**2** if the output does not cover the sample.
+
 **`iss_director_recall` is GATED as of 2026-09-29** (`GRIND_PLAN.md` §8.5A) at
 the permanent no-regression floor **0.82** — it was 0.90 as a round target while
-the ISS round ran, and was reset when the round closed (§8.5B, step 2). The
-gated count is therefore **five**. The other three ISS metrics —
+the ISS round ran, and was reset when the round closed (§8.5B, step 2). The other three ISS metrics —
 `iss_share_agreement_1pct`, `_5pct` and `iss_individual_precision_proxy` — stay
 DIAGNOSTIC: they print with their denominators, by era, on every scoring run and
 cannot change `check.sh`'s exit code.
@@ -389,8 +426,39 @@ Go is not installed on the grid. Build locally and copy the static binary:
 
 ```bash
 cd parse_def14a_own_go && go vet ./... && go test ./... && \
-  CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -o parse_def14a_own_go .
+  CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -buildvcs=false \
+    -o parse_def14a_own_go .
 ```
+
+**`-buildvcs=false` is not optional, and it is why the binary kept looking
+"modified" after a run it did not change.** `go build` defaults to
+`-buildvcs=auto`, which stamps the git revision into the binary. Identical source
+at two commits therefore produces two different sha256s of *exactly the same
+length*, which reads like a rebuild and is not one. Measured 2026-09-29:
+
+```
+$ go version -m parse_def14a_own_go            # the working-tree binary
+	build	vcs.revision=4b36a9621372be775e1833da7e067117fbdace7e
+	build	vcs.modified=false
+$ git show HEAD:…/parse_def14a_own_go | go version -m /dev/stdin   # the committed one
+	build	vcs.revision=e3864f835cf6fb596b906068ddabe0b80603cf0c
+	build	vcs.modified=true
+```
+
+Same source, two stamps, two hashes (`8236f718…` vs `181617fd…`). With
+`-buildvcs=false` the build is reproducible and invariant to repo state — three
+builds, one clean and one with a dirty tree, all `beb332f1aed4cb96…`:
+
+```
+$ for i in 1 2; do CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+    go build -trimpath -buildvcs=false -o /tmp/novcs_$i .; done
+$ sha256sum /tmp/novcs_1 /tmp/novcs_2
+beb332f1aed4cb9609ec3444c60560ab08b6d08d9ac78a47936ce07dd303672d  /tmp/novcs_1
+beb332f1aed4cb9609ec3444c60560ab08b6d08d9ac78a47936ce07dd303672d  /tmp/novcs_2
+```
+
+`run_baseline.sh` passes the flag, so the committed binary is reproducible from
+HEAD source by anyone who runs the command above.
 
 `-debug <file>` prints the document-item stream and every candidate grid for one
 filing, which is the first thing to run on a filing the parser got wrong.
