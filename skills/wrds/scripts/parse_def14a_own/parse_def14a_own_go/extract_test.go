@@ -1992,3 +1992,71 @@ func TestClassInsideThePercentCell(t *testing.T) {
 		}
 	}
 }
+
+// An ASCII proxy states each class over its own (shares, percent) COLUMN PAIR,
+// on caption lines above the dashed rule, and adds a third column for the
+// combined voting power. classLabelsFromHeader reads class tokens out of the
+// joined header in ORDER, and the class line itself carries no "percent /
+// shares / beneficial / amount" cue, so it was never collected as a header line
+// at all: every one of the three holdings of a holder came out with the same
+// share_class and three rows collapsed onto one grain key.
+const asciiSpanningClassColumns = `
+     The table below sets forth certain information regarding the beneficial
+ownership of each class of Common Stock as of December 4, 1998 by each person
+who is known to the Company to be the beneficial owner of more than 5% of the
+outstanding Class A Common Stock or Class B Common Stock.
+
+                                   BENEFICIAL OWNERSHIP OF         BENEFICIAL OWNERSHIP OF
+                                   CLASS A COMMON STOCK(1)           CLASS B COMMON STOCK
+                                  --------------------------     ----------------------------    PERCENTAGE
+                                    NUMBER         PERCENT         NUMBER           PERCENT     OF COMBINED
+                                  OF SHARES      OF CLASS(2)      OF SHARES       OF CLASS(3)   VOTING POWER
+                                  ----------     -----------     -----------      -----------   ------------
+Bradley Currey, Jr.(4)..........   3,510,616(5)     13.64%        2,766,180(6)       23.56%        20.23%
+Jay Shuster.....................     751,858(7)      3.18           599,769(8)        5.10          4.37
+Edward E. Bowns.................     316,211(9)      1.36           211,364(10)       1.80          1.58
+J. Hyatt Brown(17)..............   5,208,935(18)    20.06         3,020,795(19)      25.73         23.08
+`
+
+func TestASCIISpanningClassColumns(t *testing.T) {
+	rows := run(t, asciiSpanningClassColumns)
+	byClass := map[string]*Row{}
+	n := 0
+	for i := range rows {
+		if rows[i].HolderName != "Bradley Currey, Jr" {
+			continue
+		}
+		n++
+		byClass[rows[i].ShareClass] = &rows[i]
+	}
+	if n != 3 {
+		t.Fatalf("want 3 holdings for Bradley Currey, got %d: %+v", n, rows)
+	}
+	if len(byClass) != 3 {
+		t.Fatalf("want 3 DISTINCT share_class labels, got %d: %v", len(byClass), keysOf(byClass))
+	}
+	var a, b *Row
+	for cls, r := range byClass {
+		lc := strings.ToLower(cls)
+		if strings.Contains(lc, "class a") {
+			a = r
+		}
+		if strings.Contains(lc, "class b") {
+			b = r
+		}
+	}
+	if a == nil || a.Shares == nil || *a.Shares != 3510616 {
+		t.Errorf("class A column not labelled from the caption: %v", keysOf(byClass))
+	}
+	if b == nil || b.Shares == nil || *b.Shares != 2766180 {
+		t.Errorf("class B column not labelled from the caption: %v", keysOf(byClass))
+	}
+}
+
+func keysOf(m map[string]*Row) []string {
+	var out []string
+	for k := range m {
+		out = append(out, k)
+	}
+	return out
+}
