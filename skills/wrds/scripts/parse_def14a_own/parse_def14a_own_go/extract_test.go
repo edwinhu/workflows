@@ -713,22 +713,22 @@ func TestASCIIProseLeadInDoesNotGrabCompensationTable(t *testing.T) {
 // missing group row for the same filing.
 func TestCollectiveLabelsAreGroupRows(t *testing.T) {
 	yes := []string{
-		"All directors",                                    // 0000703799-00-000022
-		"All directors and executive officers",              // 0000011199-96 / many
-		"All executive officers and",                        // 0000103872-00-000184
-		"Directors and executive officers",                  // 0000057528-96-001104
-		"ALL DIRECTORS AND EXECUTIVE OFFICERS",              // 0000094328-00-000012
-		"(24 Persons)",                                      // 0000094328-00-000012
-		"Directors (22 persons,",                            // 0000899681-97-000161
-		"those listed above)",                               // 0000899681-96-000050
-		"Group (18 persons)",                                // 0000025445-96-000246
-		"Group (7 in number)",                               // 0000700612-98-000005
-		"officers",                                          // 0000912057-97-014579
-		"All nominees, directors and named officers as a",    // 0000950128-98-000652
-		"Non-Executive Director Group (6 persons)",           // 0000892569-98-001409
-		"(28 persons, including those named above)",          // 0000950124-00-001884
-		"All directors, directors emeritus and",              // 0000050863-97-000028
-		"Executive Officers and Directors",                   // 0000912057-96-021732
+		"All directors",                                   // 0000703799-00-000022
+		"All directors and executive officers",            // 0000011199-96 / many
+		"All executive officers and",                      // 0000103872-00-000184
+		"Directors and executive officers",                // 0000057528-96-001104
+		"ALL DIRECTORS AND EXECUTIVE OFFICERS",            // 0000094328-00-000012
+		"(24 Persons)",                                    // 0000094328-00-000012
+		"Directors (22 persons,",                          // 0000899681-97-000161
+		"those listed above)",                             // 0000899681-96-000050
+		"Group (18 persons)",                              // 0000025445-96-000246
+		"Group (7 in number)",                             // 0000700612-98-000005
+		"officers",                                        // 0000912057-97-014579
+		"All nominees, directors and named officers as a", // 0000950128-98-000652
+		"Non-Executive Director Group (6 persons)",        // 0000892569-98-001409
+		"(28 persons, including those named above)",       // 0000950124-00-001884
+		"All directors, directors emeritus and",           // 0000050863-97-000028
+		"Executive Officers and Directors",                // 0000912057-96-021732
 	}
 	for _, name := range yes {
 		if g, _ := isGroupRow(name); !g {
@@ -1246,5 +1246,83 @@ func TestContinuationTableInheritsHeaders(t *testing.T) {
 	}
 	if len(seen) != 4 {
 		t.Errorf("two funds x two percent columns = 4 keys, got %d: %v", len(seen), seen)
+	}
+}
+
+// A STACKED cell: one grid cell holds several values, one per share class,
+// separated by line breaks. Flattening it concatenates the digits into a share
+// count that cannot exist (33,870,629 / 712,172 / 631,060 read as 3.4e19) and
+// collapses three real holdings onto one key.
+const stackedCellHTML = `<html><body>
+<p>Principal Shareholders: 5% record ownership of each fund</p>
+<table>
+<tr><td></td><td></td><td colspan="2">AHIM</td><td colspan="2">AHIT</td></tr>
+<tr><td>Name and Address</td><td>Class</td><td>Shares Held</td><td>As % of shares outstanding, record or beneficial</td><td>Shares Held</td><td>As % of shares outstanding, record or beneficial</td></tr>
+<tr><td>Edward D. Jones &amp; Co. Omnibus Account</td><td>A<br>B<br>C</td><td>33,870,629<br>712,172<br>631,060</td><td>25.03<br>20.65<br>6.56</td><td>239,940,628<br>9,218,274<br>-</td><td>24.85<br>16.75<br>-</td></tr>
+<tr><td>First Clearing, LLC Custody Account</td><td>A<br>B</td><td>12,480,283<br>390,344</td><td>9.22<br>11.32</td><td>79,963,790<br>6,491,940</td><td>8.28<br>11.80</td></tr>
+</table></body></html>`
+
+func TestStackedCellSplitsIntoOneRowPerClass(t *testing.T) {
+	rows := ScreenRows(run(t, stackedCellHTML))
+	var got []*Row
+	for i := range rows {
+		if strings.HasPrefix(rows[i].HolderName, "Edward D. Jones") {
+			got = append(got, &rows[i])
+		}
+	}
+	if len(got) == 0 {
+		t.Fatalf("holder lost: %v", holderNames(rows))
+	}
+	for _, r := range got {
+		if r.Shares != nil && *r.Shares > 1e12 {
+			t.Errorf("share count %v cannot exist: the stacked cell's lines were "+
+				"concatenated (class %q)", *r.Shares, r.ShareClass)
+		}
+	}
+	// A: 33,870,629 at 25.03% of AHIM is one holding; B: 712,172 at 20.65% is
+	// another. Both must be present and distinguishable.
+	var a, b *Row
+	for _, r := range got {
+		if r.Shares != nil && *r.Shares == 33870629 {
+			a = r
+		}
+		if r.Shares != nil && *r.Shares == 712172 {
+			b = r
+		}
+	}
+	if a == nil || b == nil {
+		cls := []string{}
+		for _, r := range got {
+			cls = append(cls, r.ShareClass)
+		}
+		t.Fatalf("the per-class holdings were not emitted separately; classes %v", cls)
+	}
+	if a.Percent == nil || *a.Percent != 25.03 {
+		t.Errorf("class A percent = %v, want 25.03", a.Percent)
+	}
+	if b.Percent == nil || *b.Percent != 20.65 {
+		t.Errorf("class B percent = %v, want 20.65", b.Percent)
+	}
+	if a.ShareClass == b.ShareClass {
+		t.Errorf("two classes share one key: %q", a.ShareClass)
+	}
+	// Nine holdings: two holders x two funds x their classes, every one on its
+	// own key, and the label must name the FUND as well as the class -- the
+	// deepest header row ("Shares Held" / "As %...") is identical over both
+	// funds and cannot be the key.
+	if len(rows) != 9 {
+		t.Errorf("want 9 rows (2 holders x 2 funds x classes), got %d", len(rows))
+	}
+	if !strings.Contains(a.ShareClass, "AHIM") {
+		t.Errorf("share_class %q does not name the fund column group", a.ShareClass)
+	}
+	keys := map[string]int{}
+	for _, r := range rows {
+		keys[r.HolderName+"|"+r.ShareClass]++
+	}
+	for k, n := range keys {
+		if n > 1 {
+			t.Errorf("key %q emitted %d times", k, n)
+		}
 	}
 }

@@ -35,10 +35,14 @@ var (
 
 // screenTable is the per-table context the row rules need.
 type screenTable struct {
-	isGraph     bool            // a stock-performance graph, not an ownership table
-	medianTotal float64         // median shares/(pct/100) over the table's own rows
-	haveMedian  bool            //
-	pctRepeats  map[float64]int // how many distinct non-group rows carry each percent
+	isGraph     bool    // a stock-performance graph, not an ownership table
+	medianTotal float64 // median shares/(pct/100) over the table's own rows
+	haveMedian  bool    //
+	// Per CLASS medians. A multi-class or per-fund table has one outstanding
+	// total per class, tens of times apart, so a single table-wide median
+	// throws away every class but the largest.
+	medianByClass map[string]float64
+	pctRepeats    map[float64]int // how many distinct non-group rows carry each percent
 }
 
 // ScreenRows returns the rows of one filing that survive the layout screen, in
@@ -224,6 +228,7 @@ func screenFold(s string) string {
 func screenTables(rows []Row) map[int]*screenTable {
 	tabs := map[int]*screenTable{}
 	implied := map[int][]float64{}
+	impliedCls := map[int]map[string][]float64{}
 	dateRows := map[int]int{}
 	for _, r := range rows {
 		t := tabs[r.TableIndex]
@@ -244,7 +249,14 @@ func screenTables(rows []Row) map[int]*screenTable {
 			}
 		}
 		if r.Shares != nil && *r.Shares > 0 && r.Percent != nil && *r.Percent >= 0.5 {
-			implied[r.TableIndex] = append(implied[r.TableIndex], *r.Shares/(*r.Percent/100.0))
+			v := *r.Shares / (*r.Percent / 100.0)
+			implied[r.TableIndex] = append(implied[r.TableIndex], v)
+			if k := screenClassKey(r); k != "" {
+				if impliedCls[r.TableIndex] == nil {
+					impliedCls[r.TableIndex] = map[string][]float64{}
+				}
+				impliedCls[r.TableIndex][k] = append(impliedCls[r.TableIndex][k], v)
+			}
 		}
 	}
 	// Three period labels in one table is a graph stub, not a coincidence.
@@ -262,7 +274,34 @@ func screenTables(rows []Row) map[int]*screenTable {
 		sort.Float64s(s)
 		tabs[ti].medianTotal, tabs[ti].haveMedian = s[len(s)/2], true
 	}
+	for ti, byCls := range impliedCls {
+		if len(byCls) < 2 {
+			continue // one class: the table-wide median is the same thing
+		}
+		for k, v := range byCls {
+			if len(v) < 2 {
+				continue
+			}
+			s := make([]float64, len(v))
+			copy(s, v)
+			sort.Float64s(s)
+			if tabs[ti].medianByClass == nil {
+				tabs[ti].medianByClass = map[string]float64{}
+			}
+			tabs[ti].medianByClass[k] = s[len(s)/2]
+		}
+	}
 	return tabs
+}
+
+// screenClassKey is the class the row's holding is in, as the screen sees it:
+// the recovered label counts, because the implied outstanding total is a
+// property of the class whether or not ShareClass has been populated yet.
+func screenClassKey(r Row) string {
+	if r.ShareClass != "" {
+		return r.ShareClass
+	}
+	return r.classHint
 }
 
 func screenDrop(r Row, t *screenTable) bool {
@@ -305,9 +344,18 @@ func screenDrop(r Row, t *screenTable) bool {
 	// the table. An order-of-magnitude miss means the two cells are from
 	// different columns.
 	if t != nil && t.haveMedian && r.Shares != nil && *r.Shares > 0 && *r.Percent > 0 {
-		ratio := (*r.Shares / (*r.Percent / 100.0)) / t.medianTotal
-		if ratio > 5.0 || ratio < 0.2 {
-			return true
+		med, ok := t.medianTotal, true
+		if t.medianByClass != nil {
+			// Several classes in one table: the table-wide median is a mixture
+			// of several outstanding totals and says nothing about any of them.
+			// Only this row's own class can judge it.
+			med, ok = t.medianByClass[screenClassKey(r)]
+		}
+		if ok {
+			ratio := (*r.Shares / (*r.Percent / 100.0)) / med
+			if ratio > 5.0 || ratio < 0.2 {
+				return true
+			}
 		}
 	}
 	return false
