@@ -703,6 +703,12 @@ dimensions and two of them own no task: neither a failing mechanical check nor a
 finding — a judgment about the whole deliverable — can appear in `tasksThatFlagged`, so an empty
 selector on a failing run means "re-run everything", not "nothing to fix".
 
+**A lens-only FAIL is still scoped, by FILE.** `work-redispatch.sh --dispatch` maps each surviving
+blocking finding to the task(s) whose `writablePaths` contain its `file` and re-runs those, closed
+under dependents. One finding that maps to no task, or any failed mechanical check, falls back to FULL
+and says why. Without this, FULL re-probed the red commands the last round had already fixed, they
+exited 0, and `red-not-red` refused the dispatch outright.
+
 | selector | what it names | how you fix it |
 |---|---|---|
 | `tasksThatFlagged` | task ids that were not done, failed verification, or whose implementer/verifier never reported | fix the work, re-invoke with `onlyTasks: [<those ids>]` + `priorResults: {implemented, verified, red}` from the last run — dropping `red` makes every carried red-gated task re-read as unproven |
@@ -729,10 +735,13 @@ set closed?"**, which is finite and shrinks.
 
 `work-redispatch.sh --dispatch` implements it; do not hand-wire any of it:
 
-- On the advance to **round 2** it carries the previous verdict's surviving blocking findings into
-  `priorFindings` and sets `freezeFindingSet`. **Once** — never re-derived, or the carried set tracks
-  the generator instead of freezing against it. Each entry is adversarially refuted every round, so a
-  fixed finding is one the refuter can now refute; that is what "closed" means.
+- From **round 2** on, `priorFindings` is **the previous verdict's survivors**: its blocking
+  `findings` (already filtered to the unrefuted by `workflow.js`) merged with still-open carried
+  entries, deduped by `lens`+`title`+`file`. A finding the last round's refuters killed **drops out**;
+  one a later round raised is **carried**, not lost. `freezeFindingSet` is set with it. Each entry is
+  adversarially refuted every round, so a fixed finding is one the refuter can now refute; that is what
+  "closed" means, and refutation — not the round number — is what shrinks the set. `maxRounds` stops
+  the run.
 - From round 2, a fresh **lens** finding is reported as `residue` and does not gate. It is real and it
   is not lost — it is the input to a follow-up run's `priorFindings`.
 - `maxRounds` **defaults to 6**. The dispatch that would exceed it exits 4, spends no round, rotates

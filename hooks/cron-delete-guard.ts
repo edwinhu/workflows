@@ -183,7 +183,7 @@ const deleteId = String(((hookInput?.tool_input ?? {}) as Record<string, unknown
 // hold in one step, rather than an env var the session sets for itself.
 //
 // AN UNEVALUATED HOLD STILL DENIES, and says so with the remedy. This guard's path never changed
-// while `hooks/hound.ts` was deleted under it, so a session predating that rename enforces its hold
+// while the Stop-side hook file was deleted under it, so a session predating that rename enforces its hold
 // here from a hook that is running and has NOTHING evaluating the hold on the Stop side — rounds 0
 // forever, no release after a PASS, and every heartbeat delete refused. Weakening the deny would
 // hand the session an argument for deleting a live run's loop; naming the skew costs nothing and is

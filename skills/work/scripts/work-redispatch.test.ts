@@ -460,7 +460,11 @@ function selFixture(opts: { extra?: Record<string, unknown> } = {}) {
 }
 
 /** A previous round's verdict carrying per-task records for every task it settled. */
-function selResult(dir: string, flagged: string[], opts: { settled?: string[]; noRedFor?: string[] } = {}) {
+function selResult(
+  dir: string,
+  flagged: string[],
+  opts: { settled?: string[]; noRedFor?: string[]; findings?: unknown[]; mechFailed?: unknown[] } = {},
+) {
   const settled = opts.settled ?? ['T1', 'T2', 'T3', 'T4', 'T5'].filter(id => !flagged.includes(id))
   const noRed = new Set(opts.noRedFor ?? [])
   writeFileSync(join(dir, 'result.json'), JSON.stringify({
@@ -469,7 +473,9 @@ function selResult(dir: string, flagged: string[], opts: { settled?: string[]; n
     verified: settled.map(id => ({ id, pass: true })),
     red: settled.filter(id => !noRed.has(id)).map(id => ({ id, verdict: 'red-green' })),
     tasksThatFlagged: flagged,
-    mechanicalThatFailed: [], lensesThatFlagged: [], findings: [],
+    mechanicalThatFailed: opts.mechFailed ?? [],
+    lensesThatFlagged: opts.findings?.length ? ['k'] : [],
+    findings: opts.findings ?? [],
   }, null, 2) + '\n')
 }
 
@@ -587,6 +593,96 @@ describe('work-redispatch.sh derives the selective re-run from the previous verd
     selResult(f.dir, ['T5'])
     expect(run(f.plan, f.args).code).toBe(0)
     expect(only(f.args)).toEqual(['T1'])
+  })
+})
+
+/**
+ * A FAIL carried entirely by review lenses names no task: `tasksThatFlagged` is [] because no
+ * implementer, verifier or red gate failed. Selection fell back to FULL, and FULL re-probes every red
+ * command — including the ones the previous round FIXED, which now exit 0 and are refused as
+ * `red-not-red`. The round could not be dispatched at all, on a verdict whose findings were confined
+ * to two files. The mapping is the one plan-lint already uses: a finding names a `file`, and a task
+ * declares the paths it may write.
+ */
+describe('a lens-only FAIL is narrowed by the files its findings name', () => {
+  const major = (file: string, title = 'the gate asserts existence only') =>
+    ({ title, severity: 'major', detail: 'why it is wrong', file, lens: 'k' })
+
+  test('a finding in one task’s writablePaths scopes the re-run to that task', () => {
+    const f = selFixture()
+    selResult(f.dir, [], { findings: [major('src/t5/thing.ts')] })
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(0)
+    expect(only(f.args)).toEqual(['T5'])
+    expect(carriedIds(f.args, 'verified')).toEqual(['T1', 'T2', 'T3', 'T4'])
+    expect(r.out).toMatch(/lens-only FAIL/)
+  })
+
+  test('an ABSOLUTE path in the finding still maps — findings carry absolute paths, writablePaths do not', () => {
+    const f = selFixture()
+    selResult(f.dir, [], { findings: [major(join(f.dir, 'src/t5/thing.ts'))] })
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(0)
+    expect(only(f.args)).toEqual(['T5'])
+  })
+
+  test('two findings in two tasks select both', () => {
+    const f = selFixture()
+    selResult(f.dir, [], { findings: [major('src/t1/a.ts'), major('src/t5/b.ts', 'a second defect')] })
+    expect(redispatch(f.plan, f.args).code).toBe(0)
+    expect(only(f.args)!.sort()).toEqual(['T1', 'T5'])
+  })
+
+  // SOUNDNESS, the same condition the flagged path enforces: anything reading a re-run task's output
+  // was verified against code that is about to change.
+  test('the mapped task drags its transitive dependents in', () => {
+    const f = selFixture()
+    selResult(f.dir, [], { findings: [major('src/t2/a.ts')] })
+    expect(redispatch(f.plan, f.args).code).toBe(0)
+    expect(only(f.args)).toEqual(['T2', 'T3', 'T4'])
+  })
+
+  // ONE unmapped finding is enough: scoping to the rest would carry a task the unmapped finding may
+  // be about, on a "verified" record earned before the fix.
+  test('a finding that maps to NO task falls back to FULL, and names the finding', () => {
+    const f = selFixture()
+    selResult(f.dir, [], { findings: [major('src/t5/a.ts'), major('docs/elsewhere.md', 'unowned')] })
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(0)
+    expect(only(f.args)).toBeUndefined()
+    expect(r.out).toMatch(/FULL re-run/)
+    expect(r.out).toContain('unowned')
+  })
+
+  test('a finding with no `file` at all falls back to FULL', () => {
+    const f = selFixture()
+    const { file, ...noFile } = major('src/t5/a.ts')
+    selResult(f.dir, [], { findings: [noFile] })
+    const r = redispatch(f.plan, f.args)
+    expect(only(f.args)).toBeUndefined()
+    expect(r.out).toMatch(/names no file/)
+  })
+
+  // A mechanical failure is attributable to no task and no file, and mechanical checks re-run under
+  // any scope — so narrowing would leave the round failing on a check nobody selected can touch.
+  test('a failed mechanical check forbids the narrowing, even with mappable findings', () => {
+    const f = selFixture()
+    selResult(f.dir, [], {
+      findings: [major('src/t5/a.ts')],
+      mechFailed: [{ name: 'tests', exitCode: 1, output: 'boom' }],
+    })
+    const r = redispatch(f.plan, f.args)
+    expect(only(f.args)).toBeUndefined()
+    expect(r.out).toMatch(/FULL re-run/)
+    expect(r.out).toMatch(/mechanical/)
+  })
+
+  test('a MINOR finding is not a blocking finding and scopes nothing', () => {
+    const f = selFixture()
+    selResult(f.dir, [], { findings: [{ ...major('src/t5/a.ts'), severity: 'minor' }] })
+    const r = redispatch(f.plan, f.args)
+    expect(only(f.args)).toBeUndefined()
+    expect(r.out).toMatch(/FULL re-run/)
   })
 })
 
@@ -718,13 +814,16 @@ describe('work-redispatch.sh re-hashes the SPEC, not the plan bytes', () => {
  * whose rate does not fall as fixes land. The cap is what actually stops the run.
  */
 describe('the frozen finding set and the round cap', () => {
-  /** A previous verdict carrying findings, so round 2 has a blocking set to freeze. */
-  function withFindings(dir: string, findings: unknown[], name = 'result.json') {
+  /**
+   * A previous verdict. `findings` is the gate return's SURVIVING pool — workflow.js has already
+   * removed the refuted ones and put them in `refuted`, which is what makes it the still-open set.
+   */
+  function withFindings(dir: string, findings: unknown[], name = 'result.json', refuted: unknown[] = []) {
     writeFileSync(join(dir, name), JSON.stringify({
       overallPass: false, verdict: 'FAIL',
       scoreTable: { survivingBlocking: findings.length, lensFindings: findings.length },
       tasksThatFlagged: [], mechanicalThatFailed: [], lensesThatFlagged: ['k'],
-      findings,
+      findings, refuted,
     }, null, 2) + '\n')
   }
   const major = (title: string) => ({ title, severity: 'major', detail: 'why it is wrong', file: 'src/a.ts', lens: 'k' })
@@ -743,29 +842,100 @@ describe('the frozen finding set and the round cap', () => {
     expect(a.priorFindings[0].severity).toBe('major')
   })
 
-  test('an already-frozen set is carried unchanged — the freeze is from round 1, not re-derived', () => {
+  /**
+   * CARRY-OVER. `priorFindings` used to be set ONCE, on the advance to round 2, and never touched:
+   * a finding the round-3 refuters killed was still carried into round 4 as an open gate, and a
+   * blocking finding a later round raised was never carried at all. The set was frozen against the
+   * generator and also against the evidence. It is now re-derived from the previous verdict's
+   * survivors every round; refutation, not the round number, is what shrinks it.
+   */
+  test('a carried finding that survived the round is carried again', () => {
     const f = gateFixture()
     const a0 = readArgs(f.args)
     a0.rounds = 2
     a0.freezeFindingSet = true
     a0.priorFindings = [{ title: 'carried from round 1', severity: 'major', detail: 'd', lens: 'k' }]
     writeFileSync(f.args, JSON.stringify(a0, null, 2))
-    withFindings(f.dir, [major('raised in round 2, residue not gate')])
+    // The gate return puts a surviving carried finding back in `findings`, so this IS the carry.
+    withFindings(f.dir, [{ title: 'carried from round 1', severity: 'major', detail: 'd', lens: 'k' }])
     expect(redispatch(f.plan, f.args).code).toBe(0)
     const a = readArgs(f.args)
     expect(a.priorFindings.map((p: any) => p.title)).toEqual(['carried from round 1'])
     expect(a.freezeFindingSet).toBe(true)
   })
 
+  test('a carried finding the round REFUTED drops out', () => {
+    const f = gateFixture()
+    const a0 = readArgs(f.args)
+    a0.rounds = 2
+    a0.freezeFindingSet = true
+    a0.priorFindings = [
+      { title: 'fixed this round', severity: 'major', detail: 'd', lens: 'k' },
+      { title: 'still open', severity: 'major', detail: 'd', lens: 'k' },
+    ]
+    writeFileSync(f.args, JSON.stringify(a0, null, 2))
+    withFindings(f.dir,
+      [{ title: 'still open', severity: 'major', detail: 'd', lens: 'k' }],
+      'result.json',
+      [{ title: 'fixed this round', severity: 'major', detail: 'd', lens: 'k', refuted: true }])
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(0)
+    expect(readArgs(f.args).priorFindings.map((p: any) => p.title)).toEqual(['still open'])
+    expect(r.out).toMatch(/1 refuted last round and dropped/)
+  })
+
+  test('a NEW blocking finding from a later round is carried, not lost', () => {
+    const f = gateFixture()
+    withFindings(f.dir, [major('a real defect')])
+    expect(redispatch(f.plan, f.args).code).toBe(0)
+    expect(readArgs(f.args).priorFindings.map((p: any) => p.title)).toEqual(['a real defect'])
+    // Round 3's verdict still carries the first and adds one the round-2 lenses raised.
+    withFindings(f.dir, [major('a real defect'), major('another one')])
+    expect(redispatch(f.plan, f.args).code).toBe(0)
+    const a = readArgs(f.args)
+    expect(a.rounds).toBe(3)
+    expect(a.freezeFindingSet).toBe(true)
+    expect(a.priorFindings.map((p: any) => p.title).sort()).toEqual(['a real defect', 'another one'])
+  })
+
+  test('a carried finding the verdict never mentions at all stays OPEN — only refutation removes one', () => {
+    // The refute leg can die, and a verdict can predate the channel. Silence is not a refutation.
+    const f = gateFixture()
+    const a0 = readArgs(f.args)
+    a0.rounds = 2
+    a0.priorFindings = [{ title: 'unjudged', severity: 'major', detail: 'd', lens: 'k' }]
+    writeFileSync(f.args, JSON.stringify(a0, null, 2))
+    withFindings(f.dir, [])
+    expect(redispatch(f.plan, f.args).code).toBe(0)
+    expect(readArgs(f.args).priorFindings.map((p: any) => p.title)).toEqual(['unjudged'])
+  })
+
+  test('the same finding in both channels is ONE entry — dedupe is by lens+title+file', () => {
+    const f = gateFixture()
+    const a0 = readArgs(f.args)
+    a0.rounds = 2
+    a0.priorFindings = [major('the one defect')]
+    writeFileSync(f.args, JSON.stringify(a0, null, 2))
+    withFindings(f.dir, [major('the one defect'), major('the one defect')])
+    expect(redispatch(f.plan, f.args).code).toBe(0)
+    expect(readArgs(f.args).priorFindings.length).toBe(1)
+  })
+
+  test('the same title from a DIFFERENT lens is a different finding and both are carried', () => {
+    const f = gateFixture()
+    withFindings(f.dir, [major('shared title'), { ...major('shared title'), lens: 'other' }])
+    expect(redispatch(f.plan, f.args).code).toBe(0)
+    const a = readArgs(f.args)
+    expect(a.priorFindings.length).toBe(2)
+    expect(a.priorFindings.map((p: any) => p.lens).sort()).toEqual(['k', 'other'])
+  })
+
   test('freezeFindingSet and priorFindings survive the plan sync — they are run-local', () => {
     const f = gateFixture()
     withFindings(f.dir, [major('a real defect')])
     expect(redispatch(f.plan, f.args).code).toBe(0)
-    // Second advance: the plan block carries neither key, and the sync must not erase them.
-    withFindings(f.dir, [major('another one')])
-    expect(redispatch(f.plan, f.args).code).toBe(0)
+    // The plan block carries neither key, and the sync must not erase them.
     const a = readArgs(f.args)
-    expect(a.rounds).toBe(3)
     expect(a.freezeFindingSet).toBe(true)
     expect(a.priorFindings.map((p: any) => p.title)).toEqual(['a real defect'])
   })

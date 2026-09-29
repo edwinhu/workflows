@@ -151,7 +151,7 @@ describe('the hook', () => {
 // ------------------------------------------------- the liveness stamp: is this hook running at all?
 //
 // A hold is armed by a script and enforced by a hook, registered independently. Measured 2026-09-28:
-// a session predating v6.25 kept its Stop registration on the DELETED hooks/hound.ts while running
+// a session predating v6.25 kept its Stop registration on a hook file that release deleted, while running
 // the current work-dispatch.sh, so it armed a hold nothing ever evaluated — rounds 0 forever, no
 // release after a PASS — while cron-delete-guard.ts, whose path never changed, went on refusing every
 // CronDelete of the heartbeats. Nothing in the state distinguished that from a first round still
