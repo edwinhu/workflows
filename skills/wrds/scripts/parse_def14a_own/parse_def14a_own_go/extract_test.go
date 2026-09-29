@@ -1344,3 +1344,48 @@ func TestStackedSharesOverPercentIsOneHolding(t *testing.T) {
 		}
 	}
 }
+
+// A fund-family proxy prints the same holder table, headers and all, once per
+// page, and writes the Fund only on the row where it changes. The first rows of
+// every page but the first therefore carry a blank fund that belongs to the
+// page before, and without carrying it across the two tables the same broker's
+// holdings in different funds collapse onto one key.
+const repeatedTablePagesHTML = `<html><body>
+<p>Principal Shareholders: 5% record ownership of each fund</p>
+<table>
+<tr><td>Fund</td><td>Class</td><td>Name</td><td>Number of Shares of Class</td><td>% of Class</td></tr>
+<tr><td>AB All Market Portfolio</td><td>A</td><td>Charles Schwab &amp; Co.</td><td>328,210</td><td>23.95%</td></tr>
+<tr><td></td><td>C</td><td>Charles Schwab &amp; Co.</td><td>71,452</td><td>6.11%</td></tr>
+</table>
+<table>
+<tr><td>Fund</td><td>Class</td><td>Name</td><td>Number of Shares of Class</td><td>% of Class</td></tr>
+<tr><td></td><td>R</td><td>Charles Schwab &amp; Co.</td><td>49,619</td><td>8.79%</td></tr>
+<tr><td>AB Value Fund</td><td>A</td><td>Charles Schwab &amp; Co.</td><td>62,739</td><td>5.76%</td></tr>
+</table></body></html>`
+
+func TestFundCarriesToTheNextPageOfTheSameTable(t *testing.T) {
+	rows := ScreenRows(run(t, repeatedTablePagesHTML))
+	seen := map[string]int{}
+	for _, r := range rows {
+		if strings.HasPrefix(r.HolderName, "Charles Schwab") {
+			seen[r.ShareClass]++
+		}
+	}
+	if len(seen) == 0 {
+		t.Fatalf("holder lost: %v", holderNames(rows))
+	}
+	for cls, n := range seen {
+		if n > 1 {
+			t.Errorf("share_class %q emitted %d times: %v", cls, n, seen)
+		}
+	}
+	var carried string
+	for cls := range seen {
+		if strings.Contains(cls, "All Market") && strings.Contains(cls, "R") {
+			carried = cls
+		}
+	}
+	if carried == "" {
+		t.Errorf("the class-R row on page two did not inherit the fund from page one: %v", seen)
+	}
+}
