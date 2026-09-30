@@ -3153,3 +3153,47 @@ func TestRule1_AsciiCompensationSubHeadingDoesNotCloseTheSection(t *testing.T) {
 		t.Errorf("len(persons) = %d after the compensation table: %v", got, personNames(e))
 	}
 }
+
+// Groupon 2011 (0001047469-11-009142) sets the Name header and each section
+// label with COLSPAN=2 over a spacer column while every body name cell sits in
+// the second of the two. The grid then holds a column 0 filled only by the
+// colspan shadow of "Officers:" and "Directors:", and a left-most-wins Name
+// column reads that shadow: two section rows, no people, status no_mgmt_table.
+// Name is the candidate column the BODY fills, not the left-most one.
+func TestRule1_ColspanShadowIsNotTheNameColumn(t *testing.T) {
+	const section = `<P ALIGN="center"><B>MANAGEMENT</B></P>
+<P><B>Officers and Directors</B></P>
+<TABLE>
+<TR><TH COLSPAN=2 ALIGN="LEFT">Name</TH><TH></TH><TH COLSPAN=2 ALIGN="CENTER">Age</TH><TH></TH><TH>Position</TH></TR>
+<TR><TD COLSPAN=2>Officers:</TD><TD></TD><TD></TD><TD></TD><TD></TD><TD></TD></TR>
+<TR><TD></TD><TD>Ada Lovelace</TD><TD></TD><TD></TD><TD>36</TD><TD></TD><TD>Co-Founder, Chief Executive Officer and Director</TD></TR>
+<TR><TD></TD><TD>Grace Hopper</TD><TD></TD><TD></TD><TD>45</TD><TD></TD><TD>Chief Financial Officer</TD></TR>
+<TR><TD COLSPAN=2>Directors:</TD><TD></TD><TD></TD><TD></TD><TD></TD><TD></TD></TR>
+<TR><TD></TD><TD>Alan Turing</TD><TD></TD><TD></TD><TD>41</TD><TD></TD><TD>Director</TD></TR>
+<TR><TD></TD><TD>Charles Babbage</TD><TD></TD><TD></TD><TD>52</TD><TD></TD><TD>Director</TD></TR>
+</TABLE>
+<P><I>Ada Lovelace</I> has served as our Chief Executive Officer since 1843.</P>`
+	e := ExtractManagement([]byte(sgmlHeader + sgmlDoc("424B4", "<HTML><BODY>"+section+"</BODY></HTML>")))
+	if e.Filing.Status != StatusOK {
+		t.Fatalf("status = %q, want %q", e.Filing.Status, StatusOK)
+	}
+	if len(e.Persons) != 4 {
+		t.Fatalf("len(persons) = %d, want 4: %v", len(e.Persons), personNames(e))
+	}
+	if got := squash(e.Filing.CEOName); got != "Ada Lovelace" {
+		t.Errorf("ceo_name = %q, want %q", got, "Ada Lovelace")
+	}
+	// The section labels must still govern: the colspan shadow is a Name-column
+	// artefact, not a reason to lose the Officers:/Directors: split.
+	if p := person(t, e, "Grace Hopper"); p.Section != SectionOfficer {
+		t.Errorf("Grace Hopper section = %q, want %q", p.Section, SectionOfficer)
+	}
+	if p := person(t, e, "Alan Turing"); p.Section != SectionDirector {
+		t.Errorf("Alan Turing section = %q, want %q", p.Section, SectionDirector)
+	}
+	for _, bad := range []string{"Officers:", "Directors:"} {
+		if _, ok := findPerson(e, bad); ok {
+			t.Errorf("section row %q became a person", bad)
+		}
+	}
+}

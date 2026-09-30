@@ -59,21 +59,31 @@ func columnRoles(g *Grid, hdr int) (colRoles, bool) {
 		return colRoles{}, false
 	}
 
-	// Name: the left-most column that is mostly non-age text. Prefer a column
-	// left of Age (every layout in circulation puts the name first) and fall
-	// back to the right of it rather than giving up.
+	// Name: the column of mostly non-age text that the BODY actually fills.
+	// Prefer a column left of Age (every layout in circulation puts the name
+	// first) and fall back to the right of it rather than giving up.
+	//
+	// Among the candidates left of Age, the one with the most filled body cells
+	// wins rather than the left-most. Groupon 2011 sets the Name header and each
+	// section label with COLSPAN=2 over a spacer column while every body name
+	// cell sits in the second of the two, so column 0 is filled only by the
+	// colspan shadow of "Officers:" and "Directors:" — two rows against the name
+	// column's sixteen — and left-most-wins reads the shadow, yielding no people
+	// at all.
 	name := -1
-	for j := 0; j < ncol; j++ {
-		if j == age || filled[j] == 0 || ages[j]*2 > filled[j] {
+	for j := 0; j < age && j < ncol; j++ {
+		if filled[j] == 0 || ages[j]*2 > filled[j] {
 			continue
 		}
-		if j < age {
-			name = j
-			break
-		}
-		if name < 0 {
+		if name < 0 || filled[j] > filled[name] {
 			name = j
 		}
+	}
+	for j := age + 1; name < 0 && j < ncol; j++ {
+		if filled[j] == 0 || ages[j]*2 > filled[j] {
+			continue
+		}
+		name = j
 	}
 	if name < 0 {
 		return colRoles{}, false
