@@ -2919,3 +2919,45 @@ func TestClassLetterCommonStockIsCommonStock(t *testing.T) {
 		t.Errorf("row missing: %+v", rows)
 	}
 }
+
+// The D&O group total is printed in its OWN one-row HTML table at the foot of the
+// page, continuing the ownership table above it. The two-data-row floor -- there
+// to stop a stray one-row table being read as ownership -- rejected it, so the
+// filing emitted twenty person rows and no group row at all. Transcribed from
+// Agilent's 2005 proxy (0001193125-05-003365).
+const groupRowInItsOwnTableHTML = `<html><body>
+<p><b>Security Ownership of Certain Beneficial Owners and Management</b></p>
+<table>
+<tr><th>Name of Beneficial Owner</th><th>Shares Beneficially Owned</th><th></th><th>Percentage(1)</th></tr>
+<tr><td>William P. Sullivan</td><td>1,123,456</td><td></td><td>*</td></tr>
+<tr><td>Adrian T. Dillon</td><td>654,321</td><td></td><td>*</td></tr>
+<tr><td>James G. Cullen</td><td>45,678</td><td></td><td>*</td></tr>
+</table>
+<table>
+<tr><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td colspan="3">Shares of Agilent Common Stock Beneficially Owned</td></tr>
+<tr><td>Name of Beneficial Owner</td><td>Number</td><td>Nature(2)</td><td>Percentage(1)</td></tr>
+<tr><td>All current directors and executive officers as a group (18 persons)</td><td>7,223,483</td><td></td><td>1.5</td></tr>
+</table></body></html>`
+
+func TestGroupRowAloneInAContinuationTable(t *testing.T) {
+	rows := ScreenRows(run(t, groupRowInItsOwnTableHTML))
+	var g *Row
+	for i := range rows {
+		if rows[i].IsGroupRow {
+			g = &rows[i]
+		}
+	}
+	if g == nil {
+		t.Fatalf("the group row in its own one-row table was rejected: %+v", rows)
+	}
+	if g.Percent == nil || *g.Percent != 1.5 {
+		t.Errorf("group row percent: %+v", g.Percent)
+	}
+	if g.GroupN != 18 {
+		t.Errorf("group n: %d", g.GroupN)
+	}
+	if find(rows, "William P. Sullivan", "") == nil {
+		t.Errorf("a person row was lost: %+v", rows)
+	}
+}
