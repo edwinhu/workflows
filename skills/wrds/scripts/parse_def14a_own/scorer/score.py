@@ -70,10 +70,13 @@ Metrics, each printed with its denominator:
                                >= 1 lost group row carried a parsed percent)
                                with a percent-carrying group row again. The
                                share-only group-row population and the filings
-                               whose old rows were demonstrably wrong (the two
+                               whose old rows were demonstrably wrong (the FOUR
                                exclusion clauses recorded in the builder and in
-                               gold_regress.json) are reported as DIAGNOSTICS
-                               with their own denominators, never gated.
+                               gold_regress.json — X1 dollar-in-name, X2
+                               one-value-all-rows, and since 2026-09-30 X3 fund
+                               dollar-range tables and X4 per-fund compensation
+                               tables) are reported as DIAGNOSTICS with their own
+                               denominators, per clause, never gated.
 
 GATED vs DIAGNOSTIC. The gated set is EXACTLY the keys under `minimums` (a floor,
 val >= thr) plus the keys under `maximums` (a ceiling, val <= thr) in
@@ -656,12 +659,27 @@ def main():
     # carries the flags that say which set each filing is in and which exclusion
     # clause fired. Re-deriving it here from a panel would let a round that
     # re-parsed the archive move its own denominator.
+    # The four exclusion clauses are read by NAME from the header, so a clause added
+    # to build_regress_set.py takes effect here without this file choosing which
+    # exclusions it believes in. X3/X4 (2026-09-30) are the fund dollar-range and
+    # per-fund compensation families; they get their OWN diagnostic denominator
+    # below, because the whole point of the correction is that re-accepting them
+    # stays visible after they leave the gated set.
+    EXCL_COLS = ["excl_x1_dollar_in_name", "excl_x2_one_value_all_rows",
+                 "excl_x3_dollar_range_table", "excl_x4_m3_repeated_per_fund"]
     reg_a, reg_bg, reg_bd, reg_excl, reg_excl_zero = set(), set(), set(), set(), set()
+    reg_excl_zero_by_clause = defaultdict(set)
     reg_meta = {}
+    present = []
     if not args.no_regress:
         rpath = os.path.join(g, "gold_regress.tsv")
         with open(rpath) as fh:
-            for r in csv.DictReader(fh, **TSV):
+            rdr = csv.DictReader(fh, **TSV)
+            present = [c for c in EXCL_COLS if c in (rdr.fieldnames or [])]
+            if not present:
+                sys.exit("ERROR: %s carries none of the exclusion columns %s — rebuild it "
+                         "with gold/build_regress_set.py" % (rpath, EXCL_COLS))
+            for r in rdr:
                 key = (r["cik"].lstrip("0") or "0", r["accession"])
                 reg_meta[key] = r
                 if r["in_set_zero_row"] == "1":
@@ -670,7 +688,8 @@ def main():
                     reg_bg.add(key)
                 if r["in_set_group_row_diag"] == "1":
                     reg_bd.add(key)
-                if r["excl_x1_dollar_in_name"] == "1" or r["excl_x2_one_value_all_rows"] == "1":
+                fired = [c for c in present if r[c] == "1"]
+                if fired:
                     reg_excl.add(key)
                     # The diagnostic denominator is the excluded ZERO-ROW candidates
                     # only. An excluded filing that merely lost its group row still
@@ -678,11 +697,16 @@ def main():
                     # whatever the parser does.
                     if r["cand_zero_row"] == "1":
                         reg_excl_zero.add(key)
+                        for c in fired:
+                            reg_excl_zero_by_clause[c].add(key)
         print("[in ] regress %s: %d candidate filings — set(a) zero-row %d, "
               "set(b) group-row GATED %d, set(b) share-only DIAGNOSTIC %d, excluded %d "
               "(of which zero-row candidates %d)" % (
                   rpath, len(reg_meta), len(reg_a), len(reg_bg), len(reg_bd),
                   len(reg_excl), len(reg_excl_zero)))
+        print("[in ] regress exclusion clauses in force: %s" % ", ".join(
+            "%s=%d" % (c.replace("excl_", ""), len(reg_excl_zero_by_clause[c]))
+            for c in present))
 
     # ---- parser output ------------------------------------------------------
     man = {}
@@ -1280,7 +1304,8 @@ def main():
 
         print("\n== (vii) REGRESSION SET (fixed diff of panel_e4e78a95 -> panel; "
               "%d candidate filings) ==" % len(reg_meta))
-        print("  (a) ZERO-ROW set: old n_rows > 0 and new n_rows == 0, after the two exclusions")
+        print("  (a) ZERO-ROW set: old n_rows > 0 and new n_rows == 0, after the %d "
+              "exclusion clauses" % len(present))
         print("      recovered >=1 row   [GATED]: %d / %d = %.4f" % (
             len(a_hit), len(reg_a), a_rate))
         print("      rows: %d in the old panel over those filings, %d now" % (
@@ -1293,10 +1318,21 @@ def main():
         print("  DIAGNOSTIC, never gated:")
         print("      share-only group-row population, any group row back: %d / %d = %.4f" % (
             len(bd_hit), len(reg_bd), rrate(bd_hit, reg_bd)))
-        print("      EXCLUDED zero-row filings (X1 dollar-in-name / X2 one-value-all-rows)")
+        print("      EXCLUDED zero-row filings (X1 dollar-in-name / X2 one-value-all-rows /")
+        print("      X3 fund dollar-range table / X4 per-fund compensation table)")
         print("      that emit >=1 row again: %d / %d = %.4f  — a RISE here is the round" % (
             len(ex_hit), len(reg_excl_zero), rrate(ex_hit, reg_excl_zero)))
         print("      re-accepting dollar-range and compensation tables, not recovering ownership")
+        # PER CLAUSE, so the 2026-09-30 set correction is auditable: the 285 filings
+        # X3/X4 removed from set (a) are still counted here every round. Clauses can
+        # overlap, so these denominators sum to more than the total above.
+        for c in EXCL_COLS:
+            den = reg_excl_zero_by_clause.get(c, set())
+            if not den:
+                continue
+            hit = reg.recovered_zero_row(den)
+            print("        %-32s %d / %d = %.4f" % (
+                c.replace("excl_", ""), len(hit), len(den), rrate(hit, den)))
 
         regress_metrics = {
             "regress_zero_row_recovered": a_rate,
@@ -1316,10 +1352,20 @@ def main():
             "regress_candidate_filings": len(reg_meta),
             "regress_manifest_covered": len(reg_man),
         }
+        # Per-clause diagnostics, never gated. Named after the clause so the
+        # 2026-09-30 X3/X4 correction is checkable from metrics_dev.json alone.
+        for c in EXCL_COLS:
+            den = reg_excl_zero_by_clause.get(c, set())
+            if not den:
+                continue
+            regress_metrics["regress_%s_emitting_rows_rate" % c.replace("excl_", "")] = \
+                rrate(reg.recovered_zero_row(den), den)
+            regress_metrics["regress_%s_denominator" % c.replace("excl_", "")] = len(den)
         if args.regress_report:
             with open(args.regress_report, "w") as fh:
                 fh.write("cik\taccession\tfiling_date\tin_set_zero_row\tin_set_group_row_gated"
-                         "\tin_set_group_row_diag\texcluded\told_n_rows\told_group_rows"
+                         "\tin_set_group_row_diag\texcluded\texcl_clauses\told_n_rows"
+                         "\told_group_rows"
                          "\told_group_rows_with_percent\tnew_n_rows\tnew_group_row_any"
                          "\tnew_group_row_with_percent\trecovered\n")
                 for k in sorted(reg_meta):
@@ -1337,7 +1383,9 @@ def main():
                     fh.write("\t".join(str(x) for x in [
                         k[0], k[1], r["filing_date"], r["in_set_zero_row"],
                         r["in_set_group_row_gated"], r["in_set_group_row_diag"],
-                        1 if k in reg_excl else 0, r["old_n_rows"], r["old_group_rows"],
+                        1 if k in reg_excl else 0,
+                        ",".join(c.replace("excl_", "") for c in present if r[c] == "1") or "-",
+                        r["old_n_rows"], r["old_group_rows"],
                         r["old_group_rows_with_percent"], reg.rows.get(k, 0),
                         1 if k in reg.group_any else 0, 1 if k in reg.group_pct else 0,
                         rec]) + "\n")

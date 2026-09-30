@@ -65,16 +65,28 @@ regress, **22,856** filings) and asserts coverage before it submits, and
 
 | set | definition | denominator |
 |---|---|---:|
-| (a) ZERO-ROW, **gated** | old `n_rows` > 0 and new `n_rows` == 0, after the exclusions | **933** |
+| (a) ZERO-ROW, **gated** | old `n_rows` > 0 and new `n_rows` == 0, after the exclusions | **648** |
 | (b) GROUP-ROW, **gated** | old group row, new none, and ≥ 1 lost group row carried a **parsed percent** | **83** |
-| (b) share-only, diagnostic | the same minus the percent requirement | 1,075 |
-| excluded, diagnostic | the old rows were demonstrably wrong (X1/X2 below) | 150 |
+| (b) share-only, diagnostic | the same minus the percent requirement | 1,054 |
+| excluded, diagnostic | the old rows were demonstrably wrong (X1-X4 below) | 437 |
+
+**SET CORRECTED 2026-09-30 by the operator; set (a) was 933 and is now 648.** Two
+exclusion clauses were ADDED, X3 and X4, quoted from the loop's own floors — the
+205 N-1A fund dollar-range tables and the 43 per-fund compensation tables had OLD
+rows that were themselves wrong, so 0.95 over 933 was unreachable (ceiling 0.7342).
+The **0.95 thresholds did not move**, `round_filelist.tsv` is byte-identical, and
+the removed filings are still reported as a per-clause diagnostic. The two floors
+`regress-zero-row-ceiling-0.761-dollar-range-tables` and
+`regress-zero-row-ceiling-0.734-refined` are RESOLVED by that correction — see the
+journal note `operator-regress-set-corrected` and GRIND_PLAN §12.
 
 `regress_zero_row_recovered` = share of (a) that parses to ≥ 1 row again;
 `regress_group_row_recovered` = share of (b) with a percent-carrying group row
-again. **Both are 0.0000 at HEAD by construction** — the current parser IS the one
-that lost them — so this round starts from zero and the whole 0.95 is headroom:
-about **886 of 933** filings and **79 of 83**.
+again. Measured on the corrected set at the last scoring: **427 of 648 = 0.6590**
+and **66 of 83 = 0.7952**, so the headroom is **221** filings and **17**. The
+reachable residue the floors measured is `share_only_other` 197 + `has_percent` 32
+= 229, and **390 of the ASCII-path residue went through the plain-text reader** —
+that, not the fund tables, is where the work is.
 
 The per-filing detail is `$DEF14A_WORK/regress_dev.tsv`, written by every scoring
 run: one row per candidate filing with its set flags, its old row and group-row
@@ -93,8 +105,9 @@ These are from the run-2 report and from the setup; all three are in set (a):
 
 ### The exclusions, and why you must not chase them
 
-150 candidate filings are EXCLUDED because the old rows were demonstrably wrong,
-by two mechanical clauses, both read in the documents during setup:
+437 candidate filings are EXCLUDED because the old rows were demonstrably wrong,
+by four mechanical clauses — X1/X2 read in the documents during setup, X3/X4 added
+2026-09-30 from the loop's own measured floors:
 
 - **X1** — a `$` in an old `holder_name` (96 filings). The parser had read a
   DOLLAR column as the name: `Thomas R. $10,001-$50,000 $0` → shares 100000
@@ -106,11 +119,29 @@ by two mechanical clauses, both read in the documents during setup:
   from "Over $100,000". `0000930413-02-002213` Third Avenue 2002: 10 trustees each
   `0`, from "$0*".
 
-`regress_excluded_emitting_rows_rate` is printed every round, over the **137** of
-those 150 that were zero-row candidates. **If it rises you have re-accepted
-dollar-range and compensation tables**, which is the defect
-commit `52f43c4f` removed, and the duplicate ceilings and `holder_precision_blockw`
-will fail.
+- **X3** — no old row carries a percent AND ≥ half the filing's old `shares` values
+  fall in the N-1A dollar-range endpoint set `{0,1,10000,50000,100000,500000,1000000}`
+  (327 filings). The $1–$10,000 / $10,001–$50,000 / $50,001–$100,000 / over
+  $100,000 bands read as share counts: `0000950137-04-004256`,
+  `0001072613-08-000788` (DOLLAR RANGES OF SHARES OWNED BY TRUSTEES),
+  `0001047469-06-007946`. X1/X2 miss them because the ranges DIFFER between
+  trustees, so no three rows share one `(shares, percent)` pair and no name carries
+  a `$`.
+- **X4** — no percent anywhere AND ≥ 3 distinct old `table_index` values AND ≥ half
+  the old rows carry a `holder_name` repeating 3+ times (43 filings). ALL 43 are one
+  document, `0000051931-18-000890` (American Funds 2018, old `n_rows` 375), filed
+  under 43 co-registrant CIKs and the ENTIRE 2018 residue: the fund-family
+  compensation table attached once per fund, columns "Aggregate compensation from
+  Fund … | Total compensation from all Funds | Dollar range of Fund shares owned",
+  no share count and no percent. This is mechanism **M3**, which the round rejects.
+
+`regress_excluded_emitting_rows_rate` is printed every round over the **422** of
+those 437 that were zero-row candidates, and now ALSO per clause (x1 83, x2 58,
+x3 325, x4 43 — overlapping denominators). **If any of them rises you have
+re-accepted dollar-range and compensation tables**, which is the defect commit
+`52f43c4f` removed, and the duplicate ceilings and `holder_precision_blockw` will
+fail. `textMoneyBlock` rejects these correctly and **must not be weakened**. Do not
+re-diagnose the dollar-range or per-fund-compensation families.
 
 ### Rules specific to THIS round
 

@@ -60,7 +60,13 @@ scorer/score_test.py     tests for the ISS name matcher, the duplicate-excess co
 thresholds.json          the locked pass thresholds
 lock.sha256              scorer + gold + thresholds hashes the scorer verifies before scoring
 check.sh                 the grind's --check
+gate.sh                  the grind's --gate (2026-09-30): open when the round is done OR
+                         provably orphaned, shut while a job is queued/running
+gate_lib.sh              sourced by run_baseline.sh: records the submitted job ids and the
+                         round state that gate.sh reads. Not executable on its own
+gate_test.sh             gate.sh + gate_lib.sh against a stubbed qstat, no grid (24 checks)
 run_baseline.sh          build -> stage -> qsub -> fetch -> score, one command
+                         (--fetch-only skips build/submit: brings an orphaned round home)
 GRIND_PLAN.md            baseline, thresholds argument, and the launch commands
 GRIND_PROMPT.md          the per-iteration prompt the loop hands a fresh agent
 ```
@@ -350,9 +356,44 @@ python3 gold/build_gold_iss.py                    # (c) ISS directors 2002-2024,
 python3 gold/sample_gold_iss.py                   # (c) sample seed 20260929 + split seed 20260930
 python3 gold/sample_full_archive.py               # (d) the FIXED full-archive sample, seed 20260929
 bash make_lock.sh                                 # hash-lock scorer + gold + sample + thresholds
+python3 gold/build_regress_set.py                 # (e) the FIXED regression set + round filelist
+bash make_lock.sh                                 # hash-lock scorer + gold + sample + thresholds
 bash run_baseline.sh                              # grid pass + score
-bash check.sh                                     # the gate: 0 pass, 1 short, 3 lock broken
+bash check.sh                                     # the check: 0 pass, 1 short, 2 no output, 3 lock broken
+bash gate.sh                                      # the gate: 0 spend a model call, 1 wait
+bash gate_test.sh                                 # the gate's test (stubbed qstat, no grid)
 ```
+
+### The gate — and why it is not `test -f round-ready`
+
+`run_baseline.sh` removes `$DEF14A_WORK/out/round-ready` when it starts a pass and
+re-creates it after the fetch and score, so a bare `test -f` on it looked like a
+sufficient gate. It is not: **twice on 2026-09-29** a grind iteration ended while its
+round's SGE job was still queued, the iteration's process group died, `qsub -sync y` died
+with it, and the marker was therefore never written — the loop then waited forever on a
+file no surviving process was going to create.
+
+So `run_baseline.sh` now records the submitted job ids and its own pid **before** it waits
+(`out/round-jobs.tsv`, `out/round-state.json`, written by `gate_lib.sh` at the moment SGE
+prints the id, which is before `-sync y` blocks), and `gate.sh` decides from the grid and
+the process table rather than from a process surviving:
+
+| exit | when |
+|---|---|
+| 0 | `out/round-ready` exists (normal) |
+| 1 | the recorded `run_baseline.sh` pid is alive, per `/proc/<pid>/cmdline` |
+| 1 | a recorded SGE job id is still in `qstat` |
+| 1 | a job named `^def14a` is on the grid but not in `round-jobs.tsv` (an un-recorded round) |
+| 1 | the scheduler could not be reached — a failed query is not a finished job |
+| 0 | nothing recorded and no `def14a` job on the grid; **no marker is invented** |
+| 0 | **orphaned** — pid gone, jobs gone, marker absent → re-creates it, reason in `out/round-orphaned` |
+
+Every branch says why, on stdout and in `out/round-gate.log`. `gate.sh` never fetches and
+never scores: if the orphaned round died at `phase=array` or earlier, its grid output was
+never brought home, and the message says to run `bash run_baseline.sh --fetch-only` before
+trusting any metric from `$DEF14A_WORK/out`. Overrides: `DEF14A_QSTAT` (the listing
+command — the test stubs it), `DEF14A_JOB_NAME_RE` (default `^def14a`),
+`DEF14A_GATE_QUIET=1`.
 
 Gold set (c) needs a DEF 14A index that reaches past 2021, which
 `def14a_index.tsv.gz` does not; `def14a_index_iss.tsv.gz` (2002-2025, 149,759
@@ -447,19 +488,36 @@ gold/round_filelist.tsv     gold ∪ ISS ∪ sample ∪ regress = 22,856 filings
 
 | set | definition | n | gated |
 |---|---|---:|---|
-| (a) zero-row | old `n_rows` > 0, new `n_rows` == 0, after exclusions | 933 | `regress_zero_row_recovered` >= 0.95 |
+| (a) zero-row | old `n_rows` > 0, new `n_rows` == 0, after exclusions | **648** (933 before the 2026-09-30 correction) | `regress_zero_row_recovered` >= 0.95 |
 | (b) group-row | old group row, new none, >= 1 lost group row had a percent | 83 | `regress_group_row_recovered` >= 0.95 |
-| (b) share-only | the same without the percent requirement | 1,075 | diagnostic |
-| excluded | old rows demonstrably wrong: `$` in a holder name (96), or >= 3 rows all one identical (shares, percent) pair (58) | 150 | diagnostic |
+| (b) share-only | the same without the percent requirement | 1,054 | diagnostic |
+| excluded | old rows demonstrably wrong — X1 `$` in a holder name (96), X2 >= 3 rows all one identical (shares, percent) pair (58), X3 fund dollar-range table (327), X4 per-fund compensation table (43) | **437** | diagnostic, per clause |
 
-The exclusions were checked against the documents — dollar-range-of-equity tables
+X1/X2 were checked against the documents — dollar-range-of-equity tables
 (`0001193125-12-089540`, `0000875626-06-000515`, `0000930413-02-002213`,
 `0000950116-02-000782`) and a summary compensation table (`0000891554-99-000468`). The
 wider rule "the old parse emitted no percent anywhere" was REJECTED because GE 2013
 (`0001206774-13-001019`) states no percent at all and its old rows are the real table.
-`regress_excluded_emitting_rows_rate` reports the 137 excluded filings that were
-zero-row candidates; a rise means the round re-accepted those tables. Both gates read
-**0.0000 at HEAD by construction** — the panel is the parser at HEAD.
+
+**X3 and X4 were added 2026-09-30**, quoted verbatim from the grind's own floors
+`regress-zero-row-ceiling-0.761-dollar-range-tables` and
+`regress-zero-row-ceiling-0.734-refined`, which measured that set (a) was mis-specified:
+205 N-1A fund dollar-range tables and 43 per-fund compensation tables (all 43 one
+document, `0000051931-18-000890`, under 43 co-registrant CIKs) had OLD rows that were
+themselves wrong and that the duplicate round removed on purpose, capping the gate at
+685/933 = 0.7342. X3 = no old row carries a percent AND >= half the old `shares` values
+are in `{0,1,10000,50000,100000,500000,1000000}`. X4 = no percent anywhere AND >= 3
+distinct old `table_index` values AND >= half the old rows carry a `holder_name`
+repeating 3+ times. **The 0.95 thresholds did not move**; the SET was corrected, 285
+filings left set (a), and `regress_filelist.tsv` / `round_filelist.tsv` are
+byte-identical, so nothing about what a round parses changed. See GRIND_PLAN §12.
+
+`regress_excluded_emitting_rows_rate` reports the **422** excluded filings that were
+zero-row candidates, and score.py now also prints a rate PER CLAUSE
+(`regress_x3_dollar_range_table_emitting_rows_rate` and friends, denominators x1 83 /
+x2 58 / x3 325 / x4 43, overlapping); a rise means the round re-accepted those tables,
+and `textMoneyBlock` must not be weakened. Both gates read **0.0000 at HEAD by
+construction** when the set was cut — the panel is the parser at HEAD.
 
 `gold_regress.tsv` joins `lock.sha256`, which now covers **10** files.
 
