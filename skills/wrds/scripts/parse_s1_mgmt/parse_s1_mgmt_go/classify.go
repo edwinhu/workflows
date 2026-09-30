@@ -85,6 +85,9 @@ var (
 	// "Founder, Chairman of the Board and a director", Snap's and Airbnb's
 	// "Co-Founder".
 	rePosFounder = regexp.MustCompile(`(?i)\b(?:co[-\s]?)?founder\b`)
+	// A referent that turns out to be possessive, so the thing founded is the
+	// NEXT noun rather than the issuer.
+	rePossessiveAfter = regexp.MustCompile(`^['\x{2019}]s\b`)
 	// ... but not a firm whose NAME contains the token.
 	reFounderFirm = regexp.MustCompile(`(?i)\bfounders?['\x{2019}]?\s+(?:fund|circle|forum|capital|equity)\b`)
 
@@ -96,7 +99,10 @@ var (
 	reBioFounder = []*regexp.Regexp{
 		regexp.MustCompile(`(?i)\b(?:our|the\s+company['\x{2019}]s)\s+(?:co[-\s]?)?founders?\b`),
 		regexp.MustCompile(`(?i)\bone\s+of\s+our\s+(?:co[-\s]?)?founders\b`),
-		regexp.MustCompile(`(?i)\b(?:co[-\s]?)?founded\s+(?:our\s+company|our\s+business|the\s+company|us)\b`),
+		// Participle as well as past tense ("Prior to co-founding our company"),
+		// and the formation verb a 1990s filing uses for the same act
+		// ("Immediately prior to forming the Company").
+		regexp.MustCompile(`(?i)\b(?:co[-\s]?\s*)?(?:found|form)(?:ed|ing)\s+(?:our\s+company|our\s+business|the\s+company|us)\b`),
 		regexp.MustCompile(`(?i)\b(?:co[-\s]?)?founders?\s+of\s+(?:our\s+company|our\s+business|the\s+company)\b`),
 	}
 )
@@ -362,6 +368,11 @@ func detectFounder(p Person, ref *issuerRef) (bool, string) {
 			continue
 		}
 		if reFounderFirm.MatchString(p.Bio[m[0]:m[1]]) {
+			continue
+		}
+		// The issuer, not something the issuer owns: "forming the Company's
+		// sales organization" is a job, not a founding.
+		if rePossessiveAfter.MatchString(p.Bio[m[1]:]) {
 			continue
 		}
 		return true, evidence(p.Bio, m[0], m[1])

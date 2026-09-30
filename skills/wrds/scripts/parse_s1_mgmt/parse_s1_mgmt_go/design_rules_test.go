@@ -2492,3 +2492,41 @@ func TestRule7_VentureLabelBeforeTheFirmName(t *testing.T) {
 		})
 	}
 }
+
+// The founding written as a PARTICIPLE, and as a formation verb. Coaxmedia
+// (0000950133-00-004018) writes three bios as "Prior to co-founding our company",
+// which the -ed-only pattern could not read, and Corinthian Colleges
+// (0001017062-99-000150) writes "Immediately prior to forming the Company". The
+// same-company referent still carries the whole guard: the SAME Coaxmedia filing
+// says "Prior to co-founding Baker Communications" of a director, and a company's
+// SALES ORGANISATION is not the company.
+func TestRule6_ParticipleAndFormationVerbReachTheIssuer(t *testing.T) {
+	cases := []struct {
+		name string
+		bio  string
+		want bool
+	}{
+		{"co-founding", "Ada Lovelace has served as our President, Chief Executive Officer and Chairman of the board of directors since our inception. Prior to co-founding our company, Ms. Lovelace served as Vice President and general manager of 3Com Corporation's Broadband Access Communications Division from August 1995 to August 1997.", true},
+		{"forming", "Ada Lovelace has served as President and Chief Executive Officer and a Director of the Company since its inception in July 1995. Immediately prior to forming the Company, she was President of National Education Centers, Inc., a subsidiary of National Education Corporation.", true},
+		{"hyphen-wrapped", "Ada Lovelace is a general partner of Baker Communications Fund, L.P. Prior to co- founding our company, she was a private equity investor.", true},
+		{"other-company", "Ada Lovelace is a general partner of Baker Communications Fund, L.P., a private equity fund. Prior to co-founding Baker Communications, Ms. Lovelace consulted for various venture capital firms and start-up companies.", false},
+		{"possessive-object", "Ada Lovelace was responsible for forming the Company's sales organization from 1995 to 1998 and has served as our Chief Executive Officer since 1999.", false},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			e := ExtractManagement([]byte(sgmlHeaderFor("Coaxmedia Inc") +
+				sgmlDoc("424B4", "<HTML><BODY>"+mgmtSectionWithCEOBio(c.bio)+"</BODY></HTML>")))
+			if e.Filing.Status != StatusOK {
+				t.Fatalf("status = %q, want %q", e.Filing.Status, StatusOK)
+			}
+			p := person(t, e, "Ada Lovelace")
+			if !containsFold(p.Bio, "form") && !containsFold(p.Bio, "found") {
+				t.Fatalf("bio does not carry the founding sentence\n  bio = %q", p.Bio)
+			}
+			if p.FounderSelfDescribed != c.want {
+				t.Errorf("founder_self_described = %v, want %v (evidence=%q bio=%q)",
+					p.FounderSelfDescribed, c.want, p.FounderEvidence, p.Bio)
+			}
+		})
+	}
+}
