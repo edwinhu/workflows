@@ -142,8 +142,32 @@ Panel-wide `filing_yield_parsed_percent` **0.8454** and
 under-represent 1994-1996 entirely. Full per-year table, spot checks and the
 duplicate-row diagnostic: `~/projects/r2000/scratch/def14a_full_run.md`.
 
-**Known defect 4 is bigger than it reads above, and it is a GRAIN defect, not only
-an over-emission one.** Exact-key duplicate rows — same
+**Re-run 2026-09-29 at commit `092b6fb9`, SGE array 40334523** — same filelist and
+shard plan (all three hashes reproduced), binary sha256 `d53b81d7…`. The current
+panel is that run; the `4b36a962` panel is kept beside it at
+`/data/def14a_own/panel_e4e78a95/`:
+
+```
+run:       1004/1004 status=0, 0 failed, 0 resubmitted
+           files=207912 rows=3156227 manifest=207912  (+8.69% rows)
+           wall 4,851 s (1 h 21 m) at -tc 10; Σ task wall 29,683 s
+           shard-paired against run 1: 1.30x slower, 983/1004 shards slower, none >2x
+yield:     filing_yield_parsed_percent 0.8486 (+0.32 pp), group_row_rate 0.7798 (-0.41 pp)
+dups:      identical-row excess 1.90% -> 0.28%; same-(kind,holder,class) 8.43% -> 2.21%
+```
+
+The group-row rate FELL in 14 of 33 years by more than 0.5 pp. 1,181 filings lost
+their group row; in 1,057 of them the lost row carried no percent and came from a
+compensation or option table, but **124 filings lost a percent-carrying D&O group
+row, and 1,070 filings went from ≥1 row to 0 rows** (against 465 the other way) —
+the tables that used to produce the additive-layout duplicates are now rejected
+whole in some filings. Per-year table, flags and spot checks:
+`~/projects/r2000/scratch/def14a_full_run2.md`.
+
+**Known defect 4 as measured on the `4b36a962` panel — mostly bought back at HEAD
+(2.43% under the same key, see the re-run block above), but the mechanism below is
+what the remaining excess is.** It is a GRAIN defect, not only
+an over-emission one. Exact-key duplicate rows — same
 `(accession, cik, holder_name, share_class)` — are **9.00%** of the panel, and
 32.65% in 2009, 19.93% in 2018, 18.75% in 2024. Diagnosed 2026-09-29 (duckdb over
 the panel, then `-debug` on 12 of the worst filings; full write-up in
