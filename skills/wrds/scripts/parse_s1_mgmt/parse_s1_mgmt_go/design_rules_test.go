@@ -2134,6 +2134,47 @@ func TestRule6_GappedCoordinationSharesTheFoundersObject(t *testing.T) {
 	}
 }
 
+// The same elision written WITHOUT the comma, and with the shared object at the
+// FIRST "of" rather than the last. NorthPoint Communications (0000929624-99-000832)
+// writes six bios as "is a founder and has been the <title> of NorthPoint", and
+// Context Therapeutics (0001193125-21-303138) writes "is the Co-founder and Chief
+// Executive Officer of Context Therapeutics and member of our board of directors",
+// where the LAST "of" is "board of directors" and only an earlier one is the
+// referent.
+func TestRule6_GappedCoordinationWithoutACommaAndAtAnEarlierOf(t *testing.T) {
+	cases := []struct {
+		name      string
+		conformed string
+		bio       string
+		want      bool
+	}{
+		{"northpoint", "NORTHPOINT COMMUNICATIONS GROUP INC", "Ada Lovelace is a founder and has been the Chief Executive Officer and Chairman of NorthPoint since June 1997.", true},
+		{"context", "Context Therapeutics Inc.", "Ada Lovelace is the Co-founder and Chief Executive Officer of Context Therapeutics and member of our board of directors since its founding in 2015.", true},
+		// The coordinated clause's object is a DIFFERENT company, so no "of" in
+		// the sentence names the issuer.
+		{"other-company", "Acme Bio Inc", "Ada Lovelace is a founder and has been a General Partner of Foo Ventures since 1999.", false},
+		// The founder's own object is present, so nothing is elided.
+		{"object-present", "Uber Technologies, Inc", "Ada Lovelace founded Red Swoosh and later served as an advisor of Uber Technologies.", false},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			e := ExtractManagement([]byte(sgmlHeaderFor(c.conformed) +
+				sgmlDoc("424B4", "<HTML><BODY>"+mgmtSectionWithCEOBio(c.bio)+"</BODY></HTML>")))
+			if e.Filing.Status != StatusOK {
+				t.Fatalf("status = %q, want %q", e.Filing.Status, StatusOK)
+			}
+			p := person(t, e, "Ada Lovelace")
+			if !containsFold(p.Bio, "found") {
+				t.Fatalf("bio does not carry the founder sentence\n  bio = %q", p.Bio)
+			}
+			if p.FounderSelfDescribed != c.want {
+				t.Errorf("founder_self_described = %v, want %v (evidence=%q bio=%q)",
+					p.FounderSelfDescribed, c.want, p.FounderEvidence, p.Bio)
+			}
+		})
+	}
+}
+
 // The issuer named by its own INITIALS. Virtual Radiologic Corp's 2007 prospectus
 // (0001193125-07-248004) writes its CEO's founding twice, and only the second
 // reaches the issuer: "since co-founding VRP's predecessor", where VRP is the
