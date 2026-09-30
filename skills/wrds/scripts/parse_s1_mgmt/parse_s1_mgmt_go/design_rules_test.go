@@ -1367,6 +1367,33 @@ func TestRule7_TheDictionaryReachesAFirmTheBioNeverLabels(t *testing.T) {
 		{"0001047469-04-023893",
 			"William Laverack, Jr. has served as a member of our board of directors since 1998. Mr. Laverack is a Managing Partner of Whitney & Co., LLC, which he joined in 1993. Mr. Laverack is also a director of Knology, Inc., Grande Communications, Inc. and several private companies. Mr. Laverack holds a B.A. from Harvard College and an M.B.A. from Harvard Business School.",
 			"Whitney & Co"},
+		// Informatica 1999: "a venture partner with Asset Management Associates"
+		// is the whole description the bio gives, and the phrase "venture
+		// capital" appears nowhere in the filing, so only the dictionary reaches
+		// it. AMA has backed Silicon Valley device and software companies since
+		// 1984.
+		{"0000891618-99-001884",
+			"Mr. Pidwell has been one of our directors since February 1996. From January 1988 to January 1996, Mr. Pidwell was president and chief executive officer of Rasna Corporation, a software company. Mr. Pidwell is currently a venture partner with Asset Management Associates and serves on the boards of directors of a number of private companies.",
+			"Asset Management Associates"},
+		// Scholar Rock 2019: Omega Funds carries no label in the bio at all, and
+		// the only other mention in the filing is a bare name in the list of
+		// investors.
+		{"0001047469-19-003926",
+			"Otello Stampacchia, Ph.D. has served as a member of our board of directors since December 2018. He has served as founder and Managing Director of Omega Funds since 2004. Previously, Dr. Stampacchia was in charge of life sciences direct investments at AlpInvest Partners B.V. from 2001 to 2003, and from 2000 to 2001, he worked at Merrill Lynch.",
+			"Omega Funds"},
+		// Cidara 2015: the appositive the bio does supply calls SV Life Sciences
+		// "an investment fund", which is not a venture label, so the appositive
+		// routes cannot fire and the dictionary is the only way in.
+		{"0001193125-15-131330",
+			"Mr. Burgess has served as a member of our board of directors since April 2014. Mr. Burgess is currently a venture partner at SV Life Sciences, an investment fund, a position he has held since June 2014.",
+			"SV Life Sciences"},
+		// Avrobio 2018: the same house under its current name, and a bio that
+		// walks through two seats the dictionary must NOT credit - MRL Ventures
+		// is a corporate venture fund run inside Merck, and the Atlas Venture
+		// partnership is in the past.
+		{"0001193125-18-199473",
+			"Joshua Resnick, M.D. has served as a member of our board of directors since July 2016. Dr. Resnick has been a partner at SV Health Investors, or SV, since January 2016. Before joining SV in January 2016, Dr. Resnick was president and managing partner at MRL Ventures Fund, or MRL Ventures, an early-stage therapeutics-focused corporate venture fund that he built and managed within Merck & Co from December 2014 to January 2016. Prior to MRL Ventures, Dr. Resnick was a venture partner with Atlas Venture, or Atlas, focusing on company formation, Seed and Series A investing.",
+			"SV Health Investors"},
 		{"0001193125-21-231612",
 			"JeenJoo (JJ) Kang, Ph.D. has served as a member of our board of directors since August 2016. Dr. Kang has also served as a member of our compensation committee since December 2018, as a member of our audit committee since September 2019, and as our President, Treasurer and Secretary from August 2016 to June 2018. Dr. Kang has served as a Venture Partner at The Column Group since 2020, and prior to that served as an Associate beginning in 2015, then as a Partner from 2019 to 2020.",
 			"Column Group"},
