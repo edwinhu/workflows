@@ -63,6 +63,31 @@ func DebugFile(path string, maxTables int) {
 	kept := len(ScreenRows(allRows))
 	fmt.Printf("html path: rows=%d screened_to=%d screen=%v\n", len(allRows), kept, screenDropReasons)
 	screenDropReasons = nil
+	// process() falls back to the ASCII reader when the DOM reader emits
+	// nothing (an HTML wrapper around a <pre> table), and then to the prose
+	// reader when both emit nothing. -debug used to stop at the DOM reader, so
+	// an HTML filing that reaches the grid through one of those two paths
+	// looked here like a filing that parses to nothing at all.
+	if len(allRows) == 0 {
+		textBlockReasons = map[string]int{}
+		screenDropReasons = map[string]int{}
+		r2, s2, u2 := ExtractText(body, base)
+		k2 := ScreenRows(r2)
+		fmt.Printf("html->text fallback: blocks_seen=%d used=%d rows=%d screened_to=%d reasons=%v screen=%v\n",
+			s2, u2, len(r2), len(k2), textBlockReasons, screenDropReasons)
+		textBlockReasons, screenDropReasons = nil, nil
+		if len(k2) == 0 {
+			pr := ScreenRows(ExtractProse(body, base))
+			fmt.Printf("html->prose fallback: rows=%d\n", len(pr))
+			for i, r := range pr {
+				if i > 10 {
+					break
+				}
+				fmt.Printf("  %-55s shares=%v pct=%v kind=%s\n",
+					r.HolderName, fmtp(r.Shares), fmtp(r.Percent), r.TableKind)
+			}
+		}
+	}
 	n := 0
 	for _, it := range items {
 		if it.Kind == "text" {
