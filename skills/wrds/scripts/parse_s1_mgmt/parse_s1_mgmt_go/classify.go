@@ -459,6 +459,32 @@ var (
 	// Speiser, Rein, Clark and Gupta all open the NEXT sentence with a range
 	// describing the job they held before the partnership they hold now.
 	reVCClosedRangeTail = regexp.MustCompile(`(?i)^[,\s]*from\s+(?:[a-z]+\s+)?[0-9]{4}\s+(?:to|until|through)\b`)
+
+	// A venture label written on the FAR side of the firm name, which is how the
+	// 1990s filings label an entity they never introduce with ", a venture
+	// capital firm": bare on the far side of the defined-term parenthetical
+	// ("Kowaliga Capital, Inc. (\"Kowaliga\") venture capital and fund management
+	// companies", 0000950144-98-004643) or in a relative clause ("Artesian
+	// Capital Limited Partnership II (\"Artesian Capital II\"), which are seed
+	// and start-up venture investment funds", 0000950131-96-003098). The head
+	// noun can sit a few words past the "venture capital" that modifies it.
+	//
+	// The parenthetical form must have whitespace right after the ")": a comma
+	// there is the ordinary appositive, which the two appositive routes own.
+	reVCPostLabel = regexp.MustCompile(`(?i)(?:\)|,?\s+(?:each\s+of\s+)?which\s+(?:is|are))\s+` +
+		`(?:[a-z/-]+\s+){0,3}venture(?:\s+(?:capital|investment|growth|equity))*` +
+		`(?:\s+[a-z/-]+){0,3}\s+(?:firm|funds?|partnership|investor|compan(?:y|ies))\b`)
+
+	// "principal" is a partner-grade seat only where the firm itself carries a
+	// venture label, so only the post-label route reads it: gold counts neither
+	// "a Principal" of William Blair (0001047469-04-017088) nor a Principal at
+	// the corporate Novartis Venture Fund (0001193125-21-218024).
+	reVCPrincipalRole = regexp.MustCompile(`(?i)\bprincipals?\b`)
+
+	// An OPEN date range whose preposition would otherwise read as past tense:
+	// "From 1993 until present, Mr. Adair has been a principal of ..."
+	// (0000950144-98-004643) ends at the filing date, not before it.
+	reOpenRangeEnd = regexp.MustCompile(`(?i)\b(?:until|through|to)\s+(?:the\s+)?(?:present|now|date\s+hereof)\b`)
 )
 
 // ventureLeadWindow is how far back detectVC reads for a past-tense marker
@@ -571,6 +597,21 @@ func detectVC(bio string) (bool, string, string) {
 			continue
 		}
 		add(firm, evidence(bio, m[0], m[1]))
+	}
+	for _, m := range reVCPostLabel.FindAllStringIndex(bio, -1) {
+		// The label opens on the firm name's closing ")" in the bare form and on
+		// the comma before "which" in the relative-clause one, so the name runs
+		// back from the paren in the first case and from the comma in the second.
+		head := bio[:m[0]]
+		if bio[m[0]] == ')' {
+			head = bio[:m[0]+1]
+		}
+		firm, at := firmBefore(head)
+		if firm == "" || !vcPostLabelLeadOK(bio[:at]) ||
+			reVCClosedRangeTail.MatchString(bio[m[1]:]) {
+			continue
+		}
+		add(firm, evidence(bio, at, m[1]))
 	}
 	for _, m := range reVCRole.FindAllStringIndex(bio, -1) {
 		hi := m[1] + 110
@@ -701,6 +742,19 @@ func vcAppositiveLeadOK(lead string) bool {
 	return reVCRole.MatchString(vcLead(lead)) && !vcLeadIsPast(lead)
 }
 
+// vcPostLabelLeadOK reports whether the clause running up to a firm the filing
+// labels on the FAR side of its name puts the person at a present partner-grade
+// seat there. Unlike the appositive routes this one is a requirement and not a
+// veto: the label can just as easily be attached to a portfolio fund the person
+// only sits on the board of, and the lead is all that separates the two.
+func vcPostLabelLeadOK(lead string) bool {
+	l := vcLead(lead)
+	if isPastLead(l) || (reVCNonPartnerRole.MatchString(l) && !reVCRole.MatchString(l)) {
+		return false
+	}
+	return reVCRole.MatchString(l) || reVCPrincipalRole.MatchString(l)
+}
+
 // vcLeadIsPast reports whether the clause that runs up to the firm name puts the
 // affiliation in the past. It is the only tense test the narrow appositive and
 // the firm dictionary get: neither reads a role, because the narrow appositive's
@@ -713,6 +767,7 @@ func vcLeadIsPast(lead string) bool { return isPastLead(vcLead(lead)) }
 // isPastLead reports whether the text puts the affiliation in the past. A closed
 // date range says so only when no present-perfect verb contradicts it.
 func isPastLead(s string) bool {
+	s = reOpenRangeEnd.ReplaceAllString(s, " ")
 	if reVCPastWord.MatchString(s) {
 		return true
 	}

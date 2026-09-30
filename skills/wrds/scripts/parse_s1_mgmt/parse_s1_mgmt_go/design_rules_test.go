@@ -2019,3 +2019,59 @@ func TestRule3_TypographicApostropheSurvivesInTheName(t *testing.T) {
 			curly, ceo.FounderEvidence, trunc(ceo.Bio))
 	}
 }
+
+// The 1990s filings label a firm without the ", a venture capital firm"
+// appositive both routes read: the label sits AFTER the name, either bare on the
+// far side of the defined-term parenthetical ("Kowaliga Capital, Inc.
+// (\"Kowaliga\") venture capital and fund management companies") or in a relative
+// clause ("Artesian Capital Limited Partnership II (\"Artesian Capital II\"),
+// which are seed and start-up venture investment funds"). Neither firm is in the
+// dictionary and neither name ends in "Ventures", so the post-positioned label is
+// the only VC signal either bio carries.
+//
+// The label alone cannot fire, because the entity it labels may be a portfolio
+// fund the person has nothing to do with: the lead has to put the person at a
+// partner-grade seat, and "principal" counts only here, gated on the label. Gold
+// excludes Arda Minocherhomjee, "a Principal" of William Blair, in
+// 0001047469-04-017088, where no label follows the firm at all.
+//
+// Bios are quoted verbatim from the accession named on each line, and exercised
+// through detectVC because check_full.sh re-cuts every fixture from a source
+// filing this corpus does not hold.
+func TestRule7_APostPositionedVentureLabelFires(t *testing.T) {
+	positive := []struct{ accession, bio, firm string }{
+		{"0000950144-98-004643",
+			"Charles E. Adair joined the Company's Board of Directors in January 1998. From 1993 until present, Mr. Adair has been a principal of Cordova Capital II, Inc. (\"Cordova\") and Kowaliga Capital, Inc. (\"Kowaliga\") venture capital and fund management companies, where he serves as manager of venture capital funds. Cordova and Kowaliga are the general partners of Cordova Capital Partners, L.P. -- Enhanced Appreciation (\"Cordova -- Enhanced Appreciation\"), a venture capital fund and shareholder of the Company.",
+			"Kowaliga"},
+		{"0000950131-96-003098",
+			"Frank B. Bennett has been a director of the Company since 1992. Mr. Bennett is the founder of Artesian Capital Management, Inc. (\"Artesian\") and Artesian Management, Inc. (\"Artesian Management\") and has served as the President of each of these entities since their inception. Artesian is the general partner of Artesian Capital Limited Partnership (\"Artesian Capital\"), and Artesian Management is the general partner of Artesian Capital Limited Partnership II (\"Artesian Capital II\"), which are seed and start-up venture investment funds.",
+			"Artesian"},
+	}
+	for _, c := range positive {
+		t.Run("yes/"+c.firm, func(t *testing.T) {
+			ok, firm, ev := detectVC(c.bio)
+			if !ok {
+				t.Fatalf("%s: vc_affiliated = false, want true", c.accession)
+			}
+			if !containsFold(firm, c.firm) {
+				t.Errorf("%s: vc_firm = %q, want it to name %q (evidence %q)", c.accession, firm, c.firm, ev)
+			}
+		})
+	}
+
+	negative := []struct{ accession, why, bio string }{
+		{"0001047469-04-017088", "a Principal at a firm the filing never labels",
+			"Arda M. Minocherhomjee, Ph.D. has served as a member of our board of directors since May 2001. Since 1992, Dr. Minocherhomjee has served in various capacities for William Blair & Company, L.L.C., including, most recently, as a Principal."},
+		{"constructed", "no seat at the labelled entity, only a board seat at a company it backed",
+			"Mr. Doe has served as our Chief Executive Officer since 2011. He was appointed to the board by Acme Holdings, Inc. (\"Acme\") venture capital and fund management companies."},
+		{"constructed", "the principalship closed out before the filing",
+			"Mr. Doe was a principal of Acme Holdings, Inc. (\"Acme\"), which is a venture capital fund."},
+	}
+	for _, c := range negative {
+		t.Run("no/"+c.why, func(t *testing.T) {
+			if ok, firm, ev := detectVC(c.bio); ok {
+				t.Errorf("%s: vc_affiliated = true, want false (firm=%q evidence=%q)", c.accession, firm, ev)
+			}
+		})
+	}
+}
