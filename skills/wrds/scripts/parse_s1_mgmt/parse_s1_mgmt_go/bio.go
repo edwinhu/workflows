@@ -71,6 +71,17 @@ func coreKey(s string) (string, int) {
 var reBioLeadIn = regexp.MustCompile(
 	`^((?:[A-Z][A-Za-z.'\x{2019}-]*\s*){1,4})\.\s+(?:Mr|Ms|Mrs|Dr|Prof|His|Her)\b`)
 
+// reParenAliasLeadIn matches a name whose tokens are interrupted by a
+// parenthesised alias, which is how two filings spell the CEO in the bio but not
+// in the table: Upland writes "John T. McDonald" in the table and "John T.
+// (Jack) McDonald has served as ..." in the bio, Prelude writes "Kris Vaddi,
+// Ph.D." against "Krishna (“Kris”) Vaddi, Ph.D. has served ...". The alias
+// pulls the block's key away from the table's spelling in BOTH directions, so
+// the two want opposite repairs — drop the alias for Upland, substitute it for
+// the given name before it for Prelude — and matchPerson tries both readings.
+var reParenAliasLeadIn = regexp.MustCompile(
+	`^((?:[A-Z][A-Za-z.'\x{2019}-]*\s+){1,3})\(\s*['"\x{2018}\x{2019}\x{201C}\x{201D}]?([A-Z][A-Za-z'\x{2019}-]+)['"\x{2018}\x{2019}\x{201C}\x{201D}]?\s*\)\s*((?:[A-Z][A-Za-z.'\x{2019}-]*,?\s*){1,4})`)
+
 // reBareHonorificLeadIn matches the pre-2000 convention's other opening: no name
 // at all, just the honorific and the surname. Object Design 1996 writes every
 // bio in its section that way — "Mr. Bay has been a director of the Company
@@ -220,6 +231,9 @@ func matchPerson(block string, keys, cores, surnames []string, parts [][]string,
 			return best
 		}
 	}
+	if best = byParenAlias(block, cores, parts); best >= 0 {
+		return best
+	}
 	if !honorific {
 		return -1
 	}
@@ -227,6 +241,37 @@ func matchPerson(block string, keys, cores, surnames []string, parts [][]string,
 		return bySurname(nameKey(m[1]), surnames, parts)
 	}
 	return -1
+}
+
+// byParenAlias reports which person without a bio yet a lead-in carrying a
+// parenthesised alias belongs to. Both readings of the alias are keyed on the
+// CORE, so the surname and the given names the table and the bio agree on are
+// what carry the claim.
+func byParenAlias(block string, cores []string, parts [][]string) int {
+	m := reParenAliasLeadIn.FindStringSubmatch(block)
+	if m == nil {
+		return -1
+	}
+	pre := strings.Fields(m[1])
+	cands := []string{strings.Join(pre, " ") + " " + m[3]}
+	cands = append(cands,
+		strings.Join(append(append([]string{}, pre[:len(pre)-1]...), m[2]), " ")+" "+m[3])
+	best := -1
+	for _, c := range cands {
+		ck, _ := coreKey(c)
+		if ck == "" {
+			continue
+		}
+		for i, core := range cores {
+			if core == "" || len(parts[i]) > 0 || !strings.HasPrefix(ck, core) {
+				continue
+			}
+			if best < 0 || len(core) > len(cores[best]) {
+				best = i
+			}
+		}
+	}
+	return best
 }
 
 // bySurname reports which person without a bio yet the lead-in's trailing
