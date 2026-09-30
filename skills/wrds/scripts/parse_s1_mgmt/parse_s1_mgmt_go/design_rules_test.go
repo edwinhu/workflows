@@ -780,3 +780,91 @@ func TestRule7_NonDirectorsAreNotCountedAsVCDirectors(t *testing.T) {
 		})
 	}
 }
+
+// The appositive is not always ", a venture capital firm". Across the dev split
+// the same clause is written ", a venture capital fund", ", a venture fund",
+// ", a prominent venture capital investment firm" and ", a growth
+// equity/late-stage venture capital investment firm" — and the narrow form was
+// accidentally doing a second job: because the variants it rejected happen to be
+// the ones advisors and ex-partners use, widening it alone bought as many false
+// positives as true ones on dev (8 of each). So the variant forms are credited
+// only when the bio ALSO puts the person in a partner-grade role at that firm,
+// in the present tense.
+//
+// Bios are quoted verbatim from the accession named on each line; they are
+// exercised through detectVC rather than a fixture because none of the seven
+// profiled filings carries a variant appositive, and check_full.sh re-cuts every
+// fixture from a source filing this corpus does not hold.
+func TestRule7_VariantAppositiveNeedsAPresentPartnerGradeRole(t *testing.T) {
+	positive := []struct{ accession, bio, firm string }{
+		{"0001032210-00-001406",
+			"Since August 1997, Mr. Huseby has served as managing partner of SeaPoint Ventures, a venture capital fund focused on communications and Internet infrastructure.",
+			"SeaPoint Ventures"},
+		{"0001047469-13-010949",
+			"Mr. Werner is a co-founder and since 1985 is a General Partner of HealthCare Ventures LLC, a venture capital fund specializing in the health-care industry.",
+			"HealthCare Ventures"},
+		{"0001047469-16-015606",
+			"He is a co-founder and managing partner at Founder Collective, a seed stage venture capital fund.",
+			"Founder Collective"},
+		{"0001193125-12-126304",
+			"Mr. Maxwell has been the Senior Managing Director of OpenView Venture Partners, a venture capital fund with a focus on software, the Internet and technology-enabled companies that he founded, since 2006.",
+			"OpenView Venture Partners"},
+		{"0001193125-13-395408",
+			"Dr. Raffin is a Founder and Partner of Telegraph Hill Partners, a growth equity/late-stage venture capital investment firm focused exclusively on healthcare related companies, since its inception in 2001.",
+			"Telegraph Hill Partners"},
+		{"0001193125-18-314672",
+			"Mr. Conley is a Partner and Managing Director at Paladin Capital Group, a prominent venture capital investment firm, a position he has held since November 2007.",
+			"Paladin Capital Group"},
+	}
+	for _, c := range positive {
+		t.Run("yes/"+c.firm, func(t *testing.T) {
+			ok, firm, ev := detectVC(c.bio)
+			if !ok {
+				t.Fatalf("%s: vc_affiliated = false, want true", c.accession)
+			}
+			if !containsFold(firm, c.firm) {
+				t.Errorf("%s: vc_firm = %q, want it to name %q (evidence %q)", c.accession, firm, c.firm, ev)
+			}
+		})
+	}
+
+	// Advisor-grade, an "Investment Director" the gold does not count, a
+	// corporate venture fund run inside Merck, a fund headed in a closed
+	// 2012-2017 spell, and a partnership the bio puts in the past.
+	negative := []struct{ accession, why, bio string }{
+		{"0001193125-18-314672", "advisor, not a principal",
+			"Mr. Johannessen currently serves as an advisor to iGlobe Partners, a venture capital company. Mr. Johannessen served as Chief Operating Officer and Secretary at Conexant Systems, LLC, a semiconductor company, from May 2013 to August 2017."},
+		{"0001193125-18-314672", "Investment Director is not partner-grade",
+			"Ms. Mai is an Investment Director of GF Xinde Investment Management Co. Ltd, a venture capital investment firm based in China that specializes in investing in biotechnology companies, a position she has held since June 2015."},
+		{"0001193125-20-175569", "Senior Advisor, not a principal",
+			"Dr. Nussbaum has also served as a Senior Advisor to Sandbox Industries, a venture fund, since January 2017, and Ontario Teachers' Pension Fund since August 2016."},
+		{"0001193125-21-031436", "the partnership is over",
+			"Dr. Resnick previously served as a Partner at SV Health Investors from January 2016 to September 2018 and as President and Managing Partner at MRL Ventures Fund, an early-stage therapeutics-focused corporate venture fund that he built and managed within Merck & Co., from 2014 to January 2016."},
+		{"0001193125-21-230254", "headed the fund from 2012 to 2017, not now",
+			"From September 2012 to October 2017, Dr. Iancovici served as the head of the Qualcomm Life Fund, a venture fund focused on investing in digital health technologies."},
+		{"0001047469-14-004991", "was with the firm, and the role is not named",
+			"Prior to General Atlantic LLC, Mr. Agrawal was with Lazard Technology Partners, or Lazard, an Internet and technology focused venture capital firm, and previously served in Lazard's investment banking group."},
+	}
+	for _, c := range negative {
+		t.Run("no/"+c.why, func(t *testing.T) {
+			if ok, firm, ev := detectVC(c.bio); ok {
+				t.Errorf("%s: vc_affiliated = true, want false (firm=%q evidence=%q)", c.accession, firm, ev)
+			}
+		})
+	}
+}
+
+// A year is not a firm name. "a co-founder of BOLD Capital Partners in 2015, a
+// venture fund investing in exponential technologies" put the appositive after
+// the date, and firmBefore credited the firm "2015" (0001193125-21-328157).
+func TestRule7_FirmNameIsNeverABareNumber(t *testing.T) {
+	const bio = "Dr. Diamandis has started more than 24 companies in the areas of human longevity, " +
+		"space, venture capital and education, including as a co-founder of BOLD Capital Partners " +
+		"in 2015, a venture fund investing in exponential technologies."
+	_, firm, _ := detectVC(bio)
+	for _, f := range strings.Split(firm, "; ") {
+		if f != "" && strings.IndexFunc(f, func(r rune) bool { return r < '0' || r > '9' }) < 0 {
+			t.Errorf("vc_firm = %q credits the bare number %q as a firm", firm, f)
+		}
+	}
+}

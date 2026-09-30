@@ -169,6 +169,25 @@ var (
 	// Caufield & Byers, a venture capital firm".
 	reVCAppositive = regexp.MustCompile(`(?i),\s+(?:a|an)\s+(?:[A-Za-z-]+\s+){0,3}venture\s+capital\s+(?:firm|partnership|investor)\b`)
 
+	// The same clause, written the other ways the corpus writes it: "a venture
+	// capital fund", "a venture fund", "a prominent venture capital investment
+	// firm", "a growth equity/late-stage venture capital investment firm".
+	//
+	// These are credited only through vcAppositiveLeadOK, because the narrow form
+	// above was doing a second job by accident: the variants it rejected are
+	// disproportionately the ones advisors and ex-partners use, and widening the
+	// head noun on its own bought one false positive per true one on the dev
+	// split.
+	reVCAppositiveWide = regexp.MustCompile(`(?i),\s+(?:a|an)\s+(?:[A-Za-z/-]+\s+){0,4}venture(?:\s+capital)?(?:\s+investment)?\s+(?:firm|funds?|partnership|investor|company)\b`)
+
+	// Read immediately before the firm name. A partner-grade role must be there
+	// — "an advisor to iGlobe Partners", "a Senior Advisor to Sandbox
+	// Industries" and "an Investment Director of GF Xinde" are the forms the
+	// gold does not count — and a past-tense marker must not be, which is what
+	// keeps a partnership the bio has already closed out from firing.
+	reVCPastLead = regexp.MustCompile(`(?i)\b(?:previously|formerly|until|was|prior\s+to)\b|` +
+		`\bfrom\s+(?:[A-Z][a-z]+\s+)?[0-9]{4}\s+(?:to|until|through)\b`)
+
 	// The pre-2000 fallback: a partner-grade role at a firm the dictionary knows.
 	// eBay 1998 carries no appositive anywhere in its MANAGEMENT section, so
 	// Robert Kagle is reachable only this way (profile, R10). "Managing Director"
@@ -235,9 +254,16 @@ func detectVC(bio string) (bool, string, string) {
 	}
 
 	for _, m := range reVCAppositive.FindAllStringIndex(bio, -1) {
-		if firm := firmBefore(bio[:m[0]]); firm != "" {
+		if firm, _ := firmBefore(bio[:m[0]]); firm != "" {
 			add(firm, evidence(bio, m[0], m[1]))
 		}
+	}
+	for _, m := range reVCAppositiveWide.FindAllStringIndex(bio, -1) {
+		firm, at := firmBefore(bio[:m[0]])
+		if firm == "" || !vcAppositiveLeadOK(bio[:at]) {
+			continue
+		}
+		add(firm, evidence(bio, m[0], m[1]))
 	}
 	for _, m := range reVCRole.FindAllStringIndex(bio, -1) {
 		hi := m[1] + 110
@@ -261,8 +287,14 @@ func detectVC(bio string) (bool, string, string) {
 // firmBefore reads the firm name off the text immediately before a
 // ", a venture capital firm" appositive: the trailing run of proper-noun tokens.
 // It stops at the first lower-case function word, which is what separates
-// "Andreessen Horowitz" from the "General Partner of" that introduces it.
-func firmBefore(head string) string {
+// "Andreessen Horowitz" from the "General Partner of" that introduces it. The
+// second return value is the byte offset the name starts at, which is where
+// vcAppositiveLeadOK reads back from.
+//
+// A run that is nothing but digits is rejected: "a co-founder of BOLD Capital
+// Partners in 2015, a venture fund investing in exponential technologies" puts
+// the appositive after the date, and the year is not the firm.
+func firmBefore(head string) (string, int) {
 	head = strings.TrimRight(head, " \t")
 	toks := strings.Fields(head)
 	i := len(toks)
@@ -277,8 +309,27 @@ func firmBefore(head string) string {
 		}
 	}
 	if i == len(toks) {
-		return ""
+		return "", 0
 	}
-	firm := strings.Join(toks[i:], " ")
-	return strings.TrimRight(strings.TrimSpace(firm), ",;:")
+	firm := strings.TrimRight(strings.TrimSpace(strings.Join(toks[i:], " ")), ",;:")
+	if firm == "" || !strings.ContainsFunc(firm, func(r rune) bool { return r < '0' || r > '9' }) {
+		return "", 0
+	}
+	at := strings.LastIndex(head, firm)
+	if at < 0 {
+		at = len(head)
+	}
+	return firm, at
+}
+
+// vcAppositiveLeadOK reports whether the text running up to the firm name puts
+// the person in a partner-grade role at it, in the present tense. The window is
+// one clause wide: wider and it reaches the previous sentence's employer, which
+// on this corpus is routinely the job the person left.
+func vcAppositiveLeadOK(lead string) bool {
+	const window = 90
+	if len(lead) > window {
+		lead = lead[len(lead)-window:]
+	}
+	return reVCRole.MatchString(lead) && !reVCPastLead.MatchString(lead)
 }
