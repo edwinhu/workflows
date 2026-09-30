@@ -1364,3 +1364,77 @@ func TestRule1_AsciiHeaderNeedNotSayName(t *testing.T) {
 		t.Errorf("ceo_founder_self_described = 0, want 1: %q", squash(e.Filing.CEOFounderEvidence))
 	}
 }
+
+// A section that splits its people across TWO Name/Age/Position tables — the
+// officers under "Executive Officers", the board under "Non-Employee Directors"
+// — must yield both sets. TScan's 2021 S-1 (0001193125-21-218024) is the case:
+// reading only the first table gives four officers, no directors at all, and
+// loses every one of its four venture-capital directors. The shape below is that
+// filing's, with its own names, positions and bio sentences.
+func TestRule1_SecondPersonTableInTheSectionIsRead(t *testing.T) {
+	body := `<HTML><BODY>
+<P ALIGN="center"><B>MANAGEMENT</B></P>
+<P><B>Executive Officers, Directors and Key Employees</B></P>
+<P><B>Executive Officers</B></P>
+<P>The following table sets forth the names and positions of our current executive officers.</P>
+<TABLE>
+<TR><TD>Name</TD><TD>Age</TD><TD>Position</TD></TR>
+<TR><TD>David Southwell</TD><TD>60</TD><TD>President, Chief Executive Officer and Director</TD></TR>
+<TR><TD>Brian Silver</TD><TD>52</TD><TD>Senior Vice President and Chief Financial Officer</TD></TR>
+<TR><TD>Gavin MacBeath, Ph.D.</TD><TD>51</TD><TD>Chief Scientific Officer</TD></TR>
+</TABLE>
+<P>David Southwell has served as our President, Chief Executive Officer and as a member of our board of directors since October 2018.</P>
+<P>Brian Silver has served as our Senior Vice President and Chief Financial Officer since May 2021.</P>
+<P>Gavin MacBeath, Ph.D. has served as our Chief Scientific Officer since December 2018.</P>
+<P><B>Non-Employee Directors</B></P>
+<P>The following table sets forth the names and positions of our non-employee directors.</P>
+<TABLE>
+<TR><TD>Name</TD><TD>Age</TD><TD>Position</TD></TR>
+<TR><TD>Timothy Barberich(1),(2)</TD><TD>73</TD><TD>Chairperson of the Board</TD></TR>
+<TR><TD>Ittai Harel(1),(3)</TD><TD>53</TD><TD>Director</TD></TR>
+<TR><TD>Andrew Hedin(5)</TD><TD>36</TD><TD>Director</TD></TR>
+</TABLE>
+<P>The following is a biographical summary of the experience of our non-employee directors.</P>
+<P>Timothy Barberich has served as a member of our board of directors since March 2019 and as the Chair of our board of directors since June 2019.</P>
+<P>Ittai Harel has served as a member of our board of directors since August 2019. Mr. Harel has served as the Managing General Partner of Pitango Venture Capital since 2006.</P>
+<P>Andrew Hedin has served as a member of our board of directors since July 2020. Mr. Hedin has served as an investment professional at Bessemer Venture Partners, a venture capital firm, since 2015 and has been a partner since 2021.</P>
+<P><B>Board Composition</B></P>
+<P>Our board of directors currently consists of nine members.</P>
+</BODY></HTML>`
+	e := ExtractManagement([]byte(sgmlHeader + sgmlDoc("424B4", body)))
+	if e.Filing.Status != StatusOK {
+		t.Fatalf("status = %q, want %q", e.Filing.Status, StatusOK)
+	}
+	if len(e.Persons) != 6 {
+		t.Fatalf("len(persons) = %d, want 6 (3 officers + 3 directors): %v",
+			len(e.Persons), personNames(e))
+	}
+	if got := countSection(e, SectionOfficer); got != 3 {
+		t.Errorf("officers = %d, want 3: %v", got, personNames(e))
+	}
+	if got := countSection(e, SectionDirector); got != 3 {
+		t.Errorf("directors = %d, want 3: %v", got, personNames(e))
+	}
+	if got := squash(e.Filing.CEOName); got != "David Southwell" {
+		t.Errorf("ceo_name = %q, want %q", got, "David Southwell")
+	}
+	// A person from the second table must carry the bio that follows it, and the
+	// VC flag must fire off that bio exactly as it does from the first table.
+	hedin := person(t, e, "Andrew Hedin")
+	if !containsFold(hedin.Bio, "a venture capital firm") {
+		t.Fatalf("Andrew Hedin bio = %q, want the sentence naming Bessemer", squash(hedin.Bio))
+	}
+	if !hedin.VCAffiliated {
+		t.Errorf("Andrew Hedin vc_affiliated = false, want true (bio: %q)", squash(hedin.Bio))
+	}
+	if e.Filing.NVCDirectors < 1 {
+		t.Errorf("n_vc_directors = %d, want >= 1", e.Filing.NVCDirectors)
+	}
+	// Seq must stay a dense 1..n over the joined set, not restart at the second
+	// table: the person rows are keyed on it.
+	for i, p := range e.Persons {
+		if p.Seq != i+1 {
+			t.Errorf("persons[%d].Seq = %d, want %d", i, p.Seq, i+1)
+		}
+	}
+}
