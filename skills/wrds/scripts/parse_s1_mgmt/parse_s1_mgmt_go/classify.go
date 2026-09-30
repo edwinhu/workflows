@@ -398,7 +398,28 @@ var (
 
 	// Words that end a firm name when scanning back from the appositive.
 	reFirmToken = regexp.MustCompile(`^(?:[A-Z0-9(]|&$)`)
+
+	// A firm-name token whose alphabetic body ends in "Venture"/"Ventures":
+	// Ventures, Venture, BioVentures, bioVenture. The leading capital is
+	// checked separately, so the lower-case "venture" of an appositive is left
+	// to the two appositive routes.
+	reVentureToken = regexp.MustCompile(`(?i)^[a-z]*ventures?$`)
+
+	// The two things that can follow the firm name and disqualify it: an
+	// appositive calling it a corporate venture arm, and a seat on its
+	// investment committee.
+	reCorporateVenture = regexp.MustCompile(`(?i)^[,\s]+(?:a|an)\s[^.;]{0,80}?corporate\s+venture\b`)
+	reFirmCommittee    = regexp.MustCompile(`(?i)^\s+(?:investment\s+)?committee\b`)
 )
+
+// ventureLeadWindow is how far back detectVC reads for a past-tense marker
+// before the partner-grade role that introduces a venture-named firm. One
+// clause is too wide here: "From September 1991 to the present, Mr. Tai has
+// been a general partner of the Walden Group of Venture Capital Funds" opens
+// with a date range and closes it with "to the present"
+// (0000891618-96-002428), so the window is the few words that actually
+// introduce the role.
+const ventureLeadWindow = 35
 
 // vcFirms is the dictionary the pre-2000 fallback needs. It is a list of firms,
 // not a pattern: "Ventures" or "Capital" in a name is no evidence at all (Credit
@@ -477,6 +498,22 @@ func detectVC(bio string) (bool, string, string) {
 				break
 			}
 		}
+		// The same role window, but with the firm's own name as the label.
+		lead := bio[:m[0]]
+		if len(lead) > ventureLeadWindow {
+			lead = lead[len(lead)-ventureLeadWindow:]
+		}
+		if reVCPastLead.MatchString(lead) {
+			continue
+		}
+		firm, end := ventureFirmAfter(window)
+		if firm == "" {
+			continue
+		}
+		if tail := window[end:]; reCorporateVenture.MatchString(tail) || reFirmCommittee.MatchString(tail) {
+			continue
+		}
+		add(firm, evidence(bio, m[0], m[1]+end))
 	}
 	if len(firms) == 0 {
 		return false, "", ""
@@ -533,3 +570,70 @@ func vcAppositiveLeadOK(lead string) bool {
 	}
 	return reVCRole.MatchString(lead) && !reVCPastLead.MatchString(lead)
 }
+
+// ventureFirmAfter reads a firm name out of the window that follows a
+// partner-grade role, when the name itself carries the label: a token ending in
+// "Venture"/"Ventures", with the run of proper-noun tokens either side of it.
+// The second return value is the offset in window just past the name, which is
+// where detectVC checks for the "corporate venture" and "investment committee"
+// disqualifiers.
+//
+// "of", "the" and "and" are crossed when a firm token sits beyond them, which is
+// what keeps "Walden Group of Venture Capital Funds" whole. Nothing else
+// lower-case is, so the "a venture capital firm" of an appositive cannot be read
+// as part of a name.
+func ventureFirmAfter(window string) (string, int) {
+	type tok struct {
+		lo, hi int
+		text   string
+	}
+	var toks []tok
+	for i := 0; i < len(window); {
+		for i < len(window) && (window[i] == ' ' || window[i] == '\t' || window[i] == '\n') {
+			i++
+		}
+		start := i
+		for i < len(window) && window[i] != ' ' && window[i] != '\t' && window[i] != '\n' {
+			i++
+		}
+		if i > start {
+			toks = append(toks, tok{start, i, strings.Trim(window[start:i], `.,;:()"`)})
+		}
+	}
+	for i, t := range toks {
+		if t.text == "" || !isUpperASCII(t.text[0]) || !reVentureToken.MatchString(t.text) {
+			continue
+		}
+		lo := i
+		for lo > 0 {
+			p := toks[lo-1].text
+			if p != "" && reFirmToken.MatchString(p) {
+				lo--
+				continue
+			}
+			lower := strings.ToLower(p)
+			if (lower == "of" || lower == "the" || lower == "and") && lo-2 >= 0 &&
+				toks[lo-2].text != "" && reFirmToken.MatchString(toks[lo-2].text) {
+				lo--
+				continue
+			}
+			break
+		}
+		hi := i + 1
+		for hi < len(toks) && hi-i < 5 && toks[hi].text != "" && reFirmToken.MatchString(toks[hi].text) {
+			hi++
+		}
+		parts := make([]string, 0, hi-lo)
+		for k := lo; k < hi; k++ {
+			parts = append(parts, toks[k].text)
+		}
+		firm := strings.Trim(strings.Join(parts, " "), " ,;:")
+		if firm == "" {
+			return "", 0
+		}
+		return firm, toks[hi-1].hi
+	}
+	return "", 0
+}
+
+func isUpperASCII(c byte) bool { return c >= 'A' && c <= 'Z' }
