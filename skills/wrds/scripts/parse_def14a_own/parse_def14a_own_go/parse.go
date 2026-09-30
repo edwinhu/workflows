@@ -189,3 +189,21 @@ func isGroupRow(name string) (bool, int) {
 func hasWords(s string, min int) bool {
 	return len(reAlphaWords.FindAllString(s, -1)) >= min
 }
+
+// isStrongGroupRow is isGroupRow restricted to the UNAMBIGUOUS collective
+// labels: "as a group", "(20 individuals)", "including those named above". The
+// weak arms of isGroupRow -- a name that merely LEADS with a collective noun --
+// match a stub column that names the population of a block ("Directors
+// (including nominees)"), so only the strong arms may be read off a cell that is
+// not the holder column.
+func isStrongGroupRow(name string) (bool, int) {
+	if !(reGroupRow.MatchString(name) || reGroupCount.MatchString(name) ||
+		reGroupAbove.MatchString(name) || reGroupFrag.MatchString(name)) {
+		return false, 0
+	}
+	n := 0
+	if m := reGroupN.FindStringSubmatch(name); m != nil {
+		n, _ = strconv.Atoi(m[1])
+	}
+	return true, n
+}

@@ -2651,3 +2651,52 @@ func TestASCIIWholeHeaderRowIsNotAClassLabel(t *testing.T) {
 		t.Errorf("percent lost: %+v", sd.Percent)
 	}
 }
+
+// A modern D&O table carries a STUB column that names the population of each
+// block ("Directors (including nominees)", "Named Executive Officers") to the
+// left of the holder column. Its final row is the D&O group total, and the
+// collective label is written in that stub column with the HOLDER column left
+// empty -- so the row was skipped for having no holder, and the filing lost the
+// only group row it has. Transcribed from Old Republic's 2025 proxy
+// (0001140361-25-010962).
+const stubColumnGroupRowHTML = `<html><body>
+<p><b>Principal Holders of Securities</b></p>
+<table>
+<tr><th></th><th>Name of Beneficial Owner</th><th>Shares Subject to Stock Options</th><th>Other Shares Beneficially Owned</th><th>Total</th><th>Percent of Class</th></tr>
+<tr><td>Directors (including nominees)</td><td>Barbara A. Adachi</td><td>0</td><td>8,287</td><td>8,287</td><td>**</td></tr>
+<tr><td>Directors (including nominees)</td><td>Steven J. Bateman</td><td>0</td><td>29,551</td><td>29,551</td><td>**</td></tr>
+<tr><td>Named Executive Officers</td><td>Craig R. Smiddy</td><td>600,000</td><td>379,786</td><td>979,786</td><td>0.39</td></tr>
+<tr><td>Directors and Executive Officers as a group (20 individuals) (7)</td><td></td><td>1,805,516</td><td>920,987</td><td>2,726,503</td><td>1.1</td></tr>
+</table></body></html>`
+
+func TestStubColumnGroupRow(t *testing.T) {
+	rows := ScreenRows(run(t, stubColumnGroupRowHTML))
+	var g *Row
+	for i := range rows {
+		if rows[i].IsGroupRow {
+			g = &rows[i]
+		}
+	}
+	if g == nil {
+		t.Fatalf("the group row written in the stub column was lost: %+v", rows)
+	}
+	if g.Percent == nil || *g.Percent != 1.1 {
+		t.Errorf("group row percent: %+v", g.Percent)
+	}
+	if g.GroupN != 20 {
+		t.Errorf("group n: %d", g.GroupN)
+	}
+	// The stub column must not turn the PERSON rows into group rows.
+	if find(rows, "Barbara A. Adachi", "") == nil {
+		t.Errorf("a person row was lost: %+v", rows)
+	}
+	ngrp := 0
+	for _, r := range rows {
+		if r.IsGroupRow {
+			ngrp++
+		}
+	}
+	if ngrp != 1 {
+		t.Errorf("want exactly one group row, got %d: %+v", ngrp, rows)
+	}
+}
