@@ -142,6 +142,35 @@ const compPlanHTML = `<html><body>
 <tr><td>Equity compensation plans not approved by security holders</td><td>1,000,000</td><td>$12.00</td></tr>
 </table></body></html>`
 
+// Transcribed from 0001206774-09-000166 (Hovnanian Enterprises 2009). The
+// beneficial-ownership table's own footnote carries the standard sentence
+// "options exercisable within 60 days, whether or not in-the-money", and the
+// option-detail reject fired on the bare phrase, throwing away a three-class
+// ownership table with share counts and percents of class. In-the-money names
+// an option-detail COLUMN only in "Value of Unexercised In-the-Money Options";
+// in a negation it is the ordinary 60-day beneficial-ownership footnote.
+const inTheMoneyFootnoteHTML = `<html><body>
+<p>Security Ownership of Certain Beneficial Owners and Management</p>
+<table>
+<tr><th>Directors and Holders of More Than 5%</th>
+    <th>Class A Amount and Nature of Beneficial Ownership</th><th>Percent of Class</th>
+    <th>Class B Amount and Nature of Beneficial Ownership</th><th>Percent of Class</th></tr>
+<tr><td>Kevork S. Hovnanian (4)</td><td>7,567,392</td><td>12.10 %</td><td>7,165,926</td><td>48.95 %</td></tr>
+<tr><td>Ara K. Hovnanian (5)</td><td>5,736,237</td><td>8.91 %</td><td>988,915</td><td>6.76 %</td></tr>
+<tr><td>Paul W. Buchanan (6)</td><td>84,981</td><td>.14 %</td><td>-</td><td>-</td></tr>
+<tr><td>All Directors and Executive Officers as a Group (17 persons)</td><td>15,120,455</td><td>23.30 %</td><td>8,663,341</td><td>59.18 %</td></tr>
+<tr><td>(1) Shares subject to options exercisable within 60 days, whether or not
+in-the-money, include the shares shown above.</td><td></td><td></td><td></td><td></td></tr>
+</table></body></html>`
+
+func TestInTheMoneyInAFootnoteIsNotAnOptionDetailTable(t *testing.T) {
+	rows := run(t, inTheMoneyFootnoteHTML)
+	got := find(rows, "Kevork S. Hovnanian", "")
+	if got == nil || got.Shares == nil || *got.Shares != 7567392 {
+		t.Fatalf("ownership table rejected on a 60-day footnote: %d rows %+v", len(rows), rows)
+	}
+}
+
 func TestCompensationTableRejected(t *testing.T) {
 	if rows := run(t, compPlanHTML); len(rows) != 0 {
 		t.Fatalf("equity comp plan table should not yield ownership rows: %+v", rows)
