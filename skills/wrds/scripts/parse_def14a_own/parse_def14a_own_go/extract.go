@@ -123,7 +123,13 @@ var (
 	// These phrases describe an option or a purchase and never a holding, so
 	// they veto the table outright.
 	reOptDetailCue = regexp.MustCompile(`(?i)remaining\s+contractual\s+(?:life|term)|` +
-		`in[- ]?the[- ]?money|option\s+price\s+range|option\s+average\s+price|` +
+		// "In-the-money" names an option-detail COLUMN only in the SEC's own
+		// heading, "Value of Unexercised In-the-Money Options at FY-End". On its
+		// own it is the ordinary beneficial-ownership footnote -- "options
+		// exercisable within 60 days, whether or not in-the-money" -- which sits
+		// under the ownership table itself and must not reject it.
+		`(?:value|number|unexercised)[^.]{0,40}in[- ]?the[- ]?money|` +
+		`option\s+price\s+range|option\s+average\s+price|` +
 		`average\s+option\s+price|net\s+shares\s+from\s+\S+\s+options|` +
 		`average\s+purchase\s+price|average\s+discount`)
 
