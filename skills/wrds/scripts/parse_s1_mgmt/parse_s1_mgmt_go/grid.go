@@ -28,9 +28,15 @@ var (
 // charFix folds the characters EDGAR HTML uses for spacing and punctuation.
 // The non-breaking space matters most: a cell holding only &#160; must read as
 // empty, or every spacer column survives compaction as a data column.
+//
+// The RIGHT single quote is deliberately NOT folded: in "Rory T. O’Driscoll" it
+// is a letter of the name, and an emitted name that differs from the filing's own
+// bytes is a different person to anything joining on it. Everything that reads an
+// apostrophe as punctuation — the possessive in "the company’s founders" — accepts
+// both characters instead.
 var charFix = strings.NewReplacer(
 	" ", " ", " ", " ", " ", " ", "​", "",
-	"’", "'", "‘", "'", "“", "\"", "”", "\"",
+	"‘", "'", "“", "\"", "”", "\"",
 	"–", "-", "—", "-", "−", "-", "•", " ",
 )
 
@@ -52,7 +58,6 @@ func flat(s string) string { return norm(strings.ReplaceAll(s, "\n", " ")) }
 
 func norm(s string) string {
 	s = strings.ReplaceAll(s, " ", " ")
-	s = strings.ReplaceAll(s, "’", "'")
 	s = strings.ReplaceAll(s, "–", "-")
 	s = strings.ReplaceAll(s, "—", "-")
 	s = strings.ReplaceAll(s, "•", " ")

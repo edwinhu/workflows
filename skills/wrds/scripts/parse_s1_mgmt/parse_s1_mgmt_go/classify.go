@@ -58,7 +58,7 @@ var (
 	// the quoted evidence reads "ptember 1998, our President since ..."; without
 	// the comma it drags two unrelated "since" dates in front of the one that
 	// matters.
-	reSinceInception = regexp.MustCompile(`(?i)\b\w[^.;,]{0,69}\bsince\s+(?:our\s+|the\s+company's\s+|its\s+)?inception\b`)
+	reSinceInception = regexp.MustCompile(`(?i)\b\w[^.;,]{0,69}\bsince\s+(?:our\s+|the\s+company['\x{2019}]s\s+|its\s+)?inception\b`)
 	reSinceDate      = regexp.MustCompile(`(?i)\bsince\s+(?:[A-Z][a-z]+\s+)?[0-9]{4}\b`)
 )
 
@@ -86,7 +86,7 @@ var (
 	// "Co-Founder".
 	rePosFounder = regexp.MustCompile(`(?i)\b(?:co[-\s]?)?founder\b`)
 	// ... but not a firm whose NAME contains the token.
-	reFounderFirm = regexp.MustCompile(`(?i)\bfounders?'?\s+(?:fund|circle|forum|capital|equity)\b`)
+	reFounderFirm = regexp.MustCompile(`(?i)\bfounders?['\x{2019}]?\s+(?:fund|circle|forum|capital|equity)\b`)
 
 	// Same-company referents only. Each pattern requires the issuer as the thing
 	// founded, which is what keeps "founder of Starbucks", "founder of Intuit",
@@ -94,7 +94,7 @@ var (
 	// founder of Kitty Hawk Capital" and "is a co-founder [of Andreessen
 	// Horowitz]" from firing.
 	reBioFounder = []*regexp.Regexp{
-		regexp.MustCompile(`(?i)\b(?:our|the\s+company's)\s+(?:co[-\s]?)?founders?\b`),
+		regexp.MustCompile(`(?i)\b(?:our|the\s+company['\x{2019}]s)\s+(?:co[-\s]?)?founders?\b`),
 		regexp.MustCompile(`(?i)\bone\s+of\s+our\s+(?:co[-\s]?)?founders\b`),
 		regexp.MustCompile(`(?i)\b(?:co[-\s]?)?founded\s+(?:our\s+company|our\s+business|the\s+company|us)\b`),
 		regexp.MustCompile(`(?i)\b(?:co[-\s]?)?founders?\s+of\s+(?:our\s+company|our\s+business|the\s+company)\b`),
