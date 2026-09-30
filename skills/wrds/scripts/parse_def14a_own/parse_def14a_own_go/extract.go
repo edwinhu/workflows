@@ -133,8 +133,11 @@ var (
 		// heading, "Value of Unexercised In-the-Money Options at FY-End". On its
 		// own it is the ordinary beneficial-ownership footnote -- "options
 		// exercisable within 60 days, whether or not in-the-money" -- which sits
-		// under the ownership table itself and must not reject it.
-		`(?:value|number|unexercised)[^.]{0,40}in[- ]?the[- ]?money|` +
+		// under the ownership table itself and must not reject it. A COUNT of
+		// them is not an option-detail column either: an ownership table may
+		// carry "Number of In the Money Options Vesting by June 30, 2005"
+		// beside its own shares and percent-of-class columns.
+		`(?:value|unexercised)[^.]{0,40}in[- ]?the[- ]?money|` +
 		`option\s+price\s+range|option\s+average\s+price|` +
 		`average\s+option\s+price|net\s+shares\s+from\s+\S+\s+options|` +
 		`average\s+purchase\s+price|average\s+discount`)
