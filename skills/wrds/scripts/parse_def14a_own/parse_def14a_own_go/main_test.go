@@ -269,3 +269,34 @@ func TestAFootnoteSentenceIsNotATableRow(t *testing.T) {
 		}
 	}
 }
+
+// Transcribed from 0000890566-00-000062 (Snap-on/Ampco 2000). The ownership
+// table carries a FACE VALUE OF DEBENTURES column in dollars beside the share
+// counts, and its percent column is the less-than-1% marker "*" for all but
+// two rows. textMoneyBlock vetoes itself on a literal "%" only, so a block of
+// such rows read as money and the table -- group total included -- was thrown
+// away. A percent MARKER is a percent of class just as "%" is.
+func TestAPercentMarkerVetoesTheMoneyBlock(t *testing.T) {
+	clean := []string{
+		"John D. O' Connell                        $ 12,500             10,710           17,396          *",
+		"Vincent R. Scorsone                       $100,000              5,000           24,174          *",
+		"Michael J. Sebastian                      $150,000             21,000           13,760          *",
+		"All officers and directors as a group",
+		"  (15 persons)                            $312,500            140,042          658,011           4.5",
+	}
+	if textMoneyBlock(clean, []int{0, 1, 2, 4}) {
+		t.Errorf("an ownership table with a dollar column and a 4.5 percent read as money")
+	}
+	// A fund DOLLAR-RANGE table still must read as money: its "*" is a
+	// footnote marker on a dollar band, not a percent of class. These are the
+	// rows of 0000930413-02-002213 and 0001072613-08-000788, the filings the
+	// exclusion clauses X2 and X3 were written from.
+	money := []string{
+		"Martin J. Whitman                         $0*                Over $100,000*",
+		"David M. Barse                            $0*                Over $100,000*",
+		"Jack W. Aber                              $0*                $50,001 - $100,000*",
+	}
+	if !textMoneyBlock(money, []int{0, 1, 2}) {
+		t.Errorf("a dollar-range block stopped being money")
+	}
+}
