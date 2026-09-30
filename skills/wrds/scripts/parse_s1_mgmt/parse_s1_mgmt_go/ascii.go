@@ -155,6 +155,20 @@ func asciiRows(lines []string, hdr, hi int) (rows []mgmtRow, bodyEnd int) {
 			if name == "" {
 				continue
 			}
+			// A name cell that ran out of column and wrapped: Integ 1996 writes
+			// "Mark B. Knudson," on its own line and " Ph.D.(1)(3)....  47
+			// Chairman of the Board of Directors" under it. The dangling line has
+			// no age, so the pass above filed it as a section label. Two things
+			// separate the wrap from a real label: the label ends a phrase while
+			// the dangling half of a cell breaks on a comma, and the
+			// continuation is INDENTED past the margin where both a name cell and
+			// a section label start.
+			if last := len(rows) - 1; last >= 0 && rows[last].Label != "" &&
+				strings.HasSuffix(rows[last].Label, ",") &&
+				len(line[:lo])-len(strings.TrimLeft(line[:lo], " ")) > 0 {
+				name = strings.TrimSpace(rows[last].Label + " " + name)
+				rows = rows[:last]
+			}
 			age, _ := plausibleAge(line[lo:hiIdx])
 			rows = append(rows, mgmtRow{
 				NameRaw:  name,

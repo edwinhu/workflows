@@ -1688,3 +1688,103 @@ func TestRule7_AFirmNamedBeforeThePresentRoleInTheSameSentenceFires(t *testing.T
 		t.Errorf("a closed seat fired through the backward window: vc_affiliated = true (firm=%q evidence=%q)", firm, ev)
 	}
 }
+
+// Medical Innovation / Integ Incorporated 1996 (0000950131-96-003098) runs out of
+// name column on two rows and wraps the cell:
+//
+//	Mark B. Knudson,
+//	 Ph.D.(1)(3)...............  47 Chairman of the Board of Directors
+//
+// The dangling line carries no age, so the row parser filed it as a section
+// label and named the person "Ph.D." -- which loses the name, loses the bio that
+// opens with it (it lands on the officer above instead) and collapses two rows
+// onto one name in the distinct-person count. The continuation is indented past
+// the left margin where a real name cell and a real section label both start,
+// and the dangling line ends mid-cell on a comma. Verbatim from the filing.
+const asciiWrappedNameCellExcerpt = `                                  MANAGEMENT
+ 
+DIRECTORS AND EXECUTIVE OFFICERS
+ 
+  The directors, executive officers and key management personnel of the
+Company are as follows:
+ 
+<TABLE>
+<CAPTION>
+NAME                        AGE POSITION
+- ----                        --- --------
+<S>                         <C> <C>
+Frank A. Solomon(3)........  52 President, Chief Executive Officer and Director
+Ronald M. Nelson...........  45 Chief Financial Officer
+Mark B. Knudson,
+ Ph.D.(1)(3)...............  47 Chairman of the Board of Directors
+Frank B. Bennett(1)(2).....  39 Director
+Robert S. Nickoloff........  67 Director
+Walter L. Sembrowich,
+ Ph.D.(3)..................  53 Director
+</TABLE>
+- --------
+(1) Member of the Compensation Committee of the Board of Directors.
+ 
+  Frank A. Solomon, one of the founders of the Company, served as a consultant
+to the Company from July through December 1990, its President and a director
+since January 1991 and as Chief Executive Officer since December 1991.
+ 
+  Ronald M. Nelson has acted as the Company's Chief Financial Officer on a
+part-time basis since January 1994. Mr. Nelson is a Certified Public
+Accountant.
+ 
+  Mark B. Knudson, Ph.D., one of the founders of the Company, served as the
+President of the Company from its inception in April 1990 through December
+1990, and as Chief Executive Officer from its inception through November 1991.
+Since 1993, Dr. Knudson has been the Managing Venture Partner of Medical
+Innovation Partners II, a Limited Partnership ("MIP II").
+ 
+  Frank B. Bennett has been a director of the Company since 1992. Mr. Bennett
+is the founder of Artesian Capital Management, Inc. ("Artesian").
+ 
+  Robert S. Nickoloff has been a director of the Company since its inception.
+Mr. Nickoloff is a General Partner of MIP and MIP II.
+ 
+  Walter L. Sembrowich, Ph.D., has been a director of the Company since its
+inception. Since co-founding Diametrics in 1990, Dr. Sembrowich held various
+management positions at Diametrics through December 1995.
+`
+
+func TestRule3_AsciiWrappedNameCellIsOneRow(t *testing.T) {
+	raw := sgmlHeaderFor("INTEG INCORPORATED") +
+		sgmlDoc("424B4", asciiWrappedNameCellExcerpt+"\nEXECUTIVE COMPENSATION\n")
+	e := ExtractManagement([]byte(raw))
+	if e.Filing.Status != StatusOK {
+		t.Fatalf("status = %q, want %q", e.Filing.Status, StatusOK)
+	}
+	if len(e.Persons) != 6 {
+		t.Fatalf("len(persons) = %d, want 6: %v", len(e.Persons), personNames(e))
+	}
+	for _, p := range e.Persons {
+		if squash(p.Name) == "Ph.D." || squash(p.Name) == "" {
+			t.Errorf("a wrapped name cell produced the person %q: %v", squash(p.Name), personNames(e))
+		}
+	}
+	k := person(t, e, "Mark B. Knudson")
+	if k.Age != 47 {
+		t.Errorf("Knudson age = %d, want 47", k.Age)
+	}
+	if !containsFold(k.Position, "Chairman of the Board") {
+		t.Errorf("Knudson position = %q, want the chairman cell", squash(k.Position))
+	}
+	if !containsFold(k.Bio, "Managing Venture Partner") {
+		t.Errorf("Knudson bio = %q, want his own bio", squash(k.Bio))
+	}
+	// The bio that opens with the wrapped name must not land on the row above it.
+	n := person(t, e, "Ronald M. Nelson")
+	if containsFold(n.Bio, "Managing Venture Partner") {
+		t.Errorf("Knudson's bio landed on Nelson: %q", squash(n.Bio))
+	}
+	if n.FounderSelfDescribed {
+		t.Errorf("Nelson is flagged a founder off Knudson's bio: %q", squash(n.FounderEvidence))
+	}
+	s := person(t, e, "Walter L. Sembrowich")
+	if s.Age != 53 {
+		t.Errorf("Sembrowich age = %d, want 53", s.Age)
+	}
+}
