@@ -132,7 +132,7 @@ func extractHTML(body string) Extraction {
 	var prose []string
 	for j := tableIdx + 1; j < hi; j++ {
 		b := blocks[j]
-		if b.Kind != blockText || b.InTable || isPageFurniture(b.Text) {
+		if b.Kind != blockText || b.InTable || blockIsFurniture(blocks, j) {
 			continue
 		}
 		prose = append(prose, b.Text)
