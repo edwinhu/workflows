@@ -624,6 +624,33 @@ var (
 	// "From 1993 until present, Mr. Adair has been a principal of ..."
 	// (0000950144-98-004643) ends at the filing date, not before it.
 	reOpenRangeEnd = regexp.MustCompile(`(?i)\b(?:until|through|to)\s+(?:the\s+)?(?:present|now|date\s+hereof)\b`)
+
+	// The venture label written nowhere but the board-qualification sentence
+	// Item 401(e) makes a prospectus carry for each director. Aisling Capital is
+	// introduced bare and labelled only by "his experience in the
+	// biopharmaceutical industry as a venture capital investor ... give him the
+	// qualifications" (0001193125-12-307785); SV Health Investors carries the
+	// appositive "an investment firm focused on healthcare investing" and is
+	// labelled only by "because of his experience in venture capital in the life
+	// sciences industry" (0001104659-21-128952). The sentence is the person's
+	// own, so rule 7's scoping holds.
+	reVentureCapital   = regexp.MustCompile(`(?i)\bventure\s+capital\b`)
+	reQualifiedToServe = regexp.MustCompile(`(?i)\bqualif(?:ied|ications?)\b`)
+
+	// The route transfers a label from a sentence about EXPERIENCE onto a firm
+	// the filing never labels, so it may only run where the transfer has one
+	// possible target. A qualification sentence that coordinates venture capital
+	// with another asset class does not say which firm supplied which: gold
+	// leaves out Vulcan Capital, whose director's "significant experience in the
+	// venture capital and private equity industries" is the only venture word
+	// near it (0001047469-14-004991), and Francisco Partners, whose director's
+	// reads "the private equity and venture capital industries"
+	// (0001193125-20-253358).
+	reQualOtherAssetClass = regexp.MustCompile(`(?i)\b(?:private\s+(?:equity|investment)|growth\s+equity|buyouts?|hedge\s+funds?)\b`)
+
+	// The preposition between a partner-grade role and the firm it is held at,
+	// stripped before the firm name is read forward.
+	reVCRoleConnector = regexp.MustCompile(`(?i)^[,;\s]*(?:at|of|with|for|to|in)\s+`)
 )
 
 // ventureLeadWindow is how far back detectVC reads for a past-tense marker
@@ -864,10 +891,89 @@ func detectVC(bio string) (bool, string, string) {
 		}
 		ventureNamed(m[0], m[1], bio[m[1]:hi])
 	}
+	// The label in the board-qualification sentence, which labels no firm by
+	// name: the firm is the proper-noun run after a present partner-grade role,
+	// the same forward read firmAfterLabel does for a pre-positioned label.
+	if qualificationVentureLabel(bio) {
+		for _, m := range reVCRole.FindAllStringIndex(bio, -1) {
+			if vcLeadIsPast(bio[:m[0]]) || vcLeadIsNonPartner(bio[:m[0]]) {
+				continue
+			}
+			hi := m[1] + 110
+			if hi > len(bio) {
+				hi = len(bio)
+			}
+			window := bio[m[1]:hi]
+			c := reVCRoleConnector.FindString(window)
+			if c == "" {
+				continue
+			}
+			firm, end := firmAfterLabel(window[len(c):])
+			if firm == "" {
+				continue
+			}
+			// The same three vetoes the venture-named route runs, read off the
+			// whole bio because the window truncates a clause mid-word.
+			tail := bio[m[1]+len(c)+end:]
+			if reCorporateVenture.MatchString(tail) || reFirmCommittee.MatchString(tail) ||
+				closedRangeAfterFirm(tail) {
+				continue
+			}
+			if reFirmIsServices.MatchString(tail) &&
+				!strings.Contains(strings.ToLower(clauseAt(tail)), "venture") {
+				continue
+			}
+			add(firm, evidence(bio, m[0], m[1]+len(c)+end))
+		}
+	}
 	if len(firms) == 0 {
 		return false, "", ""
 	}
 	return true, strings.Join(firms, "; "), ev[0]
+}
+
+// qualificationVentureLabel reports whether the bio's own board-qualification
+// sentence calls the person's experience venture capital. Both tokens have to
+// sit in ONE sentence: a bio can say "venture capital" about a portfolio company
+// in one sentence and carry the qualification boilerplate in another.
+// And the bio must label no firm as venture anywhere else: when it does, that
+// firm is what the qualification sentence is about, and the label cannot be
+// transferred to an unlabelled one. Vulcan Capital's director held a past seat
+// at "Lazard Technology Partners, or Lazard, an Internet and technology focused
+// venture capital firm" (0001047469-14-004991) and TPG Growth's ran "the
+// Qualcomm Life Fund, a venture fund focused on investing in digital health
+// technologies" until 2017 (0001193125-21-230254); both are why the
+// qualification sentence says venture capital at all.
+// "Anywhere else" is the whole bio MINUS the qualification sentence: that
+// sentence's own "as a venture capital investor," is a match of the
+// pre-positioned label pattern, and vetoing on it would close the route on the
+// very row it is for.
+func qualificationVentureLabel(bio string) bool {
+	for _, m := range reVentureCapital.FindAllStringIndex(bio, -1) {
+		lo := lastSentenceStart(bio[:m[0]])
+		hi := lo + len(sentenceAround(bio, m[0]))
+		s := bio[lo:hi]
+		if !reQualifiedToServe.MatchString(s) || reQualOtherAssetClass.MatchString(s) {
+			continue
+		}
+		if !ventureLabelOutside(bio, lo, hi) {
+			return true
+		}
+	}
+	return false
+}
+
+// ventureLabelOutside reports whether the bio labels a firm as venture anywhere
+// outside the byte range [lo, hi).
+func ventureLabelOutside(bio string, lo, hi int) bool {
+	for _, re := range []*regexp.Regexp{reVCAppositive, reVCAppositiveWide, reVCPostLabel, reVCPreLabel} {
+		for _, m := range re.FindAllStringIndex(bio, -1) {
+			if m[0] < lo || m[0] >= hi {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // closedRangeAfterFirm reports whether a closed date range opens immediately
