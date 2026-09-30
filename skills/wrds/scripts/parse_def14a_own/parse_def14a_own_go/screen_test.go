@@ -269,6 +269,40 @@ Class M ESOP Voting Junior State Street Bank    1,669,444            8.4%
 </TABLE>
 `
 
+// Transcribed from 0000356476-06-000063, a variable-annuity separate-account
+// proxy. Its 5% record holders are named "<Fund> Series Account" -- a SEPARATE
+// ACCOUNT, which really does hold the shares -- and the non-common-class
+// screen read "Series Account" as a series designator, dropping all six rows
+// and with them the whole filing. A series designator is "Series A", "Series
+// 1", "Series AA": one to three characters, not a word.
+func TestASeriesAccountIsAHolderNotAShareClass(t *testing.T) {
+	var rows []Row
+	for i, tc := range []struct {
+		name string
+		sh   float64
+		pct  float64
+	}{
+		{"Retirement Plan Series Account", 381385, 17.33},
+		{"FutureFunds Series Account", 564733, 25.66},
+		{"FutureFunds II Series Account", 1097240, 49.87},
+		{"Series A Preferred Holders LLC", 100000, 4.0},
+	} {
+		rows = append(rows, Row{HolderName: tc.name, TableIndex: 11, RowIndex: 20 + i,
+			Shares: pf(tc.sh), Percent: pf(tc.pct), TableKind: "5pct_holders"})
+	}
+	got := ScreenRows(rows)
+	for _, want := range []string{"Retirement Plan Series Account",
+		"FutureFunds Series Account", "FutureFunds II Series Account"} {
+		if find(got, want, "") == nil {
+			t.Errorf("separate-account holder %q dropped as a share class: %s", want, names(got))
+		}
+	}
+	// "Series A" still is one, and so is the word preferred beside it.
+	if find(got, "Series A Preferred Holders LLC", "") != nil {
+		t.Errorf("a real series designator was kept: %s", names(got))
+	}
+}
+
 func TestNonCommonShareClassRowsAreDropped(t *testing.T) {
 	rows := runScreened(t, nonCommonClassPrefix)
 	for _, r := range rows {
