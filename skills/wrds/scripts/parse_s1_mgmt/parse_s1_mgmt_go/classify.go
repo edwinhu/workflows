@@ -549,6 +549,28 @@ var (
 	// Technology Ventures, LLC, an early-stage life sciences investment
 	// company" is a true positive (0000950123-12-002923).
 	reCorporateVenture = regexp.MustCompile(`(?i)^[,\s]+(?:a|an)\s[^.;]{0,80}?corporate\s+venture\b`)
+
+	// The captive fund's own appositive, and the reason reCorporateVenture is
+	// keyed on the INDEFINITE article. "MRL Ventures Fund, an early-stage
+	// therapeutics-focused corporate venture fund that he built and managed
+	// within Merck & Co." describes a fund the person ran inside an operating
+	// company and gold does not count it; "S.R. One, Limited, the corporate
+	// venture capital arm of GlaxoSmithKline" names the parent's standing
+	// investment house, which gold does count (0001047469-19-003926,
+	// 0001193125-18-208021, and Taiho Ventures at 0001193125-21-145768). The
+	// definite article and the head noun "arm" are what separate them, and no
+	// other appositive route accepts either.
+	reVCCorporateArm = regexp.MustCompile(
+		`(?i),\s+the\s+(?:[A-Za-z/-]+\s+){0,3}venture(?:\s+(?:capital|investment|growth|equity))*\s+arm\b`)
+
+	// The head of a captive arm is titled President rather than managing
+	// partner: "has served since April 2016 as President of Taiho Ventures,
+	// LLC, the corporate venture arm of Taiho Pharmaceutical Co., Ltd."
+	// Read ONLY on the corporate-arm route, where the appositive has already
+	// established that the firm is the parent's investment house — at an
+	// operating company "President" is the officer grade reVCNonPartnerRole is
+	// right to reject.
+	reVCArmHeadRole = regexp.MustCompile(`(?i)\b(?:president|head)\b`)
 	reFirmCommittee    = regexp.MustCompile(`(?i)^\s+(?:investment\s+)?committee\b`)
 	// The third arm is an asset class rather than a service: a firm the filing
 	// calls private equity or private investment is not venture capital, and the
@@ -785,6 +807,16 @@ func detectVC(bio string) (bool, string, string) {
 	for _, m := range reVCAppositiveWide.FindAllStringIndex(bio, -1) {
 		firm, at := firmBefore(bio[:m[0]])
 		if firm == "" || !vcAppositiveLeadOK(bio[:at]) || closedRangeAt(bio[m[1]:]) {
+			continue
+		}
+		add(firm, evidence(bio, m[0], m[1]))
+	}
+	for _, m := range reVCCorporateArm.FindAllStringIndex(bio, -1) {
+		firm, at := firmBefore(bio[:m[0]])
+		if firm == "" || vcLeadIsPast(bio[:at]) || closedRangeAfterFirm(bio[m[1]:]) {
+			continue
+		}
+		if !vcAppositiveLeadOK(bio[:at]) && !reVCArmHeadRole.MatchString(vcLead(bio[:at])) {
 			continue
 		}
 		add(firm, evidence(bio, m[0], m[1]))
