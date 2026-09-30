@@ -350,6 +350,90 @@ func TestASCIIBiographyUnderEachHolderDoesNotEndTheBlock(t *testing.T) {
 	}
 }
 
+// The same Perini table (0000077543-03-000009) as it really runs: a PAGE BREAK
+// after the fifth director, then the identical column header reprinted on the
+// new page and four more holders plus the group total. The page break is more
+// than six non-row lines, so the block ends at the break and the second page --
+// including the group row -- is never read.
+var asciiPageBreakReprintedHeader = `
+                OWNERSHIP OF COMMON STOCK BY DIRECTORS AND OFFICERS
+
+     The following table sets forth certain information concerning the
+beneficial ownership of the Common Stock of the Company by each Director and
+by all Directors and Executive Officers of the Company as a group.
+
+                                                         Served    Sole Voting
+                                                          as a         and
+  Name and Principal Occupation for The Past            Director   Investment                                       Percentage
+                  Five Years                     Age     Since        Power             Shared         Aggregate     of Class
+- -----------------------------------------------  -----  ---------  ------------------ -----------     ------------ -------------
+Ronald N. Tutor (4)                               62      1997      6,282,201     (5)     0            6,282,201      23.94%
+  Director; Chairman and Chief Executive
+  Officer since March 29, 2000, formerly
+  Chairman since July 1, 1999.
+
+Robert Band                                       55      1999        267,405     (6)     0              267,405       1.17%
+  Director; President and Chief Operating
+  Officer since March 29, 2000.
+
+Robert A. Kennedy (2)(9)                          67      2000          0                 0                0            -
+  Director; Vice President of Special Projects
+  for The Union Labor Life Insurance Company
+  since 1997.
+
+
+
+                                                         Served    Sole Voting
+                                                          as a         and
+  Name and Principal Occupation for The Past            Director   Investment                                       Percentage
+                  Five Years                     Age     Since        Power             Shared         Aggregate     of Class
+- -----------------------------------------------  -----  ---------  ------------------ -----------     ------------ -------------
+Raymond R. Oneglia (2)(3)(4)(10)                  55      2000          0                 0                0            -
+  Director; Vice Chairman, O&G Industries, Inc.
+  since 1997.
+
+Zohrab B. Marashlian                              58       -         477,307     (12)     0              477,307      2.06%
+  President, Perini Civil Construction, a division
+  of the Company.
+
+Craig W. Shaw                                     48       -         477,120     (13)     0              477,120      2.06%
+  President, Perini Building Company, Inc., a
+  wholly owned subsidiary of the Company.
+
+All Directors and Executive Officers as                             7,636,294             0            7,636,294      27.71%
+  a group (10 persons)
+
+- -----------------------------------------------
+
+(a) Less than one percent
+` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 250)
+
+func TestASCIITableResumesAfterAReprintedHeader(t *testing.T) {
+	rows := run(t, asciiPageBreakReprintedHeader)
+	for _, want := range []struct {
+		name string
+		sh   float64
+	}{
+		{"Ronald N. Tutor", 6282201},
+		{"Zohrab B. Marashlian", 477307},
+		{"Craig W. Shaw", 477120},
+	} {
+		got := find(rows, want.name, "")
+		if got == nil || got.Shares == nil || *got.Shares != want.sh {
+			t.Fatalf("holder %q wrong: %+v (%d rows: %+v)", want.name, got, len(rows), rows)
+		}
+	}
+	var grp *Row
+	for i := range rows {
+		if rows[i].IsGroupRow {
+			grp = &rows[i]
+		}
+	}
+	if grp == nil || grp.Percent == nil || *grp.Percent != 27.71 || grp.GroupN != 10 {
+		t.Fatalf("group row wrong: %+v (all: %+v)", grp, rows)
+	}
+}
+
 func TestASCIITable(t *testing.T) {
 	if IsHTML(asciiProxy) {
 		t.Fatalf("ascii proxy misrouted to the DOM parser")

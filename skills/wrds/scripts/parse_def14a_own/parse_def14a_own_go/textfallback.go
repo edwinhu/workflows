@@ -284,6 +284,22 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 		// after one row. blankRun ends it only on a real run of blank lines,
 		// nonRowRun on a run of prose, sinceRow caps the two together.
 		blankRun, nonRowRun, sinceRow := 0, 0, 0
+		// The block's own column header, normalised, filled in once the first row
+		// is seen. A table that runs over a page break REPRINTS it on the new
+		// page, which is the only thing distinguishing a page break from the end
+		// of the table.
+		var ownHdrSet map[string]bool
+		resume := func() bool {
+			if ownHdrSet == nil {
+				return false
+			}
+			if k := reprintedHeaderAt(clean, j, limit, ownHdrSet); k > 0 {
+				j = k
+				blankRun, nonRowRun, sinceRow = 0, 0, 0
+				return true
+			}
+			return false
+		}
 		for ; j < limit; j++ {
 			if consumed[j] {
 				continue
@@ -294,6 +310,9 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 				if len(block) > 0 {
 					sinceRow++
 					if blankRun >= 3 || sinceRow >= maxLinesSinceRow {
+						if resume() {
+							continue
+						}
 						break
 					}
 				}
@@ -309,6 +328,9 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 			if _, _, ok := parseTextRow(clean[j]); ok {
 				block = append(block, j)
 				nonRowRun, sinceRow = 0, 0
+				if ownHdrSet == nil {
+					ownHdrSet = headerLineSet(clean, block[0])
+				}
 			} else if len(block) > 0 {
 				// A holder's postal address is not prose: it does not count
 				// toward the run of non-row lines that ends the table. Only
@@ -319,6 +341,9 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 				}
 				sinceRow++
 				if nonRowRun > 6 || sinceRow >= maxLinesSinceRow {
+					if resume() {
+						continue
+					}
 					break
 				}
 			}
@@ -644,22 +669,6 @@ func alignedRows(clean []string, block []int) []int {
 			bestBucket, bestN = b, n
 		}
 	}
-	// The right edge the table's LAST value column is set against, taken from
-	// the rows that do line up. A row whose stub is SHORT pushes its first value
-	// into a later column and fails the modal-start test, but its last column
-	// still ends where every other row's does.
-	edge := map[int]int{}
-	for _, ln := range block {
-		if st, ok := starts[ln]; ok && st/4 >= bestBucket-1 && st/4 <= bestBucket+1 {
-			edge[len(strings.TrimRight(clean[ln], " "))]++
-		}
-	}
-	bestEdge, edgeN := -1, 0
-	for e, n := range edge {
-		if n > edgeN || (n == edgeN && e < bestEdge) {
-			bestEdge, edgeN = e, n
-		}
-	}
 	var out []int
 	for _, ln := range block {
 		st, ok := starts[ln]
@@ -670,16 +679,16 @@ func alignedRows(clean []string, block []int) []int {
 			out = append(out, ln)
 			continue
 		}
-		// The GROUP label wraps forward -- "All Directors and Executive Officers
-		// as" on the numeric line, "a group (10 persons)" below it -- so the
-		// label is short and the first value sits further right than the modal
-		// column. Keep it when the line ends on the table's own right edge and
-		// its stub reads as a collective label, which a stray proxy paragraph
-		// with a number in it does not.
-		if edgeN >= 2 && st/4 > bestBucket {
-			if e := len(strings.TrimRight(clean[ln], " ")); e >= bestEdge-2 && e <= bestEdge+2 {
-				if nm, _, _, ok2 := parseTextRowAt(clean[ln]); ok2 {
-					if g, _ := isGroupRow(nm); g {
+		// The GROUP label wraps FORWARD -- "All Directors and Executive Officers
+		// as" on the numeric line, "a group (10 persons)" on the line below --
+		// so the stub is short and the first value sits to the RIGHT of the
+		// modal column. Keep such a line only when the continuation below it
+		// completes the label into a group row WITH a person count, which a
+		// stray proxy paragraph carrying a number cannot do.
+		if st/4 > bestBucket {
+			if nm, _, _, ok2 := parseTextRowAt(clean[ln]); ok2 {
+				if g, n := isGroupRow(nm); g {
+					if _, _, joined := joinForwardLabel(clean, ln, nm); n > 0 || joined {
 						out = append(out, ln)
 					}
 				}
@@ -1187,6 +1196,51 @@ func stubCellCont(clean []string, first, ln int) bool {
 	l := strings.TrimRight(clean[ln], " ")
 	indent := len(l) - len(strings.TrimLeft(l, " "))
 	return indent > nameStart && len(l) < restStart
+}
+
+// headerLineSet is the block's own column-header lines, normalised to
+// whitespace-collapsed text, for recognising the same header reprinted on the
+// next page. Rule lines are excluded: a row of dashes appears under every table
+// in the document and identifies none of them.
+func headerLineSet(clean []string, first int) map[string]bool {
+	out := map[string]bool{}
+	for _, r := range textHeaderRows(clean, first) {
+		var parts []string
+		for _, g := range r {
+			parts = append(parts, g.text)
+		}
+		t := strings.TrimSpace(strings.Join(parts, " "))
+		if len(t) < 20 || reRuleLine.MatchString(t) || !hasWords(t, 3) {
+			continue
+		}
+		out[t] = true
+	}
+	return out
+}
+
+// reprintedHeaderAt looks forward from a would-be end of block for the SAME
+// column header printed again, which is how an ASCII proxy carries one table
+// over a page break. It returns the line index of the reprint, so the scan can
+// resume below it, or -1. Nothing but an exact repeat of a header line this
+// block already has will do: a different table's header is a different table.
+func reprintedHeaderAt(clean []string, from, limit int, want map[string]bool) int {
+	if len(want) == 0 {
+		return -1
+	}
+	stop := from + 25
+	if stop > limit {
+		stop = limit
+	}
+	for k := from; k < stop; k++ {
+		var parts []string
+		for _, g := range splitHdrGroups(clean[k]) {
+			parts = append(parts, g.text)
+		}
+		if want[strings.TrimSpace(strings.Join(parts, " "))] {
+			return k
+		}
+	}
+	return -1
 }
 
 // hdrRowsText flattens the block's own header lines back into one string, so
