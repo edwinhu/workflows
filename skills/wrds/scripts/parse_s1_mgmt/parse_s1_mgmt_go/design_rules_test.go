@@ -1788,3 +1788,58 @@ func TestRule3_AsciiWrappedNameCellIsOneRow(t *testing.T) {
 		t.Errorf("Sembrowich age = %d, want 53", s.Age)
 	}
 }
+
+// ---------------------------------------------------------------------------
+// Rule 2 — a long executive title is still an executive office
+// ---------------------------------------------------------------------------
+
+// rePosOfficer's "chief ... officer" alternative allowed at most two words
+// between the two anchors and no ampersand, so three real 2021 titles fell
+// through to section=unknown and the filing's own person count came up short:
+// "Chief Strategy and Development Officer", "Chief Experience & Innovation
+// Officer" and "Chief Medical and Quality Officer" (all 0001193125-21-118203),
+// plus NuVasive's "Chief Patent Counsel" (0001047469-04-017088), which names an
+// office the pattern only knew as "general counsel".
+//
+// Position cells are quoted verbatim from those two accessions.
+func TestRule2_ALongChiefTitleIsAnOfficerPosition(t *testing.T) {
+	body := `<HTML><BODY>
+<P ALIGN="center"><B>MANAGEMENT</B></P>
+<P><B>Executive Officers and Directors</B></P>
+<TABLE>
+<TR><TD>Name</TD><TD>Age</TD><TD>Position</TD></TR>
+<TR><TD>Steven J. Sell</TD><TD>51</TD><TD>Director, Chief Executive Officer and President</TD></TR>
+<TR><TD>Veeral Desai</TD><TD>38</TD><TD>Chief Strategy and Development Officer</TD></TR>
+<TR><TD>Lisa Dombro</TD><TD>62</TD><TD>Chief Experience &amp; Innovation Officer</TD></TR>
+<TR><TD>Benjamin Kornitzer, M.D.</TD><TD>41</TD><TD>Chief Medical and Quality Officer</TD></TR>
+<TR><TD>Jonathan D. Spangler</TD><TD>40</TD><TD>Chief Patent Counsel</TD></TR>
+<TR><TD>Michelle A. Gourdine, M.D.</TD><TD>58</TD><TD>Director</TD></TR>
+</TABLE>
+<P>Steven J. Sell has served as our Chief Executive Officer since June 2020.</P>
+<P>Veeral Desai has served as our Chief Strategy and Development Officer since 2019.</P>
+<P>Lisa Dombro has served as our Chief Experience &amp; Innovation Officer since 2019.</P>
+<P>Benjamin Kornitzer, M.D. has served as our Chief Medical and Quality Officer since 2018.</P>
+<P>Jonathan D. Spangler has served as our Chief Patent Counsel since 2004.</P>
+<P>Michelle A. Gourdine, M.D. has served as a member of our board of directors since 2021.</P>
+</BODY></HTML>`
+	e := ExtractManagement([]byte(sgmlHeader + sgmlDoc("424B4", body)))
+	if e.Filing.Status != StatusOK {
+		t.Fatalf("status = %q, want %q", e.Filing.Status, StatusOK)
+	}
+	for _, c := range []struct{ name, section string }{
+		{"Steven J. Sell", SectionOfficer},
+		{"Veeral Desai", SectionOfficer},
+		{"Lisa Dombro", SectionOfficer},
+		{"Benjamin Kornitzer", SectionOfficer},
+		{"Jonathan D. Spangler", SectionOfficer},
+		{"Michelle A. Gourdine", SectionDirector},
+	} {
+		if p := person(t, e, c.name); p.Section != c.section {
+			t.Errorf("%s section = %q, want %q (position=%q)",
+				c.name, p.Section, c.section, squash(p.Position))
+		}
+	}
+	if e.Filing.NDirectors != 1 {
+		t.Errorf("n_directors = %d, want 1", e.Filing.NDirectors)
+	}
+}

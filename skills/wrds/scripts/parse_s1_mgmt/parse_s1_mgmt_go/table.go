@@ -206,7 +206,11 @@ var (
 
 	// An executive office, which settles officer-vs-director when the filing
 	// carries no section rows at all (Google, Facebook).
-	rePosOfficer = regexp.MustCompile(`(?i)\bchief\s+[a-z]+(?:\s+[a-z]+)?\s+officer\b|` +
+	// Up to three words, and "&" counted as one of them, because 2021 titles
+	// run long: "Chief Strategy and Development Officer", "Chief Experience &
+	// Innovation Officer", "Chief Medical and Quality Officer". The same span
+	// closing on "counsel" is NuVasive's "Chief Patent Counsel".
+	rePosOfficer = regexp.MustCompile(`(?i)\bchief\s+(?:[a-z&]+\s+){1,3}(?:officer|counsel)\b|` +
 		`\bchief\s+executive\b|\bC\.?E\.?O\.?\b|\bC\.?F\.?O\.?\b|\bC\.?O\.?O\.?\b|\bC\.?T\.?O\.?\b|` +
 		`\bpresident\b|\bvice\s+president\b|\bgeneral\s+counsel\b|\bsecretary\b|\btreasurer\b|` +
 		`\bcontroller\b|\bgeneral\s+manager\b|\bhead\s+of\b|\bchief\s+of\s+staff\b|` +
