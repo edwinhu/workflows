@@ -535,7 +535,17 @@ var (
 	// company" is a true positive (0000950123-12-002923).
 	reCorporateVenture = regexp.MustCompile(`(?i)^[,\s]+(?:a|an)\s[^.;]{0,80}?corporate\s+venture\b`)
 	reFirmCommittee    = regexp.MustCompile(`(?i)^\s+(?:investment\s+)?committee\b`)
-	reFirmIsServices   = regexp.MustCompile(`(?i)^[,\s]+(?:a|an)\s(?:(?:[^.;]{0,90}?\bconsult(?:ing|ancy)\b)|(?:[^.;]{0,90}?\badvisory\s+(?:firm|services|business)\b))`)
+	// The third arm is an asset class rather than a service: a firm the filing
+	// calls private equity or private investment is not venture capital, and the
+	// gold says so across every batch ("a private equity firm", "a private
+	// investment firm", "not called venture"). Riviera Ventures is "an
+	// Alameda-based private investment and management firm" (0000929624-99-000832)
+	// and Bluewater Ventures Ltd. is "a private equity firm specializing in
+	// turnarounds" (0001193125-07-032392); both are credited off the Ventures in
+	// the name, so the label is the only thing that can stop them. The shared
+	// "venture" escape below keeps "a private equity and venture capital firm"
+	// (Battery Ventures, 0001193125-12-126304) a true positive.
+	reFirmIsServices = regexp.MustCompile(`(?i)^[,\s]+(?:a|an)\s(?:(?:[^.;]{0,90}?\bconsult(?:ing|ancy)\b)|(?:[^.;]{0,90}?\badvisory\s+(?:firm|services|business)\b)|(?:[^.;]{0,90}?\bprivate\s+(?:equity|investment)\b))`)
 
 	// The date an affiliation started, written between the firm name and the
 	// appositive that labels it: "BOLD Capital Partners in 2015, a venture fund".
@@ -745,12 +755,17 @@ func detectVC(bio string) (bool, string, string) {
 		if reCorporateVenture.MatchString(tail) || reFirmCommittee.MatchString(tail) {
 			return
 		}
-		// A services appositive only contradicts the name when it does not also
-		// say "venture": "a venture capital and advisory firm" labels the firm
-		// the way the name does. Read off the whole bio, not off window: the
-		// 110-byte window cuts Myers' appositive two words before "consulting".
-		if s := reFirmIsServices.FindString(bio[roleHi+end:]); s != "" &&
-			!strings.Contains(strings.ToLower(s), "venture") {
+		// A contradicting appositive only contradicts the name when the appositive
+		// does not ALSO say "venture": "a venture capital and advisory firm" and
+		// "a private equity/venture capital firm he founded" both label the firm
+		// the way the name does. The escape is read over the whole appositive
+		// clause, not over the matched text, because the match is lazy and stops
+		// at its keyword - "a private equity" ends two words before the "venture"
+		// that saves Salmon River Capital (0000950137-06-012322). Read off the
+		// whole bio, not off window: the 110-byte window cuts Myers' appositive
+		// two words before "consulting".
+		if rest := bio[roleHi+end:]; reFirmIsServices.MatchString(rest) &&
+			!strings.Contains(strings.ToLower(clauseAt(rest)), "venture") {
 			return
 		}
 		add(firm, evidence(bio, roleLo, roleHi+end))
@@ -955,6 +970,16 @@ func roleSentence(lead string) string {
 		return lead[at:]
 	}
 	return lead
+}
+
+// clauseAt is the appositive clause that opens rest: everything up to the first
+// sentence or clause break, which is the same boundary reFirmIsServices stops at.
+// The veto reads its escape word over this rather than over its own lazy match.
+func clauseAt(rest string) string {
+	if at := strings.IndexAny(rest, ".;"); at >= 0 {
+		return rest[:at]
+	}
+	return rest
 }
 
 // vcLeadIsNonPartner reports whether the clause that runs up to the firm name
