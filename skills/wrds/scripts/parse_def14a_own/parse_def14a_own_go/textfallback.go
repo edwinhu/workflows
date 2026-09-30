@@ -335,7 +335,24 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 			continue
 		}
 		blocksSeen++
+		// The header lines above the block, split into column groups with their
+		// character spans, so a class stated over ONE (shares, percent) pair can
+		// be attached to that pair and to no other. Computed BEFORE the cue tests
+		// because it is also the block's own statement of what its columns are.
+		hdrRows := textHeaderRows(clean, block[0])
 		hdr := strings.Join(header, " ")
+		// A proxy that runs its ownership table over a page break REPRINTS the
+		// column header on the new page and states the heading only once, above
+		// the first page. `header` is collected between the anchor and the block,
+		// and the anchor that reaches a continuation block starts BELOW that
+		// reprinted header, so the block's own column header -- the thing that
+		// says "Amount and Nature of Beneficial Ownership / Percent of Class" --
+		// is absent from `hdr` and the block reads as cueless. Read it off the
+		// lines immediately above the block instead, which is where it is.
+		ownHdr := hdrRowsText(hdrRows)
+		if ownHdr != "" {
+			hdr = strings.TrimSpace(hdr + " " + ownHdr)
+		}
 		textReason := func(why string) {
 			if textBlockReasons != nil {
 				textBlockReasons[why]++
@@ -376,10 +393,6 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 		// block rows at all and the identity was simply lost.
 		stickyAt := textStickyLabels(clean, block)
 		tailAt := textNameTails(clean, block)
-		// The header lines above the block, split into column groups with their
-		// character spans, so a class stated over ONE (shares, percent) pair can
-		// be attached to that pair and to no other.
-		hdrRows := textHeaderRows(clean, block[0])
 		var rows []Row
 		lastHolder := ""
 		// The class column's last value, forward-filled over the rows that leave
@@ -1126,6 +1139,20 @@ func textHeaderRows(clean []string, first int) [][]hdrGroup {
 		}
 	}
 	return out
+}
+
+// hdrRowsText flattens the block's own header lines back into one string, so
+// the cue tests can read what the columns say about themselves.
+func hdrRowsText(rows [][]hdrGroup) string {
+	var parts []string
+	for _, r := range rows {
+		for _, g := range r {
+			if t := strings.TrimSpace(g.text); t != "" {
+				parts = append(parts, t)
+			}
+		}
+	}
+	return strings.Join(parts, " ")
 }
 
 // splitHdrGroups cuts a header line at every run of two or more spaces.
