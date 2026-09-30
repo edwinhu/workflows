@@ -378,15 +378,27 @@ var (
 	// disproportionately the ones advisors and ex-partners use, and widening the
 	// head noun on its own bought one false positive per true one on the dev
 	// split.
-	reVCAppositiveWide = regexp.MustCompile(`(?i),\s+(?:a|an)\s+(?:[A-Za-z/-]+\s+){0,4}venture(?:\s+capital)?(?:\s+investment)?\s+(?:firm|funds?|partnership|investor|company)\b`)
+	// "growth" joins "capital" and "investment" as a word that can sit between
+	// "venture" and the head noun: HealthQuest Capital Management, "a healthcare
+	// venture growth fund", is the only firm Garheng Kong holds a PRESENT
+	// partnership at, and both of his labelled firms are closed partnerships
+	// (0001193125-19-040772). The run is a closed list rather than any word
+	// because "a venture backed software company" is a portfolio company, not a
+	// venture firm.
+	reVCAppositiveWide = regexp.MustCompile(`(?i),\s+(?:a|an)\s+(?:[A-Za-z/-]+\s+){0,4}venture(?:\s+(?:capital|investment|growth|equity))*\s+(?:firm|funds?|partnership|investor|company)\b`)
 
 	// Read immediately before the firm name. A partner-grade role must be there
 	// — "an advisor to iGlobe Partners", "a Senior Advisor to Sandbox
 	// Industries" and "an Investment Director of GF Xinde" are the forms the
 	// gold does not count — and a past-tense marker must not be, which is what
 	// keeps a partnership the bio has already closed out from firing.
+	// The range needs a year on BOTH sides, because the corpus leaves ranges
+	// open: "From August 1979 to the present, he has been a general partner of
+	// Venrock Associates" and "From September 1991 to the present, Mr. Tai has
+	// been a general partner of the Walden Group of Venture Capital Funds" are
+	// both present-tense partnerships written date-first.
 	reVCPastLead = regexp.MustCompile(`(?i)\b(?:previously|formerly|until|was|prior\s+to)\b|` +
-		`\bfrom\s+(?:[A-Z][a-z]+\s+)?[0-9]{4}\s+(?:to|until|through)\b`)
+		`\bfrom\s+(?:[A-Z][a-z]+\s+)?[0-9]{4}\s+(?:to|until|through)\s+(?:[A-Z][a-z]+\s+)?[0-9]{4}\b`)
 
 	// The pre-2000 fallback: a partner-grade role at a firm the dictionary knows.
 	// eBay 1998 carries no appositive anywhere in its MANAGEMENT section, so
@@ -396,8 +408,11 @@ var (
 		`managing\s+director|founding\s+partner|venture\s+partner|general\s+manager\s+of\s+the\s+fund|` +
 		`partner|member)\b`)
 
-	// Words that end a firm name when scanning back from the appositive.
-	reFirmToken = regexp.MustCompile(`^(?:[A-Z0-9(]|&$)`)
+	// Words that end a firm name when scanning back from the appositive. A
+	// camel-cased token counts: "Lanza techVentures" and "Pivotal bioVenture
+	// Partners" write the firm's own name with the capital inside the word, and
+	// requiring it in first position truncated both names at the camel token.
+	reFirmToken = regexp.MustCompile(`^(?:[A-Z0-9(]|&$|[a-z]+[A-Z])`)
 
 	// A firm-name token whose alphabetic body ends in "Venture"/"Ventures":
 	// Ventures, Venture, BioVentures, bioVenture. The leading capital is
@@ -410,6 +425,14 @@ var (
 	// investment committee.
 	reCorporateVenture = regexp.MustCompile(`(?i)^[,\s]+(?:a|an)\s[^.;]{0,80}?corporate\s+venture\b`)
 	reFirmCommittee    = regexp.MustCompile(`(?i)^\s+(?:investment\s+)?committee\b`)
+
+	// A closed date range opening IMMEDIATELY after the appositive: "a managing
+	// partner of Medical Innovation Partners, a venture capital firm from 1989
+	// through 2007" writes the dates on the far side of the clause, where no lead
+	// window can see them (0001193125-12-126304). It has to be immediate —
+	// Speiser, Rein, Clark and Gupta all open the NEXT sentence with a range
+	// describing the job they held before the partnership they hold now.
+	reVCClosedRangeTail = regexp.MustCompile(`(?i)^[,\s]*from\s+(?:[a-z]+\s+)?[0-9]{4}\s+(?:to|until|through)\b`)
 )
 
 // ventureLeadWindow is how far back detectVC reads for a past-tense marker
@@ -475,13 +498,15 @@ func detectVC(bio string) (bool, string, string) {
 	}
 
 	for _, m := range reVCAppositive.FindAllStringIndex(bio, -1) {
-		if firm, _ := firmBefore(bio[:m[0]]); firm != "" {
-			add(firm, evidence(bio, m[0], m[1]))
+		firm, at := firmBefore(bio[:m[0]])
+		if firm == "" || vcLeadIsPast(bio[:at]) || reVCClosedRangeTail.MatchString(bio[m[1]:]) {
+			continue
 		}
+		add(firm, evidence(bio, m[0], m[1]))
 	}
 	for _, m := range reVCAppositiveWide.FindAllStringIndex(bio, -1) {
 		firm, at := firmBefore(bio[:m[0]])
-		if firm == "" || !vcAppositiveLeadOK(bio[:at]) {
+		if firm == "" || !vcAppositiveLeadOK(bio[:at]) || reVCClosedRangeTail.MatchString(bio[m[1]:]) {
 			continue
 		}
 		add(firm, evidence(bio, m[0], m[1]))
@@ -492,10 +517,12 @@ func detectVC(bio string) (bool, string, string) {
 			hi = len(bio)
 		}
 		window := bio[m[1]:hi]
-		for _, f := range vcFirms {
-			if at := strings.Index(window, f); at >= 0 {
-				add(f, evidence(bio, m[0], m[1]+at+len(f)))
-				break
+		if !vcLeadIsPast(bio[:m[0]]) {
+			for _, f := range vcFirms {
+				if at := strings.Index(window, f); at >= 0 {
+					add(f, evidence(bio, m[0], m[1]+at+len(f)))
+					break
+				}
 			}
 		}
 		// The same role window, but with the firm's own name as the label.
@@ -564,11 +591,60 @@ func firmBefore(head string) (string, int) {
 // one clause wide: wider and it reaches the previous sentence's employer, which
 // on this corpus is routinely the job the person left.
 func vcAppositiveLeadOK(lead string) bool {
+	return reVCRole.MatchString(vcLead(lead)) && !vcLeadIsPast(lead)
+}
+
+// vcLeadIsPast reports whether the clause that runs up to the firm name puts the
+// affiliation in the past. It is the only tense test the narrow appositive and
+// the firm dictionary get: neither reads a role, because the narrow appositive's
+// own true positives include "Dr. Behbahani joined New Enterprise Associates,
+// Inc., a venture capital firm, in 2007 and is a General Partner" and
+// "all entities affiliated with Canaan Partners, a venture capital firm", where
+// the role sits on the far side of the name.
+func vcLeadIsPast(lead string) bool { return reVCPastLead.MatchString(vcLead(lead)) }
+
+// vcLead is the one clause before the firm name: the last 90 bytes, cut back to
+// the start of the sentence the role sits in. The sentence cut is what keeps
+// Matthew Foy's own board service — "He previously served as a member of our
+// board of directors from April 2019 to November 2020. Mr. Foy has been a
+// partner at SR One Capital Management, LP, a venture capital firm, since 2011"
+// — from reading as a closed partnership.
+//
+// The boundary cannot be the last ". " in the window, because the honorific in
+// "Mr. Slootman served as a Partner of Greylock Partners" is one, and cutting
+// there would throw away the date range that sentence opens with.
+func vcLead(lead string) string {
 	const window = 90
 	if len(lead) > window {
 		lead = lead[len(lead)-window:]
 	}
-	return reVCRole.MatchString(lead) && !reVCPastLead.MatchString(lead)
+	if at := lastSentenceStart(lead); at > 0 {
+		lead = lead[at:]
+	}
+	return lead
+}
+
+// An abbreviation whose full stop does not end a sentence. A single letter is
+// one too: "Rory T. O'Driscoll", "Woodrow A. Myers".
+var reNotSentenceEnd = regexp.MustCompile(`(?i)(?:^|[\s(])(?:[a-z]|mr|mrs|ms|dr|prof|jr|sr|st|no|inc|corp|co|ltd|llc|llp|lp|l\.p|u\.s|ph|approx|e\.g|i\.e)\.\s+$`)
+
+// lastSentenceStart is the offset just past the LAST sentence-ending full stop
+// in s, or 0 when s holds none.
+func lastSentenceStart(s string) int {
+	at := 0
+	for i := 0; i < len(s)-1; i++ {
+		if s[i] != '.' || (s[i+1] != ' ' && s[i+1] != '\t' && s[i+1] != '\n') {
+			continue
+		}
+		j := i + 1
+		for j < len(s) && (s[j] == ' ' || s[j] == '\t' || s[j] == '\n') {
+			j++
+		}
+		if !reNotSentenceEnd.MatchString(s[:j]) {
+			at = j
+		}
+	}
+	return at
 }
 
 // ventureFirmAfter reads a firm name out of the window that follows a
