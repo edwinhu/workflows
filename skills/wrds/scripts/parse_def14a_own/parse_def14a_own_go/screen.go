@@ -263,6 +263,7 @@ func screenTables(rows []Row) map[int]*screenTable {
 	tabs := map[int]*screenTable{}
 	implied := map[int][]float64{}
 	impliedCls := map[int]map[string][]float64{}
+	explicitClasses := map[int]map[string]bool{}
 	dateRows := map[int]int{}
 	indexRows := map[int]int{}
 	for _, r := range rows {
@@ -297,6 +298,12 @@ func screenTables(rows []Row) map[int]*screenTable {
 					impliedCls[r.TableIndex] = map[string][]float64{}
 				}
 				impliedCls[r.TableIndex][k] = append(impliedCls[r.TableIndex][k], v)
+				if r.ShareClass != "" {
+					if explicitClasses[r.TableIndex] == nil {
+						explicitClasses[r.TableIndex] = map[string]bool{}
+					}
+					explicitClasses[r.TableIndex][r.ShareClass] = true
+				}
 			}
 		}
 	}
@@ -328,6 +335,11 @@ func screenTables(rows []Row) map[int]*screenTable {
 	for ti, byCls := range impliedCls {
 		if len(byCls) < 2 {
 			continue // one class: the table-wide median is the same thing
+		}
+		// Explicit class columns identify distinct outstanding totals even
+		// with one holder each. Post-screen hints retain their existing policy.
+		if len(explicitClasses[ti]) >= 2 {
+			tabs[ti].medianByClass = map[string]float64{}
 		}
 		for k, v := range byCls {
 			if len(v) < 2 {

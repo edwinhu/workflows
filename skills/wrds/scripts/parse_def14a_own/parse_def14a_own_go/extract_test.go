@@ -3562,6 +3562,39 @@ func TestACountOfInTheMoneyOptionsIsNotAnOptionDetailTable(t *testing.T) {
 	}
 }
 
+func TestASCIIClassPercentsOnAddressLine(t *testing.T) {
+	// 0000021847-98-000050: each class's percent is printed under its shares.
+	body := `As of June 12, 1998, the following shareholder owned more than 5% of a
+class of shares of the Fund and was deemed to control the Fund:
+
+      Name and Address               Number of Shares Owned and Percent of Class
+
+                                        Class A      Class B        Class C
+Keyport Life Insurance Company          267,599      26,771        26,771
+125 High Street                         99.60%       100%          100%
+Boston, MA  02101
+
+Votes cast by proxy or in person will be counted by persons appointed by
+ the Fund to act as election tellers for the Meeting.`
+	rows := run(t, body)
+	for _, want := range []struct {
+		class       string
+		shares, pct float64
+	}{{"Class A", 267599, 99.60}, {"Class B", 26771, 100}, {"Class C", 26771, 100}} {
+		r := find(rows, "Keyport Life Insurance Company", want.class)
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+			t.Fatalf("stacked class %s not paired: %+v", want.class, rows)
+		}
+	}
+	if len(rows) != 3 {
+		t.Fatalf("address must not emit a holder or repeat a class: %+v", rows)
+	}
+	kept := ScreenRows(rows)
+	if len(kept) != 1 || kept[0].HolderName != "Keyport Life Insurance Company" || kept[0].Shares == nil || *kept[0].Shares != 267599 || kept[0].ShareClass != "Class A" {
+		t.Fatalf("common-class holding lost at screen: %+v", kept)
+	}
+}
+
 // A stock-owned-by heading introduces the same table as security ownership.
 func TestASCIIStockOwnedByHeading(t *testing.T) {
 	body := `             COMMON STOCK OWNED BY DIRECTORS AND EXECUTIVE OFFICERS
