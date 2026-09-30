@@ -276,6 +276,15 @@ func process(archiveRoot string, j job) ([]Row, Manifest) {
 	// its rules need a whole table at once. TablesSeen/TablesUsed still count
 	// what the extractor accepted; NRows counts what is actually emitted.
 	rows = ScreenRows(rows)
+	// LAST RESORT: the ownership is written as prose, not as a table. Reached
+	// only when both column readers emitted nothing, so it can neither displace
+	// a parsed table nor re-emit a row that is already there.
+	if len(rows) == 0 {
+		if pr := ScreenRows(ExtractProse(body, base)); len(pr) > 0 {
+			man.Parser, rows = "text_prose", pr
+			seen, used = seen+1, used+1
+		}
+	}
 	man.TablesSeen, man.TablesUsed, man.NRows = seen, used, len(rows)
 	for _, r := range rows {
 		if r.Percent != nil {
