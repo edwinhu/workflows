@@ -2530,3 +2530,195 @@ func TestRule6_ParticipleAndFormationVerbReachTheIssuer(t *testing.T) {
 		})
 	}
 }
+
+// Coinmach Laundry 1996 (0000950130-96-002646) writes its fixed-width table with
+// the AGE column LAST -- "NAME  TITLE  AGE" -- so a header pattern that requires
+// AGE before POSITION finds no table and the whole filing comes back
+// no_mgmt_table: no CEO, no persons, nothing. The column ORDER is not part of the
+// geometry the parser depends on; the <S>/<C> marker line under the caption
+// carries the real column offsets in either order. Verbatim.
+const asciiAgeLastExcerpt = `                                  MANAGEMENT
+ 
+EXECUTIVE OFFICERS AND DIRECTORS
+ 
+  The directors and executive officers of the Company are:
+ 
+<TABLE>
+<CAPTION>
+                NAME                                 TITLE                   AGE
+                ----                                 -----                   ---
+   <S>                             <C>                                       <C>
+   Stephen R. Kerrigan............ Chairman of the Board and Chief            42
+                                   Executive Officer, Director
+   Mitchell Blatt................. President, Chief Operating Officer,        44
+                                   Director
+   Robert M. Doyle................ Chief Financial Officer, Senior Vice       39
+                                   President Treasurer, Secretary
+   John E. Denson................. Senior Vice President--Corporate           58
+                                   Development
+   Michael E. Stanky.............. Senior Vice President                      44
+   R. Daniel Osborne.............. Area Vice President                        40
+   David A. Siegel................ Area Vice President                        38
+   Bruce V. Rauner................ Director                                   40
+   David A. Donnini............... Director                                   31
+   James N. Chapman............... Director                                   34
+</TABLE>
+ 
+  Pursuant to the terms of a Stockholders Agreement (the "SAS Stockholders
+Agreement"), dated July 26, 1995, amended and restated as of November 30,
+1995, among the Company, GTCR and the stockholders of the Company at such time
+(the "SAS Stockholders"), the right of certain of the SAS Stockholders to
+elect members of the Board as set forth therein automatically terminates upon
+an initial public offering of the Company's common stock having an aggregate
+offering value of at least $25 million. Upon the consummation of the Offering,
+holders of the Common Stock of the Company prior to the Offering, who, after
+consummation of the Offering will own in the aggregate approximately 60.5% of
+the outstanding Common Stock, will enter into the Voting Agreement, providing
+for, among other things, the designation and nomination of directors of the
+Company by such stockholders. Pursuant to the Voting Agreement, each of the
+stockholders party to such agreement will agree to vote its shares in favor of
+the individuals designated below and to cause such individuals to be selected
+as nominees to the Board, in accordance with the Bylaws of the Company, as
+amended, with the effect that, at any given time, the directors of the Company
+shall initially be comprised of: (i) two individuals designated by GTCR, (ii)
+two members of the Company's management or employees or officers of the
+Company, in each case, designated by the holders of a majority of the Common
+Stock held by the executive officers (the "Executives") of the Company, which
+individuals initially shall be Stephen R. Kerrigan (the "Management Director")
+and Mitchell Blatt ("Blatt" and, together with the Management Director, the
+"Executive Directors") (the designation of the Executive Director that will be
+the Management Director shall be determined by the holders of a majority of
+the Common Stock held by the Executives), and, (iii) one individual to be
+jointly designated by GTCR and the Management Director, who initially shall be
+James N. Chapman.
+ 
+  The Board will be divided into three classes as nearly equal in number as
+possible. Within 90 days of consummation of the Offering, the Company shall
+appoint up to two additional directors who are not employees or affiliates of
+the Company. At each annual meeting of stockholders, successors to the class
+of directors whose term expires at such meeting will be elected to serve for
+three-year terms or until their successors are duly elected and qualified. The
+Board has the power to appoint the officers of the Company. Each officer will
+hold office for such terms as may be prescribed by the Board and until such
+person's successor is chosen and qualified or until such person's death,
+resignation or removal.
+ 
+BACKGROUND AND EXPERIENCE
+ 
+  Mr. Kerrigan has been Chief Executive Officer of the Company since April,
+1996, and of Coinmach since November, 1995. Mr. Kerrigan was President and
+Treasurer of Solon and the Company from April, 1995 until April, 1996, and
+Chief Executive Officer of TCC from January, 1995, until November, 1995. Mr.
+Kerrigan was
+ 
+                                      42
+<PAGE>
+ 
+appointed Chairman of the Board of the Company in April, 1995 and of Coinmach
+in November, 1995. Mr. Kerrigan has been a director of the Company's
+predecessor, TCC, since January, 1995 and of Solon since April, 1995. Mr.
+Kerrigan served as Vice President and Chief Financial Officer of TCC's
+predecessor from 1987 until 1994. Mr. Kerrigan was an executive officer of CIC
+which filed a voluntary petition for reorganization under Chapter 11 of the
+United States Bankruptcy Code in 1993.
+ 
+  Mr. Blatt has been President and Chief Operating Officer of the Company
+since April, 1996 and of Coinmach since November, 1995 and its predecessor,
+TCC, since January, 1995. Mr. Blatt has been a director of the Company and
+Coinmach since November, 1995. Mr. Blatt joined Coinmach's predecessor as Vice
+President-General Manager in 1982 and was Vice President and Chief Operating
+Officer from January 1988 to February 1994. Mr. Blatt was an executive officer
+of CIC, which filed a voluntary petition for reorganization under Chapter 11
+of the United States Bankruptcy Code in 1993.
+ 
+  Mr. Doyle has been Chief Financial Officer, Senior Vice President and
+Secretary of the Company since April, 1996 and Chief Financial Officer, Senior
+Vice President, Treasurer and Secretary of Coinmach since November, 1995. Mr.
+Doyle served as Vice President, Treasurer and Secretary of Coinmach's
+predecessor since January, 1995. Mr. Doyle joined Coinmach's predecessor in
+1987 as Controller. In 1988, he became Director of Accounting, and was
+promoted in 1989 to Vice President and Controller. Mr. Doyle was an executive
+officer of CIC which filed a voluntary petition for reorganization under
+Chapter 11 of the United States Bankruptcy Code in 1993.
+ 
+  Mr. Denson has been Senior Vice President of the Company since April, 1996
+and of Coinmach since November, 1995. Mr. Denson was Senior Vice President,
+Finance of Solon from June, 1987 until the Merger. He has served as an officer
+of Solon under various titles since 1973. He served as a director and Co-Chief
+Executive Officer of Solon from November, 1994 to April, 1995.
+ 
+  Mr. Stanky has been Senior Vice President of the Company since April, 1996
+and of Coinmach since November, 1995. Mr. Stanky has been Senior Vice
+President of Solon since July, 1995. He joined Solon in 1976 as a sales
+manager. Mr. Stanky served Solon in various capacities since 1976, and in 1985
+was promoted to Area Vice President responsible for the South-Central Region.
+Mr. Stanky served as a Co-Chief Executive Officer from November, 1994 to
+April, 1995.
+ 
+  Mr. Osborne has been Area Vice President of the Company since April, 1996
+and of Coinmach since November, 1995. Mr. Osborne has served Solon in various
+capacities since 1987. In July, 1995, he was promoted to Area Vice President
+responsible for the Southeast Region.
+ 
+  Mr. Siegel has been Area Vice President of the Company since April, 1996 and
+of Coinmach since November, 1995. Mr. Siegel joined Solon in 1985 as a sales
+manager. Mr. Siegel served Solon in various capacities since 1985, and in
+August, 1995 was promoted to Area Vice President responsible for the Mid-
+Atlantic Region.
+ 
+  Mr. Rauner has been a Director of the Company since April, 1995, Coinmach
+since November, 1995 and its predecessor, TCC, since January, 1995. Mr. Rauner
+serves as a director of ERO, Inc., COREStaff, Inc. and Polymer Group, Inc. Mr.
+Rauner has been a Principal and General Partner with GTCR since 1984, where he
+is responsible for originating and making new investments, monitoring
+portfolio companies and recruiting and training associates.
+ 
+  Mr. Donnini has been a Director of the Company since April, 1995, Coinmach
+since November 1995 and its predecessor, TCC, since January, 1995. Mr. Donnini
+serves as a director of Polymer Group, Inc. Mr. Donnini has been a Principal
+of GTCR since 1993. From 1991 to 1993, Mr. Donnini was an Associate with GTCR.
+ 
+  Mr. Chapman has been a Director of the Company since April, 1995, Coinmach
+since November 1995 and its predecessor, TCC, since January, 1995. Mr. Chapman
+was a Principal of Fieldstone Private Capital Group, L.P. from its inception
+in 1990 through May 30, 1996.
+ 
+ 
+                                      43`
+
+func TestRule1_AsciiAgeColumnMayComeLast(t *testing.T) {
+	raw := sgmlHeaderFor("COINMACH LAUNDRY CORP") +
+		sgmlDoc("424B1", asciiAgeLastExcerpt+"\n\nEXECUTIVE COMPENSATION\n")
+	e := ExtractManagement([]byte(raw))
+	if e.Filing.Status != StatusOK {
+		t.Fatalf("status = %q, want %q: NAME/TITLE/AGE is the same table as NAME/AGE/POSITION read right to left",
+			e.Filing.Status, StatusOK)
+	}
+	if len(e.Persons) != 10 {
+		t.Errorf("len(persons) = %d, want 10: %v", len(e.Persons), personNames(e))
+	}
+	if got := squash(e.Filing.CEOName); got != "Stephen R. Kerrigan" {
+		t.Errorf("ceo_name = %q, want %q", got, "Stephen R. Kerrigan")
+	}
+	// The position cell sits BETWEEN the name and the age here, and its
+	// continuation line carries the word that makes Kerrigan a director.
+	if got := squash(person(t, e, "Stephen R. Kerrigan").Position); got != "Chairman of the Board and Chief Executive Officer, Director" {
+		t.Errorf("Kerrigan position = %q, want the joined cell", got)
+	}
+	// Rauner, Donnini and Chapman hold nothing but a board seat. Kerrigan and
+	// Blatt are officers whose cell ALSO says Director; sectionForPosition puts
+	// the officer first by design, so gold's five board seats are three here.
+	if n := countSection(e, "director"); n != 3 {
+		t.Errorf("directors = %d, want 3 (Rauner, Donnini, Chapman)", n)
+	}
+	if got := person(t, e, "Mitchell Blatt").Section; got != "officer" {
+		t.Errorf("Blatt section = %q, want officer", got)
+	}
+	// GTCR is the company's equity sponsor, never called venture, and
+	// Fieldstone Private Capital Group is unlabelled: no VC directors at all.
+	for _, p := range e.Persons {
+		if p.VCAffiliated {
+			t.Errorf("%s vc_affiliated = 1, want 0: %q", squash(p.Name), squash(p.VCEvidence))
+		}
+	}
+}
