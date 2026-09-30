@@ -507,8 +507,12 @@ var (
 	// leads with no role in them at all ("Dr. Behbahani joined New Enterprise
 	// Associates, Inc., a venture capital firm, in 2007 and is a General
 	// Partner").
+	// "consultant" is the same grade: gold leaves out a director who "has also
+	// served as a consultant with Matrix Partners, a venture capital firm, since
+	// 1991" (0000928385-00-002071). The noun only, never "consulting", which
+	// belongs to firm labels the services veto reads.
 	reVCNonPartnerRole = regexp.MustCompile(`(?i)\b(?:advis[eo]r|chair(?:man|woman|person)|officer|` +
-		`entrepreneur[\s-]?in[\s-]?residence|investment\s+director)\b`)
+		`consultant|entrepreneur[\s-]?in[\s-]?residence|investment\s+director)\b`)
 
 	// Words that end a firm name when scanning back from the appositive. A
 	// camel-cased token counts: "Lanza techVentures" and "Pivotal bioVenture
@@ -566,6 +570,14 @@ var (
 	// Speiser, Rein, Clark and Gupta all open the NEXT sentence with a range
 	// describing the job they held before the partnership they hold now.
 	reVCClosedRangeTail = regexp.MustCompile(`(?i)^[,\s]*from\s+(?:[a-z]+\s+)?[0-9]{4}\s+(?:to|until|through)\b`)
+
+	// The same shape left OPEN, which closes nothing: "From September 1991 to
+	// the present, Mr. Tai has been a general partner of the Walden Group of
+	// Venture Capital Funds" (0000891618-96-002428). The tail pattern above
+	// stops at the preposition and cannot tell the two apart, so this runs as
+	// its escape.
+	reVCOpenRangeTail = regexp.MustCompile(`(?i)^[,\s]*from\s+(?:[a-z]+\s+)?[0-9]{4}\s+` +
+		`(?:to|until|through)\s+(?:the\s+)?(?:present|now|date\s+hereof)\b`)
 
 	// A venture label written on the FAR side of the firm name, which is how the
 	// 1990s filings label an entity they never introduce with ", a venture
@@ -755,6 +767,15 @@ func detectVC(bio string) (bool, string, string) {
 		if reCorporateVenture.MatchString(tail) || reFirmCommittee.MatchString(tail) {
 			return
 		}
+		// The closed-range veto the three appositive routes and the dictionary
+		// already run, which this route never did: "served as a Principal at
+		// Third Rock Ventures from 2017 to 2018" (0001140361-21-013962) is a
+		// seat the bio closes out on the far side of the name. Read off the bio
+		// and not off window, for the same reason the dictionary route does -
+		// the 110-byte window truncates the range mid-word.
+		if closedRangeAfterFirm(bio[roleHi+end:]) {
+			return
+		}
 		// A contradicting appositive only contradicts the name when the appositive
 		// does not ALSO say "venture": "a venture capital and advisory firm" and
 		// "a private equity/venture capital firm he founded" both label the firm
@@ -850,16 +871,21 @@ func detectVC(bio string) (bool, string, string) {
 // to that served as an Associate beginning in 2015, then as a Partner from 2019
 // to 2020" closes out a JUNIOR seat and holds the partnership (0001193125-21-231612).
 func closedRangeAfterFirm(tail string) bool {
-	if reVCClosedRangeTail.MatchString(tail) {
+	if closedRangeAt(tail) {
 		return true
 	}
 	for _, re := range []*regexp.Regexp{reVCAppositive, reVCAppositiveWide} {
-		if m := re.FindStringIndex(tail); m != nil && m[0] == 0 &&
-			reVCClosedRangeTail.MatchString(tail[m[1]:]) {
+		if m := re.FindStringIndex(tail); m != nil && m[0] == 0 && closedRangeAt(tail[m[1]:]) {
 			return true
 		}
 	}
 	return false
+}
+
+// closedRangeAt reports whether a date range opens at the head of s AND closes,
+// which is the only form that ends a seat.
+func closedRangeAt(s string) bool {
+	return reVCClosedRangeTail.MatchString(s) && !reVCOpenRangeTail.MatchString(s)
 }
 
 // firmBefore reads the firm name off the text immediately before a

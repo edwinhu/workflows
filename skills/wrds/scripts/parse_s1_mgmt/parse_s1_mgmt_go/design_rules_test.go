@@ -1676,6 +1676,8 @@ func TestRule7_ANonPartnerRoleAtAVentureFirmDoesNotFire(t *testing.T) {
 			"Dennis J. Henner, Ph.D. has served as a member of our board of directors since November 2015. He is the Chief Scientific Advisor of Clarus Ventures, LLC, a venture capital firm, where he served as Managing Director from the firm's inception in March 2005 to January 2018."},
 		{"0001193125-21-231612", "an entrepreneur-in-residence at the firm",
 			"Catherine Stehman-Breen, M.D. has served as a member of our board of directors since June 2020. Since March 2018, she has served as an entrepreneur-in-residence at Atlas Ventures, a venture capital firm."},
+		{"0000928385-00-002071", "a consultant with the firm, not a partner in it",
+			"Steven G. Finn has served as a member of our board of directors since March 1998. Dr. Finn has been a principal research scientist and lecturer at M.I.T. since 1991. Dr. Finn has also served as a consultant with Matrix Partners, a venture capital firm, since 1991."},
 	}
 	for _, c := range negative {
 		t.Run("no/"+c.why, func(t *testing.T) {
@@ -2404,6 +2406,13 @@ func TestRule7_APrincipalAtAVentureNamedFirmFires(t *testing.T) {
 			"Egon Durban has served as a member of our board of directors since June 2019. Mr. Durban is a Co-Chief Executive Officer and Managing Partner of Silver Lake, a global private equity firm, where he has been a founding principal since 1999."},
 		{"constructed", "the principalship closed out before the filing",
 			"Mr. Doe was previously a Principal at the Acme Venture Fund."},
+		// The date range that closes the seat sits AFTER the venture-named firm,
+		// which is the shape the three appositive routes already veto and this
+		// one did not. The lead says "Prior to that, Dr. Murdoch served as a",
+		// but 35 bytes of it is all the past-tense window reads and "served" is
+		// not a past marker, so the range is the only evidence in reach.
+		{"0001140361-21-013962", "the principalship ran 2017 to 2018 and the seat now is an investment directorship",
+			"Travis Murdoch, M.D. has served on our board of directors since September 2020. Dr. Murdoch has served as an Investment Director at Softbank Investment Advisers since January 2018, where he focuses on life sciences investments. Prior to that, Dr. Murdoch served as a Principal at Third Rock Ventures from 2017 to 2018, where he was part of the founding teams of Ambys Medicines and Rheos Medicines."},
 	}
 	for _, c := range negative {
 		t.Run("no/"+c.why, func(t *testing.T) {
