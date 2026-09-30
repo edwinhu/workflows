@@ -2474,7 +2474,6 @@ func TestWrappedPairLabelKeepsTheWholeFundName(t *testing.T) {
 	}
 }
 
-
 // A D&O beneficial-ownership table that states NO PERCENT, because the proxy
 // says in prose that no individual owns as much as 1%. The share columns name
 // the COMPONENTS of the holding -- common stock, stock equivalents, options
@@ -2698,5 +2697,41 @@ func TestStubColumnGroupRow(t *testing.T) {
 	}
 	if ngrp != 1 {
 		t.Errorf("want exactly one group row, got %d: %+v", ngrp, rows)
+	}
+}
+
+// The SHARES column is headed "Amount and Nature of Beneficial Ownership of
+// Common Stock" and the HOLDER column is headed "Directors and Management", which
+// names no holder. reHdrNameCol matched "beneficial owner" INSIDE "Beneficial
+// OwnerSHIP", so repoint() moved the name role off the holder column and onto the
+// shares column, and every person row was then skipped for having no holder --
+// leaving the filing with its group row alone. Transcribed from SITE Centers'
+// 2025 proxy (0001193125-25-064065).
+const beneficialOwnershipHeaderHTML = `<html><body>
+<p><b>SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS</b></p>
+<table>
+<tr><td>Directors and Management</td><td colspan="2">Amount and Nature of Beneficial Ownership of Common stock(1)</td><td>Percentage Ownership (%)(2)</td></tr>
+<tr><td>David R. Lukes</td><td>702,291</td><td></td><td>*</td></tr>
+<tr><td>Linda B. Abraham</td><td>36,096</td><td></td><td>*</td></tr>
+<tr><td>Terrance R. Ahern</td><td>68,618</td><td></td><td>*</td></tr>
+<tr><td>Jane E. DeFlorio</td><td>42,488</td><td></td><td>*</td></tr>
+<tr><td>Victor B. MacFarlane</td><td>17,466</td><td></td><td>*</td></tr>
+<tr><td>Barry A. Sholem</td><td>110,024</td><td>(4)</td><td>*</td></tr>
+<tr><td>John M. Cattonar</td><td>38,273</td><td></td><td>*</td></tr>
+<tr><td>All Current Executive Officers and Directors as a Group (10 persons)</td><td>9,033,215</td><td></td><td>8.6</td></tr>
+<tr><td>More Than 5% Owners</td><td colspan="2">Amount and Nature of Beneficial Ownership of Common stock</td><td>Percentage Ownership (%)(2)</td></tr>
+<tr><td>Blackrock, Inc.</td><td>17,033,619</td><td>(5)</td><td>16.2</td></tr>
+<tr><td>Alexander Otto</td><td>9,033,000</td><td>(3)</td><td>8.6</td></tr>
+</table></body></html>`
+
+func TestBeneficialOwnershipHeaderIsNotTheNameColumn(t *testing.T) {
+	rows := ScreenRows(run(t, beneficialOwnershipHeaderHTML))
+	for _, want := range []string{"David R. Lukes", "Linda B. Abraham", "Alexander Otto"} {
+		if find(rows, want, "") == nil {
+			t.Fatalf("%q missing; the name role moved onto the shares column: %+v", want, rows)
+		}
+	}
+	if r := find(rows, "Alexander Otto", ""); r == nil || r.Shares == nil || *r.Shares != 9033000 {
+		t.Errorf("shares wrong: %+v", r)
 	}
 }

@@ -47,7 +47,10 @@ func DebugFile(path string, maxTables int) {
 			continue
 		}
 		c := compactWith(it.Grid, base)
+		roleVotes = map[int]string{}
 		c.analyze()
+		votes := roleVotes
+		roleVotes = nil
 		why := c.ownershipReject(it.Text)
 		okOwn := why == ""
 		if !okOwn && !reOwnCue.MatchString(it.Text) {
@@ -60,6 +63,11 @@ func DebugFile(path string, maxTables int) {
 		if os.Getenv("DEF14A_DEBUG_CUE") != "" {
 			fmt.Printf("    CUE=%q TEXT=%q\n", reOwnCue.FindString(it.Text), trunc(flat(it.Text), 600))
 		}
+		if os.Getenv("DEF14A_DEBUG_ROLES") != "" {
+			for j := 0; j < len(c.roles); j++ {
+				fmt.Printf("    ROLE%d %-6s %s\n", j, c.roles[j].role, votes[j])
+			}
+		}
 		roles := []string{}
 		for _, r := range c.roles {
 			roles = append(roles, r.role)
@@ -69,7 +77,11 @@ func DebugFile(path string, maxTables int) {
 		for i := 0; i < len(it.Grid.Rows) && i < 8; i++ {
 			fmt.Printf("    RAW%d: %q\n", i, it.Grid.Rows[i])
 		}
-		for i := 0; i < len(c.rows) && i < 6; i++ {
+		lim := 6
+		if os.Getenv("DEF14A_DEBUG_ALLROWS") != "" {
+			lim = len(c.rows)
+		}
+		for i := 0; i < len(c.rows) && i < lim; i++ {
 			fmt.Printf("    row%d: %q\n", i, c.rows[i])
 		}
 		rows, _ := ExtractGrid(it.Grid, it.Text, base, it.Pos, nil)
