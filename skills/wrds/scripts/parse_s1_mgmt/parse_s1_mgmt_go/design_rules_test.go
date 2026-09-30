@@ -1131,6 +1131,16 @@ func TestRule7_VentureInTheFirmNameIsTheLabel(t *testing.T) {
 			"Dr. Resnick previously served as a Partner at SV Health Investors from January 2016 to September 2018 and as President and Managing Partner at MRL Ventures Fund, an early-stage therapeutics-focused corporate venture fund that he built and managed within Merck & Co., from 2014 to January 2016."},
 		{"0001193125-07-265545", "the general partnership is in the past",
 			"Mr. Saalfield was a General Partner of Fleet Financial Group's venture capital funds, Fleet Venture Partners I-IV from 1994 to 1999."},
+		// The name says Ventures and the appositive right after it says what the
+		// firm actually does: consulting. A venture-NAMED firm is credited off
+		// its name alone, so this route never read the label that contradicts
+		// it. Gold excludes Myers for exactly that reason - "not called venture
+		// despite the name". Contrast Brandys above, whose appositive calls
+		// Biobank Technology Ventures "an early-stage life sciences investment
+		// company": an investment business is not a contradiction, a services
+		// business is.
+		{"0001047469-08-003061", "the appositive calls the venture-named firm a consulting business",
+			"Dr. Myers has been a member of our board of directors since August 2007. Since December 2005, he has served as the Managing Director of Myers Ventures LLC, an investment firm with interests in health care consulting and international health."},
 	}
 	for _, c := range negative {
 		t.Run("no/"+c.why, func(t *testing.T) {

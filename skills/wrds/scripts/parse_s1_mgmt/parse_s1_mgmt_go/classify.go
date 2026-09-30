@@ -446,11 +446,20 @@ var (
 	// to the two appositive routes.
 	reVentureToken = regexp.MustCompile(`(?i)^[a-z]*ventures?$`)
 
-	// The two things that can follow the firm name and disqualify it: an
-	// appositive calling it a corporate venture arm, and a seat on its
-	// investment committee.
+	// The three things that can follow the firm name and disqualify it: an
+	// appositive calling it a corporate venture arm, a seat on its investment
+	// committee, and an appositive that says the firm's business is consulting
+	// or advisory services rather than investing. The last one matters because
+	// a firm whose NAME ends in Ventures is credited off the name alone, so
+	// nothing else reads the label: "Myers Ventures LLC, an investment firm
+	// with interests in health care consulting and international health" is a
+	// consultancy (0001047469-08-003061). An appositive that calls the firm an
+	// investment business is not a contradiction and must not veto — "Biobank
+	// Technology Ventures, LLC, an early-stage life sciences investment
+	// company" is a true positive (0000950123-12-002923).
 	reCorporateVenture = regexp.MustCompile(`(?i)^[,\s]+(?:a|an)\s[^.;]{0,80}?corporate\s+venture\b`)
 	reFirmCommittee    = regexp.MustCompile(`(?i)^\s+(?:investment\s+)?committee\b`)
+	reFirmIsServices   = regexp.MustCompile(`(?i)^[,\s]+(?:a|an)\s(?:(?:[^.;]{0,90}?\bconsult(?:ing|ancy)\b)|(?:[^.;]{0,90}?\badvisory\s+(?:firm|services|business)\b))`)
 
 	// A closed date range opening IMMEDIATELY after the appositive: "a managing
 	// partner of Medical Innovation Partners, a venture capital firm from 1989
@@ -661,7 +670,16 @@ func detectVC(bio string) (bool, string, string) {
 		if reVCNonPartnerRole.MatchString(firm) {
 			continue
 		}
-		if tail := window[end:]; reCorporateVenture.MatchString(tail) || reFirmCommittee.MatchString(tail) {
+		tail := window[end:]
+		if reCorporateVenture.MatchString(tail) || reFirmCommittee.MatchString(tail) {
+			continue
+		}
+		// A services appositive only contradicts the name when it does not also
+		// say "venture": "a venture capital and advisory firm" labels the firm
+		// the way the name does. Read off the whole bio, not off window: the
+		// 110-byte window cuts Myers' appositive two words before "consulting".
+		if m := reFirmIsServices.FindString(bio[m[1]+end:]); m != "" &&
+			!strings.Contains(strings.ToLower(m), "venture") {
 			continue
 		}
 		add(firm, evidence(bio, m[0], m[1]+end))
