@@ -1111,6 +1111,16 @@ func TestRule7_VentureInTheFirmNameIsTheLabel(t *testing.T) {
 		{"0001193125-21-230254",
 			"Dr. Parmar is currently a Member of 5AM Venture Management, LLC, where he has worked since 2010.",
 			"5AM Venture Management"},
+		// A private-equity appositive that ALSO says venture capital agrees with
+		// the name and must not veto it; gold counts Brown (0001193125-12-126304)
+		// and Lewis (0000950137-06-012322), where the saving "venture" sits past
+		// the end of the veto's own lazy match.
+		{"0001193125-12-126304",
+			"Since 2007, Mr. Brown has been a General Partner of Battery Ventures, a private equity and venture capital firm focused on technology companies, which he initially joined in 1998.",
+			"Battery Ventures"},
+		{"0000950137-06-012322",
+			"S. Joshua Lewis has served as a director of our company since 2000. Since 2001, Mr. Lewis has been Managing Member and a Principal of Salmon River Capital LLC, a private equity/venture capital firm he founded. He is also a Special Partner of Insight Venture Partners, a private equity/venture capital firm. During 2000, he was a General Partner of Forstmann Little & Co., an investment firm.",
+			"Insight Venture Partners"},
 	}
 	for _, c := range positive {
 		t.Run("yes/"+c.firm, func(t *testing.T) {
@@ -1141,6 +1151,17 @@ func TestRule7_VentureInTheFirmNameIsTheLabel(t *testing.T) {
 		// business is.
 		{"0001047469-08-003061", "the appositive calls the venture-named firm a consulting business",
 			"Dr. Myers has been a member of our board of directors since August 2007. Since December 2005, he has served as the Managing Director of Myers Ventures LLC, an investment firm with interests in health care consulting and international health."},
+		// Same shape as Myers, with the contradicting appositive naming an asset
+		// class instead of a service: a firm the filing calls private equity or
+		// private investment is not venture capital, and gold says so
+		// consistently across the batches ("a private equity firm", "a private
+		// investment firm", "not called venture"). Both of these are credited
+		// off the Ventures in the NAME, so the label is the only thing that can
+		// stop them.
+		{"0000929624-99-000832", "the appositive calls the venture-named firm a private investment firm",
+			"Robert K. Dahl has served as a member of the board of directors since March 1998. Mr. Dahl has been a General Partner at Riviera Ventures, an Alameda-based private investment and management firm, since February 1998, where he specializes in investing in companies in the communications sector."},
+		{"0001193125-07-032392", "the appositive calls the venture-named firm a private equity firm",
+			"Mr. Gregg is the founder and Managing Director of Bluewater Ventures Ltd., a private equity firm specializing in turnarounds and investments in the media and telecommunications sectors in Europe, the U.S. and Asia."},
 	}
 	for _, c := range negative {
 		t.Run("no/"+c.why, func(t *testing.T) {
