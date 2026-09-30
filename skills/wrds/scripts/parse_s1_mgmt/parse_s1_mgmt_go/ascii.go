@@ -280,6 +280,12 @@ func asciiColumns(lines []string, hdr int) (ageAnchor, posAnchor int) {
 // anchors the split, and the age itself is what identifies a person row.
 func asciiRows(lines []string, hdr, hi int) (rows []mgmtRow, bodyEnd int) {
 	anchor, posAnchor := asciiColumns(lines, hdr)
+	// Where the name cell ends: the position field's left edge when AGE is last,
+	// the age column otherwise.
+	nameColEnd := anchor
+	if posAnchor >= 0 {
+		nameColEnd = posAnchor
+	}
 
 	blanks := 0
 	for i := hdr + 1; i < hi; i++ {
@@ -364,6 +370,22 @@ func asciiRows(lines []string, hdr, hi int) (rows []mgmtRow, bodyEnd int) {
 		// known, and the wrapped half sits exactly on it.
 		if last := len(rows) - 1; continuesCell(line, anchor, posAnchor) && rows[last].Label == "" {
 			rows[last].Position = strings.TrimSpace(rows[last].Position + " " + t)
+			continue
+		}
+		// The other half of the wrap handled above: Simplex 2001 keeps the age on
+		// the FIRST half and dangles the remainder under it, "Harvey C. Jones,
+		// 48 Director" over "  Jr.(1)(2).................". That line sits far
+		// left of the position field, so the rule above cannot claim it, and it
+		// ends on a dot leader, so the label rule below rejects it and the table
+		// is read as having ended. Two signals identify it: the row above breaks
+		// mid-cell on a comma, and the dangling half is indented and stays
+		// wholly inside the name column.
+		if last := len(rows) - 1; rows[last].Label == "" && nameColEnd > 0 &&
+			strings.HasSuffix(rows[last].NameRaw, ",") &&
+			len(line)-len(strings.TrimLeft(line, " ")) > 0 &&
+			len(strings.TrimRight(line, " ")) <= nameColEnd {
+			rows[last].NameRaw = strings.TrimSpace(rows[last].NameRaw + " " + t)
+			rows[last].Name = normName(rows[last].NameRaw)
 			continue
 		}
 		if len(t) <= 70 && !strings.HasSuffix(t, ".") {
