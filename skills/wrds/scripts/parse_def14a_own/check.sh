@@ -11,15 +11,16 @@
 #   GOLD_DIR      the gold sets (default /data/def14a_own/gold)
 #
 # Exit codes: 0 all metrics pass, 1 a metric is short, 2 no output to score OR
-#             the parser output does not cover the ISS gold filings (score.py
-#             refuses to compute the gated iss_director_recall over a partial
-#             denominator), 3 the hash lock does not verify.
+#             the parser output does not cover the ISS gold filings, the sample or
+#             the regression set (score.py refuses to compute a gated rate over a
+#             partial denominator), 3 the hash lock does not verify.
 #
-# EIGHT metrics gate as of 2026-09-29 — the keys under `minimums` (floors) plus
-# the keys under `maximums` (ceilings) in thresholds.json, which now include
-# `iss_director_recall`, `sample_yield_worst_year_margin` and the two duplicate-rate
-# ceilings. This script never names them; score.py reads the gated set from the
-# locked thresholds file.
+# TEN metrics gate as of the 2026-09-29 regression round — the keys under
+# `minimums` (floors) plus the keys under `maximums` (ceilings) in thresholds.json:
+# the five older floors, `sample_yield_worst_year_margin`, the two identical-row
+# duplicate ceilings, and `regress_zero_row_recovered` / `regress_group_row_recovered`.
+# This script never names them; score.py reads the gated set from the locked
+# thresholds file.
 
 set -uo pipefail
 
@@ -44,5 +45,6 @@ exec python3 "$HERE/scorer/score.py" \
     --miss-report "$WORK/miss_dev.tsv" \
     --iss-miss-report "$WORK/miss_iss_dev.tsv" \
     --sample-report "$WORK/sample_by_year.tsv" \
+    --regress-report "$WORK/regress_dev.tsv" \
     --json-out "$WORK/metrics_dev.json" \
     --check

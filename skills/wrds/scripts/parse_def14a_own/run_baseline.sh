@@ -15,14 +15,16 @@
 #                    (default round_filelist.tsv — the UNION of the blockw/factset
 #                     filelist, the ISS one, and the fixed full-archive sample)
 #
-# EVERY ROUND PARSES BOTH GOLD FILELISTS AND THE SAMPLE. `iss_director_recall` is
+# EVERY ROUND PARSES BOTH GOLD FILELISTS, THE SAMPLE AND THE REGRESSION SET. `iss_director_recall` is
 # gated as of 2026-09-29, and the three sample metrics were gated the same day; a
 # gated rate scored over only the filings that happened to be submitted is a rate
 # over a denominator the round chose. The submitted filelist is therefore asserted
 # below to cover $GOLD_DIR/gold_filelist.tsv (blockw/factset, dev AND holdout
 # filings — the parser sees both, the SCORER sees dev only),
-# $GOLD_DIR/gold_iss_filelist.tsv (ISS, likewise) and $GOLD_DIR/sample_full.tsv
-# (the seed-20260929 year-stratified sample), and the run aborts if it does not.
+# $GOLD_DIR/gold_iss_filelist.tsv (ISS, likewise), $GOLD_DIR/sample_full.tsv
+# (the seed-20260929 year-stratified sample) and $GOLD_DIR/regress_filelist.tsv
+# (the fixed panel-diff regression set, 2026-09-29), and the run aborts if it does
+# not.
 #
 # Extending the filelist is additive: score.py keys on (cik, accession) and
 # ignores rows for filings that are not in the gold set it is scoring, so a
@@ -48,7 +50,7 @@ echo "== filelist coverage =="
 # over a partial denominator. Compared on the archive path (column 1) because the
 # union file tags the 90 shared filings with their blockw/factset source, so the
 # whole LINE differs for a filing that is present in both.
-for req in gold_filelist.tsv gold_iss_filelist.tsv sample_full.tsv; do
+for req in gold_filelist.tsv gold_iss_filelist.tsv sample_full.tsv regress_filelist.tsv; do
     if [[ ! -f "$GOLD/$req" ]]; then
         echo "ERROR: required gold filelist $GOLD/$req is missing" >&2
         exit 1
@@ -58,8 +60,9 @@ for req in gold_filelist.tsv gold_iss_filelist.tsv sample_full.tsv; do
     echo "  $req: $(wc -l < "$GOLD/$req") filings, $n_missing not covered by $FILELIST"
     if [[ "$n_missing" != "0" ]]; then
         echo "ERROR: $FILELIST does not cover $req ($n_missing filings missing)." >&2
-        echo "       Every round must parse BOTH gold filelists AND the fixed" >&2
-        echo "       full-archive sample; use round_filelist.tsv." >&2
+        echo "       Every round must parse BOTH gold filelists, the fixed" >&2
+        echo "       full-archive sample AND the fixed regression set; use" >&2
+        echo "       round_filelist.tsv, rebuilt by gold/build_regress_set.py." >&2
         exit 1
     fi
 done
@@ -101,9 +104,13 @@ if [[ "$FAIL" != "0" ]]; then
 fi
 
 echo "== fetch =="
-mkdir -p "$WORK/out"
-rm -f "$WORK"/out/*
+mkdir -p "$WORK/out" "$WORK/shard_logs"
+# The shard logs land OUTSIDE $WORK/out on purpose: `rm -f $WORK/out/*` is how the
+# round clears the last pass, and a directory in there makes that line fail under
+# `set -e`.
+rm -f "$WORK"/out/* "$WORK"/shard_logs/*
 scp -q "$HOST:$ROOT/out/*.tsv.gz" "$WORK/out/"
+scp -q "$HOST:$ROOT/out/*.log" "$WORK/shard_logs/"
 ROWS=$(zcat "$WORK"/out/*[0-9].tsv.gz | grep -vc '^accession' || true)
 MAN=$(zcat "$WORK"/out/*.manifest.tsv.gz | grep -vc '^accession' || true)
 FILES_IN=$(wc -l < "$GOLD/$FILELIST")
@@ -112,6 +119,41 @@ if [[ "$MAN" != "$FILES_IN" ]]; then
     echo "ERROR: manifest rows ($MAN) != filings submitted ($FILES_IN)" >&2
     exit 1
 fi
+
+# --- DIAGNOSTIC, NEVER GATED: parser wall time per shard -----------------------
+# The 31 duplicate-round commits made the parser 1.30x slower shard-paired over the
+# full archive (22,907 s -> 29,683 s, worst on the late-era HTML shards), so every
+# round prints what it cost. It is REPORTED and never gated: a wall-time ceiling
+# would pay the loop to stop parsing.
+echo "== wall time per shard (diagnostic, not gated) =="
+python3 - "$WORK/shard_logs" "$WORK/shard_wall.tsv" <<'PY'
+import glob, os, re, statistics, sys
+logs, out = sys.argv[1], sys.argv[2]
+rows = []
+for p in sorted(glob.glob(os.path.join(logs, "*.log"))):
+    txt = open(p, errors="replace").read()
+    m = re.search(r"shard=(\S+) status=(\d+) files=(\d+) ownership_rows=(\d+) "
+                  r"manifest_rows=(\d+) wall=(\d+)s", txt)
+    if not m:
+        print("  NO wall= line in %s (shard failed or still running)" % os.path.basename(p))
+        continue
+    rows.append((m.group(1), int(m.group(3)), int(m.group(4)), int(m.group(6))))
+rows.sort()
+with open(out, "w") as fh:
+    fh.write("shard\tfiles\townership_rows\twall_s\n")
+    for r in rows:
+        fh.write("%s\t%d\t%d\t%d\n" % r)
+if not rows:
+    print("  no shard logs parsed — nothing to report")
+    raise SystemExit(0)
+w = [r[3] for r in rows]
+print("  shards=%d  total=%ds  median=%ds  max=%ds  mean=%.1fs" % (
+    len(w), sum(w), int(statistics.median(w)), max(w), sum(w) / len(w)))
+print("  slowest five (shard, files, rows, wall_s):")
+for r in sorted(rows, key=lambda r: -r[3])[:5]:
+    print("    %-12s files=%-6d rows=%-8d wall=%ds" % r)
+print("  [out] %s" % out)
+PY
 
 echo "== score (dev) =="
 # The scorer's exit code is captured rather than allowed to abort the script: a
@@ -128,6 +170,7 @@ python3 "$HERE/scorer/score.py" \
     --miss-report "$WORK/miss_dev.tsv" \
     --iss-miss-report "$WORK/miss_iss_dev.tsv" \
     --sample-report "$WORK/sample_by_year.tsv" \
+    --regress-report "$WORK/regress_dev.tsv" \
     --json-out "$WORK/metrics_dev.json" \
     "$@"
 SCORE_EXIT=$?
