@@ -408,6 +408,18 @@ var (
 		`managing\s+director|founding\s+partner|venture\s+partner|general\s+manager\s+of\s+the\s+fund|` +
 		`partner|member)\b`)
 
+	// The role grades that sit AT a venture firm without being a seat in the
+	// partnership: a chairman, a salaried officer, an advisor, an
+	// entrepreneur-in-residence. Each of these introduces a firm the filing
+	// itself calls "a venture capital firm", so the label is no help — only the
+	// grade separates them from a general partner. Read as a veto and never as
+	// a requirement, because the narrow appositive's true positives include
+	// leads with no role in them at all ("Dr. Behbahani joined New Enterprise
+	// Associates, Inc., a venture capital firm, in 2007 and is a General
+	// Partner").
+	reVCNonPartnerRole = regexp.MustCompile(`(?i)\b(?:advis[eo]r|chair(?:man|woman|person)|officer|` +
+		`entrepreneur[\s-]?in[\s-]?residence|investment\s+director)\b`)
+
 	// Words that end a firm name when scanning back from the appositive. A
 	// camel-cased token counts: "Lanza techVentures" and "Pivotal bioVenture
 	// Partners" write the firm's own name with the capital inside the word, and
@@ -528,7 +540,8 @@ func detectVC(bio string) (bool, string, string) {
 
 	for _, m := range reVCAppositive.FindAllStringIndex(bio, -1) {
 		firm, at := firmBefore(bio[:m[0]])
-		if firm == "" || vcLeadIsPast(bio[:at]) || reVCClosedRangeTail.MatchString(bio[m[1]:]) {
+		if firm == "" || vcLeadIsPast(bio[:at]) || vcLeadIsNonPartner(bio[:at]) ||
+			reVCClosedRangeTail.MatchString(bio[m[1]:]) {
 			continue
 		}
 		add(firm, evidence(bio, m[0], m[1]))
@@ -561,6 +574,14 @@ func detectVC(bio string) (bool, string, string) {
 		}
 		firm, end := ventureFirmAfter(window)
 		if firm == "" {
+			continue
+		}
+		// A role word inside the captured name means the run started at a role
+		// and not at the firm: anchored on the bare "member" of "a member of our
+		// board of directors", the window swallows "Chief Scientific Advisor of
+		// Clarus Ventures LLC" whole (0001193125-18-207640). No firm is called
+		// that, and the grade that reaches the name is not a partnership.
+		if reVCNonPartnerRole.MatchString(firm) {
 			continue
 		}
 		if tail := window[end:]; reCorporateVenture.MatchString(tail) || reFirmCommittee.MatchString(tail) {
@@ -628,6 +649,16 @@ func vcAppositiveLeadOK(lead string) bool {
 // "all entities affiliated with Canaan Partners, a venture capital firm", where
 // the role sits on the far side of the name.
 func vcLeadIsPast(lead string) bool { return reVCPastLead.MatchString(vcLead(lead)) }
+
+// vcLeadIsNonPartner reports whether the clause that runs up to the firm name
+// puts the person in a role at it that is not a seat in the partnership, AND in
+// no partner-grade role. Both halves are needed: "Managing Partner and Chairman
+// of X Ventures" names a chairmanship and a partnership in one breath, and it
+// is the partnership that decides.
+func vcLeadIsNonPartner(lead string) bool {
+	l := vcLead(lead)
+	return reVCNonPartnerRole.MatchString(l) && !reVCRole.MatchString(l)
+}
 
 // vcLead is the one clause before the firm name: the last 90 bytes, cut back to
 // the start of the sentence the role sits in. The sentence cut is what keeps

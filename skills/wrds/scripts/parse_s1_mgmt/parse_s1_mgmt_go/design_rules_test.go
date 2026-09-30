@@ -1582,3 +1582,67 @@ func TestRule2_BoardMemberIsADirectorPosition(t *testing.T) {
 		t.Errorf("n_vc_directors = %d, want 1", e.Filing.NVCDirectors)
 	}
 }
+
+// ---------------------------------------------------------------------------
+// Rule 7 — the role grade at a labelled venture firm
+// ---------------------------------------------------------------------------
+
+// A labelled venture capital firm in the bio is not enough: the gold counts a
+// venture DIRECTOR, which means a partner-grade seat at the firm. A chairman, a
+// salaried officer, a scientific advisor and an entrepreneur-in-residence all
+// sit at a firm the filing calls "a venture capital firm" and none of them is
+// counted.
+//
+// The test is a veto and not a requirement, because the narrow appositive's own
+// true positives include leads with no role in them at all: "Dr. Behbahani
+// joined New Enterprise Associates, Inc., a venture capital firm, in 2007 and
+// is a General Partner" puts the role on the far side of the name, so a lead
+// that must carry a partner-grade role would throw him away.
+//
+// Bios are quoted verbatim from the accession named on each line, and exercised
+// through detectVC because check_full.sh re-cuts every fixture from a source
+// filing this corpus does not hold.
+func TestRule7_ANonPartnerRoleAtAVentureFirmDoesNotFire(t *testing.T) {
+	negative := []struct{ accession, why, bio string }{
+		{"0000936392-00-000157", "chairman of the firm, not a partner in it",
+			"John C. Stiska has served as a Director since March 1999. Mr. Stiska currently is Chairman of Commercial Bridge Capital, LLC., a venture capital firm, and serves as of-counsel to the law firm of Latham & Watkins."},
+		{"0000950123-05-008754", "an officer of the firm, and later its President",
+			"Joan P. Neuscheler has been a Director since 2002. Ms. Neuscheler has 16 years of experience in private equity investing as an officer of Tullis-Dickerson & Co., Inc., a health care-focused venture capital firm. Since July 1998, Ms. Neuscheler has been the President of Tullis-Dickerson & Co., Inc."},
+		{"0001193125-18-207640", "the Chief Scientific Advisor, and the managing directorship closed in 2018",
+			"Dennis J. Henner, Ph.D. has served as a member of our board of directors since November 2015. He is the Chief Scientific Advisor of Clarus Ventures, LLC, a venture capital firm, where he served as Managing Director from the firm's inception in March 2005 to January 2018."},
+		{"0001193125-21-231612", "an entrepreneur-in-residence at the firm",
+			"Catherine Stehman-Breen, M.D. has served as a member of our board of directors since June 2020. Since March 2018, she has served as an entrepreneur-in-residence at Atlas Ventures, a venture capital firm."},
+	}
+	for _, c := range negative {
+		t.Run("no/"+c.why, func(t *testing.T) {
+			if ok, firm, ev := detectVC(c.bio); ok {
+				t.Errorf("%s: vc_affiliated = true, want false (firm=%q evidence=%q)", c.accession, firm, ev)
+			}
+		})
+	}
+
+	// The partner-grade seats the veto must leave alone, including the two
+	// spellings that put the role after the firm name.
+	positive := []struct{ accession, bio, firm string }{
+		{"0001193125-21-199386",
+			"Dr. Behbahani joined New Enterprise Associates, Inc., a venture capital firm, in 2007 and is a General Partner on the healthcare team.",
+			"New Enterprise Associates"},
+		{"0001193125-15-338931",
+			"Since 2008, Mr. Speiser has served as a Managing Director at Sutter Hill Ventures, a venture capital firm. From 2007 to 2008, Mr. Speiser served as Vice President of Community Products at Yahoo! Inc.",
+			"Sutter Hill Ventures"},
+		{"0001193125-19-177602",
+			"Mr. Nussbaum is a managing partner and a co-founder of The Pontifax Group, or Pontifax, a group of Israel-based life sciences venture funds focusing on investments in development stage bio-pharmaceutical and med-tech technologies.",
+			"Pontifax"},
+	}
+	for _, c := range positive {
+		t.Run("yes/"+c.firm, func(t *testing.T) {
+			ok, firm, ev := detectVC(c.bio)
+			if !ok {
+				t.Fatalf("%s: vc_affiliated = false, want true", c.accession)
+			}
+			if !containsFold(firm, c.firm) {
+				t.Errorf("%s: vc_firm = %q, want it to name %q (evidence %q)", c.accession, firm, c.firm, ev)
+			}
+		})
+	}
+}
