@@ -49,6 +49,9 @@ var (
 	// there are no headings, only the caption's column labels.
 	reTxtTableOpen  = regexp.MustCompile(`(?i)<TABLE>`)
 	reTxtTableClose = regexp.MustCompile(`(?i)</TABLE>`)
+	// A line carrying nothing but a caption's own markers. asciiLine blanks a
+	// marker to spaces, so such a line looks blank while the table is still open.
+	reTxtCaptionOnly = regexp.MustCompile(`(?i)^\s*(?:<(?:CAPTION|S|C)>\s*)+$`)
 )
 
 // isAsciiHeader reports whether line j is the fixed-width table's header row.
@@ -134,6 +137,13 @@ func asciiRows(lines []string, hdr, hi int) (rows []mgmtRow, bodyEnd int) {
 		line := asciiLine(lines[i])
 		t := strings.TrimSpace(line)
 		if t == "" {
+			// A caption marker is not a blank line. UbiquiTel 2000 puts both of
+			// its blocks in ONE <TABLE> and opens a SECOND <CAPTION> over the
+			// "OTHER KEY EMPLOYEES" rows; counting that line as the second blank
+			// ends the table two rows early.
+			if reTxtCaptionOnly.MatchString(strings.TrimSuffix(lines[i], "\r")) {
+				continue
+			}
 			// Two blank lines after at least one row is the end of the table in
 			// filings that omit </TABLE>.
 			blanks++
@@ -144,6 +154,12 @@ func asciiRows(lines []string, hdr, hi int) (rows []mgmtRow, bodyEnd int) {
 		}
 		blanks = 0
 		if reRuleLine.MatchString(t) {
+			continue
+		}
+		// The second caption re-declares NAME / AGE / POSITION over its own block.
+		// The line carries no age, so the label pass below would file the column
+		// names as a section and put the rows under them in no section at all.
+		if isAsciiHeader(lines, i) {
 			continue
 		}
 		if strings.HasPrefix(t, "(") && len(rows) > 0 {
