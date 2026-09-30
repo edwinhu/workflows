@@ -392,7 +392,12 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 		// Same guard as the DOM path: the block itself, not the heading above
 		// it, must read as an ownership table. Without this the scan runs on
 		// into the Summary Compensation Table.
-		body := hdr + " " + ownHdr + " " + strings.Join(sliceLines(clean, block), " ")
+		// The header read DOWN its columns as well as across its lines: a
+		// stacked ASCII header spells its column labels vertically and the
+		// row-wise flattening interleaves them into nonsense.
+		colHdr := hdrColumnText(header)
+		body := hdr + " " + ownHdr + " " + colHdr + " " +
+			strings.Join(sliceLines(clean, block), " ")
 		switch {
 		case !reOwnCue.MatchString(body):
 			textReason("no_own_cue")
@@ -1241,6 +1246,43 @@ func reprintedHeaderAt(clean []string, from, limit int, want map[string]bool) in
 		}
 	}
 	return -1
+}
+
+// hdrColumnText reads a stacked ASCII column header DOWN each column instead
+// of across each line. "PERCENTAGE" over "OF SHARES" over "OUTSTANDING" is one
+// column label; flattened row by row it interleaves with its neighbours
+// ("PERCENTAGE OCCUPATION AND NUMBER OF SHARES ... OUTSTANDING") and no
+// ownership phrase survives for the cue test to match. Each column of the
+// BOTTOM header line collects the groups above it whose character spans
+// overlap it.
+func hdrColumnText(lines []string) string {
+	var rows [][]hdrGroup
+	for _, l := range lines {
+		if g := splitHdrGroups(l); len(g) > 0 {
+			rows = append(rows, g)
+		}
+	}
+	if len(rows) < 2 {
+		return ""
+	}
+	last := rows[len(rows)-1]
+	var out []string
+	for _, g := range last {
+		var parts []string
+		for _, r := range rows[:len(rows)-1] {
+			for _, h := range r {
+				if h.lo < g.hi && g.lo < h.hi {
+					parts = append(parts, strings.TrimSpace(h.text))
+				}
+			}
+		}
+		if len(parts) == 0 {
+			continue
+		}
+		parts = append(parts, strings.TrimSpace(g.text))
+		out = append(out, strings.Join(parts, " "))
+	}
+	return strings.Join(out, " | ")
 }
 
 // hdrRowsText flattens the block's own header lines back into one string, so
