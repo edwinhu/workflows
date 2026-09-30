@@ -1326,15 +1326,21 @@ def main():
                     r = reg_meta[k]
                     in_a = r["in_set_zero_row"] == "1"
                     in_bg = r["in_set_group_row_gated"] == "1"
-                    rec = ((not in_a or reg.rows.get(k, 0) > 0)
-                           and (not in_bg or k in reg.group_pct))
+                    # `recovered` is only meaningful for a filing in a GATED set;
+                    # for the diagnostic and excluded rows it is `na`, not 1, so
+                    # counting the column cannot overstate the recovery.
+                    if not (in_a or in_bg):
+                        rec = "na"
+                    else:
+                        rec = 1 if ((not in_a or reg.rows.get(k, 0) > 0)
+                                    and (not in_bg or k in reg.group_pct)) else 0
                     fh.write("\t".join(str(x) for x in [
                         k[0], k[1], r["filing_date"], r["in_set_zero_row"],
                         r["in_set_group_row_gated"], r["in_set_group_row_diag"],
                         1 if k in reg_excl else 0, r["old_n_rows"], r["old_group_rows"],
                         r["old_group_rows_with_percent"], reg.rows.get(k, 0),
                         1 if k in reg.group_any else 0, 1 if k in reg.group_pct else 0,
-                        1 if rec else 0]) + "\n")
+                        rec]) + "\n")
             print("[out] %s: %d rows" % (args.regress_report, len(reg_meta)))
 
     # ---- miss decomposition -------------------------------------------------
