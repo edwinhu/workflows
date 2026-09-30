@@ -531,6 +531,18 @@ var (
 	reFirmCommittee    = regexp.MustCompile(`(?i)^\s+(?:investment\s+)?committee\b`)
 	reFirmIsServices   = regexp.MustCompile(`(?i)^[,\s]+(?:a|an)\s(?:(?:[^.;]{0,90}?\bconsult(?:ing|ancy)\b)|(?:[^.;]{0,90}?\badvisory\s+(?:firm|services|business)\b))`)
 
+	// The date an affiliation started, written between the firm name and the
+	// appositive that labels it: "BOLD Capital Partners in 2015, a venture fund".
+	// Anchored to the end of the text firmBefore is handed, so only a date
+	// sitting immediately before the appositive is stripped.
+	reVCStartDateTail = regexp.MustCompile(`(?i)\s+(?:in|since|during)\s+(?:[A-Z][a-z]+\s+)?[0-9]{4}$`)
+
+	// A person can hold no partner grade at a fund they started, so the founder
+	// of a firm the filing labels a venture fund is partner-grade by itself. It
+	// is read only by the wide appositive's lead test, where the label has to be
+	// there in words before the lead is read at all.
+	reVCFounderRole = regexp.MustCompile(`(?i)\b(?:co[\s-]?)?founder\b`)
+
 	// A closed date range opening IMMEDIATELY after the appositive: "a managing
 	// partner of Medical Innovation Partners, a venture capital firm from 1989
 	// through 2007" writes the dates on the far side of the clause, where no lead
@@ -812,11 +824,17 @@ func closedRangeAfterFirm(tail string) bool {
 // second return value is the byte offset the name starts at, which is where
 // vcAppositiveLeadOK reads back from.
 //
-// A run that is nothing but digits is rejected: "a co-founder of BOLD Capital
-// Partners in 2015, a venture fund investing in exponential technologies" puts
-// the appositive after the date, and the year is not the firm.
+// The date the affiliation STARTED can sit between the name and the appositive:
+// "a co-founder of BOLD Capital Partners in 2015, a venture fund investing in
+// exponential technologies" (0001193125-21-328157). That phrase is stripped
+// before the name is read, because the year is not the firm and neither is the
+// month in front of it. A run that is nothing but digits is still rejected, for
+// the date forms the strip does not reach.
 func firmBefore(head string) (string, int) {
 	head = strings.TrimRight(head, " \t")
+	if m := reVCStartDateTail.FindStringIndex(head); m != nil {
+		head = strings.TrimRight(head[:m[0]], " \t")
+	}
 	toks := strings.Fields(head)
 	i := len(toks)
 	for i > 0 {
@@ -848,7 +866,8 @@ func firmBefore(head string) (string, int) {
 // one clause wide: wider and it reaches the previous sentence's employer, which
 // on this corpus is routinely the job the person left.
 func vcAppositiveLeadOK(lead string) bool {
-	return reVCRole.MatchString(vcLead(lead)) && !vcLeadIsPast(lead)
+	l := vcLead(lead)
+	return (reVCRole.MatchString(l) || reVCFounderRole.MatchString(l)) && !vcLeadIsPast(lead)
 }
 
 // vcPostLabelLeadOK reports whether the clause running up to a firm the filing

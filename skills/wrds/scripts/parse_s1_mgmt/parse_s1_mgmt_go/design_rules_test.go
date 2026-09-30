@@ -2351,3 +2351,19 @@ func TestRule7_APrincipalAtAVentureNamedFirmFires(t *testing.T) {
 		})
 	}
 }
+
+// The appositive can sit on the far side of the date the affiliation started:
+// "a co-founder of BOLD Capital Partners in 2015, a venture fund investing in
+// exponential technologies" (0001193125-21-328157). The firm name runs back from
+// the date phrase, not from the comma, and the lead role is a bare founder — the
+// only grade a person can hold at a fund they started.
+func TestRule7_AppositiveAfterStartDate(t *testing.T) {
+	const bio = "Dr. Diamandis has started more than 24 companies in the areas of human longevity, " +
+		"space, venture capital and education, including as a co-founder of BOLD Capital Partners " +
+		"in 2015, a venture fund investing in exponential technologies, and as the founder and " +
+		"Executive Chairman of the XPRIZE Foundation, a non-profit."
+	ok, firm, ev := detectVC(bio)
+	if !ok || !strings.Contains(firm, "BOLD Capital Partners") {
+		t.Errorf("vc = %v firm = %q, want BOLD Capital Partners (evidence=%q)", ok, firm, ev)
+	}
+}
