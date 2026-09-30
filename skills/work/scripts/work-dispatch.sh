@@ -546,7 +546,7 @@ loops=""
 # is no way to put implementers on one provider and lenses on another, and mixing them would mean two
 # gates. Deliberately NOT recorded in args.json — it is a property of this dispatch, not of the plan,
 # and the point of the lever is to differ between rounds.
-provider=claude
+provider=""
 while :; do
   case "${1:-}" in
     --provider) provider="${2:-}"; shift 2 || { echo "--provider needs claude|codex|gemini" >&2; exit 2; }
@@ -859,6 +859,11 @@ else
 fi
 
 # One argument vector, so the two dispatch paths cannot drift apart.
+if [ -z "$provider" ]; then
+  echo "work-dispatch.sh requires an explicit --provider (gemini is recommended)" >&2
+  exit 2
+fi
+
 farm_cmd=(bash "$FARM" --provider "$provider"
   --workflow "$SKILL/workflow.js"
   --args "$R/args.json" --out "$R/result.json" --cwd "$PWD")

@@ -20,7 +20,7 @@ function runFarm(expectPath: string, opts: { writeRelative?: string } = {}) {
   chmodSync(stub, 0o755)
   const tasks = join(root, 'tasks.json')
   writeFileSync(tasks, JSON.stringify([{ label: 'r', prompt: 'p', expect: expectPath }]))
-  const res = spawnSync('bash', [FARM, '--tasks', tasks, '--cwd', agentCwd], {
+  const res = spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', agentCwd], {
     encoding: 'utf8',
     cwd: root,                                   // deliberately NOT agentCwd
     env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1' },
@@ -55,7 +55,7 @@ function runRow(row: Record<string, unknown>) {
   chmodSync(stub, 0o755)
   const tasks = join(root, 'tasks.json')
   writeFileSync(tasks, JSON.stringify([row]))
-  const res = spawnSync('bash', [FARM, '--tasks', tasks, '--cwd', agentCwd], {
+  const res = spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', agentCwd], {
     encoding: 'utf8',
     cwd: root,
     env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1' },
