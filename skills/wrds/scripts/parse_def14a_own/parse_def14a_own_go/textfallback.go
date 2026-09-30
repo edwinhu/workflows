@@ -120,7 +120,7 @@ type holding struct {
 	lo, hi int
 }
 
-var reNumTok = regexp.MustCompile(`[0-9][0-9,]*(?:\.[0-9]+)?\s*%|\.[0-9]+\s*%|[0-9][0-9,]*(?:\.[0-9]+)?|\*|(?:^|\s)[\+#†‡](?:\s|$)`)
+var reNumTok = regexp.MustCompile(`[0-9][0-9,]*(?:\.[0-9]+)?\s*%|\.[0-9]+\s*%|[0-9][0-9,]*(?:\.[0-9]+)?|\.[0-9]+|\*|(?:^|\s)[\+#†‡](?:\s|$)`)
 
 // isStarMarker reports the less-than-1% glyphs as a standalone column value.
 // They are normalised to "*" downstream so consumers see one marker, not five.
@@ -1015,6 +1015,22 @@ var reLeadClassCol = regexp.MustCompile(`(?i)^((?:[A-Z][\w.&/-]*\s+){0,3}(?:shar
 
 var reTextStickyLabel = regexp.MustCompile(`(?i)^[A-Z0-9][\w.,'&()/ -]{0,58}?\b(?:class|classes|shares|portfolio|fund|series|trust)\s*:?$`)
 
+func textStickyLabel(t string) bool {
+	if !reTextStickyLabel.MatchString(t) {
+		return false
+	}
+	// Two header columns flattened into one line can end in "shares".
+	// Their column gap and independent header cues distinguish them from a label.
+	groups := splitHdrGroups(t)
+	headerColumns := 0
+	for _, g := range groups {
+		if reHdrLineCue.MatchString(g.text) {
+			headerColumns++
+		}
+	}
+	return headerColumns < 2
+}
+
 // textStickyLabels maps every line of a block to the label in force at it. A
 // label written at a SMALLER indent contains the ones written further in, so a
 // fund line resets the class line under it and the two compose. Returns nil when
@@ -1047,7 +1063,7 @@ func textStickyLabels(clean []string, block []int) map[int]string {
 	found := false
 	for ln := lo; ln <= hi && ln < len(clean); ln++ {
 		t := strings.TrimSpace(clean[ln])
-		if t != "" && !reTextValueish.MatchString(t) && reTextStickyLabel.MatchString(t) {
+		if t != "" && !reTextValueish.MatchString(t) && textStickyLabel(t) {
 			ind := len(clean[ln]) - len(strings.TrimLeft(clean[ln], " "))
 			var keep []int
 			for _, k := range indents {
@@ -1089,7 +1105,7 @@ func textStickyLabels(clean []string, block []int) map[int]string {
 	if minInd > 0 {
 		for ln := lo - 1; ln >= 0 && ln > lo-200; ln-- {
 			t := strings.TrimSpace(clean[ln])
-			if t == "" || reTextValueish.MatchString(t) || !reTextStickyLabel.MatchString(t) {
+			if t == "" || reTextValueish.MatchString(t) || !textStickyLabel(t) {
 				continue
 			}
 			if ind := len(clean[ln]) - len(strings.TrimLeft(clean[ln], " ")); ind < minInd {
