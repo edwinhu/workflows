@@ -572,6 +572,82 @@ func TestRule4_BiosDoNotBleedIntoEachOther(t *testing.T) {
 	}
 }
 
+// The table and the bio disagree about how much of the name to print. Four
+// spellings measured on the dev split, all of them a director whose bio the
+// strict prefix test cannot claim:
+//
+//	table "Carl Gordon, Ph.D., C.F.A."  bio "Carl L. Gordon, Ph.D., C.F.A. has served ..."
+//	                                        (Prevail, 0001193125-19-177602)
+//	table "Carl Gordon, Ph.D."          bio "Carl Gordon, CFA, Ph.D . has served ..."
+//	                                        (Kinnate, 0001140361-20-027255)
+//	table "Robert Goodman"              bio "Robert P. Goodman has served ..."
+//	                                        (ACV Auctions, 0001193125-21-092803)
+//	table "Bryan E. Roberts, Ph.D."     bio "Bryan E. Roberts has served ..."
+//	                                        (Ironwood, 0001047469-10-000546)
+//
+// Each one costs two disagreements, not one: the block falls through to the
+// PRECEDING person, so the VC firm in it is credited to the wrong director and
+// the right one is left with no bio at all.
+func TestRule4_TheBioSpellsTheNameWithOtherInitialsAndCredentials(t *testing.T) {
+	body := `<HTML><BODY><P ALIGN="center"><B>MANAGEMENT</B></P>
+<P><B>Executive Officers and Directors</B></P>
+<TABLE>
+<TR><TD>Name</TD><TD>Age</TD><TD>Position</TD></TR>
+<TR><TD>Ada Lovelace</TD><TD>36</TD><TD>Chief Executive Officer and Director</TD></TR>
+<TR><TD>Timothy Adams</TD><TD>55</TD><TD>Director</TD></TR>
+<TR><TD>Carl Gordon, Ph.D., C.F.A.</TD><TD>57</TD><TD>Director</TD></TR>
+<TR><TD>Robert Goodman</TD><TD>60</TD><TD>Director</TD></TR>
+<TR><TD>Bryan E. Roberts, Ph.D.</TD><TD>44</TD><TD>Director</TD></TR>
+</TABLE>
+<P>Ada Lovelace has served as our Chief Executive Officer since 1843.</P>
+<P>Timothy Adams has served as a member of our board since April 2019. Mr. Adams has served as Chief Financial Officer of ObsEva SA since January 2017.</P>
+<P>Carl L. Gordon, Ph.D., C.F.A. has served as a member of our board since August 2017. Dr. Gordon is a founding Partner and Co-Head of Global Private Equity at OrbiMed Advisors, LLC, an investment firm focused on the healthcare sector.</P>
+<P>Robert P. Goodman has served as a member of our board of directors since February 2017. Mr. Goodman is a Partner at Bessemer Venture Partners, a venture capital firm which he joined in 1998.</P>
+<P>Bryan E. Roberts has served as director since 2001. Dr. Roberts joined Venrock, a venture capital investment firm, in 1997, where he serves as partner.</P>
+</BODY></HTML>`
+	e := ExtractManagement([]byte(sgmlHeader + sgmlDoc("424B4", body)))
+
+	for _, c := range []struct{ name, wantIn string }{
+		{"Carl Gordon, Ph.D., C.F.A.", "OrbiMed Advisors"},
+		{"Robert Goodman", "Bessemer Venture Partners"},
+		{"Bryan E. Roberts, Ph.D.", "Venrock"},
+	} {
+		p := person(t, e, c.name)
+		if !containsFold(p.Bio, c.wantIn) {
+			t.Errorf("%s's bio does not carry %q\n  bio = %q", c.name, c.wantIn, trunc(p.Bio))
+		}
+	}
+	// ... and the person above each of them has not absorbed it.
+	for _, c := range []struct{ name, notIn string }{
+		{"Timothy Adams", "OrbiMed"},
+		{"Carl Gordon, Ph.D., C.F.A.", "Bessemer"},
+		{"Robert Goodman", "Venrock"},
+	} {
+		p := person(t, e, c.name)
+		if containsFold(p.Bio, c.notIn) {
+			t.Errorf("%s's bio has absorbed %q from the bio beneath it\n  bio = %q",
+				c.name, c.notIn, trunc(p.Bio))
+		}
+	}
+	// The whole point of the join: the firm lands on the right director.
+	if p := person(t, e, "Timothy Adams"); p.VCAffiliated {
+		t.Errorf("Timothy Adams: vc_affiliated = true (firm %q) from a bio that is not his", p.VCFirm)
+	}
+	for _, want := range []vcWant{
+		{"Carl Gordon, Ph.D., C.F.A.", "OrbiMed"},
+		{"Robert Goodman", "Bessemer Venture"},
+	} {
+		p := person(t, e, want.name)
+		if !p.VCAffiliated {
+			t.Errorf("%s: vc_affiliated = false, want true (bio=%q)", want.name, trunc(p.Bio))
+			continue
+		}
+		if !containsFold(p.VCFirm, want.firm) {
+			t.Errorf("%s: vc_firm = %q, want it to name %q", want.name, p.VCFirm, want.firm)
+		}
+	}
+}
+
 // ---------------------------------------------------------------------------
 // Rule 5 — extraction is bounded to the MANAGEMENT section
 // ---------------------------------------------------------------------------
