@@ -19,8 +19,9 @@ func DebugFile(path string, maxTables int) {
 	base := Row{series: SeriesNames(string(raw))}
 	fmt.Printf("bytes=%d isHTML=%v series=%d\n", len(body), IsHTML(body), len(base.series))
 	if !IsHTML(body) {
+		textBlockReasons = map[string]int{}
 		rows, seen, used := ExtractText(body, base)
-		fmt.Printf("text path: blocks_seen=%d used=%d rows=%d\n", seen, used, len(rows))
+		fmt.Printf("text path: blocks_seen=%d used=%d rows=%d reasons=%v\n", seen, used, len(rows), textBlockReasons)
 		for i, r := range rows {
 			if i > 40 {
 				break
@@ -43,7 +44,8 @@ func DebugFile(path string, maxTables int) {
 		}
 		c := compactWith(it.Grid, base)
 		c.analyze()
-		okOwn := c.looksLikeOwnership(it.Text)
+		why := c.ownershipReject(it.Text)
+		okOwn := why == ""
 		if !okOwn && !reOwnCue.MatchString(it.Text) {
 			continue
 		}
@@ -51,12 +53,15 @@ func DebugFile(path string, maxTables int) {
 		if n > maxTables {
 			break
 		}
+		if os.Getenv("DEF14A_DEBUG_CUE") != "" {
+			fmt.Printf("    CUE=%q TEXT=%q\n", reOwnCue.FindString(it.Text), trunc(flat(it.Text), 600))
+		}
 		roles := []string{}
 		for _, r := range c.roles {
 			roles = append(roles, r.role)
 		}
-		fmt.Printf("[pos %d] TABLE %dx%d -> compact %d cols, nHeader=%d, ownership=%v roles=%v\n",
-			it.Pos, len(it.Grid.Rows), it.Grid.NCol(), len(c.roles), c.nHeader, okOwn, roles)
+		fmt.Printf("[pos %d] TABLE %dx%d -> compact %d cols, nHeader=%d, ownership=%v(%s) roles=%v\n",
+			it.Pos, len(it.Grid.Rows), it.Grid.NCol(), len(c.roles), c.nHeader, okOwn, why, roles)
 		for i := 0; i < len(it.Grid.Rows) && i < 8; i++ {
 			fmt.Printf("    RAW%d: %q\n", i, it.Grid.Rows[i])
 		}
