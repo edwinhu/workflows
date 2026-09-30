@@ -38,8 +38,14 @@ type screenTable struct {
 	// fracShares counts rows whose share count has a fractional part. A MUTUAL
 	// FUND's share register is fractional throughout, so two or more such rows
 	// make the fraction the table's convention rather than a mis-read column.
-	fracShares  int
-	isGraph     bool    // a stock-performance graph, not an ownership table
+	fracShares int
+	isGraph    bool // a stock-performance graph, not an ownership table
+	// prose marks a pseudo-table assembled by the PROSE reader: one row per
+	// sentence, each stating its own fund and its own outstanding total. The
+	// rules that compare one row's value against the rest of the COLUMN --
+	// implied outstanding total, a percent repeated down the column -- have no
+	// column to read here and only ever delete real holders.
+	prose       bool
 	medianTotal float64 // median shares/(pct/100) over the table's own rows
 	haveMedian  bool    //
 	// Per CLASS medians. A multi-class or per-fund table has one outstanding
@@ -271,6 +277,9 @@ func screenTables(rows []Row) map[int]*screenTable {
 				t.pctRepeats[*r.Percent]++
 			}
 		}
+		if r.Parser == "text_prose" {
+			t.prose = true
+		}
 		if r.Shares != nil && *r.Shares != math.Trunc(*r.Shares) {
 			t.fracShares++
 		}
@@ -375,7 +384,7 @@ func screenDropWhy(r Row, t *screenTable) string {
 	// count is fractional by convention (Oakmark 2016: 55 correctly aligned rows,
 	// each with its fund, its class and its percent, all discarded by this rule).
 	// Two or more fractional rows in one table is the convention, not a mis-read.
-	if r.Shares != nil && *r.Shares != math.Trunc(*r.Shares) && !(t != nil && t.fracShares >= 2) {
+	if r.Shares != nil && *r.Shares != math.Trunc(*r.Shares) && !(t != nil && (t.fracShares >= 2 || t.prose)) {
 		return "fractional_shares"
 	}
 	if r.Percent == nil {
@@ -383,13 +392,13 @@ func screenDropWhy(r Row, t *screenTable) string {
 	}
 	// Three or more distinct holders in one table carrying the identical percent
 	// is one value broadcast down a mis-aligned column.
-	if t != nil && t.pctRepeats[*r.Percent] >= 3 {
+	if t != nil && !t.prose && t.pctRepeats[*r.Percent] >= 3 {
 		return "pct_repeats"
 	}
 	// shares and percent must imply the same outstanding total as the rest of
 	// the table. An order-of-magnitude miss means the two cells are from
 	// different columns.
-	if t != nil && t.haveMedian && r.Shares != nil && *r.Shares > 0 && *r.Percent > 0 {
+	if t != nil && !t.prose && t.haveMedian && r.Shares != nil && *r.Shares > 0 && *r.Percent > 0 {
 		med, ok := t.medianTotal, true
 		if t.medianByClass != nil {
 			// Several classes in one table: the table-wide median is a mixture

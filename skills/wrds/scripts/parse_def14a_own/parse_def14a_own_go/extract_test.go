@@ -17,6 +17,14 @@ func run(t *testing.T, body string) []Row {
 	return rows
 }
 
+// runProse exercises the last-resort prose reader on its own: it is reached in
+// process() only when both table paths emit nothing.
+func runProse(t *testing.T, body string) []Row {
+	t.Helper()
+	base := Row{Accession: "acc", CIK: "cik", Company: "Co", FilingDate: "2010-01-01"}
+	return ScreenRows(ExtractProse(body, base))
+}
+
 func find(rows []Row, name, class string) *Row {
 	for i := range rows {
 		if rows[i].HolderName == name && (class == "" || rows[i].ShareClass == class) {
@@ -2959,5 +2967,171 @@ func TestGroupRowAloneInAContinuationTable(t *testing.T) {
 	}
 	if find(rows, "William P. Sullivan", "") == nil {
 		t.Errorf("a person row was lost: %+v", rows)
+	}
+}
+
+// A FUND PROXY OFTEN HAS NO 5% TABLE AT ALL. The record holders are disclosed
+// in running prose, one sentence per holder, under a bare fund-name line:
+// "<holder>, <address>, which owned N shares (representing approximately P% of
+// the Fund's then outstanding shares)". Transcribed from
+// 0000728889-05-000687 (Oppenheimer/OFI Tremont 2005) and
+// 0000879569-99-000012 (the "N Class A Shares (P%)" variant), both of which
+// parsed to ZERO rows.
+const proseFivePercentText = `
+                      OFI Tremont Core Strategies Hedge Fund
+
+American Express Trust Company, as Trustee for The American Express Retirement
+Plan, 991 ACP Financial Center, Minneapolis, Minnesota 55747, which owned
+25,610.010 shares of the Fund (representing approximately 10.6% of the Fund's
+then outstanding shares).
+
+SCI Cash Balance Plan, 1929 Allen Parkway, Houston, Texas 77070, which owned
+24,662.463 shares of the Fund (representing approximately 10.2% of the Fund's
+then outstanding shares).
+
+                     Oppenheimer International Value Fund
+
+Merrill Lynch, Pierce, Fenner & Smith, Jacksonville, FL, on behalf of various
+customer accounts, owned approximately 1,343,257 Class A Shares (9.26% of the
+outstanding Class A Shares).
+`
+
+func TestProseFivePercentHoldersRecovered(t *testing.T) {
+	rows := runProse(t, proseFivePercentText)
+	if len(rows) != 3 {
+		t.Fatalf("want 3 prose holder rows, got %d: %+v", len(rows), rows)
+	}
+	for _, c := range []struct {
+		name   string
+		shares float64
+		pct    float64
+	}{
+		{"American Express Trust Company", 25610.010, 10.6},
+		{"SCI Cash Balance Plan", 24662.463, 10.2},
+		{"Merrill Lynch", 1343257, 9.26},
+	} {
+		var got *Row
+		for i := range rows {
+			if strings.HasPrefix(rows[i].HolderName, c.name) {
+				got = &rows[i]
+				break
+			}
+		}
+		if got == nil {
+			t.Fatalf("no row whose name starts %q: %+v", c.name, rows)
+		}
+		if got.Shares == nil || *got.Shares != c.shares {
+			t.Errorf("%s: shares = %v, want %v", c.name, got.Shares, c.shares)
+		}
+		if got.Percent == nil || *got.Percent != c.pct {
+			t.Errorf("%s: percent = %v, want %v", c.name, got.Percent, c.pct)
+		}
+	}
+}
+
+// The prose reader must not fire on a partnership's impairment schedule, whose
+// "(50% owned)" parentheticals and dollar carrying values match a careless
+// share-and-percent rule. Transcribed from 0000950136-01-000330.
+const proseNotOwnershipText = `
+                     DESCRIPTION                 CARRYING VALUE   IMPAIRMENT
+
+Century Park I Office Complex, Kearny Mesa, California (50% owned)
+$15,923,305      $11,700,000      $4,223,305
+568 Broadway Office Building, New York, New York (38.925% owned)
+$15,696,401      $10,821,150      $4,875,251
+`
+
+func TestProseReaderIgnoresNonOwnershipProse(t *testing.T) {
+	if rows := runProse(t, proseNotOwnershipText); len(rows) != 0 {
+		t.Fatalf("want 0 rows, got %d: %+v", len(rows), rows)
+	}
+}
+
+// Three name defects the first prose cut produced, transcribed from the
+// filings that showed them: an initialism read as a sentence end
+// (0000728889-05-000687, "The H.E.B. Savings & Retirement Plan Trust"), a
+// middle initial read the same way (0000879569-99-000012, "William M.
+// Whitmire"), a PO box the address cut kept (0000896923-96-000003, "Cede &
+// Co., P.O. Box 20"), and a group total whose sentence opens with a date
+// (0000950137-02-003588).
+const proseNameEdgesText = `
+The H.E.B. Savings & Retirement Plan Trust, 646 South Main Avenue, San Antonio,
+Texas 78204, which owned 5,407.391 shares of the Fund (representing
+approximately 7.2% of the Fund's then outstanding shares).
+
+Mr. William M. Whitmire, Atlanta, GA, owned approximately 1,705,148 Class A
+Shares (15.42% of the outstanding Class A Shares).
+
+Cede & Co., P.O. Box 20, Bowling Green Station, New York, New York 10004, owned
+of record 13,926,999 shares or 97.34% of the outstanding Common Stock.
+
+On February 28, 2002, the Trustees and executive officers of the Funds as a
+group beneficially owned 424,520 shares, or less than 1% of the outstanding
+shares of the Funds.
+`
+
+func TestProseHolderNameEdges(t *testing.T) {
+	rows := runProse(t, proseNameEdgesText)
+	want := []struct {
+		name  string
+		group bool
+	}{
+		{"The H.E.B. Savings & Retirement Plan Trust", false},
+		{"William M. Whitmire", false},
+		{"Cede & Co.", false},
+		{"the Trustees and executive officers of the Funds as a group", true},
+	}
+	if len(rows) != len(want) {
+		t.Fatalf("want %d rows, got %d: %+v", len(want), len(rows), rows)
+	}
+	for i, w := range want {
+		if rows[i].HolderName != w.name {
+			t.Errorf("row %d name = %q, want %q", i, rows[i].HolderName, w.name)
+		}
+		if rows[i].IsGroupRow != w.group {
+			t.Errorf("row %d is_group_row = %v, want %v", i, rows[i].IsGroupRow, w.group)
+		}
+	}
+}
+
+// A FUND'S D&O AGGREGATE, STATED IN PROSE AND NOWHERE ELSE. The collective
+// label is "the Trustees and officers of the Fund", which the table path's
+// collective nouns deliberately do not carry ("Trustees of the X Pension
+// Trust" is a real holder), and the percent is "less than 1%", which is a
+// MARKER and not the number 1. Transcribed from 0000865177-94-000007 and
+// 0000081259-96-000011, both of which parsed to zero rows.
+const proseTrusteeGroupText = `
+As of March 15, 1994, the Trustees and officers of the Fund owned in the
+aggregate 82,058 Class A shares of the Fund comprising less than 1% of the
+outstanding shares.
+
+As of March 15, 1996, the Trustees and officers of the fund owned a total of
+579,458 shares of the fund, comprising 2.4% of the outstanding shares.
+`
+
+func TestProseTrusteeGroupTotal(t *testing.T) {
+	rows := runProse(t, proseTrusteeGroupText)
+	if len(rows) != 2 {
+		t.Fatalf("want 2 rows, got %d: %+v", len(rows), rows)
+	}
+	if s := rows[1]; s.Shares == nil || *s.Shares != 579458 || !s.IsGroupRow ||
+		s.Percent == nil || *s.Percent != 2.4 {
+		t.Errorf("\"owned a total of\" row = %+v", s)
+	}
+	r := rows[0]
+	if !r.IsGroupRow {
+		t.Errorf("is_group_row = false, want true (name %q)", r.HolderName)
+	}
+	if r.HolderName != "the Trustees and officers of the Fund" {
+		t.Errorf("name = %q", r.HolderName)
+	}
+	if r.Shares == nil || *r.Shares != 82058 {
+		t.Errorf("shares = %v, want 82058", r.Shares)
+	}
+	if r.Percent != nil {
+		t.Errorf("percent = %v, want nil: \"less than 1%%\" is a marker", *r.Percent)
+	}
+	if r.PctMarker != "<1%" {
+		t.Errorf("percent_marker = %q, want %q", r.PctMarker, "<1%")
 	}
 }
