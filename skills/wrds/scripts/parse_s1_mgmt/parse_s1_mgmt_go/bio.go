@@ -14,6 +14,8 @@ package main
 import (
 	"regexp"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 )
 
 var reNonAlnum = regexp.MustCompile(`[^a-z0-9]+`)
@@ -21,6 +23,40 @@ var reNonAlnum = regexp.MustCompile(`[^a-z0-9]+`)
 // nameKey folds a name or a block of prose to the form the matcher compares on.
 func nameKey(s string) string {
 	return reNonAlnum.ReplaceAllString(strings.ToLower(charFix.Replace(s)), "")
+}
+
+// The letters a filing hangs off a name. They are dropped from BOTH sides of the
+// comparison because the table and the bio disagree about which ones to print:
+// Kinnate's table says "Carl Gordon, Ph.D." while his bio opens "Carl Gordon,
+// CFA, Ph.D ." and Ironwood's table says "Bryan E. Roberts, Ph.D." while his bio
+// opens with no credential at all.
+//
+// "M.S." and "B.S." are deliberately absent: the pattern would eat the "Ms."
+// that opens half the post-2015 bios.
+var reCredential = regexp.MustCompile(`(?i)\b(?:Ph\.?\s*D|M\.?B\.?A|M\.?D|D\.?V\.?M|` +
+	`Pharm\.?\s*D|D\.?Phil|Sc\.?D|D\.?Sc|M\.?Sc|M\.?P\.?H|LL\.?[BM]|J\.?D|` +
+	`C\.?F\.?A|C\.?P\.?A|C\.?F\.?P|R\.?Ph|Esq|Jr|Sr|I{2,3}|IV)\b\.?`)
+
+// coreKey is nameKey over the tokens that identify the person and nothing else:
+// the credentials above and every single-character token are dropped, so a
+// middle initial the table omits and the bio prints ("Robert Goodman" against
+// "Robert P. Goodman") no longer breaks the prefix test. The token count is
+// returned with it because a one-token core is a surname, and a surname is what
+// every CONTINUATION block of a bio starts with.
+func coreKey(s string) (string, int) {
+	s = reCredential.ReplaceAllString(charFix.Replace(s), " ")
+	var b strings.Builder
+	n := 0
+	for _, f := range strings.FieldsFunc(s, func(r rune) bool {
+		return !unicode.IsLetter(r) && !unicode.IsDigit(r)
+	}) {
+		if utf8.RuneCountInString(f) < 2 {
+			continue
+		}
+		b.WriteString(strings.ToLower(f))
+		n++
+	}
+	return b.String(), n
 }
 
 // reBioLeadIn matches the post-2015 convention's opening: one to four
@@ -43,9 +79,13 @@ func attachBios(persons []Person, blocks []string) {
 		return
 	}
 	keys := make([]string, len(persons))
+	cores := make([]string, len(persons))
 	surnames := make([]string, len(persons))
 	for i, p := range persons {
 		keys[i] = nameKey(p.Name)
+		if c, n := coreKey(p.Name); n >= 2 {
+			cores[i] = c
+		}
 		if f := strings.Fields(p.Name); len(f) > 0 {
 			surnames[i] = nameKey(f[len(f)-1])
 		}
@@ -69,7 +109,7 @@ func attachBios(persons []Person, blocks []string) {
 	}
 
 	for _, b := range joined {
-		if who := matchPerson(b, keys, surnames, parts); who >= 0 {
+		if who := matchPerson(b, keys, cores, surnames, parts); who >= 0 {
 			current = who
 			parts[who] = append(parts[who], b)
 			continue
@@ -107,7 +147,10 @@ func isPartialName(key string, keys []string) bool {
 }
 
 // matchPerson reports which person a block opens the bio of, or -1.
-func matchPerson(block string, keys, surnames []string, parts [][]string) int {
+//
+// The three routes are tried in order of how much of the name they insist on, so
+// a relaxation can only claim a block the stricter route left unclaimed.
+func matchPerson(block string, keys, cores, surnames []string, parts [][]string) int {
 	key := nameKey(block)
 	best := -1
 	for i, k := range keys {
@@ -120,6 +163,19 @@ func matchPerson(block string, keys, surnames []string, parts [][]string) int {
 	}
 	if best >= 0 {
 		return best
+	}
+	if ck, _ := coreKey(block); ck != "" {
+		for i, c := range cores {
+			if c == "" || len(parts[i]) > 0 || !strings.HasPrefix(ck, c) {
+				continue
+			}
+			if best < 0 || len(c) > len(cores[best]) {
+				best = i
+			}
+		}
+		if best >= 0 {
+			return best
+		}
 	}
 	m := reBioLeadIn.FindStringSubmatch(block)
 	if m == nil {
