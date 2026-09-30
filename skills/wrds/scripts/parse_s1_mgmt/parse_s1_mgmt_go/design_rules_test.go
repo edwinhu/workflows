@@ -966,3 +966,75 @@ func TestRule7_FirmNameIsNeverABareNumber(t *testing.T) {
 		}
 	}
 }
+
+// A firm whose own NAME ends in "Venture"/"Ventures" needs no appositive: the
+// filing has already said what kind of firm it is. The dictionary route cannot
+// reach these because the dictionary is a list of specific firms — "Versant
+// Ventures" is in it and "Versant Venture Management, LLC" is not, and neither
+// "Quaker BioVentures" nor "Biobank Technology Ventures" ever will be.
+//
+// The token, not the word "Capital": "Ventures" in a name is evidence, while
+// "Capital" is not (Bridgemere Capital, Skoll Engineering). Three guards keep
+// the route honest — a past-tense marker in the clause introducing the role, a
+// "corporate venture" appositive (gold does not count a fund run inside Merck
+// or AstraZeneca), and an "investment committee" seat, which is not a
+// partner-grade role at the firm.
+//
+// Bios are quoted verbatim from the accession named on each line, and exercised
+// through detectVC because check_full.sh re-cuts every fixture from a source
+// filing this corpus does not hold.
+func TestRule7_VentureInTheFirmNameIsTheLabel(t *testing.T) {
+	positive := []struct{ accession, bio, firm string }{
+		{"0000891618-96-002428",
+			"From September 1991 to the present, Mr. Tai has been a general partner of the Walden Group of Venture Capital Funds. Concurrently, from August 1995 to the present, he has been Chairman and Chief Executive Officer of AUNET Corporation.",
+			"Walden Group of Venture Capital Funds"},
+		{"0000892569-03-002445",
+			"Since 1990, Dr. Royston has served as a partner at Forward Ventures, a firm he co-founded, and is currently Managing Member of that firm.",
+			"Forward Ventures"},
+		{"0000936392-00-000157",
+			"Mr. Loarie is currently a managing member of Morgan Stanley Venture Partners III, L.L.C. and Morgan Stanley Dean Witter Venture Partners IV, L.L.C.",
+			"Morgan Stanley Venture Partners"},
+		{"0000950123-07-008163",
+			"Mr. Neff is a founding partner and has served as managing partner of Quaker BioVentures, L.P. since 2002.",
+			"Quaker BioVentures"},
+		{"0000950123-12-002923",
+			"Mr. Brandys is the President and managing member of Biobank Technology Ventures, LLC, an early-stage life sciences investment company which he co-founded in 2001.",
+			"Biobank Technology Ventures"},
+		{"0001193125-20-167812",
+			"Mr. Rhodes has been a partner at Atlas Venture since 2014.",
+			"Atlas Venture"},
+		{"0001193125-21-199386",
+			"Dr. Bolzon has served as Chairman and Managing Director of Versant Venture Management, LLC, where he has been employed since May 2004.",
+			"Versant Venture Management"},
+		{"0001193125-21-230254",
+			"Dr. Parmar is currently a Member of 5AM Venture Management, LLC, where he has worked since 2010.",
+			"5AM Venture Management"},
+	}
+	for _, c := range positive {
+		t.Run("yes/"+c.firm, func(t *testing.T) {
+			ok, firm, ev := detectVC(c.bio)
+			if !ok {
+				t.Fatalf("%s: vc_affiliated = false, want true", c.accession)
+			}
+			if !containsFold(firm, c.firm) {
+				t.Errorf("%s: vc_firm = %q, want it to name %q (evidence %q)", c.accession, firm, c.firm, ev)
+			}
+		})
+	}
+
+	negative := []struct{ accession, why, bio string }{
+		{"0001047469-13-010949", "an investment-committee seat is not a partner-grade role at the firm",
+			"From January 2011 to May 2013, Mr. Saran was Senior Vice President, Corporate Development & Ventures of MedImmune and a member of the MedImmune Ventures investment committee, and from September 2008 to January 2011, he served as the Vice President of Corporate Development."},
+		{"0001193125-21-031436", "a corporate venture fund run inside Merck",
+			"Dr. Resnick previously served as a Partner at SV Health Investors from January 2016 to September 2018 and as President and Managing Partner at MRL Ventures Fund, an early-stage therapeutics-focused corporate venture fund that he built and managed within Merck & Co., from 2014 to January 2016."},
+		{"0001193125-07-265545", "the general partnership is in the past",
+			"Mr. Saalfield was a General Partner of Fleet Financial Group's venture capital funds, Fleet Venture Partners I-IV from 1994 to 1999."},
+	}
+	for _, c := range negative {
+		t.Run("no/"+c.why, func(t *testing.T) {
+			if ok, firm, ev := detectVC(c.bio); ok {
+				t.Errorf("%s: vc_affiliated = true, want false (firm=%q evidence=%q)", c.accession, firm, ev)
+			}
+		})
+	}
+}
