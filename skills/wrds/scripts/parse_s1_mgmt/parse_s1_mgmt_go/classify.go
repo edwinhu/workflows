@@ -601,9 +601,16 @@ var (
 	//
 	// The parenthetical form must have whitespace right after the ")": a comma
 	// there is the ordinary appositive, which the two appositive routes own.
-	reVCPostLabel = regexp.MustCompile(`(?i)(?:\)|,?\s+(?:each\s+of\s+)?which\s+(?:is|are))\s+` +
+	//
+	// The relative clause can also state the firm's business instead of its
+	// kind — "AsiaVest Partners, TCW/YFY (Taiwan), Ltd., which specializes in
+	// venture capital investment" (0000950130-03-004056) — so the copula
+	// alternates with specializes/focuses and the head noun with the activity
+	// nouns those verbs take. "venture capital" still has to be there in words.
+	reVCPostLabel = regexp.MustCompile(`(?i)(?:\)|,?\s+(?:each\s+of\s+)?which\s+` +
+		`(?:is|are|specializes?\s+in|focus(?:es)?\s+on))\s+` +
 		`(?:[a-z/-]+\s+){0,3}venture(?:\s+(?:capital|investment|growth|equity))*` +
-		`(?:\s+[a-z/-]+){0,3}\s+(?:firm|funds?|partnership|investor|compan(?:y|ies))\b`)
+		`(?:\s+[a-z/-]+){0,3}\s+(?:firm|funds?|partnership|investor|compan(?:y|ies)|investments?|investing)\b`)
 
 	// A venture label written BEFORE the firm name, which no other route reads:
 	// "Co-Managing Partner of venture capital fund DCVC" (0001140361-21-013962),
