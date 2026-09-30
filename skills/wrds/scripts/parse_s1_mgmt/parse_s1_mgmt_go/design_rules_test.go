@@ -1843,3 +1843,119 @@ func TestRule2_ALongChiefTitleIsAnOfficerPosition(t *testing.T) {
 		t.Errorf("n_directors = %d, want 1", e.Filing.NDirectors)
 	}
 }
+
+// ---------------------------------------------------------------------------
+// Rule 4 — a bio may open with a bare honorific and a surname
+// ---------------------------------------------------------------------------
+
+// Object Design 1996 (0000950135-96-002496) writes EVERY bio in the section
+// with a bare honorific lead-in -- "Mr. Bay has been a director of the Company
+// since 1988." -- so the name never appears in the bio at all. All three of
+// attachBios' routes want a name: the prefix routes want the table's spelling
+// and reBioLeadIn wants "<Name>. Mr. <Surname>". Nothing matched, so every bio
+// in the filing fell through to `current` and piled onto the first officer,
+// leaving eleven of twelve people with no bio and both of the filing's VC
+// directors (Bay, Marks) unreachable.
+//
+// The second half of the same defect is tense: both VC bios date the
+// partnership "From 1980 to 1996" / "From 1984 to 1996" in a filing FILED in
+// 1996, and then say "has been", so reVCPastLead's closed-range alternative
+// read a present partnership as closed.
+//
+// Verbatim from the filing, officers between Goldman and Bay elided.
+const asciiHonorificLeadInExcerpt = `                                   MANAGEMENT
+ 
+EXECUTIVE OFFICERS AND DIRECTORS
+ 
+<TABLE>
+     The following table sets forth certain information with respect to the executive officers 
+and directors of the Company:
+<CAPTION>
+
+    NAME                             AGE                        POSITION
+    ----                             ---                        --------
+    <S>                               <C>  <C>
+    Robert N. Goldman..............   47   President, Chief Executive Officer and Director
+    Lacey P. Brandt................   38   Chief Financial Officer
+    Gerald B. Bay(1)...............   56   Director
+    Arthur J. Marks(2).............   51   Director
+    Tim R. Palmer(1)...............   38   Director
+    Steven C. Walske...............   44   Director
+<FN>
+ 
+- ---------------
+(1) Member of the Audit Committee
+</TABLE>
+ 
+     Mr. Goldman was elected President and Chief Executive Officer of the
+Company in November 1995. He has been a director of Object Design since August
+1995.
+ 
+     Ms. Brandt joined Object Design as Chief Financial Officer in April 1996.
+From September 1995 to April 1996, Ms. Brandt served as Director of Finance,
+Controller and Treasurer of International Integration Inc., a systems
+integration company.
+ 
+     Mr. Bay has been a director of the Company since 1988. From 1980 to 1996,
+Mr. Bay has a been Managing Partner of The Vista Group, a venture capital firm.
+Mr. Bay served as interim President of the Company from August to November 1995.
+ 
+     Mr. Marks has been a director of the Company since 1990. From 1984 to 1996,
+Mr. Marks has been a General Partner of New Enterprise Associates, a venture
+capital firm. Mr. Marks is a director of AMISYS Managed Care Systems, Inc.,
+Platinum Software, Inc., NETRIX Corporation, and Progress Software Corporation.
+ 
+     Mr. Palmer has been a director of the Company since February 1996. Since
+1990, Mr. Palmer has held several positions at the Harvard Private Capital
+Group, Inc., most recently as Managing Director.
+ 
+     Mr. Walske has been a director of the Company since 1994. Since 1994, Mr.
+Walske has been Chairman of the Board and Chief Executive Officer of Parametric
+Technology Corporation, a mechanical design automation software firm.
+`
+
+func TestRule4_BareHonorificLeadInAttachesTheBio(t *testing.T) {
+	raw := sgmlHeaderFor("OBJECT DESIGN INC") +
+		sgmlDoc("424B4", asciiHonorificLeadInExcerpt+"\nEXECUTIVE COMPENSATION\n")
+	e := ExtractManagement([]byte(raw))
+	if e.Filing.Status != StatusOK {
+		t.Fatalf("status = %q, want %q", e.Filing.Status, StatusOK)
+	}
+	for _, c := range []struct{ name, want string }{
+		{"Robert N. Goldman", "was elected President and Chief Executive Officer"},
+		{"Lacey P. Brandt", "joined Object Design as Chief Financial Officer"},
+		{"Gerald B. Bay", "Managing Partner of The Vista Group"},
+		{"Arthur J. Marks", "General Partner of New Enterprise Associates"},
+		{"Tim R. Palmer", "Harvard Private Capital"},
+		{"Steven C. Walske", "Chairman of the Board and Chief Executive Officer of Parametric"},
+	} {
+		p := person(t, e, c.name)
+		if !containsFold(p.Bio, c.want) {
+			t.Errorf("%s bio = %q, want it to carry %q", c.name, squash(p.Bio), c.want)
+		}
+	}
+	// No bio may bleed past its own person.
+	if g := person(t, e, "Robert N. Goldman"); containsFold(g.Bio, "Vista Group") {
+		t.Errorf("Bay's bio landed on Goldman: %q", squash(g.Bio))
+	}
+	// A closed range that ends in the filing year, followed by "has been", is a
+	// present partnership.
+	for _, c := range []struct{ name, firm string }{
+		{"Gerald B. Bay", "Vista Group"},
+		{"Arthur J. Marks", "New Enterprise Associates"},
+	} {
+		p := person(t, e, c.name)
+		if !p.VCAffiliated {
+			t.Errorf("%s vc = false, want true (bio=%q)", c.name, squash(p.Bio))
+		} else if !containsFold(p.VCFirm, c.firm) {
+			t.Errorf("%s vc firm = %q, want %q", c.name, squash(p.VCFirm), c.firm)
+		}
+	}
+	// Palmer's Harvard endowment arm and Walske's software company are not
+	// venture firms, and Goldman's own bio names no firm at all.
+	for _, n := range []string{"Robert N. Goldman", "Lacey P. Brandt", "Tim R. Palmer", "Steven C. Walske"} {
+		if p := person(t, e, n); p.VCAffiliated {
+			t.Errorf("%s vc = true off %q", n, squash(p.VCEvidence))
+		}
+	}
+}
