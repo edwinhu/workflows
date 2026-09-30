@@ -1418,8 +1418,28 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 		} else if name != "" {
 			lastName = name
 		}
+		// The collective label of the D&O group total is sometimes written in the
+		// STUB column that names each block's population, with the HOLDER column
+		// left empty. Read strictly: only the unambiguous collective labels
+		// count off a cell that is not the holder column, or the stub itself
+		// ("Directors (including nominees)") turns every person row into a group.
 		if name == "" || !hasWords(name, 1) || reSkipName.MatchString(name) {
-			continue
+			rescued := ""
+			for j, cell := range r {
+				if j == nc || c.roles[j].role == "shares" || c.roles[j].role == "pct" {
+					continue
+				}
+				if t := flat(cell); t != "" {
+					if ok, _ := isStrongGroupRow(t); ok {
+						rescued = t
+						break
+					}
+				}
+			}
+			if rescued == "" {
+				continue
+			}
+			name, fns = StripFootnotes(rescued)
 		}
 		// Still nothing but an address after the two recovery attempts above:
 		// the cell names no holder.

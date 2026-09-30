@@ -139,12 +139,18 @@ func screenNames(rows []Row) []Row {
 		}
 		screenRepairPair(&r)
 		if screenNoHolder(strings.TrimSpace(r.HolderName)) {
+			if screenDropReasons != nil {
+				screenDropReasons["no_holder"]++
+			}
 			continue
 		}
 		// A registrant that files a DEF 14A has public voting shareholders, so a
 		// single non-group holder of exactly 100.00% of a class is never the
 		// common stock the proxy solicits: it is another class, or a total.
 		if r.Percent != nil && *r.Percent == 100.0 {
+			if screenDropReasons != nil {
+				screenDropReasons["pct_100"]++
+			}
 			continue
 		}
 		// One holder, one row per filing. The 5% table and the D&O table
@@ -152,6 +158,9 @@ func screenNames(rows []Row) []Row {
 		if r.Percent != nil {
 			sig := screenFold(r.HolderName) + "|" + strconv.FormatFloat(*r.Percent, 'f', -1, 64)
 			if seen[sig] {
+				if screenDropReasons != nil {
+					screenDropReasons["same_holder_pct"]++
+				}
 				continue
 			}
 			seen[sig] = true
@@ -315,40 +324,54 @@ func screenClassKey(r Row) string {
 }
 
 func screenDrop(r Row, t *screenTable) bool {
+	why := screenDropWhy(r, t)
+	if why != "" && screenDropReasons != nil {
+		screenDropReasons[why]++
+	}
+	return why != ""
+}
+
+// screenDropReasons, when non-nil, tallies which screen rule dropped each row.
+// Set by the -debug path only; nil in the pipeline.
+var screenDropReasons map[string]int
+
+func screenDropWhy(r Row, t *screenTable) string {
 	if r.IsGroupRow {
-		return false
+		return ""
 	}
 	if t != nil && t.isGraph {
-		return true
+		return "is_graph"
 	}
 	name := strings.TrimSpace(r.HolderName)
 	switch {
 	case reScreenIndex.MatchString(name), reScreenDate.MatchString(name):
-		return true
+		return "index_or_date"
 	case reScreenProse.MatchString(name):
-		return true
+		return "prose"
 	case reScreenForeign.MatchString(name):
-		return true
-	case reScreenNonCommon.MatchString(name), reScreenNonCommon.MatchString(r.ShareClass):
-		return true
+		return "foreign"
+	case reScreenNonCommon.MatchString(name):
+		return "non_common_name"
+	case reScreenNonCommon.MatchString(r.ShareClass):
+		return "non_common_class"
 	}
 	// A holder name never starts with a lower-case letter; a name that does is
 	// the tail of a wrapped prose line.
 	if name != "" && name[0] >= 'a' && name[0] <= 'z' {
-		return true
+		return "lowercase_name"
 	}
 	// A fractional share count means the name cell absorbed the shares column,
 	// so whatever was read as the percent came from somewhere else.
 	if r.Shares != nil && *r.Shares != math.Trunc(*r.Shares) {
-		return true
+		return "fractional_shares"
 	}
 	if r.Percent == nil {
-		return false
+		return ""
 	}
 	// Three or more distinct holders in one table carrying the identical percent
 	// is one value broadcast down a mis-aligned column.
 	if t != nil && t.pctRepeats[*r.Percent] >= 3 {
-		return true
+		return "pct_repeats"
 	}
 	// shares and percent must imply the same outstanding total as the rest of
 	// the table. An order-of-magnitude miss means the two cells are from
@@ -364,9 +387,9 @@ func screenDrop(r Row, t *screenTable) bool {
 		if ok {
 			ratio := (*r.Shares / (*r.Percent / 100.0)) / med
 			if ratio > 5.0 || ratio < 0.2 {
-				return true
+				return "implied_total_off"
 			}
 		}
 	}
-	return false
+	return ""
 }
