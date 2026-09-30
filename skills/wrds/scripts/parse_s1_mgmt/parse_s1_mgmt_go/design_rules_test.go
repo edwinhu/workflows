@@ -1526,3 +1526,59 @@ func TestRule1_SecondPersonTableInTheSectionIsRead(t *testing.T) {
 		}
 	}
 }
+
+// Beyond Meat (0001628280-19-005740) writes every board seat as "Board Member"
+// and nothing else, under a label — "Executive Officers and Directors" — that
+// names both sides and so settles nothing. The Position fallback therefore
+// decides, and a board seat spelled without the word "director" must still
+// read as one: ten rows landed section=unknown, which drops them out of
+// n_directors and out of the VC-director count even when their own bio names a
+// venture capital firm.
+func TestRule2_BoardMemberIsADirectorPosition(t *testing.T) {
+	body := `<HTML><BODY>
+<P ALIGN="center"><B>MANAGEMENT</B></P>
+<P><B>Executive Officers and Directors</B></P>
+<P>The following table sets forth information regarding our executive officers and directors as of March 30, 2019.</P>
+<TABLE>
+<TR><TD>Name</TD><TD>Age</TD><TD>Position</TD></TR>
+<TR><TD>Ethan Brown</TD><TD>47</TD><TD>President and Chief Executive Officer, Board Member</TD></TR>
+<TR><TD>Mark J. Nelson</TD><TD>50</TD><TD>Chief Financial Officer, Treasurer and Secretary</TD></TR>
+<TR><TD>Gregory Bohlen</TD><TD>59</TD><TD>Board Member</TD></TR>
+<TR><TD>Diane Carhart</TD><TD>64</TD><TD>Board Member</TD></TR>
+</TABLE>
+<P>Ethan Brown has served as our President and Chief Executive Officer since 2011.</P>
+<P>Mark J. Nelson has served as our Chief Financial Officer since 2017.</P>
+<P>Gregory Bohlen has served as a member of our board of directors since February 2013. Mr. Bohlen co-founded Union Grove Venture Partners, a venture capital firm, in March 2014 and serves as a Managing Partner.</P>
+<P>Diane Carhart has served as a member of our board of directors since February 2016.</P>
+</BODY></HTML>`
+	e := ExtractManagement([]byte(sgmlHeader + sgmlDoc("424B4", body)))
+	if e.Filing.Status != StatusOK {
+		t.Fatalf("status = %q, want %q", e.Filing.Status, StatusOK)
+	}
+	// A cell naming an executive office AND a board seat is still an officer:
+	// Brown's "President and Chief Executive Officer, Board Member" must not be
+	// pulled over to the director side by the new alternative.
+	for _, c := range []struct{ name, section string }{
+		{"Ethan Brown", SectionOfficer},
+		{"Mark J. Nelson", SectionOfficer},
+		{"Gregory Bohlen", SectionDirector},
+		{"Diane Carhart", SectionDirector},
+	} {
+		if p := person(t, e, c.name); p.Section != c.section {
+			t.Errorf("%s section = %q, want %q (position=%q)",
+				c.name, p.Section, c.section, squash(p.Position))
+		}
+	}
+	if e.Filing.NDirectors != 2 {
+		t.Errorf("n_directors = %d, want 2", e.Filing.NDirectors)
+	}
+	// Bohlen's own bio labels Union Grove, so the only thing that kept him out
+	// of the VC-director count was the unknown section.
+	bohlen := person(t, e, "Gregory Bohlen")
+	if !bohlen.VCAffiliated {
+		t.Fatalf("Gregory Bohlen vc_affiliated = false, want true (bio: %q)", squash(bohlen.Bio))
+	}
+	if e.Filing.NVCDirectors != 1 {
+		t.Errorf("n_vc_directors = %d, want 1", e.Filing.NVCDirectors)
+	}
+}
