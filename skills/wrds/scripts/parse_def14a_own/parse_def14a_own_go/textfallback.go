@@ -232,6 +232,55 @@ func commaNums(rest string) []string {
 	return out
 }
 
+// stackedClassHoldings pairs a shares-only line with the percent line directly
+// below it. Each value column must have its own class and an overlapping percent;
+// an address may occupy the stub of the percent line, but never a new holder.
+func stackedClassHoldings(clean []string, ln, restStart int, rest string, hdr [][]hdrGroup) []holding {
+	if ln+1 >= len(clean) || len(clean[ln+1]) <= restStart {
+		return nil
+	}
+	prefix := strings.TrimSpace(clean[ln+1][:restStart])
+	if prefix != "" && !isAddressLine(prefix) {
+		return nil
+	}
+	sharesText := reFootnote.ReplaceAllStringFunc(rest, func(m string) string { return strings.Repeat(" ", len(m)) })
+	percentText := clean[ln+1][restStart:]
+	ss := reNumTok.FindAllStringIndex(sharesText, -1)
+	pp := reNumTok.FindAllStringIndex(percentText, -1)
+	if len(ss) < 2 || len(ss) != len(pp) || strings.TrimSpace(reNumTok.ReplaceAllString(sharesText, "")) != "" || strings.TrimSpace(reNumTok.ReplaceAllString(percentText, "")) != "" {
+		return nil
+	}
+	classes := map[string]bool{}
+	var out []holding
+	for k, s := range ss {
+		t := strings.TrimSpace(sharesText[s[0]:s[1]])
+		p := pp[k]
+		pt := strings.TrimSpace(percentText[p[0]:p[1]])
+		if strings.ContainsAny(t, ".%*") || (!strings.HasSuffix(pt, "%") && pt != "*") || s[0] >= p[1] || p[0] >= s[1] {
+			return nil
+		}
+		v, ok := ParseShares(t)
+		if !ok {
+			return nil
+		}
+		c := textColLabel(hdr, restStart+s[0], restStart+s[1])
+		if c == "" || classes[c] {
+			return nil
+		}
+		classes[c] = true
+		pct, parsed, marker, _ := ParsePercent(pt)
+		if !parsed && marker == "" {
+			return nil
+		}
+		h := holding{shares: &v, marker: marker, lo: s[0], hi: s[1]}
+		if parsed {
+			h.pct = &pct
+		}
+		out = append(out, h)
+	}
+	return out
+}
+
 func stripEntities(s string) string {
 	return strings.NewReplacer("&nbsp;", " ", "&amp;", "&", "&lt;", "<", "&gt;", ">",
 		"&quot;", "\"", "&#151;", "-", "&#150;", "-").Replace(s)
@@ -426,7 +475,11 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 		// The class column's last value, forward-filled over the rows that leave
 		// it blank. Local to the block, which is one fund's table.
 		lastColClass := ""
+		percentContinuations := map[int]bool{}
 		for _, ln := range block {
+			if percentContinuations[ln] {
+				continue
+			}
 			consumed[ln] = true
 			name, rest, restStart, ok := parseTextRowAt(clean[ln])
 			if !ok {
@@ -505,6 +558,13 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 				}
 			}
 			cells := textTokens(rest)
+			if len(cells) == 1 && cells[0].pct == nil && cells[0].marker == "" {
+				if stacked := stackedClassHoldings(clean, ln, restStart, rest, hdrRows); len(stacked) > 0 {
+					cells = stacked
+					percentContinuations[ln+1] = true
+					consumed[ln+1] = true
+				}
+			}
 			// One ASCII line is one holding unless it carries two COMPLETE
 			// (shares + percent) pairs, which is what a genuine two-class row
 			// looks like. Otherwise the extra percent tokens are the voting-
@@ -1014,9 +1074,10 @@ func textSeriesLabels(clean []string, series []string) []string {
 var reLeadClassCol = regexp.MustCompile(`(?i)^((?:[A-Z][\w.&/-]*\s+){0,3}(?:shares|class\s+[a-z0-9]+|series\s+[a-z0-9]+))\s*:\s{2,}(\S.*)$`)
 
 var reTextStickyLabel = regexp.MustCompile(`(?i)^[A-Z0-9][\w.,'&()/ -]{0,58}?\b(?:class|classes|shares|portfolio|fund|series|trust)\s*:?$`)
+var reTextStickyProse = regexp.MustCompile(`(?i)\b(?:was|were|is|are|be)\s+(?:deemed|known)\b`)
 
 func textStickyLabel(t string) bool {
-	if !reTextStickyLabel.MatchString(t) {
+	if !reTextStickyLabel.MatchString(t) || reTextStickyProse.MatchString(t) {
 		return false
 	}
 	// Two header columns flattened into one line can end in "shares".
