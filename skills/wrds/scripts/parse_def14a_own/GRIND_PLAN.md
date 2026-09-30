@@ -218,12 +218,16 @@ file the lock covers.
 **The gate** (cheap, shell-only; while it is red no model call is spent):
 
 ```bash
-test -f /data/def14a_own/work/out/round-ready
+bash /home/eh/projects/workflows/skills/wrds/scripts/parse_def14a_own/gate.sh
 ```
 
-`run_baseline.sh` removes that marker when it starts a grid pass and re-creates
-it after the fetch and score, so the gate is red exactly while a round is in
-flight.
+Was `test -f /data/def14a_own/work/out/round-ready`, and that form **deadlocked twice
+on 2026-09-29**: an iteration ended while its round was queued, `qsub -sync y` died with
+the process group, and nothing was left alive to re-create the marker. `gate.sh` asks the
+grid and the process table instead of trusting a process to survive, and re-creates the
+marker itself when a round is provably orphaned. Full exit-code table and the test: **§12
+below**. The running loop still carries the old `test -f` gate; switch `--gate` at its
+next relaunch.
 
 **The launch** (not run):
 
@@ -232,7 +236,7 @@ setsid nohup bash /home/eh/.claude/skills/workflows/skills/grind/scripts/grind.s
   --journal /data/def14a_own/work/grind.jsonl \
   --prompt-file /home/eh/projects/workflows/skills/wrds/scripts/parse_def14a_own/GRIND_PROMPT.md \
   --check 'bash /home/eh/projects/workflows/skills/wrds/scripts/parse_def14a_own/check.sh' \
-  --gate  'test -f /data/def14a_own/work/out/round-ready' \
+  --gate  'bash /home/eh/projects/workflows/skills/wrds/scripts/parse_def14a_own/gate.sh' \
   --sleep 300 --stall-after 6 --max-iters 120 \
   >/data/def14a_own/work/grind.log 2>&1 </dev/null &
 ```
@@ -1110,3 +1114,196 @@ shard-paired over the full archive (22,907 s → 29,683 s, 983 of 1,004 shards s
 worst on the late-era HTML shards), and a layout fix that re-walks the DOM can make
 that worse. A wall-time ceiling would pay the loop to stop parsing; a wall-time number
 in the journal is how the cost stays visible.
+
+## 12. AMENDMENT — 2026-09-30, a DURABLE GATE and a CORRECTED REGRESSION SET (operator, outside the loop)
+
+Two fixes, both outside the loop, neither touching a threshold. No grid round was run:
+the existing local parser output was re-scored.
+
+### 12.1 The gate no longer depends on a process that can be killed
+
+**What went wrong, twice on 2026-09-29.** A grind iteration ended while its round's SGE
+job was still queued. The iteration's process group died, `qsub -sync y` died with it,
+and `$DEF14A_WORK/out/round-ready` was therefore never re-created — so the loop waited
+forever on a marker no surviving process was going to write. The second time, the job
+was `40335943` (`def14a_py`), queued at 00:19 behind another project's `parsefull4`
+array. A gate whose open condition depends on a process that can be killed is not a
+gate; it is a deadlock with a timer.
+
+**What changed.** `run_baseline.sh` now records, BEFORE it starts waiting on anything:
+
+| file | contents |
+|---|---|
+| `$DEF14A_WORK/out/round-jobs.tsv` | `jobid <TAB> label <TAB> epoch`, one line per qsub, append-only |
+| `$DEF14A_WORK/out/round-state.json` | `pid`, `host`, `root`, `work`, `filelist`, `fetch_only`, `phase`, `job_ids`, timestamps |
+
+The recorder lives in `gate_lib.sh`, sourced by `run_baseline.sh`, so it is reachable by
+a test without a scheduler. It reads the qsub stream, passes it through **unchanged**
+(the pipeline stays a pipeline) and writes the job id the instant SGE prints it — which
+is *before* `-sync y` starts blocking. That timing is the whole point: a kill during the
+block still leaves the id on disk. Both SGE spellings are matched, `Your job 40335942`
+and `Your job-array 40335943.1-57:1`.
+
+Two smaller changes make the bookkeeping survivable and actionable:
+
+* the fetch step's clear-down is now `rm -f $WORK/out/*.tsv.gz`, **not** `rm -f
+  $WORK/out/*` — the state files live in that directory and are exactly what must not be
+  deleted by the round they describe;
+* `bash run_baseline.sh --fetch-only` skips build/stage/submit and runs only fetch and
+  score. That is how an orphaned round whose grid job *did* finish is brought home.
+
+### 12.2 The new gate command
+
+**Switch `--gate` to this at the loop's next relaunch** (the running loop still carries
+the old `test -f` gate; it is not being relaunched now):
+
+```bash
+bash /home/eh/projects/workflows/skills/wrds/scripts/parse_def14a_own/gate.sh
+```
+
+| exit | when |
+|---|---|
+| 0 | `out/round-ready` exists — the normal case, and it short-circuits everything below |
+| 1 | the recorded `run_baseline.sh` pid is still alive (checked via `/proc/<pid>/cmdline`, never `pgrep -f`, which matches the gate's own command line) |
+| 1 | a recorded SGE job id is still in `qstat` |
+| 1 | a job whose NAME matches `^def14a` is on the grid but is **not** in `round-jobs.tsv` — an un-recorded round, which is why switching the gate is safe even while `40335943` is still queued |
+| 1 | the scheduler could not be reached; a failed query is not evidence of a finished job |
+| 0 | nothing recorded and no `^def14a` job on the grid — nothing in flight, and **no marker is invented** |
+| 0 | **ORPHANED**: pid gone, recorded jobs gone, marker absent → re-creates `round-ready` and writes the reason to `out/round-orphaned` |
+
+Every branch prints why and appends the same line to `out/round-gate.log`. The orphan
+message names the last `phase` and says that if it was `array` or earlier the grid
+output was never fetched, so `bash run_baseline.sh --fetch-only` must run before any
+metric from that output is trusted — `gate.sh` itself never fetches and never scores.
+
+Verified against the REAL scheduler, 2026-09-30, read-only, throwaway `DEF14A_WORK`:
+
+```
+$ T=$(mktemp -d); mkdir -p $T/out; DEF14A_WORK=$T bash gate.sh
+gate: shut — a job matching ^def14a is on the grid but not in .../round-jobs.tsv:
+      40335943/def14a_py (an un-recorded round is in flight)
+EXIT=1
+```
+
+`qstat -u $USER` was also read directly to confirm the column assumptions: column 1 is
+the job-ID, column 3 the (10-char-truncated) job name.
+
+### 12.3 The gate test
+
+```bash
+bash /home/eh/projects/workflows/skills/wrds/scripts/parse_def14a_own/gate_test.sh   # 24 passed, 0 failed
+```
+
+A stubbed `qstat` (via `DEF14A_QSTAT`) and a throwaway `mktemp -d` work dir; it touches
+nothing else and needs no grid. Cases: **1** in-flight with a live pid → shut, no
+marker; **1b** pid already dead but the job still queued → still shut (the grid is doing
+the work); **2** finished normally → open, marker untouched, not reported as orphaned;
+**3** orphaned-and-finished → open, marker re-created, reason recorded, message names
+the `--fetch-only` remedy; **4** scheduler unreachable → shut, no marker invented;
+**5** nothing ever recorded → open, marker NOT invented; **5b** nothing recorded but a
+`def14a` job queued → shut; **6** the recorder in `gate_lib.sh` driven with verbatim SGE
+qsub output for both spellings, then read back by `gate.sh` end to end.
+
+### 12.4 The regression set is corrected; the 0.95 thresholds are NOT
+
+The loop filed two floors that measured, from the panels themselves, that set (a) was
+mis-specified:
+
+* `regress-zero-row-ceiling-0.761-dollar-range-tables` — 223 of the 933 set-(a) filings
+  are fund dollar-range tables whose recovery the round itself forbids, capping the gate
+  at 710/933 = **0.7610**. Six of six sampled filings say so in their own words.
+* `regress-zero-row-ceiling-0.734-refined` — on the run11f residue, `dollar_range` 205 +
+  `m3_repeated_per_fund` 43, a hard ceiling of (933−205−43)/933 = 685/933 = **0.7342**.
+  All 43 of the m3 family are **one document**, `0000051931-18-000890` (American Funds
+  2018, old `n_rows` 375), filed under 43 co-registrant CIKs.
+
+A 0.95 gate over a denominator with a 0.7342 ceiling pays the loop to re-accept exactly
+the rows `regress_excluded_emitting_rows_rate` exists to catch. The defect is in the
+SET, so the SET is corrected. The floors' **own** mechanical rules become exclusion
+clauses X3 and X4 in `gold/build_regress_set.py`, quoted verbatim in that file and in
+`gold_regress.json`:
+
+* **X3 `dollar_range_table`** — "NO old row carries a percent and at least half its old
+  shares values fall in the dollar-range endpoint set
+  `{0,1,10000,50000,100000,500000,1000000}` — the N-1A ranges $1–$10,000 / $10,001–$50,000
+  / $50,001–$100,000 / over $100,000."
+* **X4 `m3_repeated_per_fund`** — "no percent anywhere, at least 3 distinct old
+  `table_index` values, and at least half the old rows are holder names that repeat 3+
+  times — the fund-family COMPENSATION table attached once per fund, which is the
+  round's own mechanism M3 and which it says to REJECT."
+
+Neither clause is "no percent anywhere" on its own: that rule was rejected in the
+original builder because GE 2013 (`0001206774-13-001019`) refutes it. It is the
+CONJUNCTION with the dollar-range shape or the per-fund repetition that excludes.
+
+### 12.5 Set sizes, before → after
+
+`python3 gold/build_regress_set.py` (exit 0), join-audited 207,912 = 207,912, and
+deterministic — two consecutive runs both give
+`sha256(gold_regress.tsv) = 73ee0419df65fd9d51aa623fcbae651bfe68ca533502c7c14452d82a536c9846`.
+
+| | before | after |
+|---|---|---|
+| candidates | 1,893 | **1,893** (unchanged — every candidate is still submitted and scored) |
+| exclusions, any clause | 150 | **437** |
+| X1 `$` in old holder_name | 96 | 96 |
+| X2 ≥3 old rows, one identical (shares, percent) | 58 | 58 |
+| X3 fund dollar-range table | — | 327 (244 not already excluded by X1/X2) |
+| X4 per-fund compensation table | — | 43 (none already excluded) |
+| newly excluded by X3-or-X4 only | — | 287 (285 from set (a), 21 from the group-row candidates) |
+| **set (a) ZERO-ROW, GATED** | **933** | **648** |
+| **set (b) GROUP-ROW, GATED** | **83** | **83** (unchanged by construction: the gated (b) set needs a percent-carrying lost group row, and X3/X4 both require no percent anywhere) |
+| set (b) share-only, DIAGNOSTIC | 1,075 | 1,054 |
+
+`regress_filelist.tsv` (sha256 `e4ac8ec6…`) and `round_filelist.tsv` (sha256
+`da8e15b4…`) are **byte-identical** after the rebuild, so what a round parses did not
+change and the existing local output re-scores without a grid pass.
+
+The 285 removed from set (a) exceed the floors' 248 because the floors classified only
+the UNRECOVERED residue (480 filings at run11f), while an exclusion clause applies to
+the whole candidate set. Dollar-range-shaped filings the parser happens to emit rows for
+today leave the denominator too — which is the point: they were never a recovery target,
+and they are precisely what the per-clause diagnostic now watches.
+
+### 12.6 Re-scored, no grid round
+
+`bash make_lock.sh` then `bash check.sh` → **exit 1** (the two regression floors are the
+round's open target; they were failing before too).
+
+| gated metric | before | after |
+|---|---|---|
+| `regress_zero_row_recovered` | 0.4952 = 462/933 | **0.6590 = 427/648** |
+| `regress_group_row_recovered` | 0.7952 = 66/83 | **0.7952 = 66/83** |
+| the other eight | — | **byte-for-byte identical** (0.8939 / 0.7868 / 0.8298 / 0.9063 / 0.9205 / 0.0050 / 0.0025 / 0.0104) |
+
+`regress_zero_row_recovered_n` falls 462 → 427 because 35 of the filings previously
+counted as recoveries were dollar-range or per-fund-compensation tables. That is the
+correction working, not a regression.
+
+**0.95 is now reachable.** 427 of 648, 221 short, against a reachable residue the floors
+measured as `share_only_other` 197 + `has_percent` 32 = 229.
+
+### 12.7 The excluded filings stay a reported DIAGNOSTIC, now per clause
+
+`score.py` reads the clause columns by NAME from `gold_regress.tsv` (so a clause added to
+the builder takes effect without the scorer choosing which exclusions it believes in) and
+prints, for each clause, the share of that clause's EXCLUDED **zero-row** candidates
+emitting rows again. Clauses overlap, so the per-clause denominators sum to more than the
+pooled one. Measured on this re-score:
+
+```
+      EXCLUDED zero-row filings (X1 dollar-in-name / X2 one-value-all-rows /
+      X3 fund dollar-range table / X4 per-fund compensation table)
+      that emit >=1 row again: 45 / 422 = 0.1066  — a RISE here is the round
+      re-accepting dollar-range and compensation tables, not recovering ownership
+        x1_dollar_in_name                8 / 83 = 0.0964
+        x2_one_value_all_rows            4 / 58 = 0.0690
+        x3_dollar_range_table            39 / 325 = 0.1200
+        x4_m3_repeated_per_fund          0 / 43 = 0.0000
+```
+
+The same rates land in `metrics_dev.json` as
+`regress_x3_dollar_range_table_emitting_rows_rate` and friends, and `regress_dev.tsv`
+gains an `excl_clauses` column naming which clauses fired per filing. **`textMoneyBlock`
+must not be weakened**, and the dollar-range and per-fund-compensation families must not
+be re-diagnosed — a rise in these rates is the round re-accepting them.
