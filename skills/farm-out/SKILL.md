@@ -149,3 +149,9 @@ $S/farm-team.sh --prompt-file t.txt --cwd /repo --expect /repo/a.txt --expect /r
 
 Read `reference.md` before changing a runner, debugging a 429, or hand-writing
 a proxy call — it holds the verified model-routing and failure-mode details.
+
+## Red flags
+
+| Situation | Wrong move | Right move |
+|---|---|---|
+| Per-document LLM coding/extraction over many files | Use `--tasks` fan-out to have agents read each document | Use `gemini-batch` for large-scale extraction |

@@ -850,3 +850,13 @@ test('parseArgs reads goalCheck off the args object, and leaves it undefined whe
   expect(parseArgs({ tasks: [], goalCheck: 'bun test' }).goalCheck).toBe('bun test')
   expect(parseArgs({ tasks: [] }).goalCheck).toBeUndefined()
 })
+
+test('per-document LLM coding triggers a minor finding', () => {
+  const p = base({ tasks: [task({ work: 'code each document in the folder' })] })
+  expect(rules(p)).toContain('per-document-batch-extraction')
+})
+
+test('per-document batch extraction rule is case-insensitive', () => {
+  const p = base({ tasks: [task({ work: 'Hand-code each filing' })] })
+  expect(rules(p)).toContain('per-document-batch-extraction')
+})
