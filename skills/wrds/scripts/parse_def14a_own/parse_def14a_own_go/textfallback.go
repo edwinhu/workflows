@@ -648,8 +648,21 @@ func parseTextRowAt(l string) (name, rest string, restStart int, ok bool) {
 	if !hasWords(name, 1) {
 		return "", "", 0, false
 	}
+	// A value column is NUMBERS. A footnote sentence splits at one of its own
+	// wide gaps and its tail carries a grouped number -- "additional 100,000
+	// common shares at a price of $0.30 per share, which" -- so it read as a
+	// row, and four of them outvoted a real table in alignedRows' modal
+	// alignment. Five or more words in the TAIL is prose, not columns; the
+	// widest real tails seen carry two ("Director since", "President and").
+	if len(reTailWord.FindAllString(rest, -1)) >= 5 {
+		return "", "", 0, false
+	}
 	return name, rest, restStart, true
 }
+
+// A word in a row's numeric tail: three letters or more, so column markers and
+// the odd initial do not count.
+var reTailWord = regexp.MustCompile(`[A-Za-z]{3,}`)
 
 // alignedRows keeps only the lines whose numeric tail starts at the table's
 // modal column. A proxy paragraph ("There were  2,266,000,000  shares
