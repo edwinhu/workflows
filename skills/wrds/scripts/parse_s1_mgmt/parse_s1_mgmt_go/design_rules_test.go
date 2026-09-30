@@ -2112,6 +2112,9 @@ func TestRule7_APostPositionedVentureLabelFires(t *testing.T) {
 		{"0000950131-96-003098",
 			"Frank B. Bennett has been a director of the Company since 1992. Mr. Bennett is the founder of Artesian Capital Management, Inc. (\"Artesian\") and Artesian Management, Inc. (\"Artesian Management\") and has served as the President of each of these entities since their inception. Artesian is the general partner of Artesian Capital Limited Partnership (\"Artesian Capital\"), and Artesian Management is the general partner of Artesian Capital Limited Partnership II (\"Artesian Capital II\"), which are seed and start-up venture investment funds.",
 			"Artesian"},
+		{"0000950130-03-004056",
+			"Henry Shaw has served on our board of directors since September 2000. Since August 1996, Mr. Shaw has served as the Executive Managing Director of AsiaVest Partners, TCW/YFY (Taiwan), Ltd., which specializes in venture capital investment, where Mr. Shaw is responsible for assessing potential investments. Mr. Shaw was Vice President of Tanspac Capital Pte. Ltd., which specializes in regional equity investment, from 1993 to 1996 and the Chief Financial Officer of Mosel-Vitelic, Inc., a publicly-listed semiconductor memory company in Taiwan, from 1984 to 1993.",
+			"AsiaVest"},
 	}
 	for _, c := range positive {
 		t.Run("yes/"+c.firm, func(t *testing.T) {
