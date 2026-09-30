@@ -1115,6 +1115,116 @@ func TestRule7_VentureInTheFirmNameIsTheLabel(t *testing.T) {
 	}
 }
 
+// A partnership the bio has CLOSED is not a VC affiliation, and the narrow
+// ", a venture capital firm" appositive was the one route that never checked:
+// it credited the firm on the strength of the appositive alone, so
+// "From January 2011 to April 2011, Mr. Slootman served as a Partner of
+// Greylock Partners, a venture capital firm" read the same as Aneel Bhusri's
+// "Since 1999, Mr. Bhusri has served as a partner at Greylock Partners, a
+// venture capital firm" two paragraphs above it. The dictionary route had the
+// same hole.
+//
+// Two shapes of past tense, because the corpus writes the dates on either side
+// of the appositive: a marker in the clause that introduces the role
+// ("From 2011 to January 2022, ... served as", "Ms. Brege was a general
+// partner at", "Dr. Lu previously served as"), and a closed range opening
+// IMMEDIATELY after the appositive ("a venture capital firm from 1989 through
+// 2007"). The second has to be immediate: every surviving bio below carries a
+// "From ... to ..." range in the NEXT sentence, describing the job the person
+// held before this one.
+//
+// Bios are quoted verbatim from the accession named on each line, and exercised
+// through detectVC because check_full.sh re-cuts every fixture from a source
+// filing this corpus does not hold.
+func TestRule7_AClosedPartnershipDoesNotFire(t *testing.T) {
+	negative := []struct{ accession, why, bio string }{
+		{"0001193125-23-237900", "the Sequoia membership ended two months before the offering",
+			"Mr. Moritz has served as a member of our board of directors since June 2013. Mr. Moritz currently serves as Senior Advisor to Sequoia Heritage, a private investment partnership, and from 1986 to July 2023, Mr. Moritz served as a Managing Member of Sequoia Capital, a venture capital firm. Mr. Moritz currently serves on the boards of directors of PhenomeX, Inc."},
+		{"0001193125-23-237900", "the Greylock partnership ran January to April 2011",
+			"From May 2011 to April 2017, Mr. Slootman served as President and Chief Executive Officer and as a member of the board of directors of ServiceNow, Inc. From January 2011 to April 2011, Mr. Slootman served as a Partner of Greylock Partners, a venture capital firm. From July 2009 to January 2011, Mr. Slootman served as President of the Backup Recovery Systems Division at EMC Corporation."},
+		{"0001193125-23-237900", "an Executive Advisor, and only to January 2022",
+			"Since February 2022, Mr. McCarthy has served as the Chief Executive Officer and President of Peloton Interactive, Inc., a fitness technology company. From 2011 to January 2022, Mr. McCarthy served as an Executive Advisor to Technology Crossover Ventures, a venture capital firm. Mr. McCarthy currently serves on the boards of directors of Peloton Interactive, Inc."},
+		{"0001104659-21-042550", "the general partnership predates a 2006 role",
+			"Before Onyx, Ms. Brege was a general partner at Red Rock Capital Management, a venture capital firm, and Senior Vice President and Chief Financial Officer at COR Therapeutics, Inc., a research and development company focused on cardiovascular diseases."},
+		{"0001193125-24-181773", "an Associate, and the role ended in 2016",
+			"Dr. Yamanaka is currently a Principal at venBio Partners LLC, a life sciences investment firm, which she joined in August 2016. From May 2015 to August 2016, Dr. Yamanaka was an Associate on the venture creation team at Flagship Pioneering, a venture capital firm focused on building innovative life sciences companies."},
+		{"0001193125-12-126304", "the closed range follows the appositive, not precedes it",
+			"Mr. Maudlin served as a managing partner of Medical Innovation Partners, a venture capital firm from 1989 through 2007 and as President of its management company since 1985. Mr. Maudlin has served as a director of Sucampo Pharmaceuticals, Inc., a NASDAQ-listed pharmaceutical company since September 2006."},
+		{"0001193125-19-040772", "the dictionary route read a role the bio marks previous",
+			"Dr. Lu previously served as a Managing Director at OrbiMed Advisors, LLC in Asia from 2011 to 2016. Prior to her work at OrbiMed, Dr. Lu spent more than five years at Piper Jaffray & Co. as an equity analyst."},
+	}
+	for _, c := range negative {
+		t.Run("no/"+c.why, func(t *testing.T) {
+			if ok, firm, ev := detectVC(c.bio); ok {
+				t.Errorf("%s: vc_affiliated = true, want false (firm=%q evidence=%q)", c.accession, firm, ev)
+			}
+		})
+	}
+
+	// The same corpus, present tense. Every one of these carries a closed date
+	// range in the sentence AFTER the appositive, or a past role in the sentence
+	// before it, and none of that touches the partnership the person holds now.
+	positive := []struct{ accession, bio, firm string }{
+		{"0001193125-15-338931",
+			"Since 2008, Mr. Speiser has served as a Managing Director at Sutter Hill Ventures, a venture capital firm. From 2007 to 2008, Mr. Speiser served as Vice President of Community Products at Yahoo! Inc.",
+			"Sutter Hill Ventures"},
+		{"0001047469-08-003061",
+			"He has served as a General Partner with Foundation Medical Partners, a venture capital firm, since March 2003. From 1987 to 2002, Mr. Rein served as the founder and Managing General Partner of Canaan Partners, a venture capital fund focused on health care companies.",
+			"Foundation Medical Partners"},
+		{"0001193125-18-207640",
+			"Mr. Clark has been an Operating Partner at Clarus Ventures, LLC, a venture capital firm, since September 2017. From 2003 to January 2017, Mr. Clark served in various positions at Genentech Inc., a biopharmaceutical company.",
+			"Clarus Ventures"},
+		{"0001193125-23-237900",
+			"Since November 2019, Mr. Gupta has served as a Managing Member of Sequoia Capital, a venture capital firm. From 2015 to November 2019, Mr. Gupta served as our Chief Financial Officer.",
+			"Sequoia Capital"},
+		{"0001193125-21-230254",
+			"Dr. Shannon has been both a Non-Managing Member of Canaan Partners IX LLC, a Managing Member of Canaan Partners X LLC, a Managing Member of Canaan Partners XI LLC, and a Managing Member of Canaan Partners XII LLC, all entities affiliated with Canaan Partners, a venture capital firm, since November 2009.",
+			"Canaan Partners"},
+		{"0001104659-21-042550",
+			"Since 2015, Dr. Harrison has been employed as a partner by Novo Ventures (US), Inc., which provides consulting services to Novo Holdings A/S, an investment firm focused on life sciences and finance. Previously, Dr. Harrison was Senior Market Planning Manager from November 2013 to November 2015 at Genentech, Inc. Prior to joining Genentech, Dr. Harrison worked as a management consultant from September 2012 to December 2013 at L.E.K. Consulting LLC, a global management consulting firm. Previously, Dr. Harrison was Entrepreneurship Program Manager from September 2011 to September 2012 at QB3, and partner from September 2011 to September 2012 at Mission Bay Capital Management Inc., a venture capital firm.",
+			"Novo Ventures"},
+		// Three shapes the veto must NOT read as past. Anthony Sun's range is
+		// left open — "From August 1979 to the present, he has been a general
+		// partner of Venrock Associates, a venture capital partnership"
+		// (0000891618-96-002428) — so a closed range needs a year on BOTH sides.
+		// Matthew Foy's closed range dates his own earlier BOARD service, one
+		// sentence before the partnership, so the lead stops at the sentence
+		// boundary; the honorific is why that boundary cannot be the last ". "
+		// in the window. And Lucio Lanza's firm is spelled "Lanza
+		// techVentures": the camel-cased token stopped firmBefore dead, so the
+		// only route that ever credited him was the dictionary reading his
+		// CLOSED U.S. Venture Partners partnership.
+		{"0000891618-96-002428",
+			"ANTHONY SUN has served as a director since October 1995. From August 1979 to the present, he has been a general partner of Venrock Associates, a venture capital partnership. Mr. Sun serves on the Board of Directors of Cognex Corporation.",
+			"Venrock Associates"},
+		{"0001193125-21-041651",
+			"Mr. Foy has served as a member of our board of directors since January 2021. He previously served as a member of our board of directors from April 2019 to November 2020. Mr. Foy has been a partner at SR One Capital Management, LP, a venture capital firm, since 2011. Previously, Mr. Foy was a vice president at Greenhill & Co, an investment bank, from 2002 to 2010.",
+			"SR One Capital Management"},
+		{"0001095811-01-503434",
+			"Lucio L. Lanza has served as a director since November 1995. Mr. Lanza has been managing partner of Lanza techVentures, a venture capital firm, since January 2000. From 1990 to December 2000, Mr. Lanza served with U.S. Venture Partners, a venture capital firm, including as a general partner from 1996 through December 2000.",
+			"Lanza techVentures"},
+		// Garheng Kong's two labelled firms are BOTH closed - Sofinnova from 2010
+		// to 2013, Intersouth from 2000 to 2010 - and the fund he runs now is
+		// labelled "a healthcare venture growth fund", a head noun the variant
+		// appositive did not reach. Vetoing the two past firms without reading
+		// that one would turn a gold VC director into a miss.
+		{"0001193125-19-040772",
+			"In 2013, he founded, and has since served as Managing Partner of, HealthQuest Capital Management Company, LLC, a healthcare venture growth fund focused on medical products, devices, diagnostics, consumer health and healthcare IT. Dr. Kong was a general partner at Sofinnova Ventures, L.L.C., a venture firm focused on life sciences, from September 2010 to December 2013. From May 2000 to September 2010, he worked at Intersouth LLC, LTD., a venture capital firm, serving most recently as a General Partner.",
+			"HealthQuest Capital Management"},
+	}
+	for _, c := range positive {
+		t.Run("yes/"+c.firm, func(t *testing.T) {
+			ok, firm, ev := detectVC(c.bio)
+			if !ok {
+				t.Fatalf("%s: vc_affiliated = false, want true", c.accession)
+			}
+			if !containsFold(firm, c.firm) {
+				t.Errorf("%s: vc_firm = %q, want it to name %q (evidence %q)", c.accession, firm, c.firm, ev)
+			}
+		})
+	}
+}
+
 // ---------------------------------------------------------------------------
 // Rule 1, the ASCII path — the table's own header furniture
 // ---------------------------------------------------------------------------
