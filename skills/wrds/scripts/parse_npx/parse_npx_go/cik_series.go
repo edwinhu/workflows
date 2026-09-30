@@ -529,6 +529,80 @@ func dateGapDays(a, b string) int {
 	}
 }
 
+// blankInexactSiblingBanners refuses a sibling's inexact id without guessing
+// the other series named by the banner. Rows must already have all stamps applied.
+func (d *cikSeries) blankInexactSiblingBanners(rows []VoteRow, cik, period string, header []SeriesDecl) {
+	if d == nil || len(rows) == 0 || len(d.byCIK[cik]) == 0 {
+		return
+	}
+	type banner struct {
+		name, id string
+	}
+	exact := map[banner]bool{}
+	addExact := func(name, id string) {
+		if k := normalizeSeriesName(name); k != "" && id != "" {
+			exact[banner{k, id}] = true
+		}
+	}
+	for _, decl := range header {
+		addExact(decl.Name, decl.SeriesID)
+		for _, name := range decl.ClassNames {
+			addExact(name, decl.SeriesID)
+		}
+	}
+	dictNames := map[string]map[string]bool{}
+	for _, decl := range d.byCIK[cik] {
+		k := normalizeSeriesName(decl.Name)
+		if k == "" || decl.SeriesID == "" {
+			continue
+		}
+		if dictNames[k] == nil {
+			dictNames[k] = map[string]bool{}
+		}
+		dictNames[k][decl.SeriesID] = true
+		if period != "" && decl.DeclDate != "" && decl.DeclDate <= period {
+			exact[banner{k, decl.SeriesID}] = true
+		}
+	}
+
+	// Cache by printed banner, not vote row; large filings repeat each heading.
+	keys := map[string]string{}
+	banners := map[banner]bool{}
+	exactOwners := map[string]bool{}
+	for _, r := range rows {
+		if r.FundName == "" || r.SeriesID == "" {
+			continue
+		}
+		k, seen := keys[r.FundName]
+		if !seen {
+			k = normalizeSeriesName(r.FundName)
+			keys[r.FundName] = k
+		}
+		b := banner{k, r.SeriesID}
+		banners[b] = false
+		if exact[b] {
+			exactOwners[r.SeriesID] = true
+		}
+	}
+	for b := range banners {
+		if exact[b] || !exactOwners[b.id] {
+			continue
+		}
+		for id := range dictNames[b.name] {
+			if id != b.id {
+				banners[b] = true
+				break
+			}
+		}
+	}
+	for i := range rows {
+		r := &rows[i]
+		if banners[banner{keys[r.FundName], r.SeriesID}] {
+			r.SeriesID, r.ClassIDs = "", ""
+		}
+	}
+}
+
 // dictFallback stamps a row whose heading equals, EXACTLY, one dictionary name of
 // the filing's registrant that the header itself did not declare. The header
 // stays the authority for what it declares (those names are excluded here, so

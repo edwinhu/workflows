@@ -479,7 +479,8 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 	// evidence than any CIK-wide dictionary row, so it is the one shape the
 	// dictionary is not allowed to answer ahead of the chassis stamp below.
 	headerNames := map[string]bool{}
-	if _, ownDecls := parseSeriesDecls(head); seriesRow != "" {
+	_, ownDecls := parseSeriesDecls(head)
+	if seriesRow != "" {
 		for _, d := range ownDecls {
 			if k := normalizeSeriesName(d.Name); k != "" {
 				headerNames[k] = true
@@ -493,7 +494,7 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 	}
 
 	dictFB := cikDict.exactFallback(parseMeta)
-	stamp := func(r VoteRow) error {
+	stamp := func(r VoteRow) VoteRow {
 		if r.SeriesID == "" && seriesRow != "" {
 			// The chassis stamp answers a row the parser left unnamed with the one
 			// series this filing's header declares -- but the header of an AMENDMENT
@@ -524,7 +525,7 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 		if r.ClassIDs == "" && r.SeriesID != "" {
 			r.ClassIDs = classesOf(r.SeriesID)
 		}
-		return sink.emit(r)
+		return r
 	}
 
 	switch mode {
@@ -536,7 +537,9 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 		// Streaming: the decoder pulls off a buffered reader and rows leave
 		// through the sink as they are produced, so peak memory is independent
 		// of filing size.
-		if _, err := parseNPXXML(bufio.NewReaderSize(f, 1<<20), &meta, stamp); err != nil {
+		if _, err := parseNPXXML(bufio.NewReaderSize(f, 1<<20), &meta, func(r VoteRow) error {
+			return sink.emit(stamp(r))
+		}); err != nil {
 			meta.ParseStatus = "error"
 			meta.ErrorMsg = err.Error()
 			meta.NRows = sink.n
@@ -607,7 +610,7 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 		if priorAcc != "" && len(res.Rows) > 0 && res.Rows[0].FundName == "" {
 			inheritFund, inheritSeries = relatedPredecessorFund(fullPath, priorAcc)
 		}
-		for _, r := range res.Rows {
+		for i, r := range res.Rows {
 			if r.Layout == "" {
 				r.Layout = meta.Layout
 			}
@@ -624,7 +627,12 @@ func processFile(relPath, fullPath string, sink *rowSink, headBuf []byte) (meta 
 			if consolidated != "" && r.SeriesID == "" {
 				r.SeriesID = consolidated
 			}
-			if err := stamp(r); err != nil {
+			res.Rows[i] = stamp(r)
+		}
+		// Refusals must follow every fallback, including the optional overlay.
+		cikDict.blankInexactSiblingBanners(res.Rows, h.CIK, metaPeriod(meta), ownDecls)
+		for _, r := range res.Rows {
+			if err := sink.emit(r); err != nil {
 				meta.ParseStatus = "error"
 				meta.ErrorMsg = err.Error()
 				break
