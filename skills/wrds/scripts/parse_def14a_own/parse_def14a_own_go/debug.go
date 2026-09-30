@@ -20,8 +20,12 @@ func DebugFile(path string, maxTables int) {
 	fmt.Printf("bytes=%d isHTML=%v series=%d\n", len(body), IsHTML(body), len(base.series))
 	if !IsHTML(body) {
 		textBlockReasons = map[string]int{}
+		screenDropReasons = map[string]int{}
 		rows, seen, used := ExtractText(body, base)
-		fmt.Printf("text path: blocks_seen=%d used=%d rows=%d reasons=%v\n", seen, used, len(rows), textBlockReasons)
+		kept := len(ScreenRows(rows))
+		defer func() { screenDropReasons = nil }()
+		fmt.Printf("text path: blocks_seen=%d used=%d rows=%d screened_to=%d reasons=%v screen=%v\n",
+			seen, used, len(rows), kept, textBlockReasons, screenDropReasons)
 		for i, r := range rows {
 			if i > 40 {
 				break

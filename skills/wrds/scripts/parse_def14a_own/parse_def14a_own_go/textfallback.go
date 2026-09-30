@@ -334,15 +334,28 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 		}
 		blocksSeen++
 		hdr := strings.Join(header, " ")
+		textReason := func(why string) {
+			if textBlockReasons != nil {
+				textBlockReasons[why]++
+			}
+		}
 		// Same guard as the DOM path: the block itself, not the heading above
 		// it, must read as an ownership table. Without this the scan runs on
 		// into the Summary Compensation Table.
 		body := hdr + " " + strings.Join(sliceLines(clean, block), " ")
-		if !reOwnCue.MatchString(body) || reCompCue.MatchString(body) ||
-			reOptDetailCue.MatchString(body) {
+		switch {
+		case !reOwnCue.MatchString(body):
+			textReason("no_own_cue")
+			continue
+		case reCompCue.MatchString(body):
+			textReason("comp_cue")
+			continue
+		case reOptDetailCue.MatchString(body):
+			textReason("opt_detail_cue")
 			continue
 		}
 		if textMoneyBlock(clean, block) {
+			textReason("money_block")
 			continue
 		}
 		classes := classLabelsFromHeader(hdr)
@@ -528,8 +541,10 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 			}
 		}
 		if len(rows) < 2 && !(sole && len(rows) == 1) {
+			textReason("rows_lt_2")
 			continue
 		}
+		textReason("accepted")
 		blocksUsed++
 		blockText := hdr + " " + strings.Join(sliceLines(clean, block), " ")
 		kd := tableKind(kind, rows, blockText+" "+t)
@@ -1043,6 +1058,19 @@ var (
 	reColLabelKeep = regexp.MustCompile(`(?i)\bclass\s+[a-d0-9]\b|\bcommon\s+stock\b|\bpreferred\b|\bordinary\s+shares\b|\bseries\s+[a-z0-9]+\b|\bvoting\s+power\b|\bcombined\b|\btotal\b|\bdepositary\b|\bunits?\b|\bfund\b|\btrust\b|\bportfolio\b`)
 	// Header text that is only the shape of the column, never its identity.
 	reColLabelDrop = regexp.MustCompile(`(?i)^(?:number|percent|percentage|amount|shares?|no\.?|of\s+shares|of\s+class|%)[\s.():0-9]*$`)
+	// A WHOLE HEADER ROW, not a column label. An ASCII proxy routinely writes its
+	// headings as one wide group spanning every value column ("Number of Shares
+	// of Common Stock Beneficially Owned Percent"), which reColLabelDrop cannot
+	// catch because the shape words are not the whole of it and reColLabelKeep
+	// then admits it on the "Common Stock" inside it. Such a group identifies the
+	// SECURITY, or the table, never one column among several. A fund or class
+	// label never states the shape of the column it stands over.
+	// Counted, not matched once: TWO OR MORE distinct shape words in one group is
+	// a header row ("Options (a) Warrants (b) Total (c)", "Number of Shares of
+	// Common Stock Beneficially Owned Percent"). A class or fund label states an
+	// identity and carries at most one of these ("Total Return Fund").
+	reColLabelShapeWord = regexp.MustCompile(`(?i)\bshares?\b|\boptions?\b|\bwarrants?\b|\btotal\b|` +
+		`\bpercent(?:age)?\b|\bnumber\b|\bamount\b|\bsubject\s+to\b|exercisab|beneficially|\bowned\b`)
 	// A preposition left at the head of a label whose first words were the
 	// dropped shape word on the line above.
 	reColLabelLead = regexp.MustCompile(`(?i)^(?:of|in|and|the)\s+`)
@@ -1153,6 +1181,9 @@ func textColLabel(hdr [][]hdrGroup, lo, hi int) string {
 		if reRuleLine.MatchString(t) || reColLabelDrop.MatchString(t) {
 			continue
 		}
+		if isHeaderRowText(t) {
+			continue // a whole header row, spanning every value column
+		}
 		all = append(all, t)
 	}
 	parts := all
@@ -1258,4 +1289,18 @@ func textNameTails(clean []string, block []int) map[int]string {
 		}
 	}
 	return out
+}
+
+// textBlockReasons, when non-nil, tallies why each ASCII block was accepted or
+// rejected. Set by the -debug path only; nil in the pipeline.
+var textBlockReasons map[string]int
+
+// isHeaderRowText reports whether a header group is a whole header ROW rather
+// than one column's label: two or more DISTINCT shape words in one group.
+func isHeaderRowText(t string) bool {
+	seen := map[string]bool{}
+	for _, m := range reColLabelShapeWord.FindAllString(t, -1) {
+		seen[strings.ToLower(m)] = true
+	}
+	return len(seen) >= 2
 }
