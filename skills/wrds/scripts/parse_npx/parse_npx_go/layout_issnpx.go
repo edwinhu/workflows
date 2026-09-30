@@ -3075,8 +3075,8 @@ func issUniqueNamePrefix(ix *issSeriesIndex, key string) *SeriesDecl {
 // readable spelling on other rows of the same table.
 //
 // Every printed token must be the declared token itself or an abbreviation of
-// it, in order, and the declared name may carry extra LEADING tokens only (the
-// house brand the abbreviation drops). One hit stamps; two refuse.
+// it, in order. Extra leading house-brand tokens or one omitted terminal type
+// noun are allowed, never both. One series stamps; two refuse.
 func issVowelDroppedAbbrev(ix *issSeriesIndex, key string) *SeriesDecl {
 	toks := strings.Fields(normalizeSeriesName(key))
 	if len(toks) < 3 {
@@ -3088,6 +3088,23 @@ func issVowelDroppedAbbrev(ix *issSeriesIndex, key string) *SeriesDecl {
 			continue
 		}
 		dt := strings.Fields(name)
+		// An omitted terminal type noun is safe only when every other token
+		// aligns; never combine it with a leading brand cut.
+		if len(dt) == len(toks)+1 && issTypeWord(dt[len(dt)-1]) && !issTypeWord(toks[len(toks)-1]) {
+			whole := true
+			for j, t := range toks {
+				// Two letters scattered through a long word do not distinguish
+				// siblings; with the type noun absent, require a prefix.
+				if t != dt[j] && (!issVowelDropped(t, dt[j]) ||
+					(len(t) == 2 && len(dt[j]) > 3 && !strings.HasPrefix(dt[j], t))) {
+					whole = false
+					break
+				}
+			}
+			if whole {
+				dt = dt[:len(dt)-1]
+			}
+		}
 		if len(dt) < len(toks) || len(dt) > len(toks)+2 {
 			continue
 		}
@@ -3113,7 +3130,12 @@ func issVowelDroppedAbbrev(ix *issSeriesIndex, key string) *SeriesDecl {
 		if hit != nil && hit.SeriesID != d.SeriesID {
 			return nil
 		}
-		hit = d
+		// Later guards read Name, not just the id. Retain the fullest alias
+		// so map order cannot hide a brand word from those guards.
+		if hit == nil || len(normalizeSeriesName(d.Name)) > len(normalizeSeriesName(hit.Name)) ||
+			(len(normalizeSeriesName(d.Name)) == len(normalizeSeriesName(hit.Name)) && d.Name < hit.Name) {
+			hit = d
+		}
 	}
 	return hit
 }
