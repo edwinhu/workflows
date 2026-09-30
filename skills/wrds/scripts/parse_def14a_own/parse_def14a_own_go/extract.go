@@ -1454,6 +1454,15 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 					}
 				}
 			}
+			// The label WRAPS: this row carries the numbers and the HEAD of the
+			// label, and the row under it carries the tail and no numbers at all
+			// ("All directors & executive" / "officers as a group (7 persons)").
+			// Neither half reads as a collective label on its own.
+			if rescued == "" && i+1 < len(c.rows) && rowIsValueless(c, c.rows[i+1]) {
+				if j := c.joinedLabel(r, c.rows[i+1], nc); j != "" {
+					rescued = j
+				}
+			}
 		}
 		nameUnusable := name == "" || !hasWords(name, 1) || reSkipName.MatchString(name) ||
 			isParenQualifier(name)
@@ -1615,3 +1624,56 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 // roleVotes, when non-nil, records the per-column counters analyze() voted on.
 // Set by the -debug path only; nil in the pipeline.
 var roleVotes map[int]string
+
+// rowIsValueless reports a row with no share and no percent cell of its own: the
+// continuation of the label on the row above, not a holding.
+func rowIsValueless(c *compacted, r []string) bool {
+	for j, cell := range r {
+		if j >= len(c.roles) {
+			continue
+		}
+		if c.roles[j].role != "shares" && c.roles[j].role != "pct" {
+			continue
+		}
+		t := flat(cell)
+		if t == "" {
+			continue
+		}
+		if _, ok := ParseShares(t); ok {
+			return false
+		}
+		if _, _, _, pctish := ParsePercent(t); pctish {
+			return false
+		}
+	}
+	return true
+}
+
+// joinedLabel joins the non-value text of a row with that of the valueless row
+// under it, in column order, and returns it only if the join reads as a strong
+// collective label. Returning "" leaves every other row untouched.
+func (c *compacted) joinedLabel(r, next []string, nc int) string {
+	part := func(row []string) string {
+		var out []string
+		for j, cell := range row {
+			if j < len(c.roles) && (c.roles[j].role == "shares" || c.roles[j].role == "pct") {
+				continue
+			}
+			if t := flat(cell); t != "" && !reFootnote.MatchString(t) {
+				if len(out) == 0 || out[len(out)-1] != t {
+					out = append(out, t)
+				}
+			}
+		}
+		return strings.Join(out, " ")
+	}
+	head, tail := part(r), part(next)
+	if head == "" || tail == "" {
+		return ""
+	}
+	joined := norm(head + " " + tail)
+	if ok, _ := isStrongGroupRow(joined); !ok {
+		return ""
+	}
+	return joined
+}
