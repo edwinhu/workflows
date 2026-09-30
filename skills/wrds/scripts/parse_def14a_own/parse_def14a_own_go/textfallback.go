@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"os"
 	"regexp"
 	"strings"
 	"unicode"
@@ -337,6 +339,15 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 		textReason := func(why string) {
 			if textBlockReasons != nil {
 				textBlockReasons[why]++
+			}
+			// DEF14A_DEBUG_TEXTBLOCK dumps the rejected block verbatim, so a reason
+			// name can be turned into the layout that produced it without
+			// re-deriving the block boundaries by hand.
+			if os.Getenv("DEF14A_DEBUG_TEXTBLOCK") != "" {
+				fmt.Fprintf(os.Stderr, "--- textblock reject=%s hdr=%q\n", why, hdr)
+				for _, ln := range block {
+					fmt.Fprintf(os.Stderr, "    | %s\n", clean[ln])
+				}
 			}
 		}
 		// Same guard as the DOM path: the block itself, not the heading above

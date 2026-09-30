@@ -18,6 +18,26 @@ func DebugFile(path string, maxTables int) {
 	// fund / series names are per-filing context the extractor reads.
 	base := Row{series: SeriesNames(string(raw))}
 	fmt.Printf("bytes=%d isHTML=%v series=%d\n", len(body), IsHTML(body), len(base.series))
+	// The prose reader runs only when both column readers emit nothing, but its
+	// candidates are printed unconditionally: a filing that loses a holder to a
+	// name rule is otherwise indistinguishable from one with no prose at all.
+	proseDropReasons = map[string]int{}
+	if pr := ExtractProse(body, base); len(pr) > 0 || len(proseDropReasons) > 0 {
+		drops := proseDropReasons
+		proseDropReasons = nil
+		screenDropReasons = map[string]int{}
+		kept := len(ScreenRows(pr))
+		_ = drops
+		fmt.Printf("prose path: rows=%d screened_to=%d screen=%v dropped=%v\n", len(pr), kept, screenDropReasons, drops)
+		screenDropReasons = nil
+		for i, r := range pr {
+			if i > 40 {
+				break
+			}
+			fmt.Printf("  PROSE %-55s shares=%v pct=%v class=%q group=%v\n",
+				r.HolderName, fmtp(r.Shares), fmtp(r.Percent), r.ShareClass, r.IsGroupRow)
+		}
+	}
 	if !IsHTML(body) {
 		textBlockReasons = map[string]int{}
 		screenDropReasons = map[string]int{}
