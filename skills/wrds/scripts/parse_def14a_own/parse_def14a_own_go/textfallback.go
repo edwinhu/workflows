@@ -314,7 +314,7 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 				// toward the run of non-row lines that ends the table. Only
 				// sinceRow caps it, so a c/o line plus a firm, a tower, a
 				// street and a city/zip cannot separate two holders forever.
-				if !isAddressLine(lt) {
+				if !isAddressLine(lt) && !stubCellCont(clean, block[0], j) {
 					nonRowRun++
 				}
 				sinceRow++
@@ -350,9 +350,6 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 		// is absent from `hdr` and the block reads as cueless. Read it off the
 		// lines immediately above the block instead, which is where it is.
 		ownHdr := hdrRowsText(hdrRows)
-		if ownHdr != "" {
-			hdr = strings.TrimSpace(hdr + " " + ownHdr)
-		}
 		textReason := func(why string) {
 			if textBlockReasons != nil {
 				textBlockReasons[why]++
@@ -361,7 +358,7 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 			// name can be turned into the layout that produced it without
 			// re-deriving the block boundaries by hand.
 			if os.Getenv("DEF14A_DEBUG_TEXTBLOCK") != "" {
-				fmt.Fprintf(os.Stderr, "--- textblock reject=%s hdr=%q\n", why, hdr)
+				fmt.Fprintf(os.Stderr, "--- textblock reject=%s hdr=%q own=%q\n", why, hdr, ownHdr)
 				for _, ln := range block {
 					fmt.Fprintf(os.Stderr, "    | %s\n", clean[ln])
 				}
@@ -370,7 +367,7 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 		// Same guard as the DOM path: the block itself, not the heading above
 		// it, must read as an ownership table. Without this the scan runs on
 		// into the Summary Compensation Table.
-		body := hdr + " " + strings.Join(sliceLines(clean, block), " ")
+		body := hdr + " " + ownHdr + " " + strings.Join(sliceLines(clean, block), " ")
 		switch {
 		case !reOwnCue.MatchString(body):
 			textReason("no_own_cue")
@@ -647,6 +644,22 @@ func alignedRows(clean []string, block []int) []int {
 			bestBucket, bestN = b, n
 		}
 	}
+	// The right edge the table's LAST value column is set against, taken from
+	// the rows that do line up. A row whose stub is SHORT pushes its first value
+	// into a later column and fails the modal-start test, but its last column
+	// still ends where every other row's does.
+	edge := map[int]int{}
+	for _, ln := range block {
+		if st, ok := starts[ln]; ok && st/4 >= bestBucket-1 && st/4 <= bestBucket+1 {
+			edge[len(strings.TrimRight(clean[ln], " "))]++
+		}
+	}
+	bestEdge, edgeN := -1, 0
+	for e, n := range edge {
+		if n > edgeN || (n == edgeN && e < bestEdge) {
+			bestEdge, edgeN = e, n
+		}
+	}
 	var out []int
 	for _, ln := range block {
 		st, ok := starts[ln]
@@ -655,6 +668,22 @@ func alignedRows(clean []string, block []int) []int {
 		}
 		if st/4 >= bestBucket-1 && st/4 <= bestBucket+1 {
 			out = append(out, ln)
+			continue
+		}
+		// The GROUP label wraps forward -- "All Directors and Executive Officers
+		// as" on the numeric line, "a group (10 persons)" below it -- so the
+		// label is short and the first value sits further right than the modal
+		// column. Keep it when the line ends on the table's own right edge and
+		// its stub reads as a collective label, which a stray proxy paragraph
+		// with a number in it does not.
+		if edgeN >= 2 && st/4 > bestBucket {
+			if e := len(strings.TrimRight(clean[ln], " ")); e >= bestEdge-2 && e <= bestEdge+2 {
+				if nm, _, _, ok2 := parseTextRowAt(clean[ln]); ok2 {
+					if g, _ := isGroupRow(nm); g {
+						out = append(out, ln)
+					}
+				}
+			}
 		}
 	}
 	return out
@@ -1139,6 +1168,25 @@ func textHeaderRows(clean []string, first int) [][]hdrGroup {
 		}
 	}
 	return out
+}
+
+// stubCellCont reports whether line ln is the STUB CELL of the block's table
+// continuing below its own numeric line, rather than prose that ends the table.
+// A proxy whose stub column is "Name and Principal Occupation for the Past Five
+// Years" writes a biography of up to seven lines under every holder, and the
+// six-line prose run ends the block after the first one. The test is the ASCII
+// table's own geometry: a continuation is INDENTED past the stub's left edge
+// and ENDS before the value columns begin, where a paragraph closing the table
+// runs out to the full measure.
+func stubCellCont(clean []string, first, ln int) bool {
+	_, _, restStart, ok := parseTextRowAt(clean[first])
+	if !ok || restStart < 12 {
+		return false
+	}
+	nameStart := len(clean[first]) - len(strings.TrimLeft(clean[first], " "))
+	l := strings.TrimRight(clean[ln], " ")
+	indent := len(l) - len(strings.TrimLeft(l, " "))
+	return indent > nameStart && len(l) < restStart
 }
 
 // hdrRowsText flattens the block's own header lines back into one string, so
