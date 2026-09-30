@@ -1307,3 +1307,90 @@ The same rates land in `metrics_dev.json` as
 gains an `excl_clauses` column naming which clauses fired per filing. **`textMoneyBlock`
 must not be weakened**, and the dollar-range and per-fund-compensation families must not
 be re-diagnosed — a rise in these rates is the round re-accepting them.
+
+## 13. Amendment — 2026-09-30: guarded set-(b) correction (operator)
+
+The grind remains stopped. This amendment rebuilds the fixed regression ruler and
+re-scores the existing local output. It does not change parser code, start the
+grind, submit a grid round, or change a threshold. Both regression minimums remain
+0.95; all other floors, ceilings, and per-year yield floors are unchanged.
+
+### 13.1 Floor rule and source checks
+
+The floor `regress-group-row-ceiling-0.9157-set-b-exhausted` proposes, verbatim:
+
+> (X7) no old group row of the filing carries BOTH a share count and a non-zero percent, and (X8) at least half the old group rows of the filing carry a holder_name that is also a value in the filings share-class column
+
+A fresh profile read 2,892,154 old rows, selected 1,035 rows for the 83 gated
+(CIK, accession) keys, and matched 83/83 keys. Broad X7 matched eight keys,
+including real ownership tables. It also did not match the prose-only filing:
+its five old “group” rows have both shares and percent but names from the Position
+column. Applying the proposed predicates without guards would therefore be wrong.
+
+Three source checks (original local filings, not merely parser debug):
+
+* `0001398344-17-004035`: `Share Class | Name and Address | Shares Owned | Percent of Class`; `Individual Investor | ARTHUR J KUBICK & ELIZABETH T KUBICK ... | 14,601.765 | 63.99%`. The 21 old group names match the Share Class cells, not the holder cells (21/21 matches per CIK). `0001398344-17-012894` was also checked: 18/18 names are `Individual Investor Class`, including `23,425.662 | 9.25%`. The two documents contribute four filing keys through co-registration.
+* `0000061138-06-000006`: `Name and Position | Dollar Value ($) (1) | Number of Shares Underlying Options Grants`; `All Current Non-Executive Directors as a Group | 0 | 21,795`. The other table is `Individual/Group | Restricted Shares Received (#) (1) | Aggregate Value As of Grant Date ($)`, with `All Current Non Executive Directors as a Group | 17,973 | 552,819`. The old group percent of zero is a dollar-column artifact. The old share-only group values are grant-date dollars, not an ownership aggregate.
+* `0001104659-05-035182`: `Position | Name of Beneficial Owner | Amount and Nature of Beneficial Ownership | % of Class`; `Director of LB&T | Clell Peyton | 10,733 | 1.52%`. All five old group names are Position cells (5/5 matches). The genuine aggregate is prose: `All directors and executive officers of the Company as a group owned 193,404 shares or 27.47% ...`. No group table cell exists to recover. This is X9, a source-confirmed false-group-name/prose classification, not X7.
+
+The fifth document refutes the floor's claim that all seven keys are unreachable:
+`0000910472-08-000038` states that the following table gives shares beneficially
+owned by executive officers and trustees as a group. Its cells read
+`As a Group: | Corporate/Government Bond Fund-N Class | 0.04% | 2,103`, followed
+by other fund classes. It is a genuine ownership table. The missing old share
+count and missing current group row are parser defects. **This filing stays gated.**
+
+### 13.2 Implemented mechanical clauses and scope
+
+* **X7 group_grant_zero:** no old group row pairs shares with nonzero percent; at least two old group rows; all percent-carrying old group rows have zero percent and names in a source grant table; no non-grant table group cell. This guard retains true-zero and split-column ownership tables.
+* **X8 group_share_class_name:** an old-group majority has the `Individual Investor[/Class]` shape, and at least half the old group names equal values in the source's actual Share Class column. The old parsed `share_class` fields are empty here and cannot establish this fact.
+* **X9 group_position_name_prose:** all old group names begin `Director of`, equal source Position cells, and the real directors-and-officers aggregate is prose-only (group shares and percent statement, no group table cell).
+
+These clauses affect set (b) only. Set (a) still targets real ownership rows even
+when the old group label was false. The builder uses old-row predicates and source
+cells, never current recovery outcomes or an accession exclusion list. Six scoped
+source tasks all matched (6/6), with their SHA-256 evidence recorded in the existing
+`gold_regress.json`. Missing required sources fail loudly. X5/X6 are not introduced:
+this amendment does not address the separate compensation/award floors for set (a).
+
+### 13.3 Shapes and set sizes, before → after
+
+| Surface | Before | After |
+|---|---:|---:|
+| Old/new manifests joined | 207,912 / 207,912 | 207,912 matched, zero unmatched (100%) |
+| Candidate union | 1,893 | 1,893 |
+| Old rows selected for candidates | 38,136 | 38,136 |
+| `gold_regress.tsv` data shape | 1,893 × 24 | 1,893 × 27 |
+| Set (a) gated | 648 | 648 |
+| Set (b) gated | 83 | 77 |
+| Set (b) share-only diagnostic | 1,054 | 1,054 |
+| Unique candidates with any exclusion clause | 437 | 443 |
+| New group-only exclusions | 0 | 6 (X7: 1, X8: 4, X9: 1) |
+| Regression parser filelist | 1,893 | 1,893 |
+| Three-way round filelist | 22,856 | 22,856 |
+
+Both filelists remain byte-identical (SHA-256 `e4ac8ec66217ba10db98be6c343dac9da2830136a9ef0eb37aae32a328ce4b0b` and `da8e15b431a9828ba58c046e514a9e249fa10149df923c27b392256ec9b8a133`). Two rebuilds produced identical TSV, JSON, and filelists. Set-(a) flags and the candidate universe are unchanged.
+
+### 13.4 Re-score and diagnostics
+
+`bash check.sh` on existing local output, after `bash make_lock.sh`, printed:
+
+```text
+regress_zero_row_recovered                 0.7855  >= 0.9500  FAIL
+regress_group_row_recovered                0.9870  >= 0.9500  PASS
+CHECK FAIL (1 of 10 gated metric(s) short):
+  regress_zero_row_recovered: 0.7855 < 0.9500 (floor)
+```
+
+Observed exit code: **1**, not a full check pass. Group recovery is 76/83 → 76/77;
+zero-row recovery remains 509/648. The six excluded targets remain a pooled
+**DIAGNOSTIC**, 0/6 with a group percent back, and per-clause diagnostics 0/1,
+0/4, 0/1. Every candidate remains in `regress_dev.tsv`; the new clauses do not
+change the excluded-zero-row diagnostic's denominator (422). The other nine
+gated metric values are unchanged. The one real unresolved group table (Dunham)
+is retained and reported as a miss, not declared a floor.
+
+Verbatim commands, exit codes, document cells, rebuilds, lock verification, and
+full check printouts are in `/home/eh/projects/r2000/scratch/group_set_fix.md`.
+Journal note: `operator-regress-set-b-corrected`. No loop-owned success record is
+written, and the stopped grind is not restarted.
