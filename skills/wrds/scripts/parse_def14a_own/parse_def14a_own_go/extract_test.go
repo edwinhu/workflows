@@ -3522,3 +3522,42 @@ func TestProseTrusteeGroupTotal(t *testing.T) {
 		t.Errorf("percent_marker = %q, want %q", r.PctMarker, "<1%")
 	}
 }
+
+// Transcribed from 0000950133-05-001853. The beneficial-ownership table's
+// auxiliary columns are headed "Number of \"Underwater\" Options Vesting by
+// June 30, 2005" and "Number of \"In the Money\" Options Vesting by June 30,
+// 2005" beside its own "Number of Shares Beneficially Owned" and "Percent of
+// Class", and the option-detail veto threw the whole table away -- the group
+// total with it. The SEC's option-detail heading is "VALUE of Unexercised
+// In-the-Money Options"; a COUNT of in-the-money options is a column an
+// ownership table may carry.
+const inTheMoneyCountColumnHTML = `<html><body>
+<p>Security Ownership of Certain Beneficial Owners and Management</p>
+<table>
+<tr><th>Name of Beneficial Owner</th>
+    <th>Number of Shares Beneficially Owned (1)</th>
+    <th>Number of "Underwater" Options Vesting by June 30, 2005 (2)</th>
+    <th>Number of "In the Money" Options Vesting by June 30, 2005 (2)</th>
+    <th>Percent of Class (3)</th></tr>
+<tr><td>Thomas P. Danaher</td><td>46,000</td><td>1,000</td><td>30,338</td><td>1.60 %</td></tr>
+<tr><td>William M. Drohan</td><td>26,103</td><td>1,000</td><td>30,338</td><td>1.17 %</td></tr>
+<tr><td>All directors &amp; executive officers as a group (12 persons)</td><td>352,730</td><td>12,000</td><td>364,056</td><td>16.84 %</td></tr>
+</table></body></html>`
+
+func TestACountOfInTheMoneyOptionsIsNotAnOptionDetailTable(t *testing.T) {
+	rows := run(t, inTheMoneyCountColumnHTML)
+	// Which of the three numeric columns becomes Shares is a separate
+	// question; what this pins is that the table is not thrown away.
+	if got := find(rows, "Thomas P. Danaher", ""); got == nil || got.Percent == nil || *got.Percent != 1.60 {
+		t.Fatalf("ownership table rejected on an in-the-money COUNT column: %d rows %+v", len(rows), rows)
+	}
+	var grp *Row
+	for i := range rows {
+		if rows[i].IsGroupRow {
+			grp = &rows[i]
+		}
+	}
+	if grp == nil || grp.Percent == nil || *grp.Percent != 16.84 {
+		t.Fatalf("group row lost: %+v", grp)
+	}
+}
