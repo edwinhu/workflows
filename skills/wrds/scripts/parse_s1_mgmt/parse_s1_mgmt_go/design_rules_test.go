@@ -419,9 +419,9 @@ func TestRule2_NoSectionRowsFallsBackToPositionText(t *testing.T) {
 
 func TestRule3_NameNormalisation(t *testing.T) {
 	cases := []struct {
-		fixture  string
-		name     string // the normalised Name the row must carry
-		rawHas   string // a marker the unnormalised cell still carries
+		fixture string
+		name    string // the normalised Name the row must carry
+		rawHas  string // a marker the unnormalised cell still carries
 	}{
 		{fixture: "facebook.txt", name: "Marc L. Andreessen", rawHas: "(1)"},
 		{fixture: "facebook.txt", name: "Donald E. Graham", rawHas: "*"},
@@ -2720,5 +2720,123 @@ func TestRule1_AsciiAgeColumnMayComeLast(t *testing.T) {
 		if p.VCAffiliated {
 			t.Errorf("%s vc_affiliated = 1, want 0: %q", squash(p.Name), squash(p.VCEvidence))
 		}
+	}
+}
+
+// The venture label written ONLY in the board-qualification sentence that
+// Item 401(e) makes every post-2006 prospectus carry. Two dev filings label
+// their director's firm nowhere else: Aisling Capital is introduced bare ("has
+// been a partner at Aisling Capital since 2008") and its venture nature is
+// stated as "his experience in the biopharmaceutical industry as a venture
+// capital investor ... give him the qualifications" (0001193125-12-307785), and
+// SV Health Investors carries the appositive "an investment firm focused on
+// healthcare investing" with "because of his experience in venture capital in
+// the life sciences industry" doing the labelling (0001104659-21-128952).
+//
+// The sentence is the person's own, so rule 7's scope holds; the firm is the
+// proper-noun run after a present partner-grade role. Bios quoted verbatim.
+func TestRule7_QualificationSentenceLabelsTheFirm(t *testing.T) {
+	positive := []struct{ accession, bio, firm string }{
+		{"0001193125-12-307785",
+			"Dov A. Goldstein, M.D. has served as a member of our board of directors since " +
+				"December 2009. Dr. Goldstein has been a partner at Aisling Capital since 2008 and was " +
+				"employed as a principal at Aisling Capital from 2006 to 2008. From 2000 to 2005, " +
+				"Dr. Goldstein served as Chief Financial Officer of Vicuron Pharmaceuticals Inc., which " +
+				"was acquired by Pfizer in September 2005. We believe that Dr. Goldstein’s medical " +
+				"training and his experience in the biopharmaceutical industry as a venture capital " +
+				"investor, as an executive of Vicuron and a member of the boards of directors of other " +
+				"biopharmaceutical companies give him the qualifications and skills to serve as a director, " +
+				"including a valuable perspective on our business.",
+			"Aisling Capital"},
+		{"0001104659-21-128952",
+			"Michael Ross, Ph.D. has served as a member of our board of directors since February 2020. " +
+				"Since 2002, Dr. Ross has served as managing partner at SV Health Investors fka SV Life " +
+				"Sciences, an investment firm focused on healthcare investing. Prior to joining SV Health, " +
+				"Mike held various positions including serving as CEO of several private biotechnology " +
+				"companies and as a Vice President at Genentech, Inc., a public biotechnology company, " +
+				"from 1978 to 1990. We believe Dr. Ross is qualified to serve on our board of directors " +
+				"because of his experience in venture capital in the life sciences industry.",
+			"SV Health Investors"},
+	}
+	for _, c := range positive {
+		t.Run("yes/"+c.firm, func(t *testing.T) {
+			ok, firm, ev := detectVC(c.bio)
+			if !ok {
+				t.Fatalf("%s: vc_affiliated = false, want true", c.accession)
+			}
+			if !containsFold(firm, c.firm) {
+				t.Errorf("%s: vc_firm = %q, want it to name %q (evidence %q)", c.accession, firm, c.firm, ev)
+			}
+		})
+	}
+
+	// Quoted verbatim, and each one is a firm gold does NOT count. The route
+	// transfers a label onto a firm the filing never labels, so it only runs
+	// where the transfer has one target: a qualification sentence naming a second
+	// asset class does not say which firm supplied which (Vulcan Capital, "the
+	// venture capital and private equity industries"; Francisco Partners, "the
+	// private equity and venture capital industries"), and a bio that labels some
+	// OTHER firm as venture has already accounted for the sentence (Vulcan's
+	// director sat at "Lazard Technology Partners ... an Internet and technology
+	// focused venture capital firm"; TPG Growth's ran "the Qualcomm Life Fund, a
+	// venture fund" until 2017).
+	negativeQuoted := []struct{ accession, bio string }{
+		{"0001047469-14-004991",
+			"Abhishek Agrawal has served as a member of our board of directors since November 2013. " +
+				"Since April 2013, Mr. Agrawal has served as Managing Director at Vulcan Capital, an " +
+				"investment management firm, and head of its Palo Alto office. Prior to General Atlantic " +
+				"LLC, Mr. Agrawal was with Lazard Technology Partners, or Lazard, an Internet and " +
+				"technology focused venture capital firm, and previously served in Lazard’s investment " +
+				"banking group. We believe Mr. Agrawal is qualified to serve as a member of our board of " +
+				"directors because of his substantial corporate finance, business strategy and corporate " +
+				"development expertise gained from his significant experience in the venture capital and " +
+				"private equity industries, analyzing, investing in, serving on the boards of, and " +
+				"providing guidance to various technology companies."},
+		{"0001193125-20-253358",
+			"Dipanjan Deb has served as a member of our board of directors since October 2015. Mr. Deb " +
+				"is a founder of Francisco Partners and has served as the Managing Partner/Chief " +
+				"Executive Officer of Francisco Partners since September 2005. Prior to founding " +
+				"Francisco Partners, Mr. Deb was a principal at TPG Capital, a private equity firm. " +
+				"We believe that Mr. Deb is qualified to serve as a member of our board of directors " +
+				"because of his experience in the private equity and venture capital industries " +
+				"analyzing, investing in and serving on the boards of directors of manufacturing and " +
+				"technology companies."},
+		{"0001193125-21-230254",
+			"Lucian Iancovici, M.D., has served as a member of our board of directors since May 2020. " +
+				"Dr. Iancovici is currently a Managing Director of TPG Growth, where he has worked since " +
+				"January 2018. From September 2012 to October 2017, Dr. Iancovici served as the head of " +
+				"the Qualcomm Life Fund, a venture fund focused on investing in digital health " +
+				"technologies. We believe that Dr. Iancovici is qualified to serve on our board of " +
+				"directors because of his extensive experience in the venture capital industry, and his " +
+				"medical and scientific background and training."},
+	}
+	for _, c := range negativeQuoted {
+		t.Run("no/"+c.accession, func(t *testing.T) {
+			if ok, firm, ev := detectVC(c.bio); ok {
+				t.Errorf("%s: fired, firm=%q evidence=%q", c.accession, firm, ev)
+			}
+		})
+	}
+
+	// Constructed, not quoted. The qualification sentence is a LABEL and never an
+	// affiliation on its own: the seat still has to be partner-grade and present,
+	// and a bio with no such sentence keeps the behaviour it had before.
+	negative := []string{
+		"Mr. Doe has served on our board since 2015. Prior to joining us, Mr. Doe was a partner " +
+			"at Aisling Capital. We believe Mr. Doe is qualified to serve on our board of directors " +
+			"because of his experience in venture capital.",
+		"Mr. Doe has served on our board since 2015. Mr. Doe has been an advisor to Aisling Capital " +
+			"since 2008. We believe Mr. Doe is qualified to serve on our board of directors because " +
+			"of his experience in venture capital.",
+		"Mr. Doe has served on our board since 2015. Mr. Doe has been a partner at Aisling Capital " +
+			"since 2008. We believe Mr. Doe is qualified to serve on our board of directors because " +
+			"of his experience in the life sciences industry.",
+	}
+	for _, bio := range negative {
+		t.Run("no", func(t *testing.T) {
+			if ok, firm, ev := detectVC(bio); ok {
+				t.Errorf("fired on %q: firm=%q evidence=%q", bio, firm, ev)
+			}
+		})
 	}
 }
