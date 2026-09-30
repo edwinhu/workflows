@@ -2818,3 +2818,35 @@ func TestEnumeratorCellDoesNotHideAGroupRow(t *testing.T) {
 		}
 	}
 }
+
+// A MUTUAL FUND's 5% record-holder table states fractional share counts, because
+// a fund's register is fractional: every row of Oakmark's 2016 table
+// (0001104659-16-100553) is correctly aligned -- name and address, fund and class,
+// number of shares, percentage of outstanding shares held -- and all 55 were
+// discarded by the screen rule that reads a fraction as a mis-read column.
+const fundFractionalSharesHTML = `<html><body>
+<p><b>Security Ownership of Certain Beneficial Owners</b></p>
+<table>
+<tr><th>Name and Address</th><th>Fund and Class</th><th>Number of Shares</th><th>Percentage of Outstanding Shares Held</th></tr>
+<tr><td>Charles Schwab &amp; Co. Inc.<br>101 Montgomery St.<br>San Francisco, CA 94104-4151</td><td>Oakmark Fund, Class I</td><td>50,219,260.594</td><td>19.99%</td></tr>
+<tr><td>First Clearing LLC<br>2801 Market ST.<br>Saint Louis, MO 63103-2523</td><td>Oakmark Equity &amp; Income Fund, Class I</td><td>31,193,011.956</td><td>5.43%</td></tr>
+<tr><td>Great West Life &amp; Annuity<br>8515 E. Orchard Rd.<br>Greenwood Village, CO 80111-5002</td><td>Oakmark Equity &amp; Income Fund, Class II</td><td>1,496,337.559</td><td>5.28%</td></tr>
+</table></body></html>`
+
+func TestFundFractionalSharesSurviveTheScreen(t *testing.T) {
+	rows := ScreenRows(run(t, fundFractionalSharesHTML))
+	// Two of the three survive here; the Class II row is dropped by the
+	// implied-outstanding-total rule, which is a separate question -- one class
+	// with a single row cannot get a median of its own. On the real filing the
+	// same change carries 44 of 55 rows, and all 18 of 0001193125-17-377627.
+	if len(rows) < 2 {
+		t.Fatalf("want the fractional fund rows kept, got %d: %+v", len(rows), rows)
+	}
+	r := find(rows, "Charles Schwab & Co. Inc", "")
+	if r == nil || r.Percent == nil || *r.Percent != 19.99 {
+		t.Fatalf("Schwab row wrong: %+v", r)
+	}
+	if r.Shares == nil || *r.Shares != 50219260.594 {
+		t.Errorf("shares: %+v", r.Shares)
+	}
+}
