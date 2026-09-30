@@ -96,7 +96,19 @@ var (
 	// counted. Read only where the table has no percent column (see
 	// looksLikeOwnership).
 	reHdrOwnedShares = regexp.MustCompile(`(?i)\bowned\b|\bowns\b|ownership|\bheld\b|\bholdings?\b|beneficial|\bvot(?:ing|es)\b|\binterest\b`)
-	reSkipName       = regexp.MustCompile(`(?i)^(name|names?\s+(and\s+address\s+)?of\s+.*|(name\s+of\s+)?beneficial\s+owners?|title\s+of\s+class|total|subtotal|directors?|non-?employee\s+directors?|executive\s+officers?|named\s+executive\s+officers?|nominees?|continuing\s+directors?|other\s+executive\s+officers?|5%\s+.*|principal\s+.*holders?|common\s+stock|class\s+[a-d].*)$`)
+	// A share column's header that names an AWARD or a plan benefit rather than a
+	// holding. Read only where the table has no percent column, and only to
+	// reject a table EVERY share column of which is one of these: a genuine
+	// ownership table routinely carries an options or restricted-stock component
+	// column beside its common-stock column, and rejecting on any single award
+	// column would throw the holding away with it.
+	// Deliberately NOT including "unit": a spanning header row ("Number of Shares
+	// or Units" over a Common Stock, a Stock Equivalent Units and an Options
+	// column) contributes its words to EVERY column below it, so a unit cue makes
+	// the common-stock column award-flavoured too and the whole table is lost.
+	reHdrAwardCol = regexp.MustCompile(`(?i)\boption|\bgrant|\baward|\bssar|\bsars?\b|exercisab|` +
+		`\bunvested\b|\bvest|restricted|deferred|purchas|(?:share|stock|equity)\s+investment`)
+	reSkipName = regexp.MustCompile(`(?i)^(name|names?\s+(and\s+address\s+)?of\s+.*|(name\s+of\s+)?beneficial\s+owners?|title\s+of\s+class|total|subtotal|directors?|non-?employee\s+directors?|executive\s+officers?|named\s+executive\s+officers?|nominees?|continuing\s+directors?|other\s+executive\s+officers?|5%\s+.*|principal\s+.*holders?|common\s+stock|class\s+[a-d].*)$`)
 	// The table must look like an ownership table, not an equity-comp-plan or
 	// compensation table that also carries share counts.
 	reOwnCue = regexp.MustCompile(`(?i)beneficial|percent\s*(?:age)?\s*of\s*(?:class|shares|common|outstanding)|amount\s+and\s+nature|%\s*of\s*class|shares\s+owned|owned\s+of\s+record|as\s+a\s+group|principal\s+(?:stock|share)holders`)
@@ -1039,14 +1051,21 @@ func (c *compacted) classCol() int {
 // looksLikeOwnershipTable is the guard against compensation and equity-plan
 // tables, which also carry names and share counts.
 func (c *compacted) looksLikeOwnership(tableText string) bool {
+	return c.ownershipReject(tableText) == ""
+}
+
+// ownershipReject names the clause that rejected the table, or "" if it is
+// accepted. One function so the -debug view reports the same reason the pipeline
+// acted on.
+func (c *compacted) ownershipReject(tableText string) string {
 	if reOptDetailCue.MatchString(tableText) {
-		return false
+		return "opt_detail_cue"
 	}
 	if reCompCue.MatchString(tableText) && !reOwnCue.MatchString(tableText) {
-		return false
+		return "comp_cue"
 	}
 	if !reOwnCue.MatchString(tableText) {
-		return false
+		return "no_own_cue"
 	}
 	ndata := 0
 	for i := c.nHeader; i < len(c.rows); i++ {
@@ -1055,10 +1074,10 @@ func (c *compacted) looksLikeOwnership(tableText string) bool {
 		}
 	}
 	if ndata < 2 {
-		return false
+		return "ndata_lt_2"
 	}
 	hasP := false
-	nPct, nOwned, nShares := 0, 0, 0
+	nPct, nOwned, nShares, nNotAward := 0, 0, 0, 0
 	for _, r := range c.roles {
 		if r.role == "pct" || r.role == "shares" {
 			hasP = true
@@ -1071,21 +1090,33 @@ func (c *compacted) looksLikeOwnership(tableText string) bool {
 			if reHdrOwnedShares.MatchString(flat(r.header)) {
 				nOwned++
 			}
+			if !reHdrAwardCol.MatchString(flat(r.header)) {
+				nNotAward++
+			}
 		}
 	}
-	// A table with no percent column of its own has to say, in a share column's
-	// own header, that the shares are OWNED. An award or plan-benefits table
-	// ("Option Shares", "Number of Shares Underlying SSAR/Option Grants", "Share
-	// Investment") repeats the ownership table's people with a different count
-	// and no percent, so both rows land on one exact key; a genuine ownership
-	// table that states no percent (J&J's directors table: common shares,
-	// deferred units, options, total) always names the holding as owned, held or
-	// beneficial. Restricted to percent-less tables so that no filing can lose a
+	// A percent-less table whose EVERY share column is named as an award or plan
+	// benefit ("Number of Options Received or To Be Received", "Number of Shares
+	// Underlying SSAR/Option Grants", "Share Investment") repeats the ownership
+	// table's people with a different count: it is a plan table, not ownership.
+	//
+	// The earlier form of this clause demanded instead that a share column's own
+	// header say the shares are OWNED, and that threw away a whole layout class.
+	// A D&O beneficial-ownership table states no percent whenever the proxy says
+	// in prose that no individual reaches 1%, and it names its share columns by
+	// the COMPONENTS of the holding — "Common Stock | Stock Equivalents | Options
+	// Exercisable Within 60 Days | Restricted Stock | Total" (Xcel 2008), or
+	// simply "Shares(1)" (United Technologies 2005). Measured on the fixed panel
+	// diff, it is the largest single cause of the filings that went from rows to
+	// zero rows. Restricted to percent-less tables so that no filing can lose a
 	// parsed percent by this rule.
-	if nPct == 0 && nShares > 0 && nOwned == 0 {
-		return false
+	if nPct == 0 && nShares > 0 && nOwned == 0 && nNotAward == 0 {
+		return "pctless_award_cols_only"
 	}
-	return hasP
+	if !hasP {
+		return "no_value_col"
+	}
+	return ""
 }
 
 var reAddrLine = regexp.MustCompile(`(?i)^(\d|P\.?\s?O\.?\s+box|one\s+\w+\s+(street|plaza|place|way|center|centre|avenue)|c/o\b|[\w\s]+,\s*[A-Z]{2}\s+\d{5})`)
