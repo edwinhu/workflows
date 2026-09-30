@@ -3561,3 +3561,45 @@ func TestACountOfInTheMoneyOptionsIsNotAnOptionDetailTable(t *testing.T) {
 		t.Fatalf("group row lost: %+v", grp)
 	}
 }
+
+// A stock-owned-by heading introduces the same table as security ownership.
+func TestASCIIStockOwnedByHeading(t *testing.T) {
+	body := `             COMMON STOCK OWNED BY DIRECTORS AND EXECUTIVE OFFICERS
+
+         The shares of Cecil Bancorp's common stock that were beneficially owned
+on the Record Date by persons who were directors and officers on that date, are
+shown below.
+
+                                   Amount and
+                                    Nature of                   Percentage
+                                   Beneficial                    of Shares
+Name                               Ownership (1)               Outstanding (2)
+- ----                               -------------               --------------
+Donald F. Angert                      22,824                          1.40%
+Matthew G. Bathon                     19,064(3)                       1.17
+Mary B. Halsey                        82,134                          5.03
+Robert L. Johnson                     11,393                           .70
+Charles Sposato                      531,015(4)                      32.46
+Thomas L. Vaughan, Sr.                24,103                          1.48
+All Directors and Executive
+ Officers as a Group
+ (12 persons)                        731,435(5)                      44.55%
+
+- -----------------
+(1)      Beneficial ownership is defined by rules of the Securities and Exchange
+         Commission, and includes shares that the person has or shares voting or`
+	rows := ScreenRows(run(t, body))
+	r := find(rows, "Donald F. Angert", "")
+	if r == nil || r.Shares == nil || *r.Shares != 22824 || r.Percent == nil || *r.Percent != 1.40 {
+		t.Fatalf("stock-owned-by table missed: %+v", rows)
+	}
+	var g *Row
+	for i := range rows {
+		if rows[i].IsGroupRow {
+			g = &rows[i]
+		}
+	}
+	if g == nil || g.Shares == nil || *g.Shares != 731435 || g.Percent == nil || *g.Percent != 44.55 {
+		t.Fatalf("real group row missed: %+v", g)
+	}
+}

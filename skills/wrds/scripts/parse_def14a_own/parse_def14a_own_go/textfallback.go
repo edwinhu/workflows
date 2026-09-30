@@ -42,7 +42,8 @@ var (
 	// A heading the DOM-path anchor misses because a company name sits between
 	// "ownership of" and the class ("OWNERSHIP OF SUNDSTRAND COMMON STOCK").
 	reHdrPctCue       = regexp.MustCompile(`(?i)percent|%`)
-	reOwnHeadingLoose = regexp.MustCompile(`(?i)ownership\s+of\s+(?:\S+\s+){0,3}(?:common|capital|voting|ordinary)\s+(?:stock|shares)`)
+	reOwnHeadingLoose = regexp.MustCompile(`(?i)ownership\s+of\s+(?:\S+\s+){0,3}(?:common|capital|voting|ordinary)\s+(?:stock|shares)|` +
+		`^(?:common|capital|voting|ordinary)\s+(?:stock|shares)\s+owned\s+by\s+(?:directors?|executive\s+officers?|management)\b`)
 )
 
 // textAnchor reports whether the ASCII scan should try to find a table under
