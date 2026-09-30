@@ -3281,3 +3281,39 @@ func TestRule1_ColspanShadowIsNotTheNameColumn(t *testing.T) {
 		}
 	}
 }
+
+// The appositive that names a captive fund writes "the ... venture ... arm of
+// <parent>": a DEFINITE article and "arm" for a head noun, neither of which any
+// appositive route accepts. Gold counts these seats — S.R. One in two filings
+// and Taiho Ventures in a third — and the indefinite "a ... corporate venture
+// fund" that reCorporateVenture vetoes is a different claim: that one describes
+// a fund the person built inside an operating company, this one names the
+// parent's standing investment house.
+func TestVCCorporateArmAppositive(t *testing.T) {
+	for _, c := range []struct{ acc, firm, bio string }{
+		{"0001047469-19-003926", "S.R. One, Limited",
+			"Vikas Goyal has served as a member of our board of directors since June 2016. Mr. Goyal is currently a Principal at S.R. One, Limited, the corporate venture capital arm of GlaxoSmithKline plc, in Cambridge, Massachusetts, where he manages investments in innovative drug discovery and development companies. He joined S.R. One, Limited in January 2011."},
+		{"0001193125-18-208021", "S.R. One, Limited",
+			"Brian M. Gallagher, Jr., Ph.D. has served as a member of our board of directors since 2011. Since 2010, Dr. Gallagher has served as a partner at S.R. One, Limited, the corporate venture capital arm of GlaxoSmithKline. From 2008 until 2010, Dr. Gallagher worked at Sirtris Pharmaceuticals, Inc., a biotechnology company that was acquired by GlaxoSmithKline in 2008."},
+		// The head of a captive arm is titled President, not managing partner.
+		// The SAME bio carries a past arm seat with a closed range (Astellas,
+		// "from April 2012 until January 2016"), which must not be credited.
+		{"0001193125-21-145768", "Taiho Ventures, LLC",
+			"Sakae Asanuma, C.F.A., has served on our board of directors since August 2019. Mr. Asanuma established and has served since April 2016 as President of Taiho Ventures, LLC, the corporate venture arm of Taiho Pharmaceutical Co., Ltd., a Japanese specialty pharmaceutical company focusing on oncology, allergy and immunology and urology. Previously, Mr. Asanuma was President and Chief Executive Officer at Astellas Venture Management LLC, the corporate venture capital arm of Astellas Pharma, Inc. from April 2012 until January 2016, and U.S. Head of Astellas Innovation Management from 2013 to 2015."},
+	} {
+		ok, firm, ev := detectVC(c.bio)
+		if !ok {
+			t.Errorf("%s: detectVC = false, want the corporate arm %q", c.acc, c.firm)
+			continue
+		}
+		if firm != c.firm {
+			t.Errorf("%s: firm = %q, want %q (ev %q)", c.acc, firm, c.firm, ev)
+		}
+	}
+	// The indefinite "corporate venture fund" veto stays: MRL Ventures is a fund
+	// built inside Merck and gold does not count it.
+	probe := "Dr. Resnick previously served as a Partner at SV Health Investors from January 2016 to September 2018 and as President and Managing Partner at MRL Ventures Fund, an early-stage therapeutics-focused corporate venture fund that he built and managed within Merck & Co., from 2014 to January 2016."
+	if ok, firm, ev := detectVC(probe); ok {
+		t.Errorf("MRL Ventures: detectVC = true firm=%q ev=%q, want false", firm, ev)
+	}
+}
