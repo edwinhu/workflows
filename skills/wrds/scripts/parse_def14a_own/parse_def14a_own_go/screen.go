@@ -35,6 +35,10 @@ var (
 
 // screenTable is the per-table context the row rules need.
 type screenTable struct {
+	// fracShares counts rows whose share count has a fractional part. A MUTUAL
+	// FUND's share register is fractional throughout, so two or more such rows
+	// make the fraction the table's convention rather than a mis-read column.
+	fracShares  int
 	isGraph     bool    // a stock-performance graph, not an ownership table
 	medianTotal float64 // median shares/(pct/100) over the table's own rows
 	haveMedian  bool    //
@@ -267,6 +271,9 @@ func screenTables(rows []Row) map[int]*screenTable {
 				t.pctRepeats[*r.Percent]++
 			}
 		}
+		if r.Shares != nil && *r.Shares != math.Trunc(*r.Shares) {
+			t.fracShares++
+		}
 		if r.Shares != nil && *r.Shares > 0 && r.Percent != nil && *r.Percent >= 0.5 {
 			v := *r.Shares / (*r.Percent / 100.0)
 			implied[r.TableIndex] = append(implied[r.TableIndex], v)
@@ -362,7 +369,13 @@ func screenDropWhy(r Row, t *screenTable) string {
 	}
 	// A fractional share count means the name cell absorbed the shares column,
 	// so whatever was read as the percent came from somewhere else.
-	if r.Shares != nil && *r.Shares != math.Trunc(*r.Shares) {
+	// A fractional share count usually means the name cell absorbed the shares
+	// column, so whatever was read as the percent came from elsewhere. It means
+	// nothing of the kind in a MUTUAL FUND's 5% record-holder table, where every
+	// count is fractional by convention (Oakmark 2016: 55 correctly aligned rows,
+	// each with its fund, its class and its percent, all discarded by this rule).
+	// Two or more fractional rows in one table is the convention, not a mis-read.
+	if r.Shares != nil && *r.Shares != math.Trunc(*r.Shares) && !(t != nil && t.fracShares >= 2) {
 		return "fractional_shares"
 	}
 	if r.Percent == nil {

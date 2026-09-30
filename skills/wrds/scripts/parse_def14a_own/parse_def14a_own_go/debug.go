@@ -38,6 +38,11 @@ func DebugFile(path string, maxTables int) {
 	doc, err := html.Parse(strings.NewReader(body))
 	must(err)
 	items := DocumentItems(doc)
+	screenDropReasons = map[string]int{}
+	allRows, _, _ := ExtractHTML(body, base)
+	kept := len(ScreenRows(allRows))
+	fmt.Printf("html path: rows=%d screened_to=%d screen=%v\n", len(allRows), kept, screenDropReasons)
+	screenDropReasons = nil
 	n := 0
 	for _, it := range items {
 		if it.Kind == "text" {
