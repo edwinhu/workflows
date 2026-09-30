@@ -84,6 +84,37 @@ func TestPerformanceGraphIndexNamesAreNotHolders(t *testing.T) {
 	}
 }
 
+// Transcribed from 0001628280-19-011505 (Guggenheim Strategy Fund II 2019), a
+// per-fund 5% RECORD HOLDER table whose holders are other funds in the same
+// complex. One of them is "Rydex Variable Trust - NASDAQ-100 2x Strategy Fund",
+// and one index word condemned the whole table as a performance graph: twelve
+// real holders with share counts and percents of class screened to nothing.
+// A graph names two or more indices; one is a fund that tracks one.
+const oneIndexNamedHolder = `
+              BENEFICIAL OWNERS OF MORE THAN 5% OF EACH FUND
+
+<TABLE>
+<CAPTION>
+Name and Address of Owner                              Number of Shares   Percent of Class Owned
+<S>                                                    <C>                <C>
+Guggenheim Funds Trust - StylePlus-Large Core Fund       2,437,840            12.74%
+Guggenheim Funds Trust - StylePlus-Mid Growth Fund       1,187,609             6.21%
+Rydex Variable Trust - NASDAQ-100 2x Strategy Fund       1,946,332            10.17%
+Guggenheim Funds Trust - Total Return Bond Fund          3,104,211            16.22%
+</TABLE>
+`
+
+func TestOneIndexNamedHolderIsNotAPerformanceGraph(t *testing.T) {
+	raw := run(t, oneIndexNamedHolder)
+	if len(raw) < 4 {
+		t.Fatalf("fixture extracts %d rows, so the screen is untested: %s", len(raw), names(raw))
+	}
+	got := ScreenRows(raw)
+	if find(got, "Guggenheim Funds Trust - Total Return Bond Fund", "") == nil {
+		t.Fatalf("one index-named holder condemned the whole table: %s", names(got))
+	}
+}
+
 // The screen must be inert on a clean ownership table: every row TestASCIITable
 // checks has to survive it unchanged.
 func TestScreenKeepsACleanOwnershipTable(t *testing.T) {

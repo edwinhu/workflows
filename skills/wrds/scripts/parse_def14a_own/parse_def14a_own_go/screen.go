@@ -259,6 +259,7 @@ func screenTables(rows []Row) map[int]*screenTable {
 	implied := map[int][]float64{}
 	impliedCls := map[int]map[string][]float64{}
 	dateRows := map[int]int{}
+	indexRows := map[int]int{}
 	for _, r := range rows {
 		t := tabs[r.TableIndex]
 		if t == nil {
@@ -268,7 +269,7 @@ func screenTables(rows []Row) map[int]*screenTable {
 		name := strings.TrimSpace(r.HolderName)
 		if !r.IsGroupRow {
 			if reScreenIndex.MatchString(name) {
-				t.isGraph = true
+				indexRows[r.TableIndex]++
 			}
 			if reScreenDate.MatchString(name) {
 				dateRows[r.TableIndex]++
@@ -297,6 +298,16 @@ func screenTables(rows []Row) map[int]*screenTable {
 	// Three period labels in one table is a graph stub, not a coincidence.
 	for ti, n := range dateRows {
 		if n >= 3 {
+			tabs[ti].isGraph = true
+		}
+	}
+	// TWO index names, not one. A performance graph plots the company against
+	// an index and a peer index, so it always names at least two; a fund
+	// complex's 5% RECORD HOLDER table legitimately holds ONE fund that tracks
+	// an index ("Rydex Variable Trust - NASDAQ-100 2x Strategy Fund"), and
+	// condemning the table for it drops every real holder in it.
+	for ti, n := range indexRows {
+		if n >= 2 {
 			tabs[ti].isGraph = true
 		}
 	}
