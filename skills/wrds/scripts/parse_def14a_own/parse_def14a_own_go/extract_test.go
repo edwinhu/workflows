@@ -508,6 +508,49 @@ func TestASCIIStackedColumnHeaderCarriesTheCue(t *testing.T) {
 	}
 }
 
+// Transcribed from 0000950137-04-004242. A closed-end fund's 5% record-holder
+// exhibit heads its columns "AMOUNT OF / OWNERSHIP AS OF / APRIL 23, 2004" and
+// "APPROXIMATE / PERCENTAGE / OF OWNERSHIP" -- ownership stated as a noun, and
+// nowhere the words reOwnCue looks for. Read down its columns the first one is
+// "AMOUNT OF OWNERSHIP AS OF", which is what the table is.
+var asciiAmountOfOwnership = `
+                        SHAREHOLDER INFORMATION
+
+  As of April 23, 2004, no person was known by the Fund to own beneficially 5%
+or more of the Fund's outstanding Shares except as follows:
+
+<Table>
+<Caption>
+                                                  AMOUNT OF      APPROXIMATE
+NAME AND ADDRESS                               OWNERSHIP AS OF    PERCENTAGE
+OF HOLDER                                      APRIL 23, 2004    OF OWNERSHIP
+- ----------------                               ---------------   ------------
+<S>                                            <C>               <C>
+A Fletcher Sisk Jr.                                10,183               5%
+3009 Larkspur Run
+Williamsburg, VA 23185
+
+Comerica Bank Detroit &                            45,045              24%
+  Edward Mardigian, Trustees
+Helen Mardigian Trust
+P.O. Box 75000
+Detroit, MI 48275-0001
+
+Gordon E. Moore & Betty I. Moore, Trustees         11,184               6%
+Gordon and Betty Moore Trust
+Palo Alto, CA 94301
+</Table>
+` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 250)
+
+func TestAmountOfOwnershipIsAnOwnershipCue(t *testing.T) {
+	rows := run(t, asciiAmountOfOwnership)
+	got := find(rows, "A Fletcher Sisk Jr", "")
+	if got == nil || got.Shares == nil || *got.Shares != 10183 ||
+		got.Percent == nil || *got.Percent != 5 {
+		t.Fatalf("record-holder table rejected: %d rows %+v", len(rows), rows)
+	}
+}
+
 func TestASCIITable(t *testing.T) {
 	if IsHTML(asciiProxy) {
 		t.Fatalf("ascii proxy misrouted to the DOM parser")
