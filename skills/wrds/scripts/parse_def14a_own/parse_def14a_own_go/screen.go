@@ -30,7 +30,12 @@ var (
 	reScreenForeign = regexp.MustCompile(`(?i)\b[A-Z]\d[A-Z]\s*\d[A-Z]\d\b|\b(?:canada|england|scotland|united\s+kingdom|switzerland|netherlands|germany|japan|france|australia|bermuda|cayman\s+islands)\s*$`)
 	// A share class that is not the common stock blockw records. "Class A" is
 	// left out on purpose: it is routinely the only common class there is.
-	reScreenNonCommon = regexp.MustCompile(`(?i)\bpreferred\b|\bseries\s+[a-z0-9]+\b|\bclass\s+[b-z]\b|\besop\b|\bjunior\b|\bconvertible\b|\bdepositary\b|\bdebenture|\bwarrant|\boption\b`)
+	// "Series" followed by a DESIGNATOR -- Series A, Series 1, Series AA -- is a
+	// share class. Followed by a word it is part of a holder's name: a variable
+	// annuity's 5% record holders are "<Fund> Series Account", separate accounts
+	// that really do hold the shares, and reading them as a class dropped every
+	// row of the filing.
+	reScreenNonCommon = regexp.MustCompile(`(?i)\bpreferred\b|\bseries\s+[a-z0-9]{1,3}\b|\bclass\s+[b-z]\b|\besop\b|\bjunior\b|\bconvertible\b|\bdepositary\b|\bdebenture|\bwarrant|\boption\b`)
 )
 
 // screenTable is the per-table context the row rules need.
