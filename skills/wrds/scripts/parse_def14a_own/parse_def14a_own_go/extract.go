@@ -1137,6 +1137,19 @@ var reClassInValue = regexp.MustCompile(`(?i)\bclass\s+[a-z0-9]{1,3}\b|\bseries\
 // holder named on the row above.
 var reParenOnlyName = regexp.MustCompile(`^\s*\([^()]*\)\s*$`)
 
+// isParenQualifier reports a fully parenthesised name cell that continues the
+// holder above it. A COLLECTIVE LABEL is sometimes written entirely inside
+// parentheses ("(All Directors and officers as a group 8 persons)"), and reading
+// that as a qualifier re-emits the group total under the last director's name and
+// loses the filing's only group row.
+func isParenQualifier(nm string) bool {
+	if !reParenOnlyName.MatchString(nm) {
+		return false
+	}
+	grp, _ := isStrongGroupRow(nm)
+	return !grp
+}
+
 // holderName takes the lines of a 5% holder's cell that come BEFORE the mailing
 // address EDGAR proxies put under the name. The name itself routinely wraps
 // ("State of" / "Wisconsin Investment Board (2)" / "P.O. Box 7842" / "Madison,
@@ -1361,7 +1374,7 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 		if nc < len(c.rows[i]) {
 			if nm := dropAddress(holderName(c.rows[i][nc])); nm != "" &&
 				hasWords(nm, 1) && !reSkipName.MatchString(nm) && !isAddressLine(nm) &&
-				!reParenOnlyName.MatchString(nm) {
+				!isParenQualifier(nm) {
 				lastName = nm
 			}
 		}
@@ -1417,25 +1430,21 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 		}
 		name, fns := StripFootnotes(holderName(r[nc]))
 		name = dropAddress(name)
-		// A 5% holder is often laid out over two grid rows: the name alone,
-		// then the address with the numbers beside it.
-		// ... and the second row may be a parenthesised qualifier rather than an
-		// address ("(Vanguard Variable Annuity)"), which cleanHolderName later
-		// strips to nothing, leaving a row with no holder at all.
-		if (reAddrLine.MatchString(name) || reParenOnlyName.MatchString(name)) && lastName != "" {
-			name = lastName
-		} else if name != "" {
-			lastName = name
-		}
-		// The collective label of the D&O group total is sometimes written in the
-		// STUB column that names each block's population, with the HOLDER column
-		// left empty. Read strictly: only the unambiguous collective labels
-		// count off a cell that is not the holder column, or the stub itself
-		// ("Directors (including nominees)") turns every person row into a group.
-		if name == "" || !hasWords(name, 1) || reSkipName.MatchString(name) {
-			rescued := ""
+		// The collective label of the D&O group total is sometimes written NOT in
+		// the holder column but in the STUB column that names each block's
+		// population, or beside an enumerator cell ("(iii)"), with the holder
+		// column empty or holding only that enumerator. Read strictly: only the
+		// unambiguous collective labels count off a cell that is not the holder
+		// column, or the stub itself ("Directors (including nominees)") turns
+		// every person row into a group row.
+		rescued := ""
+		if ok, _ := isStrongGroupRow(name); !ok {
+			// Every cell but the holder's own is a candidate, whatever role it
+			// was given: the label is sometimes in a column the votes called a
+			// percent column, and a numeric cell can never read as a collective
+			// label, so the role is not the filter — isStrongGroupRow is.
 			for j, cell := range r {
-				if j == nc || c.roles[j].role == "shares" || c.roles[j].role == "pct" {
+				if j == nc {
 					continue
 				}
 				if t := flat(cell); t != "" {
@@ -1445,10 +1454,23 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 					}
 				}
 			}
-			if rescued == "" {
-				continue
-			}
+		}
+		nameUnusable := name == "" || !hasWords(name, 1) || reSkipName.MatchString(name) ||
+			isParenQualifier(name)
+		if rescued != "" && nameUnusable {
 			name, fns = StripFootnotes(rescued)
+		} else if (reAddrLine.MatchString(name) || isParenQualifier(name)) && lastName != "" {
+			// A 5% holder is often laid out over two grid rows: the name alone,
+			// then the address with the numbers beside it.
+			// ... and the second row may be a parenthesised qualifier rather than
+			// an address ("(Vanguard Variable Annuity)"), which cleanHolderName
+			// later strips to nothing, leaving a row with no holder at all.
+			name = lastName
+		} else if name != "" {
+			lastName = name
+		}
+		if name == "" || !hasWords(name, 1) || reSkipName.MatchString(name) {
+			continue
 		}
 		// Still nothing but an address after the two recovery attempts above:
 		// the cell names no holder.

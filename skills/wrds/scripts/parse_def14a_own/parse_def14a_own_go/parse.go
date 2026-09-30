@@ -24,8 +24,13 @@ var (
 	reDotPct    = regexp.MustCompile(`^\.[0-9]+\s*%?$`)
 	// "As Group (15 persons)" — the article is dropped often enough in ASCII
 	// proxies that requiring it loses real group rows.
-	reGroupRow   = regexp.MustCompile(`(?i)\bas\s+an?\s+group\b|\bas\s+group\b|\bas\s+a\s+whole\b`)
-	reGroupN     = regexp.MustCompile(`(?i)\(\s*([0-9]{1,3})\s+(?:persons?|people|individuals?|directors?|officers?|in\s+number)`)
+	reGroupRow = regexp.MustCompile(`(?i)\bas\s+an?\s+group\b|\bas\s+group\b|\bas\s+a\s+whole\b`)
+	// The count need not follow the opening parenthesis: a label written as one
+	// parenthesised phrase states it inline ("(All Directors and officers as a
+	// group 8 persons)"). Read only after isGroupRow has already said the cell is
+	// a collective label, so a bare "8 persons" in a holder name cannot reach it.
+	reGroupN = regexp.MustCompile(`(?i)\(\s*([0-9]{1,3})\s+(?:persons?|people|individuals?|directors?|officers?|in\s+number)|` +
+		`\b([0-9]{1,3})\s+(?:persons?|people|individuals?)\b`)
 	reAlphaWords = regexp.MustCompile(`[A-Za-z]{2,}`)
 	reShareUnit  = regexp.MustCompile(`(?i)\s*(?:shares?|sh\.?|common\s+shares?|units?)\s*$`)
 	reOnlyPunct  = regexp.MustCompile(`^[\s\$\(\)%\*\.\,\-–—:;_]*$`)
@@ -179,10 +184,7 @@ func isGroupRow(name string) (bool, int) {
 	if !grp {
 		return false, 0
 	}
-	n := 0
-	if m := reGroupN.FindStringSubmatch(name); m != nil {
-		n, _ = strconv.Atoi(m[1])
-	}
+	n := groupN(name)
 	return true, n
 }
 
@@ -201,9 +203,23 @@ func isStrongGroupRow(name string) (bool, int) {
 		reGroupAbove.MatchString(name) || reGroupFrag.MatchString(name)) {
 		return false, 0
 	}
-	n := 0
-	if m := reGroupN.FindStringSubmatch(name); m != nil {
-		n, _ = strconv.Atoi(m[1])
-	}
+	n := groupN(name)
 	return true, n
+}
+
+// groupN is the person count stated in a collective label, from either form the
+// count is written in: parenthesis-leading ("(20 persons)") or inline ("as a
+// group 8 persons").
+func groupN(name string) int {
+	m := reGroupN.FindStringSubmatch(name)
+	if m == nil {
+		return 0
+	}
+	for _, g := range m[1:] {
+		if g != "" {
+			n, _ := strconv.Atoi(g)
+			return n
+		}
+	}
+	return 0
 }
