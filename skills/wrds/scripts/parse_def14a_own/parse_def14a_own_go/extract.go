@@ -1083,7 +1083,17 @@ func (c *compacted) ownershipReject(tableText string) string {
 		}
 	}
 	if ndata < 2 {
-		return "ndata_lt_2"
+		// ... unless the ONE data row is the D&O group total, printed in a table
+		// of its own at the foot of the page and continuing the ownership table
+		// above it (Agilent 2005: twenty person rows and no group row, because the
+		// group total was alone in the next HTML table, under a REPRINT of the
+		// ownership table's own headers). The floor is there to stop a stray
+		// one-row table being read as ownership; a table whose single row is an
+		// unambiguous collective label, and which either reprints the ownership
+		// headers or inherits them from the table it continues, is not that.
+		if !(ndata == 1 && c.soleRowIsGroup() && (c.inherited || c.hasHeaderCues())) {
+			return "ndata_lt_2"
+		}
 	}
 	hasP := false
 	nPct, nOwned, nShares, nNotAward := 0, 0, 0, 0
@@ -1676,4 +1686,20 @@ func (c *compacted) joinedLabel(r, next []string, nc int) string {
 		return ""
 	}
 	return joined
+}
+
+// soleRowIsGroup reports whether the table's only data row reads, in some cell,
+// as an unambiguous collective label.
+func (c *compacted) soleRowIsGroup() bool {
+	for i := c.nHeader; i < len(c.rows); i++ {
+		if !rowIsData(c.rows[i]) {
+			continue
+		}
+		for _, cell := range c.rows[i] {
+			if ok, _ := isStrongGroupRow(flat(cell)); ok {
+				return true
+			}
+		}
+	}
+	return false
 }
