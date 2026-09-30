@@ -2932,3 +2932,197 @@ func TestRule7_ARangeAfterTheAppositiveSettlesTheSeatBothWays(t *testing.T) {
 		})
 	}
 }
+
+// Affiliated Managers Group 1997 (0000950135-97-004756) runs its MANAGEMENT
+// section as MANAGEMENT / EXECUTIVE OFFICERS / EXECUTIVE COMPENSATION /
+// DIRECTORS, all four at the left margin and in the same capitals. Its own
+// table of contents gives "Management....55" with "Certain Transactions....64"
+// next, so the board table under DIRECTORS is INSIDE the section and the
+// compensation heading between them is a sub-heading written to look like a
+// successor. Two things break on it: the section closes at EXECUTIVE
+// COMPENSATION, and the board table has no POSITION column at all -- its
+// caption is NAME and AGE only, with the heading above it saying what the rows
+// are. The filing then yields 7 people where the prospectus says "all directors
+// and executive officers as a group (12 persons)", and not one director.
+//
+// Both slices are verbatim. Elided between them: the six remaining officer bios
+// (the trailing "(1)"/"(2)" footnotes of the officers table included), and after
+// them the board's remaining five bios.
+const asciiCompHeadingOfficersExcerpt = `
+                                   MANAGEMENT
+ 
+EXECUTIVE OFFICERS
+ 
+     The names, ages and positions of each of the executive officers of the
+Company, as well as a description of their business experience and past
+employment are as set forth below:
+ 
+<TABLE>
+<CAPTION>
+             NAME                AGE                       POSITION
+- ------------------------------   ---    -----------------------------------------------
+<S>                              <C>    <C>
+William J. Nutt...............   52     President, Chief Executive Officer and Chairman
+                                        of the Board of Directors
+Sean M. Healey................   36     Executive Vice President
+Levon Chertavian, Jr. ........   38     Senior Vice President, Affiliate Support
+Nathaniel Dalton..............   31     Senior Vice President, General Counsel and
+                                        Secretary
+Brian J. Girvan...............   42     Senior Vice President, Chief Financial Officer
+                                        and Treasurer
+Seth W. Brennan...............   27     Vice President
+Jeffrey S. Murphy.............   31     Vice President
+</TABLE>
+ 
+     William J. Nutt founded the Company in December 1993 and has served as its
+Chairman, President and Chief Executive Officer since that time. Mr. Nutt began
+his career at the law firm of Ballard, Spahr, Andrews & Ingersoll in
+Philadelphia, where he was a Partner until he joined The Boston Company in 1982.
+As Senior Executive Vice President of that firm, Mr. Nutt built The Boston
+Company's mutual fund administration, distribution and custody business serving
+over 45 fund sponsors with assets of $119.0 billion. In 1989, he became
+President, assuming overall responsibility for The Boston Company's $36.0
+billion institutional money management business, its $190.0 billion master
+trustee and custodian business, and the personal banking and trust business of
+the Boston Safe Deposit and Trust Company. Mr. Nutt received a J.D. from the
+University of Pennsylvania and a B.A. from Grove City College. From 1991 to
+1994, Mr. Nutt served on the Executive Committee of the Board of Governors of
+the Investment Company Institute.
+ 
+`
+
+const asciiCompHeadingDirectorsExcerpt = `EXECUTIVE COMPENSATION
+ 
+     The following table sets forth information concerning the cash compensation
+awarded to the Company's Chief Executive Officer and the Company's four (4)
+other most highly compensated executive officers whose total salary and bonus
+exceeded $100,000 during the fiscal year ended December 31, 1996 (collectively,
+the "Named Executive Officers").
+ 
+                        1996 SUMMARY COMPENSATION TABLE
+ 
+<TABLE>
+<CAPTION>
+                                                             1996 ANNUAL
+                                                             COMPENSATION
+                                                         --------------------       ALL OTHER
+             NAME AND PRINCIPAL POSITION                  SALARY      BONUS      COMPENSATION(1)
+- ------------------------------------------------------   --------    --------    ----------------
+<S>                                                      <C>         <C>         <C>
+William J. Nutt, Chairman, President and Chief
+  Executive Officer...................................   $354,350    $315,000        $ 26,750
+Sean M. Healey, Executive Vice President..............    270,460     277,500          26,750
+Levon Chertavian, Jr., Senior Vice President..........    159,227     116,667          24,813
+Nathaniel Dalton, Senior Vice President (2)...........     98,498     100,000          17,068
+Seth W. Brennan, Vice President.......................     56,277      55,000          15,806
+</TABLE>
+ 
+- ---------------
+ 
+(1) Includes (i) contributions by the Company under its 401(k) Profit Sharing
+    Plan in the amount of $22,500 on behalf of each of Messrs. Nutt, Healey and
+    Chertavian, $14,755 on behalf of Mr. Dalton and $14,375 on behalf of Mr.
+    Brennan; and (ii) the dollar value of insurance premiums paid by the Company
+    with respect to term life and long term disability insurance policies for
+    the benefit of the Named Executive Officers in the amount of $4,250 on
+    behalf of Messrs. Nutt and Healey, $2,313 on behalf of Messrs. Chertavian
+    and Dalton and $1,431 on behalf of Mr. Brennan.
+ 
+(2) Mr. Dalton's employment with the Company commenced in May 1996.
+ 
+                                       56
+<PAGE>   57
+ 
+DIRECTORS
+ 
+     The names, ages and a description of the business experience, principal
+occupation and past employment during at least the last five years of each of
+the directors of the Company are set forth below.
+ 
+<TABLE>
+<CAPTION>
+                                         NAME                                    AGE
+        ----------------------------------------------------------------------   ---
+        <S>                                                                      <C>
+        William J. Nutt(1)....................................................   52
+        Richard E. Floor(2)...................................................   57
+        Roger B. Kafker(2)(3).................................................   35
+        P. Andrews McLane(1)(3)...............................................   50
+        John M. B. O'Connor(1)(3).............................................   43
+        W. W. Walker, Jr.(2)(3)...............................................   50
+</TABLE>
+ 
+- ---------------
+ 
+(1) Member of the Compensation Committee.
+ 
+(2) Member of the Audit Committee.
+ 
+(3) Messrs. McLane, Kafker, Walker and O'Connor were elected as directors in
+    accordance with the terms of a certain Amended and Restated Stockholders'
+    Agreement dated as of October 9, 1997 (the "Stockholders' Agreement") among
+    the Company and certain of the Company's stockholders, including TA
+    Associates, NationsBank, The Hartford and Chase Equity Associates, which was
+    entered into in connection with the recent equity investment by Chase Equity
+    Associates in the Company. These provisions of the Stockholders' Agreement
+    will be terminated upon consummation of the Offerings.
+ 
+     For Mr. Nutt's biographical information, see information under "--Executive
+Officers".
+ 
+     Richard E. Floor has been a director of the Company since its formation. A
+professional corporation of which Mr. Floor is the sole stockholder is and has
+been a partner at the law firm of Goodwin, Procter & Hoar LLP or its predecessor
+since 1975. Mr. Floor is also a director of Town & Country Corporation, a
+jewelry manufacturer, and New America High Income Fund, a closed-end investment
+company.
+ 
+`
+
+func TestRule1_AsciiCompensationSubHeadingDoesNotCloseTheSection(t *testing.T) {
+	raw := sgmlHeaderFor("AFFILIATED MANAGERS GROUP INC") +
+		sgmlDoc("424B4", asciiCompHeadingOfficersExcerpt+asciiCompHeadingDirectorsExcerpt+
+			"\nCERTAIN TRANSACTIONS\n")
+	e := ExtractManagement([]byte(raw))
+	if e.Filing.Status != StatusOK {
+		t.Fatalf("status = %q, want %q", e.Filing.Status, StatusOK)
+	}
+	if len(e.Persons) != 12 {
+		t.Fatalf("len(persons) = %d, want 12 (7 officers + 6 directors, Nutt in both): %v",
+			len(e.Persons), personNames(e))
+	}
+	// Five, not six: Nutt sits in both tables and the officer-wins rule keeps him
+	// an officer, as it does for every filing whose CEO also holds a board seat.
+	if got := countSection(e, SectionDirector); got != 5 {
+		t.Errorf("directors = %d, want 5: the DIRECTORS heading over a NAME/AGE table sections its rows: %v",
+			got, personNames(e))
+	}
+	if got := squash(e.Filing.CEOName); got != "William J. Nutt" {
+		t.Errorf("ceo_name = %q, want %q", got, "William J. Nutt")
+	}
+	if !e.Filing.CEOFounderSelfDescribed {
+		t.Errorf("ceo_founder_self_described = 0, want 1: %q", squash(e.Filing.CEOFounderEvidence))
+	}
+	// A person reached only through the second table must carry the bio that
+	// follows it, exactly as a first-table person does.
+	floor := person(t, e, "Richard E. Floor")
+	if !containsFold(floor.Bio, "a director of the Company since its formation") {
+		t.Errorf("Richard E. Floor bio = %q, want the sentence opening his board service", squash(floor.Bio))
+	}
+	// Nutt sits in both tables and must be one person, not two.
+	n := 0
+	for _, p := range e.Persons {
+		if squash(p.Name) == "William J. Nutt" {
+			n++
+		}
+	}
+	if n != 1 {
+		t.Errorf("William J. Nutt appears %d times, want 1: %v", n, personNames(e))
+	}
+	// The five people the SUMMARY COMPENSATION table names sit between the two
+	// person tables and must not become people: the section reaches through that
+	// table, and only the AGE column keeps its rows out.
+	if got := len(e.Persons); got != 12 {
+		t.Errorf("len(persons) = %d after the compensation table: %v", got, personNames(e))
+	}
+}
