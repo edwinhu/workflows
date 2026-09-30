@@ -15,6 +15,24 @@
 #                    (default round_filelist.tsv — the UNION of the blockw/factset
 #                     filelist, the ISS one, and the fixed full-archive sample)
 #
+# THE GATE MUST NOT DEPEND ON THIS PROCESS SURVIVING. Twice on 2026-09-29 a grind
+# iteration ended while the round's SGE job was still queued; the iteration's
+# process group died, `qsub -sync y` died with it, and `$WORK/out/round-ready` was
+# therefore never re-created — so the loop waited on a marker nothing was left to
+# write, forever. Every qsub below now records its job id and this script's pid in
+#
+#   $WORK/out/round-jobs.tsv     jobid <TAB> label <TAB> epoch   (append-only)
+#   $WORK/out/round-state.json   pid, host, root, phase, jobs, timestamps
+#
+# BEFORE it starts waiting, so `gate.sh` can ask the grid and the process table
+# what actually happened and open the gate itself. See gate.sh.
+#
+# MODES
+#   bash run_baseline.sh [score args...]              full round (build/stage/submit/fetch/score)
+#   bash run_baseline.sh --fetch-only [score args...] skip build+submit; fetch $ROOT/out and score
+#                                                    (this is how an ORPHANED round whose grid
+#                                                    job finished is brought home)
+#
 # EVERY ROUND PARSES BOTH GOLD FILELISTS, THE SAMPLE AND THE REGRESSION SET. `iss_director_recall` is
 # gated as of 2026-09-29, and the three sample metrics were gated the same day; a
 # gated rate scored over only the filings that happened to be submitted is a rate
@@ -39,11 +57,30 @@ GOLD="${GOLD_DIR:-/data/def14a_own/gold}"
 HOST="${WRDS_HOST:-wrds}"
 FILELIST="${DEF14A_FILELIST:-round_filelist.tsv}"
 
+FETCH_ONLY=0
+if [[ "${1:-}" == "--fetch-only" ]]; then
+    FETCH_ONLY=1
+    shift
+fi
+
+# --- durable gate bookkeeping -------------------------------------------------
+# Written BEFORE any wait, so a killed round is still reconstructable. `gate.sh`
+# is the only reader.
+mkdir -p "$WORK/out"
+JOBS_TSV="$WORK/out/round-jobs.tsv"
+STATE_JSON="$WORK/out/round-state.json"
+PHASE="start"
+START_EPOCH=$(date +%s)
+# shellcheck source=gate_lib.sh
+source "$HERE/gate_lib.sh"
+
 # The grind --gate watches this marker: while a round is in flight it is absent,
 # the loop records a `wait` and spends no model call. It is re-created at the end
-# of EVERY round, including a round whose scorer reports a gated metric short.
-mkdir -p "$WORK/out"
-rm -f "$WORK/out/round-ready"
+# of EVERY round, including a round whose scorer reports a gated metric short —
+# and, if this process is killed mid-round, by gate.sh once the grid is clear.
+rm -f "$WORK/out/round-ready" "$WORK/out/round-orphaned"
+: > "$JOBS_TSV"
+gate_write_state "start"
 
 echo "== filelist coverage =="
 # Both gold filelists must be covered, or the round scores a gated ISS recall
@@ -67,6 +104,11 @@ for req in gold_filelist.tsv gold_iss_filelist.tsv sample_full.tsv regress_filel
     fi
 done
 
+if (( FETCH_ONLY )); then
+    echo "== --fetch-only: skipping build/stage/submit; bringing $HOST:$ROOT/out home =="
+    gate_write_state "fetch"
+else
+
 echo "== build =="
 # -buildvcs=false is NOT optional. Without it `go build` stamps vcs.revision,
 # vcs.time and vcs.modified into the binary, so the same source built at two
@@ -86,7 +128,9 @@ scp -q "$GOLD/$FILELIST" "$HOST:$ROOT/filelists/filelist_gold.tsv"
 ssh "$HOST" "chmod +x $ROOT/sge/*.sh $ROOT/bin/parse_def14a_own_go; echo gold > $ROOT/filelists/buckets.txt; rm -f $ROOT/out/*"
 
 echo "== sizes (compute node) =="
-ssh "$HOST" "cd $ROOT && qsub -sync y -pe onenode 2 -l m_mem_free=8G -o $ROOT/logs/scan_sizes.out sge/run_python.sh sge/scan_sizes.py $ROOT/filelists" >/dev/null
+gate_write_state "sizes"
+ssh "$HOST" "cd $ROOT && qsub -sync y -pe onenode 2 -l m_mem_free=8G -o $ROOT/logs/scan_sizes.out sge/run_python.sh sge/scan_sizes.py $ROOT/filelists" \
+    | gate_record_stream scan_sizes >/dev/null
 ssh "$HOST" "tail -2 $ROOT/logs/scan_sizes.out"
 
 echo "== shards =="
@@ -95,7 +139,9 @@ NSHARD=$(ssh "$HOST" "wc -l < $ROOT/filelists/shards/chunks.txt")
 echo "shards: $NSHARD"
 
 echo "== array =="
-ssh "$HOST" "cd $ROOT && qsub -sync y -t 1-$NSHARD sge/submit_shards.sh" | tail -3
+gate_write_state "array"
+ssh "$HOST" "cd $ROOT && qsub -sync y -t 1-$NSHARD sge/submit_shards.sh" \
+    | gate_record_stream shard_array | tail -3
 ssh "$HOST" "grep -h '\[scan_shard\]' $ROOT/out/*.log | tail -5"
 FAIL=$(ssh "$HOST" "grep -lh FAIL $ROOT/out/*.log 2>/dev/null | wc -l")
 if [[ "$FAIL" != "0" ]]; then
@@ -103,12 +149,16 @@ if [[ "$FAIL" != "0" ]]; then
     exit 1
 fi
 
+fi   # end of the build/stage/submit block skipped by --fetch-only
+
 echo "== fetch =="
+gate_write_state "fetch"
 mkdir -p "$WORK/out" "$WORK/shard_logs"
-# The shard logs land OUTSIDE $WORK/out on purpose: `rm -f $WORK/out/*` is how the
-# round clears the last pass, and a directory in there makes that line fail under
-# `set -e`.
-rm -f "$WORK"/out/* "$WORK"/shard_logs/*
+# The shard logs land OUTSIDE $WORK/out on purpose: clearing the last pass is a
+# glob over $WORK/out, and a directory in there makes that line fail under `set -e`.
+# The glob is *.tsv.gz and NOT `*`: round-jobs.tsv / round-state.json live in the
+# same directory and are what gate.sh reads if this process is killed.
+rm -f "$WORK"/out/*.tsv.gz "$WORK"/shard_logs/*
 scp -q "$HOST:$ROOT/out/*.tsv.gz" "$WORK/out/"
 scp -q "$HOST:$ROOT/out/*.log" "$WORK/shard_logs/"
 ROWS=$(zcat "$WORK"/out/*[0-9].tsv.gz | grep -vc '^accession' || true)
@@ -156,6 +206,7 @@ print("  [out] %s" % out)
 PY
 
 echo "== score (dev) =="
+gate_write_state "score"
 # The scorer's exit code is captured rather than allowed to abort the script: a
 # round whose gated metric is short (exit 1 under --check) has still produced the
 # output the loop must be able to read, so the marker is written either way and
@@ -179,5 +230,6 @@ set -e
 # The grind --gate waits on this marker: while it is absent the loop records a
 # `wait` and spends nothing.
 touch "$WORK/out/round-ready"
+gate_write_state "done"
 echo "== done: $WORK/out/round-ready (score exit $SCORE_EXIT) =="
 exit "$SCORE_EXIT"
