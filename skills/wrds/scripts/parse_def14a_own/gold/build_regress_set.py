@@ -17,8 +17,8 @@ locked, exactly like `sample_full.tsv`.
   (a) ZERO-ROW set    old n_rows > 0 AND new n_rows == 0
   (b) GROUP-ROW set   old has_group_row == 1 AND new has_group_row == 0
 
-EXCLUSIONS — two clauses, both mechanical, both applied to the OLD rows of the
-candidate filing, and both meaning "the old rows are demonstrably wrong, so
+EXCLUSIONS — FOUR clauses, all mechanical, all applied to the OLD rows of the
+candidate filing, and all meaning "the old rows are demonstrably wrong, so
 restoring them is not a target":
 
   X1  >= 1 old row whose `holder_name` contains a `$`.
@@ -40,6 +40,53 @@ restoring them is not a target":
       directors each `100000` from "over $100,000" while the real
       "Shares of Common Stock Beneficially Owned" column (22,887 / 3,672 / ...)
       went unread.
+
+  X3  NO old row carries a percent AND at least half the filing's old `shares`
+      values fall in the N-1A dollar-range endpoint set
+      {0, 1, 10000, 50000, 100000, 500000, 1000000}.
+      ADDED 2026-09-30, and the rule is quoted VERBATIM from the grind floor
+      `regress-zero-row-ceiling-0.761-dollar-range-tables`, which measured it:
+        "for each of the 590 set-(a) filings not recovered at commit d73248ab, read
+         the OLD rows out of panel_e4e78a95/rows_*.tsv.gz; classify a filing
+         dollar_range_shaped when NO old row carries a percent and at least half its
+         old shares values fall in the dollar-range endpoint set
+         {0,1,10000,50000,100000,500000,1000000} -- the N-1A ranges $1-$10,000 /
+         $10,001-$50,000 / $50,001-$100,000 / over $100,000."
+      Those are Item 22(b)(5) fund dollar-range tables read as share counts, and
+      X1/X2 miss them for the reason that floor gives: "the ranges DIFFER between
+      trustees, so no three rows carry one identical (shares,percent) pair and no
+      holder_name carries a dollar sign." The floor verified six of six sampled
+      filings against the documents' own words (0000950137-04-004256,
+      0000950137-07-007193, 0001072613-08-000788, 0001047469-06-007946,
+      0000950136-05-005070, and earlier 0000950134-02-001418, 0001047469-06-009764,
+      0000891092-05-000978, 0000897101-04-000270, 0000950116-05-000211).
+  X4  NO old row carries a percent AND >= 3 distinct old `table_index` values AND at
+      least half the old rows carry a `holder_name` that repeats 3+ times in the
+      filing — the fund-family COMPENSATION table attached once per fund.
+      ADDED 2026-09-30, quoted VERBATIM from the grind floor
+      `regress-zero-row-ceiling-0.734-refined`:
+        "m3_repeated_per_fund 43 (no percent anywhere, at least 3 distinct old
+         table_index values, and at least half the old rows are holder names that
+         repeat 3+ times -- the fund-family COMPENSATION table attached once per
+         fund, which is the rounds own mechanism M3 and which it says to REJECT)."
+      All 43 are one document, 0000051931-18-000890 (American Funds 2018, old n_rows
+      375) filed under 43 co-registrant CIKs, whose columns read verbatim from
+      -debug: "Aggregate compensation from Fund (inc. voluntarily deferred
+      compensation2) | Total compensation from all Funds | Dollar range3 of Fund
+      shares owned | Aggregate dollar range3 of shares owned in all overseen Funds"
+      — compensation dollars and dollar ranges, no share count and no percent.
+
+WHY X3 AND X4 WERE ADDED. Set (a) was gated at `regress_zero_row_recovered >= 0.95`
+on the premise that every filing in it had lost REAL ownership rows. It had not: the
+two floors above measured, from the panels themselves, that 205 + 43 = 248 of the
+933 set-(a) filings had OLD rows that were themselves wrong, which the duplicate
+round REMOVED on purpose in 52f43c4f. That put a hard ceiling of 685/933 = 0.7342 on
+the gate, so 0.95 was unreachable and the loop was being paid to re-accept tables
+`regress_excluded_emitting_rows_rate` exists to catch. The correction is to the SET,
+not to the threshold: 0.95 stays, the mis-specified members leave the denominator,
+and they are reported as a DIAGNOSTIC (score.py prints the X3/X4 exclusions and
+their emitting-rows rate separately from X1/X2, so re-accepting them is still
+visible). `textMoneyBlock` must not be weakened.
 
 A rule that was CONSIDERED AND REJECTED, because a document refuted it: "the old
 parse emitted no percent anywhere" (980 of the 1,070). GE 2013
@@ -150,10 +197,20 @@ def main():
     print("[set] candidates: (a) zero-row %d ; (b) group-row %d ; union %d" % (
         len(cand_a), len(cand_b), len(cands)))
 
-    # ---- the OLD rows of the candidate filings, for X1 / X2 and for the report ----
+    # ---- the OLD rows of the candidate filings, for X1..X4 and for the report ----
+    # N-1A DOLLAR-RANGE ENDPOINTS, quoted from the 0.761 floor: the $1-$10,000 /
+    # $10,001-$50,000 / $50,001-$100,000 / over $100,000 bands, plus 0 and the
+    # $500,001-$1,000,000 band the later forms add. A `shares` value equal to one of
+    # these and no percent anywhere is a dollar RANGE read as a share COUNT.
+    DOLLAR_RANGE_ENDPOINTS = {0, 1, 10000, 50000, 100000, 500000, 1000000}
+
     n_old_rows = 0
     val_count = defaultdict(lambda: defaultdict(int))   # key -> (shares, percent) -> n
-    stat = defaultdict(lambda: {"rows": 0, "dollar": 0, "grp": 0, "grp_pct": 0})
+    name_count = defaultdict(lambda: defaultdict(int))  # key -> holder_name -> n   (X4)
+    tables = defaultdict(set)                           # key -> {table_index}      (X4)
+    names = defaultdict(list)                           # key -> [holder_name, ...] (X4)
+    stat = defaultdict(lambda: {"rows": 0, "dollar": 0, "grp": 0, "grp_pct": 0,
+                                "pct": 0, "endpoint": 0})
     for p in sorted(glob.glob(os.path.join(args.old_panel, "rows_*.tsv.gz"))):
         with gzip.open(p, "rt") as fh:
             for r in csv.DictReader(fh, **TSV):
@@ -170,6 +227,18 @@ def main():
                     if (r["percent"] or "") != "":
                         s["grp_pct"] += 1
                 val_count[key][(r["shares"], r["percent"])] += 1
+                # --- X3 / X4 inputs ---
+                if (r["percent"] or "") != "":
+                    s["pct"] += 1
+                try:
+                    if int(r["shares"]) in DOLLAR_RANGE_ENDPOINTS:
+                        s["endpoint"] += 1
+                except (TypeError, ValueError):
+                    pass          # an unparsed shares cell is not an endpoint
+                tables[key].add(r["table_index"])
+                nm = r["holder_name"] or ""
+                names[key].append(nm)
+                name_count[key][nm] += 1
     print("[in ] old rows in candidate filings: %d" % n_old_rows)
 
     rows, counts = [], defaultdict(int)
@@ -180,24 +249,44 @@ def main():
         max_same = max(vals.values()) if vals else 0
         x1 = 1 if s["dollar"] > 0 else 0
         x2 = 1 if (s["rows"] >= 3 and max_same == s["rows"]) else 0
-        excluded = x1 or x2
+        # X3 / X4 — both require "no percent anywhere" in the OLD rows, which is the
+        # condition the two floors state and which is NOT on its own an exclusion
+        # (GE 2013 refuted that; see the rejected rule above). It is the CONJUNCTION
+        # with the dollar-range shape (X3) or the per-fund repetition (X4) that is.
+        no_pct = s["rows"] > 0 and s["pct"] == 0
+        x3 = 1 if (no_pct and 2 * s["endpoint"] >= s["rows"]) else 0
+        n_rep_rows = sum(1 for nm in names[key] if name_count[key][nm] >= 3)
+        x4 = 1 if (no_pct and len(tables[key]) >= 3 and 2 * n_rep_rows >= s["rows"]) else 0
+        excluded = x1 or x2 or x3 or x4
         in_a = 1 if (key in cand_a and not excluded) else 0
         in_b_gated = 1 if (key in cand_b and not excluded and s["grp_pct"] > 0) else 0
         in_b_diag = 1 if (key in cand_b and not excluded and s["grp_pct"] == 0) else 0
         m = old[key]
         rows.append([acc, cik, m["filing_date"], m["source_file"], m["form"],
                      1 if key in cand_a else 0, 1 if key in cand_b else 0,
-                     in_a, in_b_gated, in_b_diag, x1, x2,
+                     in_a, in_b_gated, in_b_diag, x1, x2, x3, x4,
                      m["n_rows"], m["n_percent_parsed"], s["grp"], s["grp_pct"],
-                     s["rows"], max_same])
+                     s["rows"], max_same,
+                     s["pct"], s["endpoint"], len(tables[key]), n_rep_rows])
         counts["candidates"] += 1
         counts["cand_a"] += 1 if key in cand_a else 0
         counts["cand_b"] += 1 if key in cand_b else 0
         counts["excl_x1"] += x1
         counts["excl_x2"] += x2
+        counts["excl_x3"] += x3
+        counts["excl_x4"] += x4
         counts["excl_x1_only"] += 1 if (x1 and not x2) else 0
         counts["excl_x2_only"] += 1 if (x2 and not x1) else 0
         counts["excl_both"] += 1 if (x1 and x2) else 0
+        # What the 2026-09-30 correction ACTUALLY removed, which is the number the
+        # amendment is judged on: candidates X3/X4 catch that X1/X2 did not.
+        counts["excl_x3_new"] += 1 if (x3 and not (x1 or x2)) else 0
+        counts["excl_x4_new"] += 1 if (x4 and not (x1 or x2 or x3)) else 0
+        counts["excl_x3_or_x4_new"] += 1 if ((x3 or x4) and not (x1 or x2)) else 0
+        counts["excl_x3_or_x4_new_from_a"] += 1 if (
+            key in cand_a and (x3 or x4) and not (x1 or x2)) else 0
+        counts["excl_x3_or_x4_new_from_b"] += 1 if (
+            key in cand_b and (x3 or x4) and not (x1 or x2)) else 0
         counts["excl_any"] += 1 if excluded else 0
         counts["excl_from_a"] += 1 if (key in cand_a and excluded) else 0
         counts["excl_from_b"] += 1 if (key in cand_b and excluded) else 0
@@ -210,8 +299,12 @@ def main():
               "cand_zero_row", "cand_group_row",
               "in_set_zero_row", "in_set_group_row_gated", "in_set_group_row_diag",
               "excl_x1_dollar_in_name", "excl_x2_one_value_all_rows",
+              "excl_x3_dollar_range_table", "excl_x4_m3_repeated_per_fund",
               "old_n_rows", "old_n_percent_parsed", "old_group_rows",
-              "old_group_rows_with_percent", "old_rows_counted", "old_max_identical_value"]
+              "old_group_rows_with_percent", "old_rows_counted", "old_max_identical_value",
+              # the X3/X4 inputs, so every exclusion can be re-checked from this file
+              "old_rows_with_percent", "old_rows_range_endpoint_shares",
+              "old_distinct_table_index", "old_rows_name_repeated_3plus"]
     out_path = os.path.join(g, "gold_regress.tsv")
     rows.sort(key=lambda r: (r[0], int(r[1])))
     with open(out_path, "w") as fh:
@@ -280,6 +373,31 @@ def main():
             "X2_one_value_all_rows": ">= 3 old rows, all carrying the identical "
                                      "(shares, percent) pair — no real ownership table "
                                      "gives every holder the same holding",
+            "X3_dollar_range_table": "ADDED 2026-09-30, quoted from grind floor "
+                                     "regress-zero-row-ceiling-0.761-dollar-range-tables: "
+                                     "'classify a filing dollar_range_shaped when NO old "
+                                     "row carries a percent and at least half its old "
+                                     "shares values fall in the dollar-range endpoint set "
+                                     "{0,1,10000,50000,100000,500000,1000000} -- the N-1A "
+                                     "ranges $1-$10,000 / $10,001-$50,000 / "
+                                     "$50,001-$100,000 / over $100,000.'",
+            "X4_m3_repeated_per_fund": "ADDED 2026-09-30, quoted from grind floor "
+                                       "regress-zero-row-ceiling-0.734-refined: "
+                                       "'m3_repeated_per_fund 43 (no percent anywhere, at "
+                                       "least 3 distinct old table_index values, and at "
+                                       "least half the old rows are holder names that "
+                                       "repeat 3+ times -- the fund-family COMPENSATION "
+                                       "table attached once per fund, which is the rounds "
+                                       "own mechanism M3 and which it says to REJECT).'",
+            "why_X3_X4_added": "set (a) was gated at regress_zero_row_recovered >= 0.95 on "
+                               "the premise that every member had lost REAL ownership rows. "
+                               "The two floors above measured, from the panels, that 205 + "
+                               "43 = 248 of the 933 set-(a) filings had OLD rows that were "
+                               "themselves wrong and that the duplicate round removed on "
+                               "purpose in 52f43c4f, putting a hard ceiling of 685/933 = "
+                               "0.7342 on the gate. The SET is corrected; the 0.95 "
+                               "thresholds are unchanged; the removed filings remain a "
+                               "reported diagnostic",
             "rejected_rule": "'old parse emitted no percent anywhere' (980 of the 1,070) "
                              "was REJECTED: GE 2013 0001206774-13-001019 states no percent "
                              "at all and its old rows are the real table",
