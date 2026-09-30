@@ -2735,3 +2735,86 @@ func TestBeneficialOwnershipHeaderIsNotTheNameColumn(t *testing.T) {
 		t.Errorf("shares wrong: %+v", r)
 	}
 }
+
+// The D&O group row's label is written ENTIRELY inside parentheses -- "(All
+// Directors and officers as a group 8 persons)" -- and reParenOnlyName reads a
+// fully parenthesised name cell as a qualifier continuing the holder above it, so
+// the group row was re-emitted under the LAST DIRECTOR'S name and the filing lost
+// the only group row it has, percent and all. Transcribed from 0001493152-24-043144.
+const parenthesisedGroupRowHTML = `<html><body>
+<p><b>SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS AND MANAGEMENT</b></p>
+<table>
+<tr><th>Name and address (1)</th><th>Number of shares beneficially owned</th><th>Percentage of ownership (2)</th></tr>
+<tr><td>Kimberly Murphy (9)</td><td>71,646</td><td>*</td></tr>
+<tr><td>John Gandolfo (10)</td><td>50,102</td><td>*</td></tr>
+<tr><td>(All Directors and officers as a group 8 persons)</td><td>1,139,355</td><td>10.1</td></tr>
+</table></body></html>`
+
+func TestParenthesisedGroupRowIsNotAQualifier(t *testing.T) {
+	rows := ScreenRows(run(t, parenthesisedGroupRowHTML))
+	var g *Row
+	for i := range rows {
+		if rows[i].IsGroupRow {
+			g = &rows[i]
+		}
+	}
+	if g == nil {
+		t.Fatalf("the parenthesised group row was read as a qualifier: %+v", rows)
+	}
+	if g.Percent == nil || *g.Percent != 10.1 {
+		t.Errorf("group row percent: %+v", g.Percent)
+	}
+	if g.GroupN != 8 {
+		t.Errorf("group n: %d", g.GroupN)
+	}
+	// It must not have been re-emitted under the last director's name.
+	n := 0
+	for _, r := range rows {
+		if r.HolderName == "John Gandolfo" {
+			n++
+		}
+	}
+	if n != 1 {
+		t.Errorf("John Gandolfo emitted %d times", n)
+	}
+}
+
+// The D&O group row's label sits beside an ENUMERATOR cell: the holder column
+// holds "(iii)" and the collective label is in the column to its right. "(iii)"
+// is a fully parenthesised cell, so it was read as a qualifier continuing the
+// holder above and the group total was re-emitted under that holder's name.
+// Transcribed from 0001193125-12-177680.
+const enumeratorGroupRowHTML = `<html><body>
+<p><b>Security Ownership of Certain Beneficial Owners and Management</b></p>
+<table>
+<tr><th>Name of Beneficial Owner</th><th>Percent of Class</th><th>Number of Shares</th><th>Percent of Class</th></tr>
+<tr><td>Joseph A. Mollica</td><td></td><td>412,400</td><td>*</td></tr>
+<tr><td>Ted W. Love</td><td></td><td>158,000</td><td>*</td></tr>
+<tr><td>(iii)</td><td>All Director nominees and Executive Officers as a group</td><td>1,314,087</td><td>2.63</td></tr>
+</table></body></html>`
+
+func TestEnumeratorCellDoesNotHideAGroupRow(t *testing.T) {
+	rows := ScreenRows(run(t, enumeratorGroupRowHTML))
+	var g *Row
+	for i := range rows {
+		if rows[i].IsGroupRow {
+			g = &rows[i]
+		}
+	}
+	if g == nil {
+		t.Fatalf("the group row beside the enumerator cell was lost: %+v", rows)
+	}
+	if g.Percent == nil || *g.Percent != 2.63 {
+		t.Errorf("group row percent: %+v", g.Percent)
+	}
+	if n := 0; true {
+		for _, r := range rows {
+			if r.HolderName == "Ted W. Love" {
+				n++
+			}
+		}
+		if n != 1 {
+			t.Errorf("Ted W. Love emitted %d times", n)
+		}
+	}
+}
