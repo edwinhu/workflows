@@ -463,6 +463,51 @@ func TestASCIITableResumesAfterAReprintedHeader(t *testing.T) {
 	}
 }
 
+// Transcribed from 0000903594-01-500049. The column header is stacked over
+// THREE lines and the cue that says this is an ownership table is spelled down
+// one COLUMN -- "PERCENTAGE" / "OF SHARES" / "OUTSTANDING". Flattened row by
+// row it becomes "PERCENTAGE OCCUPATION AND NUMBER OF SHARES ... OUTSTANDING",
+// in which no ownership phrase survives, and the table -- nine directors with
+// share counts and percents, and the group total -- is rejected no_own_cue.
+var asciiStackedColumnHeader = `
+                        ELECTION OF DIRECTORS
+
+     The following table sets forth information about the nominees.
+
+<TABLE>
+<CAPTION>
+                                                                    BENEFICIAL OWNERSHIP(1)
+                                                                                 PERCENTAGE
+                               OCCUPATION AND                         NUMBER     OF SHARES
+NOMINEE               AGE        EMPLOYMENT                         OF SHARES   OUTSTANDING
+<S>                   <C>   <C>                                    <C>          <C>
+
+Ben S. Beiler          58   Director since 1989                       24,163(2)     0.79%
+                            President of Beiler Enterprises, Inc.
+
+Arthur A. Bernardon    54   Director since 1998                        4,982(3)     0.16%
+                            President of Bernardon & Associates
+
+Clyde L. Cameron       75   Director since 1979                       33,046(4)     1.09%
+                            President of Cameron's Inc.
+
+George C. Mason        65   Chairman of the Board since 1973         365,612(6)   12.03%
+                            Chairman and Chief Executive Officer
+
+All directors and executive officers as a group
+  (13 persons)                                                       541,337(9)     17.80%
+</TABLE>
+` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 250)
+
+func TestASCIIStackedColumnHeaderCarriesTheCue(t *testing.T) {
+	rows := run(t, asciiStackedColumnHeader)
+	got := find(rows, "George C. Mason", "")
+	if got == nil || got.Shares == nil || *got.Shares != 365612 ||
+		got.Percent == nil || *got.Percent != 12.03 {
+		t.Fatalf("stacked-header ownership table rejected: %d rows %+v", len(rows), rows)
+	}
+}
+
 func TestASCIITable(t *testing.T) {
 	if IsHTML(asciiProxy) {
 		t.Fatalf("ascii proxy misrouted to the DOM parser")
