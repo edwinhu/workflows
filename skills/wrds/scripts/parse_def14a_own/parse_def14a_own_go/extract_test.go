@@ -3593,6 +3593,15 @@ All Directors and Executive
 	if r == nil || r.Shares == nil || *r.Shares != 22824 || r.Percent == nil || *r.Percent != 1.40 {
 		t.Fatalf("stock-owned-by table missed: %+v", rows)
 	}
+	j := find(rows, "Robert L. Johnson", "")
+	if j == nil || j.Shares == nil || *j.Shares != 11393 || j.Percent == nil || *j.Percent != .70 {
+		t.Fatalf("leading-dot percent overwrote shares: %+v", j)
+	}
+	for _, r := range rows {
+		if strings.Contains(r.ShareClass, "Beneficial") || strings.Contains(r.ShareClass, "of Shares") {
+			t.Fatalf("column header became a fund label: %+v", r)
+		}
+	}
 	var g *Row
 	for i := range rows {
 		if rows[i].IsGroupRow {
