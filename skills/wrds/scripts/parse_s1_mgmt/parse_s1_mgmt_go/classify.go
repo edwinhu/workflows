@@ -762,7 +762,21 @@ func vcPostLabelLeadOK(lead string) bool {
 // Inc., a venture capital firm, in 2007 and is a General Partner" and
 // "all entities affiliated with Canaan Partners, a venture capital firm", where
 // the role sits on the far side of the name.
-func vcLeadIsPast(lead string) bool { return isPastLead(vcLead(lead)) }
+//
+// The tense test reads the firm's WHOLE sentence and not just vcLead's 90
+// bytes, because the corpus writes the marker at the head of a sentence whose
+// firm is at its tail: "Prior to joining HBM Partners AG, Dr. Leo worked as a
+// postdoctoral scientist at Stanford University, as a physician at the
+// University Hospital Leipzig and as a principal at Wellington Partners, a
+// venture capital firm" (0001193125-21-199386) puts 130 bytes between the two.
+// Only the tense test is widened: the ROLE requirement in vcAppositiveLeadOK
+// stays on vcLead, where a partner-grade word has to sit next to the name it
+// grades rather than anywhere in the sentence. Both reads are kept because the
+// wider one can pick up a present-perfect verb that cancels a closed range the
+// narrow one reads as past.
+func vcLeadIsPast(lead string) bool {
+	return isPastLead(vcLead(lead)) || isPastLead(roleSentence(lead))
+}
 
 // isPastLead reports whether the text puts the affiliation in the past. A closed
 // date range says so only when no present-perfect verb contradicts it.

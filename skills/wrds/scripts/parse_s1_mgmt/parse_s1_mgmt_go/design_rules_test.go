@@ -1185,6 +1185,12 @@ func TestRule7_AClosedPartnershipDoesNotFire(t *testing.T) {
 			"Mr. Maudlin also serves as a director of Newegg, Inc., one of the largest online-only retailers in the United States, and is the Chairperson of its audit and governance committees and a member of its compensation committee. Mr. Maudlin served as a managing partner of Medical Innovation Partners, a venture capital firm from 1989 through 2007 and as President of its management company since 1985."},
 		{"0001193125-19-040772", "the dictionary route read a role the bio marks previous",
 			"Dr. Lu previously served as a Managing Director at OrbiMed Advisors, LLC in Asia from 2011 to 2016. Prior to her work at OrbiMed, Dr. Lu spent more than five years at Piper Jaffray & Co. as an equity analyst."},
+		// The past marker opens the sentence and the firm closes it, 130-odd
+		// bytes later, so the 90-byte lead window cannot see it: "Prior to
+		// joining HBM Partners AG" is what puts the Wellington principalship in
+		// the past, and nothing nearer the firm name says so.
+		{"0001193125-21-199386", "the Wellington principalship predates the HBM role",
+			"Chandra P. Leo, M.D. has been a member of our board of directors since September 2020. Dr. Leo has served as an Investment Advisor in the private equity team at HBM Partners AG, a Swiss healthcare investment company, since 2007. Prior to joining HBM Partners AG, Dr. Leo worked as a postdoctoral scientist at Stanford University, as a physician at the University Hospital Leipzig and as a principal at Wellington Partners, a venture capital firm. Dr. Leo currently serves as a director on the boards of Fore Biotherapeutics Inc., River 2 Renal Corp. and River 3 Renal Corp., all of which are biotechnology companies, and Gynesonics Inc., a medical device company."},
 	}
 	for _, c := range negative {
 		t.Run("no/"+c.why, func(t *testing.T) {
