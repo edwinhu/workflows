@@ -1415,6 +1415,18 @@ func textMoneyBlock(clean []string, block []int) bool {
 		if strings.Contains(rest, "%") {
 			return false
 		}
+		// A bare decimal percent is a percent of class just as "%" is. An
+		// ownership table with a "face value of debentures" column in dollars
+		// beside its share counts writes its percents as 1.4 and 4.5 with no
+		// sign, and reading the block as money threw the table away. The
+		// less-than-1% MARKER does NOT count: a fund dollar-range table marks
+		// its rows "$0*" and "over $100,000*", and accepting those is the
+		// defect the exclusion clauses X2 and X3 exist to describe.
+		for _, h := range textTokens(rest) {
+			if h.pct != nil {
+				return false
+			}
+		}
 		if reMoneyTail.MatchString(rest) {
 			money++
 		}
