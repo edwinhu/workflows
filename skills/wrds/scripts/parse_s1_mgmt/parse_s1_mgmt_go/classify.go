@@ -467,7 +467,7 @@ var vcFirms = []string{
 	"Battery Ventures", "Benchmark", "Bessemer Venture", "Canaan Partners",
 	"Charles River Ventures", "Crosspoint Venture", "DAG Ventures", "Delphi Ventures",
 	"Domain Associates", "Draper Fisher Jurvetson", "El Dorado Ventures",
-	"Emergence Capital", "First Round Capital", "Flagship Pioneering",
+	"Emergence Capital", "First Round Capital", "Flagship Pioneering", "Foresite Capital",
 	"Foundation Capital", "Founders Fund", "Frazier Healthcare", "General Catalyst",
 	"GGV Capital", "Greylock", "Highland Capital Partners", "Hummer Winblad",
 	"Index Ventures", "Insight Partners", "Institutional Venture Partners",
@@ -562,6 +562,19 @@ func detectVC(bio string) (bool, string, string) {
 		if !vcLeadIsPast(bio[:m[0]]) {
 			if f, end := firmInWindow(window); f != "" {
 				add(f, evidence(bio, m[0], m[1]+end))
+			} else if sent := roleSentence(bio[:m[0]]); !reVCPastLead.MatchString(sent) {
+				// The firm can be named BEFORE the role, in the same sentence:
+				// "Dr. Roberts joined Venrock, a venture capital investment
+				// firm, in 1997, where he serves as partner". The forward window
+				// opens on the far side of the role and the appositive lead test
+				// wants the role first, so this arrangement is invisible to
+				// both. The window is the role's own sentence rather than
+				// vcLead's 90 bytes, which cut "Venrock" off by two characters,
+				// and the tense test is re-run over that whole sentence so the
+				// wider read cannot smuggle a closed seat in with it.
+				if f, _ := firmInWindow(sent); f != "" {
+					add(f, evidence(bio, m[0], m[1]))
+				}
 			}
 		}
 		// The same role window, but with the firm's own name as the label.
@@ -649,6 +662,17 @@ func vcAppositiveLeadOK(lead string) bool {
 // "all entities affiliated with Canaan Partners, a venture capital firm", where
 // the role sits on the far side of the name.
 func vcLeadIsPast(lead string) bool { return reVCPastLead.MatchString(vcLead(lead)) }
+
+// roleSentence is the sentence the role sits in, from its first word up to the
+// role itself. It is vcLead without the byte cap, and only the firm dictionary's
+// backward window uses it: a name as short as "Venrock" can sit just outside 90
+// bytes and still be in the same clause as the seat held at it.
+func roleSentence(lead string) string {
+	if at := lastSentenceStart(lead); at > 0 {
+		return lead[at:]
+	}
+	return lead
+}
 
 // vcLeadIsNonPartner reports whether the clause that runs up to the firm name
 // puts the person in a role at it that is not a seat in the partnership, AND in

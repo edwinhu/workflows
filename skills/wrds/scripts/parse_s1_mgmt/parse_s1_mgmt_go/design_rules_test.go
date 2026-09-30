@@ -1646,3 +1646,45 @@ func TestRule7_ANonPartnerRoleAtAVentureFirmDoesNotFire(t *testing.T) {
 		})
 	}
 }
+
+// The firm can sit BEFORE the partner-grade role inside one sentence, which is
+// the one arrangement neither dictionary window could see: the forward window
+// opens after the role and the appositive lead test reads only what precedes
+// the name. "Dr. Roberts joined Venrock, a venture capital investment firm, in
+// 1997, where he serves as partner" and "He has served in various roles with
+// Foresite Capital Management, an investment firm, since August 2016, including
+// serving as Managing Director since May 2020" both name a dictionary firm and
+// then, in the same sentence and in the present tense, the seat held at it.
+//
+// Bios are quoted verbatim from the accession named on each line, and exercised
+// through detectVC because check_full.sh re-cuts every fixture from a source
+// filing this corpus does not hold.
+func TestRule7_AFirmNamedBeforeThePresentRoleInTheSameSentenceFires(t *testing.T) {
+	positive := []struct{ accession, bio, firm string }{
+		{"0001047469-10-000546",
+			"Bryan E. Roberts has served as director since 2001. Dr. Roberts joined Venrock, a venture capital investment firm, in 1997, where he serves as partner. From 1989 to 1992, Dr. Roberts worked in the corporate finance department of Kidder, Peabody & Co., a brokerage company.",
+			"Venrock"},
+		{"0001140361-20-027255",
+			"Michael Rome, Ph.D. has served on our board of directors since December 2019. He has served in various roles with Foresite Capital Management, an investment firm, since August 2016, including serving as Managing Director since May 2020. Prior to that, he served as an Analyst at DAFNA Capital Management LLC, a healthcare hedge fund, from September 2015 to July 2016.",
+			"Foresite Capital"},
+	}
+	for _, c := range positive {
+		t.Run("yes/"+c.firm, func(t *testing.T) {
+			ok, firm, ev := detectVC(c.bio)
+			if !ok {
+				t.Fatalf("%s: vc_affiliated = false, want true", c.accession)
+			}
+			if !containsFold(firm, c.firm) {
+				t.Errorf("%s: vc_firm = %q, want it to name %q (evidence %q)", c.accession, firm, c.firm, ev)
+			}
+		})
+	}
+
+	// Constructed, not quoted: the backward window reads one sentence and only
+	// in the present tense, so the same arrangement with the seat already closed
+	// out must stay unread even though the firm name sits in that sentence.
+	probe := "Mr. Doe joined Greylock Partners in 1999, where he was a general partner until 2011."
+	if ok, firm, ev := detectVC(probe); ok {
+		t.Errorf("a closed seat fired through the backward window: vc_affiliated = true (firm=%q evidence=%q)", firm, ev)
+	}
+}
