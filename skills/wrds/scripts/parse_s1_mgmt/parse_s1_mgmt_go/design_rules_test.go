@@ -3317,3 +3317,170 @@ func TestVCCorporateArmAppositive(t *testing.T) {
 		t.Errorf("MRL Ventures: detectVC = true firm=%q ev=%q, want false", firm, ev)
 	}
 }
+
+// ---------------------------------------------------------------------------
+// bio-misalignment — a parenthetical nickname between the name's tokens
+// ---------------------------------------------------------------------------
+
+// Two filings write the CEO's name one way in the table and another in the bio
+// lead-in, and the difference is a parenthesised alias sitting BETWEEN the name
+// tokens. Upland's table says "John T. McDonald" while the bio opens "John T.
+// (Jack) McDonald has served as ..."; Prelude's table says "Kris Vaddi, Ph.D."
+// while the bio opens "Krishna (“Kris”) Vaddi, Ph.D. has served as ...".
+// Neither prefix route can see it — the block key carries "jack"/"krishna" the
+// table key has not got — reBioLeadIn wants "<Name>. Mr.", and the bare
+// honorific route is not reached because it only runs for a person with no bio
+// and claims a block opening "Mr. <Surname>". So the CEO of each filing came
+// out with NO bio at all, which cost founder_self_described in both
+// (0001193125-14-401545 "Prior to founding Upland in 2010";
+// 0001193125-20-254577 "as our founder and Chief Executive Officer").
+//
+// The two need OPPOSITE repairs: Upland's table name is the alias DROPPED,
+// Prelude's is the alias SUBSTITUTED for the given name before it.
+//
+// Verbatim, table rows between the CEO and the last director elided.
+const parenNicknameUpland = `<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL" ALIGN="center"><B><A NAME="rom710680_12"></A>MANAGEMENT </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman">The following table sets forth the name, age and position of each of our executive officers and directors as of October 31, 2014. </P>
+<P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" ALIGN="center">
+
+
+<TR>
+<TD WIDTH="38%"></TD>
+<TD VALIGN="bottom" WIDTH="2%"></TD>
+<TD WIDTH="2%"></TD>
+<TD VALIGN="bottom" WIDTH="2%"></TD>
+<TD WIDTH="56%"></TD></TR>
+<TR STYLE="font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="bottom" NOWRAP ALIGN="center" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Name</B></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Age</B></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Position</B></P></TD></TR>
+
+
+<TR BGCOLOR="#cceeff" STYLE="font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><B><I>Executive Officers</I></B></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"></TD></TR>
+<TR STYLE="font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE="margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">John T. McDonald</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center">51</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Chief Executive Officer and Chairman of the Board</TD></TR>
+<TR STYLE="font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE="margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><B><I>Non-Employee Directors</I></B></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"></TD></TR>
+<TR STYLE="font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE="margin-left:3.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman">Rodney C. Favaron</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP ALIGN="center"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:10pt; font-family:Times New Roman" ALIGN="center">51</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:10pt; font-family:Times New Roman">Director</P></TD></TR>
+</TABLE> <P STYLE="margin-top:18pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman"><B>Executive Officers </B></P>
+<P STYLE="margin-top:6pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman"><I>John T. (Jack) McDonald</I> has served as our Chief Executive Officer and Chairman of our board of directors since our founding in July
+2010. Prior to founding Upland in 2010, Mr.&nbsp;McDonald was Chief Executive Officer of Perficient, Inc. (NASDAQ: PRFT), an information technology consulting firm, from 1999 to 2009, and chairman from 2001 to 2010. Mr.&nbsp;McDonald started his
+career as an attorney with Skadden, Arps, Slate, Meagher&nbsp;&amp; Flom LLP in New York, focusing on mergers and acquisitions and corporate finance, from 1987 to 1993. Mr.&nbsp;McDonald currently serves as chairman of the Greater Austin Chamber of
+Commerce and is a member of the board of directors of a number of privately held companies and non-profit organizations. Mr.&nbsp;McDonald received a B.A. in Economics from Fordham University and a J.D. from Fordham Law School. </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman">We believe that Mr.&nbsp;McDonald is qualified to serve as a member of our board of directors because of his experience as our Chief Executive
+Officer and his background in the technology industry, including serving as chairman of a public technology company. </P>
+`
+
+// Verbatim, table rows between the CEO and the last director elided.
+const parenNicknamePrelude = `<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><FONT COLOR="#344274"><B><A NAME="rom935180_13"></A>MANAGEMENT </B></FONT></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#344274"><B>Executive Officers and Directors </B></FONT></P>
+<P STYLE="margin-top:6pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#344274">The following table provides information, including ages as of August&nbsp;21, 2020, regarding our executive officers and
+directors: </FONT></P> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" ALIGN="center">
+
+
+<TR>
+
+<TD WIDTH="35%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD></TD>
+<TD></TD>
+<TD></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="61%"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="bottom" NOWRAP> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; border-bottom:1.00pt solid #000000; display:table-cell; font-size:8pt; font-family:Times New Roman; "><FONT COLOR="#344274"><B>Name</B></FONT></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" COLSPAN="2" NOWRAP> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; border-bottom:1.00pt solid #000000; display:table-cell; font-size:8pt; font-family:Times New Roman; "><FONT COLOR="#344274"><B>Age</B></FONT></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; border-bottom:1.00pt solid #000000; display:table-cell; font-size:8pt; font-family:Times New Roman; "><FONT COLOR="#344274"><B>Position</B></FONT></P></TD></TR>
+
+
+<TR BGCOLOR="#cceeff" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#344274"><B>Executive Officers:</B></FONT></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom"></TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#344274">Kris Vaddi, Ph.D.</FONT></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT COLOR="#344274">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT COLOR="#344274">55</FONT></TD>
+<TD NOWRAP VALIGN="top"><FONT COLOR="#344274">&nbsp;</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#344274">Chief Executive Officer and Director</FONT></P></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#344274">Victor Sandor, M.D.C.M.</FONT></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT COLOR="#344274">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT COLOR="#344274">53</FONT></TD>
+<TD NOWRAP VALIGN="top"><FONT COLOR="#344274">&nbsp;</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#344274">Director</FONT></P></TD></TR>
+</TABLE> <P STYLE="margin-top:18pt; margin-bottom:0pt; margin-left:4%; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#344274"><B><I>Executive Officers </I></B></FONT></P>
+<P STYLE="margin-top:6pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#344274"><B>Krishna (&#147;Kris&#148;) Vaddi, Ph.D.</B> has served as our Chief Executive Officer and a member of our board of
+directors since February 2016. From June 2014 to June 2016, Dr.&nbsp;Vaddi also served as Chief Executive Officer of Orsenix, LLC, a clinical stage biotechnology company. Dr.&nbsp;Vaddi previously held several roles at Incyte Corporation, most
+recently as Senior Advisor from June 2015 to June 2016 and Group Vice President from March 2010 to June 2015. Dr.&nbsp;Vaddi received a BVSc in Veterinary Medicine from Acharya N.G. Ranga Agricultural University in India and a Ph.D. in Pharmacology
+and Toxicology from the University of Florida. We believe that Dr.&nbsp;Vaddi&#146;s experience as our founder and Chief Executive Officer and history in the biopharmaceutical field qualifies him to serve on our board of directors. </FONT></P>
+`
+
+func TestBioParentheticalNicknameAttachesTheBio(t *testing.T) {
+	for _, c := range []struct{ acc, issuer, section, ceo, bioHas string }{
+		{"0001193125-14-401545", "Upland Software, Inc.", parenNicknameUpland,
+			"John T. McDonald", "Prior to founding Upland in 2010"},
+		{"0001193125-20-254577", "Prelude Therapeutics Inc", parenNicknamePrelude,
+			"Kris Vaddi", "as our founder and Chief Executive Officer"},
+	} {
+		e := ExtractManagement([]byte(sgmlHeaderFor(c.issuer) +
+			sgmlDoc("424B4", "<HTML><BODY>"+c.section+"</BODY></HTML>")))
+		if e.Filing.Status != StatusOK {
+			t.Errorf("%s: status = %q, want %q", c.acc, e.Filing.Status, StatusOK)
+			continue
+		}
+		p, ok := findPerson(e, c.ceo)
+		if !ok {
+			t.Errorf("%s: no person named %q; got %v", c.acc, c.ceo, personNames(e))
+			continue
+		}
+		if !containsFold(p.Bio, c.bioHas) {
+			t.Errorf("%s: %s bio = %q, want it to carry %q",
+				c.acc, c.ceo, squash(p.Bio), c.bioHas)
+			continue
+		}
+		if !p.FounderSelfDescribed {
+			t.Errorf("%s: %s founder_self_described = false, want true",
+				c.acc, c.ceo)
+		}
+	}
+}
