@@ -566,6 +566,14 @@ var (
 		`(?:[a-z/-]+\s+){0,3}venture(?:\s+(?:capital|investment|growth|equity))*` +
 		`(?:\s+[a-z/-]+){0,3}\s+(?:firm|funds?|partnership|investor|compan(?:y|ies))\b`)
 
+	// A venture label written BEFORE the firm name, which no other route reads:
+	// "Co-Managing Partner of venture capital fund DCVC" (0001140361-21-013962),
+	// "founded two venture capital firms, North Bridge Venture Partners in May
+	// 1993" (0001193125-21-221914). The name follows the label directly or across
+	// the comma that opens the list.
+	reVCPreLabel = regexp.MustCompile(`(?i)\bventure\s+(?:capital|investment)\s+` +
+		`(?:firms?|funds?|partnerships?|investors?|compan(?:y|ies))[,\s]+`)
+
 	// "principal" is a partner-grade seat only where the firm itself carries a
 	// venture label, in words or in its own name, so only the post-label and
 	// venture-named routes read it: gold counts a Principal at the Novartis
@@ -771,6 +779,22 @@ func detectVC(bio string) (bool, string, string) {
 			}
 		}
 		ventureNamed(m[0], m[1], window)
+	}
+	for _, m := range reVCPreLabel.FindAllStringIndex(bio, -1) {
+		firm, end := firmAfterLabel(bio[m[1]:])
+		if firm == "" {
+			continue
+		}
+		// The label alone is no affiliation: the sentence it sits in has to put
+		// the person in a partner-grade seat, in the present. The grade is read
+		// off the WHOLE sentence and not off the lead, because North Bridge's
+		// partnership is written on the far side of the name ("where he
+		// currently serves as a Managing Partner").
+		sent := sentenceAround(bio, m[0])
+		if !reVCRole.MatchString(sent) || isPastLead(sent) {
+			continue
+		}
+		add(firm, evidence(bio, m[0], m[1]+end))
 	}
 	// "Principal" reaches a firm the FILING labels through the post-positioned
 	// route above, and a firm its own NAME labels here: "Dr. Shangari has served
@@ -1047,3 +1071,65 @@ func ventureFirmAfter(window string) (string, int) {
 }
 
 func isUpperASCII(c byte) bool { return c >= 'A' && c <= 'Z' }
+
+// firmAfterLabel reads a firm name written immediately after a venture label,
+// as the run of proper-noun tokens that opens the window. It is the forward
+// twin of firmBefore: the first token must itself be a firm token, so a label
+// followed by ordinary prose ("venture capital firms in the Boston area")
+// yields nothing. "of", "the" and "and" are crossed when a firm token follows,
+// which is what keeps a name like "Bank of America Ventures" whole.
+func firmAfterLabel(window string) (string, int) {
+	toks := strings.Fields(window)
+	if len(toks) == 0 {
+		return "", 0
+	}
+	n := 0
+	for n < len(toks) && n < 8 {
+		t := strings.TrimRight(toks[n], ",;:.")
+		if t != "" && reFirmToken.MatchString(t) {
+			n++
+			continue
+		}
+		lower := strings.ToLower(t)
+		if (lower == "of" || lower == "the" || lower == "and") && n+1 < len(toks) {
+			next := strings.TrimRight(toks[n+1], ",;:.")
+			if next != "" && reFirmToken.MatchString(next) {
+				n++
+				continue
+			}
+		}
+		break
+	}
+	if n == 0 {
+		return "", 0
+	}
+	firm := strings.TrimRight(strings.Join(toks[:n], " "), " ,;:.")
+	if firm == "" || !strings.ContainsFunc(firm, func(r rune) bool { return r < '0' || r > '9' }) {
+		return "", 0
+	}
+	end := strings.Index(window, firm)
+	if end < 0 {
+		return firm, len(window)
+	}
+	return firm, end + len(firm)
+}
+
+// sentenceAround is the whole sentence holding the byte at lo: lastSentenceStart
+// gives its head and the next sentence-ending full stop its tail. The routes
+// that read only a lead cannot use it, but a label written in front of the firm
+// name can have its grade on either side of that name.
+func sentenceAround(s string, lo int) string {
+	start := lastSentenceStart(s[:lo])
+	rest := s[lo:]
+	end := len(rest)
+	for i := 0; i < len(rest)-1; i++ {
+		if rest[i] != '.' || (rest[i+1] != ' ' && rest[i+1] != '\t' && rest[i+1] != '\n') {
+			continue
+		}
+		if !reNotSentenceEnd.MatchString(rest[:i+2]) {
+			end = i + 1
+			break
+		}
+	}
+	return s[start : lo+end]
+}
