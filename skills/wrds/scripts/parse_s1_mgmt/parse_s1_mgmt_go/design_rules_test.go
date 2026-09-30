@@ -2091,3 +2091,45 @@ func TestRule7_APostPositionedVentureLabelFires(t *testing.T) {
 		})
 	}
 }
+
+// Rallybio's 2021 prospectus (0001193125-21-230254) elides the founder's own
+// object and shares it with the coordinated clause: "is a co-founder of, and has
+// been Chief Executive Officer and Chairman of the board of directors of
+// Rallybio since January 2018". Three of that filing's bios are written this
+// way, so the referent has to be read at the LAST "of" of the sentence rather
+// than at the connector.
+func TestRule6_GappedCoordinationSharesTheFoundersObject(t *testing.T) {
+	cases := []struct {
+		name      string
+		conformed string
+		bio       string
+		want      bool
+	}{
+		{"mackay", "Rallybio Corp", "Ada Lovelace, Ph.D., is a co-founder of, and has been Chief Executive Officer and Chairman of the board of directors of Rallybio since January 2018.", true},
+		{"uden", "Rallybio Corp", "Ada Lovelace, M.D., is a co-founder of, and has been President, Chief Operating Officer and Chief Scientific Officer of Rallybio since January 2018.", true},
+		{"fryer", "Rallybio Corp", "Ada Lovelace, CPA, is a co-founder of, and has been Chief Financial Officer and Treasurer of Rallybio since January 2018.", true},
+		// The shared object is a DIFFERENT company whose name starts with the
+		// issuer's first word — the prefix guard still has to hold.
+		{"other-company", "Cascade Microtech Inc", "Ada Lovelace is a co-founder of, and has been Chief Executive Officer of, Cascade Communications Corporation, a networking company.", false},
+		// The founder's object is present, so nothing is elided and the route
+		// must not reach past it to a later "of".
+		{"object-present", "Uber Technologies, Inc", "Ada Lovelace founded Red Swoosh and later served as an advisor of Uber Technologies.", false},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			e := ExtractManagement([]byte(sgmlHeaderFor(c.conformed) +
+				sgmlDoc("424B4", "<HTML><BODY>"+mgmtSectionWithCEOBio(c.bio)+"</BODY></HTML>")))
+			if e.Filing.Status != StatusOK {
+				t.Fatalf("status = %q, want %q", e.Filing.Status, StatusOK)
+			}
+			p := person(t, e, "Ada Lovelace")
+			if !containsFold(p.Bio, "found") {
+				t.Fatalf("bio does not carry the founder sentence\n  bio = %q", p.Bio)
+			}
+			if p.FounderSelfDescribed != c.want {
+				t.Errorf("founder_self_described = %v, want %v (evidence=%q bio=%q)",
+					p.FounderSelfDescribed, c.want, p.FounderEvidence, p.Bio)
+			}
+		})
+	}
+}

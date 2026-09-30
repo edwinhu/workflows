@@ -253,6 +253,34 @@ func subjectIsThePerson(bio string, tokenStart int, name string) bool {
 	return person > firm
 }
 
+// A coordination that begins where the founder's own object should have been:
+// "is a co-founder of, and has been Chief Executive Officer ... of Rallybio".
+var (
+	reGappedCoordination = regexp.MustCompile(`^,\s*and\b`)
+	reOfToken            = regexp.MustCompile(`(?i)\bof\b`)
+)
+
+// gappedReferent handles the elision three of Rallybio's bios are written with
+// (0001193125-21-230254): the object of "co-founder of" is dropped and shared
+// with the clause coordinated onto it, so the referent sits at the LAST "of" of
+// the same sentence. It reports the text following that "of", and false when
+// nothing is elided — an object present right after the connector keeps the
+// route from reaching past it.
+func gappedReferent(rest string) (string, bool) {
+	if !reGappedCoordination.MatchString(rest) {
+		return "", false
+	}
+	s := rest
+	if k := strings.Index(s, ". "); k >= 0 {
+		s = s[:k]
+	}
+	at := lastIndexOf(s, reOfToken)
+	if at < 0 {
+		return "", false
+	}
+	return strings.TrimLeft(s[at+len("of"):], " \t\n\r"), true
+}
+
 // lastIndexOf is the start offset of re's LAST match in s, or -1.
 func lastIndexOf(s string, re *regexp.Regexp) int {
 	m := re.FindAllStringIndex(s, -1)
@@ -307,7 +335,11 @@ func detectFounder(p Person, ref *issuerRef) (bool, string) {
 		}
 		after := p.Bio[m[1]:]
 		c := reFounderConnector.FindString(after)
-		if ref.namesIssuer(after[len(c):]) && subjectIsThePerson(p.Bio, m[0], p.Name) {
+		rest := after[len(c):]
+		if g, ok := gappedReferent(rest); ok {
+			rest = g
+		}
+		if ref.namesIssuer(rest) && subjectIsThePerson(p.Bio, m[0], p.Name) {
 			return true, evidence(p.Bio, m[0], m[1])
 		}
 	}
