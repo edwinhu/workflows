@@ -150,17 +150,45 @@ EVENT_DIR="${TMPDIR:-/tmp}/farm-events${CLAUDE_CODE_SESSION_ID:+/$CLAUDE_CODE_SE
 mkdir -p "$EVENT_DIR" 2>/dev/null || true
 EVENTS="$EVENT_DIR/$$.ndjson"
 
-# Session budget check
-FARM_SESSION_BUDGET=20000000
+# Session budget check and estimation
+FARM_SESSION_BUDGET=${FARM_SESSION_BUDGET:-20000000}
+FARM_TASK_BUDGET=${FARM_TASK_BUDGET:-4000000}
+
+session_tokens=0
+if [ -d "$EVENT_DIR" ]; then
+  session_tokens=$(grep -h '"tokensW":' "$EVENT_DIR"/*.ndjson 2>/dev/null | jq -s 'map(.tokensW) | add' || echo 0)
+  [ "$session_tokens" = "null" ] && session_tokens=0
+  session_tokens=$(printf "%.0f" "$session_tokens" 2>/dev/null || echo 0)
+fi
+
+estimate=0
+num_tasks=0
+if [ -n "$TASKS" ]; then
+  num_tasks=$(jq 'length' "$TASKS" 2>/dev/null || echo 0)
+  for i in $(seq 0 $((num_tasks - 1))); do
+    label=$(jq -r ".[$i].label // \"\"" "$TASKS" 2>/dev/null)
+    case "$label" in
+      *grind*) estimate=$((estimate + 728921)) ;;
+      *probe*) estimate=$((estimate + 665974)) ;;
+      *farm*) estimate=$((estimate + 664158)) ;;
+      *work*|*implementer*|*lens*) estimate=$((estimate + 332807)) ;;
+      *batch*|*hand-coding*) estimate=$((estimate + 23209)) ;;
+      *) estimate=$((estimate + FARM_TASK_BUDGET)) ;;
+    esac
+  done
+elif [ -n "$WORKFLOW" ]; then
+  num_tasks=1
+  estimate=$FARM_TASK_BUDGET
+fi
+
+echo "Estimate for $num_tasks task(s): $estimate tokensW" >&2
+echo "Session spend so far: $session_tokens tokensW" >&2
+echo "Cap remaining: $((FARM_SESSION_BUDGET - session_tokens)) tokensW" >&2
+
 if [ "${FARM_BUDGET_OVERRIDE:-0}" != "1" ]; then
-  session_tokens=0
-  if [ -d "$EVENT_DIR" ]; then
-    session_tokens=$(grep -h '"tokensW":' "$EVENT_DIR"/*.ndjson 2>/dev/null | jq -s 'map(.tokensW) | add' || echo 0)
-    [ "$session_tokens" = "null" ] && session_tokens=0
-    session_tokens=$(printf "%.0f" "$session_tokens" 2>/dev/null || echo 0)
-  fi
-  if [ "$session_tokens" -ge "$FARM_SESSION_BUDGET" ]; then
-    refuse "Session budget exceeded: ${session_tokens} >= ${FARM_SESSION_BUDGET}. Set FARM_BUDGET_OVERRIDE=1 to bypass."
+  total_proj=$((session_tokens + estimate))
+  if [ "$total_proj" -ge "$FARM_SESSION_BUDGET" ]; then
+    refuse "Session budget exceeded up front: $total_proj (spend + estimate) >= ${FARM_SESSION_BUDGET}. Set FARM_BUDGET_OVERRIDE=1 to bypass."
   fi
 fi
 
