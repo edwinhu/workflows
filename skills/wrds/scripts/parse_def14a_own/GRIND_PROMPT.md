@@ -15,25 +15,140 @@ The loop ends when this exits 0, and nothing else ends it:
 bash /home/eh/projects/workflows/skills/wrds/scripts/parse_def14a_own/check.sh
 ```
 
-**Exactly EIGHT metrics gate** — the keys under `minimums` (floors) plus the keys
+**Exactly TEN metrics gate** — the keys under `minimums` (floors) plus the keys
 under `maximums` (ceilings) in `thresholds.json`:
 
 | gated metric | kind | threshold |
 |---|---|---:|
-| `sample_dup_excess_identical_row_rate` | ceiling | **≤ 0.01** — THIS round's target |
-| `sample_dup_excess_identical_row_rate_max_year` | ceiling | **≤ 0.02** — THIS round's target |
-| `sample_yield_worst_year_margin` | floor | **≥ 0.0** — the per-year no-regression guard |
+| `regress_zero_row_recovered` | floor | **≥ 0.95** — THIS round's target |
+| `regress_group_row_recovered` | floor | **≥ 0.95** — THIS round's target |
+| `sample_dup_excess_identical_row_rate` | ceiling | ≤ 0.01 |
+| `sample_dup_excess_identical_row_rate_max_year` | ceiling | ≤ 0.02 |
+| `sample_yield_worst_year_margin` | floor | ≥ 0.0 — the per-year no-regression guard |
 | `filing_yield_parsed_percent` | floor | 0.88 |
 | `holder_recall_blockw` | floor | 0.75 |
 | `holder_precision_blockw` | floor | 0.82 |
 | `group_row_detection_rate` | floor | 0.80 |
 | `iss_director_recall` | floor | 0.82 |
 
-## THIS ROUND IS A DUPLICATE-ROW ROUND (2026-09-29)
+## THIS ROUND IS A REGRESSION ROUND (2026-09-29)
 
-**The two duplicate ceilings are the only gates short, and the duplicate defect is
-the only thing to work on.** Everything from `## CARRIED OVER` down is a GUARD:
-those five floors pass today and a "fix" that breaks one of them still exits 1.
+**The two `regress_*` floors are the only gates short, and recovering the filings
+the last round lost is the only thing to work on.** Everything below this section
+is a GUARD: those eight gates pass today, and a "fix" that breaks one of them still
+exits 1. In particular **the identical-row duplicate ceilings are the guard that
+stops you from getting the recovery by putting the duplicates back.**
+
+### What regressed, measured
+
+The full-archive re-run at `092b6fb9` (`def14a_full_run2.md`, 207,912 filings)
+cut the identical-row duplicate rate 0.0190 → 0.0028 and lifted yield +0.32 pp,
+and paid for it with two recall losses, both concentrated in the layouts the
+duplicate rounds changed:
+
+```
+filings with >=1 row at 4b36a962 and ZERO rows at 092b6fb9   1,070   (0.51% of 207,912)
+filings that LOST a D&O group row                            1,181   (1,618 group rows, 176 with a percent)
+```
+
+The zero-row losses cluster in **2002-2006 (58 / 96 / 96 / 145 / 85 filings) and
+2018 (53)**.
+
+### The ruler is new: a fixed panel DIFF
+
+`gold/gold_regress.tsv` — **1,893 candidate filings**, built ONCE by
+`gold/build_regress_set.py` as the diff of `panel_e4e78a95` (parser `4b36a962`)
+against `panel` (parser `092b6fb9`). It is covered by `lock.sha256`: you may not
+edit it, `run_baseline.sh` submits `round_filelist.tsv` (gold ∪ ISS ∪ sample ∪
+regress, **22,856** filings) and asserts coverage before it submits, and
+`score.py` exits **2** if the output does not cover the set.
+
+| set | definition | denominator |
+|---|---|---:|
+| (a) ZERO-ROW, **gated** | old `n_rows` > 0 and new `n_rows` == 0, after the exclusions | **933** |
+| (b) GROUP-ROW, **gated** | old group row, new none, and ≥ 1 lost group row carried a **parsed percent** | **83** |
+| (b) share-only, diagnostic | the same minus the percent requirement | 1,075 |
+| excluded, diagnostic | the old rows were demonstrably wrong (X1/X2 below) | 150 |
+
+`regress_zero_row_recovered` = share of (a) that parses to ≥ 1 row again;
+`regress_group_row_recovered` = share of (b) with a percent-carrying group row
+again. **Both are 0.0000 at HEAD by construction** — the current parser IS the one
+that lost them — so this round starts from zero and the whole 0.95 is headroom:
+about **886 of 933** filings and **79 of 83**.
+
+The per-filing detail is `$DEF14A_WORK/regress_dev.tsv`, written by every scoring
+run: one row per candidate filing with its set flags, its old row and group-row
+counts, and what the round just emitted.
+
+### Where to start — example accessions, read the documents first
+
+These are from the run-2 report and from the setup; all three are in set (a):
+
+| accession | year | what the old parser emitted, and what the document says |
+|---|---|---|
+| `0000950123-11-033365` | 2011 | Southwestern Energy. 13 rows then, **0 now**. The additive layout `Shares \| Options \| Restricted \| Exercisable \| Total \| Percent`: `Harold M. Korell 2,376,038 — 2,350 1,862,998 4,241,386 1.21 %` and the group row `… 9,920,963 (3) 2.82 %`. 2011's same-kind duplicate excess fell 0.0496 → 0.0077 in the same change: **the duplicate fix and this loss are one change seen from two sides.** |
+| `0001206774-13-001019` | 2013 | GE. `As a group (27) 24,040,027 / 40,202,945` and `BlackRock 583,104,477`, **no percent anywhere** because the document says none ("No director or named executive owns more than 1%"). A share-count-only ownership table is still an ownership table. |
+| `0001286964-20-000004` | 2020 | 2 rows then (`All Governors, Officers and Nominees as a Group 6,573,620 10.45`), 0 now. |
+| `0000010048-03-000003` | 2003 | Barnwell. 13 rows → **2**: plain ASCII, name-and-address in one cell, percents stated; the new parser keeps only the 5%-holder table and drops tables 618 and 627. (Not in set (a) — it still emits 2 rows — but it is the same ASCII layout class as the 2002-2006 cluster.) |
+
+### The exclusions, and why you must not chase them
+
+150 candidate filings are EXCLUDED because the old rows were demonstrably wrong,
+by two mechanical clauses, both read in the documents during setup:
+
+- **X1** — a `$` in an old `holder_name` (96 filings). The parser had read a
+  DOLLAR column as the name: `Thomas R. $10,001-$50,000 $0` → shares 100000
+  (`0000875626-06-000515`, an AGGREGATE DOLLAR RANGE OF EQUITY SECURITIES table),
+  `President/CEO - Union National Bank 1996 $166,500 $38,295 [3]` → shares 13936
+  (`0000891554-99-000468`, the SUMMARY COMPENSATION TABLE).
+- **X2** — ≥ 3 old rows all carrying one identical `(shares, percent)` pair (58
+  filings). `0001193125-12-089540` Pacholder 2012: 13 trustees each `100000`,
+  from "Over $100,000". `0000930413-02-002213` Third Avenue 2002: 10 trustees each
+  `0`, from "$0*".
+
+`regress_excluded_emitting_rows_rate` is printed every round, over the **137** of
+those 150 that were zero-row candidates. **If it rises you have re-accepted
+dollar-range and compensation tables**, which is the defect
+commit `52f43c4f` removed, and the duplicate ceilings and `holder_precision_blockw`
+will fail.
+
+### Rules specific to THIS round
+
+- **Write the failing test FIRST, and fix a LAYOUT CLASS.** Read 5-10 filings from
+  `$DEF14A_WORK/regress_dev.tsv` with
+  `parse_def14a_own_go/parse_def14a_own_go -debug /wrds/sec/archives/<relpath>`,
+  transcribe a fixture from one into `parse_def14a_own_go/extract_test.go`, watch
+  `go test ./...` go RED, then fix it. **No tuning on companies or filer agents.**
+  A rule keyed to `Southwestern`, `GE`, `0001206774` or `Barnwell` is a threshold
+  widened by another route; the set is fixed and locked, so a per-company rule can
+  clear the gate while fixing nothing, and that is the one outcome this round must
+  not produce.
+- **NEVER re-introduce duplicates.** The identical-row gate
+  (`sample_dup_excess_identical_row_rate` ≤ 0.01, `_max_year` ≤ 0.02) is the guard
+  on exactly this round: the rows you are recovering were lost by rules that were
+  put in to stop a row being emitted twice. Recover the row by making the ACCEPT
+  rule right for the layout, not by reverting the reject rule. A round that ends
+  green on recovery and red on duplicates has made the trade backwards.
+- **A recovered row must be a REAL row.** `regress_zero_row_recovered` counts
+  filings with ≥ 1 row, so one junk row would satisfy it per filing —
+  `holder_precision_blockw` (≥ 0.82), `iss_director_recall` and the printed
+  `regress_zero_row_new_rows` total are the checks, and the old row count over the
+  same filings is printed beside it.
+- **No gate may regress.** Report all ten every time, each with its denominator.
+- **Wall time is REPORTED, never gated.** `run_baseline.sh` prints per-shard wall
+  seconds and writes `$DEF14A_WORK/shard_wall.tsv`. The duplicate rounds already
+  made the parser 1.30× slower shard-paired (22,907 s → 29,683 s over the full
+  archive, worst on the late-era HTML shards). Note it in the journal when it
+  moves; never optimise it, and never trade a recovery for it.
+- The holdouts are ALL SPENT (see `thresholds.json` `holdouts_spent`). There is no
+  holdout for this round: the regression set is itself a fixed, unseen-by-tuning
+  ruler, and it is locked so that it stays that way.
+
+## THE DUPLICATE-ROW ROUND (2026-09-29) — CLOSED, GUARD ONLY
+
+**The text below is the previous round and is retained as a GUARD.** The two
+identical-row ceilings pass today and they are what stops this round from buying
+recovery with duplicates. Do not pick this round's subject from it.
 
 ### The ruler is new: a fixed full-archive sample
 
@@ -42,8 +157,9 @@ those five floors pass today and a "fix" that breaks one of them still exits 1.
 excluded. It exists because all five older gates read gold-linked filings only,
 and the gold sets are vendor coverage of larger filers that never reaches
 1994-1995 or 2025-2026. It is covered by `lock.sha256`: you may not edit it, and
-`run_baseline.sh` submits `round_filelist.tsv` (gold ∪ ISS ∪ sample, 21,128
-filings) and asserts the coverage before it submits. `score.py` exits **2** if the
+`run_baseline.sh` submits `round_filelist.tsv` and asserts the coverage before it
+submits (that list was gold ∪ ISS ∪ sample, 21,128 filings, when this round ran; it is
+gold ∪ ISS ∪ sample ∪ regress, 22,856, now). `score.py` exits **2** if the
 output does not cover the sample.
 
 The per-year table is printed every round under `== (vi) FULL-ARCHIVE SAMPLE ==`
@@ -281,9 +397,10 @@ one moving.
 | `sge/*` when the run shape itself is wrong | `lock.sha256` |
 | | anything under `/data/def14a_own/gold/` |
 
-`check.sh` verifies `lock.sha256` over the scorer, the thresholds and the six
-gold files (including `gold_iss.tsv.gz` and `holdout_iss.tsv`) before it scores
-anything, and exits 3 if any of them moved. Editing
+`check.sh` verifies `lock.sha256` over TEN files — the scorer, the thresholds, the
+six gold files (including `gold_iss.tsv.gz` and `holdout_iss.tsv`), the fixed
+sample `sample_full.tsv` and the fixed regression set `gold_regress.tsv` — before
+it scores anything, and exits 3 if any of them moved. Editing
 the ruler instead of the thing being measured is the failure this lock exists to
 catch; it will be caught, and the iteration will have been wasted.
 
@@ -294,14 +411,16 @@ it and do not read `/data/def14a_own/gold/holdout.tsv` for anything except the
 
 ## The loop for one iteration
 
-1. **Read the current miss decomposition.** This round that is
-   `$DEF14A_WORK/miss_iss_dev.tsv` — one row per ISS director in an ISS-dev
-   filing, with its cause and the filing's parsed/person/ISS-director counts.
-   (`$DEF14A_WORK/miss_dev.tsv` is the blockw/factset one, one row per
-   gold-linked dev filing; it is the guard, not the target.) Pick the LARGEST
-   cause that is not floored and not exhausted.
-2. **Look at actual filings.** Pick 5-10 filings with that cause from
-   `miss_iss_dev.tsv` and read them:
+1. **Read the current regression detail.** This round that is
+   `$DEF14A_WORK/regress_dev.tsv` — one row per candidate filing, with its set
+   flags, the old row / group-row counts, what the round just emitted, and whether
+   it counts as recovered. Group the NOT-yet-recovered filings of set (a) by
+   something structural (filing year, `parser`, the old `table_kind`) and pick the
+   largest group that is not floored and not exhausted.
+   (`$DEF14A_WORK/miss_iss_dev.tsv` and `$DEF14A_WORK/miss_dev.tsv` are the ISS and
+   blockw decompositions; they are the guard this round, not the target.)
+2. **Look at actual filings.** Pick 5-10 filings from that group in
+   `regress_dev.tsv` and read them:
    `parse_def14a_own_go/parse_def14a_own_go -debug /wrds/sec/archives/<relpath>`
    (locally: the same binary against a copy under `$DEF14A_WORK/samples/`).
    A fix written without reading the filings is a guess.
