@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""score_test.py — tests for the (v) ISS name matcher and person test, and for
-the (vi) duplicate-excess counters.
+"""score_test.py — tests for the (v) ISS name matcher and person test, the (vi)
+duplicate-excess counters and the (vii) regression-set recovery counters.
 
 Stdlib unittest, no fixtures on disk. Every ISS string below is a real value read
 out of gold_iss_all.tsv.gz; every proxy string is the form the parser emits for
@@ -14,7 +14,8 @@ import sys
 import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from score import DupExcess, era_of, looks_like_person, person_key  # noqa: E402
+from score import (  # noqa: E402
+    DupExcess, RegressCounters, era_of, looks_like_person, person_key)
 
 
 class PersonKey(unittest.TestCase):
@@ -167,6 +168,49 @@ class DupExcessCounters(unittest.TestCase):
         d.add(("320193", "0001104659-18-000001"), dict(zip(self.FIELDS, one)))
         d.add(("789019", "0001104659-18-000002"), dict(zip(self.FIELDS, one)))
         self.assertEqual(d.excess(), {})
+
+
+class RegressRecovery(unittest.TestCase):
+    """(vii). The two GATED recovery definitions, added 2026-09-29.
+
+    Shapes taken from the filings read for the regression-set setup: GE 2013
+    (`0001206774-13-001019`), whose real table states no percent at all, and the
+    percent-carrying group row of Southwestern Energy 2011
+    (`0000950123-11-033365`).
+    """
+
+    A = ("40545", "0001206774-13-001019")
+    B = ("7332", "0000950123-11-033365")
+
+    def row(self, group="0", percent=""):
+        return {"is_group_row": group, "percent": percent}
+
+    def test_zero_row_recovery_does_not_require_a_percent(self):
+        # GE 2013: share counts only, because the document states no percent.
+        r = RegressCounters()
+        r.add(self.A, self.row())
+        r.add(self.A, self.row(group="1"))
+        self.assertEqual(r.recovered_zero_row({self.A}), {self.A})
+
+    def test_zero_row_recovery_is_empty_when_no_row_is_emitted(self):
+        r = RegressCounters()
+        self.assertEqual(r.recovered_zero_row({self.A}), set())
+        self.assertEqual(r.rows.get(self.A, 0), 0)
+
+    def test_group_row_recovery_requires_a_percent_on_the_group_row(self):
+        r = RegressCounters()
+        r.add(self.B, self.row(group="1"))          # group row, no percent
+        r.add(self.B, self.row(percent="1.21"))     # percent, but not a group row
+        self.assertEqual(r.recovered_group_row({self.B}), set())
+        self.assertEqual(r.recovered_group_row_any({self.B}), {self.B})
+        r.add(self.B, self.row(group="1", percent="2.82"))
+        self.assertEqual(r.recovered_group_row({self.B}), {self.B})
+
+    def test_counters_are_per_filing(self):
+        r = RegressCounters()
+        r.add(self.A, self.row(group="1", percent="2.82"))
+        self.assertEqual(r.recovered_group_row({self.B}), set())
+        self.assertEqual(r.recovered_zero_row({self.B}), set())
 
 
 if __name__ == "__main__":

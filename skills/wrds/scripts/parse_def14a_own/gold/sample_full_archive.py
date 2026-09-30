@@ -22,9 +22,12 @@ Inputs   /data/def14a_own/panel/manifest_<year>.tsv.gz   (the full-archive run)
 Outputs  <gold-dir>/sample_full.tsv    the filelist, parser format, 6 columns:
                                        relpath, cik, accession, form, fdate, 'sample'
          <gold-dir>/sample_full.json   sidecar: seed, per-year counts, bytes, sha256
-         <gold-dir>/round_filelist.tsv UNION of gold_filelist_all.tsv and
-                                       sample_full.tsv — what run_baseline.sh
-                                       submits, so one grid pass scores both.
+
+`round_filelist.tsv` — what run_baseline.sh submits — is NOT written here. Since
+the 2026-09-29 regression round it is the THREE-way union of gold_filelist_all.tsv,
+sample_full.tsv and regress_filelist.tsv, and `gold/build_regress_set.py` is its
+single writer. Re-run that script after this one; two writers of one filelist is a
+file that can disagree with itself about what a round parses.
 
 `sample_full.tsv` is covered by lock.sha256: the grind may not edit the sample it
 is scored on, exactly as it may not edit the gold sets.
@@ -109,26 +112,11 @@ def main():
     total_bytes = sum(v["bytes"] for v in per_year.values())
     print("[out] %s: %d filings, %.2f GB" % (out_path, len(picked), total_bytes / 1e9))
 
-    # The union filelist the round submits. Deduplicated on the ARCHIVE PATH, which
-    # is the parser's unit of work; the same accession under two CIKs is two paths
-    # and both are kept, because the panel grain is (cik, accession).
-    union, seen = [], set()
-    for src in (gold_path, out_path):
-        with open(src) as fh:
-            for line in fh:
-                f = line.rstrip("\n").split("\t")
-                if f[0] in seen:
-                    continue
-                seen.add(f[0])
-                union.append(line.rstrip("\n"))
-    union.sort()
-    round_path = os.path.join(args.gold_dir, "round_filelist.tsv")
-    with open(round_path, "w") as fh:
-        for line in union:
-            fh.write(line + "\n")
-    print("[out] %s: %d filings (gold %d + sample %d, %d shared paths dropped)" % (
-        round_path, len(union), sum(1 for _ in open(gold_path)), len(picked),
-        sum(1 for _ in open(gold_path)) + len(picked) - len(union)))
+    # round_filelist.tsv is NOT written here. `gold/build_regress_set.py` owns it and
+    # writes the THREE-way union (gold_filelist_all + sample_full + regress_filelist);
+    # run it after this script.
+    print("[note] round_filelist.tsv is written by gold/build_regress_set.py — "
+          "run it now, or run_baseline.sh will submit a stale filelist")
 
     side = {
         "built": "gold/sample_full_archive.py",
@@ -145,8 +133,8 @@ def main():
         "sampled_bytes": total_bytes,
         "per_year": {str(k): v for k, v in sorted(per_year.items())},
         "sha256_sample_full_tsv": sha256_of(out_path),
-        "sha256_round_filelist_tsv": sha256_of(round_path),
-        "round_filelist_filings": len(union),
+        "round_filelist": "written by gold/build_regress_set.py since 2026-09-29; "
+                          "its hash and counts live in gold_regress.json",
     }
     side_path = os.path.join(args.gold_dir, "sample_full.json")
     with open(side_path, "w") as fh:

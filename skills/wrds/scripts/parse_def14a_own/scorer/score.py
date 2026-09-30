@@ -56,15 +56,34 @@ Metrics, each printed with its denominator:
                                per-year values recorded in thresholds.json
                                `_sample_yield_floor_by_year`; (c) group-row rate
                                per year, reported.
+  (vii) REGRESSION SET        The fixed diff of the two full-archive panels
+                               (`gold/gold_regress.tsv`, built once by
+                               `gold/build_regress_set.py` from
+                               `panel_e4e78a95` = parser 4b36a962 against
+                               `panel` = parser 092b6fb9). Two GATED recovery
+                               rates, each over a fixed denominator:
+                               `regress_zero_row_recovered` = share of the
+                               ZERO-ROW set (old n_rows > 0, new n_rows == 0)
+                               that parses to >= 1 row again;
+                               `regress_group_row_recovered` = share of the
+                               GROUP-ROW set (old has_group_row, new none, and
+                               >= 1 lost group row carried a parsed percent)
+                               with a percent-carrying group row again. The
+                               share-only group-row population and the filings
+                               whose old rows were demonstrably wrong (the two
+                               exclusion clauses recorded in the builder and in
+                               gold_regress.json) are reported as DIAGNOSTICS
+                               with their own denominators, never gated.
 
 GATED vs DIAGNOSTIC. The gated set is EXACTLY the keys under `minimums` (a floor,
 val >= thr) plus the keys under `maximums` (a ceiling, val <= thr) in
 thresholds.json — nothing in this file hard-codes it, and no metric outside those
-two sets can change the exit code. Since 2026-09-29 that is EIGHT metrics: filing
-yield (parsed percent), holder recall vs blockw, holder precision vs blockw,
-group-row detection, ISS director recall, the sample's worst-year yield margin,
-and two ceilings on the sample's IDENTICAL-ROW duplicate excess rate (pooled and
-worst year; the same-table pair they replaced on 2026-09-29 is now diagnostic).
+two sets can change the exit code. Since the 2026-09-29 regression round that is
+TEN metrics: filing yield (parsed percent), holder recall vs blockw, holder
+precision vs blockw, group-row detection, ISS director recall, the sample's
+worst-year yield margin, two ceilings on the sample's IDENTICAL-ROW duplicate
+excess rate (pooled and worst year; the same-table pair they replaced on
+2026-09-29 is now diagnostic), and the two regression-set recovery rates in (vii).
 The two FactSet aggregate metrics in (iii)
 are computed and printed with their denominators every run and NEVER affect the
 exit code, because the FactSet gold is defined by a proxy window over all FactSet
@@ -368,6 +387,46 @@ class DupExcess:
         return out
 
 
+class RegressCounters:
+    """(vii) recovery counters for the fixed regression set.
+
+    ONE streaming accumulator, so the definition scorer/score_test.py exercises is
+    the definition main() scores. Rows are added with the filing key (cik,
+    accession); only three facts per filing matter.
+
+      rows[key]        parsed rows now, any kind
+      group_any        >= 1 row flagged is_group_row
+      group_pct        >= 1 row flagged is_group_row AND carrying a parsed percent
+
+    `recovered_zero_row` is >= 1 row of any kind: the zero-row set lost EVERY row,
+    including share-count-only tables the document states no percent for (GE 2013
+    is the type case), so requiring a percent here would demand what the filing
+    does not contain. `recovered_group_row` requires the PERCENT, because the gated
+    group-row set is by construction the filings whose lost group row carried one.
+    """
+
+    def __init__(self):
+        self.rows = defaultdict(int)
+        self.group_any = set()
+        self.group_pct = set()
+
+    def add(self, fkey, r):
+        self.rows[fkey] += 1
+        if r["is_group_row"] == "1":
+            self.group_any.add(fkey)
+            if r["percent"] != "":
+                self.group_pct.add(fkey)
+
+    def recovered_zero_row(self, keys):
+        return {k for k in keys if self.rows.get(k, 0) > 0}
+
+    def recovered_group_row(self, keys):
+        return {k for k in keys if k in self.group_pct}
+
+    def recovered_group_row_any(self, keys):
+        return {k for k in keys if k in self.group_any}
+
+
 def verify_lock(lock_path, files):
     """Every path in the lock must hash to its recorded value."""
     with open(lock_path) as fh:
@@ -419,6 +478,10 @@ def main():
                          "by a human, to set the no-regression floors; never from a loop.")
     ap.add_argument("--sample-floor-slack", type=float, default=0.005,
                     help="the per-year no-regression slack subtracted by --record-sample-floors")
+    ap.add_argument("--no-regress", action="store_true",
+                    help="skip the (vii) regression-set block")
+    ap.add_argument("--regress-report", default="",
+                    help="write the per-filing regression-set recovery detail here as TSV")
     ap.add_argument("--check", action="store_true", help="exit 0 iff every gated metric clears its threshold")
     ap.add_argument("--no-verify-lock", action="store_true", help="skip the hash lock (for lock creation only)")
     ap.add_argument("--miss-report", default="", help="write the per-filing miss decomposition here")
@@ -449,6 +512,12 @@ def main():
               "A gated metric cannot be switched off from the command line.",
               file=sys.stderr)
         sys.exit(2)
+    regress_gated = any(n.startswith("regress_") for n in list(gate_floor) + list(gate_ceiling))
+    if regress_gated and args.no_regress:
+        print("ERROR: --no-regress but thresholds.json gates a regress_* metric. "
+              "A gated metric cannot be switched off from the command line.",
+              file=sys.stderr)
+        sys.exit(2)
     iss_gated = "iss_director_recall" in gate_floor
     if iss_gated and args.no_iss:
         print("ERROR: --no-iss but thresholds.json gates iss_director_recall. "
@@ -470,6 +539,8 @@ def main():
             files["gold/holdout_iss.tsv"] = os.path.join(g, "holdout_iss.tsv")
         if not args.no_sample:
             files["gold/sample_full.tsv"] = args.sample_filelist or os.path.join(g, "sample_full.tsv")
+        if not args.no_regress:
+            files["gold/gold_regress.tsv"] = os.path.join(g, "gold_regress.tsv")
         bad = verify_lock(args.lock, files)
         if bad:
             print("LOCK MISMATCH:", file=sys.stderr)
@@ -579,10 +650,45 @@ def main():
         print("[in ] sample %s: %d filings, %d filing years" % (
             spath, len(sample_year), len(set(sample_year.values()))))
 
+    # ---- (vii) the fixed regression set -------------------------------------
+    # Membership is READ, never derived: `gold/gold_regress.tsv` was built once from
+    # the two panels by gold/build_regress_set.py, is covered by lock.sha256, and
+    # carries the flags that say which set each filing is in and which exclusion
+    # clause fired. Re-deriving it here from a panel would let a round that
+    # re-parsed the archive move its own denominator.
+    reg_a, reg_bg, reg_bd, reg_excl, reg_excl_zero = set(), set(), set(), set(), set()
+    reg_meta = {}
+    if not args.no_regress:
+        rpath = os.path.join(g, "gold_regress.tsv")
+        with open(rpath) as fh:
+            for r in csv.DictReader(fh, **TSV):
+                key = (r["cik"].lstrip("0") or "0", r["accession"])
+                reg_meta[key] = r
+                if r["in_set_zero_row"] == "1":
+                    reg_a.add(key)
+                if r["in_set_group_row_gated"] == "1":
+                    reg_bg.add(key)
+                if r["in_set_group_row_diag"] == "1":
+                    reg_bd.add(key)
+                if r["excl_x1_dollar_in_name"] == "1" or r["excl_x2_one_value_all_rows"] == "1":
+                    reg_excl.add(key)
+                    # The diagnostic denominator is the excluded ZERO-ROW candidates
+                    # only. An excluded filing that merely lost its group row still
+                    # emits rows, so counting it would make the diagnostic read ~1.0
+                    # whatever the parser does.
+                    if r["cand_zero_row"] == "1":
+                        reg_excl_zero.add(key)
+        print("[in ] regress %s: %d candidate filings — set(a) zero-row %d, "
+              "set(b) group-row GATED %d, set(b) share-only DIAGNOSTIC %d, excluded %d "
+              "(of which zero-row candidates %d)" % (
+                  rpath, len(reg_meta), len(reg_a), len(reg_bg), len(reg_bd),
+                  len(reg_excl), len(reg_excl_zero)))
+
     # ---- parser output ------------------------------------------------------
     man = {}
     iss_man = set()
     sample_man = set()
+    reg_man = set()
     for r in read_tsv_gz(args.manifest):
         cik = r["cik"].lstrip("0") or "0"
         key = (cik, r["accession"])
@@ -592,6 +698,8 @@ def main():
             iss_man.add(key)
         if key in sample_year:
             sample_man.add(key)
+        if key in reg_meta:
+            reg_man.add(key)
     print("[in ] parser manifest rows matching gold filings: %d" % len(man))
 
     # ISS coverage, checked BEFORE anything is scored. A recall computed over the
@@ -634,6 +742,22 @@ def main():
                 sys.exit(2)
             print("WARNING: " + msg, file=sys.stderr)
 
+    if not args.no_regress and reg_meta:
+        n_r_cov, n_r = len(reg_man), len(reg_meta)
+        print("[in ] parser manifest rows matching REGRESSION filings: %d / %d (%.2f%%)" % (
+            n_r_cov, n_r, 100 * n_r_cov / n_r if n_r else 0.0))
+        if n_r_cov < n_r:
+            missing = sorted(set(reg_meta) - reg_man)
+            msg = ("REGRESSION COVERAGE SHORT: %d of %d regression-set filings have no "
+                   "manifest row. Re-run the grid pass over the round filelist "
+                   "(DEF14A_FILELIST=round_filelist.tsv bash run_baseline.sh). "
+                   "First 5 missing (cik, accession): %s" % (
+                       n_r - n_r_cov, n_r, ", ".join("%s/%s" % k for k in missing[:5])))
+            if regress_gated:
+                print("ERROR: " + msg, file=sys.stderr)
+                sys.exit(2)
+            print("WARNING: " + msg, file=sys.stderr)
+
     # Per-year sample accumulators. Every duplicate counter comes from DupExcess
     # (see its docstring): the decomposition
     #   excess_total = excess_same_table_kind + excess_cross_table_kind
@@ -646,11 +770,17 @@ def main():
     sample_has_group = set()
     sample_n_rows = defaultdict(int)
 
+    # (vii) accumulator: three facts per regression-set filing, all that the two
+    # recovery rates and their diagnostics need. See RegressCounters.
+    reg = RegressCounters()
+
     parsed = defaultdict(list)
     n_rows_read = n_iss_parsed_rows = 0
     for r in read_tsv_gz(args.rows):
         cik = r["cik"].lstrip("0") or "0"
         key = (cik, r["accession"])
+        if key in reg_meta:
+            reg.add(key, r)
         if key in sample_year:
             sample_n_rows[key] += 1
             dup.add(key, r)
@@ -1118,6 +1248,95 @@ def main():
             print("[out] %s: per-year yield floors = measured minus %.4f" % (
                 args.record_sample_floors, args.sample_floor_slack))
 
+    # ---- (vii) REGRESSION SET ------------------------------------------------
+    #
+    # Two GATED recovery rates over denominators fixed in gold_regress.tsv:
+    #   regress_zero_row_recovered   = |{set(a): >= 1 parsed row now}| / |set(a)|
+    #   regress_group_row_recovered  = |{set(b) gated: >= 1 group row with a parsed
+    #                                   percent now}| / |set(b) gated|
+    # Both were 0.0000 by construction at the commit the set was cut from — the new
+    # panel IS the parser that lost them — so these are the round's target, not a
+    # no-regression floor.
+    #
+    # Reported, never gated: recovery over the share-only group-row population (the
+    # old group row carried no percent; the report's compensation/award group labels
+    # live there), recovery over the EXCLUDED filings (X1/X2 — if the round drags
+    # those back it is re-introducing dollar-range and compensation tables, and the
+    # duplicate ceilings and blockw precision are the gates that will say so), and
+    # the row counts, so a "recovery" that emits one junk row is visible.
+    regress_metrics = {}
+    if not args.no_regress and reg_meta:
+        def rrate(hits, den):
+            return (len(hits) / len(den)) if den else 0.0
+
+        a_hit = reg.recovered_zero_row(reg_a)
+        bg_hit = reg.recovered_group_row(reg_bg)
+        bg_any = reg.recovered_group_row_any(reg_bg)
+        bd_hit = reg.recovered_group_row_any(reg_bd)
+        ex_hit = reg.recovered_zero_row(reg_excl_zero)
+        a_rate, bg_rate = rrate(a_hit, reg_a), rrate(bg_hit, reg_bg)
+        old_rows_a = sum(int(reg_meta[k]["old_n_rows"]) for k in reg_a)
+        new_rows_a = sum(reg.rows.get(k, 0) for k in reg_a)
+
+        print("\n== (vii) REGRESSION SET (fixed diff of panel_e4e78a95 -> panel; "
+              "%d candidate filings) ==" % len(reg_meta))
+        print("  (a) ZERO-ROW set: old n_rows > 0 and new n_rows == 0, after the two exclusions")
+        print("      recovered >=1 row   [GATED]: %d / %d = %.4f" % (
+            len(a_hit), len(reg_a), a_rate))
+        print("      rows: %d in the old panel over those filings, %d now" % (
+            old_rows_a, new_rows_a))
+        print("  (b) GROUP-ROW set: old group row, new none, >=1 lost group row carried a percent")
+        print("      group row with a percent back [GATED]: %d / %d = %.4f" % (
+            len(bg_hit), len(reg_bg), bg_rate))
+        print("      of those filings, any group row at all: %d / %d" % (
+            len(bg_any), len(reg_bg)))
+        print("  DIAGNOSTIC, never gated:")
+        print("      share-only group-row population, any group row back: %d / %d = %.4f" % (
+            len(bd_hit), len(reg_bd), rrate(bd_hit, reg_bd)))
+        print("      EXCLUDED zero-row filings (X1 dollar-in-name / X2 one-value-all-rows)")
+        print("      that emit >=1 row again: %d / %d = %.4f  — a RISE here is the round" % (
+            len(ex_hit), len(reg_excl_zero), rrate(ex_hit, reg_excl_zero)))
+        print("      re-accepting dollar-range and compensation tables, not recovering ownership")
+
+        regress_metrics = {
+            "regress_zero_row_recovered": a_rate,
+            "regress_zero_row_denominator": len(reg_a),
+            "regress_zero_row_recovered_n": len(a_hit),
+            "regress_zero_row_old_rows": old_rows_a,
+            "regress_zero_row_new_rows": new_rows_a,
+            "regress_group_row_recovered": bg_rate,
+            "regress_group_row_denominator": len(reg_bg),
+            "regress_group_row_recovered_n": len(bg_hit),
+            "regress_group_row_any_group_row_back": len(bg_any),
+            "regress_group_row_share_only_recovered": rrate(bd_hit, reg_bd),
+            "regress_group_row_share_only_denominator": len(reg_bd),
+            "regress_excluded_emitting_rows_rate": rrate(ex_hit, reg_excl_zero),
+            "regress_excluded_denominator": len(reg_excl_zero),
+            "regress_excluded_filings_total": len(reg_excl),
+            "regress_candidate_filings": len(reg_meta),
+            "regress_manifest_covered": len(reg_man),
+        }
+        if args.regress_report:
+            with open(args.regress_report, "w") as fh:
+                fh.write("cik\taccession\tfiling_date\tin_set_zero_row\tin_set_group_row_gated"
+                         "\tin_set_group_row_diag\texcluded\told_n_rows\told_group_rows"
+                         "\told_group_rows_with_percent\tnew_n_rows\tnew_group_row_any"
+                         "\tnew_group_row_with_percent\trecovered\n")
+                for k in sorted(reg_meta):
+                    r = reg_meta[k]
+                    in_a = r["in_set_zero_row"] == "1"
+                    in_bg = r["in_set_group_row_gated"] == "1"
+                    rec = ((not in_a or reg.rows.get(k, 0) > 0)
+                           and (not in_bg or k in reg.group_pct))
+                    fh.write("\t".join(str(x) for x in [
+                        k[0], k[1], r["filing_date"], r["in_set_zero_row"],
+                        r["in_set_group_row_gated"], r["in_set_group_row_diag"],
+                        1 if k in reg_excl else 0, r["old_n_rows"], r["old_group_rows"],
+                        r["old_group_rows_with_percent"], reg.rows.get(k, 0),
+                        1 if k in reg.group_any else 0, 1 if k in reg.group_pct else 0,
+                        1 if rec else 0]) + "\n")
+            print("[out] %s: %d rows" % (args.regress_report, len(reg_meta)))
+
     # ---- miss decomposition -------------------------------------------------
     causes = defaultdict(int)
     detail = []
@@ -1186,6 +1405,7 @@ def main():
     }
     metrics.update(iss_metrics)
     metrics.update(sample_metrics)
+    metrics.update(regress_metrics)
     if args.json_out:
         with open(args.json_out, "w") as fh:
             json.dump(metrics, fh, indent=2, sort_keys=True)
@@ -1205,6 +1425,9 @@ def main():
         if nm in iss_metrics:
             values[nm] = iss_metrics[nm]
     for nm, v in sample_metrics.items():
+        if isinstance(v, float):
+            values[nm] = v
+    for nm, v in regress_metrics.items():
         if isinstance(v, float):
             values[nm] = v
     # GATED = exactly the keys in thresholds["minimums"] (floors, val >= thr) plus

@@ -52,9 +52,11 @@ sge/
 gold/                    gold-set builders (WRDS Blockholders, FactSet, ISS directors)
                          + the holdout splits
   sample_full_archive.py the FIXED year-stratified full-archive sample (seed 20260929)
-                         and the round filelist (gold ∪ ISS ∪ sample)
+  build_regress_set.py   the FIXED regression set — the diff of the two full-archive
+                         panels — and the round filelist (gold ∪ ISS ∪ sample ∪ regress)
 scorer/score.py          scores parser output against the gold sets; --check gates the grind
-scorer/score_test.py     tests for the ISS name matcher and person test (stdlib)
+scorer/score_test.py     tests for the ISS name matcher, the duplicate-excess counters
+                         and the regression-set recovery counters (stdlib)
 thresholds.json          the locked pass thresholds
 lock.sha256              scorer + gold + thresholds hashes the scorer verifies before scoring
 check.sh                 the grind's --check
@@ -358,7 +360,9 @@ rows) is pulled by running `pull_def14a_index.py` with `--start 2002-01-01 --end
 2025-12-31` into a scratch dir and renaming. The original index is left alone so
 gold sets (a) and (b) stay reproducible.
 
-**EIGHT metrics gate as of 2026-09-29.** `minimums` are floors, `maximums` are
+**TEN metrics gate as of the 2026-09-29 regression round** (the eight below plus
+`regress_zero_row_recovered` and `regress_group_row_recovered`, both floors at 0.95 —
+see the regression-ruler section). `minimums` are floors, `maximums` are
 ceilings, and score.py reads both from the locked thresholds file. The duplicate-row
 round (`GRIND_PLAN.md` §9) added a fourth ruler — `gold/sample_full.tsv`, a fixed
 year-stratified sample of the whole archive (8,250 filings, ~250 per filing year
@@ -372,8 +376,9 @@ the earlier key, `(accession, cik, holder_name, share_class)` within one
 `table_kind`, counted one holder listed once per managed account with distinct
 shares and percent as duplicates. `sample_dup_excess_same_table_rate` and
 `_max_year` are kept as DIAGNOSTICS. `run_baseline.sh` therefore submits
-`gold/round_filelist.tsv` (gold ∪ ISS ∪ sample, 21,128 filings) and score.py exits
-**2** if the output does not cover the sample.
+`gold/round_filelist.tsv` — gold ∪ ISS ∪ sample ∪ regress, **22,856** filings since
+the regression round (21,128 before it) — and score.py exits **2** if the output does
+not cover the sample or the regression set.
 
 **`iss_director_recall` is GATED as of 2026-09-29** (`GRIND_PLAN.md` §8.5A) at
 the permanent no-regression floor **0.82** — it was 0.90 as a round target while
@@ -423,6 +428,49 @@ floor.
 (both blockw) and `holdout_iss.tsv` (ISS, scored pre and post on 2026-09-29)
 have each been scored and are dev data from here on. A future round that needs
 an honest generalisation estimate must draw a fresh split first.
+
+### The REGRESSION ruler — a fixed diff of the two full-archive panels (2026-09-29)
+
+Built once by `gold/build_regress_set.py` from `/data/def14a_own/panel_e4e78a95`
+(parser `4b36a962`) against `/data/def14a_own/panel` (parser `092b6fb9`), because the
+`092b6fb9` re-run bought a 6.8x fall in the identical-row duplicate rate and +0.32 pp
+of yield while losing recall no gate could see: **1,070** filings went from >= 1
+ownership row to zero, and **1,181** lost a D&O group row (1,618 group rows, 176 of
+them carrying a percent).
+
+```
+gold/gold_regress.tsv       1,893 candidate filings, one row each, with set flags
+gold/regress_filelist.tsv   the parser-format filelist the round submits
+gold/gold_regress.json      sidecar: the rules, the counts, the hashes
+gold/round_filelist.tsv     gold ∪ ISS ∪ sample ∪ regress = 22,856 filings
+```
+
+| set | definition | n | gated |
+|---|---|---:|---|
+| (a) zero-row | old `n_rows` > 0, new `n_rows` == 0, after exclusions | 933 | `regress_zero_row_recovered` >= 0.95 |
+| (b) group-row | old group row, new none, >= 1 lost group row had a percent | 83 | `regress_group_row_recovered` >= 0.95 |
+| (b) share-only | the same without the percent requirement | 1,075 | diagnostic |
+| excluded | old rows demonstrably wrong: `$` in a holder name (96), or >= 3 rows all one identical (shares, percent) pair (58) | 150 | diagnostic |
+
+The exclusions were checked against the documents — dollar-range-of-equity tables
+(`0001193125-12-089540`, `0000875626-06-000515`, `0000930413-02-002213`,
+`0000950116-02-000782`) and a summary compensation table (`0000891554-99-000468`). The
+wider rule "the old parse emitted no percent anywhere" was REJECTED because GE 2013
+(`0001206774-13-001019`) states no percent at all and its old rows are the real table.
+`regress_excluded_emitting_rows_rate` reports the 137 excluded filings that were
+zero-row candidates; a rise means the round re-accepted those tables. Both gates read
+**0.0000 at HEAD by construction** — the panel is the parser at HEAD.
+
+`gold_regress.tsv` joins `lock.sha256`, which now covers **10** files.
+
+### Wall time per shard — diagnostic, never gated (2026-09-29)
+
+`run_baseline.sh` fetches the shard logs to `$DEF14A_WORK/shard_logs/`, writes
+`$DEF14A_WORK/shard_wall.tsv` (`shard`, `files`, `ownership_rows`, `wall_s`) and prints
+shards / total / median / max / mean and the slowest five. The duplicate rounds made
+the parser **1.30x** slower shard-paired over the full archive (22,907 s -> 29,683 s,
+983 of 1,004 shards slower, worst on the late-era HTML shards). It is reported so the
+cost stays visible; gating it would pay the loop to stop parsing.
 
 ## Known defects
 
