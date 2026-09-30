@@ -101,10 +101,189 @@ var (
 	}
 )
 
+// A founder token whose referent, if any, follows it: "founded X", "founding X",
+// "founder of X", "co-founders of X". The connector is bounded so that the
+// referent has to be the thing founded — "co-founder and has been a General
+// Partner of Andreessen Horowitz" leaves "and has been ..." at the cursor, not a
+// name.
+var (
+	reFounderToken     = regexp.MustCompile(`(?i)\b(?:co[-\s]?)?found(?:ed|ing|ers?)\b`)
+	reFounderConnector = regexp.MustCompile(`^(?:[\s,]*of\b)?[\s]*`)
+	// The possessive form, "musicmaker.com's founder": the referent is the run
+	// immediately before the token, with the clitic still attached.
+	reFounderPossessive = regexp.MustCompile(`(?i)\b(?:co[-\s]?)?founders?\b`)
+	rePossessiveTail    = regexp.MustCompile(`(?:['\x{2019}]s|s['\x{2019}])?[\s]*$`)
+	// Whose founding is it? A bio can name a FIRM as the issuer's founder:
+	// Ceres's CEO's bio reads "Dr. Hamilton was a principal at Oxford Bioscience
+	// Partners, one of the leading investors in the genomics field and a founder
+	// of Ceres" — the referent is the issuer and the subject is the firm. The
+	// clause's subject is taken to be whichever of the two markers sits NEARER
+	// the founder token in the preceding window.
+	rePersonMarker = regexp.MustCompile(`(?i)\b(?:mr|mrs|ms|dr|prof|professor)\.|\b(?:he|she|they|him|her|them|his|their)\b`)
+	reFirmMarker   = regexp.MustCompile(`(?i)\b(?:partners?|capital|ventures?|holdings?|associates|management|corporation|corp|incorporated|inc|company|group|fund|funds|bank|llc|llp|l\.?p\.?|l\.?l\.?c\.?)\b`)
+
+	// Corporate-form tokens a bio drops when it names the issuer, and the
+	// article an SGML name never carries but a bio does.
+	issuerTailToken = map[string]bool{
+		"inc": true, "incorporated": true, "corp": true, "corporation": true,
+		"co": true, "company": true, "companies": true, "llc": true, "lc": true,
+		"lp": true, "llp": true, "plc": true, "ltd": true, "limited": true,
+		"nv": true, "sa": true, "ag": true, "ab": true, "as": true, "bv": true,
+		"holdings": true, "holding": true, "group": true, "trust": true,
+		"the": true, "a": true, "an": true,
+	}
+)
+
+// issuerRef is the pair of anchored patterns the founder referent test needs: the
+// issuer's name in full, and its shortest DISTINCTIVE leading prefix, for the
+// bios that drop the corporate tail ("a co-founder of Ladder" where the header
+// says "Ladder Capital Corp").
+//
+// A bare prefix match would charge the issuer with every company whose name
+// starts with the same word, so the short form is only accepted when what
+// follows it is not a further capitalised word of the same name — see
+// TestRule6_FounderOfACompanySharingTheIssuersFirstWordDoesNotFire.
+type issuerRef struct {
+	full  *regexp.Regexp
+	short *regexp.Regexp
+	// and the same two anchored at the END of the text, for the possessive form.
+	fullEnd *regexp.Regexp
+}
+
+// The separator between two tokens of a name as a bio writes it: the space in
+// "Beyond Meat", the dot in "musicmaker.com", the ampersand in "Smith & Wesson".
+const issuerSep = `[^A-Za-z0-9]{1,3}`
+
+// issuerReferent compiles the issuer name the SGML header states. It returns nil
+// when the header states none, which leaves detectFounder with only the
+// "our company" referents — the behaviour before the name was plumbed through.
+func issuerReferent(name string) *issuerRef {
+	var core []string
+	for _, f := range strings.Fields(strings.ToLower(name)) {
+		t := strings.Map(func(r rune) rune {
+			if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') {
+				return r
+			}
+			return -1
+		}, f)
+		if t != "" {
+			core = append(core, t)
+		}
+	}
+	// Drop the corporate tail, but never the whole name: "The Trust Company"
+	// keeps its last token rather than becoming empty.
+	for len(core) > 1 && issuerTailToken[core[len(core)-1]] {
+		core = core[:len(core)-1]
+	}
+	for len(core) > 1 && issuerTailToken[core[0]] {
+		core = core[1:]
+	}
+	if len(core) == 0 || len(core[0]) < 2 {
+		return nil
+	}
+	pat := func(n int) string {
+		parts := make([]string, n)
+		for i, t := range core[:n] {
+			parts[i] = regexp.QuoteMeta(t)
+		}
+		return strings.Join(parts, issuerSep)
+	}
+	ref := &issuerRef{
+		full:    regexp.MustCompile(`(?i)^` + pat(len(core)) + `\b`),
+		fullEnd: regexp.MustCompile(`(?i)\b` + pat(len(core)) + `$`),
+	}
+	// The shortest leading prefix long enough to identify the issuer on its own.
+	for n := 1; n < len(core); n++ {
+		if len(strings.Join(core[:n], "")) >= 4 {
+			ref.short = regexp.MustCompile(`(?i)^` + pat(n) + `\b`)
+			break
+		}
+	}
+	return ref
+}
+
+// namesIssuer reports whether text BEGINS with the issuer's name.
+func (r *issuerRef) namesIssuer(text string) bool {
+	if r == nil {
+		return false
+	}
+	if r.full.MatchString(text) {
+		return true
+	}
+	if r.short == nil {
+		return false
+	}
+	m := r.short.FindStringIndex(text)
+	if m == nil {
+		return false
+	}
+	// " Communications Corporation" continues a DIFFERENT name; ", Dr. Hecht
+	// was" and " in 2012" do not. Only a space-then-capital continues a name.
+	rest := text[m[1]:]
+	trimmed := strings.TrimLeft(rest, " \t\n\r ")
+	if len(trimmed) < len(rest) && trimmed != "" {
+		if c := trimmed[0]; c >= 'A' && c <= 'Z' {
+			return false
+		}
+	}
+	return true
+}
+
+// subjectIsThePerson reports whether the founder clause that starts at tokenStart
+// is about the person rather than about a firm their bio has just named. Only the
+// preceding window is read, and a window with no firm marker in it always counts
+// as the person's: "Prior to co-founding Twist Bioscience, Ms. Leproust served"
+// names no subject at all before the token.
+func subjectIsThePerson(bio string, tokenStart int, name string) bool {
+	lo := tokenStart - 220
+	if lo < 0 {
+		lo = 0
+	}
+	w := bio[lo:tokenStart]
+	firm := lastIndexOf(w, reFirmMarker)
+	if firm < 0 {
+		return true
+	}
+	person := lastIndexOf(w, rePersonMarker)
+	if s := surnameOf(name); s != nil {
+		if i := lastIndexOf(w, s); i > person {
+			person = i
+		}
+	}
+	return person > firm
+}
+
+// lastIndexOf is the start offset of re's LAST match in s, or -1.
+func lastIndexOf(s string, re *regexp.Regexp) int {
+	m := re.FindAllStringIndex(s, -1)
+	if len(m) == 0 {
+		return -1
+	}
+	return m[len(m)-1][0]
+}
+
+// surnameOf compiles the person's last name token, which is how a bio refers to
+// them after the opening sentence ("Mr. Harris", "Dorsey co-founded").
+func surnameOf(name string) *regexp.Regexp {
+	f := strings.Fields(name)
+	for i := len(f) - 1; i >= 0; i-- {
+		t := strings.Trim(f[i], ".,()")
+		if len(t) >= 3 && !reCredentialTail.MatchString(t) {
+			return regexp.MustCompile(`(?i)\b` + regexp.QuoteMeta(t) + `\b`)
+		}
+	}
+	return nil
+}
+
+// A post-nominal that is not a surname.
+var reCredentialTail = regexp.MustCompile(`(?i)^(?:jr|sr|ii|iii|iv|md|phd|dds|dvm|esq|cpa|cfa|mba|ph|m|d)$`)
+
 // detectFounder applies Design rule 6. The variable is "self-described founder"
 // and it is a LOWER BOUND on founder status, not a measurement of it — see the
 // README's Netflix floor.
-func detectFounder(p Person) (bool, string) {
+//
+// ref is the issuer name from the filing's own SGML header, or nil.
+func detectFounder(p Person, ref *issuerRef) (bool, string) {
 	if m := rePosFounder.FindStringIndex(p.Position); m != nil && !reFounderFirm.MatchString(p.Position) {
 		return true, evidence(p.Position, m[0], m[1])
 	}
@@ -117,6 +296,27 @@ func detectFounder(p Person) (bool, string) {
 			continue
 		}
 		return true, evidence(p.Bio, m[0], m[1])
+	}
+	if ref == nil {
+		return false, ""
+	}
+	// The issuer named by name rather than as "our company".
+	for _, m := range reFounderToken.FindAllStringIndex(p.Bio, -1) {
+		if loc := reFounderFirm.FindStringIndex(p.Bio[m[0]:]); loc != nil && loc[0] == 0 {
+			continue // the firm literally named "Founders Fund"
+		}
+		after := p.Bio[m[1]:]
+		c := reFounderConnector.FindString(after)
+		if ref.namesIssuer(after[len(c):]) && subjectIsThePerson(p.Bio, m[0], p.Name) {
+			return true, evidence(p.Bio, m[0], m[1])
+		}
+	}
+	for _, m := range reFounderPossessive.FindAllStringIndex(p.Bio, -1) {
+		before := p.Bio[:m[0]]
+		if t := rePossessiveTail.FindStringIndex(before); t != nil && ref.fullEnd.MatchString(before[:t[0]]) &&
+			subjectIsThePerson(p.Bio, t[0], p.Name) {
+			return true, evidence(p.Bio, m[0], m[1])
+		}
 	}
 	return false, ""
 }

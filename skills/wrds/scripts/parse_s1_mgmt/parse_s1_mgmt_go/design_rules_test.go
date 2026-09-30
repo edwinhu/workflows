@@ -34,6 +34,31 @@ const sgmlHeader = "<SEC-HEADER>0000000000-00-000000.hdr.sgml : 20000101\n" +
 	"FILED AS OF DATE:\t\t20000101\n" +
 	"</SEC-HEADER>\n"
 
+// sgmlHeaderFor is sgmlHeader plus the FILER block that states the issuer's
+// name, which is where the founder referent test gets it. The FORMER CONFORMED
+// NAME line is in every case: a header regex that matched it would take a name
+// the issuer no longer uses.
+func sgmlHeaderFor(conformed string) string {
+	return "<SEC-HEADER>0000000000-00-000000.hdr.sgml : 20000101\n" +
+		"ACCESSION NUMBER:\t\t0000000000-00-000000\n" +
+		"CONFORMED SUBMISSION TYPE:\t424B4\n" +
+		"FILED AS OF DATE:\t\t20000101\n" +
+		"\nFILER:\n\n\tCOMPANY DATA:\t\n" +
+		"\t\tCOMPANY CONFORMED NAME:\t\t\t" + conformed + "\n" +
+		"\t\tCENTRAL INDEX KEY:\t\t\t0000000000\n" +
+		"\tFORMER COMPANY:\t\n" +
+		"\t\tFORMER CONFORMED NAME:\tShell Predecessor Holdings LLC\n" +
+		"\t\tDATE OF NAME CHANGE:\t19990101\n" +
+		"</SEC-HEADER>\n"
+}
+
+// mgmtSectionWithCEOBio is miniMgmtSection with the CEO's bio paragraph replaced.
+func mgmtSectionWithCEOBio(bio string) string {
+	return strings.Replace(miniMgmtSection,
+		"<P><I>Ada Lovelace</I> has served as our Chief Executive Officer since 1843.</P>",
+		"<P><I>Ada Lovelace</I> "+bio+"</P>", 1)
+}
+
 // A three-person management table in the plain 3-column shape.
 const miniMgmtSection = `<P ALIGN="center"><B>MANAGEMENT</B></P>
 <P><B>Executive Officers and Directors</B></P>
@@ -698,6 +723,79 @@ func TestRule6_FounderFiresOnOwnBioWithSameCompanyReferent(t *testing.T) {
 	}
 	if p := person(t, e, "Eric Schmidt"); p.FounderSelfDescribed {
 		t.Errorf("Eric Schmidt founder_self_described = true (evidence=%q)", p.FounderEvidence)
+	}
+}
+
+// The referent the same-company patterns cannot see: the bio names the issuer
+// rather than saying "our company". Ten of the dev split's fifteen
+// ceo_founder_self_described misses are this one form — "founded LogMeIn",
+// "is the founder of Beyond Meat", "co-founded ExactTarget", "Prior to
+// co-founding Twist Bioscience", "musicmaker.com's founder". The issuer name is
+// not a guess: the dissemination file's SGML header states it as COMPANY
+// CONFORMED NAME, so the referent test stays as strict as the "our company" one.
+func TestRule6_FounderFiresOnIssuerNamedByName(t *testing.T) {
+	cases := []struct {
+		conformed string // COMPANY CONFORMED NAME, verbatim from a real header
+		bio       string
+	}{
+		// The header name in full, after the verb and after the noun.
+		{"LogMeIn, Inc.", "Ada Lovelace founded LogMeIn and has served as our Chief Executive Officer since 1843."},
+		{"BEYOND MEAT, INC.", "Ada Lovelace is the founder of Beyond Meat and has served as our Chief Executive Officer since 1843."},
+		{"ExactTarget Inc", "Ada Lovelace co-founded ExactTarget in December 2000 and has served as our Chief Executive Officer since 1843."},
+		{"Twist Bioscience Corp", "Prior to co-founding Twist Bioscience, Ada Lovelace served in various positions at Agilent."},
+		{"i3 Verticals, Inc.", "Ada Lovelace has served as our Chief Executive Officer since she founded i3 Verticals, LLC (formerly Charge Payment, LLC) in 2012."},
+		// A short form: the bio drops the corporate tail the header carries.
+		{"Ladder Capital Corp", "Ada Lovelace is a co-founder of Ladder and has served as our Chief Executive Officer since 1843."},
+		{"Ironwood Pharmaceuticals, Inc.", "Prior to founding Ironwood, Ada Lovelace was a research fellow at the Whitehead Institute."},
+		// The possessive form.
+		{"MUSICMAKER COM INC", "Ada Lovelace is musicmaker.com's founder, Chairman of the Board and Chief Executive Officer."},
+	}
+	for _, c := range cases {
+		t.Run(c.conformed, func(t *testing.T) {
+			e := ExtractManagement([]byte(sgmlHeaderFor(c.conformed) +
+				sgmlDoc("424B4", "<HTML><BODY>"+mgmtSectionWithCEOBio(c.bio)+"</BODY></HTML>")))
+			if e.Filing.Status != StatusOK {
+				t.Fatalf("status = %q, want %q", e.Filing.Status, StatusOK)
+			}
+			p := person(t, e, "Ada Lovelace")
+			if !containsFold(p.Bio, "found") {
+				t.Fatalf("bio does not carry the founder sentence, so the detector is not exercised\n  bio = %q", p.Bio)
+			}
+			if !p.FounderSelfDescribed {
+				t.Errorf("founder_self_described = false, want true (bio=%q)", p.Bio)
+			}
+			if !e.Filing.CEOFounderSelfDescribed {
+				t.Errorf("ceo_founder_self_described = false, want true")
+			}
+		})
+	}
+}
+
+// ... and the reason the issuer-name test cannot be a bare prefix match: a firm
+// whose name STARTS with the issuer's first word is a different company.
+func TestRule6_FounderOfACompanySharingTheIssuersFirstWordDoesNotFire(t *testing.T) {
+	cases := []struct {
+		conformed string
+		bio       string
+	}{
+		{"Cascade Microtech Inc", "Ada Lovelace co-founded Cascade Communications Corporation, a networking company, and has served as our Chief Executive Officer since 1843."},
+		{"Ladder Capital Corp", "Ada Lovelace is a co-founder of Ladder Industries Limited, a manufacturer, and has served as our Chief Executive Officer since 1843."},
+		{"Uber Technologies, Inc", "Prior to Uber, Ada Lovelace founded Red Swoosh, a networking software company, where she served as Chief Executive Officer."},
+		// The referent IS the issuer and the subject is a firm the bio has just
+		// named: Ceres's 2012 prospectus says its CEO "was a principal at Oxford
+		// Bioscience Partners, one of the leading investors in the genomics field
+		// and a founder of Ceres". Oxford founded Ceres; he did not.
+		{"CERES, INC.", "From 1992 to 1997, Ada Lovelace was a principal at Oxford Bioscience Partners, one of the leading investors in the genomics field and a founder of Ceres."},
+	}
+	for _, c := range cases {
+		t.Run(c.conformed, func(t *testing.T) {
+			e := ExtractManagement([]byte(sgmlHeaderFor(c.conformed) +
+				sgmlDoc("424B4", "<HTML><BODY>"+mgmtSectionWithCEOBio(c.bio)+"</BODY></HTML>")))
+			p := person(t, e, "Ada Lovelace")
+			if p.FounderSelfDescribed {
+				t.Errorf("founder_self_described = true, want false (evidence=%q)", p.FounderEvidence)
+			}
+		})
 	}
 }
 
