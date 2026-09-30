@@ -659,14 +659,17 @@ def main():
     # carries the flags that say which set each filing is in and which exclusion
     # clause fired. Re-deriving it here from a panel would let a round that
     # re-parsed the archive move its own denominator.
-    # The four exclusion clauses are read by NAME from the header, so a clause added
-    # to build_regress_set.py takes effect here without this file choosing which
-    # exclusions it believes in. X3/X4 (2026-09-30) are the fund dollar-range and
+    # Clause names are explicit: X1-X4 affect both sets, X7-X9 only group targets. X3/X4 (2026-09-30) are the fund dollar-range and
     # per-fund compensation families; they get their OWN diagnostic denominator
     # below, because the whole point of the correction is that re-accepting them
     # stays visible after they leave the gated set.
     EXCL_COLS = ["excl_x1_dollar_in_name", "excl_x2_one_value_all_rows",
                  "excl_x3_dollar_range_table", "excl_x4_m3_repeated_per_fund"]
+    GROUP_EXCL_COLS = ["excl_x7_group_grant_zero", "excl_x8_group_share_class_name",
+                       "excl_x9_group_position_name_prose"]
+    EXCL_COLS += GROUP_EXCL_COLS
+    reg_excl_group = set()
+    reg_excl_group_by_clause = defaultdict(set)
     reg_a, reg_bg, reg_bd, reg_excl, reg_excl_zero = set(), set(), set(), set(), set()
     reg_excl_zero_by_clause = defaultdict(set)
     reg_meta = {}
@@ -695,10 +698,16 @@ def main():
                     # only. An excluded filing that merely lost its group row still
                     # emits rows, so counting it would make the diagnostic read ~1.0
                     # whatever the parser does.
-                    if r["cand_zero_row"] == "1":
+                    zero_fired = [c for c in fired if c not in GROUP_EXCL_COLS]
+                    if r["cand_zero_row"] == "1" and zero_fired:
                         reg_excl_zero.add(key)
-                        for c in fired:
+                        for c in zero_fired:
                             reg_excl_zero_by_clause[c].add(key)
+                    group_fired = [c for c in fired if c in GROUP_EXCL_COLS]
+                    if r["cand_group_row"] == "1" and group_fired:
+                        reg_excl_group.add(key)
+                        for c in group_fired:
+                            reg_excl_group_by_clause[c].add(key)
         print("[in ] regress %s: %d candidate filings — set(a) zero-row %d, "
               "set(b) group-row GATED %d, set(b) share-only DIAGNOSTIC %d, excluded %d "
               "(of which zero-row candidates %d)" % (
@@ -706,7 +715,10 @@ def main():
                   len(reg_excl), len(reg_excl_zero)))
         print("[in ] regress exclusion clauses in force: %s" % ", ".join(
             "%s=%d" % (c.replace("excl_", ""), len(reg_excl_zero_by_clause[c]))
-            for c in present))
+            for c in present if c not in GROUP_EXCL_COLS))
+        print("[in ] regress set-(b)-only exclusion clauses: %s" % ", ".join(
+            "%s=%d" % (c.replace("excl_", ""), len(reg_excl_group_by_clause[c]))
+            for c in GROUP_EXCL_COLS))
 
     # ---- parser output ------------------------------------------------------
     man = {}
@@ -1305,7 +1317,7 @@ def main():
         print("\n== (vii) REGRESSION SET (fixed diff of panel_e4e78a95 -> panel; "
               "%d candidate filings) ==" % len(reg_meta))
         print("  (a) ZERO-ROW set: old n_rows > 0 and new n_rows == 0, after the %d "
-              "exclusion clauses" % len(present))
+              "set-(a) exclusion clauses" % len([c for c in present if c not in GROUP_EXCL_COLS]))
         print("      recovered >=1 row   [GATED]: %d / %d = %.4f" % (
             len(a_hit), len(reg_a), a_rate))
         print("      rows: %d in the old panel over those filings, %d now" % (
@@ -1334,6 +1346,15 @@ def main():
             print("        %-32s %d / %d = %.4f" % (
                 c.replace("excl_", ""), len(hit), len(den), rrate(hit, den)))
 
+        group_ex_hit = reg.recovered_group_row(reg_excl_group)
+        print("      EXCLUDED set-(b) targets, group row with percent back: %d / %d = %.4f" % (
+            len(group_ex_hit), len(reg_excl_group), rrate(group_ex_hit, reg_excl_group)))
+        for c in GROUP_EXCL_COLS:
+            den = reg_excl_group_by_clause[c]
+            hit = reg.recovered_group_row(den)
+            print("        %-36s %d / %d = %.4f [DIAGNOSTIC]" % (
+                c.replace("excl_", ""), len(hit), len(den), rrate(hit, den)))
+
         regress_metrics = {
             "regress_zero_row_recovered": a_rate,
             "regress_zero_row_denominator": len(reg_a),
@@ -1349,6 +1370,8 @@ def main():
             "regress_excluded_emitting_rows_rate": rrate(ex_hit, reg_excl_zero),
             "regress_excluded_denominator": len(reg_excl_zero),
             "regress_excluded_filings_total": len(reg_excl),
+            "regress_excluded_group_row_recovered": rrate(group_ex_hit, reg_excl_group),
+            "regress_excluded_group_row_denominator": len(reg_excl_group),
             "regress_candidate_filings": len(reg_meta),
             "regress_manifest_covered": len(reg_man),
         }
@@ -1361,6 +1384,10 @@ def main():
             regress_metrics["regress_%s_emitting_rows_rate" % c.replace("excl_", "")] = \
                 rrate(reg.recovered_zero_row(den), den)
             regress_metrics["regress_%s_denominator" % c.replace("excl_", "")] = len(den)
+        for c in GROUP_EXCL_COLS:
+            den = reg_excl_group_by_clause[c]
+            regress_metrics["regress_%s_group_row_recovered" % c.replace("excl_", "")] = rrate(reg.recovered_group_row(den), den)
+            regress_metrics["regress_%s_group_row_denominator" % c.replace("excl_", "")] = len(den)
         if args.regress_report:
             with open(args.regress_report, "w") as fh:
                 fh.write("cik\taccession\tfiling_date\tin_set_zero_row\tin_set_group_row_gated"

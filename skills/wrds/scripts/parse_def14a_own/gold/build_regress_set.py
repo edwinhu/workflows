@@ -17,7 +17,7 @@ locked, exactly like `sample_full.tsv`.
   (a) ZERO-ROW set    old n_rows > 0 AND new n_rows == 0
   (b) GROUP-ROW set   old has_group_row == 1 AND new has_group_row == 0
 
-EXCLUSIONS — FOUR clauses, all mechanical, all applied to the OLD rows of the
+EXCLUSIONS — four set-(a)/(b) clauses plus guarded set-(b)-only X7/X8/X9 clauses, all mechanical, all applied to the OLD rows of the
 candidate filing, and all meaning "the old rows are demonstrably wrong, so
 restoring them is not a target":
 
@@ -96,6 +96,15 @@ ownership table — `As a group (27) 24,040,027 / 40,202,945` and
 director or named executive owns more than 1%"). Share-count-only tables are
 therefore KEPT in set (a).
 
+SET-(b) AMENDMENT 2026-09-30. The floor proposes X7 "no old group row of
+ the filing carries BOTH a share count and a non-zero percent" and X8 "at least
+ half the old group rows of the filing carry a holder_name that is also a value
+ in the filings share-class column". X7 alone also catches real ownership tables,
+ so require the source grant guard below. X9 corrects position cells falsely
+ called group names where the real aggregate is prose-only. These clauses affect
+ (b) only: real non-group ownership recoveries in (a) are not removed. Dunham
+ 0000910472-08-000038 is a parser defect and stays gated. See GRIND_PLAN §13.
+
 SCOPE, not exclusion, for (b). Of the group-row candidates that survive X1/X2,
 the GATED set is the filings whose lost group rows include at least one carrying a
 PARSED PERCENT; the rest are reported as a DIAGNOSTIC with their own denominator.
@@ -134,6 +143,9 @@ import hashlib
 import json
 import os
 import sys
+import re
+from html.parser import HTMLParser
+from concurrent.futures import ProcessPoolExecutor
 from collections import defaultdict
 
 csv.field_size_limit(1 << 24)
@@ -165,12 +177,108 @@ def read_manifests(panel_dir):
     return out
 
 
+
+# Set-(b) only: the floor's broad X7 is unsafe on real ownership tables.
+# X7 is guarded by a document-confirmed grant header; X8 reads the actual
+# Share Class column, not the old parser's empty share_class field. X9 covers
+# the floor's prose-only aggregate whose old "group" names were position cells.
+GROUP_RULES = {
+    "X7": "no old group row of the filing carries BOTH a share count and a non-zero percent",
+    "X8": "at least half the old group rows of the filing carry a holder_name that is also a value in the filings share-class column",
+    "X9": "all old group names are Director-of position cells, with the real group aggregate only in prose",
+}
+
+
+class SourceTables(HTMLParser):
+    """Leaf tables retain cell roles; outer layout tables are not evidence."""
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.stack, self.tables, self.text = [], [], []
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "table":
+            if self.stack:
+                self.stack[-1]["nested"] = True
+            self.stack.append({"rows": [], "row": None, "cell": None, "nested": False})
+        elif self.stack:
+            t = self.stack[-1]
+            if tag == "tr":
+                t["row"] = []
+            elif tag in ("td", "th") and t["row"] is not None:
+                t["cell"] = []
+
+    def handle_data(self, data):
+        self.text.append(data)
+        if self.stack and self.stack[-1]["cell"] is not None:
+            self.stack[-1]["cell"].append(data)
+
+    def handle_endtag(self, tag):
+        if not self.stack:
+            return
+        t = self.stack[-1]
+        if tag in ("td", "th") and t["cell"] is not None:
+            t["row"].append(" ".join(" ".join(t["cell"]).split()))
+            t["cell"] = None
+        elif tag == "tr" and t["row"] is not None:
+            t["rows"].append(t["row"])
+            t["row"] = None
+        elif tag == "table":
+            self.stack.pop()
+            if not t["nested"]:
+                self.tables.append(t["rows"])
+
+
+def group_source_flags(task):
+    key, groups, source, roots = task
+    paths = [os.path.join(root, source) for root in roots]
+    paths += [os.path.join(root, key[1] + ".txt") for root in roots]
+    path = next((p for p in paths if os.path.isfile(p)), None)
+    if path is None:
+        raise FileNotFoundError("group exclusion needs original source: " + source)
+    with open(path) as fh:
+        raw = fh.read()
+    doc = SourceTables()
+    doc.feed(raw)
+    classes, positions, grant_names, table_group = set(), set(), set(), set()
+    for table in doc.tables:
+        for i, row in enumerate(table):
+            cells = [c.casefold() for c in row]
+            for label, dest in (("share class", classes), ("position", positions)):
+                if label in cells:
+                    col = cells.index(label)
+                    dest.update(r[col].casefold() for r in table[i+1:] if len(r) > col and r[col])
+            head = " ".join(cells)
+            if re.search(r"shares underlying options grants|restricted shares received", head):
+                grant_names.update(r[0].casefold() for r in table[i+1:] if r)
+            if not re.search(r"options grants|restricted shares received", " ".join(" ".join(r) for r in table).casefold()):
+                table_group.update(c.casefold() for r in table for c in r if re.search(r"as a group", c, re.I))
+    paired = sum(r["shares"] != "" and r["percent"] != "" and float(r["percent"]) != 0 for r in groups)
+    pct_groups = [r for r in groups if r["percent"] != ""]
+    # Require mixed zero-percent/share-only old group rows plus source-confirmed
+    # grant labels. True zero ownership and split-column tables stay gated.
+    x7 = int(paired == 0 and len(groups) >= 2 and bool(pct_groups)
+             and all(float(r["percent"]) == 0 and r["holder_name"].casefold() in grant_names for r in pct_groups)
+             and not table_group)
+    hits = sum(r["holder_name"].casefold() in classes for r in groups)
+    x8 = int(bool(groups) and 2 * hits >= len(groups))
+    plain = " ".join(" ".join(doc.text).split())
+    role_hits = sum(r["holder_name"].casefold() in positions for r in groups)
+    x9 = int(bool(groups) and role_hits == len(groups) and not table_group
+             and re.search(r"directors and executive officers.{0,80}as a group owned [\d,]+ shares or [\d.]+%", plain, re.I) is not None)
+    return key, (x7, x8, x9), {"source_file": source, "sha256": sha256_of(path),
+                              "group_rows": len(groups), "paired_group_rows": paired,
+                              "share_class_name_matches": hits, "position_name_matches": role_hits}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--old-panel", default="/data/def14a_own/panel_e4e78a95")
     ap.add_argument("--new-panel", default="/data/def14a_own/panel")
     ap.add_argument("--gold-dir", default=os.environ.get("GOLD_DIR", "/data/def14a_own/gold"))
+    ap.add_argument("--source-root", action="append", default=None,
+                    help="local original filings for guarded set-(b) exclusions")
     args = ap.parse_args()
+    roots = args.source_root or ["/data/def14a_own/work/regsamp18", "/data/def14a_own/work/regsamp"]
     g = args.gold_dir
 
     old = read_manifests(args.old_panel)
@@ -204,6 +312,7 @@ def main():
     # these and no percent anywhere is a dollar RANGE read as a share COUNT.
     DOLLAR_RANGE_ENDPOINTS = {0, 1, 10000, 50000, 100000, 500000, 1000000}
 
+    group_rows = defaultdict(list)
     n_old_rows = 0
     val_count = defaultdict(lambda: defaultdict(int))   # key -> (shares, percent) -> n
     name_count = defaultdict(lambda: defaultdict(int))  # key -> holder_name -> n   (X4)
@@ -224,6 +333,7 @@ def main():
                     s["dollar"] += 1
                 if r["is_group_row"] == "1":
                     s["grp"] += 1
+                    group_rows[key].append(r)
                     if (r["percent"] or "") != "":
                         s["grp_pct"] += 1
                 val_count[key][(r["shares"], r["percent"])] += 1
@@ -240,6 +350,25 @@ def main():
                 names[key].append(nm)
                 name_count[key][nm] += 1
     print("[in ] old rows in candidate filings: %d" % n_old_rows)
+
+    tasks = []
+    for key in sorted(cand_b):
+        groups = group_rows[key]
+        # Cheap OLD-row predicates bound document reads. No current recovery flag
+        # or accession whitelist is used to select an exclusion.
+        pct_groups = [r for r in groups if r["percent"] != ""]
+        zero_grant_shape = len(groups) >= 2 and pct_groups and all(float(r["percent"]) == 0 for r in pct_groups)
+        class_shape = groups and 2 * sum(re.fullmatch(r"individual investor(?: class)?", r["holder_name"], re.I) is not None for r in groups) >= len(groups)
+        role_shape = groups and all(re.match(r"director of\b", r["holder_name"], re.I) for r in groups)
+        if stat[key]["grp_pct"] and (zero_grant_shape or class_shape or role_shape):
+            tasks.append((key, groups, old[key]["source_file"], roots))
+    group_flags, evidence = {}, {}
+    if tasks:
+        with ProcessPoolExecutor(max_workers=min(8, len(tasks))) as pool:
+            for key, flags, proof in pool.map(group_source_flags, tasks, chunksize=1):
+                group_flags[key] = flags
+                evidence["%s|%s" % key] = proof
+    print("[source] guarded group classification: %d tasks -> %d matched sources (100%%)" % (len(tasks), len(evidence)))
 
     rows, counts = [], defaultdict(int)
     for key in sorted(cands):
@@ -259,12 +388,14 @@ def main():
         x4 = 1 if (no_pct and len(tables[key]) >= 3 and 2 * n_rep_rows >= s["rows"]) else 0
         excluded = x1 or x2 or x3 or x4
         in_a = 1 if (key in cand_a and not excluded) else 0
-        in_b_gated = 1 if (key in cand_b and not excluded and s["grp_pct"] > 0) else 0
+        x7, x8, x9 = group_flags.get(key, (0, 0, 0))
+        excluded_b = excluded or x7 or x8 or x9
+        in_b_gated = 1 if (key in cand_b and not excluded_b and s["grp_pct"] > 0) else 0
         in_b_diag = 1 if (key in cand_b and not excluded and s["grp_pct"] == 0) else 0
         m = old[key]
         rows.append([acc, cik, m["filing_date"], m["source_file"], m["form"],
                      1 if key in cand_a else 0, 1 if key in cand_b else 0,
-                     in_a, in_b_gated, in_b_diag, x1, x2, x3, x4,
+                     in_a, in_b_gated, in_b_diag, x1, x2, x3, x4, x7, x8, x9,
                      m["n_rows"], m["n_percent_parsed"], s["grp"], s["grp_pct"],
                      s["rows"], max_same,
                      s["pct"], s["endpoint"], len(tables[key]), n_rep_rows])
@@ -275,6 +406,10 @@ def main():
         counts["excl_x2"] += x2
         counts["excl_x3"] += x3
         counts["excl_x4"] += x4
+        counts["excl_x7"] += x7
+        counts["excl_x8"] += x8
+        counts["excl_x9"] += x9
+        counts["excl_group_new"] += int(bool((x7 or x8 or x9) and not excluded))
         counts["excl_x1_only"] += 1 if (x1 and not x2) else 0
         counts["excl_x2_only"] += 1 if (x2 and not x1) else 0
         counts["excl_both"] += 1 if (x1 and x2) else 0
@@ -287,9 +422,9 @@ def main():
             key in cand_a and (x3 or x4) and not (x1 or x2)) else 0
         counts["excl_x3_or_x4_new_from_b"] += 1 if (
             key in cand_b and (x3 or x4) and not (x1 or x2)) else 0
-        counts["excl_any"] += 1 if excluded else 0
+        counts["excl_any"] += 1 if excluded_b else 0
         counts["excl_from_a"] += 1 if (key in cand_a and excluded) else 0
-        counts["excl_from_b"] += 1 if (key in cand_b and excluded) else 0
+        counts["excl_from_b"] += 1 if (key in cand_b and excluded_b) else 0
         counts["set_a"] += in_a
         counts["set_b_gated"] += in_b_gated
         counts["set_b_diag"] += in_b_diag
@@ -300,6 +435,8 @@ def main():
               "in_set_zero_row", "in_set_group_row_gated", "in_set_group_row_diag",
               "excl_x1_dollar_in_name", "excl_x2_one_value_all_rows",
               "excl_x3_dollar_range_table", "excl_x4_m3_repeated_per_fund",
+              "excl_x7_group_grant_zero", "excl_x8_group_share_class_name",
+              "excl_x9_group_position_name_prose",
               "old_n_rows", "old_n_percent_parsed", "old_group_rows",
               "old_group_rows_with_percent", "old_rows_counted", "old_max_identical_value",
               # the X3/X4 inputs, so every exclusion can be re-checked from this file
@@ -402,6 +539,15 @@ def main():
                              "was REJECTED: GE 2013 0001206774-13-001019 states no percent "
                              "at all and its old rows are the real table",
         },
+        "group_exclusion_rules": GROUP_RULES,
+        "group_exclusion_guards": {
+            "X7": "mixed old group rows (>=2), percent-carrying group rows all zero and named in a source grant table; no non-grant table group cell",
+            "X8": "old group majority Individual Investor[/Class] shape, then equality against actual source Share Class cells",
+            "X9": "all old group names begin Director of, equal source Position cells, no table group cell; directors-and-officers group shares/percent aggregate in prose",
+            "scope": "set (b) only; set (a) unchanged; not an exclusion merely because old shares are missing",
+            "retained_counterexample": "0000910472-08-000038: As a Group | Corporate/Government Bond Fund-N Class | 0.04% | 2,103; genuine table, parser defect",
+        },
+        "group_source_evidence": dict(sorted(evidence.items())),
         "group_row_scope": "of the group-row candidates surviving X1/X2, the GATED set is "
                            "those whose lost group rows include >= 1 carrying a parsed "
                            "percent; the rest are a printed diagnostic",
