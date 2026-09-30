@@ -205,7 +205,7 @@ func asciiParagraphs(lines []string, lo, hi int) []string {
 }
 
 // extractASCII is the fixed-width counterpart of extractHTML.
-func extractASCII(body string) Extraction {
+func extractASCII(body, issuer string) Extraction {
 	lines := strings.Split(body, "\n")
 	_, hi, hdr, status := asciiSection(lines)
 	if status != StatusOK {
@@ -217,5 +217,5 @@ func extractASCII(body string) Extraction {
 		return Extraction{Filing: FilingSummary{Status: StatusNoMgmtTable}}
 	}
 	attachBios(persons, asciiParagraphs(lines, bodyEnd, hi))
-	return finish(persons)
+	return finish(persons, issuer)
 }

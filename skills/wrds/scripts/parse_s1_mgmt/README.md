@@ -103,6 +103,16 @@ It fires on one of two things, and only within the person's own record:
    director`, Snap's and Airbnb's `Co-Founder`.
 2. Their **own bio**, with the issuer as the thing founded: `our founder` / `our co-founder`, `one of
    our founders`, `co-founded our company`, `founded the Company`, `founder of our company`.
+3. Their **own bio**, with the issuer named **by name**: `founded LogMeIn`, `is the founder of Beyond
+   Meat`, `co-founded ExactTarget`, `Prior to co-founding Twist Bioscience`, `musicmaker.com's
+   founder`. The name is not guessed from the prose — it is the `COMPANY CONFORMED NAME` the
+   dissemination file's SGML header states, so this referent is as strict as the `our company` one.
+   A bio that drops the corporate tail (`a co-founder of Ladder` where the header says `Ladder
+   Capital Corp`) matches on a leading prefix, but only when what follows the prefix is not a
+   further capitalised word — `co-founded Cascade Communications Corporation` is a different company
+   from `Cascade Microtech`. And the clause's subject has to be the person: Ceres's CEO's bio says
+   he `was a principal at Oxford Bioscience Partners, one of the leading investors in the genomics
+   field and a founder of Ceres` — the firm founded the issuer, not him.
 
 Never the document, never the section, never another person's bio. That scoping is the entire
 difficulty. Seven filings carry six live instances of a director who founded some *other* company:

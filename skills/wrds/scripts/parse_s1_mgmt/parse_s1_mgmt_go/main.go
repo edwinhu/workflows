@@ -98,19 +98,20 @@ type Extraction struct {
 // the MANAGEMENT section's officers, directors and key employees plus the
 // filing-level CEO / founder / VC summary.
 func ExtractManagement(raw []byte) Extraction {
-	return extractBody(PrimaryDocument(string(raw)))
+	return extractBody(PrimaryDocument(string(raw)), IssuerName(string(raw)))
 }
 
 // extractBody is the shared spine: the driver reaches it with a streamed
-// prospectus body, ExtractManagement with one sliced out of a whole file.
-func extractBody(body string) Extraction {
+// prospectus body, ExtractManagement with one sliced out of a whole file. issuer
+// is the name the filing's SGML header states, or "" when it states none.
+func extractBody(body, issuer string) Extraction {
 	if IsHTML(body) {
-		return extractHTML(body)
+		return extractHTML(body, issuer)
 	}
-	return extractASCII(body)
+	return extractASCII(body, issuer)
 }
 
-func extractHTML(body string) Extraction {
+func extractHTML(body, issuer string) Extraction {
 	doc, err := html.Parse(strings.NewReader(body))
 	if err != nil {
 		return Extraction{Filing: FilingSummary{Status: StatusParseError}}
@@ -138,15 +139,16 @@ func extractHTML(body string) Extraction {
 		prose = append(prose, b.Text)
 	}
 	attachBios(persons, prose)
-	return finish(persons)
+	return finish(persons, issuer)
 }
 
 // finish derives the three variables and the filing summary. The summary is
 // computed FROM the person rows rather than alongside them, so the two can never
 // disagree about who the CEO is or how many directors a VC sits for.
-func finish(persons []Person) Extraction {
+func finish(persons []Person, issuer string) Extraction {
+	ref := issuerReferent(issuer)
 	for i := range persons {
-		persons[i].FounderSelfDescribed, persons[i].FounderEvidence = detectFounder(persons[i])
+		persons[i].FounderSelfDescribed, persons[i].FounderEvidence = detectFounder(persons[i], ref)
 		persons[i].VCAffiliated, persons[i].VCFirm, persons[i].VCEvidence = detectVC(persons[i].Bio)
 	}
 	f := FilingSummary{Status: StatusOK, NPersons: len(persons)}
@@ -279,11 +281,11 @@ func process(archiveRoot string, j job) result {
 }
 
 func extractFile(path string) Extraction {
-	body, err := streamPrimaryDocument(path)
+	body, issuer, err := streamPrimaryDocument(path)
 	if err != nil {
 		return Extraction{Filing: FilingSummary{Status: StatusParseError}}
 	}
-	return extractBody(body)
+	return extractBody(body, issuer)
 }
 
 // ---------------------------------------------------------------------------
@@ -304,15 +306,15 @@ func extractFile(path string) Extraction {
 // A filing with no <DOCUMENT> wrapper, or none of a wanted type, falls back to
 // reading the file and taking PrimaryDocument's answer, so the streamed path and
 // ExtractManagement agree on every input.
-func streamPrimaryDocument(path string) (string, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return "", err
+func streamPrimaryDocument(path string) (body string, issuer string, err error) {
+	f, ferr := os.Open(path)
+	if ferr != nil {
+		return "", "", ferr
 	}
 	defer f.Close()
 
 	br := bufio.NewReaderSize(f, 1<<20)
-	var body bytes.Buffer
+	var buf bytes.Buffer
 	docType := ""
 	capture := false
 	sawDocument := false
@@ -324,47 +326,45 @@ func streamPrimaryDocument(path string) (string, error) {
 			case "<DOCUMENT>":
 				sawDocument = true
 				docType, capture = "", false
-				body.Reset()
+				buf.Reset()
 			case "<TYPE>":
 				docType = strings.ToUpper(strings.ReplaceAll(strings.TrimSpace(rest), " ", ""))
 			case "<TEXT>":
 				capture = proxyTypes[docType]
-				body.Reset()
+				buf.Reset()
 			case "</TEXT>", "</DOCUMENT>":
 				if capture {
-					return body.String(), nil
+					return buf.String(), issuer, nil
 				}
 				capture = false
 			default:
-				if capture {
-					body.Write(line)
+				switch {
+				case capture:
+					buf.Write(line)
+				case !sawDocument && issuer == "":
+					// The header precedes every <DOCUMENT>, so this never scans a
+					// prospectus or a uuencoded graphic.
+					issuer = IssuerName(string(line))
 				}
 			}
 		}
 		if rerr != nil {
 			if rerr != io.EOF {
-				return "", rerr
+				return "", "", rerr
 			}
 			break
 		}
 	}
-	if capture && body.Len() > 0 {
-		return body.String(), nil
+	if capture && buf.Len() > 0 {
+		return buf.String(), issuer, nil
 	}
-	if !sawDocument {
-		raw, err := os.ReadFile(path)
-		if err != nil {
-			return "", err
-		}
-		return PrimaryDocument(string(raw)), nil
+	// No <DOCUMENT> wrapper at all, or a file whose documents are all of other
+	// types: let PrimaryDocument's own fallback pick one.
+	raw, rerr := os.ReadFile(path)
+	if rerr != nil {
+		return "", "", rerr
 	}
-	// A dissemination file whose documents are all of other types: let
-	// PrimaryDocument's own fallback pick one.
-	raw, err := os.ReadFile(path)
-	if err != nil {
-		return "", err
-	}
-	return PrimaryDocument(string(raw)), nil
+	return PrimaryDocument(string(raw)), IssuerName(string(raw)), nil
 }
 
 // sgmlTag reports whether a line is one of the structural SGML markers, and
