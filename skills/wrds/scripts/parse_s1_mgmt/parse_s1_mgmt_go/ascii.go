@@ -43,6 +43,18 @@ var (
 	// the geometry is not, so this form is accepted only with a rule line under
 	// it — which is what separates a header from a sentence mentioning an age.
 	reTxtHeaderLoose = regexp.MustCompile(`(?i)^\s*\S.*\bAGE\b.*\b(?:POSITION|TITLE|OFFICE)S?\b`)
+	// The same three columns with AGE written LAST: Coinmach Laundry 1996 heads
+	// its table "NAME  TITLE  AGE". The column ORDER is not part of the geometry
+	// the parser depends on, but the position field then sits BETWEEN the name
+	// and the age, so this form is accepted only when the marker line under the
+	// caption is there to say where that field starts.
+	reTxtHeaderAgeLast = regexp.MustCompile(`(?i)\bNAME\b.*\b(?:POSITION|TITLE|OFFICE)S?\b.*\bAGE\b`)
+	reTxtHeaderPos     = regexp.MustCompile(`(?i)\b(?:POSITION|TITLE|OFFICE)S?\b`)
+	// The caption's column-definition line: <S> over the first column, one <C>
+	// over each of the rest. Unlike the header's own labels, which these filings
+	// centre over their fields, these markers sit AT the column offsets.
+	reTxtMarkerS = regexp.MustCompile(`(?i)^\s*<S>`)
+	reTxtMarkerC = regexp.MustCompile(`(?i)<C>`)
 	// A bare two-digit number standing alone in the line: the age.
 	reTxtAge = regexp.MustCompile(`(^|\s)([0-9]{2})(\s|$)`)
 	// The ASCII table's own delimiters, matched on the RAW line: inside them
@@ -59,6 +71,10 @@ func isAsciiHeader(lines []string, j int) bool {
 	t := strings.TrimSpace(asciiLine(lines[j]))
 	if reTxtHeader.MatchString(t) {
 		return true
+	}
+	if reTxtHeaderAgeLast.MatchString(t) {
+		_, posAnchor := asciiColumns(lines, j)
+		return posAnchor >= 0
 	}
 	if !reTxtHeaderLoose.MatchString(t) {
 		return false
@@ -126,11 +142,38 @@ func asciiSection(lines []string) (lo, hi, hdr int, status string) {
 	return 0, 0, -1, status
 }
 
+// asciiColumns returns the AGE column's anchor and, when AGE is the LAST column,
+// the offset where the position field starts. In the usual NAME / AGE / POSITION
+// order the position field is everything past the age, so posAnchor is -1 and
+// nothing downstream changes. In the age-last order it is the caption's <S>/<C>
+// marker line that carries the offsets — the header's own labels are centred over
+// their fields, so "TITLE" sits in the middle of the position cell, not at its
+// left edge. Without that marker line the age-last form is not readable and
+// posAnchor stays -1, which is what makes isAsciiHeader reject it.
+func asciiColumns(lines []string, hdr int) (ageAnchor, posAnchor int) {
+	hdrLine := strings.ToUpper(asciiLine(lines[hdr]))
+	ageAnchor, posAnchor = strings.Index(hdrLine, "AGE"), -1
+	pos := reTxtHeaderPos.FindStringIndex(hdrLine)
+	if ageAnchor < 0 || pos == nil || pos[0] > ageAnchor {
+		return ageAnchor, posAnchor
+	}
+	for k := hdr + 1; k < len(lines) && k <= hdr+3; k++ {
+		if !reTxtMarkerS.MatchString(lines[k]) {
+			continue
+		}
+		m := reTxtMarkerC.FindAllStringIndex(lines[k], -1)
+		if len(m) < 2 {
+			continue
+		}
+		return m[len(m)-1][0], m[0][0]
+	}
+	return ageAnchor, -1
+}
+
 // asciiRows parses the fixed-width table body. The age's column in the header row
 // anchors the split, and the age itself is what identifies a person row.
 func asciiRows(lines []string, hdr, hi int) (rows []mgmtRow, bodyEnd int) {
-	hdrLine := asciiLine(lines[hdr])
-	anchor := strings.Index(strings.ToUpper(hdrLine), "AGE")
+	anchor, posAnchor := asciiColumns(lines, hdr)
 
 	blanks := 0
 	for i := hdr + 1; i < hi; i++ {
@@ -167,7 +210,13 @@ func asciiRows(lines []string, hdr, hi int) (rows []mgmtRow, bodyEnd int) {
 			return rows, i
 		}
 		if lo, hiIdx, ok := pickAge(line, anchor); ok {
-			name := strings.TrimSpace(line[:lo])
+			// Where the name cell ends and where the position cell lies. With
+			// AGE last the position sits between them, not past the age.
+			nameEnd, posLo, posHi := lo, hiIdx, len(line)
+			if posAnchor >= 0 && posAnchor < lo {
+				nameEnd, posLo, posHi = posAnchor, posAnchor, lo
+			}
+			name := strings.TrimSpace(line[:nameEnd])
 			if name == "" {
 				continue
 			}
@@ -181,7 +230,7 @@ func asciiRows(lines []string, hdr, hi int) (rows []mgmtRow, bodyEnd int) {
 			// a section label start.
 			if last := len(rows) - 1; last >= 0 && rows[last].Label != "" &&
 				strings.HasSuffix(rows[last].Label, ",") &&
-				len(line[:lo])-len(strings.TrimLeft(line[:lo], " ")) > 0 {
+				len(line[:nameEnd])-len(strings.TrimLeft(line[:nameEnd], " ")) > 0 {
 				name = strings.TrimSpace(rows[last].Label + " " + name)
 				rows = rows[:last]
 			}
@@ -190,7 +239,7 @@ func asciiRows(lines []string, hdr, hi int) (rows []mgmtRow, bodyEnd int) {
 				NameRaw:  name,
 				Name:     normName(name),
 				Age:      age,
-				Position: strings.TrimSpace(line[hiIdx:]),
+				Position: strings.TrimSpace(line[posLo:posHi]),
 			})
 			continue
 		}
@@ -205,8 +254,9 @@ func asciiRows(lines []string, hdr, hi int) (rows []mgmtRow, bodyEnd int) {
 		// the Board and Chief" / "Executive Officer", and a position cell
 		// truncated there names no chief executive. A section label sits at the
 		// left margin, which is what separates the two.
-		if last := len(rows) - 1; anchor > 0 && rows[last].Label == "" &&
-			len(line)-len(strings.TrimLeft(line, " ")) > anchor {
+		// When AGE is the last column the position field's own left edge is
+		// known, and the wrapped half sits exactly on it.
+		if last := len(rows) - 1; continuesCell(line, anchor, posAnchor) && rows[last].Label == "" {
 			rows[last].Position = strings.TrimSpace(rows[last].Position + " " + t)
 			continue
 		}
@@ -217,6 +267,20 @@ func asciiRows(lines []string, hdr, hi int) (rows []mgmtRow, bodyEnd int) {
 		return rows, i
 	}
 	return rows, hi
+}
+
+// continuesCell reports whether an age-less line is the wrapped remainder of the
+// row above it rather than a section label. A label sits at the left margin; the
+// wrapped half sits inside the position field. Where that field begins is only
+// known in the age-last layout, so the age column stands in for it otherwise:
+// Horizon Medical 1998 wraps its CEO's cell as "Director, Chairman of the Board
+// and Chief" / "Executive Officer", indented well past the age.
+func continuesCell(line string, anchor, posAnchor int) bool {
+	indent := len(line) - len(strings.TrimLeft(line, " "))
+	if posAnchor >= 0 {
+		return indent >= posAnchor
+	}
+	return anchor > 0 && indent > anchor
 }
 
 // pickAge finds the age field in a fixed-width row: the bare two-digit number
