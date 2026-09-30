@@ -240,3 +240,32 @@ func TestProcessSyntheticProxy(t *testing.T) {
 		t.Error("Vanguard must flag as institutional")
 	}
 }
+
+// A footnote sentence is not a table row. 0001163238-03-000122's notes read
+// "(3) Anton Drescher owns an additional 100,000 warrants to purchase up to an
+// / additional 100,000 common shares at a price of $0.30 per share, which /
+// warrants expire on August 8, 2003." The middle line splits at a wide gap and
+// its tail carries a grouped number, so parseTextRowAt read it as a row; four
+// of them then outvoted the real table in alignedRows' modal alignment and the
+// group total was dropped. A value column is numbers, not a sentence.
+func TestAFootnoteSentenceIsNotATableRow(t *testing.T) {
+	for _, l := range []string{
+		"     additional  100,000  common  shares  at  a  price of $0.30 per share, which",
+		"     an  additional  25,000  common  shares at a price of $0.30 per share, which",
+	} {
+		if _, _, _, ok := parseTextRowAt(l); ok {
+			t.Errorf("footnote sentence read as a table row: %q", l)
+		}
+	}
+	// Real rows, which must still parse.
+	for _, l := range []string{
+		" as a Group [four persons]                     2,507,213                    24.82%",
+		"Morton H. Kinzler           1100 Alakea Street, Suite 2900                   219,960 (4)           16.7%",
+		"Ronald K. Earnest                      48      113,256  (2)                5.4%        President and          1998",
+		"Ronald N. Tutor (4)                               62      1997      6,282,201     (5)     0            6,282,201      23.94%",
+	} {
+		if _, _, _, ok := parseTextRowAt(l); !ok {
+			t.Errorf("real table row rejected: %q", l)
+		}
+	}
+}
