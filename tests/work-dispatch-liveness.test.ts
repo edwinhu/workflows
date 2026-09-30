@@ -40,7 +40,7 @@ test('reports alive while the run is running, dead once it exits', async () => {
 })
 
 test('neither liveness site names a runner file', () => {
-  const src = readFileSync(DISPATCH, 'utf8')
+  const src = readFileSync(DISPATCH, '--provider', 'claude', 'utf8')
   const livenessLines = src.split('\n').filter((l) => l.includes('result\\.json') || l.includes('farm-alive'))
   expect(livenessLines.length).toBeGreaterThan(0)
   // Assert on a COUNT, never on the file's text: a failure diff that dumps this script's
@@ -54,7 +54,7 @@ test('neither liveness site names a runner file', () => {
 })
 
 test('`work` dispatches the runner with bash, not bun', () => {
-  const src = readFileSync(DISPATCH, 'utf8')
+  const src = readFileSync(DISPATCH, '--provider', 'claude', 'utf8')
   expect(src.includes('bun "$FARM"')).toBe(false)
   expect(src.includes('farm.sh')).toBe(true)
 })

@@ -36,7 +36,7 @@ function run(args: string[], env: Record<string, string> = {}) {
 
 describe('a --workflow run prints the hourly heartbeat instruction', () => {
   test('the default is the CronCreate block, with the hourly expr and the farm nudge', () => {
-    const r = run(['--workflow', '@wf', '--out', '@out', '--cwd', '@cwd'])
+    const r = run(['--provider', 'claude', '--workflow', '@wf', '--out', '@out', '--cwd', '@cwd'])
     expect(r.status).toBe(0)
     expect(r.stdout).toContain('CronCreate')
     expect(r.stdout).toContain('7 * * * *')
@@ -46,13 +46,13 @@ describe('a --workflow run prints the hourly heartbeat instruction', () => {
   })
 
   test('the instruction precedes the run, so a caller sees it before the 20-60 minute wait', () => {
-    const r = run(['--workflow', '@wf', '--out', '@out', '--cwd', '@cwd'])
+    const r = run(['--provider', 'claude', '--workflow', '@wf', '--out', '@out', '--cwd', '@cwd'])
     // The run's own JSON verdict is printed last; the instruction must come before it.
     expect(r.stdout.indexOf('CronCreate')).toBeLessThan(r.stdout.indexOf('"toolCalls"'))
   })
 
   test('--no-cron prints no CronCreate block, and says the monitor is the only wake', () => {
-    const r = run(['--workflow', '@wf', '--out', '@out', '--cwd', '@cwd', '--no-cron'])
+    const r = run(['--provider', 'claude', '--workflow', '@wf', '--out', '@out', '--cwd', '@cwd', '--no-cron'])
     expect(r.status).toBe(0)
     expect(r.stdout).not.toContain('CronCreate')
     expect(r.stdout).not.toContain('and? (farm')
@@ -60,25 +60,25 @@ describe('a --workflow run prints the hourly heartbeat instruction', () => {
   })
 
   test('WORK_LOOP_INTERVAL_MINUTES moves the interval', () => {
-    const sub = run(['--workflow', '@wf', '--out', '@out', '--cwd', '@cwd'], { WORK_LOOP_INTERVAL_MINUTES: '30' })
+    const sub = run(['--provider', 'claude', '--workflow', '@wf', '--out', '@out', '--cwd', '@cwd'], { WORK_LOOP_INTERVAL_MINUTES: '30' })
     expect(sub.stdout).toContain('7-59/30 * * * *')
-    const multi = run(['--workflow', '@wf', '--out', '@out', '--cwd', '@cwd'], { WORK_LOOP_INTERVAL_MINUTES: '240' })
+    const multi = run(['--provider', 'claude', '--workflow', '@wf', '--out', '@out', '--cwd', '@cwd'], { WORK_LOOP_INTERVAL_MINUTES: '240' })
     expect(multi.stdout).toContain('7 */4 * * *')
     // Junk falls back to hourly rather than handing cron an unparseable field.
-    const junk = run(['--workflow', '@wf', '--out', '@out', '--cwd', '@cwd'], { WORK_LOOP_INTERVAL_MINUTES: 'soon' })
+    const junk = run(['--provider', 'claude', '--workflow', '@wf', '--out', '@out', '--cwd', '@cwd'], { WORK_LOOP_INTERVAL_MINUTES: 'soon' })
     expect(junk.stdout).toContain('7 * * * *')
   })
 })
 
 describe('a --tasks run prints nothing — the session monitor covers a row', () => {
   test('no CronCreate block, and stdout stays parseable as the fan-out JSON', () => {
-    const r = run(['--tasks', '@tasks', '--cwd', '@cwd'])
+    const r = run(['--provider', 'claude', '--tasks', '@tasks', '--cwd', '@cwd'])
     expect(r.stdout).not.toContain('CronCreate')
     expect(() => JSON.parse(r.stdout)).not.toThrow()
   })
 
   test('--no-cron on a --tasks run is accepted and still silent', () => {
-    const r = run(['--tasks', '@tasks', '--cwd', '@cwd', '--no-cron'])
+    const r = run(['--provider', 'claude', '--tasks', '@tasks', '--cwd', '@cwd', '--no-cron'])
     expect(r.status).toBe(0)
     expect(r.stdout).not.toContain('CronCreate')
     expect(() => JSON.parse(r.stdout)).not.toThrow()

@@ -56,7 +56,7 @@ function setPlansDirectory(root: string, value: string, file = 'settings.json') 
 }
 
 function specHash(root: string, plansDir = '.claude/plans'): string {
-  return execFileSync('bash', [DISPATCH, '--spec-hash', join(root, plansDir, 'p.md')], {
+  return execFileSync('bash', [DISPATCH, '--provider', 'claude', '--spec-hash', join(root, plansDir, 'p.md')], {
     encoding: 'utf8',
   }).trim()
 }

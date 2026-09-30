@@ -145,7 +145,7 @@ setsid nohup bash $S/farm.sh --workflow /abs/wf.js --out /abs/result.json --cwd 
 $S/farm-team.sh --prompt-file t.txt --cwd /repo --expect /repo/a.txt --expect /repo/b.txt
 ```
 
-`--provider claude|codex|gemini` (default `claude`) on both runners.
+`--provider claude|codex|gemini` (required, gemini recommended) on both runners.
 
 Read `reference.md` before changing a runner, debugging a 429, or hand-writing
 a proxy call — it holds the verified model-routing and failure-mode details.
