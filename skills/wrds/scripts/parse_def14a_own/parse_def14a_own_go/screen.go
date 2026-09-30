@@ -359,7 +359,7 @@ func screenDropWhy(r Row, t *screenTable) string {
 		return "foreign"
 	case reScreenNonCommon.MatchString(name):
 		return "non_common_name"
-	case reScreenNonCommon.MatchString(r.ShareClass):
+	case isNonCommonClass(r.ShareClass):
 		return "non_common_class"
 	}
 	// A holder name never starts with a lower-case letter; a name that does is
@@ -406,3 +406,26 @@ func screenDropWhy(r Row, t *screenTable) string {
 	}
 	return ""
 }
+
+// isNonCommonClass reports a share_class that names a security OTHER than the
+// common stock the proxy solicits. A lettered class of COMMON stock is common
+// stock: "Class H Common Stock" is General Motors' tracking stock, disclosed in
+// the director table beside the $1-2/3 par common, and matching `class [b-z]`
+// alone threw away every row of that table. A label that says "common" and names
+// no other security is common stock whatever letter it carries.
+func isNonCommonClass(cls string) bool {
+	if !reScreenNonCommon.MatchString(cls) {
+		return false
+	}
+	if !reScreenCommonWord.MatchString(cls) {
+		return true
+	}
+	// "Series A Convertible Preferred and Common" still names a preferred class.
+	return reScreenHardNonCommon.MatchString(cls)
+}
+
+var (
+	reScreenCommonWord = regexp.MustCompile(`(?i)\bcommon\b|\bordinary\b`)
+	// Securities that are never the common stock, whatever else the label says.
+	reScreenHardNonCommon = regexp.MustCompile(`(?i)\bpreferred\b|\besop\b|\bdebenture|\bwarrant|\bdepositary\b|\bconvertible\b|\bjunior\b|\boption\b`)
+)

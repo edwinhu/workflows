@@ -2884,3 +2884,38 @@ func TestForwardWrappedGroupLabelInTheDOM(t *testing.T) {
 		t.Errorf("group n: %d", g.GroupN)
 	}
 }
+
+// "Class H Common Stock" IS common stock. The screen's non-common rule matched
+// `class [b-z]` in the share_class the header assembled ("Class H Common Stock
+// #") and dropped ALL of GM's director rows, leaving the filing with nothing.
+// Transcribed from General Motors' 2000 proxy (0000890163-00-000125).
+const classHCommonStockASCII = `
+                      SECURITY OWNERSHIP OF MANAGEMENT
+
+     In most cases, each individual has sole voting and investment power with
+respect to the shares he or she beneficially owns.
+
+                                         Shares                Deferred
+                                   Beneficially Owned         Stock Units           Total Shares
+                                 -----------------------   -----------------   -----------------------
+                                               Class H               Class H                 Class H
+                                   Common       Common     Common    Common      Common       Common
+          Directors                Stock        Stock       Stock     Stock      Stock        Stock
+          ---------              ----------   ----------   -------   -------   ----------   ----------
+                                     #            #           #         #          #            #
+P. N. Barnevik (c)............       10,000          -0-     1,093       309       11,093          309
+J. H. Bryan (c)...............        7,000          -0-     8,534       962       15,534          962
+T. E. Everhart (d)............          400          -0-    13,026    11,543       13,426       11,543
+G. M. C. Fisher (d)...........        5,000          -0-       760     3,821        5,760        3,821
+N. Idei.......................        4,250          750       -0-       -0-        4,250          750
+`
+
+func TestClassLetterCommonStockIsCommonStock(t *testing.T) {
+	rows := ScreenRows(run(t, classHCommonStockASCII))
+	if len(rows) < 4 {
+		t.Fatalf("Class H Common Stock rows were dropped as non-common: %d %+v", len(rows), rows)
+	}
+	if find(rows, "J. H. Bryan", "") == nil {
+		t.Errorf("row missing: %+v", rows)
+	}
+}
