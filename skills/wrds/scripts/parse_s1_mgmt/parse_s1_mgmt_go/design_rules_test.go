@@ -1359,6 +1359,14 @@ func TestRule7_TheDictionaryReachesAFirmTheBioNeverLabels(t *testing.T) {
 		{"0001193125-19-177602",
 			"Ran Nussbaum has served as a member of our board of directors since March 2018. Mr. Nussbaum is a managing partner and a co-founder of The Pontifax Group, or Pontifax, a group of Israel-based life sciences venture funds focusing on investments in development stage bio-pharmaceutical and med-tech technologies.",
 			"Pontifax"},
+		// NeuroMetrix 2004: the bio gives Whitney & Co., LLC no description at
+		// all. The filing does call Laverack a director "affiliated with venture
+		// capital firms that are our stockholders", but that sentence sits in the
+		// director-compensation paragraph, not in his bio, so rule 7 leaves only
+		// the dictionary. J.H. Whitney & Co. is one of the oldest VC houses.
+		{"0001047469-04-023893",
+			"William Laverack, Jr. has served as a member of our board of directors since 1998. Mr. Laverack is a Managing Partner of Whitney & Co., LLC, which he joined in 1993. Mr. Laverack is also a director of Knology, Inc., Grande Communications, Inc. and several private companies. Mr. Laverack holds a B.A. from Harvard College and an M.B.A. from Harvard Business School.",
+			"Whitney & Co"},
 		{"0001193125-21-231612",
 			"JeenJoo (JJ) Kang, Ph.D. has served as a member of our board of directors since August 2016. Dr. Kang has also served as a member of our compensation committee since December 2018, as a member of our audit committee since September 2019, and as our President, Treasurer and Secretary from August 2016 to June 2018. Dr. Kang has served as a Venture Partner at The Column Group since 2020, and prior to that served as an Associate beginning in 2015, then as a Partner from 2019 to 2020.",
 			"Column Group"},
