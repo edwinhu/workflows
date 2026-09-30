@@ -164,6 +164,104 @@ All directors and executive officers
 </TABLE>
 ` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 250)
 
+// Transcribed from 0000010048-03-000003 (Barnwell Industries 2003). The proxy
+// prints the ownership heading once, over the 5% holders table, then a page of
+// footnotes, then the DIRECTORS table on a new page under a REPRINT of the same
+// column header and no heading of its own. The anchor that reaches the second
+// block starts BELOW that reprinted header, so the block's ownership cue is in
+// header lines the anchor window never collected and the block is rejected
+// no_own_cue -- nine real holders with share counts and percents of class.
+var asciiSecondTableOwnHeader = `
+                SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS AND MANAGEMENT
+
+     The following table sets forth information with respect to the beneficial
+ownership of the Common Stock by each person who beneficially owns more than 5%
+of the Common Stock.
+
+<TABLE>
+<CAPTION>
+                                                                       Amount and Nature of       Percent
+              Name and Address of Beneficial Owner                   Beneficial Ownership (1)    of Class
+- ------------------------------------------------------------------   ------------------------    ---------
+<S>                         <C>                                              <C>                   <C>
+Joseph E. Magaro            401 Riversville Road                             211,510 (2)           16.1%
+                            Greenwich, Connecticut
+
+R. David Sudarsky           3050 North Ocean Boulevard                       121,600 (3)            9.2%
+                            Ft. Lauderdale, Florida
+<FN>
+- ---------------------------------
+(1)  A person is  deemed  to be the  beneficial  owner of  securities  that such
+     person can acquire as of and within the 60 days  following the date of this
+     table upon the exercise of options or rights of conversion. Each beneficial
+     owner's  percentage  of ownership is determined by assuming that options or
+     conversion  rights  that are held by such person (but not those held by any
+     other person) and which are  exercisable as of and within 60 days following
+     the date of this table have been  exercised.  Except  as  indicated  in the
+     footnotes that follow, shares listed in the table are held with sole voting
+     and investment power.
+
+(2)  Includes  a note in the  principal  amount  of  $20,000  that is  currently
+     convertible  into 1,000  shares of Common  Stock at a  conversion  price of
+     $20.00 per share.
+
+(3)  Includes  a note in the  principal  amount of  $10,000  that  is  currently
+     convertible into 500 shares of Common Stock at a conversion price of $20.00
+     per share.
+</FN>
+</TABLE>
+
+                                       9
+<PAGE>
+<TABLE>
+<CAPTION>
+
+                                                                       Amount and Nature of       Percent
+              Name and Address of Beneficial Owner                     Beneficial Ownership      of Class
+- ------------------------------------------------------------------   ------------------------    ---------
+<S>                         <C>                                              <C>                   <C>
+Morton H. Kinzler           1100 Alakea Street, Suite 2900                   219,960 (4)           16.7%
+                            Honolulu, Hawaii
+
+Alan D. Hunter              44 Medford Place, S.W.                               400                 *
+                            Calgary, Alberta, Canada
+
+Daniel Jacobson             885 Third Avenue                                   5,000                 *
+                            New York, New York
+
+Martin Anderson             1099 Alakea Street, Suite 1800                    90,503                6.9%
+                            Honolulu, Hawaii
+
+Alexander C. Kinzler        671 Puuikena Drive                                56,420 (5)            4.2%
+                            Honolulu, Hawaii
+
+Russell M. Gifford          1100 Alakea Street, Suite 2900                    21,550 (6)            1.6%
+                            Honolulu, Hawaii
+</TABLE>
+` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 250)
+
+func TestASCIISecondTableCarriesItsOwnHeader(t *testing.T) {
+	rows := run(t, asciiSecondTableOwnHeader)
+	if find(rows, "Joseph E. Magaro", "") == nil {
+		t.Fatalf("the FIRST ascii table regressed: %+v", rows)
+	}
+	for _, want := range []struct {
+		name string
+		sh   float64
+		pct  float64
+	}{
+		{"Morton H. Kinzler", 219960, 16.7},
+		{"Martin Anderson", 90503, 6.9},
+		{"Russell M. Gifford", 21550, 1.6},
+	} {
+		got := find(rows, want.name, "")
+		if got == nil || got.Shares == nil || *got.Shares != want.sh ||
+			got.Percent == nil || *got.Percent != want.pct {
+			t.Fatalf("second-table holder %q wrong: %+v (all rows: %+v)", want.name, got, rows)
+		}
+	}
+}
+
 func TestASCIITable(t *testing.T) {
 	if IsHTML(asciiProxy) {
 		t.Fatalf("ascii proxy misrouted to the DOM parser")
