@@ -107,7 +107,7 @@ describe('the self-send transport is gone, not merely unused', () => {
   })
 
   test('work-dispatch.sh queues nothing and names no drainer', () => {
-    const s = readFileSync(DISPATCH, '--provider', 'claude', 'utf8')
+    const s = readFileSync(DISPATCH, 'utf8')
     expect(s).not.toMatch(/goal-send-drain|agent-msg|herdr agent prompt/)
   })
 })
@@ -237,7 +237,7 @@ describe('half two: the cron is the DEFAULT backstop, the monitor is the primary
    * wake line can be missed — and a run dispatched with a loop is precisely the unattended one.
    */
   test('both dispatching exits arm the hold and print the wake line', () => {
-    const s = readFileSync(DISPATCH, '--provider', 'claude', 'utf8')
+    const s = readFileSync(DISPATCH, 'utf8')
     expect(s.match(/^\s*print_cron_instruction$/gm)?.length).toBe(2)
     expect(s.match(/^\s*arm_hold$/gm)?.length).toBe(2)
     const detachedExit = s.indexOf('loop: detached (pid $loop_pid)')
