@@ -1959,3 +1959,36 @@ func TestRule4_BareHonorificLeadInAttachesTheBio(t *testing.T) {
 		}
 	}
 }
+
+// The typographic apostrophe EDGAR HTML writes as &#146;/&#8217; is part of the
+// name, not spacing furniture. Scale Venture Partners' Rory T. O’Driscoll
+// (0001193125-12-126304) is one row in the dev split whose emitted name differed
+// from the filing's own bytes, and a downstream join on the name saw two
+// different people. Folding it to an ASCII apostrophe is a loss of the source
+// text; the possessive tests that read "the company’s founders" must therefore
+// accept both characters rather than assume the fold happened.
+func TestRule3_TypographicApostropheSurvivesInTheName(t *testing.T) {
+	const curly = "’"
+	body := `<HTML><BODY>` + strings.Replace(
+		strings.Replace(miniMgmtSection, "Alan Turing", "Rory T. O"+curly+"Driscoll", -1),
+		"Ada Lovelace</I> has served as our Chief Executive Officer since 1843.",
+		"Ada Lovelace</I> is one of the company"+curly+"s founders and has served as our Chief Executive Officer since 1843.", 1) +
+		`</BODY></HTML>`
+	e := ExtractManagement([]byte(sgmlHeaderFor("Analytic Engine Corp") + sgmlDoc("424B4", body)))
+
+	want := "Rory T. O" + curly + "Driscoll"
+	p := person(t, e, want)
+	if p.Name != want {
+		t.Errorf("name = %q, want %q", p.Name, want)
+	}
+	if p.NameRaw != want {
+		t.Errorf("name_raw = %q, want %q", p.NameRaw, want)
+	}
+
+	// The fold was load-bearing for the possessive patterns; widening them is
+	// half the fix, so the same test pins it.
+	if ceo := person(t, e, "Ada Lovelace"); !ceo.FounderSelfDescribed {
+		t.Errorf("founder_self_described = false for a bio reading \"the company%ss founders\" (evidence=%q, bio=%q)",
+			curly, ceo.FounderEvidence, trunc(ceo.Bio))
+	}
+}
