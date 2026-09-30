@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -69,7 +70,11 @@ var (
 	// "Title of Class" is deliberately absent: it heads a class column, and a
 	// proxy that puts one to the left of the holder column otherwise has its
 	// class labels read as holder names.
-	reHdrNameCol = regexp.MustCompile(`(?i)\bname\b|beneficial\s+owner|stockholder|shareholder|\bholder`)
+	// "beneficial owners?" must end at a WORD BOUNDARY: without it the regex
+	// matches "Amount and Nature of Beneficial OwnerSHIP of Common Stock", which
+	// is the SHARES column's header, and repoint() then moves the name role off
+	// the holder column onto it -- losing every person row in the table.
+	reHdrNameCol = regexp.MustCompile(`(?i)\bname\b|beneficial\s+owners?\b|stockholder|shareholder|\bholder`)
 	// A row-level column stating which ISSUER the holding is in. A proxy has one
 	// issuer, so such a column exists exactly when several are listed side by
 	// side -- a fund complex's trustee table, or a holding-company group -- and
@@ -402,6 +407,10 @@ func (c *compacted) analyze() {
 			}
 		}
 		hdr := c.roles[j].header
+		if roleVotes != nil {
+			roleVotes[j] = fmt.Sprintf("n=%d words=%d strongPct=%d bigNum=%d pctish=%d classish=%d seriesish=%d glue=%d pctFlag=%v hdr=%q",
+				n, words, strongPct, bigNum, pctish, classish, seriesish, glue, c.pctFlag[j], trunc(hdr, 40))
+		}
 		switch {
 		case n == 0:
 			c.roles[j].role = "other"
@@ -1580,3 +1589,7 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 	}
 	return out, c
 }
+
+// roleVotes, when non-nil, records the per-column counters analyze() voted on.
+// Set by the -debug path only; nil in the pipeline.
+var roleVotes map[int]string
