@@ -1305,7 +1305,7 @@ func icrResolveFundShared(ix *issSeriesIndex, name string) string {
 	// the near miss is a different fund of the same house. See
 	// icrLateExactDictName for what the rung refuses.
 	if ans != "" && !issBannerDeclaredExact(ix, name) {
-		if late := icrLateExactDictDecl(ix, name); late != nil && late.SeriesID != ans {
+		if late := icrLateExactDictDecl(ix, name, ans); late != nil && late.SeriesID != ans {
 			return late.SeriesID
 		}
 	}
@@ -1340,9 +1340,23 @@ func icrResolveFundShared(ix *issSeriesIndex, name string) string {
 //     nothing, the refusal every name index here makes on a collision.
 //   - Only this CIK's rows are read, so nothing here can move a vote onto
 //     another registrant's fund.
-func icrLateExactDictDecl(ix *issSeriesIndex, banner string) *SeriesDecl {
+//
+// Two further conditions, both required, keep a whole-corpus re-parse's ~48K
+// over-reached rows out: (1) the later-named series must be DECLARED IN THIS
+// FILING'S OWN SGML HEADER under some name -- read off ix.hdrOnly alone, since
+// a sleeve the registrant had not yet created cannot own a section here -- and
+// (2) the answer being displaced must not already account for the banner under
+// the names it holds for this period, which is the case where a name simply
+// moved between two siblings the filing declares side by side. A blank answer
+// satisfies (2) vacuously.
+func icrLateExactDictDecl(ix *issSeriesIndex, banner, cur string) *SeriesDecl {
 	dict := issIndexDict(ix)
 	if dict == nil || ix.cik == "" || len(ix.period) != 8 {
+		return nil
+	}
+	// Condition 2, which depends on the displaced answer alone and not on which
+	// spelling of the banner matches.
+	if icrBannerAccountedBy(ix, banner, cur) {
 		return nil
 	}
 	if d := icrLateExactDictKey(ix, dict, banner); d != nil {
@@ -1382,7 +1396,63 @@ func icrLateExactDictKey(ix *issSeriesIndex, dict *cikSeries, cand string) *Seri
 		}
 		hit = x
 	}
+	// Condition 1: the filing's own header must declare that series, under any
+	// name at all.
+	if hit != nil && !icrHeaderDeclaresSeries(ix, hit.SeriesID) {
+		return nil
+	}
 	return hit
+}
+
+// icrBannerAccountedBy reports whether the answer being displaced ALREADY
+// accounts for the banner: one of the names it holds for this period spells
+// nothing the banner does not, so the banner is that series' own name plus at
+// most a house word. This is the name-moved-between-siblings case -- Wells
+// Fargo 0001081400 at 20060630 declares S000007257 `International Equity Fund`
+// beside S000007255 `International Core Fund`, and the exact 20130630 row that
+// carries `International Equity` to S000007255 records where the NAME went, not
+// whose section this is. A blank answer accounts for nothing.
+func icrBannerAccountedBy(ix *issSeriesIndex, banner, cur string) bool {
+	if cur == "" {
+		return false
+	}
+	want := icrDistinctiveWords(ix, banner)
+	if len(want) == 0 {
+		return false
+	}
+	for _, n := range icrSeriesNamesHere(ix, cur) {
+		got := icrDistinctiveWords(ix, n)
+		if len(got) == 0 {
+			continue
+		}
+		spelled := true
+		for g := range got {
+			if !want[g] {
+				spelled = false
+				break
+			}
+		}
+		if spelled {
+			return true
+		}
+	}
+	return false
+}
+
+// icrHeaderDeclaresSeries reports whether THIS filing's own SGML header
+// declares the series, under any name and at any vintage. Only hdrOnly's
+// declarations are read -- never the dictionary and never the outer index's
+// folded aliases, both of which carry names this filing never printed.
+func icrHeaderDeclaresSeries(ix *issSeriesIndex, id string) bool {
+	if ix == nil || ix.hdrOnly == nil || id == "" {
+		return false
+	}
+	for i := range ix.hdrOnly.decls {
+		if ix.hdrOnly.decls[i].SeriesID == id {
+			return true
+		}
+	}
+	return false
 }
 
 // icrResolveFundDictChain is the dictionary-aware half of icrResolveFundShared:
