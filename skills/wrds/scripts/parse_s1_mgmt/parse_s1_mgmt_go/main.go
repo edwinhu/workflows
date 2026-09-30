@@ -130,6 +130,7 @@ func extractHTML(body, issuer string) Extraction {
 	if len(persons) == 0 {
 		return Extraction{Filing: FilingSummary{Status: StatusNoMgmtTable}}
 	}
+	persons = appendLaterTables(persons, blocks, tableIdx, hi)
 	var prose []string
 	for j := tableIdx + 1; j < hi; j++ {
 		b := blocks[j]
@@ -140,6 +141,49 @@ func extractHTML(body, issuer string) Extraction {
 	}
 	attachBios(persons, prose)
 	return finish(persons, issuer)
+}
+
+// appendLaterTables adds the people of every FURTHER management table inside the
+// section span to the set the first table gave. A section that lists its officers
+// and its board in two tables — TScan's 2021 S-1 heads them "Executive Officers"
+// and "Non-Employee Directors" — otherwise yields the officers only, and with
+// them no directors at all and none of its VC directors.
+//
+// A name already in the set is skipped rather than appended: a filing that
+// reprints the same person in a second table ("directors continuing in office")
+// would otherwise be counted twice, and a VC director twice over. Seq is
+// renumbered dense over the joined set, since the person rows are keyed on it.
+func appendLaterTables(persons []Person, blocks []docBlock, tableIdx, hi int) []Person {
+	seen := make(map[string]bool, len(persons))
+	for _, p := range persons {
+		seen[nameKey(p.Name)] = true
+	}
+	for j := tableIdx + 1; j < hi && j < len(blocks); j++ {
+		b := blocks[j]
+		if b.Kind != blockTable || b.InTable {
+			continue
+		}
+		h, ok := isMgmtTable(b.Grid)
+		if !ok {
+			continue
+		}
+		cols, ok := columnRoles(b.Grid, h)
+		if !ok {
+			continue
+		}
+		for _, p := range buildPersons(gridRows(b.Grid, h, cols)) {
+			k := nameKey(p.Name)
+			if k == "" || seen[k] {
+				continue
+			}
+			seen[k] = true
+			persons = append(persons, p)
+		}
+	}
+	for i := range persons {
+		persons[i].Seq = i + 1
+	}
+	return persons
 }
 
 // finish derives the three variables and the filing summary. The summary is
