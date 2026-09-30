@@ -148,6 +148,10 @@ type issuerRef struct {
 	short *regexp.Regexp
 	// and the same two anchored at the END of the text, for the possessive form.
 	fullEnd *regexp.Regexp
+	// The header name's INITIALS, as Virtual Radiologic Corp's prospectus writes
+	// them: "Prior to co-founding VRC". Case-SENSITIVE and at least three letters
+	// long, so that a lower-case word and a two-letter pair cannot reach it.
+	acronym *regexp.Regexp
 }
 
 // The separator between two tokens of a name as a bio writes it: the space in
@@ -170,6 +174,7 @@ func issuerReferent(name string) *issuerRef {
 			core = append(core, t)
 		}
 	}
+	all := core
 	// Drop the corporate tail, but never the whole name: "The Trust Company"
 	// keeps its last token rather than becoming empty.
 	for len(core) > 1 && issuerTailToken[core[len(core)-1]] {
@@ -199,7 +204,35 @@ func issuerReferent(name string) *issuerRef {
 			break
 		}
 	}
+	if alts := issuerAcronyms(all, core); len(alts) > 0 {
+		ref.acronym = regexp.MustCompile(`^(?:` + strings.Join(alts, "|") + `)\b`)
+	}
 	return ref
+}
+
+// issuerAcronyms is the set of initial-letter forms of the header name worth
+// testing: over every token, and over the tokens left once the corporate tail is
+// dropped. "Virtual Radiologic Corp" gives VRC and VR; only the first is kept,
+// because two initials identify nothing.
+func issuerAcronyms(all, core []string) []string {
+	var out []string
+	seen := map[string]bool{}
+	for _, toks := range [][]string{all, core} {
+		if len(toks) < 3 {
+			continue
+		}
+		var b strings.Builder
+		for _, t := range toks {
+			b.WriteByte(t[0])
+		}
+		a := strings.ToUpper(b.String())
+		if seen[a] {
+			continue
+		}
+		seen[a] = true
+		out = append(out, regexp.QuoteMeta(a))
+	}
+	return out
 }
 
 // namesIssuer reports whether text BEGINS with the issuer's name.
@@ -210,12 +243,17 @@ func (r *issuerRef) namesIssuer(text string) bool {
 	if r.full.MatchString(text) {
 		return true
 	}
-	if r.short == nil {
-		return false
+	var m []int
+	if r.acronym != nil {
+		m = r.acronym.FindStringIndex(text)
 	}
-	m := r.short.FindStringIndex(text)
 	if m == nil {
-		return false
+		if r.short == nil {
+			return false
+		}
+		if m = r.short.FindStringIndex(text); m == nil {
+			return false
+		}
 	}
 	// " Communications Corporation" continues a DIFFERENT name; ", Dr. Hecht
 	// was" and " in 2012" do not. Only a space-then-capital continues a name.

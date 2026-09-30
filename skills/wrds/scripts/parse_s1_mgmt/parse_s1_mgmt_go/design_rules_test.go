@@ -2133,3 +2133,45 @@ func TestRule6_GappedCoordinationSharesTheFoundersObject(t *testing.T) {
 		})
 	}
 }
+
+// The issuer named by its own INITIALS. Virtual Radiologic Corp's 2007 prospectus
+// (0001193125-07-248004) writes its CEO's founding twice, and only the second
+// reaches the issuer: "since co-founding VRP's predecessor", where VRP is the
+// filing's defined term for the predecessor LLC, and "Prior to co-founding VRC",
+// which is the header name's initials.
+func TestRule6_FounderFiresOnIssuerAcronym(t *testing.T) {
+	cases := []struct {
+		name      string
+		conformed string
+		bio       string
+		want      bool
+	}{
+		{"vrc", "Virtual Radiologic CORP", "Ada Lovelace has served as our Chief Executive Officer and Chairman of the Board of Directors, or the equivalent, since co-founding VRP's predecessor in May 2001. Prior to co-founding VRC, Ada Lovelace was an associate professor at the University of Minnesota.", true},
+		// A defined term for something ELSE that shares two of the issuer's
+		// initials must not fire on its own.
+		{"vrp-alone", "Virtual Radiologic CORP", "Ada Lovelace has served as our Chief Executive Officer since co-founding VRP's predecessor in May 2001.", false},
+		// Two initials are too little to identify a company.
+		{"two-initials", "Virtual Radiologic CORP", "Ada Lovelace co-founded VR in May 2001 and has served as our Chief Executive Officer since then.", false},
+		// The initials of a different company entirely.
+		{"other-acronym", "BEYOND MEAT, INC.", "Ada Lovelace co-founded IBM in 1911 and has served as our Chief Executive Officer since 1843.", false},
+		// Lower case is a word, not an acronym.
+		{"lowercase", "Virtual Radiologic CORP", "Ada Lovelace co-founded vrc in May 2001 and has served as our Chief Executive Officer since then.", false},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			e := ExtractManagement([]byte(sgmlHeaderFor(c.conformed) +
+				sgmlDoc("424B4", "<HTML><BODY>"+mgmtSectionWithCEOBio(c.bio)+"</BODY></HTML>")))
+			if e.Filing.Status != StatusOK {
+				t.Fatalf("status = %q, want %q", e.Filing.Status, StatusOK)
+			}
+			p := person(t, e, "Ada Lovelace")
+			if !containsFold(p.Bio, "found") {
+				t.Fatalf("bio does not carry the founder sentence\n  bio = %q", p.Bio)
+			}
+			if p.FounderSelfDescribed != c.want {
+				t.Errorf("founder_self_described = %v, want %v (evidence=%q bio=%q)",
+					p.FounderSelfDescribed, c.want, p.FounderEvidence, p.Bio)
+			}
+		})
+	}
+}
