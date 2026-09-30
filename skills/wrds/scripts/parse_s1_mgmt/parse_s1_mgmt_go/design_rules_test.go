@@ -1069,6 +1069,33 @@ func TestRule7_FirmNameIsNeverABareNumber(t *testing.T) {
 	}
 }
 
+// The modifiers in front of "venture capital firm" are a list often enough that
+// the list's own comma has to survive: "a nationally focused, private venture
+// capital firm" is three modifier words, inside the four the wide appositive
+// allows, but the comma after the second ended the run and the clause was never
+// matched (0001047469-99-026301). The comma is punctuation inside the modifier
+// list, not the end of the appositive, so a token may carry one.
+//
+// The same bio names a second firm in the past tense with a non-venture
+// appositive, which must stay uncredited: nothing about admitting the comma
+// relaxes the role or the tense.
+func TestRule7_AppositiveModifierListMayCarryAComma(t *testing.T) {
+	const bio = "Since September 1995, Mr. Balen has been a Principal at Canaan " +
+		"Partners, a nationally focused, private venture capital firm. From June 1985 to " +
+		"June 1995, Mr. Balen served as a Managing Director of Horsley Bridge Partners, a " +
+		"private equity investment management firm."
+	ok, firm, ev := detectVC(bio)
+	if !ok {
+		t.Fatalf("vc_affiliated = false, want true")
+	}
+	if !containsFold(firm, "Canaan Partners") {
+		t.Errorf("vc_firm = %q, want it to name %q (evidence %q)", firm, "Canaan Partners", ev)
+	}
+	if containsFold(firm, "Horsley Bridge") {
+		t.Errorf("vc_firm = %q credits the past, non-venture Horsley Bridge Partners", firm)
+	}
+}
+
 // A firm whose own NAME ends in "Venture"/"Ventures" needs no appositive: the
 // filing has already said what kind of firm it is. The dictionary route cannot
 // reach these because the dictionary is a list of specific firms — "Versant

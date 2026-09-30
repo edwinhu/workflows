@@ -472,7 +472,7 @@ var (
 	// (0001193125-19-040772). The run is a closed list rather than any word
 	// because "a venture backed software company" is a portfolio company, not a
 	// venture firm.
-	reVCAppositiveWide = regexp.MustCompile(`(?i),\s+(?:a|an)\s+(?:[A-Za-z/-]+\s+){0,4}venture(?:\s+(?:capital|investment|growth|equity))*\s+(?:firm|funds?|partnership|investor|company)\b`)
+	reVCAppositiveWide = regexp.MustCompile(`(?i),\s+(?:a|an)\s+(?:[A-Za-z/-]+,?\s+){0,4}venture(?:\s+(?:capital|investment|growth|equity))*\s+(?:firm|funds?|partnership|investor|company)\b`)
 
 	// Read immediately before the firm name. A partner-grade role must be there
 	// — "an advisor to iGlobe Partners", "a Senior Advisor to Sandbox
@@ -1055,7 +1055,12 @@ func firmBefore(head string) (string, int) {
 // on this corpus is routinely the job the person left.
 func vcAppositiveLeadOK(lead string) bool {
 	l := vcLead(lead)
-	return (reVCRole.MatchString(l) || reVCFounderRole.MatchString(l)) && !vcLeadIsPast(lead)
+	// "principal" counts here for the same reason it counts on the post-label
+	// and venture-named routes: the appositive this lead introduces IS the
+	// venture label, so the grade is read at a firm the filing has called a
+	// venture capital firm in words (0001047469-99-026301, Canaan Partners).
+	return (reVCRole.MatchString(l) || reVCFounderRole.MatchString(l) ||
+		reVCPrincipalRole.MatchString(l)) && !vcLeadIsPast(lead)
 }
 
 // vcPostLabelLeadOK reports whether the clause running up to a firm the filing
