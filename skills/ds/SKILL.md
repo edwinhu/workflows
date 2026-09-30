@@ -145,6 +145,7 @@ Five domain requirements on the plan:
 - **`refs` per task row and per lens** — required, may be empty. `work`'s spine does not validate it;
   `wc-probe` P7 refuses an absent key in THIS file, so a live run assembled from an approved plan is
   unchecked. Write `refs: []` to state "no domain rules" rather than omitting the key.
+- **Batch extraction strategy.** A task whose work is per-document LLM coding or extraction is a task that LAUNCHES a `gemini-batch` job on pre-cut excerpts (with a 1-request synchronous test first). It is never an agent reading the documents.
 
 ## Phase 3 — GOAL
 
@@ -311,6 +312,7 @@ evidence for that conversation, not human acceptance.
 | The DQ result | let the implementer report it | the doer cannot see the assumption it made in both places — the runner is a `mechanicalCheck` and the JS reads its exit code |
 | `M1`/`UNI`/`DEN`/`DEL`/`R1` | report them as `PASS` | that presents a judgement as a computation — `MODEL-EVALUATED` with the evidence read |
 | `DQ4`/`DQ6` reported `N/A` | read the `N/A` as the runner having checked them | `always N/A` is not a third kind of pass — the runner computes neither and an `N/A` never sets its non-zero exit; disposition both against task-local evidence, exactly like the MODEL-EVALUATED rows |
+| Per-document LLM coding or extraction | fan out agents to read each document | launch a `gemini-batch` job on pre-cut excerpts (with a 1-request synchronous test first) |
 | A judgement that depends on the constraint index | dispatch a built-in agent (`Explore`, `Plan`, `general-purpose`) | their prompts are predefined, no preloaded skill reaches them and they skip the CLAUDE.md hierarchy, so the constraints are graded from memory — dispatch a custom agent whose body you control, like `ds-reviewer` |
 | Handing a doer the constraint aggregates | name the four paths in the task prompt's prose, or copy the aggregates into a skill | prose is discretionary and a copy is a second source of truth `tests/constraints-no-duplication.test.ts` fails on — put the four canonical paths in the task's `refs`, which `work` defines as reads the doer owes in full |
 | Project state | write a `SPEC.md`, `STATE.md` or `LEARNINGS.md` | competing state makes progress ambiguous — the approved plan is the authority and `work` hashes it |

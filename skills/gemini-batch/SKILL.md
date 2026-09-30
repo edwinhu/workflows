@@ -1,7 +1,7 @@
 ---
 name: gemini-batch
 version: 1.0
-description: "Use when the user says 'run this prompt over all the documents', 'process thousands of PDFs', 'extract fields from every filing', 'bulk LLM job', 'submit a batch job', 'use the Gemini Batch API', 'upload files to Gemini', or 'this is too many to do one at a time' - any large-scale LLM extraction or classification over many files. ALWAYS load before writing Gemini batch code, including the small test run."
+description: "Use when the user says 'run this prompt over all the documents', 'process thousands of PDFs', 'extract fields from every filing', 'bulk LLM job', 'submit a batch job', 'use the Gemini Batch API', 'upload files to Gemini', 'this is too many to do one at a time', 'hand-code these', 'gold set', 'gold standard', 'code each filing', 'label / annotate these documents', 'have agents read each document', or 'coders' - any large-scale LLM extraction or classification over many files. ALWAYS load before writing Gemini batch code."
 user-invocable: false
 ---
 

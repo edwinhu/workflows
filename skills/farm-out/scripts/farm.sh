@@ -330,6 +330,34 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
 }
 
 if [ -n "$TASKS" ]; then
+  if [ "${FARM_ALLOW_TEMPLATED_FANOUT:-0}" != "1" ]; then
+    if python3 -c '
+import sys, json, re
+try:
+    with open(sys.argv[1], "r") as f:
+        tasks = json.load(f)
+    if len(tasks) >= 3:
+        prompts = set()
+        for t in tasks:
+            p = str(t.get("prompt", ""))
+            p = re.sub(r"/[^\s\"'\''\{\}]+", "<PATH>", p)
+            p = re.sub(r"\.\.?/[^\s\"'\''\{\}]+", "<PATH>", p)
+            p = re.sub(r"[^\s\"'\''\{\}]+\.[a-zA-Z0-9]{2,4}", "<FILE>", p)
+            p = re.sub(r"[0-9]{10}-[0-9]{2}-[0-9]{6}", "<ACCESSION>", p)
+            p = re.sub(r"[0-9]+", "<NUM>", p)
+            prompts.add(p)
+        if len(prompts) == 1:
+            sys.exit(2)
+except Exception:
+    pass
+sys.exit(0)
+' "$TASKS"; then
+      : # ok
+    else
+      refuse "A --tasks fan-out of 3 or more rows with identical prompts (after normalisation) is REFUSED. This is a per-document LLM coding/extraction task. Use gemini-batch instead. Set FARM_ALLOW_TEMPLATED_FANOUT=1 to override."
+    fi
+  fi
+
   # Fan out. Each task writes its object to its own file so parallel writers
   # cannot interleave on stdout.
   dir=$(mktemp -d -t farm-out-fan.XXXXXX)

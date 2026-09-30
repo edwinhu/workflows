@@ -90,3 +90,70 @@ test('a model carrying a control character is refused before the wrapper is invo
   expect(status).toBe(2)
   expect(stderr).toMatch(/model contains a control character/)
 })
+
+test('templated fan-out of 3 or more identical rows is refused', () => {
+  const root = mkdtempSync(join(tmpdir(), 'farmtest-'))
+  const agentCwd = join(root, 'agentcwd')
+  const bin = join(root, 'bin')
+  mkdirSync(agentCwd, { recursive: true }); mkdirSync(bin, { recursive: true })
+  const stub = join(bin, 'claude-code')
+  writeFileSync(stub, `#!/usr/bin/env bash\nprintf '{"type":"result","result":"done"}\\n'\n`)
+  chmodSync(stub, 0o755)
+  const tasks = join(root, 'tasks.json')
+  writeFileSync(tasks, JSON.stringify([
+    { label: 'r1', prompt: 'Analyze file /data/1.pdf' },
+    { label: 'r2', prompt: 'Analyze file /data/2.pdf' },
+    { label: 'r3', prompt: 'Analyze file /data/3.pdf' }
+  ]))
+  const res = spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', agentCwd], {
+    encoding: 'utf8',
+    cwd: root,
+    env: { ...process.env, PATH: `${bin}:${process.env.PATH}` }
+  })
+  expect(res.status).toBe(2)
+  expect(res.stderr).toContain('gemini-batch')
+})
+
+test('distinct rows are allowed even if 3 or more', () => {
+  const root = mkdtempSync(join(tmpdir(), 'farmtest-'))
+  const agentCwd = join(root, 'agentcwd')
+  const bin = join(root, 'bin')
+  mkdirSync(agentCwd, { recursive: true }); mkdirSync(bin, { recursive: true })
+  const stub = join(bin, 'claude-code')
+  writeFileSync(stub, `#!/usr/bin/env bash\nprintf '{"type":"result","result":"done"}\\n'\n`)
+  chmodSync(stub, 0o755)
+  const tasks = join(root, 'tasks.json')
+  writeFileSync(tasks, JSON.stringify([
+    { label: 'r1', prompt: 'Analyze file /data/1.pdf' },
+    { label: 'r2', prompt: 'Analyze file /data/2.pdf' },
+    { label: 'r3', prompt: 'Do something completely different' }
+  ]))
+  const res = spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', agentCwd], {
+    encoding: 'utf8',
+    cwd: root,
+    env: { ...process.env, PATH: `${bin}:${process.env.PATH}` }
+  })
+  expect(res.status).toBe(0)
+})
+
+test('FARM_ALLOW_TEMPLATED_FANOUT allows templated fan-out', () => {
+  const root = mkdtempSync(join(tmpdir(), 'farmtest-'))
+  const agentCwd = join(root, 'agentcwd')
+  const bin = join(root, 'bin')
+  mkdirSync(agentCwd, { recursive: true }); mkdirSync(bin, { recursive: true })
+  const stub = join(bin, 'claude-code')
+  writeFileSync(stub, `#!/usr/bin/env bash\nprintf '{"type":"result","result":"done"}\\n'\n`)
+  chmodSync(stub, 0o755)
+  const tasks = join(root, 'tasks.json')
+  writeFileSync(tasks, JSON.stringify([
+    { label: 'r1', prompt: 'Analyze file /data/1.pdf' },
+    { label: 'r2', prompt: 'Analyze file /data/2.pdf' },
+    { label: 'r3', prompt: 'Analyze file /data/3.pdf' }
+  ]))
+  const res = spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', agentCwd], {
+    encoding: 'utf8',
+    cwd: root,
+    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, FARM_ALLOW_TEMPLATED_FANOUT: '1' }
+  })
+  expect(res.status).toBe(0)
+})
