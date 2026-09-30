@@ -1,0 +1,1276 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ C3kNSDu8rTNsQctR7eXs9Lju/hHy0rOJzHyhto4iCq5JcpC9Tx2mUMC958fj3L6I
+ 8GYLoRJ0eQGi2b/LYa9UWw==
+
+<SEC-DOCUMENT>0001104659-06-057115.txt : 20060825
+<SEC-HEADER>0001104659-06-057115.hdr.sgml : 20060825
+<ACCEPTANCE-DATETIME>20060825115937
+ACCESSION NUMBER:		0001104659-06-057115
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20060630
+FILED AS OF DATE:		20060825
+DATE AS OF CHANGE:		20060825
+EFFECTIVENESS DATE:		20060825
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			FIRST AMERICAN INVESTMENT FUNDS INC
+		CENTRAL INDEX KEY:			0000820892
+		IRS NUMBER:				411418224
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			0930
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-05309
+		FILM NUMBER:		061054863
+
+	BUSINESS ADDRESS:	
+		STREET 1:		800 NICOLLET MALL
+		STREET 2:		BC-MN-H210
+		CITY:			MINNEAPOLIS
+		STATE:			MN
+		ZIP:			55402
+		BUSINESS PHONE:		6123033738
+
+	MAIL ADDRESS:	
+		STREET 1:		800 NICOLLET MALL
+		STREET 2:		BC-MN-H210
+		CITY:			MINNEAPOLIS
+		STATE:			MN
+		ZIP:			55402
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	SECURAL MUTUAL FUNDS INC
+		DATE OF NAME CHANGE:	19910627
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005543
+<SERIES-NAME>First American Arizona Tax Free Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015073
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FAAZX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015074
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FCAZX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015075
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FYAZX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005544
+<SERIES-NAME>First American High Income Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015076
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FJSIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015077
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>FJSBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015078
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FCSIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015079
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>FANSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015080
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FJSYX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005545
+<SERIES-NAME>First American Inflation Protected Securities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015081
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FAIPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015082
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FCIPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015083
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>FRIPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015084
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FYIPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005546
+<SERIES-NAME>First American Intermediate Government Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015085
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FIGAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015086
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FYGYX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005547
+<SERIES-NAME>First American Intermediate Tax Free Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015087
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FAMBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015088
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FMBIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005548
+<SERIES-NAME>First American Intermediate Term Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015089
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FAIIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015090
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FINIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005549
+<SERIES-NAME>First American International Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015091
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FAIAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015092
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>FNABX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015093
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FIACX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015094
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>ARQIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015095
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FAICX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005550
+<SERIES-NAME>First American Large Cap Growth Opportunities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015096
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FRGWX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015097
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>FETBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015098
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FAWCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015099
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>FLCYX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015100
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FIGWX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005551
+<SERIES-NAME>First American Large Cap Select Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015101
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FLRAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015102
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>FLPBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015103
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FLYCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015104
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>FLSSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015105
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FLRYX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005552
+<SERIES-NAME>First American Large Cap Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015106
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FASKX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015107
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>FATBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015108
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FALVX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015109
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>FAVSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015110
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FSKIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005553
+<SERIES-NAME>First American Mid Cap Growth Opportunities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015111
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FRSLX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015112
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>FMQBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015113
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FMECX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015114
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>FMEYX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015115
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FISGX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005554
+<SERIES-NAME>First American Balanced Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015116
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FABAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015117
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>FANBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015118
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FCBAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015119
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>FBGYX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015120
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FBAIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005555
+<SERIES-NAME>First American Mid Cap Index Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015121
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FDXAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015122
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>FMDBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015123
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FDXCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015124
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>FMCYX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015125
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FIMEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005556
+<SERIES-NAME>First American Mid Cap Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015126
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FASEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015127
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>FAESX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015128
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FACSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015129
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>FMVSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015130
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FSEIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005557
+<SERIES-NAME>First American Missouri Tax Free Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015131
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>ARMOX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015132
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FFMCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015133
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>ARMIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005558
+<SERIES-NAME>First American Minnesota Intermediate Tax Free Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015134
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FAMAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015135
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FAMTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005559
+<SERIES-NAME>First American Minnesota Tax Free Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015136
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FJMNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015137
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FCMNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015138
+<CLASS-CONTRACT-NAME>ClassY
+<CLASS-CONTRACT-TICKER-SYMBOL>FYMNX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005560
+<SERIES-NAME>First American Nebraska Tax Free Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015139
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FNTAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015140
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FNTCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015141
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FNTYX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005561
+<SERIES-NAME>First American Ohio Tax Free Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015142
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FOFAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015143
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FOTCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015144
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FOTYX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005562
+<SERIES-NAME>First American Oregon Intermediate Tax Free Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015145
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FOTAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015146
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FORCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005563
+<SERIES-NAME>First American Real Estate Securities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015147
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FREAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015148
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>FREBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015149
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FRLCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015150
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>FRSSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015151
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FARCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005564
+<SERIES-NAME>First American Short Tax Free Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015152
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FSHAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015153
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FSHYX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005565
+<SERIES-NAME>First American California Intermediate Tax Free Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015154
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FTFCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015155
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FCACX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005566
+<SERIES-NAME>First American Short Term Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015156
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FALTX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015157
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FLTIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005567
+<SERIES-NAME>First American Small Cap Growth Opportunities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015158
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FRMPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015159
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>FROBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015160
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FMPCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015161
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>FMPYX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015162
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FIMPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005568
+<SERIES-NAME>First American Small Cap Index Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015163
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FMDAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015164
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>FPXBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015165
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FPXCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015166
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>ARSCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015167
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>ASETX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005569
+<SERIES-NAME>First American Small Cap Select Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015168
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>EMGRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015169
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>ARSBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015170
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FHMCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015171
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>ASEIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015172
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>ARSTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005570
+<SERIES-NAME>First American Small Cap Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015173
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FSCAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015174
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>FCSBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015175
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FSCVX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015176
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>FSVSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015177
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FSCCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005571
+<SERIES-NAME>First American Small-Mid Cap Core Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015178
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FATAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015179
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>FITBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015180
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FTACX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015181
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FATCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005572
+<SERIES-NAME>First American Tax Free Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015182
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FJNTX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015183
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FJCTX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015184
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FYNTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005573
+<SERIES-NAME>First American Total Return Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015185
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FCDDX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015186
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>FCBBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015187
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FCBCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015188
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>FABSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015189
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FCBYX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005574
+<SERIES-NAME>First American U.S. Government Mortgage Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015190
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>ARUGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015191
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>ARUBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015192
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FRUCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015193
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>ARUIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015194
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>ARGTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005575
+<SERIES-NAME>First American California Tax Free Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015195
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FCAAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015196
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FCCAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015197
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FCAYX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005576
+<SERIES-NAME>First American Colorado Intermediate Tax Free Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015198
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FCIAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015199
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FACIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005577
+<SERIES-NAME>First American Colorado Tax Free Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015200
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FCOAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015201
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FCCOX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015202
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FCOYX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005578
+<SERIES-NAME>First American Core Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015203
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FAFIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015204
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>FFIBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015205
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FFAIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015206
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>FFISX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015207
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FFIIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005579
+<SERIES-NAME>First American Equity Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015208
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FFEIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015209
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>FAEBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015210
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FFECX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015211
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>FEISX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015212
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FAQIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000820892
+<SERIES-ID>S000005580
+<SERIES-NAME>First American Equity Index Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015213
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>FAEIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015214
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>FAEQX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015215
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>FCEIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015216
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>FADSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015217
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>FEIIX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>a06-18161_1npx.htm
+<DESCRIPTION>ANNUAL REPORT OF PROXY VOTING RECORD
+<TEXT>
+<html>
+
+<head>
+
+
+
+
+
+</head>
+
+<body lang="EN-US">
+
+<div style="font-family:Times New Roman;">
+
+<div style="border:none;border-top:double windowtext 9.0pt;padding:0in 0in 0in 0in;">
+
+<p style="border:none;margin:0in 0in .0001pt;padding:0in;"><font size="2" face="Times New Roman">&nbsp;</font></p>
+
+</div>
+
+<table border="0" cellspacing="0" cellpadding="0" width="100%" style="border-collapse:collapse;width:100.0%;">
+ <tr>
+  <td width="24%" valign="top" style="padding:0in .7pt .7pt .7pt;width:24.0%;">
+  <p style="margin:0in 0in .0001pt;"><b><font size="2" face="Times New Roman" style="font-size:1.0pt;font-weight:bold;">&nbsp;</font></b></p>
+  </td>
+  <td width="52%" valign="top" style="border:none;border-right:solid windowtext 1.0pt;padding:0in .7pt .7pt .7pt;width:52.0%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="5" face="Times New Roman" style="font-size:18.0pt;font-weight:bold;">UNITED
+  STATES</font></b></p>
+  </td>
+  <td width="24%" valign="top" style="border:solid windowtext 1.0pt;border-left:none;padding:0in .7pt .7pt .7pt;width:24.0%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">OMB APPROVAL</font></p>
+  </td>
+ </tr>
+ <tr style="page-break-inside:avoid;">
+  <td width="24%" valign="top" style="padding:0in .7pt .7pt .7pt;width:24.0%;">
+  <p style="margin:0in 0in .0001pt;"><b><font size="2" face="Times New Roman" style="font-size:1.0pt;font-weight:bold;">&nbsp;</font></b></p>
+  </td>
+  <td width="52%" rowspan="3" valign="top" style="border:none;border-right:solid windowtext 1.0pt;padding:0in .7pt .7pt .7pt;width:52.0%;">
+  <p align="center" style="font-size:10.0pt;margin:0in 0in .0001pt;text-align:center;"><b><font size="5" face="Times New Roman" style="font-size:18.0pt;font-weight:bold;">SECURITIES
+  AND EXCHANGE COMMISSION<br>
+  </font></b><b>Washington, D.C. 20549</b></p>
+  </td>
+  <td width="24%" valign="top" style="border:none;border-right:solid windowtext 1.0pt;padding:0in .7pt .7pt .7pt;width:24.0%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">OMB
+  Number:&nbsp; 3235-0582</font></p>
+  </td>
+ </tr>
+ <tr style="page-break-inside:avoid;">
+  <td width="24%" valign="top" style="padding:0in .7pt .7pt .7pt;width:24.0%;">
+  <p style="margin:0in 0in .0001pt;"><b><font size="2" face="Times New Roman" style="font-size:1.0pt;font-weight:bold;">&nbsp;</font></b></p>
+  </td>
+  <td width="24%" valign="top" style="border:none;border-right:solid windowtext 1.0pt;padding:0in .7pt .7pt .7pt;width:24.0%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Expires:&nbsp;&nbsp;&nbsp; April 30, 2009</font></p>
+  </td>
+ </tr>
+ <tr style="page-break-inside:avoid;">
+  <td width="24%" valign="top" style="padding:0in .7pt .7pt .7pt;width:24.0%;">
+  <p style="margin:0in 0in .0001pt;"><b><font size="2" face="Times New Roman" style="font-size:1.0pt;font-weight:bold;">&nbsp;</font></b></p>
+  </td>
+  <td width="24%" valign="top" style="border-bottom:solid windowtext 1.0pt;border-left:none;border-right:solid windowtext 1.0pt;border-top:none;padding:0in .7pt .7pt .7pt;width:24.0%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Estimated
+  average burden hours per response......14.4</font></p>
+  </td>
+ </tr>
+</table>
+
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman">&nbsp;</font></p>
+
+<p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="5" face="Times New Roman" style="font-size:18.0pt;font-weight:bold;">FORM
+N-PX</font></b></p>
+
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman">&nbsp;</font></p>
+
+<p style="font-weight:bold;margin:0in 0in .0001pt;text-align:center;"><b><font size="3" face="Times New Roman" style="font-size:12.0pt;">ANNUAL REPORT OF PROXY
+VOTING RECORD OF REGISTERED <br>
+MANAGEMENT INVESTMENT COMPANY</font></b></p>
+
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman">&nbsp;</font></p>
+
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Investment Company Act file
+number&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <b>811-05309</b></font></p>
+
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman">&nbsp;</font></p>
+
+<table border="0" cellspacing="0" cellpadding="0" width="100%" style="border-collapse:collapse;width:100.0%;">
+ <tr style="page-break-inside:avoid;">
+  <td width="100%" colspan="4" valign="top" style="padding:0in 0in 0in 0in;width:100.0%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="5" face="Times New Roman" style="font-size:18.0pt;font-weight:bold;">First
+  American Investment Funds, Inc.</font></b></p>
+  </td>
+ </tr>
+ <tr style="page-break-inside:avoid;">
+  <td width="100%" colspan="4" valign="top" style="padding:0in 0in 0in 0in;width:100.0%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">(Exact name of registrant as specified in charter)</font></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="49%" valign="top" style="padding:0in 0in 0in 0in;width:49.0%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+  <td width="2%" valign="bottom" style="padding:0in 0in 0in 0in;width:2.0%;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+  <td width="49%" colspan="2" valign="top" style="padding:0in 0in 0in 0in;width:49.0%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ </tr>
+ <tr style="page-break-inside:avoid;">
+  <td width="72%" colspan="3" valign="top" style="padding:0in 0in 0in 0in;width:72.9%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">800 Nicollet Mall, Minneapolis, MN</font></b></p>
+  </td>
+  <td width="27%" valign="top" style="padding:0in 0in 0in 0in;width:27.1%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">55402</font></b></p>
+  </td>
+ </tr>
+ <tr style="page-break-inside:avoid;">
+  <td width="72%" colspan="3" valign="top" style="padding:0in 0in 0in 0in;width:72.9%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">(Address of principal executive offices)</font></p>
+  </td>
+  <td width="27%" valign="top" style="padding:0in 0in 0in 0in;width:27.1%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">(Zip code)</font></p>
+  </td>
+ </tr>
+ <tr style="page-break-inside:avoid;">
+  <td width="100%" colspan="4" valign="top" style="padding:0in 0in 0in 0in;width:100.0%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ </tr>
+ <tr style="page-break-inside:avoid;">
+  <td width="100%" colspan="4" valign="top" style="padding:0in 0in 0in 0in;width:100.0%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">Brett L. Agnew, Assistant Secretary</font></b></p>
+  </td>
+ </tr>
+ <tr style="page-break-inside:avoid;">
+  <td width="100%" colspan="4" valign="top" style="padding:0in 0in 0in 0in;width:100.0%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">&nbsp;</font></b></p>
+  </td>
+ </tr>
+ <tr style="page-break-inside:avoid;">
+  <td width="100%" colspan="4" valign="top" style="padding:0in 0in 0in 0in;width:100.0%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">First American Investment Funds, Inc.</font></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="49%" valign="top" style="padding:0in 0in 0in 0in;width:49.0%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">&nbsp;</font></b></p>
+  </td>
+  <td width="2%" valign="bottom" style="padding:0in 0in 0in 0in;width:2.0%;">
+  <p style="margin:0in 0in .0001pt;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">&nbsp;</font></b></p>
+  </td>
+  <td width="49%" colspan="2" valign="top" style="padding:0in 0in 0in 0in;width:49.0%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">&nbsp;</font></b></p>
+  </td>
+ </tr>
+ <tr style="page-break-inside:avoid;">
+  <td width="100%" colspan="4" valign="top" style="padding:0in 0in 0in 0in;width:100.0%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">800 Nicollet Mall, Minneapolis, MN 55402</font></b></p>
+  </td>
+ </tr>
+ <tr style="page-break-inside:avoid;">
+  <td width="100%" colspan="4" valign="top" style="padding:0in 0in 0in 0in;width:100.0%;">
+  <p align="center" style="margin:0in 0in .0001pt;text-align:center;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">(Name and address of agent for service)</font></p>
+  </td>
+ </tr>
+ <tr height="0">
+  <td width="367" style="border:none;"></td>
+  <td width="15" style="border:none;"></td>
+  <td width="164" style="border:none;"></td>
+  <td width="203" style="border:none;"></td>
+ </tr>
+</table>
+
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman">&nbsp;</font></p>
+
+<table border="0" cellspacing="0" cellpadding="0" width="100%" style="border-collapse:collapse;width:100.0%;">
+ <tr>
+  <td width="307" colspan="3" valign="top" style="padding:0in 0in 0in 0in;width:229.95pt;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Registrant&#146;s
+  telephone number, including area code:</font></p>
+  </td>
+  <td width="143" valign="top" style="padding:0in 0in 0in 0in;width:107.05pt;">
+  <p style="margin:0in 0in .0001pt 20.0pt;text-indent:-10.0pt;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">612-303-7557</font></b></p>
+  </td>
+  <td width="272" valign="top" style="padding:0in 0in 0in 0in;width:203.8pt;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+ </tr>
+ <tr style="page-break-inside:avoid;">
+  <td width="721" colspan="5" valign="top" style="padding:0in 0in 0in 0in;width:540.8pt;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="146" valign="top" style="padding:0in 0in 0in 0in;width:109.35pt;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Date of
+  fiscal year end:</font></p>
+  </td>
+  <td width="133" valign="top" style="padding:0in 0in 0in 0in;width:99.45pt;">
+  <p style="margin:0in 0in .0001pt 20.0pt;text-indent:-10.0pt;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">9/30</font></b></p>
+  </td>
+  <td width="443" colspan="3" valign="top" style="padding:0in 0in 0in 0in;width:332.0pt;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+ </tr>
+ <tr style="page-break-inside:avoid;">
+  <td width="721" colspan="5" valign="top" style="padding:0in 0in 0in 0in;width:540.8pt;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="146" valign="top" style="padding:0in 0in 0in 0in;width:109.35pt;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Date of
+  reporting period:</font></p>
+  </td>
+  <td width="133" valign="top" style="padding:0in 0in 0in 0in;width:99.45pt;">
+  <p style="margin:0in 0in .0001pt 20.0pt;text-indent:-10.0pt;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">6/30/06</font></b></p>
+  </td>
+  <td width="443" colspan="3" valign="top" style="padding:0in 0in 0in 0in;width:332.0pt;">
+  <p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman" style="font-size:1.0pt;">&nbsp;</font></p>
+  </td>
+ </tr>
+ <tr height="0">
+  <td width="146" style="border:none;"></td>
+  <td width="132" style="border:none;"></td>
+  <td width="28" style="border:none;"></td>
+  <td width="143" style="border:none;"></td>
+  <td width="271" style="border:none;"></td>
+ </tr>
+</table>
+
+<div style="border:none;border-bottom:double windowtext 9.0pt;padding:0in 0in 0in 0in;">
+
+<p style="border:none;margin:0in 0in .0001pt;padding:0in;"><font size="2" face="Times New Roman">&nbsp;</font></p>
+
+</div>
+
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman">&nbsp;</font></p>
+
+<div style="margin:0in 0in .0001pt;"><hr size="2" width="100%" noshade color="gray" align="left"></div>
+
+</div>
+<!-- SEQ.=1,FOLIO='',FILE='C:\JMS\zaria\06-18161-1\task1322114\18161-1-ba.htm',USER='aabdulsamad',CD='Aug 18 09:33 2006' -->
+
+
+
+<br clear="all" style="page-break-before:always;">
+
+<div style="font-family:Times New Roman;">
+
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman">&nbsp;</font></p>
+
+<p style="font-size:10.0pt;margin:0in 0in .0001pt;"><b><font size="2" face="Times New Roman" style="font-size:10.0pt;font-weight:bold;">Item
+1.</font></b><b><font size="1" style="font-size:3.0pt;font-weight:bold;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font>Proxy
+Voting Record.</b></p>
+
+<p style="margin:0in 0in .0001pt;"><font size="2" face="Times New Roman">&nbsp;</font></p>
+
+<p style="margin:0in 0in .0001pt;text-indent:.5in;"><font size="2" face="Times New Roman" style="font-size:10.0pt;">Disclose the
+following information for each matter relating to a portfolio security
+considered at any shareholder meeting held during the period covered by the
+report and with respect to which the registrant was entitled to vote:</font></p>
+
+<p align="center" style="margin:0in 0in .0001pt;text-align:center;"><font size="2" face="Times New Roman">&nbsp;</font></p>
+
+<div style="margin:0in 0in .0001pt;"><hr size="2" width="100%" noshade color="gray" align="left"></div>
+
+</div>
+<!-- SEQ.=1,FOLIO='',FILE='C:\JMS\zaria\06-18161-1\task1322114\18161-1-bg.htm',USER='aabdulsamad',CD='Aug 18 09:34 2006' -->
+
+
+
+<br clear="all" style="page-break-before:always;">
+
+<div>
+ <p style="margin:0pt 0pt .0001pt;text-align:center;"></p> <p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">******************************* FORM N-Px REPORT *******************************</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">ICA File Number: 811-05309&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Reporting Period: 07/01/2005 - 06/30/2006&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160
+;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">First American Investment Funds, Inc.&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160
+;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#
+160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">==================== FIRST AMERICAN CA INTERMEDIATE TX FREE ====================</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">BLACKROCK LIQUIDITY FUNDS&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p><p style="margin:0pt 0pt .0001pt;"><font size="
+2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Ticker:&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Security ID:&#160; 09248U106&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Meeting Date: FEB 3, 2006&#160;&#160;&#160; Meeting Type: Special&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">Record Date:&#160; NOV 23, 2005&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160
+;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">#&#160;&#160;&#160;&#160; Proposal&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Mgt Rec&#160;&#160; Vote Cast&#160; Sponsor&#160;&#160;&#160; </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.1&#160;&#160; Elect&#160; Director Paul L. Audet&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#
+160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.2&#160;&#160; Elect&#160; Director G Nicholas Beckwith III&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.3&#160;&#160; Elect&#160; Director Jerold B. Harris&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.4&#160;&#160; Elect&#160; Director Rodney D. Johnson&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-si
+ze:10.0pt;">1.5&#160;&#160; Elect&#160; Director Joseph P. Platt, Jr.&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.6&#160;&#160; Elect&#160; Director Robert C. Robb, Jr.&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.7&#160;&#160; Elect&#160; Director Ralph L. Schlosstein&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.8&#160;&#160; Elect&#160; Director Kenneth L. Urish&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#16
+0; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">1.9&#160;&#160; Elect&#160; Director Frederick W. Winter&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">2&#160;&#160;&#160;&#160; Approve Investment Advisory Agreement&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2"
+ face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style
+="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">==================== FIRST AMERICAN CO INTERMEDIATE TX FREE ====================</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">=================== FIRST AMERICAN INTERMEDIATE TX FREE FUND ===================</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" 
+face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">==================== FIRST AMERICAN OR INTERMEDIATE TX FREE ====================</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p><p style="margin:0pt 0pt .0001pt;"><font size="2" face="Courier" style="font-size:10.0pt;">&nbsp;</font></p></div>
+<!-- SEQ.=1,FOLIO='',FILE='C:\JMS\zaria\06-18161-1\task1322114\18161-1-jc.htm',USER='aabdulsamad',CD='Aug 18 09:34 2006' -->
+
+
+</body>
+
+</html>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----
