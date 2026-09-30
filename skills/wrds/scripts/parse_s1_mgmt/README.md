@@ -113,6 +113,11 @@ It fires on one of two things, and only within the person's own record:
    from `Cascade Microtech`. And the clause's subject has to be the person: Ceres's CEO's bio says
    he `was a principal at Oxford Bioscience Partners, one of the leading investors in the genomics
    field and a founder of Ceres` — the firm founded the issuer, not him.
+   The header name's **initials** count as naming it: Virtual Radiologic Corp's CEO's bio says
+   `Prior to co-founding VRC`. At least three initials, matched case-sensitively, so that a
+   two-letter pair and a lower-case word cannot reach it — and it is the header's initials, never a
+   defined term the prose introduces, so the same bio's `since co-founding VRP’s predecessor` (VRP
+   being the predecessor LLC) does not fire.
 
 Never the document, never the section, never another person's bio. That scoping is the entire
 difficulty. Seven filings carry six live instances of a director who founded some *other* company:
