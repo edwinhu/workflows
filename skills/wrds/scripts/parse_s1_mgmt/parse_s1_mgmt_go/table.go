@@ -211,8 +211,10 @@ var (
 		`\bpresident\b|\bvice\s+president\b|\bgeneral\s+counsel\b|\bsecretary\b|\btreasurer\b|` +
 		`\bcontroller\b|\bgeneral\s+manager\b|\bhead\s+of\b|\bchief\s+of\s+staff\b|` +
 		`\bprincipal\s+(?:accounting|financial)\s+officer\b|\bexecutive\s+chair`)
+	// \bboard\s+members?\b is Beyond Meat's spelling of every board seat: the
+	// Position cell reads "Board Member" and never the word "director".
 	rePosDirector = regexp.MustCompile(`(?i)\bdirectors?\b|\bchairman\b|\bchairperson\b|` +
-		`\bchair\s+of\s+the\s+board\b|\btrustee\b`)
+		`\bchair\s+of\s+the\s+board\b|\btrustee\b|\bboard\s+members?\b`)
 )
 
 // sectionForLabel maps a section row's text to the block it opens. "" means the
