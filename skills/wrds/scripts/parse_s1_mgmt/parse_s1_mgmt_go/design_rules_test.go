@@ -448,6 +448,32 @@ func TestRule3_NameNormalisation(t *testing.T) {
 	}
 }
 
+// A post-nominal DEGREE is not part of the name. The cells below are verbatim
+// from the two dev filings whose rows the degree cost: Cotherix
+// (0001193125-04-095529) writes "Alan G. Walton, Ph.D., D.Sc.(2)(3)" and
+// Rallybio (0001193125-21-230254) writes "Rob Hopfner, R.Ph., Ph.D." — the same
+// two people whose bios the filing spells with no degree at all. A GENERATIONAL
+// suffix is the other half of the rule: "Jr." is the name, and stays.
+func TestRule3_PostNominalDegreesAreStrippedFromName(t *testing.T) {
+	cases := []struct{ raw, want string }{
+		{"Alan G. Walton, Ph.D., D.Sc.(2)(3)", "Alan G. Walton"},
+		{"Alan G. Walton, Ph.D., D.Sc.", "Alan G. Walton"},
+		{"Rob Hopfner, R.Ph., Ph.D.", "Rob Hopfner"},
+		{"Rob Hopfner, R.Ph., Ph.D,", "Rob Hopfner"},
+		{"Dennis J. Henner, Ph.D.", "Dennis J. Henner"},
+		{"Woodrow A. Myers Jr., M.D.", "Woodrow A. Myers Jr."},
+		{"Charles E. Adair", "Charles E. Adair"},
+		{"Scott D. Cook (1).......", "Scott D. Cook"},
+	}
+	for _, c := range cases {
+		t.Run(c.raw, func(t *testing.T) {
+			if got := normName(c.raw); got != c.want {
+				t.Errorf("normName(%q) = %q, want %q", c.raw, got, c.want)
+			}
+		})
+	}
+}
+
 // Every name in the 1998 ASCII table arrives padded with dot leaders; none of
 // them may survive into Name.
 func TestRule3_AsciiDotLeadersStripped(t *testing.T) {
@@ -534,7 +560,7 @@ func TestRule4_FinancialStatementsJumpLinkIsPageFurniture(t *testing.T) {
 		}
 	}
 	for _, want := range []vcWant{
-		{"Jeffrey W. Bird, M.D.", "Sutter Hill"},
+		{"Jeffrey W. Bird", "Sutter Hill"},
 		{"Ian T. Clark", "Clarus"},
 		{"Christopher J. Schaepe", "Lightspeed"},
 	} {
@@ -608,9 +634,9 @@ func TestRule4_TheBioSpellsTheNameWithOtherInitialsAndCredentials(t *testing.T) 
 	e := ExtractManagement([]byte(sgmlHeader + sgmlDoc("424B4", body)))
 
 	for _, c := range []struct{ name, wantIn string }{
-		{"Carl Gordon, Ph.D., C.F.A.", "OrbiMed Advisors"},
+		{"Carl Gordon", "OrbiMed Advisors"},
 		{"Robert Goodman", "Bessemer Venture Partners"},
-		{"Bryan E. Roberts, Ph.D.", "Venrock"},
+		{"Bryan E. Roberts", "Venrock"},
 	} {
 		p := person(t, e, c.name)
 		if !containsFold(p.Bio, c.wantIn) {
@@ -620,7 +646,7 @@ func TestRule4_TheBioSpellsTheNameWithOtherInitialsAndCredentials(t *testing.T) 
 	// ... and the person above each of them has not absorbed it.
 	for _, c := range []struct{ name, notIn string }{
 		{"Timothy Adams", "OrbiMed"},
-		{"Carl Gordon, Ph.D., C.F.A.", "Bessemer"},
+		{"Carl Gordon", "Bessemer"},
 		{"Robert Goodman", "Venrock"},
 	} {
 		p := person(t, e, c.name)
@@ -634,7 +660,7 @@ func TestRule4_TheBioSpellsTheNameWithOtherInitialsAndCredentials(t *testing.T) 
 		t.Errorf("Timothy Adams: vc_affiliated = true (firm %q) from a bio that is not his", p.VCFirm)
 	}
 	for _, want := range []vcWant{
-		{"Carl Gordon, Ph.D., C.F.A.", "OrbiMed"},
+		{"Carl Gordon", "OrbiMed"},
 		{"Robert Goodman", "Bessemer Venture"},
 	} {
 		p := person(t, e, want.name)

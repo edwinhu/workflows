@@ -159,11 +159,22 @@ var (
 	reFootMarker = regexp.MustCompile(`(?:\s*\((?:[0-9]{1,2}|[a-zA-Z])\))+\s*$`)
 	reStarMarker = regexp.MustCompile(`[*\x{2020}\x{2021}#§\x{00b6}]+\s*$`)
 	reTrailPunct = regexp.MustCompile(`[\s,;:]+$`)
+
+	// A post-nominal DEGREE, hung off the end of the name cell. It is not part
+	// of the name: the same filing's bio prints the person with a different set
+	// of letters or none at all ("Rob Hopfner, R.Ph., Ph.D." in the table,
+	// "Dr. Hopfner" in the bio). Generational suffixes — Jr, Sr, III — are
+	// deliberately absent, because those ARE the name. Anchored to the tail and
+	// requiring a comma or space in front so a surname is never eaten.
+	reDegreeTail = regexp.MustCompile(`(?i)[,\s]+(?:Ph\.?\s*D|M\.?B\.?A|M\.?D|D\.?V\.?M|` +
+		`Pharm\.?\s*D|D\.?Phil|Sc\.?D|D\.?Sc|M\.?Sc|M\.?P\.?H|LL\.?[BM]|J\.?D|` +
+		`C\.?F\.?A|C\.?P\.?A|C\.?F\.?P|R\.?Ph|D\.?D\.?S|Esq)\.?$`)
 )
 
 // normName strips the dot leaders a fixed-width table pads a name with and the
 // committee footnote markers every filing glues to it — "(1)(2)", "*",
-// "Scott D. Cook (1).......". NameRaw keeps the cell as the filing wrote it.
+// "Scott D. Cook (1)......." — and the post-nominal degrees it hangs off the
+// end. NameRaw keeps the cell as the filing wrote it.
 func normName(raw string) string {
 	s := flat(raw)
 	for {
@@ -171,6 +182,7 @@ func normName(raw string) string {
 		s = reDotLeader.ReplaceAllString(s, "")
 		s = reFootMarker.ReplaceAllString(s, "")
 		s = reStarMarker.ReplaceAllString(s, "")
+		s = reDegreeTail.ReplaceAllString(s, "")
 		s = reTrailPunct.ReplaceAllString(s, "")
 		if s == before {
 			return strings.TrimSpace(s)
