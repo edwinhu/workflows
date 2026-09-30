@@ -758,15 +758,20 @@ func detectVC(bio string) (bool, string, string) {
 
 	for _, m := range reVCAppositive.FindAllStringIndex(bio, -1) {
 		firm, at := firmBefore(bio[:m[0]])
-		if firm == "" || vcLeadIsPast(bio[:at]) || vcLeadIsNonPartner(bio[:at]) ||
-			reVCClosedRangeTail.MatchString(bio[m[1]:]) {
+		// The lead's past marker yields to a range the bio leaves OPEN on the far
+		// side of the name: "he was a General Partner with Oak Investment
+		// Partners, a venture capital firm, from 1999 until the present" writes
+		// the tense one way and the dates the other, and the dates are the later
+		// claim (0001193125-20-316022).
+		if firm == "" || (vcLeadIsPast(bio[:at]) && !reVCOpenRangeTail.MatchString(bio[m[1]:])) ||
+			vcLeadIsNonPartner(bio[:at]) || closedRangeAt(bio[m[1]:]) {
 			continue
 		}
 		add(firm, evidence(bio, m[0], m[1]))
 	}
 	for _, m := range reVCAppositiveWide.FindAllStringIndex(bio, -1) {
 		firm, at := firmBefore(bio[:m[0]])
-		if firm == "" || !vcAppositiveLeadOK(bio[:at]) || reVCClosedRangeTail.MatchString(bio[m[1]:]) {
+		if firm == "" || !vcAppositiveLeadOK(bio[:at]) || closedRangeAt(bio[m[1]:]) {
 			continue
 		}
 		add(firm, evidence(bio, m[0], m[1]))
@@ -781,7 +786,7 @@ func detectVC(bio string) (bool, string, string) {
 		}
 		firm, at := firmBefore(head)
 		if firm == "" || !vcPostLabelLeadOK(bio[:at]) ||
-			reVCClosedRangeTail.MatchString(bio[m[1]:]) {
+			closedRangeAt(bio[m[1]:]) {
 			continue
 		}
 		add(firm, evidence(bio, at, m[1]))
@@ -819,6 +824,17 @@ func detectVC(bio string) (bool, string, string) {
 		// and not off window, for the same reason the dictionary route does -
 		// the 110-byte window truncates the range mid-word.
 		if closedRangeAfterFirm(bio[roleHi+end:]) {
+			return
+		}
+		// The 35-byte lead window cannot see a past marker that opens the role's
+		// OWN SENTENCE, and on this route that marker is too wide a veto to run
+		// alone — it is exactly what ventureLeadWindow was narrowed to exclude.
+		// A closed range past the appositive corroborates it: "Prior to joining
+		// MongoDB, Mr. Ittycheria served as a Managing Director at OpenView
+		// Venture Partners, a venture capital firm, from October 2013 to
+		// September 2014" (0001193125-19-249577) ends the seat twice over.
+		// Neither half vetoes by itself.
+		if isPastLead(roleSentence(bio[:roleLo])) && closedRangeAfterAppositive(bio[roleHi+end:]) {
 			return
 		}
 		// A contradicting appositive only contradicts the name when the appositive
@@ -1004,6 +1020,28 @@ func closedRangeAfterFirm(tail string) bool {
 		}
 	}
 	return false
+}
+
+// closedRangeAfterAppositive is closedRangeAfterFirm with the comma the firm
+// name ate put back. ventureFirmAfter stops past the comma that ends the name,
+// so the appositive that follows opens on a bare space and neither appositive
+// pattern — both of which start at a comma — anchors at offset 0.
+//
+// It is NOT a drop-in for closedRangeAfterFirm, which is why it is a second
+// function: on its own the range it reads is too wide a veto for the
+// venture-named route, since gold COUNTS a partnership that route's own
+// corpus closes out (Lynch's Third Rock venture partnership, "from May 2013 to
+// December 2016" in a 2018 filing, 0001193125-18-208021). It only corroborates
+// a past marker in the lead.
+func closedRangeAfterAppositive(tail string) bool {
+	if closedRangeAfterFirm(tail) {
+		return true
+	}
+	t := strings.TrimLeft(tail, " \t")
+	if t == "" || strings.HasPrefix(t, ",") {
+		return false
+	}
+	return closedRangeAfterFirm(", " + t)
 }
 
 // closedRangeAt reports whether a date range opens at the head of s AND closes,

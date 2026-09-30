@@ -2870,3 +2870,57 @@ func TestRule7_QualificationSentenceLabelsTheFirm(t *testing.T) {
 		})
 	}
 }
+
+// Rule 7, both directions of the tense test read on the FAR side of the firm
+// name. A date range written after the appositive settles the seat, and the two
+// rows it settles point opposite ways.
+//
+// The veto side: "served as a Managing Director at OpenView Venture Partners, a
+// venture capital firm, from October 2013 to September 2014"
+// (0001193125-19-249577) closes the seat, but the venture-named route never saw
+// it — ventureFirmAfter consumes the comma that ends the firm name, so the
+// appositive that follows opens on a bare space and closedRangeAfterFirm's
+// appositive skip, which anchors at offset 0, could not match.
+//
+// The escape side: "he was a General Partner with Oak Investment Partners, a
+// venture capital firm, from 1999 until the present" (0001193125-20-316022)
+// writes "he was" in the lead and then contradicts it on the far side, leaving
+// the seat open. Gold counts Riley. Two things vetoed it: the appositive route
+// read reVCClosedRangeTail raw, without the open-range escape closedRangeAt
+// already runs, and the past-tense lead had no way to yield to an open range.
+func TestRule7_ARangeAfterTheAppositiveSettlesTheSeatBothWays(t *testing.T) {
+	negative := []struct{ accession, why, bio string }{
+		{"0001193125-19-249577", "the venture-named route missed the closed range past its own comma",
+			"Dev Ittycheria has served as a member of our board of directors since February 2014. Mr. Ittycheria has served as President and Chief Executive Officer of MongoDB, Inc. and as a member of its board of directors since September 2014. Prior to joining MongoDB, Mr. Ittycheria served as a Managing Director at OpenView Venture Partners, a venture capital firm, from October 2013 to September 2014. From February 2012 to June 2013, Mr. Ittycheria served as Venture Partner at Greylock Partners, a venture capital firm."},
+	}
+	for _, c := range negative {
+		t.Run("no/"+c.why, func(t *testing.T) {
+			if ok, firm, ev := detectVC(c.bio); ok {
+				t.Errorf("%s: vc_affiliated = true, want false (firm=%q evidence=%q)", c.accession, firm, ev)
+			}
+		})
+	}
+
+	positive := []struct{ accession, why, bio, firm string }{
+		{"0001193125-20-316022", "the open range on the far side outlives the past-tense lead",
+			"Prior to Enclave, from 2015 to 2019, he was a partner and member of the executive committee with Robertson Stephens, an independent registered investment advisor. Prior to Robertson Stephens, he was a General Partner with Oak Investment Partners, a venture capital firm, from 1999 until the present. Mr. Riley also currently serves on the board of several private companies.",
+			"Oak Investment Partners"},
+		// The boundary the veto side must not cross. Gold COUNTS this venture
+		// partnership even though the bio closes it out two years before the
+		// filing, and the sentence carries no past marker for the closed range
+		// to corroborate — so a closed range read past the appositive cannot
+		// veto on its own.
+		{"0001193125-18-208021", "a closed range alone does not end a seat gold counts",
+			"Mr. Lynch has served as the interim chief executive officer of Surface Oncology, Inc., a pharmaceutical company, since September 2016. He served as a venture partner at Third Rock Ventures, a venture capital firm, from May 2013 to December 2016 and as an entrepreneur-in-residence from 2011 to May 2013.",
+			"Third Rock Ventures"},
+	}
+	for _, c := range positive {
+		t.Run("yes/"+c.why, func(t *testing.T) {
+			ok, firm, ev := detectVC(c.bio)
+			if !ok || !strings.Contains(firm, c.firm) {
+				t.Errorf("%s: vc_affiliated = %v firm = %q, want true / %q (evidence=%q)",
+					c.accession, ok, firm, c.firm, ev)
+			}
+		})
+	}
+}
