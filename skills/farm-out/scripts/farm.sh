@@ -153,12 +153,16 @@ EVENTS="$EVENT_DIR/$$.ndjson"
 # Session budget check and estimation
 FARM_SESSION_BUDGET=${FARM_SESSION_BUDGET:-20000000}
 FARM_TASK_BUDGET=${FARM_TASK_BUDGET:-4000000}
+FARM_TASK_ESTIMATE=${FARM_TASK_ESTIMATE:-750000}
 
 session_tokens=0
 if [ -d "$EVENT_DIR" ]; then
-  session_tokens=$(grep -h '"tokensW":' "$EVENT_DIR"/*.ndjson 2>/dev/null | jq -s 'map(.tokensW) | add' || echo 0)
-  [ "$session_tokens" = "null" ] && session_tokens=0
-  session_tokens=$(printf "%.0f" "$session_tokens" 2>/dev/null || echo 0)
+  if ! session_tokens=$(grep -h '"tokensW":' "$EVENT_DIR"/*.ndjson 2>/dev/null | jq -s 'map(.tokensW) | add // 0'); then
+    session_tokens=0
+  fi
+  if ! session_tokens=$(printf "%.0f" "$session_tokens" 2>/dev/null); then
+    session_tokens=0
+  fi
 fi
 
 estimate=0
@@ -166,19 +170,16 @@ num_tasks=0
 if [ -n "$TASKS" ]; then
   num_tasks=$(jq 'length' "$TASKS" 2>/dev/null || echo 0)
   for i in $(seq 0 $((num_tasks - 1))); do
-    label=$(jq -r ".[$i].label // \"\"" "$TASKS" 2>/dev/null)
-    case "$label" in
-      *grind*) estimate=$((estimate + 728921)) ;;
-      *probe*) estimate=$((estimate + 665974)) ;;
-      *farm*) estimate=$((estimate + 664158)) ;;
-      *work*|*implementer*|*lens*) estimate=$((estimate + 332807)) ;;
-      *batch*|*hand-coding*) estimate=$((estimate + 23209)) ;;
-      *) estimate=$((estimate + FARM_TASK_BUDGET)) ;;
-    esac
+    task_budget=$(jq -r ".[$i].budget // \"${BUDGET:-$FARM_TASK_BUDGET}\"" "$TASKS")
+    task_estimate=$FARM_TASK_ESTIMATE
+    [ "$task_estimate" -le "$task_budget" ] || task_estimate=$task_budget
+    estimate=$((estimate + task_estimate))
   done
 elif [ -n "$WORKFLOW" ]; then
   num_tasks=1
-  estimate=$FARM_TASK_BUDGET
+  estimate=$FARM_TASK_ESTIMATE
+  task_budget=${BUDGET:-$FARM_TASK_BUDGET}
+  [ "$estimate" -le "$task_budget" ] || estimate=$task_budget
 fi
 
 echo "Estimate for $num_tasks task(s): $estimate tokensW" >&2
@@ -280,7 +281,7 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
   
   local wd_out
   ROOT=$(dirname "$(dirname "$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")")")")")
-  wd_out=$(python3 "$ROOT/skills/farm-out/scripts/watchdog.py" "$child_pid" "$log" "${budget:-4000000}" "${max_turns:-150}")
+  wd_out=$(python3 "$ROOT/skills/farm-out/scripts/watchdog.py" "$child_pid" "$log" "${budget:-4000000}" "${max_turns:-250}")
   wait "$child_pid" 2>/dev/null || true
   rc=$?
   
@@ -330,34 +331,6 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
 }
 
 if [ -n "$TASKS" ]; then
-  if [ "${FARM_ALLOW_TEMPLATED_FANOUT:-0}" != "1" ]; then
-    if python3 -c '
-import sys, json, re
-try:
-    with open(sys.argv[1], "r") as f:
-        tasks = json.load(f)
-    if len(tasks) >= 3:
-        prompts = set()
-        for t in tasks:
-            p = str(t.get("prompt", ""))
-            p = re.sub(r"/[^\s\"'\''\{\}]+", "<PATH>", p)
-            p = re.sub(r"\.\.?/[^\s\"'\''\{\}]+", "<PATH>", p)
-            p = re.sub(r"[^\s\"'\''\{\}]+\.[a-zA-Z0-9]{2,4}", "<FILE>", p)
-            p = re.sub(r"[0-9]{10}-[0-9]{2}-[0-9]{6}", "<ACCESSION>", p)
-            p = re.sub(r"[0-9]+", "<NUM>", p)
-            prompts.add(p)
-        if len(prompts) == 1:
-            sys.exit(2)
-except Exception:
-    pass
-sys.exit(0)
-' "$TASKS"; then
-      : # ok
-    else
-      refuse "A --tasks fan-out of 3 or more rows with identical prompts (after normalisation) is REFUSED. This is a per-document LLM coding/extraction task. Use gemini-batch instead. Set FARM_ALLOW_TEMPLATED_FANOUT=1 to override."
-    fi
-  fi
-
   # Fan out. Each task writes its object to its own file so parallel writers
   # cannot interleave on stdout.
   dir=$(mktemp -d -t farm-out-fan.XXXXXX)
@@ -389,7 +362,7 @@ sys.exit(0)
         refuse "task $i model contains a control character; not allowed in the event stream" ;;
     esac
     mapfile -t e < <(jq -r ".[$i].expect // [] | if type==\"array\" then .[] else . end" "$TASKS")
-    run_one "$l" "$p" "$a" "$m" "$b" "${FARM_MAX_TURNS:-150}" "${e[@]:-}" > "$dir/$i.json" &
+    run_one "$l" "$p" "$a" "$m" "$b" "${FARM_MAX_TURNS:-250}" "${e[@]:-}" > "$dir/$i.json" &
   done
   wait
   out=$(jq -s '.' "$dir"/*.json); rm -rf "$dir"
@@ -458,7 +431,7 @@ $(cat "$ARGSFILE")"
 CRITICAL — Workflow returns IMMEDIATELY with a task id and then keeps running in the background. If you end your turn at that point the session exits and the entire run is destroyed. You MUST NOT end your turn until the workflow has actually returned. It may take 20-60 minutes.
 After calling Workflow, stay alive by polling: run \`sleep 120\` via Bash, then check whether it finished (ToolSearch for \"select:TaskList,TaskGet,TaskOutput\" and use those, or read the workflow transcript directory named in the Workflow result). Repeat for as long as it takes. Never emit a final text message while the workflow is still running.
 
-When it returns, write the SCRIPT'S OWN RETURN VALUE to $OUT as a single JSON document using the Write tool — verbatim, no commentary, no summarising. The Workflow tool wraps it: the tool result is an envelope {summary, agentCount, logs, totalTokens, result, …} and the script's return value is the object under its \`result\` key. Write THAT object, unwrapped, as the whole document. Do not write the envelope, and do not add a \`result\` key of your own. If Workflow throws, write {\"error\": \"<exact error text>\"} to that same path. Do not retry with invented arguments." "" "" "$BUDGET" "${FARM_MAX_TURNS:-150}" "${EXPECT[@]:-}" "$OUT")
+When it returns, write the SCRIPT'S OWN RETURN VALUE to $OUT as a single JSON document using the Write tool — verbatim, no commentary, no summarising. The Workflow tool wraps it: the tool result is an envelope {summary, agentCount, logs, totalTokens, result, …} and the script's return value is the object under its \`result\` key. Write THAT object, unwrapped, as the whole document. Do not write the envelope, and do not add a \`result\` key of your own. If Workflow throws, write {\"error\": \"<exact error text>\"} to that same path. Do not retry with invented arguments." "" "" "$BUDGET" "${FARM_MAX_TURNS:-250}" "${EXPECT[@]:-}" "$OUT")
   # Non-empty is not structured: a child that wrote its summary would pass the artifact
   # check and hand prose to the caller as the workflow's return value.
   if printf '%s' "$out" | jq -e '.ok' >/dev/null 2>&1; then

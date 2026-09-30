@@ -699,7 +699,7 @@ run_loop() {
     child_pid=$!
     
     ROOT=$(dirname "$(dirname "$(dirname "$(dirname "$SELF")")")")
-    wd_out=$(python3 "$ROOT/skills/farm-out/scripts/watchdog.py" "$child_pid" "$log" "${FARM_TASK_BUDGET:-4000000}" "${FARM_MAX_TURNS:-150}")
+    wd_out=$(python3 "$ROOT/skills/farm-out/scripts/watchdog.py" "$child_pid" "$log" "${FARM_TASK_BUDGET:-4000000}" "${FARM_MAX_TURNS:-250}")
     wait "$child_pid" 2>/dev/null || true
     rc=$?
     

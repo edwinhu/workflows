@@ -851,9 +851,9 @@ test('parseArgs reads goalCheck off the args object, and leaves it undefined whe
   expect(parseArgs({ tasks: [] }).goalCheck).toBeUndefined()
 })
 
-test('per-document LLM coding triggers a minor finding', () => {
+test('per-document LLM coding triggers a major finding', () => {
   const p = base({ tasks: [task({ work: 'code each document in the folder' })] })
-  expect(rules(p)).toContain('per-document-batch-extraction')
+  expect(lint(p).find(f => f.rule === 'per-document-batch-extraction')?.severity).toBe('major')
 })
 
 test('per-document batch extraction rule is case-insensitive', () => {
