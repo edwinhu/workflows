@@ -2474,3 +2474,180 @@ func TestWrappedPairLabelKeepsTheWholeFundName(t *testing.T) {
 	}
 }
 
+
+// A D&O beneficial-ownership table that states NO PERCENT, because the proxy
+// says in prose that no individual owns as much as 1%. The share columns name
+// the COMPONENTS of the holding -- common stock, stock equivalents, options
+// exercisable within 60 days, restricted stock, total -- and none of them says
+// "owned", so the percent-less guard threw the whole table away. Transcribed
+// from Xcel Energy's 2008 proxy (0001047469-08-003949), which emitted 19 rows
+// before the duplicate rounds and zero after.
+const pctlessComponentHTML = `<html><body>
+<p><b>BENEFICIAL OWNERSHIP OF CERTAIN SHAREHOLDERS</b></p>
+<p><b>Share Ownership of Directors and Officers</b></p>
+<p>The following table sets forth information concerning beneficial ownership of
+our common stock. None of the individual directors or officers beneficially
+owned more than 1% of Xcel Energy's common stock.</p>
+<p><b>Beneficial Ownership Table</b></p>
+<table>
+<tr><th>Name and Principal<br>Position of Beneficial Owner</th><th>Common Stock(1)</th><th>Stock Equivalents</th><th>Options Exercisable Within 60 Days</th><th>Restricted Stock</th><th>Total</th></tr>
+<tr><td>Richard C. Kelly(2)<br>Chairman of the Board</td><td>299,508</td><td>11,183</td><td>297,750</td><td>16,020</td><td>624,461</td></tr>
+<tr><td>C. Coney Burgess<br>Director</td><td>10,723</td><td>55,442</td><td>-</td><td>-</td><td>66,165</td></tr>
+<tr><td>Fredric W. Corrigan<br>Director</td><td>6,168</td><td>11,000</td><td>-</td><td>-</td><td>17,168</td></tr>
+<tr><td>Directors and Executive Officers as a group (26 persons)</td><td>1,211,766</td><td>510,344</td><td>1,165,051</td><td>56,684</td><td>2,943,835</td></tr>
+</table></body></html>`
+
+func TestPercentLessComponentOwnershipTable(t *testing.T) {
+	rows := ScreenRows(run(t, pctlessComponentHTML))
+	if len(rows) == 0 {
+		t.Fatalf("a percent-less D&O ownership table emitted nothing")
+	}
+	k := find(rows, "Richard C. Kelly", "")
+	if k == nil {
+		t.Fatalf("the first director is missing: %+v", rows)
+	}
+	grp := 0
+	for _, r := range rows {
+		if r.IsGroupRow {
+			grp++
+		}
+	}
+	if grp == 0 {
+		t.Errorf("the D&O group row was not emitted: %+v", rows)
+	}
+}
+
+// The same class with ONE unlabelled share column: "Name | Shares(1)", under an
+// ownership heading, with the D&O group row as the only ownership cue the table
+// itself carries. United Technologies 2005 (0001193125-05-037477).
+const pctlessBareSharesHTML = `<html><body>
+<p><b>Security Ownership of Directors, Executive Officers and Certain Beneficial Owners</b></p>
+<table>
+<tr><th>Name</th><th>Shares(1)</th><th></th></tr>
+<tr><td>Betsy J. Bernard</td><td>0</td><td>(2)(4)</td></tr>
+<tr><td>George David</td><td>3,613,033</td><td></td></tr>
+<tr><td>Jean-Pierre Garnier</td><td>23,050</td><td>(3)(4)</td></tr>
+<tr><td>Jamie S. Gorelick</td><td>14,400</td><td>(3)(4)</td></tr>
+<tr><td>Directors &amp; Executive Officers as a Group (31 in total)</td><td>8,065,646</td><td></td></tr>
+</table></body></html>`
+
+func TestPercentLessBareSharesOwnershipTable(t *testing.T) {
+	rows := ScreenRows(run(t, pctlessBareSharesHTML))
+	if find(rows, "George David", "") == nil {
+		t.Fatalf("a percent-less Name/Shares ownership table emitted nothing usable: %+v", rows)
+	}
+}
+
+// CONTROL for the two tests above: a percent-less table whose EVERY share
+// column is an award column ("Number of Options Received or To Be Received")
+// repeats the ownership table's people with a different count, and must stay
+// rejected. Transcribed from 0000811211-07-000019.
+const pctlessAwardOnlyHTML = `<html><body>
+<p><b>SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS AND MANAGEMENT</b></p>
+<table>
+<tr><th>Name</th><th>Number of Options Received or To Be Received</th></tr>
+<tr><td>Paul R. Arena</td><td>1,000,000</td></tr>
+<tr><td>James R. Rose</td><td>500,000</td></tr>
+<tr><td>Douglas F. Bender</td><td>500,000</td></tr>
+<tr><td>All current executive officers, as a group</td><td>2,000,000</td></tr>
+</table></body></html>`
+
+func TestPercentLessAwardOnlyTableStaysRejected(t *testing.T) {
+	rows := ScreenRows(run(t, pctlessAwardOnlyHTML))
+	if len(rows) != 0 {
+		t.Fatalf("an options-received table was read as ownership: %d rows %+v", len(rows), rows)
+	}
+}
+
+// SECOND control: a "Share Investment" plan table repeats the ownership table's
+// officers with the plan's own count and no percent. Five of its rows matched the
+// ownership table's exactly, so accepting it put identical rows back. Gannett
+// 2015 (0001193125-15-093753).
+const pctlessShareInvestmentHTML = `<html><body>
+<p><b>Security Ownership of Certain Beneficial Owners and Management</b></p>
+<table>
+<tr><th>Name of Beneficial Owner</th><th>Shares Beneficially Owned</th><th>Percent of Class</th></tr>
+<tr><td>Gracia C. Martore</td><td>806,932</td><td>*</td></tr>
+<tr><td>Robert J. Dickey</td><td>290,701</td><td>*</td></tr>
+<tr><td>Susan Ness</td><td>10,485</td><td>*</td></tr>
+<tr><td>All directors and executive officers as a group (19 persons)</td><td>2,057,891</td><td>1.2</td></tr>
+</table>
+<p>The following table shows share investment by our officers and directors.</p>
+<table>
+<tr><th>Name of Officer or Director</th><th>Title</th><th>Share Investment</th></tr>
+<tr><td>Gracia C. Martore</td><td>President and CEO, Director</td><td>827,165</td></tr>
+<tr><td>Robert J. Dickey</td><td>President/USCP</td><td>290,701</td></tr>
+<tr><td>Susan Ness</td><td>Director</td><td>10,485</td></tr>
+<tr><td>All directors and executive officers as a group (19 persons)</td><td></td><td>2,225,917</td></tr>
+</table></body></html>`
+
+func TestShareInvestmentPlanTableStaysRejected(t *testing.T) {
+	rows := ScreenRows(run(t, pctlessShareInvestmentHTML))
+	tabs := map[int]bool{}
+	for _, r := range rows {
+		tabs[r.TableIndex] = true
+	}
+	if len(tabs) != 1 {
+		t.Fatalf("share-investment plan table read as ownership: %d tables %+v", len(tabs), rows)
+	}
+	if find(rows, "Gracia C. Martore", "") == nil {
+		t.Fatalf("the real ownership table stopped emitting: %+v", rows)
+	}
+}
+
+// An ASCII proxy writes its column headings as ONE wide group spanning every
+// value column -- "Name and Address   Number of Shares of Common Stock
+// Beneficially Owned Percent" -- so the positional column label became that
+// whole header row. The label carries "Options (a) Warrants (b)" from the line
+// below it, and the screen's non-common-stock rule then dropped EVERY row of the
+// table because its share_class said "warrant" and "option". Transcribed from
+// Royal Gold's 1996 proxy (0000085535-96-000010).
+const asciiWholeHeaderRowLabel = `
+      SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS AND
+                         MANAGEMENT
+
+     The following table shows the beneficial ownership, as of
+October 18, 1996, of the Company's Common Stock by each director,
+by each executive officer, by any person who is known to the
+Company to be the beneficial owner of more than 5% of the issued
+and outstanding shares of Common Stock of the Company and by all
+of the Company's directors and executive officers as a group.
+
+Name and Address   Number of Shares of Common Stock Beneficially Owned Percent
+of Beneficial                    Subject to:                             of
+Owners                     Shares   Options (a) Warrants (b) Total (c)  Class
+
+Stanley Dempsey (d)         495,167   463,000     15,000     973,167    6.3
+Royal Gold, Inc.
+1660 Wynkoop Street
+Suite 1000
+Denver, Colorado  80202
+
+Edwin W. Peiker, Jr. (e)    455,178    17,500     15,000     487,678    3.1
+Royal Gold, Inc.
+1660 Wynkoop Street
+Suite 1000
+Denver, Colorado  80202
+
+James W. Stuckert         1,560,874     15,000    80,000    1,655,874   10.7
+Hilliard, Lyons, Inc.
+P.O. Box 32760
+Louisville, Kentucky  40232
+`
+
+func TestASCIIWholeHeaderRowIsNotAClassLabel(t *testing.T) {
+	rows := ScreenRows(run(t, asciiWholeHeaderRowLabel))
+	sd := find(rows, "Stanley Dempsey", "")
+	if sd == nil {
+		t.Fatalf("every row was dropped; the header row became the share class: %+v", rows)
+	}
+	for _, r := range rows {
+		if strings.Contains(strings.ToLower(r.ShareClass), "warrant") ||
+			strings.Contains(strings.ToLower(r.ShareClass), "percent") {
+			t.Errorf("share_class is a whole header row: %q", r.ShareClass)
+		}
+	}
+	if sd.Percent == nil || *sd.Percent != 6.3 {
+		t.Errorf("percent lost: %+v", sd.Percent)
+	}
+}
