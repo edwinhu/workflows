@@ -491,6 +491,39 @@ func TestRule4_PageFurnitureInsideABio(t *testing.T) {
 	}
 }
 
+// Forty Seven's page breaks carry TWO jump links, not one: "Table of Contents"
+// and, beneath it, "Index to Financial Statements". The second is also the name
+// of a real top-level section, so a section scan that reads it as a heading
+// closes MANAGEMENT at the first page break — three paragraphs in — and nine of
+// the eleven people lose their bio. Every VC director in this filing sits past
+// that break.
+func TestRule4_FinancialStatementsJumpLinkIsPageFurniture(t *testing.T) {
+	e := extractFixture(t, "fortyseven.txt")
+	for _, p := range e.Persons {
+		if strings.TrimSpace(p.Bio) == "" {
+			t.Errorf("%s has no bio: the section was cut short at a page break\n  names=%v",
+				squash(p.Name), personNames(e))
+		}
+		if containsFold(p.Bio, "Index to Financial Statements") {
+			t.Errorf("%s's bio carries the page-break jump link\n  bio = %q", squash(p.Name), trunc(p.Bio))
+		}
+	}
+	for _, want := range []vcWant{
+		{"Jeffrey W. Bird, M.D.", "Sutter Hill"},
+		{"Ian T. Clark", "Clarus"},
+		{"Christopher J. Schaepe", "Lightspeed"},
+	} {
+		p := person(t, e, want.name)
+		if !p.VCAffiliated {
+			t.Errorf("%s: vc_affiliated = false, want true (bio=%q)", want.name, trunc(p.Bio))
+			continue
+		}
+		if !containsFold(p.VCFirm, want.firm) {
+			t.Errorf("%s: vc_firm = %q, want it to name %q", want.name, p.VCFirm, want.firm)
+		}
+	}
+}
+
 // A bio must belong to its own person. Google runs nine bios back to back; if
 // the splitter keys on a lead-in pattern rather than the table's name list, one
 // bio swallows the next.
