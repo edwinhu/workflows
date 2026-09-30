@@ -703,6 +703,12 @@ var vcFirms = []string{
 	"Thrive Capital",
 	"Trinity Ventures", "Union Square Ventures", "U.S. Venture Partners",
 	"Venrock", "Versant Ventures", "Walden International",
+	// J.H. Whitney & Co., one of the oldest VC houses, now writing itself
+	// "Whitney & Co., LLC". Both spellings, because NeuroMetrix 2004
+	// (0001047469-04-023893) uses the short one in the bio and the long one in
+	// the beneficial-ownership table. The ampersand keeps the entry specific;
+	// a bare "Whitney" would hit any surname.
+	"Whitney & Co", "J.H. Whitney",
 }
 
 // firmInWindow finds the first dictionary firm named in window, on WORD
