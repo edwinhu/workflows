@@ -555,9 +555,10 @@ var (
 		`(?:\s+[a-z/-]+){0,3}\s+(?:firm|funds?|partnership|investor|compan(?:y|ies))\b`)
 
 	// "principal" is a partner-grade seat only where the firm itself carries a
-	// venture label, so only the post-label route reads it: gold counts neither
-	// "a Principal" of William Blair (0001047469-04-017088) nor a Principal at
-	// the corporate Novartis Venture Fund (0001193125-21-218024).
+	// venture label, in words or in its own name, so only the post-label and
+	// venture-named routes read it: gold counts a Principal at the Novartis
+	// Venture Fund (0001193125-21-218024) but not "a Principal" of William Blair
+	// (0001047469-04-017088).
 	reVCPrincipalRole = regexp.MustCompile(`(?i)\bprincipals?\b`)
 
 	// An OPEN date range whose preposition would otherwise read as past tense:
@@ -692,6 +693,43 @@ func detectVC(bio string) (bool, string, string) {
 		}
 		add(firm, evidence(bio, at, m[1]))
 	}
+	// The role window read with the firm's OWN NAME as the label, shared by the
+	// two role anchors below.
+	ventureNamed := func(roleLo, roleHi int, window string) {
+		lead := bio[:roleLo]
+		if len(lead) > ventureLeadWindow {
+			lead = lead[len(lead)-ventureLeadWindow:]
+		}
+		if isPastLead(lead) {
+			return
+		}
+		firm, end := ventureFirmAfter(window)
+		if firm == "" {
+			return
+		}
+		// A role word inside the captured name means the run started at a role
+		// and not at the firm: anchored on the bare "member" of "a member of our
+		// board of directors", the window swallows "Chief Scientific Advisor of
+		// Clarus Ventures LLC" whole (0001193125-18-207640). No firm is called
+		// that, and the grade that reaches the name is not a partnership.
+		if reVCNonPartnerRole.MatchString(firm) {
+			return
+		}
+		tail := window[end:]
+		if reCorporateVenture.MatchString(tail) || reFirmCommittee.MatchString(tail) {
+			return
+		}
+		// A services appositive only contradicts the name when it does not also
+		// say "venture": "a venture capital and advisory firm" labels the firm
+		// the way the name does. Read off the whole bio, not off window: the
+		// 110-byte window cuts Myers' appositive two words before "consulting".
+		if s := reFirmIsServices.FindString(bio[roleHi+end:]); s != "" &&
+			!strings.Contains(strings.ToLower(s), "venture") {
+			return
+		}
+		add(firm, evidence(bio, roleLo, roleHi+end))
+	}
+
 	for _, m := range reVCRole.FindAllStringIndex(bio, -1) {
 		hi := m[1] + 110
 		if hi > len(bio) {
@@ -720,39 +758,22 @@ func detectVC(bio string) (bool, string, string) {
 				}
 			}
 		}
-		// The same role window, but with the firm's own name as the label.
-		lead := bio[:m[0]]
-		if len(lead) > ventureLeadWindow {
-			lead = lead[len(lead)-ventureLeadWindow:]
+		ventureNamed(m[0], m[1], window)
+	}
+	// "Principal" reaches a firm the FILING labels through the post-positioned
+	// route above, and a firm its own NAME labels here: "Dr. Shangari has served
+	// as a Principal at the Novartis Venture Fund since 2018"
+	// (0001193125-21-218024). Only that route, because the word alone is no
+	// grade -- gold excludes "a Principal" of William Blair
+	// (0001047469-04-017088), a principal of Global Retail Partners, L.P.
+	// (0001012870-99-002065) and Silver Lake's founding principal
+	// (0001193125-20-249257), none of whose firms is venture in name or label.
+	for _, m := range reVCPrincipalRole.FindAllStringIndex(bio, -1) {
+		hi := m[1] + 110
+		if hi > len(bio) {
+			hi = len(bio)
 		}
-		if isPastLead(lead) {
-			continue
-		}
-		firm, end := ventureFirmAfter(window)
-		if firm == "" {
-			continue
-		}
-		// A role word inside the captured name means the run started at a role
-		// and not at the firm: anchored on the bare "member" of "a member of our
-		// board of directors", the window swallows "Chief Scientific Advisor of
-		// Clarus Ventures LLC" whole (0001193125-18-207640). No firm is called
-		// that, and the grade that reaches the name is not a partnership.
-		if reVCNonPartnerRole.MatchString(firm) {
-			continue
-		}
-		tail := window[end:]
-		if reCorporateVenture.MatchString(tail) || reFirmCommittee.MatchString(tail) {
-			continue
-		}
-		// A services appositive only contradicts the name when it does not also
-		// say "venture": "a venture capital and advisory firm" labels the firm
-		// the way the name does. Read off the whole bio, not off window: the
-		// 110-byte window cuts Myers' appositive two words before "consulting".
-		if m := reFirmIsServices.FindString(bio[m[1]+end:]); m != "" &&
-			!strings.Contains(strings.ToLower(m), "venture") {
-			continue
-		}
-		add(firm, evidence(bio, m[0], m[1]+end))
+		ventureNamed(m[0], m[1], bio[m[1]:hi])
 	}
 	if len(firms) == 0 {
 		return false, "", ""

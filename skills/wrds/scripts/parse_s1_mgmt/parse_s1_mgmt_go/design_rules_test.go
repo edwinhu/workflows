@@ -2299,3 +2299,55 @@ func TestRule1_ASecondCaptionDoesNotEndTheAsciiTable(t *testing.T) {
 		}
 	}
 }
+
+// "Principal" is a partner-grade seat when the firm's OWN NAME carries the
+// venture label. TScan 2021 (0001193125-21-218024) writes the whole signal in
+// one sentence -- "Dr. Shangari has served as a Principal at the Novartis
+// Venture Fund since 2018" -- and gold counts her. The name-labelled route
+// could already read "Novartis Venture Fund", but it anchors on a
+// partner-grade role and "Principal" was in neither role list: the only place
+// the word counted was the post-positioned-label route.
+//
+// The gate stays the firm, not the word. Gold excludes "a Principal" of William
+// Blair (0001047469-04-017088), a principal of Global Retail Partners, L.P.
+// (0001012870-99-002065) and Silver Lake's founding principal
+// (0001193125-20-249257) -- in each the firm is neither labelled venture nor
+// named for it.
+//
+// Bios are quoted verbatim from the accession named on each line, and exercised
+// through detectVC because check_full.sh re-cuts every fixture from a source
+// filing this corpus does not hold.
+func TestRule7_APrincipalAtAVentureNamedFirmFires(t *testing.T) {
+	positive := []struct{ accession, bio, firm string }{
+		{"0001193125-21-218024",
+			"Nandita Shangari, Ph.D. has served as a member of our board of directors since September 2020. Dr. Shangari has served as a Principal at the Novartis Venture Fund since 2018. Prior to joining NVF, she was part of the Novartis Oncology Business Development and Licensing team from 2017 to 2018 where she managed key alliances for the Oncology Portfolio.",
+			"Novartis Venture Fund"},
+	}
+	for _, c := range positive {
+		t.Run("yes/"+c.firm, func(t *testing.T) {
+			ok, firm, ev := detectVC(c.bio)
+			if !ok {
+				t.Fatalf("%s: vc_affiliated = false, want true", c.accession)
+			}
+			if !containsFold(firm, c.firm) {
+				t.Errorf("%s: vc_firm = %q, want it to name %q (evidence %q)", c.accession, firm, c.firm, ev)
+			}
+		})
+	}
+
+	negative := []struct{ accession, why, bio string }{
+		{"0001012870-99-002065", "a principal of a firm neither labelled nor named venture",
+			"Linda Fayne Levinson has served as a director of the Company since June 1997. Ms. Levinson is a principal of Global Retail Partners, L.P. and related funds, which are private equity investors."},
+		{"0001193125-20-249257", "a founding principal of a firm the filing calls private equity",
+			"Egon Durban has served as a member of our board of directors since June 2019. Mr. Durban is a Co-Chief Executive Officer and Managing Partner of Silver Lake, a global private equity firm, where he has been a founding principal since 1999."},
+		{"constructed", "the principalship closed out before the filing",
+			"Mr. Doe was previously a Principal at the Acme Venture Fund."},
+	}
+	for _, c := range negative {
+		t.Run("no/"+c.why, func(t *testing.T) {
+			if ok, firm, ev := detectVC(c.bio); ok {
+				t.Errorf("%s: vc_affiliated = true, want false (firm=%q evidence=%q)", c.accession, firm, ev)
+			}
+		})
+	}
+}
