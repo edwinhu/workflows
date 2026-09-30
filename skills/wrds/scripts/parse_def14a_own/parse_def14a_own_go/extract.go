@@ -116,7 +116,13 @@ var (
 	reSkipName = regexp.MustCompile(`(?i)^(name|names?\s+(and\s+address\s+)?of\s+.*|(name\s+of\s+)?beneficial\s+owners?|title\s+of\s+class|total|subtotal|directors?|non-?employee\s+directors?|executive\s+officers?|named\s+executive\s+officers?|nominees?|continuing\s+directors?|other\s+executive\s+officers?|5%\s+.*|principal\s+.*holders?|common\s+stock|class\s+[a-d].*)$`)
 	// The table must look like an ownership table, not an equity-comp-plan or
 	// compensation table that also carries share counts.
-	reOwnCue = regexp.MustCompile(`(?i)beneficial|percent\s*(?:age)?\s*of\s*(?:class|shares|common|outstanding)|amount\s+and\s+nature|%\s*of\s*class|shares\s+owned|owned\s+of\s+record|as\s+a\s+group|principal\s+(?:stock|share)holders`)
+	// A closed-end fund's record-holder exhibit states ownership as a NOUN --
+	// "AMOUNT OF OWNERSHIP", "PERCENTAGE OF OWNERSHIP" -- and says its holders
+	// HELD of record rather than owned of record. Neither phrase can head a
+	// compensation or award column.
+	reOwnCue = regexp.MustCompile(`(?i)beneficial|percent\s*(?:age)?\s*of\s*(?:class|shares|common|outstanding)|` +
+		`(?:amount|percent(?:age)?|number)\s+of\s+ownership|` +
+		`amount\s+and\s+nature|%\s*of\s*class|shares\s+owned|owned\s+of\s+record|as\s+a\s+group|principal\s+(?:stock|share)holders`)
 	// An OPTION-DETAIL or share-PURCHASE table: it names the same people as the
 	// ownership table and repeats "Shares Owned" beside its own columns, so
 	// reCompCue's "unless it also reads as ownership" escape lets it through.
