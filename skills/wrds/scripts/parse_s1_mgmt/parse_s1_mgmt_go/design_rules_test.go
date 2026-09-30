@@ -2175,3 +2175,127 @@ func TestRule6_FounderFiresOnIssuerAcronym(t *testing.T) {
 		})
 	}
 }
+
+// ---------------------------------------------------------------------------
+// Rule 1 — a second <CAPTION> inside one <TABLE> is not the end of the table
+// ---------------------------------------------------------------------------
+
+// UbiquiTel (0000912057-00-027832) writes both of its blocks inside a single
+// ASCII <TABLE>: "EXECUTIVE OFFICERS AND DIRECTORS:" with eight rows, then
+// "OTHER KEY EMPLOYEES:" with a SECOND <CAPTION> re-declaring the NAME / AGE /
+// POSITION header over Gerstenberg and Zylka. asciiLine blanks an SGML marker
+// to spaces of the same width, so that <CAPTION> line read as the second blank
+// line and ended the table two rows early — the filing's only defect, and the
+// one row in the dev split where the parser's own person count differs from
+// gold's.
+//
+// Table and bio openers are quoted verbatim from that accession.
+const asciiSecondCaptionExcerpt = `                                   MANAGEMENT
+
+EXECUTIVE OFFICERS, DIRECTORS AND OTHER KEY EMPLOYEES
+
+    The following table presents information with respect to our executive
+officers, directors and other key employees.
+
+EXECUTIVE OFFICERS AND DIRECTORS:
+
+<TABLE>
+<CAPTION>
+NAME                                      AGE                         POSITION
+<S>                                     <C>        <C>
+    Donald A. Harris..................     47      Chairman of the Board, President and Chief
+                                                   Executive Officer
+    Dean E. Russell...................     48      Chief Operating Officer
+    Paul F. Judge.....................     34      Senior Vice President--Corporate Development
+                                                   and Finance
+    Andrew W. Buffmire................     53      Senior Vice President--Business Development
+    Robert A. Berlacher...............     45      Director
+    Peter Lucas.......................     45      Director
+    Eve M. Trkla......................     37      Director
+    Joseph N. Walter..................     47      Director
+
+OTHER KEY EMPLOYEES:
+
+<CAPTION>
+NAME                                      AGE                         POSITION
+<S>                                     <C>        <C>
+    Debra A. Gerstenberg..............     36      Vice President of Human Resources
+    David L. Zylka....................     39      Vice President of Engineering
+</TABLE>
+
+    DONALD A. HARRIS has served as President and Chief Executive Officer and as
+a director since our inceptions and was appointed Chairman of the Board in
+May 2000.
+
+    DEAN E. RUSSELL has been our Chief Operating Officer since February 2000.
+
+    PAUL F. JUDGE has been our Senior Vice President--Corporate Development and
+Finance since March 2000.
+
+    ANDREW W. BUFFMIRE has been our Senior Vice President--Business Development
+since April 2000.
+
+    ROBERT A. BERLACHER has been one of our directors since October 1999.
+
+    PETER LUCAS has been one of our directors since October 1999.
+
+    EVE M. TRKLA has been one of our directors since March 2000.
+
+    JOSEPH N. WALTER has been one of our directors since October 1999.
+
+    DEBRA A. GERSTENBERG has been our Vice President of Human Resources since
+January 2000. She reports to our Chief Operating Officer and is responsible for
+implementing and directing the functions of employee relations, compensation,
+benefits, training, equal employment opportunity, staffing and payroll.
+
+    DAVID L. ZYLKA has been our Vice President of Engineering since January
+2000. He reports to our Chief Operating Officer and is responsible for the
+quality and technical performance of all network operations.
+`
+
+func TestRule1_ASecondCaptionDoesNotEndTheAsciiTable(t *testing.T) {
+	raw := sgmlHeaderFor("UBIQUITEL INC") +
+		sgmlDoc("424B4", asciiSecondCaptionExcerpt+"\nEXECUTIVE COMPENSATION\n")
+	e := ExtractManagement([]byte(raw))
+	if e.Filing.Status != StatusOK {
+		t.Fatalf("status = %q, want %q", e.Filing.Status, StatusOK)
+	}
+	if len(e.Persons) != 10 {
+		t.Fatalf("len(persons) = %d, want 10 (8 officers and directors + 2 key employees): %v",
+			len(e.Persons), personNames(e))
+	}
+	// The re-declared header line must not become an eleventh person or a
+	// section label that files the two key employees under a column name.
+	for _, p := range e.Persons {
+		if containsFold(p.Name, "AGE") || containsFold(p.Name, "POSITION") {
+			t.Errorf("the second caption's header row produced the person %q: %v",
+				squash(p.Name), personNames(e))
+		}
+	}
+	for _, name := range []string{"Debra A. Gerstenberg", "David L. Zylka"} {
+		p := person(t, e, name)
+		if p.Section != SectionKeyEmployee {
+			t.Errorf("%s: section = %q, want %q", name, p.Section, SectionKeyEmployee)
+		}
+		if !containsFold(p.Bio, "since January") {
+			t.Errorf("%s: bio = %q, want the bio that opens with the January 2000 date",
+				name, squash(p.Bio))
+		}
+	}
+	// The eight rows above the second caption keep their own classification:
+	// four bare "Director" cells, and Harris an officer under rule 2.
+	if got := countSection(e, SectionDirector); got != 4 {
+		t.Errorf("directors = %d, want 4 (Berlacher, Lucas, Trkla, Walter): %v", got, personNames(e))
+	}
+	if got := countSection(e, SectionKeyEmployee); got != 2 {
+		t.Errorf("key employees = %d, want 2: %v", got, personNames(e))
+	}
+	if got := squash(e.Filing.CEOName); got != "Donald A. Harris" {
+		t.Errorf("ceo_name = %q, want %q", got, "Donald A. Harris")
+	}
+	for i, p := range e.Persons {
+		if p.Seq != i+1 {
+			t.Errorf("persons[%d].Seq = %d, want %d", i, p.Seq, i+1)
+		}
+	}
+}
