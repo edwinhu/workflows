@@ -1917,6 +1917,90 @@ func TestRule3_AsciiWrappedNameCellIsOneRow(t *testing.T) {
 	}
 }
 
+// Simplex Solutions 2001 (0000891618-01-500512) wraps a name cell the other way
+// round: the age sits on the FIRST half and the remainder dangles under it.
+//
+//	Harvey C. Jones,              48     Director
+//	  Jr.(1)(2).................
+//
+// The dangling line carries no age, sits far left of the position field so the
+// position-continuation rule cannot claim it, and ends on a dot leader so the
+// section-label rule rejects it too -- which ended the table three rows early
+// and swept Myers', Newton's and Sonsini's bios onto Jones. Verbatim from the
+// filing.
+const asciiWrappedNameTailExcerpt = `                                   MANAGEMENT
+
+EXECUTIVE OFFICERS AND DIRECTORS
+
+     The names, ages and positions of our executive officers and directors as of
+March 31, 2001 are as follows:
+
+<TABLE>
+<CAPTION>
+            NAME              AGE                               POSITION
+            ----              ---                               --------
+<S>                           <C>    <C>
+Penelope A. Herscher........  40     Chief Executive Officer and Chairman of the Board of Directors
+Joseph B. Costello(1).......  47     Director
+Harvey C. Jones,              48     Director
+  Jr.(1)(2).................
+F. Gibson Myers, Jr.(2).....  59     Director
+A. Richard Newton(1)(2).....  49     Director
+Larry W. Sonsini............  60     Director
+</TABLE>
+
+- ---------------
+(1) Member of the Audit Committee.
+
+     Penelope A. Herscher has served as our Chief Executive Officer since April
+1996. From May 1996 to July 2000, Ms. Herscher served as our President.
+
+     Joseph B. Costello has served on our Board of Directors since June 1996.
+Mr. Costello serves on the board of directors of several private companies.
+
+     Harvey C. Jones, Jr. has served on our Board of Directors since December
+1995. From December 1987 through February 1998, Mr. Jones held various positions
+at Synopsys Inc., a developer of electronic design automation software.
+
+     F. Gibson Myers, Jr. has served on our Board of Directors since July 1995.
+Mr. Myers serves as a partner emeritus of the Mayfield Fund, which he joined in
+1970.
+
+     A. Richard Newton has served on our Board of Directors since July 1995. Mr.
+Newton has served as a Venture Partner at the Mayfield Fund since 1998.
+
+     Larry W. Sonsini has served on our Board of Directors since June 1998. Mr.
+Sonsini has been an attorney with the law firm of Wilson Sonsini Goodrich &
+Rosati.
+`
+
+func TestRule3_AsciiWrappedNameTailIsOneRow(t *testing.T) {
+	raw := sgmlHeaderFor("SIMPLEX SOLUTIONS INC") +
+		sgmlDoc("424B4", asciiWrappedNameTailExcerpt+"\nEXECUTIVE COMPENSATION\n")
+	e := ExtractManagement([]byte(raw))
+	if e.Filing.Status != StatusOK {
+		t.Fatalf("status = %q, want %q", e.Filing.Status, StatusOK)
+	}
+	if len(e.Persons) != 6 {
+		t.Fatalf("len(persons) = %d, want 6: %v", len(e.Persons), personNames(e))
+	}
+	j := person(t, e, "Harvey C. Jones, Jr.")
+	if j.Age != 48 {
+		t.Errorf("Jones age = %d, want 48", j.Age)
+	}
+	if j.VCAffiliated {
+		t.Errorf("Jones carries a VC flag off a later director's bio: firm=%q evidence=%q",
+			j.VCFirm, squash(j.VCEvidence))
+	}
+	for _, want := range []string{"F. Gibson Myers, Jr.", "A. Richard Newton"} {
+		p := person(t, e, want)
+		if !p.VCAffiliated || !containsFold(p.VCFirm, "Mayfield") {
+			t.Errorf("%s vc_affiliated = %v firm = %q, want the Mayfield Fund",
+				want, p.VCAffiliated, p.VCFirm)
+		}
+	}
+}
+
 // ---------------------------------------------------------------------------
 // Rule 2 — a long executive title is still an executive office
 // ---------------------------------------------------------------------------
