@@ -676,7 +676,8 @@ const ventureLeadWindow = 35
 // backed the IPOs in circulation, not every firm that ever existed.
 var vcFirms = []string{
 	"Accel", "Advanced Technology Ventures", "Alta Partners", "Andreessen Horowitz",
-	"ARCH Venture", "Artiman", "August Capital", "Austin Ventures", "Bain Capital Ventures",
+	"ARCH Venture", "Artiman", "Asset Management Associates", "Atlas Venture",
+	"August Capital", "Austin Ventures", "Bain Capital Ventures",
 	"Battery Ventures", "Benchmark", "Bessemer Venture", "Canaan Partners",
 	"Charles River Ventures", "Crosspoint Venture", "DAG Ventures", "Delphi Ventures",
 	"Domain Associates", "Draper Fisher Jurvetson", "El Dorado Ventures",
@@ -693,12 +694,18 @@ var vcFirms = []string{
 	// case as "NEA", and the same word-boundary hazard: "MIPS Technologies".
 	"MIP",
 	"Mohr Davidow", "MPM Capital", "NEA", "New Enterprise Associates",
-	"Norwest Venture", "Oak Investment Partners", "OrbiMed",
+	"Norwest Venture", "Oak Investment Partners", "Omega Funds", "OrbiMed",
 	"Oxford Bioscience", "Partech", "Polaris Venture", "Pontifax",
 	"Prospect Venture",
 	"Redpoint Ventures", "Rho Ventures", "Scale Venture", "Sequoia Capital",
 	"Sevin Rosen", "Sierra Ventures", "Sigma Partners", "Sofinnova", "Spark Capital",
-	"Sprout Group", "Sutter Hill", "Technology Crossover Ventures",
+	"Sprout Group",
+	// One house under both its names: Cidara 2015 (0001193125-15-131330) writes
+	// "SV Life Sciences" and Avrobio 2018 (0001193125-18-199473) writes "SV
+	// Health Investors", and each bio calls it an investment fund rather than a
+	// venture one, so neither spelling is reachable by a label.
+	"SV Health Investors", "SV Life Sciences",
+	"Sutter Hill", "Technology Crossover Ventures",
 	"Technology Venture Investors", "The Column Group", "Third Rock Ventures",
 	"Thrive Capital",
 	"Trinity Ventures", "Union Square Ventures", "U.S. Venture Partners",
