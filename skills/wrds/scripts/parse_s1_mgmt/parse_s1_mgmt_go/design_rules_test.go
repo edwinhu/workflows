@@ -2367,3 +2367,57 @@ func TestRule7_AppositiveAfterStartDate(t *testing.T) {
 		t.Errorf("vc = %v firm = %q, want BOLD Capital Partners (evidence=%q)", ok, firm, ev)
 	}
 }
+
+// The venture label can be written BEFORE the firm name, where every existing
+// route is blind to it: the appositive routes read back from a label that
+// follows the name, and the venture-named route wants the word inside the name.
+// "Co-Managing Partner of venture capital fund DCVC" (0001140361-21-013962) and
+// "founded two venture capital firms, North Bridge Venture Partners in May 1993,
+// where he currently serves as a Managing Partner" (0001193125-21-221914) both
+// label the firm in words and then name it.
+//
+// The grade is read off the label's WHOLE sentence rather than the lead,
+// because North Bridge's partnership is written on the far side of the name.
+// Bios are quoted verbatim from the accession named on each line.
+func TestRule7_VentureLabelBeforeTheFirmName(t *testing.T) {
+	positive := []struct{ accession, bio, firm string }{
+		{"0001140361-21-013962",
+			"Matthew A. Ocko has served on our board of directors since June 2015. Mr. Ocko is the " +
+				"Co-Founder and Co-Managing Partner of venture capital fund DCVC since 2011, where his " +
+				"investments span computational and synthetic biology, geospatial and space access " +
+				"platforms, robotics, applied artificial intelligence, antiterror systems and large-scale " +
+				"enterprise platforms including quantum computers.",
+			"DCVC"},
+		{"0001193125-21-221914",
+			"Mr. Anderson has served as a member of our board of directors since January 2020. " +
+				"Mr. Anderson founded two venture capital firms, North Bridge Venture Partners in May 1993, " +
+				"where he currently serves as a Managing Partner focusing on early-stage high-tech " +
+				"companies, and North Bridge Growth Equity in February 2007.",
+			"North Bridge Venture Partners"},
+	}
+	for _, c := range positive {
+		t.Run("yes/"+c.firm, func(t *testing.T) {
+			ok, firm, ev := detectVC(c.bio)
+			if !ok {
+				t.Fatalf("%s: vc_affiliated = false, want true", c.accession)
+			}
+			if !containsFold(firm, c.firm) {
+				t.Errorf("%s: vc_firm = %q, want it to name %q (evidence %q)", c.accession, firm, c.firm, ev)
+			}
+		})
+	}
+
+	// Constructed, not quoted. The label alone is no affiliation: the sentence
+	// has to put the person in a partner-grade seat at the firm, in the present.
+	negative := []string{
+		"Mr. Doe serves on the board of directors of venture capital firm Sequoia Growth LLC.",
+		"Prior to joining us, Mr. Doe was a Managing Partner of venture capital firm Sequoia Growth LLC.",
+	}
+	for _, bio := range negative {
+		t.Run("no", func(t *testing.T) {
+			if ok, firm, ev := detectVC(bio); ok {
+				t.Errorf("fired on %q: firm=%q evidence=%q", bio, firm, ev)
+			}
+		})
+	}
+}
