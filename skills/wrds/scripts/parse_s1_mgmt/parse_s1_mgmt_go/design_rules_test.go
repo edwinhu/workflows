@@ -1114,3 +1114,143 @@ func TestRule7_VentureInTheFirmNameIsTheLabel(t *testing.T) {
 		})
 	}
 }
+
+// ---------------------------------------------------------------------------
+// Rule 1, the ASCII path — the table's own header furniture
+// ---------------------------------------------------------------------------
+
+// AnswerThink 1998 (0000928385-98-001146) wraps the fourth column's header over
+// three lines inside the <CAPTION>: "TERM AS" / "DIRECTOR" / then the real
+// NAME / AGE / POSITION line. "TERM AS" is short, all-capitals and carries no
+// sentence break, so the heading test reads it as a top-level successor section
+// and closes MANAGEMENT one line BEFORE the header the table parser is looking
+// for. Verbatim from the filing.
+const asciiCaptionWrapExcerpt = `                                  MANAGEMENT
+ 
+DIRECTORS AND EXECUTIVE OFFICERS
+ 
+  Set forth below is certain information as of May 1, 1998 concerning the
+directors and executive officers of the Company. The Company's board of
+directors is divided into three classes serving staggered three-year terms.
+ 
+<TABLE>
+<CAPTION>
+                                                                          TERM AS
+                                                                          DIRECTOR
+  NAME                    AGE          POSITION AND OFFICES HELD          EXPIRES
+  ----                    ---          -------------------------          --------
+<S>                       <C> <C>                                         <C>
+Ted A. Fernandez........  41  President, Chief Executive Officer and        2001
+                               Chairman
+Fernando Montero........  52  Director                                      2001
+Bruce V. Rauner.........  42  Director                                      2001
+Allan R. Frank..........  42  Executive Vice President, Chief Technology    2000
+                               Officer and Director
+William C. Kessinger....  32  Director                                      2000
+Edmund R. Miller........  42  Director                                      1999
+Ulysses S. Knotts, III..  42  Executive Vice President, Sales and           1999
+                               Marketing and Director
+John F. Brennan.........  40  Executive Vice President, Acquisitions and
+                               Strategic Planning and Secretary
+Luis E. San Miguel......  38  Executive Vice President, Finance and Chief
+                               Financial Officer
+</TABLE>
+ 
+  Ted A. Fernandez is a founder of the Company and has served as Chief
+Executive Officer, President and Chairman of its Board of Directors since
+inception. Mr. Fernandez served as the National Managing Partner of KPMG Peat
+Marwick LLP's ("KPMG's") Strategic Services Consulting, the firm's
+transformation and IT consulting group, from May 1994 to January 1997. Mr.
+Fernandez also served as a member of KPMG's Management Committee from May 1995
+to January 1997. From 1979 to 1993, Mr. Fernandez held several industry,
+executive and client service positions with KPMG.
+ `
+
+func TestRule1_AsciiCaptionHeaderDoesNotCloseTheSection(t *testing.T) {
+	raw := sgmlHeaderFor("ANSWER THINK CONSULTING GROUP INC") +
+		sgmlDoc("424B4", asciiCaptionWrapExcerpt+"\n\nEXECUTIVE COMPENSATION\n")
+	e := ExtractManagement([]byte(raw))
+	if e.Filing.Status != StatusOK {
+		t.Fatalf("status = %q, want %q: a wrapped column header inside the CAPTION is table furniture, not a successor section",
+			e.Filing.Status, StatusOK)
+	}
+	if len(e.Persons) != 9 {
+		t.Errorf("len(persons) = %d, want 9: %v", len(e.Persons), personNames(e))
+	}
+	if got := squash(e.Filing.CEOName); got != "Ted A. Fernandez" {
+		t.Errorf("ceo_name = %q, want %q", got, "Ted A. Fernandez")
+	}
+	if !e.Filing.CEOFounderSelfDescribed {
+		t.Errorf("ceo_founder_self_described = 0, want 1: %q", squash(e.Filing.CEOFounderEvidence))
+	}
+}
+
+// Horizon Medical Products 1998 (0000950144-98-004643) heads the name column
+// with the block label itself -- "EXECUTIVE OFFICERS AND DIRECTORS:" -- and
+// never writes the word NAME, so a header test requiring all three column words
+// finds no table at all. AGE and POSITION are there, and the rule line under the
+// header is what says the line is a header rather than prose. Verbatim.
+const asciiNamelessHeaderExcerpt = `                                   MANAGEMENT
+ 
+EXECUTIVE OFFICERS, DIRECTORS AND KEY EMPLOYEES
+ 
+     The following table sets forth certain information concerning each of the
+executive officers, directors and key employees of the Company as of April 14,
+1998.
+ 
+<TABLE>
+<CAPTION>
+EXECUTIVE OFFICERS AND DIRECTORS:           AGE                    POSITION
+- ---------------------------------           ---                    --------
+<S>                                         <C>   <C>
+Marshall B. Hunt..........................  42    Director, Chairman of the Board and Chief
+                                                    Executive Officer
+William E. Peterson, Jr...................  42    Director and President
+J. Ronald Hager...........................  54    Vice President of Operations
+Mark A. Jewett............................  32    Vice President of Finance
+L. Bruce Maloy............................  34    Vice President of Administration
+Charles E. Adair..........................  50    Director
+Robert Cohen..............................  40    Director
+Robert J. Simmons.........................  55    Director
+Gordon Tunstall...........................  54    Director
+KEY EMPLOYEES:
+ 
+Michael A. Crouch.........................  36    National Accounts Manager
+Frank D. DeBartola........................  34    Director of Marketing
+Robert R. Singer..........................  32    National Sales Manager
+</TABLE>
+ 
+     Marshall B. Hunt is a co-founder of the Company and has served as a
+director and Chief Executive Officer of the Company since its inception in 1990.
+Mr. Hunt has served as the Chairman of the Board of the Company since 1997.
+Prior to co-founding the Company, Mr. Hunt co-founded Cardiac Medical, Inc.
+("CMI"), a distributor of cardiac pacemakers, in 1987, and served as its Chief
+Executive Officer until October 1997. Mr. Hunt currently serves as Secretary of
+CMI. In 1981, Mr. Hunt founded Hunt Medical Systems, Inc., a distributor of
+pacemaker products, and served as its President from 1981 to 1987. From 1979
+through 1981, Mr. Hunt held various sales and management positions with American
+Hospital Supply Corporation.
+ 
+     William E. Peterson, Jr. is a co-founder of the Company and has served as
+President of the Company since its inception in 1990. Mr. Peterson joined the
+Company's Board of Directors in January 1998. Mr. Peterson served as Vice`
+
+func TestRule1_AsciiHeaderNeedNotSayName(t *testing.T) {
+	raw := sgmlHeaderFor("HORIZON MEDICAL PRODUCTS INC") +
+		sgmlDoc("424B4", asciiNamelessHeaderExcerpt+"\n\nEXECUTIVE COMPENSATION\n")
+	e := ExtractManagement([]byte(raw))
+	if e.Filing.Status != StatusOK {
+		t.Fatalf("status = %q, want %q: the name column is headed by the block label, not by \"NAME\"",
+			e.Filing.Status, StatusOK)
+	}
+	if len(e.Persons) != 12 {
+		t.Errorf("len(persons) = %d, want 12 (9 officers and directors + 3 key employees): %v",
+			len(e.Persons), personNames(e))
+	}
+	if got := squash(e.Filing.CEOName); got != "Marshall B. Hunt" {
+		t.Errorf("ceo_name = %q, want %q", got, "Marshall B. Hunt")
+	}
+	if !e.Filing.CEOFounderSelfDescribed {
+		t.Errorf("ceo_founder_self_described = 0, want 1: %q", squash(e.Filing.CEOFounderEvidence))
+	}
+}

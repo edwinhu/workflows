@@ -37,9 +37,38 @@ var (
 	reRuleLine = regexp.MustCompile(`^[-=_\s]+$`)
 	// The fixed-width header: all three column names on one line.
 	reTxtHeader = regexp.MustCompile(`(?i)\bNAME\b.*\bAGE\b.*\b(?:POSITION|TITLE|OFFICE)S?\b`)
+	// The same header with the name column headed by the block's own label
+	// rather than the word NAME: Horizon Medical 1998 writes
+	// "EXECUTIVE OFFICERS AND DIRECTORS:  AGE  POSITION". The word is optional,
+	// the geometry is not, so this form is accepted only with a rule line under
+	// it — which is what separates a header from a sentence mentioning an age.
+	reTxtHeaderLoose = regexp.MustCompile(`(?i)^\s*\S.*\bAGE\b.*\b(?:POSITION|TITLE|OFFICE)S?\b`)
 	// A bare two-digit number standing alone in the line: the age.
 	reTxtAge = regexp.MustCompile(`(^|\s)([0-9]{2})(\s|$)`)
+	// The ASCII table's own delimiters, matched on the RAW line: inside them
+	// there are no headings, only the caption's column labels.
+	reTxtTableOpen  = regexp.MustCompile(`(?i)<TABLE>`)
+	reTxtTableClose = regexp.MustCompile(`(?i)</TABLE>`)
 )
+
+// isAsciiHeader reports whether line j is the fixed-width table's header row.
+func isAsciiHeader(lines []string, j int) bool {
+	t := strings.TrimSpace(asciiLine(lines[j]))
+	if reTxtHeader.MatchString(t) {
+		return true
+	}
+	if !reTxtHeaderLoose.MatchString(t) {
+		return false
+	}
+	for k := j + 1; k < len(lines) && k <= j+3; k++ {
+		u := strings.TrimSpace(asciiLine(lines[k]))
+		if u == "" {
+			continue
+		}
+		return reRuleLine.MatchString(u)
+	}
+	return false
+}
 
 // asciiLine strips the SGML table markers from one line without changing its
 // column geometry, which the parser depends on. A marker is replaced by spaces of
@@ -63,15 +92,28 @@ func asciiSection(lines []string) (lo, hi, hdr int, status string) {
 		status = StatusNoMgmtTable
 		end := len(lines)
 		found := -1
+		depth := 0
 		for j := i + 1; j < end; j++ {
+			if reTxtTableOpen.MatchString(lines[j]) {
+				depth++
+			}
 			t := strings.TrimSpace(asciiLine(lines[j]))
-			if found < 0 && reTxtHeader.MatchString(t) {
+			if found < 0 && isAsciiHeader(lines, j) {
 				found = j
 				continue
 			}
-			if closesSection(t) {
+			// Inside a <TABLE> the short all-capitals lines are the caption's
+			// column labels, not headings: AnswerThink 1998 wraps its fourth
+			// column's header as "TERM AS" / "DIRECTOR" above the NAME / AGE /
+			// POSITION line, and reading "TERM AS" as a successor section closes
+			// MANAGEMENT one line before the table starts. A NAMED successor
+			// still closes it, so an unclosed <TABLE> cannot run away.
+			if closesSection(t) && (depth == 0 || reSectionEnd.MatchString(t)) {
 				end = j
 				break
+			}
+			if depth > 0 && reTxtTableClose.MatchString(lines[j]) {
+				depth--
 			}
 		}
 		if found >= 0 {
@@ -126,6 +168,16 @@ func asciiRows(lines []string, hdr, hi int) (rows []mgmtRow, bodyEnd int) {
 		// after it, a short line is a section label and a long one means the
 		// table has ended and the bios have started.
 		if len(rows) == 0 {
+			continue
+		}
+		// A line indented past the age column continues the row above it:
+		// Horizon Medical 1998 wraps its CEO's cell as "Director, Chairman of
+		// the Board and Chief" / "Executive Officer", and a position cell
+		// truncated there names no chief executive. A section label sits at the
+		// left margin, which is what separates the two.
+		if last := len(rows) - 1; anchor > 0 && rows[last].Label == "" &&
+			len(line)-len(strings.TrimLeft(line, " ")) > anchor {
+			rows[last].Position = strings.TrimSpace(rows[last].Position + " " + t)
 			continue
 		}
 		if len(t) <= 70 && !strings.HasSuffix(t, ".") {
