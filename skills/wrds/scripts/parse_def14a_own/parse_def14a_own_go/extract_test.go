@@ -2850,3 +2850,37 @@ func TestFundFractionalSharesSurviveTheScreen(t *testing.T) {
 		t.Errorf("shares: %+v", r.Shares)
 	}
 }
+
+// The D&O group label WRAPS over two grid rows: the first carries the numbers and
+// the head of the label ("All directors & executive"), the row under it carries
+// the tail and no numbers at all ("officers as a group (7 persons)"). Neither half
+// reads as a collective label on its own, so the filing lost its group row and its
+// 20.3%. Transcribed from 0001019687-05-000788.
+const wrappedGroupLabelDOMHTML = `<html><body>
+<p><b>Security Ownership of Certain Beneficial Owners and Management</b></p>
+<table>
+<tr><th>Title of Class</th><th></th><th>Name of Beneficial Owner</th><th>Shares</th><th></th><th>Percent of Class</th></tr>
+<tr><td>Common</td><td></td><td>Jack Smith</td><td>1,200,000</td><td>(1)</td><td>5.5</td></tr>
+<tr><td>Common</td><td></td><td>Mary Jones</td><td>900,000</td><td>(2)</td><td>4.1</td></tr>
+<tr><td colspan="2">All directors &amp; executive</td><td></td><td>4,394,765</td><td>(9)</td><td>20.3</td></tr>
+<tr><td colspan="2">officers as a group (7 persons)</td><td></td><td></td><td></td><td></td></tr>
+</table></body></html>`
+
+func TestForwardWrappedGroupLabelInTheDOM(t *testing.T) {
+	rows := ScreenRows(run(t, wrappedGroupLabelDOMHTML))
+	var g *Row
+	for i := range rows {
+		if rows[i].IsGroupRow {
+			g = &rows[i]
+		}
+	}
+	if g == nil {
+		t.Fatalf("the forward-wrapped group label was lost: %+v", rows)
+	}
+	if g.Percent == nil || *g.Percent != 20.3 {
+		t.Errorf("group row percent: %+v", g.Percent)
+	}
+	if g.GroupN != 7 {
+		t.Errorf("group n: %d", g.GroupN)
+	}
+}
