@@ -294,29 +294,32 @@ func subjectIsThePerson(bio string, tokenStart int, name string) bool {
 // A coordination that begins where the founder's own object should have been:
 // "is a co-founder of, and has been Chief Executive Officer ... of Rallybio".
 var (
-	reGappedCoordination = regexp.MustCompile(`^,\s*and\b`)
+	reGappedCoordination = regexp.MustCompile(`^,?\s*and\b`)
 	reOfToken            = regexp.MustCompile(`(?i)\bof\b`)
 )
 
-// gappedReferent handles the elision three of Rallybio's bios are written with
+// gappedReferents handles the elision three of Rallybio's bios are written with
 // (0001193125-21-230254): the object of "co-founder of" is dropped and shared
-// with the clause coordinated onto it, so the referent sits at the LAST "of" of
-// the same sentence. It reports the text following that "of", and false when
-// nothing is elided — an object present right after the connector keeps the
-// route from reaching past it.
-func gappedReferent(rest string) (string, bool) {
+// with the clause coordinated onto it, so the referent sits at a LATER "of" of
+// the same sentence. Which one is not fixed — Context Therapeutics
+// (0001193125-21-303138) writes "is the Co-founder and Chief Executive Officer of
+// Context Therapeutics and member of our board of directors", where the last "of"
+// is "board of directors" — so every "of" in the sentence is a candidate and the
+// anchored issuer test decides. Nil when nothing is elided: an object present
+// right after the connector keeps the route from reaching past it.
+func gappedReferents(rest string) []string {
 	if !reGappedCoordination.MatchString(rest) {
-		return "", false
+		return nil
 	}
 	s := rest
 	if k := strings.Index(s, ". "); k >= 0 {
 		s = s[:k]
 	}
-	at := lastIndexOf(s, reOfToken)
-	if at < 0 {
-		return "", false
+	var out []string
+	for _, m := range reOfToken.FindAllStringIndex(s, -1) {
+		out = append(out, strings.TrimLeft(s[m[1]:], " \t\n\r"))
 	}
-	return strings.TrimLeft(s[at+len("of"):], " \t\n\r"), true
+	return out
 }
 
 // lastIndexOf is the start offset of re's LAST match in s, or -1.
@@ -374,11 +377,14 @@ func detectFounder(p Person, ref *issuerRef) (bool, string) {
 		after := p.Bio[m[1]:]
 		c := reFounderConnector.FindString(after)
 		rest := after[len(c):]
-		if g, ok := gappedReferent(rest); ok {
-			rest = g
+		cands := []string{rest}
+		if g := gappedReferents(rest); g != nil {
+			cands = g
 		}
-		if ref.namesIssuer(rest) && subjectIsThePerson(p.Bio, m[0], p.Name) {
-			return true, evidence(p.Bio, m[0], m[1])
+		for _, cand := range cands {
+			if ref.namesIssuer(cand) && subjectIsThePerson(p.Bio, m[0], p.Name) {
+				return true, evidence(p.Bio, m[0], m[1])
+			}
 		}
 	}
 	for _, m := range reFounderPossessive.FindAllStringIndex(p.Bio, -1) {
