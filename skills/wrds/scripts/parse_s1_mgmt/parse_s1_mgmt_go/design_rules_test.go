@@ -1225,6 +1225,68 @@ func TestRule7_AClosedPartnershipDoesNotFire(t *testing.T) {
 	}
 }
 
+// A bio that puts the person in a partner-grade role at a firm it never labels is
+// reachable only through the dictionary: Design rule 7 scopes every signal to the
+// person's OWN bio, and for these eight the words "venture capital" appear
+// nowhere in it — the label, when the filing carries one at all, sits in a
+// sibling director's bio, which is out of bounds.
+//
+// The dictionary lookup also has to respect word boundaries. "NEA" is how
+// 0001193125-07-233916 spells New Enterprise Associates throughout Peter
+// Barris's bio, and a bare substring search for a three-letter entry hits the
+// middle of any capitalised word that happens to contain it.
+//
+// Bios are quoted verbatim from the accession named on each line, and exercised
+// through detectVC because check_full.sh re-cuts every fixture from a source
+// filing this corpus does not hold.
+func TestRule7_TheDictionaryReachesAFirmTheBioNeverLabels(t *testing.T) {
+	positive := []struct{ accession, bio, firm string }{
+		{"0000950123-12-002923",
+			"Mr. Olivier has served on our board of directors since our inception in 1996. Mr. Olivier is a founding general partner of Oxford Bioscience Partners, one of the founders of Ceres. Mr. Olivier has been with Oxford Bioscience Partners since 1995.",
+			"Oxford Bioscience"},
+		{"0001193125-04-095529",
+			"Alan G. Walton, Ph.D., D.Sc. has served as a director of our company since March 2003. Dr. Walton joined Oxford Partners as a General Partner in 1987. In 1991, he founded Oxford Bioscience Partners and he is currently Senior Partner and Chairman of Oxford Bioscience Corporation.",
+			"Oxford Bioscience"},
+		{"0001193125-07-233916",
+			"Peter J. Barris. Mr. Barris has served as a Director since 2003. Mr. Barris is currently the Managing General Partner of NEA where he specializes in information technology investing. Mr. Barris has been with NEA since 1992, and he serves as either an executive officer or general partner of various NEA entities.",
+			"NEA"},
+		{"0001193125-11-313540",
+			"Tim Wilson has served on our board of directors since April 2004. As a Partner of Partech International, LLC since 2001, he serves on the boards of ACCO Semiconductor, Array Converter, Five9, Prysm Inc. (formerly Spudnik) and LEDEngin, Inc.",
+			"Partech"},
+		{"0001193125-11-313540",
+			"Amit Shah has served on our board of directors since April 2004. As a Managing Member of Artiman Management since 2000, he serves on the boards of Auryn Inc., Lightwire, Inc., Zyme Solutions, AbsolutelyNew, Inc., Guavus, Inc., and Motif, Inc.",
+			"Artiman"},
+		{"0001193125-19-040772",
+			"Gilbert H. Kliman, M.D. has served as a member of our board of directors since November 2015. Dr. Kliman is the Managing Director at InterWest Management Partners X, LLC, where he has led their medical device team since 1999.",
+			"InterWest Management Partners"},
+		{"0001193125-19-177602",
+			"Ran Nussbaum has served as a member of our board of directors since March 2018. Mr. Nussbaum is a managing partner and a co-founder of The Pontifax Group, or Pontifax, a group of Israel-based life sciences venture funds focusing on investments in development stage bio-pharmaceutical and med-tech technologies.",
+			"Pontifax"},
+		{"0001193125-21-231612",
+			"JeenJoo (JJ) Kang, Ph.D. has served as a member of our board of directors since August 2016. Dr. Kang has also served as a member of our compensation committee since December 2018, as a member of our audit committee since September 2019, and as our President, Treasurer and Secretary from August 2016 to June 2018. Dr. Kang has served as a Venture Partner at The Column Group since 2020, and prior to that served as an Associate beginning in 2015, then as a Partner from 2019 to 2020.",
+			"Column Group"},
+	}
+	for _, c := range positive {
+		t.Run("yes/"+c.firm, func(t *testing.T) {
+			ok, firm, ev := detectVC(c.bio)
+			if !ok {
+				t.Fatalf("%s: vc_affiliated = false, want true", c.accession)
+			}
+			if !containsFold(firm, c.firm) {
+				t.Errorf("%s: vc_firm = %q, want it to name %q (evidence %q)", c.accession, firm, c.firm, ev)
+			}
+		})
+	}
+
+	// Constructed, not quoted: the hazard a three-letter dictionary entry creates
+	// is a capitalised word with the entry in its middle, and "LINEAR" carries
+	// "NEA" at offset two.
+	probe := "Mr. Doe has served as a Managing Director of LINEAR Technology Corporation, a semiconductor company, since 2001."
+	if ok, firm, ev := detectVC(probe); ok {
+		t.Errorf("a dictionary entry matched mid-word: vc_affiliated = true (firm=%q evidence=%q)", firm, ev)
+	}
+}
+
 // ---------------------------------------------------------------------------
 // Rule 1, the ASCII path — the table's own header furniture
 // ---------------------------------------------------------------------------

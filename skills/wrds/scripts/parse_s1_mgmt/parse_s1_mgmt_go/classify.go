@@ -451,7 +451,7 @@ const ventureLeadWindow = 35
 // backed the IPOs in circulation, not every firm that ever existed.
 var vcFirms = []string{
 	"Accel", "Advanced Technology Ventures", "Alta Partners", "Andreessen Horowitz",
-	"ARCH Venture", "August Capital", "Austin Ventures", "Bain Capital Ventures",
+	"ARCH Venture", "Artiman", "August Capital", "Austin Ventures", "Bain Capital Ventures",
 	"Battery Ventures", "Benchmark", "Bessemer Venture", "Canaan Partners",
 	"Charles River Ventures", "Crosspoint Venture", "DAG Ventures", "Delphi Ventures",
 	"Domain Associates", "Draper Fisher Jurvetson", "El Dorado Ventures",
@@ -459,16 +459,45 @@ var vcFirms = []string{
 	"Foundation Capital", "Founders Fund", "Frazier Healthcare", "General Catalyst",
 	"GGV Capital", "Greylock", "Highland Capital Partners", "Hummer Winblad",
 	"Index Ventures", "Insight Partners", "Institutional Venture Partners",
-	"InterWest Partners", "Khosla Ventures", "Kleiner Perkins", "Lightspeed Venture",
+	"InterWest Management Partners", "InterWest Partners", "Khosla Ventures",
+	"Kleiner Perkins", "Lightspeed Venture",
 	"Matrix Partners", "Mayfield", "Menlo Ventures", "Meritech Capital",
-	"Mohr Davidow", "MPM Capital", "New Enterprise Associates", "Norwest Venture",
-	"Oak Investment Partners", "OrbiMed", "Polaris Venture", "Prospect Venture",
+	"Mohr Davidow", "MPM Capital", "NEA", "New Enterprise Associates",
+	"Norwest Venture", "Oak Investment Partners", "OrbiMed",
+	"Oxford Bioscience", "Partech", "Polaris Venture", "Pontifax",
+	"Prospect Venture",
 	"Redpoint Ventures", "Rho Ventures", "Scale Venture", "Sequoia Capital",
 	"Sevin Rosen", "Sierra Ventures", "Sigma Partners", "Sofinnova", "Spark Capital",
 	"Sprout Group", "Sutter Hill", "Technology Crossover Ventures",
-	"Technology Venture Investors", "Third Rock Ventures", "Thrive Capital",
+	"Technology Venture Investors", "The Column Group", "Third Rock Ventures",
+	"Thrive Capital",
 	"Trinity Ventures", "Union Square Ventures", "U.S. Venture Partners",
 	"Venrock", "Versant Ventures", "Walden International",
+}
+
+// firmInWindow finds the first dictionary firm named in window, on WORD
+// boundaries. A plain substring search is wrong for a short entry: "NEA" is how
+// 0001193125-07-233916 spells New Enterprise Associates throughout Peter
+// Barris's bio, and unanchored it also sits in the middle of "LINEAR".
+// The second return value is the offset in window just past the name.
+func firmInWindow(window string) (string, int) {
+	for _, f := range vcFirms {
+		for at := 0; ; {
+			i := strings.Index(window[at:], f)
+			if i < 0 {
+				break
+			}
+			i += at
+			end := i + len(f)
+			beforeOK := i == 0 || !isWordByte(window[i-1])
+			afterOK := end == len(window) || !isWordByte(window[end])
+			if beforeOK && afterOK {
+				return f, end
+			}
+			at = i + 1
+		}
+	}
+	return "", 0
 }
 
 // detectVC applies Design rule 7 and returns the flag, the firms it credits and
@@ -518,11 +547,8 @@ func detectVC(bio string) (bool, string, string) {
 		}
 		window := bio[m[1]:hi]
 		if !vcLeadIsPast(bio[:m[0]]) {
-			for _, f := range vcFirms {
-				if at := strings.Index(window, f); at >= 0 {
-					add(f, evidence(bio, m[0], m[1]+at+len(f)))
-					break
-				}
+			if f, end := firmInWindow(window); f != "" {
+				add(f, evidence(bio, m[0], m[1]+end))
 			}
 		}
 		// The same role window, but with the firm's own name as the label.
