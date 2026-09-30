@@ -72,7 +72,7 @@ function fixture(opts: { redCommand?: string; suites?: Record<string, string> } 
 
 function dispatch(f: { dir: string; plan: string }, ...extra: string[]) {
   try {
-    const stdout = execFileSync('bash', [SCRIPT, ...extra, f.plan], {
+    const stdout = execFileSync('bash', [SCRIPT, '--provider', 'claude', ...extra, f.plan], {
       encoding: 'utf8', cwd: f.dir, env: { ...process.env, WORK_DISPATCH_DRYRUN: '1' },
     })
     return { code: 0, out: stdout }
@@ -181,7 +181,7 @@ describe('the tier is BOUNDED and leaves nothing behind', () => {
     const bun = slowBun(f.dir)
     let r
     try {
-      const stdout = execFileSync('bash', [SCRIPT, f.plan], {
+      const stdout = execFileSync('bash', [SCRIPT, '--provider', 'claude', f.plan], {
         encoding: 'utf8', cwd: f.dir,
         env: { ...process.env, WORK_DISPATCH_DRYRUN: '1', WORK_SUITE_LINT_BUN: bun, WORK_SUITE_LINT_TIMEOUT: '2' },
         timeout: 60_000,
@@ -203,7 +203,7 @@ describe('the tier is BOUNDED and leaves nothing behind', () => {
     expect(before).toEqual([])
     const r = (() => {
       try {
-        return { code: 0, out: execFileSync('bash', [SCRIPT, f.plan], {
+        return { code: 0, out: execFileSync('bash', [SCRIPT, '--provider', 'claude', f.plan], {
           encoding: 'utf8', cwd: f.dir, env: { ...process.env, WORK_DISPATCH_DRYRUN: '1', TMPDIR: tmp },
         }) }
       } catch (e: any) { return { code: e.status ?? -1, out: (e.stdout ?? '') + (e.stderr ?? '') } }
@@ -222,7 +222,7 @@ describe('the tier is BOUNDED and leaves nothing behind', () => {
     chmodSync(tmp, 0o500)
     const r = (() => {
       try {
-        return { code: 0, out: execFileSync('bash', [SCRIPT, f.plan], {
+        return { code: 0, out: execFileSync('bash', [SCRIPT, '--provider', 'claude', f.plan], {
           encoding: 'utf8', cwd: f.dir, env: { ...process.env, WORK_DISPATCH_DRYRUN: '1', TMPDIR: tmp },
         }) }
       } catch (e: any) { return { code: e.status ?? -1, out: (e.stdout ?? '') + (e.stderr ?? '') } }

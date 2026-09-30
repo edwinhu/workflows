@@ -84,7 +84,7 @@ function priorResult(dir: string, name = 'result.json') {
 
 function run(plan: string, args: string) {
   try {
-    const stdout = execFileSync('bash', [SCRIPT, plan, args], { encoding: 'utf8' })
+    const stdout = execFileSync('bash', [SCRIPT, plan, args, '--provider', 'claude'], { encoding: 'utf8' })
     return { code: 0, stdout }
   } catch (e: any) {
     return { code: e.status ?? -1, stdout: (e.stdout ?? '') + (e.stderr ?? '') }
@@ -244,7 +244,7 @@ const FARM_STUB = (() => {
 function redispatch(plan: string, args: string, ...extra: string[]) {
   const env = { ...process.env, WORK_FARM: FARM_STUB, WORK_NO_SCOPE: '1' }
   try {
-    const stdout = execFileSync('bash', [SCRIPT, plan, args, '--dispatch', ...extra], { encoding: 'utf8', env })
+    const stdout = execFileSync('bash', [SCRIPT, plan, args, '--provider', 'claude', '--dispatch', ...extra], { encoding: 'utf8', env })
     return { code: 0, out: stdout }
   } catch (e: any) {
     return { code: e.status ?? -1, out: (e.stdout ?? '') + (e.stderr ?? '') }
@@ -254,7 +254,7 @@ function redispatch(plan: string, args: string, ...extra: string[]) {
 /** The dry run: every gate above, nothing on disk. */
 function dryRun(plan: string, args: string, ...extra: string[]) {
   try {
-    const stdout = execFileSync('bash', [SCRIPT, plan, args, '--dispatch', ...extra], {
+    const stdout = execFileSync('bash', [SCRIPT, plan, args, '--provider', 'claude', '--dispatch', ...extra], {
       encoding: 'utf8', env: { ...process.env, WORK_REDISPATCH_DRYRUN: '1' },
     })
     return { code: 0, out: stdout }

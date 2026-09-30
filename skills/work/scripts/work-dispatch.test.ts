@@ -69,7 +69,7 @@ function fixture(opts: { redCommand: string; extraArgs?: Record<string, unknown>
 /** Dispatch, stopped short of the goal self-send and the farm-out. The probe still runs. */
 function dispatch(f: { dir: string; plan: string }, ...extra: string[]) {
   try {
-    const stdout = execFileSync('bash', [SCRIPT, ...extra, f.plan], {
+    const stdout = execFileSync('bash', [SCRIPT, '--provider', 'claude', ...extra, f.plan], {
       encoding: 'utf8', cwd: f.dir, env: { ...process.env, WORK_DISPATCH_DRYRUN: '1' },
     })
     return { code: 0, out: stdout }
@@ -90,7 +90,7 @@ describe('the goal names the round budget work actually enforces', () => {
    * the goal is otherwise sent as the last act of a real dispatch, where a test cannot observe it.
    */
   function goalOf(f: { dir: string; plan: string }, env: Record<string, string> = {}) {
-    return execFileSync('bash', [SCRIPT, f.plan], {
+    return execFileSync('bash', [SCRIPT, '--provider', 'claude', f.plan], {
       // BOTH seams, deliberately. WORK_GOAL_PRINT is what this test exercises; WORK_DISPATCH_DRYRUN
       // is the backstop. Observed 2026-08-27: while WORK_GOAL_PRINT was still RED, these three
       // tests fell through to a FULL dispatch — a real farm-out against a /tmp fixture, agents paid
