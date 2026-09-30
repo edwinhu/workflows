@@ -16,7 +16,7 @@
 #   work-dispatch.sh --no-mech-probe  skip only the mechanical baseline probe; keep plan-lint
 #   work-dispatch.sh --no-suite-lint  skip only the suite-lint report; keep every gate
 #   work-dispatch.sh --run-dir DIR    put args/result/log under DIR/<run-id> instead of $PWD/.work/
-#   work-dispatch.sh --provider claude|codex|gemini  the whole spine's provider (default claude)
+#   work-dispatch.sh --provider claude|codex|gemini  the whole spine's provider (required)
 #   work-dispatch.sh --no-cron        do NOT print the CronCreate call; the farm-runs plugin monitor
 #                                      becomes the only wake (and it dies with the session)
 #   work-dispatch.sh --cron           accepted no-op alias — the cron is the default

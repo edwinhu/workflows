@@ -96,7 +96,7 @@ function fixture(extraArgs: Record<string, unknown> = {}) {
  */
 function dispatch(f: { dir: string; plan: string }, env: Record<string, string>, ...extra: string[]) {
   try {
-    const out = execFileSync('bash', [SCRIPT, ...extra, f.plan], {
+    const out = execFileSync('bash', [SCRIPT, '--provider', 'claude', ...extra, f.plan], {
       encoding: 'utf8',
       timeout: 120_000,
       cwd: f.dir,
@@ -188,7 +188,7 @@ describe('--loops N > 0 hands the driver off DETACHED instead of printing', () =
     const f = fixture()
     const log = join(f.dir, 'caller.log')
     const pgid = execFileSync('bash', ['-c',
-      `setsid bash -c 'bash "$0" --loops 1 "$1" > "$2" 2>&1' "$1" "$2" "$3" & echo $!`,
+      `setsid bash -c 'bash "$0" --provider claude --loops 1 "$1" > "$2" 2>&1' "$1" "$2" "$3" & echo $!`,
       '_', SCRIPT, f.plan, log,
     ], {
       encoding: 'utf8',

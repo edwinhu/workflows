@@ -390,7 +390,7 @@ afterAll(() => dirs.forEach(d => rmSync(d, { recursive: true, force: true })))
 
 function dispatch(f: { dir: string; plan: string }) {
   try {
-    const stdout = execFileSync('bash', [DISPATCH, f.plan], {
+    const stdout = execFileSync('bash', [DISPATCH, '--provider', 'claude', f.plan], {
       encoding: 'utf8', cwd: f.dir, env: { ...process.env, WORK_DISPATCH_DRYRUN: '1' },
     })
     return { code: 0, out: stdout }

@@ -31,7 +31,7 @@ const DISPATCH = join(import.meta.dir, 'work-dispatch.sh')
 const SKILL_MD = join(import.meta.dir, '..', 'SKILL.md')
 const REPO = join(import.meta.dir, '..', '..', '..')
 
-const dispatchSrc = () => readFileSync(DISPATCH, '--provider', 'claude', 'utf8')
+const dispatchSrc = () => readFileSync(DISPATCH, 'utf8')
 
 /** The header block: everything before `set -uo pipefail`, which is where the usage lives. */
 function usageHeader(src: string): string {
