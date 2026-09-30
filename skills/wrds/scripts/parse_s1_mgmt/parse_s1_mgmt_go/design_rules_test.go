@@ -1176,6 +1176,13 @@ func TestRule7_AClosedPartnershipDoesNotFire(t *testing.T) {
 			"Dr. Yamanaka is currently a Principal at venBio Partners LLC, a life sciences investment firm, which she joined in August 2016. From May 2015 to August 2016, Dr. Yamanaka was an Associate on the venture creation team at Flagship Pioneering, a venture capital firm focused on building innovative life sciences companies."},
 		{"0001193125-12-126304", "the closed range follows the appositive, not precedes it",
 			"Mr. Maudlin served as a managing partner of Medical Innovation Partners, a venture capital firm from 1989 through 2007 and as President of its management company since 1985. Mr. Maudlin has served as a director of Sucampo Pharmaceuticals, Inc., a NASDAQ-listed pharmaceutical company since September 2006."},
+		// The same bio with the sentence that precedes it in the filing. The
+		// dictionary route's nearest role anchor is then the bare "member" of "a
+		// member of its compensation committee", 60-odd bytes ahead of the firm,
+		// which leaves the closed range outside the route's 110-byte window — so
+		// the range has to be read off the bio rather than off the window.
+		{"0001193125-12-126304", "the closed range falls outside the role window",
+			"Mr. Maudlin also serves as a director of Newegg, Inc., one of the largest online-only retailers in the United States, and is the Chairperson of its audit and governance committees and a member of its compensation committee. Mr. Maudlin served as a managing partner of Medical Innovation Partners, a venture capital firm from 1989 through 2007 and as President of its management company since 1985."},
 		{"0001193125-19-040772", "the dictionary route read a role the bio marks previous",
 			"Dr. Lu previously served as a Managing Director at OrbiMed Advisors, LLC in Asia from 2011 to 2016. Prior to her work at OrbiMed, Dr. Lu spent more than five years at Piper Jaffray & Co. as an equity analyst."},
 	}
@@ -1291,6 +1298,19 @@ func TestRule7_TheDictionaryReachesAFirmTheBioNeverLabels(t *testing.T) {
 		{"0001193125-21-231612",
 			"JeenJoo (JJ) Kang, Ph.D. has served as a member of our board of directors since August 2016. Dr. Kang has also served as a member of our compensation committee since December 2018, as a member of our audit committee since September 2019, and as our President, Treasurer and Secretary from August 2016 to June 2018. Dr. Kang has served as a Venture Partner at The Column Group since 2020, and prior to that served as an Associate beginning in 2015, then as a Partner from 2019 to 2020.",
 			"Column Group"},
+		// Integ 1996: these two bios name their firm only by the abbreviation the
+		// SIBLING bio defines. Knudson's bio writes 'Medical Innovation Partners
+		// II, a Limited Partnership ("MIP II")' and calls the family "early stage
+		// venture/seed capital partnerships"; Nickoloff's and Maudlin's own bios
+		// carry the letters and nothing else, so rule 7 leaves only the
+		// dictionary. Same shape as "NEA" above, and it needs the same word
+		// boundaries: the corpus writes "MIP" inside uuencoded attachments.
+		{"0000950131-96-003098",
+			"Robert S. Nickoloff has been a director of the Company since its inception. Mr. Nickoloff is a General Partner of MIP and MIP II, where he has been active in the formation and financing of start-up medical device and service companies since 1987. He has served as Chairman of the Board of Governors of the University of Minnesota Hospital and Clinic and is a director of Green Tree Financial Corporation, Minnesota Power and Light Co. and Northeast Venture Development Fund.",
+			"MIP"},
+		{"0000950131-96-003098",
+			"Timothy I. Maudlin has been a director of the Company since its inception. Mr. Maudlin is the Managing General Partner of MIP and MIP II. He has been active in the formation, management, financing, and development of seed and start-up medical technology and service companies since 1982. Mr. Maudlin is currently a director of Diametrics, IVI Publishing, Inc., an interactive multimedia publisher of health and medical titles, and Curative Health Services, Inc., a health care services company.",
+			"MIP"},
 	}
 	for _, c := range positive {
 		t.Run("yes/"+c.firm, func(t *testing.T) {
@@ -1310,6 +1330,13 @@ func TestRule7_TheDictionaryReachesAFirmTheBioNeverLabels(t *testing.T) {
 	probe := "Mr. Doe has served as a Managing Director of LINEAR Technology Corporation, a semiconductor company, since 2001."
 	if ok, firm, ev := detectVC(probe); ok {
 		t.Errorf("a dictionary entry matched mid-word: vc_affiliated = true (firm=%q evidence=%q)", firm, ev)
+	}
+
+	// Constructed: "MIP" is the second three-letter entry, and the word it sits
+	// at the head of is a real semiconductor issuer.
+	probe = "Ms. Roe has served as a General Partner of MIPS Technologies, Inc., a semiconductor design company, since 2001."
+	if ok, firm, ev := detectVC(probe); ok {
+		t.Errorf("a dictionary entry matched a longer word: vc_affiliated = true (firm=%q evidence=%q)", firm, ev)
 	}
 }
 

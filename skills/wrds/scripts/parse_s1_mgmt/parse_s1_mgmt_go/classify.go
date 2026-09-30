@@ -487,7 +487,12 @@ var vcFirms = []string{
 	"Index Ventures", "Insight Partners", "Institutional Venture Partners",
 	"InterWest Management Partners", "InterWest Partners", "Khosla Ventures",
 	"Kleiner Perkins", "Lightspeed Venture",
-	"Matrix Partners", "Mayfield", "Menlo Ventures", "Meritech Capital",
+	"Matrix Partners", "Mayfield", "Medical Innovation Partners", "Menlo Ventures", "Meritech Capital",
+	// Integ 1996 (0000950131-96-003098) spells the firm out once, in Knudson's
+	// bio, and Nickoloff's and Maudlin's bios carry only the abbreviation the
+	// filing defines there — a sibling bio, so out of bounds under rule 7. Same
+	// case as "NEA", and the same word-boundary hazard: "MIPS Technologies".
+	"MIP",
 	"Mohr Davidow", "MPM Capital", "NEA", "New Enterprise Associates",
 	"Norwest Venture", "Oak Investment Partners", "OrbiMed",
 	"Oxford Bioscience", "Partech", "Polaris Venture", "Pontifax",
@@ -575,7 +580,11 @@ func detectVC(bio string) (bool, string, string) {
 		window := bio[m[1]:hi]
 		if !vcLeadIsPast(bio[:m[0]]) {
 			if f, end := firmInWindow(window); f != "" {
-				add(f, evidence(bio, m[0], m[1]+end))
+				// The tail is read off the whole bio, not off window: the
+				// 110-byte window routinely truncates the range mid-word.
+				if !closedRangeAfterFirm(bio[m[1]+end:]) {
+					add(f, evidence(bio, m[0], m[1]+end))
+				}
 			} else if sent := roleSentence(bio[:m[0]]); !isPastLead(sent) {
 				// The firm can be named BEFORE the role, in the same sentence:
 				// "Dr. Roberts joined Venrock, a venture capital investment
@@ -620,6 +629,30 @@ func detectVC(bio string) (bool, string, string) {
 		return false, "", ""
 	}
 	return true, strings.Join(firms, "; "), ev[0]
+}
+
+// closedRangeAfterFirm reports whether a closed date range opens immediately
+// after a firm name the dictionary matched, optionally across the appositive
+// that labels it. The two appositive routes read the same range off the far side
+// of their own match; the dictionary route anchors on the firm, so the label sits
+// between it and the dates: "a managing partner of Medical Innovation Partners,
+// a venture capital firm from 1989 through 2007" (0001193125-12-126304).
+//
+// The range has to open right there. A later clause in the same sentence is not
+// the same claim — "a Venture Partner at The Column Group since 2020, and prior
+// to that served as an Associate beginning in 2015, then as a Partner from 2019
+// to 2020" closes out a JUNIOR seat and holds the partnership (0001193125-21-231612).
+func closedRangeAfterFirm(tail string) bool {
+	if reVCClosedRangeTail.MatchString(tail) {
+		return true
+	}
+	for _, re := range []*regexp.Regexp{reVCAppositive, reVCAppositiveWide} {
+		if m := re.FindStringIndex(tail); m != nil && m[0] == 0 &&
+			reVCClosedRangeTail.MatchString(tail[m[1]:]) {
+			return true
+		}
+	}
+	return false
 }
 
 // firmBefore reads the firm name off the text immediately before a
