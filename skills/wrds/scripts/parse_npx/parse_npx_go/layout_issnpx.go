@@ -3496,6 +3496,20 @@ func issResolveFund(ix *issSeriesIndex, banner string) (string, *SeriesDecl) {
 			return banner, alt
 		}
 	}
+	// Both dictionary rungs above refuse a spelling the registrant adopted
+	// AFTER this period, which is right where the question is what a name means
+	// today -- and wrong where the banner IS that later name and the chain
+	// reached a sibling by cutting a word. KraneShares Trust's 20220630 report
+	// heads a section `KraneShares Global Carbon Transformation ETF`, a sleeve
+	// its header does not declare at all and whose only dictionary row is
+	// 20230630, and the tolerance reaches the `Global Carbon Strategy ETF`
+	// section of this same filing. Displaces an INEXACT answer only, so nothing
+	// the filing itself spells is disturbed (family MISLINK32).
+	if outer && d != nil && !issBannerDeclaredExactAs(ix, guard, d) {
+		if alt := icrLateExactDictDecl(ix, guard); alt != nil && alt.SeriesID != d.SeriesID {
+			return banner, alt
+		}
+	}
 	// Nothing above reached it: the banner may be a declared name printed with a
 	// retail brand word in front of it and a generic type noun behind it. Last
 	// of all, and only for a heading the whole chain leaves blank.

@@ -1288,16 +1288,101 @@ func icrResolveFundShared(ix *issSeriesIndex, name string) string {
 	// since a series id is a link key and must never be guessed more loosely
 	// than it already is.
 	dictID := icrResolveFundDictChain(ix, name)
+	ans := dictID
 	if hdrOnlyID != "" && dictID != hdrOnlyID && !issBannerDeclaredExact(ix, name) &&
 		!icrDictAccountsBetter(ix, name, hdrOnlyID, dictID) {
-		return hdrOnlyID
+		ans = hdrOnlyID
+	} else if dictID == "" {
+		// Nothing the dictionary knows answers this banner either, so the
+		// inexact header-chain answer held back above is the best evidence
+		// there is.
+		ans = hdrOnlyID
 	}
-	if dictID != "" {
-		return dictID
+	// LAST: nothing above spelled the banner for this period, and the answer
+	// they reached is a tolerance rung's. A LATER vintage of this registrant's
+	// own dictionary does spell it, for one sleeve and one only -- the sleeve
+	// that was renamed INTO the banner -- so the section is that sleeve's and
+	// the near miss is a different fund of the same house. See
+	// icrLateExactDictName for what the rung refuses.
+	if ans != "" && !issBannerDeclaredExact(ix, name) {
+		if late := icrLateExactDictDecl(ix, name); late != nil && late.SeriesID != ans {
+			return late.SeriesID
+		}
 	}
-	// Nothing the dictionary knows answers this banner either, so the inexact
-	// header-chain answer held back above is the best evidence there is.
-	return hdrOnlyID
+	return ans
+}
+
+// icrLateExactDictDecl is the ONE series of THIS registrant whose own
+// dictionary spells the banner EXACTLY, at a vintage the filing could not yet
+// have known. `cik_series.tsv` is a history, not a snapshot: a sleeve renamed
+// after this period still carries the new name, stamped with the period that
+// declared it, and a banner spelled exactly that way names the sleeve that TOOK
+// the name -- not whichever sibling a tolerance rung reaches by cutting a word
+// out of the banner. Pax World Funds Series Trust I's 20100630 report heads a
+// section `Pax World Global Women's Equality Fund`, S000019419's 20110630 name,
+// for a header that still declares that sleeve as `Pax World Women's Equity
+// Fund`, and every rung that can read the banner lands on the sibling
+// S000021458, which the same filing reports under its own banner
+// (family MISLINK32).
+//
+// It is the LAST rung and refuses everything short of certainty, because a
+// series id is a link key:
+//
+//   - The candidate is the banner as printed, or -- since one vendor prints the
+//     banner behind its own field label (`Fund Name : <name>`) -- what follows a
+//     colon in it. Each candidate must equal a dictionary name IN FULL: nothing
+//     is stemmed, cut or widened.
+//   - A candidate ANY contemporaneous evidence spells -- a header declaration,
+//     or a dictionary row at or before the period -- is not this rung's case at
+//     all and refuses outright rather than being weighed. An exact answer for
+//     the period wins wherever there is one.
+//   - A name more than one of the registrant's own sleeves later took answers
+//     nothing, the refusal every name index here makes on a collision.
+//   - Only this CIK's rows are read, so nothing here can move a vote onto
+//     another registrant's fund.
+func icrLateExactDictDecl(ix *issSeriesIndex, banner string) *SeriesDecl {
+	dict := issIndexDict(ix)
+	if dict == nil || ix.cik == "" || len(ix.period) != 8 {
+		return nil
+	}
+	if d := icrLateExactDictKey(ix, dict, banner); d != nil {
+		return d
+	}
+	for i := strings.IndexByte(banner, ':'); i >= 0 && i+1 < len(banner); {
+		if d := icrLateExactDictKey(ix, dict, banner[i+1:]); d != nil {
+			return d
+		}
+		next := strings.IndexByte(banner[i+1:], ':')
+		if next < 0 {
+			break
+		}
+		i += next + 1
+	}
+	return nil
+}
+
+// icrLateExactDictKey is icrLateExactDictDecl for one candidate spelling.
+func icrLateExactDictKey(ix *issSeriesIndex, dict *cikSeries, cand string) *SeriesDecl {
+	key := normalizeSeriesName(cand)
+	if key == "" || issBannerDeclaredExactSeries(ix.hdrOnly, cand) != nil {
+		return nil
+	}
+	var hit *SeriesDecl
+	own := dict.byCIK[ix.cik]
+	for i := range own {
+		x := &own[i]
+		if x.SeriesID == "" || normalizeSeriesName(x.Name) != key {
+			continue
+		}
+		if len(x.DeclDate) != 8 || x.DeclDate <= ix.period {
+			return nil
+		}
+		if hit != nil && hit.SeriesID != x.SeriesID {
+			return nil
+		}
+		hit = x
+	}
+	return hit
 }
 
 // icrResolveFundDictChain is the dictionary-aware half of icrResolveFundShared:
