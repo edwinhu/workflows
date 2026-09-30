@@ -71,6 +71,18 @@ func coreKey(s string) (string, int) {
 var reBioLeadIn = regexp.MustCompile(
 	`^((?:[A-Z][A-Za-z.'\x{2019}-]*\s*){1,4})\.\s+(?:Mr|Ms|Mrs|Dr|Prof|His|Her)\b`)
 
+// reBareHonorificLeadIn matches the pre-2000 convention's other opening: no name
+// at all, just the honorific and the surname. Object Design 1996 writes every
+// bio in its section that way — "Mr. Bay has been a director of the Company
+// since 1988." — so none of the name-bearing routes can see any of them
+// (0000950135-96-002496).
+//
+// It is the last route tried, and it can only claim a person who has no bio yet,
+// which is what keeps a CONTINUATION block opening "Mr. Bay served as interim
+// President" on Bay rather than reassigning it.
+var reBareHonorificLeadIn = regexp.MustCompile(
+	`^(?:Mr|Ms|Mrs|Dr|Prof)\.\s+((?:[A-Z][A-Za-z.'\x{2019}-]*\s+){0,2}[A-Z][A-Za-z'\x{2019}-]+)`)
+
 // attachBios assigns each prose block to a person and writes the joined text
 // back into persons. blocks must already be in document order and confined to
 // the MANAGEMENT section.
@@ -91,7 +103,6 @@ func attachBios(persons []Person, blocks []string) {
 		}
 	}
 	parts := make([][]string, len(persons))
-	current := -1
 
 	// A name split across two blocks is rejoined before matching: the first
 	// block is a strict prefix of some person's key and carries nothing else.
@@ -108,27 +119,54 @@ func attachBios(persons []Person, blocks []string) {
 		joined = append(joined, b)
 	}
 
-	for _, b := range joined {
-		if who := matchPerson(b, keys, cores, surnames, parts); who >= 0 {
+	owner := make([]int, len(joined))
+	for i := range owner {
+		owner[i] = -1
+	}
+	assignBlocks(joined, owner, keys, cores, surnames, parts, false)
+	// The bare-honorific route runs only as a SECOND pass, over the blocks the
+	// name-bearing routes left unclaimed and only for people they left without a
+	// bio. Run in one pass it is too early: Instacart prints a footnote cell
+	// reading "Mr. Gupta has been appointed to serve as a member of our board of
+	// directors" inside the table itself, which would claim Gupta before his real
+	// bio further down the section ever gets the chance
+	// (0001193125-23-237900).
+	if !allHaveBio(parts) {
+		assignBlocks(joined, owner, keys, cores, surnames, parts, true)
+	}
+
+	for i := range persons {
+		persons[i].Bio = norm(strings.Join(parts[i], " "))
+	}
+}
+
+// assignBlocks walks the section's prose in document order and files each block
+// under a person. owner records which person claimed each block, so a later pass
+// can tell an unclaimed block from one already spent.
+func assignBlocks(joined []string, owner []int, keys, cores, surnames []string, parts [][]string, honorific bool) {
+	current := -1
+	for i, b := range joined {
+		if owner[i] >= 0 {
+			continue
+		}
+		if who := matchPerson(b, keys, cores, surnames, parts, honorific); who >= 0 {
 			current = who
 			parts[who] = append(parts[who], b)
+			owner[i] = who
 			continue
 		}
 		// A heading is not prose. Once every person has a bio the next heading
 		// is where the bios stop and the section's sub-parts begin.
 		if headingShaped(b) {
 			if allHaveBio(parts) {
-				break
+				return
 			}
 			continue
 		}
 		if current >= 0 {
 			parts[current] = append(parts[current], b)
+			owner[i] = current
 		}
-	}
-
-	for i := range persons {
-		persons[i].Bio = norm(strings.Join(parts[i], " "))
 	}
 }
 
@@ -150,7 +188,7 @@ func isPartialName(key string, keys []string) bool {
 //
 // The three routes are tried in order of how much of the name they insist on, so
 // a relaxation can only claim a block the stricter route left unclaimed.
-func matchPerson(block string, keys, cores, surnames []string, parts [][]string) int {
+func matchPerson(block string, keys, cores, surnames []string, parts [][]string, honorific bool) int {
 	key := nameKey(block)
 	best := -1
 	for i, k := range keys {
@@ -177,11 +215,24 @@ func matchPerson(block string, keys, cores, surnames []string, parts [][]string)
 			return best
 		}
 	}
-	m := reBioLeadIn.FindStringSubmatch(block)
-	if m == nil {
+	if m := reBioLeadIn.FindStringSubmatch(block); m != nil {
+		if best = bySurname(nameKey(m[1]), surnames, parts); best >= 0 {
+			return best
+		}
+	}
+	if !honorific {
 		return -1
 	}
-	lead := nameKey(m[1])
+	if m := reBareHonorificLeadIn.FindStringSubmatch(block); m != nil {
+		return bySurname(nameKey(m[1]), surnames, parts)
+	}
+	return -1
+}
+
+// bySurname reports which person without a bio yet the lead-in's trailing
+// surname belongs to, preferring the longest surname it ends with.
+func bySurname(lead string, surnames []string, parts [][]string) int {
+	best := -1
 	for i, sn := range surnames {
 		if sn == "" || len(parts[i]) > 0 || !strings.HasSuffix(lead, sn) {
 			continue

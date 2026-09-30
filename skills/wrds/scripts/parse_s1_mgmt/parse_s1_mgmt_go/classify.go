@@ -397,8 +397,22 @@ var (
 	// Venrock Associates" and "From September 1991 to the present, Mr. Tai has
 	// been a general partner of the Walden Group of Venture Capital Funds" are
 	// both present-tense partnerships written date-first.
-	reVCPastLead = regexp.MustCompile(`(?i)\b(?:previously|formerly|until|was|prior\s+to)\b|` +
-		`\bfrom\s+(?:[A-Z][a-z]+\s+)?[0-9]{4}\s+(?:to|until|through)\s+(?:[A-Z][a-z]+\s+)?[0-9]{4}\b`)
+	reVCPastWord = regexp.MustCompile(`(?i)\b(?:previously|formerly|until|was|prior\s+to)\b`)
+
+	// The date-first form of the same thing, read through isPastLead so a
+	// present-perfect verb can override it.
+	reVCPastRange = regexp.MustCompile(
+		`(?i)\bfrom\s+(?:[A-Z][a-z]+\s+)?[0-9]{4}\s+(?:to|until|through)\s+(?:[A-Z][a-z]+\s+)?[0-9]{4}\b`)
+
+	// "has been" / "have been" / the filing's own "has a been" typo. A closed
+	// range whose end year is the year the prospectus was FILED is not a closed
+	// partnership, and the corpus says so with the verb: "From 1984 to 1996, Mr.
+	// Marks has been a General Partner of New Enterprise Associates, a venture
+	// capital firm" in a 1996 filing (0000950135-96-002496). The range is read
+	// against the verb rather than against the filing date because the date is
+	// not in scope here, and because a range the bio itself closes out uses the
+	// simple past ("was", "served"), which the word alternative already catches.
+	rePresentPerfect = regexp.MustCompile(`(?i)\b(?:has|have)\b(?:\s+[a-z]+){0,2}\s+been\b`)
 
 	// The pre-2000 fallback: a partner-grade role at a firm the dictionary knows.
 	// eBay 1998 carries no appositive anywhere in its MANAGEMENT section, so
@@ -562,7 +576,7 @@ func detectVC(bio string) (bool, string, string) {
 		if !vcLeadIsPast(bio[:m[0]]) {
 			if f, end := firmInWindow(window); f != "" {
 				add(f, evidence(bio, m[0], m[1]+end))
-			} else if sent := roleSentence(bio[:m[0]]); !reVCPastLead.MatchString(sent) {
+			} else if sent := roleSentence(bio[:m[0]]); !isPastLead(sent) {
 				// The firm can be named BEFORE the role, in the same sentence:
 				// "Dr. Roberts joined Venrock, a venture capital investment
 				// firm, in 1997, where he serves as partner". The forward window
@@ -582,7 +596,7 @@ func detectVC(bio string) (bool, string, string) {
 		if len(lead) > ventureLeadWindow {
 			lead = lead[len(lead)-ventureLeadWindow:]
 		}
-		if reVCPastLead.MatchString(lead) {
+		if isPastLead(lead) {
 			continue
 		}
 		firm, end := ventureFirmAfter(window)
@@ -661,7 +675,16 @@ func vcAppositiveLeadOK(lead string) bool {
 // Inc., a venture capital firm, in 2007 and is a General Partner" and
 // "all entities affiliated with Canaan Partners, a venture capital firm", where
 // the role sits on the far side of the name.
-func vcLeadIsPast(lead string) bool { return reVCPastLead.MatchString(vcLead(lead)) }
+func vcLeadIsPast(lead string) bool { return isPastLead(vcLead(lead)) }
+
+// isPastLead reports whether the text puts the affiliation in the past. A closed
+// date range says so only when no present-perfect verb contradicts it.
+func isPastLead(s string) bool {
+	if reVCPastWord.MatchString(s) {
+		return true
+	}
+	return reVCPastRange.MatchString(s) && !rePresentPerfect.MatchString(s)
+}
 
 // roleSentence is the sentence the role sits in, from its first word up to the
 // role itself. It is vcLead without the byte cap, and only the firm dictionary's
