@@ -972,3 +972,141 @@ its conclusion, not an accident of it — the ceilings were driving work against
 that should not be deleted. The 316 identical rows that remain are real over-emission
 and are the honest residue; whether to tighten 0.01 toward that residue is a threshold
 question for a future round and is NOT decided here.
+
+---
+
+## 11. AMENDMENT — 2026-09-29, the REGRESSION round (setup)
+
+### 11.1 Why
+
+The duplicate round closed on a trade. The full-archive re-run at `092b6fb9`
+(`~/projects/r2000/scratch/def14a_full_run2.md`, 207,912 filings, same filelist and
+shard plan as the `4b36a962` run, hashed equal) cut the identical-row duplicate rate
+**0.0190 → 0.0028** and lifted panel yield **0.8454 → 0.8486**, and lost recall that
+no gate could see:
+
+```
+filings with >=1 row at 4b36a962 and ZERO rows at 092b6fb9   1,070   (0.51% of 207,912)
+filings that LOST a D&O group row                            1,181
+  the group rows themselves                                  1,618   (176 carry a percent, 1,442 do not)
+```
+
+The zero-row losses cluster in **2002-2006 (58/96/96/145/85) and 2018 (53)** — the
+layouts the duplicate rounds changed. The eight existing gates read gold-linked
+filings (blockw 1996-2001, FactSet, ISS 2002-2024) or the fixed sample, and the
+regression is invisible to all of them: this setup's own baseline run confirms that
+every one of the eight still passes while 1,070 filings parse to nothing.
+
+### 11.2 The ruler: a FIXED panel diff, built once and locked
+
+`gold/build_regress_set.py` → `gold/gold_regress.tsv`, **1,893 candidate filings**,
+one row per filing with the flags that define membership. Join-audited against both
+panels (E3): old 207,912, new 207,912, matched 207,912, old-only 0, new-only 0 — the
+builder aborts otherwise, because a diff over a subset is not this regression.
+
+```
+$ python3 gold/build_regress_set.py
+[join] old=207912 new=207912 matched=207912 old_only=0 new_only=0
+[set] candidates: (a) zero-row 1070 ; (b) group-row 1181 ; union 1893
+[in ] old rows in candidate filings: 38136
+       cand_a 1070   cand_b 1181   candidates 1893
+       excl_x1 96    excl_x2 58    excl_both 4   excl_any 150
+       excl_from_a 137   excl_from_b 23
+       set_a 933     set_b_gated 83   set_b_diag 1075   set_a_and_b_gated 22
+[out] /data/def14a_own/gold/regress_filelist.tsv: 1893 filings
+[out] /data/def14a_own/gold/round_filelist.tsv: 22856 filings
+```
+
+Deterministic (E1/E4): re-run, `sha256sum -c` over all four outputs → 4 OK.
+`gold_regress.tsv` is in `lock.sha256`, now **10** files.
+
+`round_filelist.tsv` is now the THREE-way union and `build_regress_set.py` is its
+single writer; `sample_full_archive.py` no longer writes it (two writers of one
+filelist is a file that can disagree with itself about what a round parses).
+
+### 11.3 The exclusion rule — stated, mechanical, and checked against documents
+
+Applied to the OLD rows of a candidate filing. Both clauses mean "the old rows were
+demonstrably wrong, so restoring them is not a target".
+
+| clause | rule | filings |
+|---|---|---:|
+| **X1** | ≥ 1 old row whose `holder_name` contains `$` | 96 |
+| **X2** | ≥ 3 old rows, all carrying the identical `(shares, percent)` pair | 58 |
+| both | | 4 |
+| **excluded** | X1 ∪ X2 | **150** (137 out of set (a), 23 out of set (b)) |
+
+Five documents read to check it, all pulled from `/wrds/sec/archives`:
+
+| accession | what the old parser emitted | what the document is |
+|---|---|---|
+| `0001193125-12-089540` | 13 trustees, each `shares=100000`, no percent | Pacholder 2012 `Dollar Range of Fund Shares Beneficially Owned` — every cell reads "Over $100,000" |
+| `0000875626-06-000515` | `Thomas R. $10,001-$50,000 $0` → `100000` | First Trust 2006 `AGGREGATE DOLLAR RANGE OF EQUITY SECURITIES` |
+| `0000891554-99-000468` | `President/CEO - Union National Bank 1996 $166,500 $38,295 [3]` → `13936` | Univest 1999 SUMMARY COMPENSATION TABLE (13,936 is All Other Compensation, in dollars) |
+| `0000930413-02-002213` | 10 trustees, each `shares=0` | Third Avenue 2002 dollar-range table, every cell `$0*` |
+| `0000950116-02-000782` | 6 directors, each `100000` | Lincoln National Income Fund 2002 — read "over $100,000" while the real `Shares of Common Stock Beneficially Owned` column (22,887 / 3,672 / 4,100 …) went unread |
+
+**A wider rule was considered and REJECTED by a document.** "The old parse emitted no
+percent anywhere" would have excluded **980 of the 1,070** — but GE 2013
+`0001206774-13-001019` has no percent anywhere and its old rows are the real table:
+`As a group (27) | 24,040,027 | 40,202,945` and `BlackRock | 583,104,477`, with the
+document stating "No director or named executive owns more than 1%". Share-count-only
+ownership tables are therefore KEPT in set (a). This is why the exclusion is 150 and
+not 980.
+
+### 11.4 Thresholds — fixed BEFORE the loop
+
+| metric | kind | threshold | denominator | value at HEAD |
+|---|---|---:|---:|---:|
+| `regress_zero_row_recovered` | floor | **0.95** | 933 filings | **0.0000** |
+| `regress_group_row_recovered` | floor | **0.95** | 83 filings | **0.0000** |
+
+Gated count **8 → 10**; the eight existing thresholds are byte-for-byte unchanged and
+`_sample_yield_floor_by_year` is untouched.
+
+**The baseline is 0.0000 by construction and that is the point**: the new panel IS the
+parser at HEAD, so the whole 0.95 is headroom — 886 of 933 filings and 79 of 83.
+**0.95 rather than 1.00** because both sets were cut mechanically from a panel diff
+and 5% is the slack for residue the two exclusion clauses cannot name (46 filings in
+(a), 4 in (b)). A gate at 1.00 would be a gate no honest parser change can clear,
+which is the failure §8.5A named when it reset the ISS round target.
+
+**Scope of (b), disclosed.** The gated group-row set is the **83** filings whose lost
+group rows include one carrying a parsed percent, not all 1,158 surviving candidates.
+The percent is what a group row is scored on — `group_row_detection_rate`'s
+denominator is filings with a parsed percent, the FactSet D&O metric is a percent —
+and the 1,075 share-only filings are where the run-2 report's compensation/award group
+labels sit (`All Current Executives as a Group | 271000 | no percent`). They are
+REPORTED every round as `regress_group_row_share_only_recovered`. Gating them would
+pay the loop to re-accept award tables, which is the defect `52f43c4f` removed.
+
+**One number in the run-2 report does not reproduce, and is corrected here.** That
+report says 124 filings lost a percent-carrying group row. The row-level counts
+reproduce exactly (1,618 old group rows in the 1,181 filings, 176 with a percent,
+1,442 without); the filing-level count of filings with ≥ 1 percent-carrying lost group
+row is **85**, of which **83** survive X1/X2. Four variants were tried (old
+`n_percent_parsed` > 0 → 783; that AND new > 0 → 756; distinct accessions → 1,128;
+distinct accessions with a percent group row → 83) and none gives 124. 83 is the
+denominator, measured on this run.
+
+### 11.5 The guard, and it binds both ways
+
+The eight pre-existing gates are the guard. Recovery cannot be bought by re-accepting
+the tables the duplicate rounds rejected: that drives
+`sample_dup_excess_identical_row_rate` over 0.01 or `holder_precision_blockw` under
+0.82. And `regress_excluded_emitting_rows_rate` (denominator **137**, the excluded filings
+that were ZERO-ROW candidates — an excluded filing that only lost its group row
+still emits rows, so counting it would peg the diagnostic at 1.0 whatever the parser
+does) is printed every round, so a "recovery" achieved by dragging dollar-range and compensation tables back
+is visible in the printout instead of being inferred from a gate that did not fire.
+
+### 11.6 New diagnostic: parser wall time per shard
+
+`run_baseline.sh` now fetches `$ROOT/out/*.log` into `$DEF14A_WORK/shard_logs/`,
+writes `$DEF14A_WORK/shard_wall.tsv` (`shard`, `files`, `ownership_rows`, `wall_s`)
+and prints shards / total / median / max / mean plus the slowest five. **REPORTED,
+NEVER GATED.** The 31 duplicate-round commits already made the parser **1.30×** slower
+shard-paired over the full archive (22,907 s → 29,683 s, 983 of 1,004 shards slower,
+worst on the late-era HTML shards), and a layout fix that re-walks the DOM can make
+that worse. A wall-time ceiling would pay the loop to stop parsing; a wall-time number
+in the journal is how the cost stays visible.
