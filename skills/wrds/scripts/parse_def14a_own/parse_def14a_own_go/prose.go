@@ -151,6 +151,52 @@ func ExtractProse(body string, base Row) []Row {
 			out = append(out, r)
 		}
 	}
+	if len(out) == 0 {
+		return extractPassiveHoldings(body, base)
+	}
+	return out
+}
+
+var rePassiveHolding = regexp.MustCompile(`(?i)(?:^|[^0-9,$A-Za-z])([0-9][0-9,]{2,})\s+((?:[A-Za-z][A-Za-z'\-]*\s+){0,6}shares)\s+held\s+by\s+([^();$]{3,120}?)\s*\(\s*([0-9]{1,3}(?:\.[0-9]+)?)\s*%\s+of\s+([^()$]{1,120})\)`)
+var rePassiveShareBase = regexp.MustCompile(`(?i)\bshares\b.*\b(?:outstanding|entitled\s+to\s+vote)\b|\boutstanding\b.*\bshares\b`)
+
+// Passive disclosures put the count before the holder. Require an explicit
+// share-count noun and a percent of outstanding or voting-entitled shares,
+// rather than a vote result or a fee. Existing active prose retains priority.
+func extractPassiveHoldings(body string, base Row) []Row {
+	var out []Row
+	for _, para := range reProseParaSep.Split(body, -1) {
+		flat := strings.Join(strings.Fields(para), " ")
+		if len(flat) < 20 || len(flat) > 20000 {
+			continue
+		}
+		for _, m := range rePassiveHolding.FindAllStringSubmatch(flat, -1) {
+			if !rePassiveShareBase.MatchString(m[5]) {
+				continue
+			}
+			shares, err := strconv.ParseFloat(strings.ReplaceAll(m[1], ",", ""), 64)
+			if err != nil || shares < 100 {
+				continue
+			}
+			pct, err := strconv.ParseFloat(m[4], 64)
+			if err != nil || pct <= 0 || pct > 100 {
+				continue
+			}
+			name := proseHolderName(m[3])
+			if name == "" {
+				continue
+			}
+			r := base
+			r.TableKind, r.TableIndex, r.RowIndex = "5pct_holders", 0, len(out)
+			r.HolderName, r.Shares, r.Percent = name, &shares, &pct
+			r.Parser, r.PctMarker = "text_prose", "%"
+			r.ShareClass = reHdrClass.FindString(m[2])
+			if grp, n := proseGroupRow(name); grp {
+				r.IsGroupRow, r.GroupN, r.TableKind = true, n, "combined"
+			}
+			out = append(out, r)
+		}
+	}
 	return out
 }
 

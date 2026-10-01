@@ -8789,3 +8789,35 @@ func TestShareHoldingsClassCaptionRejectsMoneyAndGrants(t *testing.T) {
 		})
 	}
 }
+
+const passiveShares53 = `
+    While all shareholders are cordially invited to attend the annual meeting,
+WE ARE NOT ASKING YOU FOR A PROXY. We have been advised that all 84,108,789
+Consumers shares held by CMS Energy Corporation (99.5% of the Consumers shares
+entitled to vote) will be voted in favor of the proposed directors and in favor
+of the appointment of the auditor, thus assuring the adoption of these
+proposals.
+`
+
+func TestProseCountBeforePassiveHolder(t *testing.T) {
+	rows := runProse(t, passiveShares53)
+	if len(rows) != 1 {
+		t.Fatalf("want 1 disclosed holding, got %d: %+v", len(rows), rows)
+	}
+	r := rows[0]
+	if r.HolderName != "CMS Energy Corporation" || r.Shares == nil || *r.Shares != 84108789 || r.Percent == nil || *r.Percent != 99.5 || r.ShareClass != "" {
+		t.Fatalf("wrong passive holding: %+v", r)
+	}
+}
+func TestPassiveProseDoesNotInventOwnershipFromFeesOrVotes(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(passiveShares53, "shares held by", "dollars paid to"),
+		strings.ReplaceAll(passiveShares53, "84,108,789", "$84,108,789"),
+		strings.ReplaceAll(passiveShares53, "Consumers shares held by", "options granted to"),
+		strings.ReplaceAll(passiveShares53, "99.5% of the Consumers shares\nentitled to vote", "99.5% of the votes cast"),
+	} {
+		if rows := runProse(t, body); len(rows) != 0 {
+			t.Fatalf("non-holding prose emitted: %+v", rows)
+		}
+	}
+}
