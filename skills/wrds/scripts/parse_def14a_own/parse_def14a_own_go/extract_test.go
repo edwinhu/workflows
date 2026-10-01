@@ -8228,3 +8228,430 @@ func TestASCIISixColumnNomineeGuards(t *testing.T) {
 		}
 	}
 }
+
+const asciiNameAgeBiographyFixture = `<TABLE>
+<CAPTION>
+INFORMATION CONCERNING NOMINEES AND DIRECTORS
+
+                                                 Amount and
+                                                 Nature of
+                                                 Beneficial
+                Positions &                      Ownership of       Percent of
+                Offices With                     Common Stock as    Common Stock
+                Company or/and       Director    of January 31,     Beneficially
+Name and Age    Employment           Since       1999               Owned (a)
+- --------------------------------------------------------------------------------
+<S>              <C>                 <C>         <C>                      <C>
+
+CLASS I
+Fred A. Bell,   District manager,    1981        20,536                   0.56%
+ Jr., 57        Mississippi
+                Materials Corp.
+                (Concrete and
+                building materials
+                manufacturer/
+                distributor
+
+Charles T.      Supervisor of        1980        15,208  (1)               0.42%
+ England, 62    Finance Company
+                subsidiaries of
+                Merchants and
+                Farmers Bank
+                beginning in
+                1995; Registered
+                Representative of
+                Security Financial
+                Network in 1994;
+                Farmer; formerly
+                Chancery Clerk,
+                Attala County
+
+</TABLE>
+<PAGE>
+
+<TABLE>
+<CAPTION>
+INFORMATION CONCERNING NOMINEES AND DIRECTORS (CONTINUED)
+
+                                                   Amount and
+                                                   Nature of
+                                                   Beneficial
+                                                   Ownership
+                  Positions &                      of Common        Percent of
+                  Offices With                     Stock as of      Common Stock
+                  Company or/and        Director   January 31,      Beneficially
+Name and Age      Employment            Since      1999             Owned (a)
+- --------------------------------------------------------------------------------
+
+<S>               <C>                   <C>         <C>                    <C>
+CLASS I (continued)
+Joseph M.         President and CEO,    1994       103,022 (2)            2.83%
+ Ivey, 40         Building One                     (3) (11)
+                  Services Corporation
+                  (facilities services
+                  company), since
+                  February, 1999.
+                  Chairman and CEO,
+                  Ivey Mechanical
+                  Company (plumbing
+                  and electrical
+                  contractors), until
+                  February, 1999
+
+Susan McCaffery,  Retired; Member of    1987       117,098 (4) (5)        3.22%
+ 59               Audit Committee;
+                  Former Professor,
+                  Wood College
+
+Edward G.         Member of Audit       1989         8,306  (6)           0.23%
+ Woodard, 44      Committee; President,
+                  K. M. Distributing
+                  Company, Inc.
+                  (wholesaler of chain
+                  saws, lawn and
+                  gardening equipment)
+
+CLASS II
+Barbara K.        Retired; Member of    1995         2,000                0.05%
+ Hammond, 54      Audit Committee;
+                  Former Specialist,
+                  Circuit Capacity
+                  Management, BellSouth
+
+R. Dale McBride,  President, Merchants  1979        17,764  (8)           0.49%
+ 59               and Farmers Bank,
+                  Durant
+
+Hugh S. Potts,    Chairman of the       1979       392,754 (4) (9)       10.79%
+ Jr., 54          Board and CEO of
+                  the Company since
+                  1994; Vice Chairman,
+                  1983-1993; Vice
+                  President, 1979-1983
+
+W. C. Shoemaker,  Consultant, IMC       1979        40,266                1.11%
+ 66               Webb Graphics
+                  (Printing);
+                  President, W.C.
+                  Shoemaker, Inc.
+                  (investments & real
+                  estate)
+
+Scott M. Wiggers, President of the      1983         5,800 (7)            0.16%
+ 54               Company since 1988
+                  and Treasurer since
+                  1979; Corporate
+                  President, Merchants
+                  & Farmers Bank
+
+CLASS III
+Jon A. Crocker,   Chairman & CEO,       1996        63,675 (10)           1.75%
+ 56               Merchants & Farmers
+                  Bank, Bruce Branch
+
+
+Toxey Hall, III,  Member of Audit       1984         2,112                0.06%
+ 59               Committee; President,
+                  Thomas-Walker-Lacey
+                  (retail discount store)
+
+</TABLE>
+<PAGE>
+
+<TABLE>
+<CAPTION>
+INFORMATION CONCERNING NOMINEES AND DIRECTORS (continued)
+
+                                                   Amount and
+                                                   Nature of
+                                                   Beneficial
+                                                   Ownership
+                  Positions &                      of Common        Percent of
+                  Offices With                     Stock as of      Common Stock
+                  Company or/and        Director   January 31,      Beneficially
+Name and Age      Employment            Since      1999             Owned (a)
+- --------------------------------------------------------------------------------
+<S>                <C>                  <C>         <C>                   <C>
+
+CLASS III (continued)
+J. Marlin Ivey,   Member of Audit       1979       112,512 (2) (11)       3.09%
+ 62               Committee; President,
+                  Ivey National
+                  Corporation (holding
+                  company for various
+                  businesses)
+
+Otho E. Pettit,   Attorney at Law,      1993        12,379 (12)           0.34%
+ Jr., 48          Thornton, Guyton,
+                  Dorrill & Pettit
+
+Charles W.        Chairman of Audit     1979       152,000 (13)           4.18%
+ Ritter, Jr.,     Committee; President,
+ 65               The Attala Company
+                  (feed manufacturing
+                  company)
+
+</TABLE>`
+
+func TestASCIINameAgeBiographyPercent(t *testing.T) {
+	rows, _, _ := ExtractText(asciiNameAgeBiographyFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 15 {
+		t.Fatalf("want 15 literal director holdings, got %d: %+v", len(rows), rows)
+	}
+	for _, want := range []struct {
+		name        string
+		shares, pct float64
+	}{
+		{"Fred A. Bell, Jr", 20536, .56}, {"Charles T. England", 15208, .42},
+		{"Joseph M. Ivey", 103022, 2.83}, {"Susan McCaffery", 117098, 3.22},
+		{"Edward G. Woodard", 8306, .23}, {"Barbara K. Hammond", 2000, .05},
+		{"R. Dale McBride", 17764, .49}, {"Hugh S. Potts, Jr", 392754, 10.79},
+		{"W. C. Shoemaker", 40266, 1.11}, {"Scott M. Wiggers", 5800, .16},
+		{"Jon A. Crocker", 63675, 1.75}, {"Toxey Hall, III", 2112, .06},
+		{"J. Marlin Ivey", 112512, 3.09}, {"Otho E. Pettit, Jr", 12379, .34},
+		{"Charles W. Ritter, Jr", 152000, 4.18},
+	} {
+		matches := 0
+		for _, r := range rows {
+			if r.HolderName == want.name {
+				matches++
+				if r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct || r.ShareClass != "Common Stock" {
+					t.Errorf("want %+v Common Stock; got %+v", want, r)
+				}
+			}
+		}
+		if matches != 1 {
+			t.Errorf("want exactly one %q, got %d", want.name, matches)
+		}
+	}
+}
+
+func TestASCIINameAgeBiographyGuards(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(asciiNameAgeBiographyFixture, "20,536", "$20,536"),
+		strings.ReplaceAll(asciiNameAgeBiographyFixture, "Beneficial", "Compensation"),
+		strings.ReplaceAll(asciiNameAgeBiographyFixture, "Percent of", "Salary of"),
+	} {
+		rows, _, _ := ExtractText(body, Row{})
+		for _, r := range ScreenRows(rows) {
+			if strings.Contains(r.HolderName, "Bell") {
+				t.Errorf("invalid caption or currency recovered holding: %+v", r)
+			}
+		}
+	}
+}
+
+const asciiGroupedClassesFixture = `                          SECURITY OWNERSHIP OF CERTAIN
+                        BENEFICIAL OWNERS AND MANAGEMENT
+
+
+      The following  table sets forth  information as to the ownership of shares
+of the  Company's  Common  Stock and Class B Common Stock as of Record Date with
+respect to (i) holders known to the Company to  beneficially  own more than five
+percent (5%) of the outstanding  Common Stock or the Class B Common Stock,  (ii)
+each  director,  (iii) the  Company's  Chief  Executive  Officer  and each other
+executive  officer  whose  annual cash  compensation  for fiscal  2005  exceeded
+$100,000  and (iv) all  directors  and  executive  officers  of the Company as a
+group.
+
+                               AMOUNT AND NATURE
+                                 OF BENEFICIAL
+                                 OWNERSHIP(b)(c)               PERCENT OF
+                            ------------------------  ----------------------------
+                                         CLASS B               CLASS B
+NAME AND ADDRESS OF           COMMON     COMMON       COMMON   COMMON
+BENEFICIAL STOCKHOLDER(a)     STOCK      STOCK(d)     STOCK    STOCK   COMBINED(e)
+- -------------------------     -------    --------     ------   ------  -----------
+Roberta Lipson............  126,679(f)   440,000(g)    2.2%     56.8%    26.3%
+Elyse Beth Silverberg.....  146,639(h)   260,500       2.5      33.6     16.2
+Lawrence Pemble...........  109,815(i)    74,500       1.8       9.6      5.3
+Robert C. Goodwin, Jr.....  199,328(j)        --       3.3       --       1.8
+Julius Y. Oestreicher.....  129,480(k)        --       2.4       --       1.3
+A. Kenneth Nilsson........  138,532(l)        --       2.4       --       1.3
+Carol R. Kaufman..........   75,360(m)        --       1.3       --        *
+Douglas B. Grob...........    6,107(n)        --        *        --        *
+Holli Harris..............    6,000(o)        --        *        --        *
+Neon Liberty Capital
+  Management LLC
+   230 Park Avenue,
+   Suite 865
+   New York, NY  10169....  341,690(p)        --       6.0      --        3.3
+Federated Kaufmann
+  Fund, a portfolio of
+  Federated Equity Funds
+   140 East 45th Street,
+   43rd Floor
+   New York, NY 10017.....  670,200(q)        --      11.7      --        6.5
+Barclays Global
+  Investors, N.A.
+   45 Fremont Street,
+   17th Floor
+   San Francisco, CA
+   94105..................  313,585(r)        --       5.5      --        3.0
+All executive officers
+  and directors as a
+  group (9 persons).......  937,940(s)   775,000      13.5     100.0     49.5`
+
+func TestASCIIGroupedSharesThenPercents(t *testing.T) {
+	rows, _, _ := ExtractText(asciiGroupedClassesFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 39 {
+		t.Fatalf("want 13 holders with two class holdings and combined voting percent, got %d: %+v", len(rows), rows)
+	}
+	for _, want := range []struct {
+		name        string
+		shares, pct float64
+	}{
+		{"Roberta Lipson", 126679, 2.2}, {"Elyse Beth Silverberg", 146639, 2.5},
+		{"Lawrence Pemble", 109815, 1.8}, {"Robert C. Goodwin, Jr", 199328, 3.3},
+		{"Julius Y. Oestreicher", 129480, 2.4}, {"A. Kenneth Nilsson", 138532, 2.4},
+		{"Carol R. Kaufman", 75360, 1.3}, {"Douglas B. Grob", 6107, -1}, {"Holli Harris", 6000, -1},
+		{"Neon Liberty Capital Management LLC", 341690, 6},
+		{"Federated Kaufmann Fund, a portfolio of Federated Equity Funds", 670200, 11.7},
+		{"Barclays Global Investors, N.A", 313585, 5.5},
+		{"All executive officers and directors as a group (9 persons)", 937940, 13.5},
+	} {
+		matches := 0
+		for _, r := range rows {
+			if r.HolderName == want.name && r.ShareClass == "Common Stock" {
+				matches++
+				if r.Shares == nil || *r.Shares != want.shares {
+					t.Errorf("want %+v, got %+v", want, r)
+				}
+				if want.pct >= 0 {
+					if r.Percent == nil || *r.Percent != want.pct {
+						t.Errorf("want %+v, got %+v", want, r)
+					}
+				} else if r.Percent != nil || r.PctMarker != "*" {
+					t.Errorf("want star marker, got %+v", r)
+				}
+			}
+		}
+		if matches != 1 {
+			t.Errorf("want exactly one %+v, got %d", want, matches)
+		}
+	}
+	for _, want := range []struct {
+		name                string
+		shares, pct, voting float64
+	}{
+		{"Roberta Lipson", 440000, 56.8, 26.3}, {"Elyse Beth Silverberg", 260500, 33.6, 16.2}, {"Lawrence Pemble", 74500, 9.6, 5.3},
+		{"All executive officers and directors as a group (9 persons)", 775000, 100, 49.5},
+	} {
+		for _, cls := range []string{"Class B Common Stock", "Combined Voting Power"} {
+			matches := 0
+			for _, r := range rows {
+				if r.HolderName == want.name && r.ShareClass == cls {
+					matches++
+					pct := want.pct
+					if cls == "Combined Voting Power" {
+						pct = want.voting
+						if r.Shares != nil {
+							t.Errorf("combined voting has no share-count column: %+v", r)
+						}
+					} else if r.Shares == nil || *r.Shares != want.shares {
+						t.Errorf("wrong class count: %+v", r)
+					}
+					if r.Percent == nil || *r.Percent != pct {
+						t.Errorf("wrong class percent: %+v", r)
+					}
+				}
+			}
+			if matches != 1 {
+				t.Errorf("want exactly one %s/%s, got %d", want.name, cls, matches)
+			}
+		}
+	}
+}
+
+func TestASCIIGroupedSharesThenPercentsGuards(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(asciiGroupedClassesFixture, "126,679(f)", "$126,679(f)"),
+		strings.ReplaceAll(asciiGroupedClassesFixture, "OF BENEFICIAL", "OF COMPENSATION"),
+		strings.ReplaceAll(asciiGroupedClassesFixture, "COMBINED(e)", "SALARY(e)"),
+	} {
+		rows, _, _ := ExtractText(body, Row{})
+		for _, r := range ScreenRows(rows) {
+			if r.HolderName == "Roberta Lipson" {
+				t.Errorf("invalid layout emitted holding: %+v", r)
+			}
+		}
+	}
+}
+
+const asciiCaptionedESOPFixture = `   SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS AND MANAGEMENT
+
+     The following table sets forth, as of March 16, 1998, the only
+persons (including any group of persons) who, to the knowledge of
+the Company, may be deemed to be the beneficial owners of more than
+5% of the Company's Common or Convertible Preferred Stock as of
+that date.  A beneficial owner of a security includes any person
+who, directly or indirectly, through any contract, arrangement,
+understanding, relationship or otherwise, has the power to vote or
+direct the voting or who has investment power over the security,
+which includes the power to dispose of or direct the disposition of
+the security.
+<TABLE>
+<CAPTION>
+
+
+                            Common Stock
+                                         Share
+Name and address of beneficial owner     Amount  Percent of class
+<S>                                     <C>             <C>
+United National Bank,                   10,504,701(1)      24.5%
+as Trustee under the 1984 ESOP
+1501 Market Street
+Wheeling, WV 26003
+
+<CAPTION>
+                          Convertible Preferred Stock
+                                         Share
+Name and address of beneficial owner     Amount  Percent of class
+
+<S>                                     <C>                 <C>
+United National Bank,                    1,699,171(2)       97.4%
+as Trustee under the 1989 ESOP
+1501 Market Street
+Wheeling, WV  26003
+<FN>
+
+(1)  All shares have been allocated to the accounts of participants
+in the 1984 ESOP consisting of approximately 6,540 employees and
+former employees of the Company.  Participants generally have full
+voting but limited dispositive power over securities allocated to
+their accounts.
+
+(2)  Includes 1,424,287 shares allocated to the accounts of
+participants in the 1989 ESOP consisting of approximately 7,267
+employees and former employees of the Company.  Participants
+generally have full voting but limited dispositive power over
+securities allocated to their accounts.
+</TABLE>`
+
+func TestASCIICommonStockESOPTrustee(t *testing.T) {
+	rows, _, _ := ExtractText(asciiCaptionedESOPFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 1 {
+		t.Fatalf("want one common-stock trustee holding; preferred remains excluded, got %d: %+v", len(rows), rows)
+	}
+	r := rows[0]
+	if r.HolderName != "United National Bank as Trustee under the 1984 ESOP" || r.ShareClass != "Common Stock" || r.Shares == nil || *r.Shares != 10504701 || r.Percent == nil || *r.Percent != 24.5 {
+		t.Errorf("wrong literal holding: %+v", r)
+	}
+}
+
+func TestASCIICommonStockESOPTrusteeGuards(t *testing.T) {
+	for _, body := range []string{
+		strings.Replace(asciiCaptionedESOPFixture, "                            Common Stock", "                            Preferred Stock", 1),
+		strings.ReplaceAll(asciiCaptionedESOPFixture, "10,504,701(1)", "$10,504,701(1)"),
+	} {
+		rows, _, _ := ExtractText(body, Row{})
+		for _, r := range ScreenRows(rows) {
+			if strings.Contains(r.HolderName, "1984 ESOP") {
+				t.Errorf("non-common or dollar count emitted: %+v", r)
+			}
+		}
+	}
+}
