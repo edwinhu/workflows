@@ -11271,3 +11271,105 @@ func TestASCIILoanTableIsNotASoleHolder(t *testing.T) {
 		t.Errorf("loan row taken as a holder: %q shares=%v pct=%v", r.HolderName, r.Shares, r.Percent)
 	}
 }
+
+// 0001010521-00-000151: a fund nominee table whose tenure column reads "First
+// Became a Trustee"; the shares column has no percent beside it.
+const asciiBecameTrusteeCountLines = `
+Information Concerning Nominees
+
+      The following table describes each nominee's position with the funds. The
+table also shows his or her principal occupation or employment during the past
+five years and the number of shares of each fund beneficially owned by him or
+her, directly or indirectly, on the record date.
+
+<TABLE>
+<CAPTION>
+                                                                          First Became           Shares Owned
+                                                                           a Trustee        Beneficially, Directly
+Name (Age) and                         Principal Occupation             (Director prior       or Indirectly, on
+Position with the Funds             During the Past Five Years             to 1-1-85)       January 20, 2000(1)(2)
+- -----------------------             --------------------------             ----------       ----------------------
+<S>                          <C>                                              <C>                   <C>
+Stephen L. Brown*            Chairman and Chief Executive Officer,            1999                  100(A)
+(age 62)                     John Hancock Life Insurance Company;                                   100(B)
+Trustee and                  Director and Chairman, the Adviser, John
+Chairman                     Hancock Funds, Inc. ("John Hancock
+                             Funds") and The Berkeley Financial
+                             Group, Inc. ("The Berkeley Group");
+                             Director, John Hancock Subsidiaries,
+                             Inc., John Hancock Insurance Agency,
+                             Inc. ("Insurance Agency, Inc.") (until
+                             June 1999), Federal Reserve Bank of
+                             Boston (until March 1999) and John
+                             Hancock Signature Services, Inc.
+                             ("Signature Services") (until January
+                             1997); Trustee, John Hancock Asset
+                             Management (until March 1997); and
+                             Trustee and Chairman of 64 funds managed
+                             by the Adviser.
+</TABLE>
+
+
+                                       2
+<PAGE>
+
+<TABLE>
+<CAPTION>
+                                                                          First Became           Shares Owned
+                                                                           a Trustee        Beneficially, Directly
+Name (Age) and                         Principal Occupation             (Director prior       or Indirectly, on
+Position with the Funds             During the Past Five Years             to 1-1-85)       January 20, 2000(1)(2)
+- -----------------------             --------------------------             ----------       ----------------------
+<S>                          <C>                                              <C>                   <C>
+Maureen R. Ford*             President, Broker/Dealer Distributor,            2000                   --(A)
+(Age 44)                     John Hancock Life Insurance Company;                                    --(B)
+Trustee, Vice Chairman       Director, Vice Chairman and Chief
+and Chief Executive          Executive Officer, the Adviser, The
+Officer                      Berkeley Group, John Hancock Funds, and
+                             Sovereign Asset Management Corporation
+                             ("SAMCorp"); President and Director,
+                             Insurance Agency, Inc.; Senior Vice
+                             President, MassMutual Insurance Co.
+                             (until 1999); Senior Vice President,
+                             Connecticut Mutual Insurance Co. (until
+                             1996); Vice President, Integrated
+                             Resources (until 1989); and Vice
+                             Chairman, Chief Executive Officer and
+                             Trustee of 64 funds managed by the
+                             Adviser.
+
+Dennis S. Aronowitz          Professor of Law, Emeritus, Boston               1988                  100(A)
+(Age 68)                     University School of Law (as of 1996);                                 100(B)
+Trustee                      Director, Brookline Bankcorp; and
+                             Trustee of 31 funds managed by the
+                             Adviser.
+
+Richard P. Chapman, Jr.      Chairman, President and Chief Executive          1975                  100(A)
+(Age 65)                     Officer, Brookline Bankcorp; Director,                                 100(B)
+Trustee                      Lumber Insurance Companies; Trustee,
+                             Northeastern University; Director,
+                             Depositors Insurance Fund, Inc.; and
+                             Trustee of 31 funds managed by the
+</TABLE>
+`
+
+func TestASCIIBecameTrusteeCountColumn(t *testing.T) {
+	raw, _, _ := ExtractText(asciiBecameTrusteeCountLines, Row{})
+	got := map[string]float64{}
+	for _, r := range raw {
+		if strings.Contains(strings.ToLower(r.HolderName), "age") {
+			t.Errorf("age line taken as a holder: %q", r.HolderName)
+		}
+		if r.Shares != nil {
+			got[r.HolderName] = *r.Shares
+		}
+	}
+	for name, shares := range map[string]float64{
+		"Dennis S. Aronowitz":    100,
+		"Richard P. Chapman, Jr": 100,
+	} {
+		if g, ok := got[name]; !ok || g != shares {
+			t.Errorf("%s: got %v (present=%v), want %v; rows=%v", name, g, ok, shares, got)
+		}
+	}
+}

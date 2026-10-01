@@ -564,6 +564,7 @@ var reASCIICaptionAge = regexp.MustCompile(`(?i),\s*age\s+[0-9]{1,3}.*$`)
 var reASCIICommitteeNote = regexp.MustCompile(`\([A-Z](?:,[A-Z])+\)`)
 var reASCIINameAgeTail = regexp.MustCompile(`,\s*[0-9]{1,3}\s*$`)
 var reASCIIOnlyAge = regexp.MustCompile(`^[0-9]{1,3}$`)
+var reASCIIParenAgeOnly = regexp.MustCompile(`(?i)^\(\s*age\s+[0-9]{1,3}\s*\)$`)
 
 // Caption columns, not numeric-tail alignment, distinguish shares from age,
 // position and election-year columns. Retry only when the legacy filing is empty.
@@ -698,7 +699,7 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 		countOnly := pctCol == -1 && (len(spans) == 4 || len(spans) == 5) && nameCol == 0 && shareCol == len(spans)-1 &&
 			strings.Contains(lowerHdr, "age") && strings.Contains(lowerHdr, "principal occupation") &&
 			shareCol >= 0 && strings.Contains(strings.ToLower(headers[shareCol]), "shares") &&
-			(strings.Contains(lowerHdr, "director since") || strings.Contains(lowerHdr, "trustee since") || strings.Contains(lowerHdr, "became director"))
+			(strings.Contains(lowerHdr, "director since") || strings.Contains(lowerHdr, "trustee since") || strings.Contains(lowerHdr, "became director") || strings.Contains(lowerHdr, "became trustee") || strings.Contains(lowerHdr, "became a trustee"))
 		if os.Getenv("DEF14A_DEBUG_TEXTBLOCK") != "" {
 			fmt.Fprintf(os.Stderr, "--- caption columns=%q shares=%d percent=%d\n", headers, shareCol, pctCol)
 		}
@@ -782,6 +783,11 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 				groupHead = nil
 			}
 			if countOnly {
+				// "(Age 68)" under the name is the holder's second line, holding
+				// another fund's shares: never a holder of its own.
+				if reASCIIParenAgeOnly.MatchString(nm) {
+					continue
+				}
 				stub := strings.TrimSpace(reDotLeader.ReplaceAllString(clean[j][:min(len(clean[j]), spans[shareCol])], " "))
 				if grp, _ := isGroupRow(stub); grp {
 					nm = stub
