@@ -326,11 +326,108 @@ var reASCIISlashParenNote = regexp.MustCompile(`/\(\s*([0-9]{1,2})\s*\)/`)
 
 func ExtractText(body string, base Row) ([]Row, int, int) {
 	rows, seen, used := extractText(body, base, false)
-	if len(rows) != 0 || !reASCIISlashParenNote.MatchString(body) || len(ScreenRows(ExtractProse(body, base))) != 0 {
+	if len(ScreenRows(rows)) != 0 || len(ScreenRows(ExtractProse(body, base))) != 0 {
 		return rows, seen, used
 	}
-	return extractText(body, base, true)
+	if rebuilt, ok := textClassAddressRows(body); ok {
+		if rr, ss, uu := extractText(rebuilt, base, false); len(ScreenRows(rr)) != 0 {
+			return rr, ss, uu
+		}
+	}
+	if len(rows) == 0 && reASCIISlashParenNote.MatchString(body) {
+		return extractText(body, base, true)
+	}
+	return rows, seen, used
 }
+
+// Move the name at the head of a four-column name/address cell onto its
+// numeric line. The class and value column spans remain explicit; postal
+// numbers are never treated as holdings. Used only after a zero-row screen.
+func textClassAddressRows(body string) (string, bool) {
+	lines := strings.Split(body, "\n")
+	changed := false
+	start := -1
+	for end, line := range lines {
+		low := strings.ToLower(line)
+		if strings.Contains(low, "<table") {
+			start = end
+		}
+		if start < 0 || !strings.Contains(low, "</table") {
+			continue
+		}
+		var header []string
+		mark := -1
+		nameStart, valueStart := -1, -1
+		for j := start + 1; j < end; j++ {
+			if reASCIIColumnMark.MatchString(lines[j]) {
+				mark = j
+				g := splitHdrGroups(lines[j])
+				if nameStart >= 0 && len(g) == 4 {
+					nameStart, valueStart = g[1].lo, g[2].lo
+				} else {
+					nameStart = -1
+				}
+				break
+			}
+			clean := reAnyTag.ReplaceAllString(lines[j], "")
+			if strings.TrimSpace(clean) == "" || reRuleLine.MatchString(clean) {
+				continue
+			}
+			header = append(header, clean)
+			g := splitHdrGroups(clean)
+			if len(g) == 4 && strings.EqualFold(strings.TrimSpace(g[0].text), "Title of Class") &&
+				strings.Contains(strings.ToLower(g[1].text), "name and address") {
+				nameStart, valueStart = g[1].lo, g[2].lo
+			}
+		}
+		hdr := hdrColumnText(header)
+		if mark < 0 || nameStart < 0 || !reTextBeneficialHeader.MatchString(hdr) ||
+			!reHdrPctCue.MatchString(strings.Join(header, " ")) || reCompCue.MatchString(hdr) || reOptDetailCue.MatchString(hdr) {
+			start = -1
+			continue
+		}
+		for j := mark + 2; j < end; j++ {
+			g := splitHdrGroups(lines[j])
+			if len(g) < 4 || g[1].lo != nameStart ||
+				!reASCIIAddressClass.MatchString(strings.TrimSpace(g[0].text)) {
+				continue
+			}
+			value, percent := g[len(g)-2], g[len(g)-1]
+			if value.lo < valueStart-2 || !reASCIIStreetCell.MatchString(strings.TrimSpace(lines[j][nameStart:value.lo])) {
+				continue
+			}
+			prev := lines[j-1]
+			nm := strings.TrimSpace(prev)
+			if len(prev)-len(strings.TrimLeft(prev, " ")) != nameStart || len(nm) > 70 ||
+				!hasWords(nm, 2) || reShareLike.MatchString(nm) || reSkipName.MatchString(nm) ||
+				reHdrLineCue.MatchString(nm) || isAddressLine(nm) || reRuleLine.MatchString(nm) {
+				continue
+			}
+			if _, ok := ParseShares(value.text); !ok {
+				continue
+			}
+			if _, ok, marker, _ := ParsePercent(percent.text); !ok && marker == "" {
+				continue
+			}
+			_, notes := StripFootnotes(value.text + " " + percent.text)
+			if len(notes) > 0 {
+				nm += " (" + strings.Join(notes, ") (") + ")"
+			}
+			prefix := strings.TrimSpace(g[0].text) + ":  " + nm
+			if len(prefix)+2 > value.lo {
+				continue
+			}
+			lines[j] = prefix + strings.Repeat(" ", value.lo-len(prefix)) + lines[j][value.lo:]
+			lines[j-1] = ""
+			changed = true
+		}
+		start = -1
+	}
+	return strings.Join(lines, "\n"), changed
+}
+
+var reASCIIAddressClass = regexp.MustCompile(`(?i)^(?:common\s+(?:shares|stock)|ordinary\s+shares|class\s+[a-z0-9]+(?:\s+common\s+stock)?)$`)
+var reASCIIStreetCell = regexp.MustCompile(`(?i)^(?:suite\s+\d|\d+[a-z]?(?:-\d+)?\s+\S.*\b(?:street|st|avenue|ave|road|rd|drive|dr|broadway)\b)`)
 
 func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, int) {
 	body = stripEntities(body)
