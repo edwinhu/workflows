@@ -1,159 +1,56 @@
-# Embedding Batches with Gemini
+# Embedding batches — production boundary and alignment
 
-Dedicated reference for batch embedding work. Read before submitting more than three items. Current [embedding docs](https://ai.google.dev/gemini-api/docs/embeddings.md.txt) call `gemini-embedding-2` the latest multimodal model and keep `gemini-embedding-001` available for text. The -001 preference below is a project-specific benchmark, not Google's latest-model recommendation.
+**Production stays on Vertex (Gemini Enterprise Agent Platform), ADC and GCS. Never use Developer `create_embeddings` / the File API as a production fallback.** Check current Cloud model support and the exact endpoint before choosing a batch route; if the pinned model has no verified Cloud route, stop and report that blocker. Do not invent support by changing a Developer client to `vertexai=True` while retaining its File API calls.
 
-## TL;DR
+Sources: [Cloud embedding batch](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/embeddings/batch-prediction-genai-embeddings), [Cloud batch models](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/batch-inference), [Cloud quotas](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/quotas). Gemini generation-batch quotas are not proof of embedding-model support or quotas.
 
-1. **Pick the right model.** Default to `gemini-embedding-001` for short-text classification; only use `-2` if you have multimodal inputs or strong evidence -001 underperforms.
-2. **Use file-based JSONL with a per-row `key`.** Inline (`inlined_requests`) silently scrambles response order at scale.
-3. **Map outputs back by `key`**, not by position.
-4. **Run sentinel verification** after parse: cosine of saved-row vs fresh sync embed of the same text must be ≥0.99.
-5. **Look at existing repo code first.** If `src/*embedding*.py` or a prior batch JSONL exists, copy that pattern verbatim.
+## Current Cloud embedding batch (checked 2026-10-01)
 
-## Choosing an Embedding Model
+Cloud now documents both Gemini embedding models; the April rejection is no longer a support matrix.
 
-| Model | When to use | Available batch path |
-|---|---|---|
-| **`gemini-embedding-001`** | **Default for text-only tasks** (short titles, sentences, classification, retrieval over text) | `client.batches.create_embeddings()` (Standard API only) |
-| `gemini-embedding-2` | Multimodal inputs (text+image), or you have benchmarks showing -2 wins your specific task | `client.batches.create_embeddings()` (Standard API only) |
-| `text-embedding-005` | You need Gemini Enterprise Agent Platform Batch console visibility; legacy text encoder | `client.batches.create()` with `vertexai=True` |
+| Model | Batch locations |
+|---|---|
+| gemini-embedding-001 | us-central1, us-east4, us-west1, us-west4, europe-west1, europe-west4 |
+| gemini-embedding-2 | global, us, eu |
 
-**Default to -001 unless you have a reason to switch.** Empirical (PPM TOC project, 2026-04-26): on a 21,796-title classification head-to-head over the same 17 canonical anchors with sentinel-verified alignment, `-001` produced **mean cosine 0.872** to the top anchor vs `-2`'s **0.751**. The two models agreed on best-section assignment only 52.5% of the time, and `-2` over-classified to common attractors (e.g., entries titled literally "Risk Factors" landing in *Plan of Distribution*). `-2` is multimodal-retrained — its text-side geometry is noisier on short titles than the text-specialized `-001`.
+GCS JSONL input/output only (no BigQuery), up to **1,000,000 rows / 1 GB** per job, no predefined concurrency quota, up to 72h queued and under-24h target. Generation batch's 200K row limit is not the embedding limit. Use the documented REST `batchPredictionJobs` model `publishers/google/models/<embedding-id>`, `inputConfig.instancesFormat="jsonl"` with `gcsSource.uris`, and `outputConfig.predictionsFormat="jsonl"` with `gcsDestination.outputUriPrefix`. Authenticate through ADC; do not transfer Developer Files/create_embeddings parameters.
 
-**Tradeoffs:**
-- `-001` is text-only; embedding 3072-dim by default; SEMANTIC_SIMILARITY task type produces unit-norm vectors
-- `-2` is multimodal; up to 3072 dimensions; does **not** accept `task_type`; supply task-prefixed text for text-only tasks, and use identical text in sentinel checks
-- `-005` (`text-embedding-005`) is a legacy text encoder accessible via Cloud batch — use only if you need a Cloud job visible in Cloud Console
-- A 2026-04 Cloud batch prediction probe rejected `gemini-embedding-*` (400 `Do not support publisher model ...`); this is a historical observation, not a universal current availability guarantee. For Gemini-family embeddings, use the Standard API path below.
+Cloud -001 input:
 
-**Don't switch models mid-project.** If your existing analysis or canonical anchors are embedded with model X, downstream embeddings must use X. Cosine geometries are not portable across models — switching means re-embedding everything (entries + anchors) and re-validating any thresholds.
-
-## The Inline Path Bug — Why You MUST Use Keys
-
-`client.batches.create_embeddings(src={"inlined_requests": EmbedContentBatch(contents=[...])})` returns responses in an undefined order at scale:
-
-- **3-text test:** order preserved (response[i] = embedding of input[i]).
-- **21K-text production:** order **scrambled** across parallel workers; positional alignment is wrong.
-- `InlinedEmbedContentResponse` has **no per-row key field** — only `response` and `error`. There is no way to recover input→output mapping from inline output alone.
-- The bug is silent: norms are unit (looks healthy), embeddings are individually correct, but `saved[i]` is not the embedding of `input[i]` for most i. Detected only by sentinel comparison.
-
-**Lesson learned the hard way (2026-04):** burned two production batches (-2 and -001, ~22K texts each) before discovering this. The fix below was already in repo at `src/toc_embeddings.py`.
-
-## Production Pattern — File-Based, Keyed
-
-The recipes below are pinned to **gemini-embedding-001**. For -2, omit task_type and use identical task-prefixed text for both batch and sentinels, as implemented in `examples/embeddings_batch.py`.
-
-### 1. Build keyed JSONL
-
-```python
-import json
-with open("embed_requests.jsonl", "w") as f:
-    for entry in entries:
-        f.write(json.dumps({
-            "key": entry["id"],                      # YOUR identifier — round-trips unchanged
-            "request": {
-                "content": {"parts": [{"text": entry["title"]}]},
-                "task_type": "SEMANTIC_SIMILARITY",  # snake_case in JSONL
-                "output_dimensionality": 3072,       # snake_case in JSONL
-            },
-        }) + "\n")
-```
-
-`key` is your domain identifier (e.g. `"<doc_id>:<entry_idx>"`). Must be unique per row.
-
-### 2. Upload + submit
-
-```python
-from google import genai
-from google.genai.types import EmbeddingsBatchJobSource
-
-client = genai.Client()  # GOOGLE_API_KEY
-uploaded = client.files.upload(
-    file="embed_requests.jsonl",
-    config={"mime_type": "application/jsonl"},
-)
-job = client.batches.create_embeddings(
-    model="gemini-embedding-001",
-    src=EmbeddingsBatchJobSource(file_name=uploaded.name),
-    config={"display_name": "embed_v1"},
-)
-```
-
-### 3. Parse results by `key`
-
-Output JSONL has one line per request, with the same `key`:
-```
-{"key": "doc_A:0", "response": {"embedding": {"values": [0.012, -0.034, ...]}}}
-```
-
-```python
-import numpy as np
-client = genai.Client()
-job = client.batches.get(name=job_name)
-blob = client.files.download(file=job.dest.file_name)
-
-embeddings = {}
-for line in blob.decode().splitlines():
-    if not line.strip(): continue
-    rec = json.loads(line)
-    embeddings[rec["key"]] = np.array(rec["response"]["embedding"]["values"], dtype=np.float32)
-
-out = np.array([embeddings[e["id"]] for e in entries], dtype=np.float32)
-np.save("embeddings.npy", out)
-```
-
-### 4. Sentinel verification (mandatory)
-
-After parsing, fresh-embed 5 random titles via sync API and assert cosine ≥0.99:
-
-```python
-from google.genai import types
-import random
-config = types.EmbedContentConfig(task_type="SEMANTIC_SIMILARITY", output_dimensionality=3072)
-random.seed(7)
-for i in random.sample(range(len(entries)), 5):
-    fresh = np.array(client.models.embed_content(
-        model="gemini-embedding-001", contents=entries[i]["title"], config=config
-    ).embeddings[0].values)
-    sim = float((out[i] @ fresh) / (np.linalg.norm(out[i]) * np.linalg.norm(fresh)))
-    assert sim >= 0.99, f"row {i} mismatch: cos={sim:.4f} — alignment broken"
-```
-
-If any sentinel fails, do not proceed downstream — re-check key uniqueness, parse logic, and that you used file-based (not inline) submission.
-
-## Schema Reference
-
-**JSONL request line (snake_case):**
 ```json
-{"key": "<your_id>", "request": {"content": {"parts": [{"text": "..."}]}, "task_type": "SEMANTIC_SIMILARITY", "output_dimensionality": 3072}}
+{"key":"doc-1","request":{"content":{"parts":[{"text":"Risk Factors"}]},"embed_content_config":{"task_type":"SEMANTIC_SIMILARITY","output_dimensionality":3072}}}
 ```
 
-**Job config:** `{"display_name": "..."}` — that's it. No `dest=` for embeddings (output goes to a file the SDK manages).
+Cloud -2 input:
 
-**Output access:**
-- File-based: `job.dest.file_name` → `client.files.download(file=...)` → JSONL with `{"key": ..., "response": {"embedding": {"values": [...]}}}` per line.
-- Inline (avoid): `job.dest.inlined_embed_content_responses` → positional list, no keys, order **unreliable** at scale.
-
-**Task types for -001 only:** `SEMANTIC_SIMILARITY`, `RETRIEVAL_DOCUMENT`, `RETRIEVAL_QUERY`, `CLASSIFICATION`, `CLUSTERING`. Match the task type used for your canonical anchors — mismatch breaks cosine geometry. With -2, omit `task_type` and include the same task instructions in each text input instead. For example, current docs recommend `task: search result | query: {content}` for retrieval queries and `title: none | text: {content}` for untitled documents; select the documented format for your actual task.
-
-## Sync aggregation — TESTING ONLY
-
-`client.models.embed_content(contents=[t1, t2, t3])` with `gemini-embedding-2` returns one aggregated embedding by design, as the [current docs](https://ai.google.dev/gemini-api/docs/embeddings.md.txt) explain. This is not an SDK bug. (Differs from `-001`, which returns one embedding per input.) Use sync for single-text smoke tests only:
-
-```python
-v = client.models.embed_content(
-    model="gemini-embedding-001",
-    contents=text,                       # single string
-    config=types.EmbedContentConfig(task_type="SEMANTIC_SIMILARITY", output_dimensionality=3072),
-).embeddings[0].values
+```json
+{"key":"doc-1","request":{"content":{"parts":[{"text":"title: none | text: Risk Factors"}]},"embed_content_config":{"output_dimensionality":3072}}}
 ```
 
-For production batches (≥4 texts), always use the file-based keyed path above.
+Use the task-prefix format appropriate to the task, identically for entries and sentinel embeds. Cloud -2 ignores task_type/title config values; include task/title in text. `key` is optional in the service schema but strongly recommended and required by this skill for reliable alignment; join output vectors by key, not position. Inspect per-row status/errors and verify the vector output shape on 5–10 rows before scaling. The disabled legacy CLI below does not implement this new Cloud schema.
 
-## Working example
+## Choosing a model without changing an existing analysis
 
-`examples/embeddings_batch.py` — `submit / status / download` CLI implementing this exact pattern with built-in sentinel verification.
+[Developer API, not for production: embedding docs](https://ai.google.dev/gemini-api/docs/embeddings.md.txt) describe `gemini-embedding-2` and `gemini-embedding-001`; that is not evidence of a Vertex batch route for either model. A 2026-04 Cloud probe rejected `gemini-embedding-*` with `Do not support publisher model ...`; this historical observation neither establishes current rejection nor authorizes Developer production.
 
-## Current limits and prices
+Developer API PPM TOC benchmark, 2026-04-26: on 21,796 short titles and 17 anchors with sentinel-verified alignment, -001's mean cosine to the top anchor was 0.872 versus -2's 0.751; assignments agreed only 52.5%. This is project-specific evidence for preserving the pinned -001 geometry, not a universal model-quality claim.
 
-Embedding 2: 8,192 input tokens, dimensions 128–3072 (recommended 768/1536/3072); check the [model card](https://ai.google.dev/gemini-api/docs/models/gemini-embedding-2.md.txt). Text is $0.20/M Standard and $0.10/M Batch; other modalities have distinct prices in [pricing](https://ai.google.dev/gemini-api/docs/pricing.md.txt), checked 2026-09-30. Do not infer every embedding model's context limit or price from the example's 3072-dimensional setting. Existing -001 outputs/anchors remain pinned; switching models requires re-embedding and recalibrating thresholds.
+- Do not switch models mid-project: re-embed entries and anchors and recalibrate thresholds if a model change is explicitly chosen.
+- -001 task types must match the canonical anchors; -2 omits task_type and uses identical task-prefixed text in batch and sentinels.
+- Do not silently switch to `text-embedding-005` solely to obtain a Cloud job.
+
+## Alignment facts
+
+Historical Developer inline embeddings preserved order in a three-text test but scrambled a 21K-text production job; output had no per-row key. Healthy norms did not detect wrong identity. Scaling positional alignment silently corrupts downstream labels.
+
+For any verified Cloud embedding route:
+1. Establish unique identity recovery in a same-model 5–10-row end-to-end pilot; never join by output order.
+2. Reconcile missing/duplicate IDs and per-row errors before building the matrix.
+3. Fresh-embed five sampled inputs on the same Vertex model/task configuration and assert saved-versus-fresh cosine ≥0.99 before downstream use.
+4. If any sentinel fails, stop and recheck identity recovery and parsing.
+
+Embedding 2's synchronous multi-text call returns one aggregate vector by design in the Developer docs, unlike -001. Do not assume identical aggregation semantics across models/backends.
+
+## Legacy example
+
+`examples/embeddings_batch.py` is disabled before any upload or model call: its Developer-only route violates the production boundary, and it does not implement the newly documented Cloud embedding schema. It is not a supported production CLI. Use existing project code only after verifying a documented Vertex route for the pinned model; do not run a Developer batch to work around missing Cloud support.
