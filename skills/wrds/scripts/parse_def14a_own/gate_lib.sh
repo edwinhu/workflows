@@ -52,3 +52,29 @@ gate_record_stream() {
         fi
     done
 }
+
+# Shared transport selection. Forced local selects local even if input validation
+# will reject the round; auto requires a nonempty, completely mirrored filelist.
+gate_local_coverage() {
+    python3 - "$1" "$2" <<'PYTHON'
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+import sys
+paths = [line.split('\t', 1)[0] for line in Path(sys.argv[1]).read_text().splitlines()]
+root = Path(sys.argv[2])
+with ThreadPoolExecutor(max_workers=28) as pool:
+    present = sum(pool.map(lambda p: (root / p).is_file(), paths))
+print("local coverage: listed=%d present=%d missing=%d" % (len(paths), present, len(paths)-present))
+sys.exit(0 if paths and present == len(paths) else 1)
+PYTHON
+}
+
+gate_select_mode() {
+    LOCAL=0
+    case "${DEF14A_LOCAL:-auto}" in
+        0) ;;
+        1) LOCAL=1 ;;
+        auto) if gate_local_coverage "$1" "$2"; then LOCAL=1; fi ;;
+        *) echo "ERROR: DEF14A_LOCAL must be 0, 1 or auto" >&2; return 2 ;;
+    esac
+}

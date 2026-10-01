@@ -121,31 +121,12 @@ echo "== build =="
 (cd "$HERE/parse_def14a_own_go" && go vet ./... && go test ./... &&
  CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -buildvcs=false -o parse_def14a_own_go .)
 
-LOCAL=0
 FILINGS="${DEF14A_FILINGS:-/data/def14a_own/filings}"
-case "${DEF14A_LOCAL:-auto}" in
-    0) ;;
-    1|auto)
-        if python3 - "$GOLD/$FILELIST" "$FILINGS" <<'PY'
-from concurrent.futures import ThreadPoolExecutor
-from pathlib import Path
-import sys
-paths = [line.split('\t', 1)[0] for line in Path(sys.argv[1]).read_text().splitlines()]
-root = Path(sys.argv[2])
-with ThreadPoolExecutor(max_workers=28) as pool:
-    present = sum(pool.map(lambda p: (root / p).is_file(), paths))
-print("local coverage: listed=%d present=%d missing=%d" % (len(paths), present, len(paths)-present))
-sys.exit(0 if paths and present == len(paths) else 1)
-PY
-        then
-            LOCAL=1
-        elif [[ "${DEF14A_LOCAL:-auto}" == "1" ]]; then
-            echo "ERROR: missing local filings under $FILINGS; refusing forced local round" >&2
-            exit 1
-        fi
-        ;;
-    *) echo "ERROR: DEF14A_LOCAL must be 0, 1 or auto" >&2; exit 2 ;;
-esac
+gate_select_mode "$GOLD/$FILELIST" "$FILINGS"
+if [[ "${DEF14A_LOCAL:-auto}" == "1" ]] && ! gate_local_coverage "$GOLD/$FILELIST" "$FILINGS"; then
+    echo "ERROR: missing local filings under $FILINGS; refusing forced local round" >&2
+    exit 1
+fi
 
 if (( LOCAL )); then
     echo "== local shards =="
