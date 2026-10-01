@@ -80,9 +80,10 @@ func textOfLines(n *html.Node) string {
 
 // Grid is one <table> with colspan/rowspan expanded to a rectangle.
 type Grid struct {
-	Rows  [][]string
-	Depth int
-	Pos   int // document order
+	Rows       [][]string
+	Depth      int
+	Pos        int // document order
+	styledTabs bool
 }
 
 func (g *Grid) NCol() int {
@@ -450,6 +451,190 @@ func fragmentedOwnershipItems(items []Item, firstPos int) []Item {
 		}
 		if !matched {
 			flush()
+		}
+	}
+	flush()
+	return out
+}
+
+var reTabSpaces = regexp.MustCompile(`(?:\x{00a0}[ \r\n]*){2,}`)
+
+// Styled whitespace can encode columns outside any TABLE. Only reconstruct a
+// complete ownership caption in the zero-output retry; ordinary prose is not a grid.
+func styledTabOwnershipItems(doc *html.Node, firstPos int) []Item {
+	type line struct {
+		text     string
+		cells    []string
+		boundary bool
+	}
+	var lines []line
+	var walk func(*html.Node)
+	walk = func(n *html.Node) {
+		if n.Type == html.ElementNode {
+			if n.DataAtom == atom.Table {
+				lines = append(lines, line{boundary: true})
+				return
+			}
+			if n.DataAtom == atom.Script || n.DataAtom == atom.Style {
+				return
+			}
+			if n.DataAtom == atom.Div || n.DataAtom == atom.P {
+				blockChild := false
+				for c := n.FirstChild; c != nil; c = c.NextSibling {
+					if c.Type == html.ElementNode && blockAtoms[c.DataAtom] && c.DataAtom != atom.Br {
+						blockChild = true
+						break
+					}
+				}
+				if !blockChild {
+					var b strings.Builder
+					var text func(*html.Node)
+					text = func(x *html.Node) {
+						if x.Type == html.TextNode {
+							b.WriteString(reTabSpaces.ReplaceAllString(x.Data, "\t"))
+							return
+						}
+						if x.Type == html.ElementNode && textOf(x) == "" {
+							for _, a := range x.Attr {
+								if a.Key == "style" && strings.Contains(strings.ToLower(a.Val), "letter-spacing") {
+									b.WriteString("\t")
+									return
+								}
+							}
+						}
+						for c := x.FirstChild; c != nil; c = c.NextSibling {
+							text(c)
+						}
+					}
+					text(n)
+					l := line{text: textOf(n)}
+					for _, s := range strings.Split(b.String(), "\t") {
+						if s = norm(s); s != "" {
+							l.cells = append(l.cells, s)
+						}
+					}
+					lines = append(lines, l)
+					return
+				}
+			}
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			walk(c)
+		}
+	}
+	walk(doc)
+	var out []Item
+	var rows [][]string
+	header, context, class, kind, pending := "", "", "", "5pct_holders", ""
+	active, owned, age := false, false, 0
+	flush := func() {
+		if len(rows) >= 2 && owned {
+			heading := "SECURITY OWNERSHIP OF MANAGEMENT"
+			if kind == "5pct_holders" {
+				heading = "SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS"
+			}
+			pos := firstPos + len(out)
+			out = append(out, Item{Kind: "text", Text: heading, Pos: pos})
+			gridRows := [][]string{{"Beneficial Owner", "Number of Shares Beneficially Owned", "Percent of Class"}}
+			if class != "" {
+				gridRows = append([][]string{{class, class, class}}, gridRows...)
+			}
+			seen := map[string]bool{}
+			for _, r := range rows {
+				sig := strings.Join(r, "\x00")
+				if !seen[sig] {
+					gridRows = append(gridRows, r)
+					seen[sig] = true
+				}
+			}
+			g := &Grid{Rows: gridRows, Pos: pos + 1, styledTabs: true}
+			out = append(out, Item{Kind: "table", Text: heading + " " + header, Grid: g, Pos: g.Pos})
+		}
+		rows = nil
+		pending = ""
+	}
+	for _, l := range lines {
+		if l.boundary {
+			flush()
+			active = false
+			context = ""
+			continue
+		}
+		if l.text == "" {
+			age++
+			if age > 100 {
+				flush()
+				active = false
+			}
+			continue
+		}
+		if isHeadingChunk(l.text) && len(l.cells) == 1 && !active {
+			context = l.text
+			continue
+		}
+		c := l.cells
+		if len(c) == 3 && reHdrNameCol.MatchString(c[0]) && strings.EqualFold(c[1], "Number of Shares") && strings.EqualFold(c[2], "Percent") && reOwnHeading.MatchString(context) {
+			flush()
+			header = l.text
+			active = true
+			owned = false
+			age = 0
+			kind = "5pct_holders"
+			class = reHdrClass.FindString(context)
+			continue
+		}
+		if !active {
+			if len(context) < 4000 {
+				context += " " + l.text
+			}
+			continue
+		}
+		age++
+		if age > 100 || strings.HasPrefix(l.text, "*Less") || len(l.text) > 250 || reCompCue.MatchString(l.text) || reOptDetailCue.MatchString(l.text) {
+			flush()
+			active = false
+			continue
+		}
+		if len(rows) == 0 && strings.Contains(strings.ToLower(l.text), "beneficially owned") && strings.Contains(strings.ToLower(l.text), "of class") {
+			owned = true
+			header += " " + l.text
+			continue
+		}
+		if strings.EqualFold(l.text, "FIVE PERCENT BENEFICIAL OWNERS") {
+			continue
+		}
+		if strings.EqualFold(l.text, "NAMED EXECUTIVE OFFICERS") || strings.EqualFold(l.text, "DIRECTORS") {
+			if kind != "management" {
+				flush()
+				kind = "management"
+			}
+			continue
+		}
+		if !owned {
+			continue
+		}
+		if len(c) == 3 {
+			sh, ok := ParseShares(c[1])
+			_, _, _, pctish := ParsePercent(c[2])
+			if !ok || sh < 0 || !pctish || strings.Contains(l.text, "$") || !(strings.Contains(c[2], "%") || reStar.MatchString(c[2]) || reLessThan.MatchString(c[2])) {
+				continue
+			}
+			name := c[0]
+			if pending != "" {
+				name = pending + " " + name
+				pending = ""
+			}
+			rows = append(rows, []string{name, c[1], c[2]})
+			continue
+		}
+		if len(c) == 1 && len(l.text) < 120 && !isAddressLine(l.text) && !reNumLedLine.MatchString(l.text) && !strings.HasPrefix(strings.ToLower(l.text), "c/o") {
+			if strings.HasPrefix(strings.ToLower(l.text), "all directors") {
+				pending = l.text
+				continue
+			}
+			if len(rows) > 0 {
+				rows[len(rows)-1][0] += " " + l.text
+			}
 		}
 	}
 	flush()

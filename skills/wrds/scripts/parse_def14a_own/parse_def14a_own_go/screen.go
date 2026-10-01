@@ -185,6 +185,9 @@ func screenNames(rows []Row) []Row {
 					sig += "|" + strconv.FormatFloat(*r.Shares, 'f', -1, 64)
 				}
 			}
+			if r.styledTabs {
+				sig += "|" + r.TableKind
+			}
 			if seen[sig] {
 				if screenDropReasons != nil {
 					screenDropReasons["same_holder_pct"]++

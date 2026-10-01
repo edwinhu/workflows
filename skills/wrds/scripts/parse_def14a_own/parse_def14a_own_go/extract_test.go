@@ -8821,3 +8821,321 @@ func TestPassiveProseDoesNotInventOwnershipFromFeesOrVotes(t *testing.T) {
 		}
 	}
 }
+
+// Literal styled-tab ownership section from 0000061138-06-000006.
+const styledTabs54 = `    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">SECURITY
+      OWNERSHIP OF CERTAIN BENEFICIAL OWNERS</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">AND
+      OF
+      MANAGEMENT</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: -84.6pt" align="left"><br></div>
+    <div align="left"><font id="TAB1" style="MARGIN-LEFT: 54pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">The
+      following table sets forth information as of </font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><u>December
+      31, 2005</u></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">,
+      (unless
+      otherwise noted) with respect to ownership of common stock by any person known
+      by MacDermid to be a beneficial owner of more than 5% of its common stock,
+      by
+      MacDermid&#8217;s C.E.O. and the four other most highly compensated executive officers
+      and by all Directors and officers of MacDermid as a group. Unless otherwise
+      noted, each person has sole voting and disposition power with respect to such
+      person&#8217;s shares. The total shares of common stock beneficially owned by the
+      officers includes the right to acquire ownership through exercisable stock
+      options. </font></div>
+    <div align="left">&#160;</div>
+    <div align="left">&#160;</div>
+    <div align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Beneficial
+      Owner</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Number
+      of
+      Shares</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;
+      </font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Percent</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -36pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><u>Beneficially
+      Owned</u></font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><u>of&#160;
+      Class</u></font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 18pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">FIVE
+      PERCENT BENEFICIAL OWNERS</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">MacDermid
+      Employees Profit Sharing,</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">2,571,357<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">8.4%
+      (1)</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Pension
+      and Stock Ownership Plans</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">MacDermid
+      Equipment, Inc. 401(K) Plan</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">245
+      Freight Street</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Waterbury,
+      CT 06702</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Bank
+      of
+      America Corporation<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">2,036,143<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">6.7
+      % (2)
+</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">100
+      North
+      Tryon Street</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Charlotte,
+      NC 28255</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Royce
+      &amp; Associates, LLC.<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">2,200,921</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;
+</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">7.2%
+      (6)</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">1414
+      Avenue of the Americas</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">New
+      York,
+      NY 10019</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><font id="TAB2" style="LETTER-SPACING: 9pt">&#160;
+</font>Vanguard/Primecap
+      Fund,
+      Inc.<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">1,701,150<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;&#160;&#160;&#160;&#160;&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">
+      5.6 %
+      (3) </font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">100
+      Vanguard Blvd.</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Malverne,
+      PA 19355</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Daniel
+      H.
+      Leever<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">2,324,810</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;&#160;&#160;&#160;&#160;7.6
+      % (4)</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">c/o
+      MacDermid, Incorporated</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">1401
+      Blake Street</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Denver,
+      Colorado 80202</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">T.
+      Rowe
+      Price Associates<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">2,385,482&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      </font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">7.8%
+      (7)</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">100
+      East
+      Pratt Street</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Baltimore,
+      MD 21202</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -36pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><em>&#160;&#160;&#160;&#160;&#160;&#160;
+      NAMED EXECUTIVE OFFICERS </em></font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -36pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -36pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;&#160;&#160;&#160;
+      Daniel H. Leever</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 36pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt"><font id="TAB2" style="LETTER-SPACING: 9pt">&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">2,324,810
+      (4)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      </font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">7.6
+      %</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Stephen
+      Largan</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 36pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;&#160;&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt"><font id="TAB2" style="LETTER-SPACING: 9pt">&#160;
+      &#160;</font></font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">
+      291,972
+      (5)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      </font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">1.0%
+      </font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Gregory
+      M. Bolingbroke</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 36pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;
+</font>210,270
+      (5)</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      * </font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">John
+      L.
+      Cordani</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 36pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">195,034
+      (5)&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      *</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Paul
+      Morrison</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 36pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">11,509
+      (5)</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      *</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><em>DIRECTORS</em></font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Robert
+      L.
+      Ecklin</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 36pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;
+</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">45,826
+      (4)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      *</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Daniel
+      H.
+      Leever</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 36pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;
+</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">2,324,810
+      (4)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      </font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">7.6%</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Donald
+      G.
+      Ogilvie</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 36pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;
+</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">55,626
+      (4)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      </font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">*</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Joseph
+      M.
+      Silvestri<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;
+</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">209,411
+      (4)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      </font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">*</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">James
+      C.
+      Smith<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;</font></font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">65,742
+      (4)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      </font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">*</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">T.
+      Quinn
+      Spitzer, Jr.</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 36pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;
+</font></font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">47,382
+      (4)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      </font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">*</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">All
+      Directors, Director</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Nominees
+      and Officers&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">3,820,942
+      (5)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      </font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">12.5
+      %</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><u><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">as
+      a
+      group (13 persons)</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 58.5pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;</font></font></u></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt"></font>&#160;</div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 58.5pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">*Less
+      than 1% of shares outstanding</font></div>`
+
+func TestStyledTabDivOwnershipWithWrappedNames(t *testing.T) {
+	rows := ScreenRows(run(t, styledTabs54))
+	if len(rows) != 17 {
+		t.Fatalf("want 17 distinct holder/kind rows, got %d: %+v", len(rows), rows)
+	}
+	wants := []struct {
+		name, kind  string
+		shares, pct float64
+	}{
+		{"MacDermid Employees Profit Sharing, Pension and Stock Ownership Plans MacDermid Equipment, Inc. 401 Plan", "5pct_holders", 2571357, 8.4},
+		{"Bank of America Corporation", "5pct_holders", 2036143, 6.7},
+		{"Royce & Associates, LLC", "5pct_holders", 2200921, 7.2},
+		{"Vanguard/Primecap Fund, Inc", "5pct_holders", 1701150, 5.6},
+		{"Daniel H. Leever", "5pct_holders", 2324810, 7.6},
+		{"T. Rowe Price Associates", "5pct_holders", 2385482, 7.8},
+		{"Daniel H. Leever", "management", 2324810, 7.6},
+		{"Stephen Largan", "management", 291972, 1.0},
+	}
+	for _, w := range wants {
+		var got *Row
+		for i := range rows {
+			if rows[i].HolderName == w.name && rows[i].TableKind == w.kind {
+				got = &rows[i]
+			}
+		}
+		if got == nil || got.ShareClass != "common stock" || got.Shares == nil || *got.Shares != w.shares || got.Percent == nil || *got.Percent != w.pct {
+			t.Errorf("want %+v common stock, got %+v; rows=%+v", w, got, rows)
+		}
+	}
+	for _, w := range []struct {
+		name   string
+		shares float64
+	}{
+		{"Gregory M. Bolingbroke", 210270}, {"John L. Cordani", 195034}, {"Paul Morrison", 11509}, {"Robert L. Ecklin", 45826}, {"Donald G. Ogilvie", 55626}, {"Joseph M. Silvestri", 209411}, {"James C. Smith", 65742}, {"T. Quinn Spitzer, Jr", 47382},
+	} {
+		r := find(rows, w.name, "common stock")
+		if r == nil || r.Shares == nil || *r.Shares != w.shares || r.Percent != nil || r.PctMarker != "*" {
+			t.Errorf("want %+v with less-than marker, got %+v", w, r)
+		}
+	}
+	r := find(rows, "All Directors, Director Nominees and Officers as a group (13 persons)", "common stock")
+	if r == nil || !r.IsGroupRow || r.GroupN != 13 || r.Shares == nil || *r.Shares != 3820942 || r.Percent == nil || *r.Percent != 12.5 {
+		t.Errorf("wrong group: %+v; rows=%+v", r, rows)
+	}
+}
+
+func TestStyledTabDivRejectsNonOwnership(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(styledTabs54, "Number\n      of\n      Shares", "Dollar Value"),
+		strings.ReplaceAll(styledTabs54, "Number\n      of\n      Shares", "Number of Options Granted"),
+		strings.ReplaceAll(styledTabs54, "Beneficial\n      Owner", "Recipient"),
+	} {
+		if rows := ScreenRows(run(t, body)); len(rows) != 0 {
+			t.Fatalf("non-ownership divs emitted %d rows: %+v", len(rows), rows)
+		}
+	}
+}
+
+func TestStyledTabDivCurrencyAndTablePriority(t *testing.T) {
+	money := strings.NewReplacer("2,571,357", "$2,571,357", "2,036,143", "$2,036,143", "2,200,921", "$2,200,921", "1,701,150", "$1,701,150", "2,324,810", "$2,324,810", "2,385,482", "$2,385,482", "291,972", "$291,972", "210,270", "$210,270", "195,034", "$195,034", "11,509", "$11,509", "45,826", "$45,826", "55,626", "$55,626", "209,411", "$209,411", "65,742", "$65,742", "47,382", "$47,382", "3,820,942", "$3,820,942").Replace(styledTabs54)
+	if rows := ScreenRows(run(t, money)); len(rows) != 0 {
+		t.Fatalf("currency divs emitted %d rows: %+v", len(rows), rows)
+	}
+	table := `<p>SECURITY OWNERSHIP OF MANAGEMENT</p><table><tr><td>Name</td><td>Shares Beneficially Owned</td><td>Percent of Class</td></tr><tr><td>Daniel H. Leever</td><td>2,324,810</td><td>7.6%</td></tr><tr><td>Stephen Largan</td><td>291,972</td><td>1.0%</td></tr></table>`
+	rows := ScreenRows(run(t, table+styledTabs54))
+	if len(rows) != 2 {
+		t.Fatalf("established table path changed: %+v", rows)
+	}
+}
+
+func TestStyledTabDivKeepsDifferentValuesAndCrossKindRows(t *testing.T) {
+	body := strings.Replace(styledTabs54, "2,324,810\n      (4)", "2,324,811\n      (4)", 1)
+	rows := ScreenRows(run(t, body))
+	count := 0
+	for _, r := range rows {
+		if r.HolderName == "Daniel H. Leever" {
+			count++
+			if r.Shares == nil || (*r.Shares != 2324810 && *r.Shares != 2324811) {
+				t.Fatalf("lost distinct holding: %+v", r)
+			}
+		}
+	}
+	if count != 3 || len(rows) != 18 {
+		t.Fatalf("want three distinct name/kind/value disclosures and 18 rows, got %d / %d: %+v", count, len(rows), rows)
+	}
+}
+
+func TestStyledTabCaptionCannotCrossAnUnrelatedTable(t *testing.T) {
+	body := strings.Replace(styledTabs54, "FIVE\n      PERCENT BENEFICIAL OWNERS</font></div>", "FIVE\n      PERCENT BENEFICIAL OWNERS</font></div><table><tr><td>Summary Compensation Table</td></tr></table>", 1)
+	if rows := ScreenRows(run(t, body)); len(rows) != 0 {
+		t.Fatalf("stale caption crossed an unrelated table: %d rows", len(rows))
+	}
+}
+
+const recordHolder54 = `
+      At December 18, 2002, Directors and officers of the Fund as a group owned
+beneficially less than 1% of the outstanding shares of the Fund. No person owned
+of record, or to the knowledge of management owned beneficially, more than 5% of
+the Fund's outstanding shares at that date, except that Cede & Co., a nominee
+for participants in Depository Trust Company, held of record 6,757,411 shares of
+Common Stock equal to approximately 93% of the outstanding shares of Common
+Stock of the Fund and 1,100 shares of Preferred Stock equal to 100% of the
+outstanding shares of Preferred Stock of the Fund.
+`
+
+func TestProseRecordHoldingAfterExceptionClause(t *testing.T) {
+	rows := runProse(t, recordHolder54)
+	if len(rows) != 1 {
+		t.Fatalf("want one explicit record holding, got %d: %+v", len(rows), rows)
+	}
+	r := rows[0]
+	if r.HolderName != "Cede & Co." || r.Shares == nil || *r.Shares != 6757411 || r.Percent == nil || *r.Percent != 93 || r.ShareClass != "Common Stock" {
+		t.Fatalf("wrong record holding: %+v", r)
+	}
+}
+
+func TestRecordHoldingProseRejectsMoneyGrantsAndUnspecifiedClass(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(recordHolder54, "6,757,411", "$6,757,411"),
+		strings.ReplaceAll(recordHolder54, "held of record", "was paid"),
+		strings.ReplaceAll(recordHolder54, "6,757,411 shares of", "6,757,411 options on"),
+		strings.ReplaceAll(recordHolder54, "Common Stock equal to", "Common Stock with a dollar value of $1,000 equal to"),
+		strings.ReplaceAll(recordHolder54, "Common Stock", "cash"),
+	} {
+		if rows := runProse(t, body); len(rows) != 0 {
+			t.Fatalf("not a disclosed holding: %+v", rows)
+		}
+	}
+}

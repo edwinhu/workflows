@@ -39,6 +39,9 @@ type Row struct {
 	// Share Holdings / Percentage Owned columns, never an address or amount.
 	numberedHolder bool
 
+	// styledTabs records a headed, non-table ownership grid reconstructed from CSS tabs.
+	styledTabs bool
+
 	// commonColumn records an explicit common-stock header over this value
 	// pair, even when the identifying class label occupies another header row.
 	commonColumn bool
@@ -1490,6 +1493,7 @@ func (c *compacted) hasHeaderCues() bool {
 // a header-less continuation table its predecessor's columns; it may be nil. The
 // compacted form is returned so the caller can pass it along.
 func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compacted) ([]Row, *compacted) {
+	base.styledTabs = g.styledTabs
 	rows, c := extractGridColumns(g, tableText, base, tableIdx, prev, false)
 	if len(rows) != 0 || !base.colspanRecovery {
 		return rows, c

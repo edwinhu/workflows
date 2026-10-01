@@ -30,7 +30,7 @@ var (
 	//
 	// The percent must come AFTER the count: "(50% owned) $15,923,305" — a
 	// partnership's impairment schedule — is not a holding and must not match.
-	reProseHolding = regexp.MustCompile(`(?i)\bown(?:ed|s|ing)\b\s+((?:of\s+record\s+)?(?:and\s+)?(?:beneficially\s+)?(?:of\s+record\s+)?)(?:approximately\s+|about\s+|in\s+the\s+aggregate\s+|(?:a|an)\s+(?:combined\s+|aggregate\s+)?(?:total|aggregate)\s+of\s+)?([0-9][0-9,]{2,}(?:\.[0-9]+)?)\s*((?:Class|Series)\s+[A-Za-z0-9]{1,3}\b\s*)?((?:shares?|units?)\b)?([^.;]{0,140}?)([0-9]{1,3}(?:\.[0-9]+)?)\s*(?:%|\bpercent\b)`)
+	reProseHolding = regexp.MustCompile(`(?i)(?:\bown(?:ed|s|ing)\b|\bheld\s+of\s+record\b)\s+((?:of\s+record\s+)?(?:and\s+)?(?:beneficially\s+)?(?:of\s+record\s+)?)(?:approximately\s+|about\s+|in\s+the\s+aggregate\s+|(?:a|an)\s+(?:combined\s+|aggregate\s+)?(?:total|aggregate)\s+of\s+)?([0-9][0-9,]{2,}(?:\.[0-9]+)?)\s*((?:Class|Series)\s+[A-Za-z0-9]{1,3}\b\s*)?((?:shares?|units?)\b)?([^.;]{0,140}?)([0-9]{1,3}(?:\.[0-9]+)?)\s*(?:%|\bpercent\b)`)
 
 	// A segment of the comma-separated run before the verb that can only be a
 	// postal address: everything from the first one on is dropped from the name.
@@ -127,6 +127,19 @@ func ExtractProse(body string, base Row) []Row {
 			if reLessThan.MatchString(gap + pctTxt + "%") {
 				pctp, marker = nil, "<1%"
 			}
+			if strings.HasPrefix(strings.ToLower(g(0)), "held") {
+				// The record-holder arm requires a named stock class and a percent explicitly
+				// equated to that share count, never an incidental number later in a sentence.
+				m := reRecordClass.FindStringSubmatch(gap)
+				if !strings.EqualFold(unit, "shares") || m == nil {
+					continue
+				}
+				class = m[1]
+				if at := strings.LastIndex(strings.ToLower(before), "except that "); at >= 0 {
+					before = before[at+len("except that "):]
+				}
+				before = reRecordNominee.ReplaceAllString(before, "")
+			}
 			name := proseHolderName(before)
 			if name == "" {
 				proseDrop("no_name")
@@ -156,6 +169,9 @@ func ExtractProse(body string, base Row) []Row {
 	}
 	return out
 }
+
+var reRecordClass = regexp.MustCompile(`(?i)^\s*of\s+((?:common|preferred)\s+stock|class\s+[A-D]\s+common\s+stock)\s+equal\s+to\s+(?:approximately\s+)?$`)
+var reRecordNominee = regexp.MustCompile(`(?i),\s+a\s+nominee\b.*$`)
 
 var rePassiveHolding = regexp.MustCompile(`(?i)(?:^|[^0-9,$A-Za-z])([0-9][0-9,]{2,})\s+((?:[A-Za-z][A-Za-z'\-]*\s+){0,6}shares)\s+held\s+by\s+([^();$]{3,120}?)\s*\(\s*([0-9]{1,3}(?:\.[0-9]+)?)\s*%\s+of\s+([^()$]{1,120})\)`)
 var rePassiveShareBase = regexp.MustCompile(`(?i)\bshares\b.*\b(?:outstanding|entitled\s+to\s+vote)\b|\boutstanding\b.*\bshares\b`)
