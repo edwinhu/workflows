@@ -34,6 +34,121 @@ func TestTitleOfClassWithNumericHolderAddresses(t *testing.T) {
 	}
 }
 
+// Transcribed from 0000891804-16-001267's four-holder ownership table.
+func TestHTMLShareHoldingsPercentageOwned(t *testing.T) {
+	body := `<html><body><p>SHARE OWNERSHIP INFORMATION</p><table>
+<tr><td></td><td></td><td></td></tr>
+<tr><td></td><td>Share</td><td>Percentage</td></tr>
+<tr><td>Shareholder Name and Address</td><td>Holdings</td><td>Owned</td></tr>
+<tr><td>Cascade Investment, L.L.C.<sup>(1)(2)</sup></td><td>13,522,751</td><td>22.10%</td></tr>
+<tr><td>2365 Carillon Point,</td><td></td><td></td></tr>
+<tr><td>Kirkland, WA 98033</td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td></tr>
+<tr><td>Wells Fargo &amp; Company<sup>(3)</sup></td><td>4,408,420</td><td>7.21%</td></tr>
+<tr><td>Wells Capital Management Incorporated</td><td></td><td></td></tr>
+<tr><td>420 Montgomery Street</td><td></td><td></td></tr>
+<tr><td>San Francisco, CA 94104</td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td></tr>
+<tr><td>First Trust Portfolios L.P.<sup>(4)</sup></td><td>4,265,917</td><td>6.97%</td></tr>
+<tr><td>First Trust Advisors L.P.</td><td></td><td></td></tr>
+<tr><td>The Charger Corporation</td><td></td><td></td></tr>
+<tr><td>120 East Liberty Drive, Suite 400</td><td></td><td></td></tr>
+<tr><td>Wheaton, IL 60187</td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td></tr>
+<tr><td>1607 Capital Partners, LLC<sup>(5)</sup></td><td>4,048,909</td><td>6.62%</td></tr>
+<tr><td>13 S. 13th Street</td><td></td><td></td></tr>
+<tr><td>Suite 400</td><td></td><td></td></tr>
+<tr><td>Richmond, VA 23219</td><td></td><td></td></tr>
+</table></body></html>`
+	rows := ScreenRows(run(t, body))
+	if len(rows) != 4 {
+		t.Fatalf("want four disclosed holders, got %d: %+v", len(rows), rows)
+	}
+	for _, want := range []struct {
+		name        string
+		shares, pct float64
+	}{
+		{"Cascade Investment, L.L.C", 13522751, 22.10},
+		{"Wells Fargo & Company", 4408420, 7.21},
+		{"First Trust Portfolios L.P", 4265917, 6.97},
+		{"1607 Capital Partners, LLC", 4048909, 6.62},
+	} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("holder %q: want shares=%g percent=%g; got %+v; all rows=%+v", want.name, want.shares, want.pct, r, rows)
+		}
+	}
+	for _, tc := range []struct{ label, altered string }{
+		{"not_owned", strings.Replace(body, "<td>Owned</td>", "<td>Granted</td>", 1)},
+		{"not_shares", strings.Replace(body, "<td>Share</td>", "<td>Dollar</td>", 1)},
+		{"compensation", strings.Replace(body, "<table>", "<table><tr><td colspan=\"3\">Summary Compensation</td></tr>", 1)},
+	} {
+		t.Run(tc.label, func(t *testing.T) {
+			if got := ScreenRows(run(t, tc.altered)); len(got) != 0 {
+				t.Fatalf("non-ownership headers must not use the stacked ownership escape: %+v", got)
+			}
+		})
+	}
+}
+
+// 0000891804-15-000334 has a real trustee table before the ownership heading.
+// Accepting the later stacked-header table must not disable its legacy fallback.
+func TestStackedOwnedHeadersPreserveEarlierTrusteeHoldings(t *testing.T) {
+	body := `<html><body><table>
+<tr><td></td><td></td><td>Term of</td><td></td><td>Number of</td><td></td><td></td></tr>
+<tr><td></td><td></td><td>Office</td><td>Principal</td><td>Portfolios In</td><td>Other</td><td>Shares of</td></tr>
+<tr><td></td><td></td><td>and</td><td>Occupations</td><td>Fund Complex*</td><td>Directorships</td><td>the Fund</td></tr>
+<tr><td></td><td>Position(s)</td><td>Length</td><td>During</td><td>Overseen by</td><td>Held by</td><td>Beneficially</td></tr>
+<tr><td>Name</td><td>Held With</td><td>of Time</td><td>the Past</td><td>Trustee or</td><td>Trustee or</td><td>Owned on</td></tr>
+<tr><td>and Age</td><td>Fund</td><td>Served</td><td>5 Years</td><td>Nominee</td><td>Nominee*</td><td>April 30, 2015</td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Independent Trustees</td><td>Independent Trustees</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Michael Larson<br>55</td><td>Trustee and Chairperson of the Board of Trustees(1)(2)</td><td>Term expires in 2016;<br>served since May 2004</td><td>Chief Investment Officer for William H. Gates III (1994-present).</td><td>2</td><td>Republic Services, Inc. (2009-present); Grupo Televisa, S.A.B. (2009-present); Autonation, Inc. (2010-present). Fomento Economico Mexicano, SAB (2011-present); EcoLab, Inc. (2012-present).</td><td>4,534**</td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Ronald A. Nyberg<br>61</td><td>Nominee and Trustee(1)(2)</td><td>Term expires in 2017; served since August 2003</td><td>Partner, Nyberg &amp; Cassioppi, LLC (2000-present). Formerly, Executive Vice President, General Counsel, and Corporate Secretary of Van Kampen<br>Investments (1982-1999).</td><td>93</td><td>None</td><td>809</td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Ronald E. Toupin, Jr.<br>56</td><td>Trustee(1)(2)</td><td>Term expires at the<br>Annual Meeting; served since August 2003</td><td>Portfolio Consultant (2010-present). Formerly, Vice President, Manager and Portfolio Manager of Nuveen Asset Management (1998-1999), Vice President and Portfolio Manager of Nuveen Investment Advisory Corporation (1992-1999), Vice President and Manager of Nuveen Unit Investment Trusts (1991-1999), and Assistant Vice President and Portfolio Manager of Nuveen Unit Investment Trusts (1988-1999), each of John Nuveen &amp; Company, Inc. (1982-1999).</td><td>90</td><td>Bennett Group of Funds (2011-2013)</td><td>919</td></tr>
+</table><p>SHARE OWNERSHIP INFORMATION</p><table>
+<tr><td></td><td>Share</td><td>Percentage</td></tr>
+<tr><td>Shareholder Name and Address</td><td>Holdings</td><td>Owned</td></tr>
+<tr><td>Cascade Investment, L.L.C.<sup>(1)(2)</sup></td><td>6,632,888</td><td>22.8%</td></tr>
+<tr><td>2365 Carillon Point,</td><td></td><td></td></tr>
+<tr><td>Kirkland, WA 98033</td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td></tr>
+<tr><td>First Trust Portfolios L.P<sup>(3)</sup></td><td>4,580,326</td><td>15.71%</td></tr>
+<tr><td>First Trust Advisors L.P.</td><td></td><td></td></tr>
+<tr><td>The Charger Corporation</td><td></td><td></td></tr>
+<tr><td>120 East Liberty Drive, Suite 400</td><td></td><td></td></tr>
+<tr><td>Wheaton, IL 60187</td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td></tr>
+<tr><td>1607 Capital Partners, LLC<sup>(4)</sup></td><td>1,750,905</td><td>6.01%</td></tr>
+<tr><td>4991 Lake Brooke Drive</td><td></td><td></td></tr>
+<tr><td>Suite 125</td><td></td><td></td></tr>
+<tr><td>Glen Allen, VA 23060</td><td></td><td></td></tr>
+</table></body></html>`
+	rows := ScreenRows(run(t, body))
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{{"Ronald A. Nyberg", 809}, {"Ronald E. Toupin, Jr", 919}} {
+		found := false
+		for _, r := range rows {
+			if r.HolderName == want.name && r.Shares != nil && *r.Shares == want.shares {
+				found = true
+			}
+		}
+		if !found {
+			t.Errorf("earlier trustee holding lost: %s shares=%g; rows=%+v", want.name, want.shares, rows)
+		}
+	}
+	for _, name := range []string{"Cascade Investment, L.L.C", "First Trust Portfolios L.P", "1607 Capital Partners, LLC"} {
+		if find(rows, name, "") == nil {
+			t.Errorf("stacked-header holder lost: %s; rows=%+v", name, rows)
+		}
+	}
+}
+
 func run(t *testing.T, body string) []Row {
 	t.Helper()
 	base := Row{Accession: "acc", CIK: "cik", Company: "Co", FilingDate: "2010-01-01"}

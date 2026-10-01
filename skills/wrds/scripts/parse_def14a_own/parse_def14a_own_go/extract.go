@@ -34,6 +34,10 @@ type Row struct {
 	// only a postal address is the case this exists for.
 	noHolder bool
 
+	// numberedHolder identifies a numeric-leading holder from explicit
+	// Share Holdings / Percentage Owned columns, never an address or amount.
+	numberedHolder bool
+
 	// classHint is a class / series / fund label recovered from a column
 	// header rather than from a class-shaped value. It is copied onto
 	// ShareClass by ScreenRows AFTER every drop rule has run, so recovering it
@@ -1093,6 +1097,13 @@ func (c *compacted) looksLikeOwnership(tableText string) bool {
 	return c.ownershipReject(tableText) == ""
 }
 
+func (c *compacted) shareHoldingsOwnedHeaders() bool {
+	return len(c.roles) == 3 &&
+		c.roles[0].role == "name" && reHdrNameCol.MatchString(c.roles[0].header) &&
+		c.roles[1].role == "shares" && strings.EqualFold(flat(strings.Join(c.roles[1].hdrCells, " ")), "Share Holdings") &&
+		c.roles[2].role == "pct" && strings.EqualFold(flat(strings.Join(c.roles[2].hdrCells, " ")), "Percentage Owned")
+}
+
 // ownershipReject names the clause that rejected the table, or "" if it is
 // accepted. One function so the -debug view reports the same reason the pipeline
 // acted on.
@@ -1103,7 +1114,9 @@ func (c *compacted) ownershipReject(tableText string) string {
 	if reCompCue.MatchString(tableText) && !reOwnCue.MatchString(tableText) {
 		return "comp_cue"
 	}
-	if !reOwnCue.MatchString(tableText) {
+	// Stacked "Share / Holdings" and "Percentage / Owned" headers state
+	// ownership down columns, not in the row-major table text.
+	if !reOwnCue.MatchString(tableText) && !c.shareHoldingsOwnedHeaders() {
 		return "no_own_cue"
 	}
 	ndata := 0
@@ -1511,7 +1524,9 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 			isParenQualifier(name)
 		if rescued != "" && nameUnusable {
 			name, fns = StripFootnotes(rescued)
-		} else if (reAddrLine.MatchString(name) || isParenQualifier(name)) && lastName != "" {
+		} else if ((reAddrLine.MatchString(name) &&
+			!(c.shareHoldingsOwnedHeaders() && rowIsData(r) && !isAddressLine(name))) ||
+			isParenQualifier(name)) && lastName != "" {
 			// A 5% holder is often laid out over two grid rows: the name alone,
 			// then the address with the numbers beside it.
 			// ... and the second row may be a parenthesised qualifier rather than
@@ -1577,6 +1592,7 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 				rw.TableIndex = tableIdx
 				rw.RowIndex = i
 				rw.HolderName = name
+				rw.numberedHolder = c.shareHoldingsOwnedHeaders() && reScreenLeadNum.MatchString(name)
 				rw.IsGroupRow = grp
 				rw.GroupN = gn
 				rw.Parser = "html_dom"
