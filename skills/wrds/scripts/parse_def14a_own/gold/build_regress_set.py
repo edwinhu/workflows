@@ -17,7 +17,8 @@ locked, exactly like `sample_full.tsv`.
   (a) ZERO-ROW set    old n_rows > 0 AND new n_rows == 0
   (b) GROUP-ROW set   old has_group_row == 1 AND new has_group_row == 0
 
-EXCLUSIONS — four set-(a)/(b) clauses plus guarded set-(b)-only X7/X8/X9 clauses, all mechanical, all applied to the OLD rows of the
+EXCLUSIONS — X1-X4 affect both sets; X7-X9 affect (b) only; X10-X13 affect
+(a) only. All are mechanical and applied to the OLD rows of the
 candidate filing, and all meaning "the old rows are demonstrably wrong, so
 restoring them is not a target":
 
@@ -105,6 +106,16 @@ SET-(b) AMENDMENT 2026-09-30. The floor proposes X7 "no old group row of
  (b) only: real non-group ownership recoveries in (a) are not removed. Dunham
  0000910472-08-000038 is a parser defect and stays gated. See GRIND_PLAN §13.
 
+SET-(a) AMENDMENT 2026-09-30. X10-X13 use old fields only, with no percent
+ anywhere (including numerical zero). X10 requires empty share_class, combined
+ table_kind, >=3 table_index values, and >=2 holder names each with an identical
+ (holder_name, shares) pair repeated >=3 times. X11 requires normalized names
+ exactly {fund, entities n/a}. X12 requires a partnership-accounting name prefix.
+ X13 requires one purchase-narrative row whose shares is an integer year 1900-2000.
+ Exact rules are in ZERO_RULES; whitespace/case are normalized for name labels.
+ They remove 14 named keys from the current gated (a) set and catch 0/513
+ recovered keys. They do not change (b); exclusions stay diagnostic. See §14.
+
 SCOPE, not exclusion, for (b). Of the group-row candidates that survive X1/X2,
 the GATED set is the filings whose lost group rows include at least one carrying a
 PARSED PERCENT; the rest are reported as a DIAGNOSTIC with their own denominator.
@@ -146,7 +157,7 @@ import sys
 import re
 from html.parser import HTMLParser
 from concurrent.futures import ProcessPoolExecutor
-from collections import defaultdict
+from collections import Counter, defaultdict
 
 csv.field_size_limit(1 << 24)
 TSV = {"delimiter": "\t", "quoting": csv.QUOTE_NONE}
@@ -158,6 +169,50 @@ def sha256_of(path):
         for chunk in iter(lambda: fh.read(1 << 20), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+ZERO_RULES = {
+    "X10_repeated_fund_compensation": "no old percent; all old share_class empty; all table_kind combined; >=3 distinct table_index; >=2 distinct holder names each has an identical (holder_name, shares) pair occurring >=3 times",
+    "X11_audit_billing_entities": "no old percent; normalized set of old holder_name equals exactly {fund, entities n/a}",
+    "X12_partnership_accounting": "no old percent; an old name begins Allocation of Income/Loss, Allocation of Income or Loss, Reimbursements to General Partners, Property management fees paid, Rental income, or Interest income",
+    "X13_purchase_narrative_year": "exactly one old row; no percent; name begins The Company purchased; shares is an integer calendar year 1900-2000",
+}
+
+
+def zero_row_exclusion_flags(old_rows):
+    """X10-X13 predicates; membership/recovery flags are deliberately not inputs."""
+    if not old_rows or any(r["percent"] != "" for r in old_rows):
+        return (0, 0, 0, 0)
+    pairs = Counter((r["holder_name"], r["shares"]) for r in old_rows)
+    repeated_names = {name for (name, shares), n in pairs.items() if n >= 3}
+    x10 = int(all(r["share_class"] == "" and r["table_kind"] == "combined" for r in old_rows)
+              and len({r["table_index"] for r in old_rows}) >= 3
+              and len(repeated_names) >= 2)
+    normalized_names = {" ".join(r["holder_name"].casefold().split()) for r in old_rows}
+    x11 = int(normalized_names == {"fund", "entities n/a"})
+    prefixes = ("allocation of income/loss", "allocation of income or loss",
+                "reimbursements to general partners", "property management fees paid",
+                "rental income", "interest income")
+    x12 = int(any(name.startswith(prefixes) for name in normalized_names))
+    shares = old_rows[0]["shares"]
+    x13 = int(len(old_rows) == 1
+              and next(iter(normalized_names)).startswith("the company purchased")
+              and re.fullmatch(r"[0-9]+", shares) is not None
+              and 1900 <= int(shares) <= 2000)
+    return (x10, x11, x12, x13)
+
+
+def read_candidate_rows(task):
+    """Filter within each shard worker; only candidate rows cross process boundaries."""
+    path, keys = task
+    scanned, selected = 0, []
+    with gzip.open(path, "rt") as fh:
+        for r in csv.DictReader(fh, **TSV):
+            scanned += 1
+            key = (r["cik"].lstrip("0") or "0", r["accession"])
+            if key in keys:
+                selected.append((key, r))
+    return scanned, selected
 
 
 def read_manifests(panel_dir):
@@ -313,6 +368,8 @@ def main():
     DOLLAR_RANGE_ENDPOINTS = {0, 1, 10000, 50000, 100000, 500000, 1000000}
 
     group_rows = defaultdict(list)
+    old_rows = defaultdict(list)
+    n_scanned_rows = 0
     n_old_rows = 0
     val_count = defaultdict(lambda: defaultdict(int))   # key -> (shares, percent) -> n
     name_count = defaultdict(lambda: defaultdict(int))  # key -> holder_name -> n   (X4)
@@ -320,12 +377,15 @@ def main():
     names = defaultdict(list)                           # key -> [holder_name, ...] (X4)
     stat = defaultdict(lambda: {"rows": 0, "dollar": 0, "grp": 0, "grp_pct": 0,
                                 "pct": 0, "endpoint": 0})
-    for p in sorted(glob.glob(os.path.join(args.old_panel, "rows_*.tsv.gz"))):
-        with gzip.open(p, "rt") as fh:
-            for r in csv.DictReader(fh, **TSV):
-                key = (r["cik"].lstrip("0") or "0", r["accession"])
-                if key not in cands:
-                    continue
+    paths = sorted(glob.glob(os.path.join(args.old_panel, "rows_*.tsv.gz")))
+    if not paths:
+        sys.exit("ERROR: no old row shards under " + args.old_panel)
+    # A shard is already a large CPU task; chunksize=1 distributes the 33 shards.
+    with ProcessPoolExecutor(max_workers=min(8, len(paths))) as pool:
+        for scanned, selected in pool.map(read_candidate_rows, [(p, cands) for p in paths], chunksize=1):
+            n_scanned_rows += scanned
+            for key, r in selected:
+                old_rows[key].append(r)
                 n_old_rows += 1
                 s = stat[key]
                 s["rows"] += 1
@@ -350,6 +410,12 @@ def main():
                 names[key].append(nm)
                 name_count[key][nm] += 1
     print("[in ] old rows in candidate filings: %d" % n_old_rows)
+    print("[transform] old rows %d -> candidate rows %d -> filing aggregates %d" % (
+        n_scanned_rows, n_old_rows, len(old_rows)))
+    print("[join] candidates=%d old-row keys=%d matched=%d match_rate=%d/%d" % (
+        len(cands), len(old_rows), len(cands & set(old_rows)), len(cands & set(old_rows)), len(cands)))
+    if set(old_rows) != cands or any(len(old_rows[k]) != int(old[k]["n_rows"]) for k in cands):
+        sys.exit("ERROR: candidate old-row coverage/counts disagree with manifests")
 
     tasks = []
     for key in sorted(cand_b):
@@ -387,7 +453,9 @@ def main():
         n_rep_rows = sum(1 for nm in names[key] if name_count[key][nm] >= 3)
         x4 = 1 if (no_pct and len(tables[key]) >= 3 and 2 * n_rep_rows >= s["rows"]) else 0
         excluded = x1 or x2 or x3 or x4
-        in_a = 1 if (key in cand_a and not excluded) else 0
+        x10, x11, x12, x13 = zero_row_exclusion_flags(old_rows[key]) if key in cand_a else (0, 0, 0, 0)
+        excluded_a = excluded or x10 or x11 or x12 or x13
+        in_a = 1 if (key in cand_a and not excluded_a) else 0
         x7, x8, x9 = group_flags.get(key, (0, 0, 0))
         excluded_b = excluded or x7 or x8 or x9
         in_b_gated = 1 if (key in cand_b and not excluded_b and s["grp_pct"] > 0) else 0
@@ -395,7 +463,7 @@ def main():
         m = old[key]
         rows.append([acc, cik, m["filing_date"], m["source_file"], m["form"],
                      1 if key in cand_a else 0, 1 if key in cand_b else 0,
-                     in_a, in_b_gated, in_b_diag, x1, x2, x3, x4, x7, x8, x9,
+                     in_a, in_b_gated, in_b_diag, x1, x2, x3, x4, x7, x8, x9, x10, x11, x12, x13,
                      m["n_rows"], m["n_percent_parsed"], s["grp"], s["grp_pct"],
                      s["rows"], max_same,
                      s["pct"], s["endpoint"], len(tables[key]), n_rep_rows])
@@ -409,6 +477,10 @@ def main():
         counts["excl_x7"] += x7
         counts["excl_x8"] += x8
         counts["excl_x9"] += x9
+        for clause, flag in zip(("x10", "x11", "x12", "x13"), (x10, x11, x12, x13)):
+            counts["excl_" + clause] += flag
+            counts["excl_" + clause + "_new_from_a"] += int(bool(flag and not excluded))
+        counts["excl_x10_x13_new_from_a"] += int(bool((x10 or x11 or x12 or x13) and not excluded))
         counts["excl_group_new"] += int(bool((x7 or x8 or x9) and not excluded))
         counts["excl_x1_only"] += 1 if (x1 and not x2) else 0
         counts["excl_x2_only"] += 1 if (x2 and not x1) else 0
@@ -422,8 +494,8 @@ def main():
             key in cand_a and (x3 or x4) and not (x1 or x2)) else 0
         counts["excl_x3_or_x4_new_from_b"] += 1 if (
             key in cand_b and (x3 or x4) and not (x1 or x2)) else 0
-        counts["excl_any"] += 1 if excluded_b else 0
-        counts["excl_from_a"] += 1 if (key in cand_a and excluded) else 0
+        counts["excl_any"] += 1 if (excluded_a or excluded_b) else 0
+        counts["excl_from_a"] += 1 if (key in cand_a and excluded_a) else 0
         counts["excl_from_b"] += 1 if (key in cand_b and excluded_b) else 0
         counts["set_a"] += in_a
         counts["set_b_gated"] += in_b_gated
@@ -437,6 +509,8 @@ def main():
               "excl_x3_dollar_range_table", "excl_x4_m3_repeated_per_fund",
               "excl_x7_group_grant_zero", "excl_x8_group_share_class_name",
               "excl_x9_group_position_name_prose",
+              "excl_x10_repeated_fund_compensation", "excl_x11_audit_billing_entities",
+              "excl_x12_partnership_accounting", "excl_x13_purchase_narrative_year",
               "old_n_rows", "old_n_percent_parsed", "old_group_rows",
               "old_group_rows_with_percent", "old_rows_counted", "old_max_identical_value",
               # the X3/X4 inputs, so every exclusion can be re-checked from this file
@@ -539,6 +613,8 @@ def main():
                              "was REJECTED: GE 2013 0001206774-13-001019 states no percent "
                              "at all and its old rows are the real table",
         },
+        "zero_row_exclusion_rules": ZERO_RULES,
+        "zero_row_exclusion_scope": "X10-X13: set (a) candidates only; old-row fields only; no percent means empty field, not numerical zero; name labels normalize whitespace/case; set (b) gated and diagnostic unchanged; thresholds unchanged; all candidates still submitted and excluded filings reported diagnostic",
         "group_exclusion_rules": GROUP_RULES,
         "group_exclusion_guards": {
             "X7": "mixed old group rows (>=2), percent-carrying group rows all zero and named in a source grant table; no non-grant table group cell",

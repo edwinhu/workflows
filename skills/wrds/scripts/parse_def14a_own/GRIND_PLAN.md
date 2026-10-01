@@ -1394,3 +1394,52 @@ Verbatim commands, exit codes, document cells, rebuilds, lock verification, and
 full check printouts are in `/home/eh/projects/r2000/scratch/group_set_fix.md`.
 Journal note: `operator-regress-set-b-corrected`. No loop-owned success record is
 written, and the stopped grind is not restarted.
+
+## 14. Amendment — 2026-09-30: old-row-only X10–X13 exclusions (operator)
+
+The grind reported `state: stopped` before any edit. These additional clauses affect set (a) only; both regression minimums remain 0.95 and every other minimum, maximum and per-year yield floor is unchanged. All candidates remain submitted. Exclusions remain pooled and per-clause DIAGNOSTICs, not gates. No parser edit, grid round, grind restart, holdout score or push is part of this correction.
+
+### 14.1 Predicates and exact new catches
+
+The rules come from `~/projects/r2000/scratch/zero_row_residue.md`, “Proposed mechanical rules from old rows only.” No percent means an empty old TSV field, not numerical zero. Name labels normalize whitespace/case; X10 identical holder/share pairs use the original fields. The production predicates consume only old-row fields, with no accession whitelist or current recovery flag.
+
+| Clause | Old-row predicate | Newly excluded gated keys | Recovered caught / tested |
+|---|---|---:|---:|
+| X10 | No percent; all share_class empty; all table_kind combined; >=3 distinct table_index; >=2 holder names each has an identical (holder_name, shares) pair occurring >=3 times | 5 | 0 / 513 |
+| X11 | No percent; normalized holder-name set exactly {fund, entities n/a} | 3 | 0 / 513 |
+| X12 | No percent; a name begins Allocation of Income/Loss, Allocation of Income or Loss, Reimbursements to General Partners, Property management fees paid, Rental income, or Interest income | 5 | 0 / 513 |
+| X13 | Exactly one row; no percent; name begins The Company purchased; shares is an integer year 1900–2000 | 1 | 0 / 513 |
+
+Exact accession catches, with no overlap among the 14 newly excluded filing keys:
+
+* X10: `0000051931-08-000307`, `0000051931-08-000308`, `0000051931-08-000309`, `0000051931-08-000310`, `0000051931-08-000311`.
+* X11: `0000950137-05-006267`, `0000950137-05-007352`, `0000950137-06-006125`.
+* X12: `0000950150-98-000367`, `0000950150-98-000368`, `0000950150-98-000385`, `0000950150-98-000386`, `0001000158-96-000076`.
+* X13: `0000765195-98-000011`.
+
+X10 matches 45 candidate keys in total, including 40 already excluded by earlier clauses. All 45 remain in its diagnostic denominator; only five newly leave the gated set. X11/X12/X13 match 3/5/1 candidates in total. This is an in-sample safety check, not evidence of safety on unseen filings.
+
+### 14.2 Fresh profile and row-count chain
+
+The proposal's residue had 136 keys. The fresh pre-change `bash check.sh` (exit 1) measures 513/648 recovered and 135 unrecovered. All 14 named keys are still unrecovered; none of the 513 recovered keys is caught. The source row for X13 contains doubled whitespace in `The Company  purchased`; the independent verifier initially missed it with a literal-space prefix, then was corrected to recognize whitespace-separated words. The production predicate already normalized whitespace. The failed check and correction are retained in `~/projects/r2000/scratch/x10_x13.md`.
+
+A five-shard pilot read 318,599 rows and selected 510 candidate rows before the bulk profile. The complete profile read 2,903,798 old rows -> 38,136 candidate rows -> 1,893 filing aggregates, matching 1,893/1,893 candidate keys. Old/new manifests each contain 207,912 rows, with 207,912 matched and zero unmatched. The rebuilt gold table changes from 1,893 × 27 to 1,893 × 31 (four clause flags added).
+
+| Population | Before | After |
+|---|---:|---:|
+| Candidate union | 1,893 | 1,893 |
+| Zero-row candidates | 1,070 | 1,070 |
+| Group-row candidates | 1,181 | 1,181 |
+| Set (a) gated | 648 | 634 |
+| Set (b) gated | 77 | 77 |
+| Set (b) share-only diagnostic | 1,054 | 1,054 |
+| Excluded candidate union | 443 | 457 |
+| Excluded zero-row diagnostic | 422 | 436 |
+
+### 14.3 Verification and scoring contract
+
+`python3 -m unittest discover -s gold -p 'test_*exclusions.py' -v` passes 12 tests (exit 0); `python3 -m unittest discover -s scorer -p '*test.py' -v` passes 23 tests (exit 0). The installed flags were independently compared against every candidate's old rows; exact newly excluded keys and unchanged set-(b) membership passed (exit 0). Two consecutive `python3 gold/build_regress_set.py` runs (exit 0) produced byte-identical gold table and sidecar hashes.
+
+`regress_filelist.tsv` remains 1,893 filings, sha256 `e4ac8ec66217ba10db98be6c343dac9da2830136a9ef0eb37aae32a328ce4b0b`; `round_filelist.tsv` remains 22,856 filings, sha256 `da8e15b431a9828ba58c046e514a9e249fa10149df923c27b392256ec9b8a133`. No parsing is needed to re-score. `score.py` reports X10–X13 in the pooled excluded zero-row population, their own per-clause rates/denominators and `regress_dev.tsv` clause labels. The journal note key is `operator-x10-x13-installed`; the ruler is re-locked with `make_lock.sh`. The complete command transcript and final `check.sh` printout are recorded in `~/projects/r2000/scratch/x10_x13.md`.
+
+Final existing-output re-score: `bash check.sh` exits 1 only for set (a), 513/634 = 0.8091 < 0.95; set (b) remains 76/77 = 0.9870. All other gated values and all 56 non-regression metrics/fields are unchanged. X10/X11/X12/X13 emission diagnostics are 0/45, 0/3, 0/5 and 0/1. An end-to-end rebuild, relock and re-score reproduced all ten output/lock hashes exactly; all ten lock members verified. The stubbed scheduler gate suite reports 24 passed, 0 failed (exit 0); it submits no job.
