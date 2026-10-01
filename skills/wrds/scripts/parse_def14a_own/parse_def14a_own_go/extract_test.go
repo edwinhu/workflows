@@ -12037,3 +12037,488 @@ func TestASCIILeadInRunEndsOnHeaderRule(t *testing.T) {
 		}
 	}
 }
+
+// 0000950130-97-004334 file lines 1439-1487: a fund complex's 5% holders,
+// one row per (holder, fund). The NAME AND ADDRESS stub wraps the holder's
+// name over several lines, some of which carry another fund's holding.
+const asciiHolderFundStubLines = `
+  The following table sets forth the information concerning beneficial
+ownership, as of September 12, 1997, of the Funds' shares by each person who
+beneficially owns more than five percent of the voting securities of any Fund:
+
+<TABLE>
+<CAPTION>
+                                                         SHARES    PERCENTAGE OF
+ NAME AND ADDRESS OF                                  BENEFICIALLY  OUTSTANDING
+     SHAREHOLDER                     NAME OF FUND        OWNED     SHARES OWNED
+- -------------------------------  -------------------- ------------ -------------
+<S>                              <C>                  <C>          <C>
+New York Life Insurance Company  EAFE Index               419,009       6.5%
+Agents' Health and Life Benefit
+Trust--(Health Benefits)
+ 51 Madison Avenue
+ New York, NY 10010
+Frank G and Frieda K Brotz       Indexed Bond             794,419       7.4%
+Family Foundation Inc.
+ 3518 Lakeshore Road
+ Sheboygan, WI 53083
+Plastics Engineering Company     EAFE Index               544,648       8.5%
+ P.O. Box 758
+ Sheboygan, WI 53082
+Merrill Lynch Trust Company      Indexed Equity         2,455,013       7.3%
+TTEE FBO Chrysler 401(k) Plan
+ 265 Davidson Ave.
+ Somerset, NJ 08873
+New York Life Trust Company--    Bond                   1,572,696       8.8%
+Client Accounts                  Growth Equity          4,052,590      15.5%
+ 51 Madison Avenue, Room 117A    Indexed Bond           2,100,768      19.6%
+ New York, NY 10010              Indexed Equity         5,261,772      15.5%
+                                 Money Market         106,550,205      42.7%
+                                 Multi-Asset            4,786,086      18.8%
+                                 Short-Term Bond          732,849      14.6%
+                                 Value Equity           9,408,935      17.5%
+Trustees of the Harvest States   International Equity     747,555       6.4%
+Cooperative Combined Retirement
+Fund
+ P.O. Box 64594
+ St. Paul, MN 55164
+Methodist Home Endowment Fund    International Equity     685,751       5.8%
+ 1111 Herring Avenue
+ Waco, TX 76708
+MacKay-Shields Financial         Short-Term Bond        1,028,983      20.5%
+Corporation
+ 9 West 57th Street
+ New York, NY 10019
+</TABLE>`
+
+// 0001047469-06-006379 (Appendix B, excerpt): the fund is the stub and the
+// holder an interior column, one holder per line under a carried fund.
+const asciiFundHolderColumnLines = `                                   APPENDIX B
+
+The following persons owned of record more than 5% of any class of voting
+securities of a Fund as of April 21, 2006:
+
+
+<Table>
+<Caption>
+NAME OF FUND                                                               BENEFICIAL OWNER               PERCENTAGE HELD
+- ------------                                                               ----------------               ---------------
+<S>                                                                  <C>                                       <C>
+PowerShares Dynamic Market Portfolio                                 American Express Investments              21.33%
+                                                                     2178 AXP Financial Center
+                                                                     Minneapolis, MN 55474
+
+                                                                     Charles Schwab                            14.49%
+                                                                     211 Main St.
+                                                                     San Francisco, CA 94105
+
+                                                                     Citigroup                                 14.08%
+                                                                     333 West 34th St.
+                                                                     New York, NY 10001
+
+                                                                     Merrill Lynch                              9.28%
+                                                                     4 Corporate Pl.
+                                                                     Piscataway, NJ 08854
+
+                                                                     National Financial Services                6.58%
+                                                                     200 Liberty St.
+                                                                     New York, NY 10281
+
+                                                                     First Clearing                             5.72%
+                                                                     901 E. Byrd St.
+                                                                     Richmond, VA 23219
+
+PowerShares Dynamic OTC Portfolio                                    Citigroup                                 22.82%
+                                                                     333 West 34th St.
+                                                                     New York, NY 10001
+
+                                                                     Charles Schwab                            11.88%
+                                                                     211 Main St.
+                                                                     San Francisco, CA 94105
+
+                                                                     First Clearing                            10.91%
+                                                                     901 E. Byrd St.
+                                                                     Richmond, VA 23219
+
+                                                                     American Express Investments               9.62%
+</Table>`
+
+// asciiFundHolderOrdinalStreetLines is a 0001209286-10-000145 excerpt (file lines 7154-7205):
+// a holder cell whose street line opens on an ordinal ("707 2nd Avenue South").
+const asciiFundHolderOrdinalStreetLines = `<TABLE>
+<CAPTION>
+C-CLASS
+
+                                   NAME AND ADDRESS                       AMOUNT OF SHARES       PERCENTAGE OF
+NAME OF THE FUND                OF THE BENEFICIAL OWNER                        OWNED               THE CLASS
+- --------------------------------------------------------------------------------------------------------------
+<S>                             <C>                                           <C>                    <C>
+Rydex Consumer Products         Pershing LLC                                   7,976.77               7%
+Fund                            P.O. Box 2052
+                                Jersey City, NJ 07303-9998
+
+Rydex Europe 1.25x              Pershing LLC                                   4,950.99               7%
+Strategy Fund                   P.O. Box 2052
+                                Jersey City, NJ 07303-9998
+
+                                First Clearing, LLC                           15,071.59              21%
+                                FBO Stevan B Dana
+                                P.O. Box 94796
+                                Las Vegas, NV 89193-4796
+
+                                Schwab Special Custody Account                 4,557.88               6%
+                                101 Montgomery Street
+                                San Francisco, CA 94104-4122
+
+Rydex Financial Services        Ameritrade Inc                                 1,860.98               7%
+Fund                            P.O. Box 2226
+                                Omaha, NE 68103-2226
+
+Rydex|SGI Global 130/30         First Clearing, LLC                           32,318.63               6%
+Strategy Fund                   FBO Suzanne A Berkey
+                                407 Webster
+                                Pittsburg, KS 66762-5542
+
+Rydex|SGI Global Market         First Clearing, LLC                            2,506.08               9%
+Neutral Fund                    FBO Evan Floreani
+                                605 Ocean Dr Apt 11M
+                                Key Biscayne, FL 33149-2306
+
+                                First Clearing, LLC                            1,466.88               5%
+                                FBO Maria J Floreani
+                                605 Ocean Drive Apt 11M
+                                Key Biscayne, FL 33149-2306
+
+                                American Enterprise Investment Services        2,124.04               7%
+                                707 2nd Avenue South
+                                Minneapolis, MN 55402
+
+Rydex Internet Fund             Southwest Securities Inc                       1,980.52              13%
+                                FBO Donald Brandt
+                                P.O. Box 509002
+                                Dallas, TX 75250
+</TABLE>
+`
+
+// asciiHolderFundRuledLines is a 0000949377-06-000745 excerpt (file lines 5674-5709):
+// holder records separated by rule lines, with a comma-less city line closing each address.
+const asciiHolderFundRuledLines = `
+<TABLE>
+<CAPTION>
+- ----------------------------------------------------------------------------------------------------------------------------
+                                                                                                 NUMBER        PERCENTAGE
+                                                                                                   OF              OF
+NAME OF SHAREHOLDER                              FUND                                            SHARES          SHARES
+- ------------------------------------------------ ------------------------------------------- --------------- ---------------
+<S>                                              <C>                                         <C>                    <C>
+NFS LLC FEBO                                     QUALITY SMALL-CAP FUND-X                         8,409.7860         11.90%
+FMT CO CUST IRA ROLLOVER
+FBO GERALD D MYERS
+1520 ALDERCREEK PL
+WESTLAKE VILLAGE CA 91362-4211
+- ------------------------------------------------ ------------------------------------------- --------------- ---------------
+NFS LLC FEBO                                     GLOBAL UTILITIES FUND-C                          5,002.0390          5.13%
+GRACE A MASCIARELLI TTEE
+THE GRACE A MASCIARELLI
+SURVIVORS TR, U/A 7/8/04
+3455 BLANDFORD WAY
+DAVIDSONVILLE MD  21035-2443
+- ------------------------------------------------ ------------------------------------------- --------------- ---------------
+NFS LLC FEBO                                     FOREIGN OPPORTUNITIES FUND-X                   143,294.2440          6.22%
+HARLEY K SEFTON TTEE                             RISING DIVIDENDS FUND-X                        454,343.3690          9.13%
+DONNA K SEFTON IRREV TRUST
+U/A 04/29/93
+2550 5TH AVE STE 808
+SAN DIEGO CA  92103-6624
+- ------------------------------------------------ ------------------------------------------- --------------- ---------------
+NFS LLC FEBO                                     QUALITY SMALL-CAP FUND-X                         7,485.0300         10.60%
+HARLEY K SEFTON TTEE                             SMALL-CAP SUSTAINABLE GROWTH FD-X                7,796.2580         11.06%
+HARLEY K SEFTON TRUST
+U/A 04/13/90
+2550 5TH AVE STE 808
+SAN DIEGO CA  92103-6624
+- ------------------------------------------------ ------------------------------------------- --------------- ---------------
+</TABLE>
+`
+
+// asciiHolderFundCityLines joins 0000949377-06-000745 file lines 5674-5682 (the table header)
+// and 5800-5830: a holder whose fund lines run past a comma-less "CITY ST  ZIP" line.
+const asciiHolderFundCityLines = `
+<TABLE>
+<CAPTION>
+- ----------------------------------------------------------------------------------------------------------------------------
+                                                                                                 NUMBER        PERCENTAGE
+                                                                                                   OF              OF
+NAME OF SHAREHOLDER                              FUND                                            SHARES          SHARES
+- ------------------------------------------------ ------------------------------------------- --------------- ---------------
+<S>                                              <C>                                         <C>                    <C>
+- ------------------------------------------------ ------------------------------------------- --------------- ---------------
+PHOENIX LIFE INSURANCE COMPANY                   DYNAMIC GROWTH FUND-A                          190,000.0000         18.65%
+C/O MATTHEW PAGLIARO                             DYNAMIC GROWTH FUND-C                           10,000.0000         62.84%
+ONE AMERICAN ROW 3RD FL                          FUNDAMENTAL GROWTH-A                           190,000.0000          7.73%
+HARTFORD CT 06103-2833                           FUNDAMENTAL GROWTH-C                            10,000.0000         52.73%
+                                                 GLOBAL UTILITIES FUND-A                        520,120.5290         36.38%
+                                                 GLOBAL UTILITIES FUND-C                         10,414.6150         10.69%
+                                                 HIGH YIELD SECURITIES FUND-A                 1,484,043.5050         61.83%
+                                                 HIGH YIELD SECURITIES FUND-C                   105,215.4470         92.17%
+                                                 LOW-DURATION CORE PLUS BOND FUND-X           1,059,449.5880        100.00%
+                                                 LOW-DURATION CORE PLUS BOND FUND-Y             527,969.6650        100.00%
+                                                 PATHFINDER FUND-A                              190,689.2160         52.78%
+                                                 PATHFINDER FUND-C                               10,004.9020         59.00%
+                                                 RELATIVE VALUE FUND-A                          190,186.8240         90.63%
+                                                 RELATIVE VALUE FUND-C                           10,000.0000         37.97%
+                                                 TOTAL VALUE FUND-A                             571,595.5600         22.34%
+                                                 TOTAL VALUE FUND-C                              30,000.0000         84.64%
+- ------------------------------------------------ ------------------------------------------- --------------- ---------------
+PHOENIX WEALTH BUILDER PHOLIO                    BOND FUND-A                                    964,255.3360         34.67%
+ATTN CHRIS WILKOS                                DYNAMIC GROWTH FUND-A                          474,475.4500         46.57%
+SHAREHOLDER SERVICES DEPT                        FOREIGN OPPORTUNITIES FUND-A                   378,040.4950          5.14%
+C/O PHOENIX EQUITY PLANNING                      FUNDAMENTAL GROWTH-A                         1,311,860.4190         53.37%
+101 MUNSON ST                                    GROWTH & INCOME FUND-A                         897,180.5190          8.42%
+GREENFIELD MA  01301-9684                        GLOBAL UTILITIES FUND-A                        473,342.1500         33.11%
+                                                 HIGH YIELD SECURITIES FUND-A                   253,954.1960         10.58%
+                                                 INSTITUTIONAL BOND FUND-Y                      320,373.7270         49.80%
+                                                 INTERNATIONAL STRATEGIES FUND-A              1,081,025.6100         17.36%
+                                                 MARKET NEUTRAL FUND-A                          715,088.5610          7.57%
+                                                 TOTAL VALUE FUND-A                           1,323,772.6970         51.74%
+- ----------------------------------------------------------------------------------------------------------------------------
+</TABLE>
+`
+
+// asciiPercentOwnedCaptionLines is a 0000927797-96-000068 excerpt (file lines 248-321):
+// a caption table whose percent column is headed "Approximate Percent Owned".
+const asciiPercentOwnedCaptionLines = `
+     The following table sets forth the beneficial  ownership of Common Stock of
+the Company as of October 15,  1996,  by (a) each person known by the Company to
+own  beneficially  more than 5% of the outstanding  Common Stock;  (b) the Chief
+Executive  Officer  of the  Company;  (c) each of the  four  other  most  highly
+compensated  executive  officers of the Company  (determined at fiscal  year-end
+1995);  (d) each  director of the Company;  and (e) all  directors and executive
+officers as a group. Except as otherwise  indicated,  the address of each holder
+identified  below  is in care of the  Company,  2124  Main  Street,  Suite  250,
+Huntington Beach, California 92648.
+
+
+<TABLE>
+<CAPTION>
+
+
+
+
+                                   Number of Shares
+                                   Beneficially             Approximate
+Name                               Owned(1)                 Percent Owned
+
+<S>                             <C>                       <C>
+Larry W. Dingus(2) . .             291,957                  3.7%
+
+
+Larry S. Jordan. .                 208,000                  2.7%
+
+
+Ronald R. Maas(3). .               381,610                  4.9%
+
+
+C. Shannon Dingus(4)               721,518                  9.1%
+
+
+Kenneth C. Welch III(5)            238,574                  3.0%
+
+
+Richard W. Brail                         0                   *
+
+
+All executive officers and 
+directors asa group 
+(6 persons)(6)                   1,841,659                  22.6%
+
+
+
+<FN>
+_______________
+
+*Less than 1%
+
+               (1) Except as  indicated  in the  footnotes  to this  table,  the
+          shareholders  named in the table are known to the Company to have sole
+          voting and investment power with respect to all shares of Common Stock
+          shown as  beneficially  owned by them,  subject to community  property
+          laws where  applicable.  As of  October  15,  1996,  an  aggregate  of
+          7,767,235 shares of Common Stock were outstanding.
+
+               (2) Includes options to purchase 134,883 shares exercisable on or
+          before December 15, 1996.
+
+               (3) Includes options to purchase 80,000 shares  exercisable on or
+          before December 15, 1996.
+
+               (4) Includes options to purchase 134,300 shares exercisable on or
+          before December 15, 1996.
+
+               (5) Includes options to purchase 52,000 shares  exercisable on or
+          before December 15, 1996.
+
+               (6) Includes officers' and directors' shares listed above.
+</FN>
+</TABLE>
+`
+
+func TestASCIICaptionPercentOwnedHeader(t *testing.T) {
+	rows := ScreenRows(run(t, asciiPercentOwnedCaptionLines))
+	for _, want := range []struct {
+		name        string
+		shares, pct float64
+	}{
+		{"Larry W. Dingus", 291957, 3.7},
+		{"C. Shannon Dingus", 721518, 9.1},
+		{"Kenneth C. Welch III", 238574, 3.0},
+	} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("percent-owned caption row lost: %+v; rows=%+v", want, rows)
+		}
+	}
+}
+
+// asciiWrappedLessThanPctLines is a 0000088053-99-000872 excerpt (file lines 321-364):
+// a director table whose percent cell wraps "Less than" / "1/4 of 1%" over two lines.
+const asciiWrappedLessThanPctLines = `Class I
+- -------
+Directors serving until 2001 Annual Meeting of Stockholders:
+
+<TABLE>
+<CAPTION>
+
+                                                                                     Shares
+                          Present Office with the Fund, if                        Beneficially
+                            any; Principal Occupation or            Year First       Owned         Percent
+                          Employment and Directorships              Became a        June 30,          of
+Name (Age)                 in Publicly Held Companies                Director       1999 (1)        Class
+- ----------                 --------------------------                --------       --------        -----
+
+<S>                       <C>                                         <C>             <C>          <C>
+Juris Padegs (67)*+       Chairman   of  the   Board;   Advisory      1991            2,140        Less than
+                          Managing  Director  of Scudder  Kemper                                   1/4 of 1%
+                          Investments,  Inc. Mr.  Padegs  serves
+                          on the boards of certain  other  funds
+                          managed by Scudder Kemper.
+
+Chang-Hee Kim (62)*       Vice  Chairman;  President  and  Chief      1990             --             --
+                          Executive  Officer,  Daewoo Securities
+                          Co.,   Ltd.;   President,   Securities
+                          Market    Stabilization   Fund;   Vice
+                          Chairman,   Korea  Securities  Dealers
+                          Association;  and Vice Chairman, Korea
+                          Listed Companies Association.
+
+Hugh T. Patrick (69)      R.D.     Calkins      Professor     of      1995            17,541       Less than
+                          International    Business,    Graduate                                   1/4 of 1%
+                          School    of    Business,     Columbia
+                          University;    Director,   Center   on
+                          Japanese    Economy   and    Business,
+                          Columbia   University;    Co-Director,
+                          APEC    Study     Center,     Columbia
+                          University;    and   Director,   Japan
+                          Society.  Mr. Patrick currently serves
+                          on the  board of one  additional  fund
+                          managed by Scudder Kemper.
+
+All Directors and Officers as a group                                               68,393 (4)     Less than
+                                                                                                   1/4 of 1%
+</TABLE>
+`
+
+func TestASCIICaptionWrappedLessThanPercent(t *testing.T) {
+	rows := ScreenRows(run(t, asciiWrappedLessThanPctLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{
+		{"Juris Padegs", 2140},
+		{"Hugh T. Patrick", 17541},
+	} {
+		var got *Row
+		for i := range rows {
+			if strings.HasPrefix(rows[i].HolderName, want.name) {
+				got = &rows[i]
+			}
+		}
+		if got == nil || got.Shares == nil || *got.Shares != want.shares || got.PctMarker != "<1%" {
+			t.Errorf("wrapped less-than percent row lost: %+v; rows=%+v", want, rows)
+		}
+	}
+}
+
+func TestASCIIHolderByFundTable(t *testing.T) {
+	rows := ScreenRows(run(t, asciiHolderFundStubLines))
+	for _, want := range []struct {
+		name, fund  string
+		shares, pct float64
+	}{
+		{"New York Life Insurance Company Agents' Health and Life Benefit Trust--(Health Benefits)", "EAFE Index", 419009, 6.5},
+		{"Plastics Engineering Company", "EAFE Index", 544648, 8.5},
+		{"New York Life Trust Company-- Client Accounts", "Bond", 1572696, 8.8},
+		{"New York Life Trust Company-- Client Accounts", "Money Market", 106550205, 42.7},
+		{"MacKay-Shields Financial Corporation", "Short-Term Bond", 1028983, 20.5},
+	} {
+		r := find(rows, want.name, want.fund)
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("holder-by-fund row lost: %+v; rows=%+v", want, rows)
+		}
+	}
+	if len(rows) != 15 {
+		t.Errorf("want 15 holder-fund rows, got %d", len(rows))
+	}
+	rows = ScreenRows(run(t, asciiFundHolderColumnLines))
+	for _, want := range []struct {
+		name, fund string
+		pct        float64
+	}{
+		{"American Express Investments", "PowerShares Dynamic Market Portfolio", 21.33},
+		{"First Clearing", "PowerShares Dynamic Market Portfolio", 5.72},
+		{"Citigroup", "PowerShares Dynamic OTC Portfolio", 22.82},
+		{"American Express Investments", "PowerShares Dynamic OTC Portfolio", 9.62},
+	} {
+		r := find(rows, want.name, want.fund)
+		if r == nil || r.Percent == nil || *r.Percent != want.pct || r.Shares != nil {
+			t.Errorf("fund-holder row lost: %+v; rows=%+v", want, rows)
+		}
+	}
+	if len(rows) != 10 {
+		t.Errorf("want 10 fund-holder rows, got %d", len(rows))
+	}
+	rows = ScreenRows(run(t, asciiFundHolderOrdinalStreetLines))
+	if r := find(rows, "American Enterprise Investment Services", "Rydex|SGI Global Market Neutral Fund"); r == nil || r.Percent == nil || *r.Percent != 7 {
+		t.Errorf("ordinal street line fused into the holder name; rows=%+v", rows)
+	}
+	for _, r := range rows {
+		if strings.Contains(r.HolderName, "Avenue") {
+			t.Errorf("address in holder name: %q", r.HolderName)
+		}
+	}
+	rows = ScreenRows(run(t, asciiHolderFundRuledLines))
+	for _, want := range []struct {
+		name, fund string
+		pct        float64
+	}{
+		{"NFS LLC FEBO GRACE A MASCIARELLI TTEE THE GRACE A MASCIARELLI SURVIVORS TR, U/A 7/8/04", "GLOBAL UTILITIES FUND-C", 5.13},
+		{"NFS LLC FEBO HARLEY K SEFTON TTEE DONNA K SEFTON IRREV TRUST U/A 04/29/93", "FOREIGN OPPORTUNITIES FUND-X", 6.22},
+		{"NFS LLC FEBO HARLEY K SEFTON TTEE HARLEY K SEFTON TRUST U/A 04/13/90", "SMALL-CAP SUSTAINABLE GROWTH FD-X", 11.06},
+	} {
+		if r := find(rows, want.name, want.fund); r == nil || r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("ruled holder-fund row lost: %+v; rows=%+v", want, rows)
+		}
+	}
+	rows = ScreenRows(run(t, asciiHolderFundCityLines))
+	for _, want := range []struct {
+		name, fund string
+		pct        float64
+	}{
+		{"PHOENIX LIFE INSURANCE COMPANY", "TOTAL VALUE FUND-C", 84.64},
+		{"PHOENIX WEALTH BUILDER PHOLIO ATTN CHRIS WILKOS SHAREHOLDER SERVICES DEPT", "TOTAL VALUE FUND-A", 51.74},
+	} {
+		if r := find(rows, want.name, want.fund); r == nil || r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("holder lost past its city line: %+v; rows=%+v", want, rows)
+		}
+	}
+}
