@@ -235,7 +235,7 @@ See **`references/sas-etl.md`** for complete patterns:
 | IBES | `tr_ibes` | `det_epsus`, `statsum_epsus` |
 | Form D / Reg D | `wrdssec` | `wrds_vc_formd` (parsed, 2000–2020); index: `wrdssec_all.forms` (all CIKs) or `wrds_forms` (filer only) — default to `forms`, see `references/wrds-forms-tables.md` |
 | SEC EDGAR | `wrdssec_all` | `forms` (raw index, all CIKs per filing — default), `wrds_forms` (filer-only view), `wciklink_cusip` |
-| SEC Search | `wrds_sec_search` | `filing_view`, `registrant` |
+| SEC Search | `wrds_sec_search` | `filing_<form>` (full text + indexed `filing_tsv`), `registrant` — server-side full-text search; never select `filing` in bulk. See `references/sec-text-search.md` |
 | EDGAR | `edgar` | `filings`, `filing_docs` |
 | Fama-French | `ff` | `factors_monthly`, `factors_daily` |
 | LSEG/Datastream | `tr_ds` | `ds2constmth`, `ds2indexlist` |
@@ -365,6 +365,7 @@ Detailed query patterns and table documentation:
 - **`references/lpc-dealscan.md`** - LPC DealScan: legacy vs 2021+ flat schema, borrower ids, the gvkey link and its grain caveats
 - **`references/muni-bonds.md`** - Municipal bonds: MSRB RTRS trades, SDC municipals
 - **`references/wrds-forms-tables.md`** - `wrdssec_all.wrds_forms` and friends: filing metadata tables and their columns
+- **`references/sec-text-search.md`** - `wrds_sec_search`: phrase/prefix full-text search over filing text in SQL (tsvector + `ts_headline` snippets, `registrant` join), plus the `bow_YYYY` word-count tables
 
 ### Example Files
 
