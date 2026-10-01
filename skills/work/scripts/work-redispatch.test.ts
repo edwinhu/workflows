@@ -18,6 +18,7 @@ import { execFileSync } from 'node:child_process'
 import { mkdtempSync, mkdirSync, chmodSync, readdirSync, rmSync, writeFileSync, readFileSync, existsSync, utimesSync } from "node:fs"
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { run as runWorkflow, replies } from './workflow-harness.mjs'
 
 // Tests in this file drive work-dispatch.sh as a real bash subprocess. Bun's 5s per-test default
 // is a budget for that subprocess plus whatever else the machine is doing, so under parallel load
@@ -53,7 +54,7 @@ function fixture(opts: { planWork: string; planRed: string; argsWork: string; ar
       goal: 'a goal',
       tasks: [{ id: 't1', name: 'one', work: opts.planWork, writablePaths: ['a.txt'], refs: [], redCommand: opts.planRed, acceptance: 'it passes' }],
       mechanicalChecks: [{ name: 'check', cmd: 'true' }],
-      reviewLenses: [{ key: 'k', agentType: 'Explore', refs: [], prompt: 'judge' }],
+      lens: { agentType: 'Explore', refs: [], prompt: 'judge' },
     },
   }
   writeFileSync(plan, `# Plan\n\n<!-- work:dispatch\n${JSON.stringify(block, null, 2)}\n-->\n`)
@@ -64,7 +65,7 @@ function fixture(opts: { planWork: string; planRed: string; argsWork: string; ar
     goal: 'a goal',
     tasks: [{ id: 't1', name: 'one', work: opts.argsWork, writablePaths: ['a.txt'], refs: [], redCommand: opts.argsRed, acceptance: 'it passes' }],
     mechanicalChecks: [{ name: 'check', cmd: 'true' }],
-    reviewLenses: [{ key: 'k', agentType: 'Explore', refs: [], prompt: 'judge' }],
+    lens: { agentType: 'Explore', refs: [], prompt: 'judge' },
     ...(opts.extra ?? {}),
   }, null, 2) + '\n')
   return { dir, plan, args }
@@ -106,6 +107,24 @@ describe('work-redispatch.sh syncs the plan dispatch block into args.json', () =
     const r = run(f.plan, f.args)
     expect(r.code).toBe(0)
     expect(readArgs(f.args).tasks[0].redCommand).toBe('bun test x -t amended')
+  })
+
+  /**
+   * The ONE key the sync has to be able to REMOVE. workflow.js refuses `reviewLenses` outright, so an
+   * args file carrying it from an earlier round while the amended plan declares `lens` throws before a
+   * single agent is dispatched — the round cannot run at all, on a plan that is correct. Every other
+   * key the sync only ever sets.
+   */
+  test('a retired reviewLenses key is REMOVED when the plan no longer declares it', () => {
+    const f = fixture({
+      planWork: 'w', planRed: 'false', argsWork: 'w', argsRed: 'false',
+      extra: { reviewLenses: [{ key: 'k', agentType: 'Explore', refs: [], prompt: 'judge' }] },
+    })
+    const r = run(f.plan, f.args)
+    expect(r.code).toBe(0)
+    expect('reviewLenses' in readArgs(f.args)).toBe(false)
+    expect(readArgs(f.args).lens.prompt).toBe('judge')
+    expect(r.stdout).toContain('-reviewLenses')
   })
 
   test('the sync is reported on stdout — a silent overwrite is how drift hides', () => {
@@ -210,7 +229,7 @@ function gateFixture(opts: { dirty?: boolean; uncountable?: boolean } = {}) {
       redCommand: 'bash scripts/check.sh', acceptance: '`bash scripts/check.sh` exits 0',
     }],
     mechanicalChecks: [{ name: 'tests', cmd: 'bun test' }],
-    reviewLenses: [{ key: 'k', agentType: 'Explore', refs: [], prompt: 'raise MAJOR when the work is wrong' }],
+    lens: { agentType: 'Explore', refs: [], prompt: 'raise MAJOR when the work is wrong' },
   }
   if (opts.dirty)
     clean.tasks.push({
@@ -430,7 +449,7 @@ describe('a re-dispatched plan is archived beside args.json, like a first dispat
  * script that is genuinely red, so the dispatch-time probe passes and the only thing under test is
  * which tasks the selection picks.
  */
-function selFixture(opts: { extra?: Record<string, unknown> } = {}) {
+function selFixture(opts: { extra?: Record<string, unknown>; paths?: Record<string, string[]> } = {}) {
   const dir = mkdtempSync(join(tmpdir(), 'work-redispatch-sel-'))
   scratch.push(dir)
   const plan = join(dir, 'plan.md')
@@ -439,7 +458,8 @@ function selFixture(opts: { extra?: Record<string, unknown> } = {}) {
   const tasks = [1, 2, 3, 4, 5].map(i => {
     redScript(dir, `red${i}.sh`, 'echo "1 failed"\nexit 1')
     return {
-      id: `T${i}`, name: `task ${i}`, work: `do part ${i}`, writablePaths: [`src/t${i}`], refs: [],
+      id: `T${i}`, name: `task ${i}`, work: `do part ${i}`,
+      writablePaths: opts.paths?.[`T${i}`] ?? [`src/t${i}`], refs: [],
       redCommand: `bash scripts/red${i}.sh`, acceptance: `\`bash scripts/red${i}.sh\` exits 0`,
       ...(deps[`T${i}`] ? { dependsOn: deps[`T${i}`] } : {}),
     }
@@ -449,7 +469,7 @@ function selFixture(opts: { extra?: Record<string, unknown> } = {}) {
     goal: 'make the thing correct',
     tasks,
     mechanicalChecks: [{ name: 'tests', cmd: 'bun test' }],
-    reviewLenses: [{ key: 'k', agentType: 'Explore', refs: [], prompt: 'raise MAJOR when the work is wrong' }],
+    lens: { agentType: 'Explore', refs: [], prompt: 'raise MAJOR when the work is wrong' },
   }
   writeFileSync(plan, '# Plan\n\n## Run sizing\n\nnothing parked\n\n' +
     `<!-- work:dispatch\n${JSON.stringify({ runId: 'sel-run', args: clean }, null, 2)}\n-->\n`)
@@ -463,19 +483,30 @@ function selFixture(opts: { extra?: Record<string, unknown> } = {}) {
 function selResult(
   dir: string,
   flagged: string[],
-  opts: { settled?: string[]; noRedFor?: string[]; findings?: unknown[]; mechFailed?: unknown[] } = {},
+  opts: {
+    settled?: string[]; noRedFor?: string[]; findings?: unknown[]; mechFailed?: unknown[]
+    /** RED-mode diagnoses: {failure, ownerTask, cause, fix}. ownerTask is a task id or 'plan'. */
+    routes?: unknown[]
+    /** Blocking items whose owner is the PLAN — no task's writablePaths can reach them. */
+    planFindings?: unknown[]
+  } = {},
 ) {
   const settled = opts.settled ?? ['T1', 'T2', 'T3', 'T4', 'T5'].filter(id => !flagged.includes(id))
   const noRed = new Set(opts.noRedFor ?? [])
+  const previousTasks = readArgs(join(dir, 'args.json')).tasks
   writeFileSync(join(dir, 'result.json'), JSON.stringify({
     overallPass: false, verdict: 'FAIL',
     implemented: settled.map(id => ({ id, done: true })),
     verified: settled.map(id => ({ id, pass: true })),
-    red: settled.filter(id => !noRed.has(id)).map(id => ({ id, verdict: 'red-green' })),
+    red: settled.filter(id => !noRed.has(id)).map(id => ({
+      id, command: previousTasks.find((t: any) => t.id === id).redCommand, verdict: 'red-green',
+    })),
     tasksThatFlagged: flagged,
     mechanicalThatFailed: opts.mechFailed ?? [],
-    lensesThatFlagged: opts.findings?.length ? ['k'] : [],
+    lensesThatFlagged: opts.findings?.length ? ['lens'] : [],
     findings: opts.findings ?? [],
+    routes: opts.routes ?? [],
+    planFindings: opts.planFindings ?? [],
   }, null, 2) + '\n')
 }
 
@@ -577,7 +608,10 @@ describe('work-redispatch.sh derives the selective re-run from the previous verd
     const r = redispatch(f.plan, f.args, '--full')
     expect(r.code).toBe(0)
     expect(only(f.args)).toBeUndefined()
-    expect(readArgs(f.args).priorResults).toBeUndefined()
+    // The stale implemented/verified records are gone — every task is re-run, so none of them holds.
+    // M1 keeps the proven RED adjudications, and only those: see the M1 tests below.
+    expect(readArgs(f.args).priorResults.implemented).toEqual([])
+    expect(readArgs(f.args).priorResults.verified).toEqual([])
   })
 
   test('the selection is printed — a scope nobody can see is a scope nobody can check', () => {
@@ -683,6 +717,372 @@ describe('a lens-only FAIL is narrowed by the files its findings name', () => {
     const r = redispatch(f.plan, f.args)
     expect(only(f.args)).toBeUndefined()
     expect(r.out).toMatch(/FULL re-run/)
+  })
+
+  /**
+   * M1. A finding's `file` is written by a model reading a diff, so it routinely carries a location.
+   * With the suffix on, `coveredBy` matched NO writablePath, every located finding was an orphan, the
+   * round fell back to FULL, and FULL re-probed red commands the previous round had fixed — so the run
+   * dead-ended on `red-not-red` over work that was done. All three location forms are pinned, because
+   * fixing only `:135` is how the range form stayed broken.
+   *
+   * The writablePath here is the FILE, not its directory: `coveredBy` is a prefix test, so `a/` matches
+   * `a/b.go:135-140` suffix and all, and a directory-scoped fixture would pass with the strip removed.
+   * The plans this defect was measured on declare exact files.
+   */
+  test("a finding file 'a/b.go:135-140' maps to the task owning a/b.go", () => {
+    const f = selFixture({ paths: { T5: ['a/b.go'] } })
+    selResult(f.dir, [], { findings: [major('a/b.go:135-140')] })
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(0)
+    expect(only(f.args)).toEqual(['T5'])
+    expect(r.out).toMatch(/lens-only FAIL/)
+    // The mapping is reported by the STRIPPED path, so a reader can see which path was matched.
+    expect(r.out).toContain('a/b.go ->')
+  })
+
+  test('the single-line and column location forms map too', () => {
+    for (const file of ['a/b.go:135', 'a/b.go:135:8']) {
+      const f = selFixture({ paths: { T5: ['a/b.go'] } })
+      selResult(f.dir, [], { findings: [major(file)] })
+      expect(redispatch(f.plan, f.args).code).toBe(0)
+      expect(only(f.args)).toEqual(['T5'])
+    }
+  })
+
+  // An ABSOLUTE path carrying a location is both transformations at once: relativise, then strip.
+  test('an absolute path with a line range maps too', () => {
+    const f = selFixture({ paths: { T5: ['a/b.go'] } })
+    selResult(f.dir, [], { findings: [major(join(f.dir, 'a/b.go') + ':135-140')] })
+    expect(redispatch(f.plan, f.args).code).toBe(0)
+    expect(only(f.args)).toEqual(['T5'])
+  })
+
+  // The strip must not eat a real path: a task may legitimately own a file whose name ends in digits.
+  test('a path with no location suffix is untouched', () => {
+    const f = selFixture({ paths: { T5: ['a/b2.go'] } })
+    selResult(f.dir, [], { findings: [major('a/b2.go')] })
+    expect(redispatch(f.plan, f.args).code).toBe(0)
+    expect(only(f.args)).toEqual(['T5'])
+  })
+})
+
+/**
+ * M1's other half, M2 and M3 — the three ways the loop used to dead-end.
+ *
+ * M1  a FULL re-run dropped every red adjudication, so the probe re-ran a command the implementer had
+ *     already made pass, classified it `red-not-red`, and refused the round at dispatch.
+ * M2  a mechanical failure was attributable to no task, so any round carrying one re-ran everything —
+ *     and a failure no task CAN fix had no channel at all.
+ * M3  carried findings reached only the review leg, never the implementer that had to fix them.
+ */
+describe('M1/M2/M3 — the loop no longer dead-ends', () => {
+  const major = (file: string, title = 'the gate asserts existence only', over: Record<string, unknown> = {}) =>
+    ({ title, severity: 'major', detail: 'why it is wrong', file, lens: 'lens', ...over })
+
+  /** Re-hash WITHOUT dispatching, so args.specHash becomes the plan's real hash and the next
+   *  --dispatch sees an UNCHANGED hash. The loop's "nothing was amended" state, reproduced. */
+  const syncHash = (f: { plan: string; args: string }) => {
+    const r = run(f.plan, f.args)
+    expect(r.code).toBe(0)
+    return r
+  }
+
+  // ---- M1: a FULL re-run keeps the proven red pair ------------------------------------------------
+  // red1.sh is rewritten to PASS, which is what a fixed task looks like. Without the carry the probe
+  // observes exit 0, classifies `red-not-red`, and refuses the whole round — the measured dead end.
+  test('a FULL round-2 re-run does not re-probe a task with a carried proven red', () => {
+    const f = selFixture()
+    selResult(f.dir, ['T5'])                       // T1..T4 settled with verdict red-green
+    redScript(f.dir, 'red1.sh', 'echo "1 passed"\nexit 0')   // T1 is FIXED
+    const r = redispatch(f.plan, f.args, '--full')
+    expect(r.code).toBe(0)
+    expect(only(f.args)).toBeUndefined()           // FULL: every task re-runs
+    const red = readArgs(f.args).priorResults.red
+    expect(red.map((x: any) => x.id).sort()).toEqual(['T1', 'T2', 'T3', 'T4'])
+    expect(r.out).toMatch(/carried red adjudications, NOT re-probed/)
+    // The probe itself skipped it, and said so rather than silently not running.
+    expect(r.out).toMatch(/red-probe T1: carried red-green — not re-probed/)
+    expect(r.out).not.toMatch(/red-not-red/)
+  })
+
+  const amendRed = (f: { dir: string; plan: string }, id: string) => {
+    const n = id.slice(1)
+    const command = `bash scripts/amended-red${n}.sh`
+    redScript(f.dir, `amended-red${n}.sh`, `echo probed > reprobed-${id}\necho "1 failed"\nexit 1`)
+    writeFileSync(f.plan, readFileSync(f.plan, 'utf8').replaceAll(`bash scripts/red${n}.sh`, command))
+    return command
+  }
+
+  test('a carried red record whose command changed is dropped and re-probed', () => {
+    const f = selFixture()
+    selResult(f.dir, ['T5'])
+    const command = amendRed(f, 'T1')
+    const r = redispatch(f.plan, f.args, '--full')
+    expect(r.code).toBe(0)
+    expect(readArgs(f.args).tasks[0].redCommand).toBe(command)
+    expect(existsSync(join(f.dir, 'reprobed-T1'))).toBe(true)
+    expect(r.out).toMatch(/red-probe T1: red \(exit 1\)/)
+    expect(r.out).not.toMatch(/red-probe T1: carried/)
+    expect(carriedIds(f.args, 'red')).toEqual(['T2', 'T3', 'T4'])
+  })
+
+  test('a changed redCommand makes an otherwise carried task active in a scoped round', () => {
+    const f = selFixture()
+    selResult(f.dir, ['T5'])
+    amendRed(f, 'T1')
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(0)
+    expect(only(f.args)).toEqual(['T1', 'T5'])
+    expect(carriedIds(f.args, 'verified')).toEqual(['T2', 'T3', 'T4'])
+    expect(carriedIds(f.args, 'red')).toEqual(['T2', 'T3', 'T4'])
+    expect(existsSync(join(f.dir, 'reprobed-T1'))).toBe(true)
+  })
+
+  test('a selected task with a changed redCommand drops its stale proof in a scoped round', () => {
+    const f = selFixture()
+    selResult(f.dir, ['T5'], { settled: ['T1', 'T2', 'T3', 'T4', 'T5'] })
+    amendRed(f, 'T5')
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(0)
+    expect(only(f.args)).toEqual(['T5'])
+    expect(carriedIds(f.args, 'red')).toEqual(['T1', 'T2', 'T3', 'T4'])
+    expect(existsSync(join(f.dir, 'reprobed-T5'))).toBe(true)
+  })
+
+  test('a plan-only amendment changing redCommand cannot carry an unobserved command into onlyTasks []', () => {
+    const f = selFixture()
+    const routed = { failure: 'tests exited 1', ownerTask: 'plan', cause: 'c', fix: 'x' }
+    selResult(f.dir, [], {
+      mechFailed: [{ name: 'tests', exitCode: 1 }], routes: [routed], planFindings: [routed],
+    })
+    amendRed(f, 'T1')
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(0)
+    expect(only(f.args)).toBeUndefined()
+    expect(carriedIds(f.args, 'red')).toEqual(['T2', 'T3', 'T4', 'T5'])
+    expect(existsSync(join(f.dir, 'reprobed-T1'))).toBe(true)
+  })
+
+  test('a legacy red record without a command is dropped and re-probed', () => {
+    const f = selFixture()
+    selResult(f.dir, ['T5'])
+    const previous = readArgs(f.result)
+    delete previous.red.find((r: any) => r.id === 'T1').command
+    writeFileSync(f.result, JSON.stringify(previous))
+    redScript(f.dir, 'red1.sh', 'echo probed > reprobed-T1\necho "1 failed"\nexit 1')
+    const r = redispatch(f.plan, f.args, '--full')
+    expect(r.code).toBe(0)
+    expect(carriedIds(f.args, 'red')).toEqual(['T2', 'T3', 'T4'])
+    expect(existsSync(join(f.dir, 'reprobed-T1'))).toBe(true)
+  })
+
+  test('without a carried proven red the same FULL re-run is REFUSED as red-not-red', () => {
+    const f = selFixture()
+    // No `red` records at all: the previous verdict settles nothing to carry.
+    selResult(f.dir, ['T5'], { noRedFor: ['T1', 'T2', 'T3', 'T4', 'T5'] })
+    redScript(f.dir, 'red1.sh', 'echo "1 passed"\nexit 0')
+    const r = redispatch(f.plan, f.args, '--full')
+    expect(r.code).toBe(3)
+    expect(r.out).toMatch(/red-not-red/)
+  })
+
+  test('a SCOPED re-run also carries the proven red of a re-run task', () => {
+    const f = selFixture()
+    // T5 flagged AND settled, so its proven pair exists and must travel even though T5 re-runs.
+    selResult(f.dir, ['T5'], { settled: ['T1', 'T2', 'T3', 'T4', 'T5'] })
+    redScript(f.dir, 'red5.sh', 'echo "1 passed"\nexit 0')
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(0)
+    expect(only(f.args)).toEqual(['T5'])
+    expect(readArgs(f.args).priorResults.red.map((x: any) => x.id).sort())
+      .toEqual(['T1', 'T2', 'T3', 'T4', 'T5'])
+    expect(r.out).toMatch(/proven red carried, NOT re-probed/)
+  })
+
+  // ---- M2: a mechanical failure the lens routed --------------------------------------------------
+  test('a lens-routed mechanical failure narrows to its owner', () => {
+    const f = selFixture()
+    selResult(f.dir, [], {
+      mechFailed: [{ name: 'tests', exitCode: 1, output: 'boom' }],
+      routes: [{ failure: 'mechanical check tests exited 1', ownerTask: 'T5',
+                 cause: 'the assertion reads a key the writer never emits', fix: 'emit the key' }],
+    })
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(0)
+    expect(only(f.args)).toEqual(['T5'])
+    expect(carriedIds(f.args, 'verified')).toEqual(['T1', 'T2', 'T3', 'T4'])
+    expect(r.out).toMatch(/mechanical failure\(s\) the lens routed to an owner/)
+    expect(r.out).toContain('tests -> T5')
+  })
+
+  test('a mechanical failure routed to an owner also drags that owner’s dependents in', () => {
+    const f = selFixture()
+    selResult(f.dir, [], {
+      mechFailed: [{ name: 'tests', exitCode: 1 }],
+      routes: [{ failure: 'tests exited 1', ownerTask: 'T2', cause: 'c', fix: 'x' }],
+    })
+    expect(redispatch(f.plan, f.args).code).toBe(0)
+    expect(only(f.args)).toEqual(['T2', 'T3', 'T4'])
+  })
+
+  // The route has to name an owner the PLAN declares. A typo is not a narrowing.
+  test('an unrouted mechanical failure forces FULL even when another task is flagged', () => {
+    const f = selFixture()
+    selResult(f.dir, ['T5'], { mechFailed: [{ name: 'tests', exitCode: 1 }] })
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(0)
+    expect(only(f.args)).toBeUndefined()
+    expect(r.out).toContain('no lens route to a valid owner (tests)')
+  })
+
+  test('a route naming an unknown task narrows nothing and falls back to FULL', () => {
+    const f = selFixture()
+    selResult(f.dir, [], {
+      mechFailed: [{ name: 'tests', exitCode: 1 }],
+      routes: [{ failure: 'tests exited 1', ownerTask: 'T99', cause: 'c', fix: 'x' }],
+    })
+    const r = redispatch(f.plan, f.args)
+    expect(only(f.args)).toBeUndefined()
+    expect(r.out).toMatch(/no lens route to a valid owner/)
+  })
+
+  // ---- M2, second half: the plan-routed failure ---------------------------------------------------
+  test('a plan-routed failure after a hash change dispatches onlyTasks []', () => {
+    const f = selFixture()                         // args.specHash is 0*64, so the hash CHANGES
+    const routed = { failure: 'mechanical check tests exited 1', ownerTask: 'plan',
+                     cause: 'the artifact is outside every task’s writablePaths',
+                     fix: 'add scripts/gen.ts to a task’s writablePaths' }
+    selResult(f.dir, [], {
+      mechFailed: [{ name: 'tests', exitCode: 1 }],
+      routes: [routed], planFindings: [routed],
+    })
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(0)
+    expect(only(f.args)).toEqual([])
+    expect(r.out).toMatch(/ZERO-IMPLEMENTER round/)
+    // workflow.js refuses onlyTasks: [] unless priorResults carries EVERY task.
+    const pr = readArgs(f.args).priorResults
+    expect(pr.implemented.map((x: any) => x.id).sort()).toEqual(['T1', 'T2', 'T3', 'T4', 'T5'])
+    expect(pr.verified.map((x: any) => x.id).sort()).toEqual(['T1', 'T2', 'T3', 'T4', 'T5'])
+    // And no probe is dispatched: every task carries a proven pair.
+    expect(r.out).toMatch(/no active task needs a probe/)
+  })
+
+  test('a zero-implementer round is refused when the previous verdict carries a task short', () => {
+    const f = selFixture()
+    const routed = { failure: 'tests exited 1', ownerTask: 'plan', cause: 'c', fix: 'x' }
+    selResult(f.dir, [], {
+      settled: ['T1', 'T2', 'T3', 'T4'],           // T5 has no implemented/verified record
+      mechFailed: [{ name: 'tests', exitCode: 1 }],
+      routes: [routed], planFindings: [routed],
+    })
+    const r = redispatch(f.plan, f.args)
+    expect(only(f.args)).toBeUndefined()
+    expect(r.out).toMatch(/FULL re-run/)
+    expect(r.out).toContain('T5')
+  })
+
+  // ---- M1: planFindings with nothing amended ------------------------------------------------------
+  test('planFindings with an unchanged hash exits 3 with the amend message', () => {
+    const f = selFixture()
+    syncHash(f)                                     // args.specHash == the plan's hash from here on
+    const routed = { title: 'the generated file is outside every writablePath', severity: 'major',
+                     detail: 'no task can write scripts/gen.ts', file: 'scripts/gen.ts',
+                     ownerTask: 'plan', lens: 'lens' }
+    selResult(f.dir, [], { findings: [routed], planFindings: [routed] })
+    const before = readFileSync(f.args, 'utf8')
+
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(3)
+    expect(r.out).toContain("amend the plan: add <path> to a task's writablePaths (or reword), then re-hash")
+    expect(r.out).toContain('scripts/gen.ts')
+    // Nothing was spent: the refusal is before every mutation.
+    expect(readFileSync(f.args, 'utf8')).toBe(before)
+    expect(readArgs(f.args).rounds).toBe(2)
+    expect(existsSync(join(f.dir, 'result-round1.json'))).toBe(false)
+  })
+
+  test('the same planFindings AFTER the plan is amended dispatches instead of refusing', () => {
+    const f = selFixture()
+    syncHash(f)
+    const routed = { title: 'outside every writablePath', severity: 'major', detail: 'd',
+                     file: 'scripts/gen.ts', ownerTask: 'plan', lens: 'lens' }
+    selResult(f.dir, [], { findings: [routed], planFindings: [routed] })
+    // The amendment: a VALUE inside the dispatch block, which is what moves the spec hash.
+    writeFileSync(f.plan, readFileSync(f.plan, 'utf8').replace('"do part 1"', '"do part 1, AMENDED"'))
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(0)
+    expect(only(f.args)).toEqual([])
+    expect(r.out).toMatch(/ZERO-IMPLEMENTER round/)
+  })
+
+  test('no planFindings and an unchanged hash is not refused', () => {
+    const f = selFixture()
+    syncHash(f)
+    selResult(f.dir, ['T5'])
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(0)
+    expect(only(f.args)).toEqual(['T5'])
+  })
+
+  // ---- M3: taskFixes ------------------------------------------------------------------------------
+  test('taskFixes are built from the previous result', () => {
+    const f = selFixture()
+    const route = { failure: 'mechanical check tests exited 1', ownerTask: 'T1',
+                    cause: 'the writer emits no key', fix: 'emit it' }
+    selResult(f.dir, ['T1'], {
+      settled: ['T2', 'T3', 'T4', 'T5'],
+      routes: [route],
+      findings: [major('src/t5/a.ts', 'T5 owns this one', { ownerTask: 'T5' })],
+    })
+    expect(redispatch(f.plan, f.args).code).toBe(0)
+    const fixes = readArgs(f.args).taskFixes
+    expect(Object.keys(fixes).sort()).toEqual(['T1', 'T5'])
+    expect(fixes.T1[0].failure).toBe('mechanical check tests exited 1')
+    expect(fixes.T1[0].cause).toBe('the writer emits no key')
+    expect(fixes.T5[0].title).toBe('T5 owns this one')
+  })
+
+  // workflow.js THROWS on a taskFixes key naming a task the plan does not declare, which would kill the
+  // round before an agent is dispatched. An invalid owner is dropped here rather than passed on.
+  test('a fix item whose ownerTask is unknown is dropped, not passed to workflow.js', () => {
+    const f = selFixture()
+    selResult(f.dir, ['T1'], {
+      routes: [{ failure: 'f', ownerTask: 'T99', cause: 'c', fix: 'x' }],
+    })
+    expect(redispatch(f.plan, f.args).code).toBe(0)
+    expect('taskFixes' in readArgs(f.args)).toBe(false)
+  })
+
+  test('a MINOR finding is not a fix item — only blocking routes and findings are', () => {
+    const f = selFixture()
+    selResult(f.dir, ['T1'], {
+      findings: [major('src/t5/a.ts', 'a nit', { ownerTask: 'T5', severity: 'minor' })],
+    })
+    expect(redispatch(f.plan, f.args).code).toBe(0)
+    expect('taskFixes' in readArgs(f.args)).toBe(false)
+  })
+
+  // args.json outlives the round, so a taskFixes left from round N-1 would hand round N a fix list for
+  // failures that are already closed.
+  test('a stale taskFixes from the previous round is cleared', () => {
+    const f = selFixture({ extra: { taskFixes: { T1: ['a fix from two rounds ago'] } } })
+    selResult(f.dir, ['T1'], { settled: ['T2', 'T3', 'T4', 'T5'] })
+    expect(redispatch(f.plan, f.args).code).toBe(0)
+    expect('taskFixes' in readArgs(f.args)).toBe(false)
+  })
+
+  test('taskFixes survive a FULL re-run — the implementer still has to be told', () => {
+    const f = selFixture()
+    selResult(f.dir, ['T1'], {
+      routes: [{ failure: 'f', ownerTask: 'T1', cause: 'c', fix: 'x' }],
+    })
+    const r = redispatch(f.plan, f.args, '--full')
+    expect(r.code).toBe(0)
+    expect(only(f.args)).toBeUndefined()
+    expect(Object.keys(readArgs(f.args).taskFixes)).toEqual(['T1'])
+    expect(r.out).toMatch(/taskFixes -> implementer prompts/)
   })
 })
 
@@ -809,26 +1209,31 @@ describe('work-redispatch.sh re-hashes the SPEC, not the plan bytes', () => {
 
 /**
  * The fix loop's exit condition. Round 1 produces a blocking set; from round 2 that set is FROZEN
- * and carried as priorFindings, so the question each round asks is "is the carried set closed?"
- * rather than "did this round's lenses raise anything?" — the second is a draw from a generator
+ * and carried as `carriedFindings`, so the question each round asks is "is the carried set closed?"
+ * rather than "did this round's lens raise anything?" — the second is a draw from a generator
  * whose rate does not fall as fixes land. The cap is what actually stops the run.
+ *
+ * `carriedFindings`, not `priorFindings`: the two doors are separate, and the run's own carry must not
+ * overwrite claims a human or an agent team put in `priorFindings` from outside the run.
  */
 describe('the frozen finding set and the round cap', () => {
   /**
-   * A previous verdict. `findings` is the gate return's SURVIVING pool — workflow.js has already
-   * removed the refuted ones and put them in `refuted`, which is what makes it the still-open set.
+   * A previous verdict. `findings` is the gate return's STANDING pool — the lens's fresh findings plus
+   * the carried entries it could not close — and `carried` is every carried entry with the lens's
+   * {status, evidence} ruling on it. An evidenced `closed` there is what drops an entry.
    */
-  function withFindings(dir: string, findings: unknown[], name = 'result.json', refuted: unknown[] = []) {
+  function withFindings(dir: string, findings: unknown[], name = 'result.json', carried: unknown[] = []) {
     writeFileSync(join(dir, name), JSON.stringify({
       overallPass: false, verdict: 'FAIL',
       scoreTable: { survivingBlocking: findings.length, lensFindings: findings.length },
-      tasksThatFlagged: [], mechanicalThatFailed: [], lensesThatFlagged: ['k'],
-      findings, refuted,
+      tasksThatFlagged: [], mechanicalThatFailed: [], lensesThatFlagged: ['lens'],
+      findings, carried, routes: [], planFindings: [],
     }, null, 2) + '\n')
   }
   const major = (title: string) => ({ title, severity: 'major', detail: 'why it is wrong', file: 'src/a.ts', lens: 'k' })
+  const titles = (p: string): string[] => (readArgs(p).carriedFindings ?? []).map((x: any) => x.title)
 
-  test('advancing to round 2 freezes the finding set and carries it as priorFindings', () => {
+  test('advancing to round 2 freezes the finding set and carries it as carriedFindings', () => {
     const f = gateFixture()
     withFindings(f.dir, [major('the gate asserts existence only'), { ...major('a minor nit'), severity: 'minor' }])
     expect(redispatch(f.plan, f.args).code).toBe(0)
@@ -837,107 +1242,217 @@ describe('the frozen finding set and the round cap', () => {
     expect(a.freezeFindingSet).toBe(true)
     // Blocking only: a minor never gated, so carrying it would make the frozen set larger than the
     // set that failed the run.
-    expect(a.priorFindings.map((p: any) => p.title)).toEqual(['the gate asserts existence only'])
-    expect(a.priorFindings[0].detail).toBe('why it is wrong')
-    expect(a.priorFindings[0].severity).toBe('major')
+    expect(titles(f.args)).toEqual(['the gate asserts existence only'])
+    expect(a.carriedFindings[0].detail).toBe('why it is wrong')
+    expect(a.carriedFindings[0].severity).toBe('major')
+    // The lens rules BY id, so every carried entry must have one — a minted id is deterministic, so
+    // the same finding carried twice is the same id both times.
+    expect(typeof a.carriedFindings[0].id).toBe('string')
+    expect(a.carriedFindings[0].id.length).toBeGreaterThan(0)
+    // The other door is left alone: this is the run's own carry, not an external claim.
+    expect('priorFindings' in a).toBe(false)
+  })
+
+  test('external priorFindings are not duplicated into the carry and the next spine accepts the args', async () => {
+    const f = gateFixture()
+    const external = { id: 'external', title: 'outside claim', severity: 'major', detail: 'd', file: 'src/e.ts' }
+    const owned = { id: 'owned', title: 'run finding', severity: 'major', detail: 'd', file: 'src/a.ts' }
+    const a0 = readArgs(f.args)
+    a0.priorFindings = [external]
+    writeFileSync(f.args, JSON.stringify(a0, null, 2))
+    withFindings(f.dir, [owned, { ...external, source: 'prior' }])
+
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(0)
+    const a = readArgs(f.args)
+    expect(a.priorFindings).toEqual([external])
+    expect(a.carriedFindings.map((x: any) => x.id)).toEqual(['owned'])
+    const next = await runWorkflow(a, replies())
+    expect(next.result.carried.map((x: any) => x.id).sort()).toEqual(['external', 'owned'])
+  })
+
+  test('an unevidenced closed ruling leaves the carried finding open', () => {
+    const f = gateFixture()
+    const claim = { id: 'open', title: 'still unproven', severity: 'major', detail: 'd', file: 'src/a.ts' }
+    const a0 = readArgs(f.args)
+    a0.rounds = 2
+    a0.freezeFindingSet = true
+    a0.carriedFindings = [claim]
+    writeFileSync(f.args, JSON.stringify(a0, null, 2))
+    withFindings(f.dir, [], 'result.json', [{ ...claim, status: 'closed', evidence: ' ' }])
+    expect(redispatch(f.plan, f.args).code).toBe(0)
+    expect(readArgs(f.args).carriedFindings.map((x: any) => x.id)).toEqual(['open'])
+  })
+
+  test('a non-object previous result falls back to FULL without emptying the carried set', () => {
+    const f = gateFixture()
+    const claim = { id: 'open', title: 'unjudged', severity: 'major', detail: 'd' }
+    const a0 = readArgs(f.args)
+    a0.rounds = 2
+    a0.freezeFindingSet = true
+    a0.carriedFindings = [claim]
+    writeFileSync(f.args, JSON.stringify(a0, null, 2))
+    writeFileSync(f.result, 'null\n')
+    const r = redispatch(f.plan, f.args, '--no-lint')
+    expect(r.code).toBe(0)
+    expect(only(f.args)).toBeUndefined()
+    expect(r.out).toMatch(/FULL re-run/)
+    expect(readArgs(f.args).carriedFindings).toEqual([claim])
+    expect(readArgs(f.args).freezeFindingSet).toBe(true)
+  })
+
+  test('a carried entry keeps a STABLE id across rounds — a ruling matches nothing otherwise', () => {
+    const f = gateFixture()
+    withFindings(f.dir, [major('a real defect')])
+    expect(redispatch(f.plan, f.args).code).toBe(0)
+    const first = readArgs(f.args).carriedFindings[0].id
+    // Round 3's verdict reports the same finding back, still without an id of its own.
+    withFindings(f.dir, [major('a real defect')])
+    expect(redispatch(f.plan, f.args).code).toBe(0)
+    expect(readArgs(f.args).carriedFindings[0].id).toBe(first)
   })
 
   /**
-   * CARRY-OVER. `priorFindings` used to be set ONCE, on the advance to round 2, and never touched:
-   * a finding the round-3 refuters killed was still carried into round 4 as an open gate, and a
-   * blocking finding a later round raised was never carried at all. The set was frozen against the
-   * generator and also against the evidence. It is now re-derived from the previous verdict's
-   * survivors every round; refutation, not the round number, is what shrinks it.
+   * CARRY-OVER. The carried set used to be written ONCE, on the advance to round 2, and never touched:
+   * a finding a later round settled was still carried as an open gate, and a blocking finding a later
+   * round raised was never carried at all. The set was frozen against the generator and also against
+   * the evidence. It is re-derived from the previous verdict every round; ADJUDICATION, not the round
+   * number, is what shrinks it.
    */
   test('a carried finding that survived the round is carried again', () => {
     const f = gateFixture()
     const a0 = readArgs(f.args)
     a0.rounds = 2
     a0.freezeFindingSet = true
-    a0.priorFindings = [{ title: 'carried from round 1', severity: 'major', detail: 'd', lens: 'k' }]
+    a0.carriedFindings = [{ id: 'x1', title: 'carried from round 1', severity: 'major', detail: 'd', lens: 'k' }]
     writeFileSync(f.args, JSON.stringify(a0, null, 2))
-    // The gate return puts a surviving carried finding back in `findings`, so this IS the carry.
-    withFindings(f.dir, [{ title: 'carried from round 1', severity: 'major', detail: 'd', lens: 'k' }])
+    // The gate return puts a still-open carried finding back in `findings`, so this IS the carry.
+    withFindings(f.dir, [{ id: 'x1', title: 'carried from round 1', severity: 'major', detail: 'd', lens: 'k' }])
     expect(redispatch(f.plan, f.args).code).toBe(0)
     const a = readArgs(f.args)
-    expect(a.priorFindings.map((p: any) => p.title)).toEqual(['carried from round 1'])
+    expect(titles(f.args)).toEqual(['carried from round 1'])
+    expect(a.carriedFindings[0].id).toBe('x1')
     expect(a.freezeFindingSet).toBe(true)
   })
 
-  test('a carried finding the round REFUTED drops out', () => {
+  test('a carried finding the lens ruled CLOSED with evidence drops out', () => {
     const f = gateFixture()
     const a0 = readArgs(f.args)
     a0.rounds = 2
     a0.freezeFindingSet = true
-    a0.priorFindings = [
-      { title: 'fixed this round', severity: 'major', detail: 'd', lens: 'k' },
-      { title: 'still open', severity: 'major', detail: 'd', lens: 'k' },
+    a0.carriedFindings = [
+      { id: 'fixed', title: 'fixed this round', severity: 'major', detail: 'd', lens: 'k' },
+      { id: 'open', title: 'still open', severity: 'major', detail: 'd', lens: 'k' },
     ]
     writeFileSync(f.args, JSON.stringify(a0, null, 2))
     withFindings(f.dir,
-      [{ title: 'still open', severity: 'major', detail: 'd', lens: 'k' }],
+      [{ id: 'open', title: 'still open', severity: 'major', detail: 'd', lens: 'k' }],
       'result.json',
-      [{ title: 'fixed this round', severity: 'major', detail: 'd', lens: 'k', refuted: true }])
+      [{ id: 'fixed', title: 'fixed this round', severity: 'major', detail: 'd', lens: 'k',
+         status: 'closed', evidence: 'the assertion now reads the value' },
+       { id: 'open', title: 'still open', severity: 'major', detail: 'd', lens: 'k', status: 'open', evidence: '' }])
     const r = redispatch(f.plan, f.args)
     expect(r.code).toBe(0)
-    expect(readArgs(f.args).priorFindings.map((p: any) => p.title)).toEqual(['still open'])
-    expect(r.out).toMatch(/1 refuted last round and dropped/)
+    expect(titles(f.args)).toEqual(['still open'])
+    expect(r.out).toMatch(/ruled closed with evidence last round and dropped/)
   })
 
   test('a NEW blocking finding from a later round is carried, not lost', () => {
     const f = gateFixture()
     withFindings(f.dir, [major('a real defect')])
     expect(redispatch(f.plan, f.args).code).toBe(0)
-    expect(readArgs(f.args).priorFindings.map((p: any) => p.title)).toEqual(['a real defect'])
-    // Round 3's verdict still carries the first and adds one the round-2 lenses raised.
+    expect(titles(f.args)).toEqual(['a real defect'])
+    // Round 3's verdict still carries the first and adds one the round-2 lens raised.
     withFindings(f.dir, [major('a real defect'), major('another one')])
     expect(redispatch(f.plan, f.args).code).toBe(0)
     const a = readArgs(f.args)
     expect(a.rounds).toBe(3)
     expect(a.freezeFindingSet).toBe(true)
-    expect(a.priorFindings.map((p: any) => p.title).sort()).toEqual(['a real defect', 'another one'])
+    expect(titles(f.args).sort()).toEqual(['a real defect', 'another one'])
   })
 
-  test('a carried finding the verdict never mentions at all stays OPEN — only refutation removes one', () => {
-    // The refute leg can die, and a verdict can predate the channel. Silence is not a refutation.
+  test('a carried finding the verdict never mentions at all stays OPEN — only an evidenced close removes one', () => {
+    // The lens leg can die, and a verdict can predate the channel. Silence is not an adjudication.
     const f = gateFixture()
     const a0 = readArgs(f.args)
     a0.rounds = 2
-    a0.priorFindings = [{ title: 'unjudged', severity: 'major', detail: 'd', lens: 'k' }]
+    a0.carriedFindings = [{ id: 'u', title: 'unjudged', severity: 'major', detail: 'd', lens: 'k' }]
     writeFileSync(f.args, JSON.stringify(a0, null, 2))
     withFindings(f.dir, [])
     expect(redispatch(f.plan, f.args).code).toBe(0)
-    expect(readArgs(f.args).priorFindings.map((p: any) => p.title)).toEqual(['unjudged'])
+    expect(titles(f.args)).toEqual(['unjudged'])
   })
 
-  test('the same finding in both channels is ONE entry — dedupe is by lens+title+file', () => {
+  // Silence preserves the run's carry; external claims remain in their own input channel.
+  test('an entry carried in carriedFindings and unmentioned by the verdict is carried again', () => {
     const f = gateFixture()
     const a0 = readArgs(f.args)
     a0.rounds = 2
-    a0.priorFindings = [major('the one defect')]
+    a0.freezeFindingSet = true
+    a0.carriedFindings = [{ id: 'own', title: 'the run’s own carry', severity: 'major', detail: 'd', lens: 'lens' }]
+    a0.priorFindings = [{ id: 'ext', title: 'an external claim', severity: 'major', detail: 'd', lens: 'team' }]
+    writeFileSync(f.args, JSON.stringify(a0, null, 2))
+    withFindings(f.dir, [])                        // the verdict echoes neither
+    expect(redispatch(f.plan, f.args).code).toBe(0)
+    expect(titles(f.args)).toEqual(['the run’s own carry'])
+    // The external door is left exactly as the user set it — the carry never overwrites it.
+    expect(readArgs(f.args).priorFindings.map((x: any) => x.id)).toEqual(['ext'])
+  })
+
+  test('the same finding in the carry and the previous findings is ONE entry — dedupe is by id', () => {
+    const f = gateFixture()
+    const a0 = readArgs(f.args)
+    a0.rounds = 2
+    a0.carriedFindings = [major('the one defect')]
     writeFileSync(f.args, JSON.stringify(a0, null, 2))
     withFindings(f.dir, [major('the one defect'), major('the one defect')])
     expect(redispatch(f.plan, f.args).code).toBe(0)
-    expect(readArgs(f.args).priorFindings.length).toBe(1)
+    expect(readArgs(f.args).carriedFindings.length).toBe(1)
   })
 
-  test('the same title from a DIFFERENT lens is a different finding and both are carried', () => {
+  test('an idless external claim retains its single prior channel after redispatch', async () => {
+    const f = gateFixture()
+    const external = major('the external defect')
+    const a0 = readArgs(f.args)
+    a0.priorFindings = [external]
+    writeFileSync(f.args, JSON.stringify(a0, null, 2))
+    withFindings(f.dir, [{ ...external, id: 'prior#0', source: 'prior' }])
+    expect(redispatch(f.plan, f.args).code).toBe(0)
+    const a = readArgs(f.args)
+    expect(a.carriedFindings).toEqual([])
+    expect(a.priorFindings).toEqual([external])
+    const next = await runWorkflow(a, replies())
+    expect(next.result.carried.map((x: any) => x.id)).toEqual(['prior#0'])
+  })
+
+  test('the same title with a DIFFERENT provenance is a different finding and both are carried', () => {
     const f = gateFixture()
     withFindings(f.dir, [major('shared title'), { ...major('shared title'), lens: 'other' }])
     expect(redispatch(f.plan, f.args).code).toBe(0)
     const a = readArgs(f.args)
-    expect(a.priorFindings.length).toBe(2)
-    expect(a.priorFindings.map((p: any) => p.lens).sort()).toEqual(['k', 'other'])
+    expect(a.carriedFindings.length).toBe(2)
+    expect(a.carriedFindings.map((p: any) => p.lens).sort()).toEqual(['k', 'other'])
   })
 
-  test('freezeFindingSet and priorFindings survive the plan sync — they are run-local', () => {
+  // ownerTask is what narrows the NEXT round and what groups taskFixes, so losing it in the carry
+  // would put the loop back to re-running everything.
+  test('the carry keeps a finding’s file and ownerTask', () => {
+    const f = gateFixture()
+    withFindings(f.dir, [{ ...major('owned'), ownerTask: 'T1' }])
+    expect(redispatch(f.plan, f.args).code).toBe(0)
+    const e = readArgs(f.args).carriedFindings[0]
+    expect(e.file).toBe('src/a.ts')
+    expect(e.ownerTask).toBe('T1')
+  })
+
+  test('freezeFindingSet and carriedFindings survive the plan sync — they are run-local', () => {
     const f = gateFixture()
     withFindings(f.dir, [major('a real defect')])
     expect(redispatch(f.plan, f.args).code).toBe(0)
     // The plan block carries neither key, and the sync must not erase them.
     const a = readArgs(f.args)
     expect(a.freezeFindingSet).toBe(true)
-    expect(a.priorFindings.map((p: any) => p.title)).toEqual(['a real defect'])
+    expect(titles(f.args)).toEqual(['a real defect'])
   })
 
   test('a previous verdict with no blocking findings freezes an EMPTY carried set, not nothing', () => {
@@ -945,7 +1460,7 @@ describe('the frozen finding set and the round cap', () => {
     withFindings(f.dir, [])
     expect(redispatch(f.plan, f.args).code).toBe(0)
     const a = readArgs(f.args)
-    expect(a.priorFindings).toEqual([])
+    expect(a.carriedFindings).toEqual([])
     expect(a.freezeFindingSet).toBe(true)
   })
 
@@ -955,7 +1470,44 @@ describe('the frozen finding set and the round cap', () => {
     expect(run(f.plan, f.args).code).toBe(0)
     const a = readArgs(f.args)
     expect('freezeFindingSet' in a).toBe(false)
-    expect('priorFindings' in a).toBe(false)
+    expect('carriedFindings' in a).toBe(false)
+  })
+
+  /**
+   * FAIL CLOSED on an unreadable previous verdict. Nothing can be re-derived, so the carried set is
+   * left exactly as the last round set it. EMPTYING it while `freezeFindingSet` stays on would leave the
+   * freeze's only gating channel empty and hold every fresh blocking finding as residue — the round
+   * would PASS on a set nobody could read.
+   */
+  test('an unreadable previous verdict leaves the carried set and the freeze untouched', () => {
+    const f = gateFixture()
+    const a0 = readArgs(f.args)
+    a0.rounds = 2
+    a0.freezeFindingSet = true
+    a0.carriedFindings = [{ id: 'k1', title: 'open from round 2', severity: 'major', detail: 'd', lens: 'lens' }]
+    writeFileSync(f.args, JSON.stringify(a0, null, 2))
+    writeFileSync(f.result, '{ this is not json\n')
+
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(0)
+    const a = readArgs(f.args)
+    expect(a.freezeFindingSet).toBe(true)
+    expect(titles(f.args)).toEqual(['open from round 2'])
+    expect(r.out).toMatch(/UNCHANGED — the previous verdict could not be read/)
+  })
+
+  test('round 1 carries nothing, and a carry left over from an earlier run is dropped', () => {
+    const f = gateFixture()
+    const a0 = readArgs(f.args)
+    a0.rounds = 0                      // this dispatch advances to round 1
+    a0.carriedFindings = [{ id: 'stale', title: 'from an earlier run', severity: 'major', detail: 'd' }]
+    writeFileSync(f.args, JSON.stringify(a0, null, 2))
+    withFindings(f.dir, [major('a real defect')])
+    expect(redispatch(f.plan, f.args).code).toBe(0)
+    const a = readArgs(f.args)
+    expect(a.rounds).toBe(1)
+    expect('carriedFindings' in a).toBe(false)
+    expect('freezeFindingSet' in a).toBe(false)
   })
 
   test('the dispatch past the default cap is refused, spends nothing, and hands back a paste-ready priorFindings block', () => {
@@ -977,6 +1529,50 @@ describe('the frozen finding set and the round cap', () => {
     expect(readFileSync(f.result, 'utf8')).toBe(resultBefore)
     expect(existsSync(join(f.dir, 'result-round1.json'))).toBe(false)
     expect(readdirSync(f.dir).filter(x => /^plan-[0-9a-f]{12}\.md$/.test(x))).toHaveLength(0)
+  })
+
+  // The block is what a human takes to a FRESH run, so it has to list everything still open — the
+  // RESIDUE included. Residue never gated (the freeze held it out of the verdict), so it is precisely
+  // the part a reader has not seen, and dropping it would lose real blocking findings at the cap.
+  test('the cap block lists the still-open CARRIED entries and the RESIDUE, deduped by id', () => {
+    const f = gateFixture()
+    const a0 = readArgs(f.args); a0.rounds = 6; writeFileSync(f.args, JSON.stringify(a0, null, 2))
+    writeFileSync(f.result, JSON.stringify({
+      overallPass: false, verdict: 'FAIL',
+      scoreTable: { survivingBlocking: 1, lensFindings: 1, residue: 1 },
+      tasksThatFlagged: [], mechanicalThatFailed: [], lensesThatFlagged: ['lens'],
+      findings: [{ id: 'c1', title: 'still open after six rounds', severity: 'major', detail: 'd', lens: 'lens' }],
+      carried: [
+        { id: 'c1', title: 'still open after six rounds', severity: 'major', detail: 'd', lens: 'lens', status: 'open', evidence: '' },
+        { id: 'c2', title: 'settled last round', severity: 'major', detail: 'd', lens: 'lens', status: 'closed', evidence: 'the check now reads it' },
+      ],
+      residue: [{ id: 'r1', title: 'raised but never gated', severity: 'critical', detail: 'd', lens: 'lens' }],
+    }, null, 2) + '\n')
+
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(4)
+    expect(r.out).toContain('"priorFindings"')
+    expect(r.out).toContain('still open after six rounds')
+    expect(r.out).toContain('raised but never gated')
+    // A CLOSED carried entry is settled and must not come back.
+    expect(r.out).not.toContain('settled last round')
+    // c1 is in both `findings` and `carried`; the id dedupes it to one entry.
+    expect(r.out.match(/still open after six rounds/g)).toHaveLength(1)
+  })
+
+  test('the cap block retains an open carried finding the previous result never echoed', () => {
+    const f = gateFixture()
+    const a0 = readArgs(f.args)
+    a0.rounds = 6
+    a0.freezeFindingSet = true
+    a0.carriedFindings = [{ id: 'silent', title: 'unjudged carry', severity: 'major', detail: 'd' }]
+    writeFileSync(f.args, JSON.stringify(a0, null, 2))
+    withFindings(f.dir, [])
+    const before = readFileSync(f.args, 'utf8')
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(4)
+    expect(r.out).toContain('"title": "unjudged carry"')
+    expect(readFileSync(f.args, 'utf8')).toBe(before)
   })
 
   test('an explicit maxRounds moves the cap', () => {

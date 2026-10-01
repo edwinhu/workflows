@@ -58,7 +58,7 @@ function fixture(opts: { redCommand: string; extraArgs?: Record<string, unknown>
       redCommand: opts.redCommand, acceptance: '`bash scripts/check.sh` exits 0',
     }],
     mechanicalChecks: [{ name: 'tests', cmd: 'bun test' }],
-    reviewLenses: [{ key: 'k', agentType: 'Explore', refs: [], prompt: 'raise MAJOR when the work is wrong' }],
+    lens: { agentType: 'Explore', refs: [], prompt: 'raise MAJOR when the work is wrong' },
     ...(opts.extraArgs ?? {}),
   }
   writeFileSync(plan, '# Plan\n\n## Run sizing\n\nnothing parked\n\n' +
@@ -697,5 +697,183 @@ describe('--covers separates the run\'s own output from what no task may write',
     writeFileSync(none, '# Plan\n\nno block here\n')
     expect(covers(none, '/tmp/x')).toBe(2)
     expect(covers(join(dir, 'missing.md'), '/tmp/x')).toBe(2)
+  })
+})
+
+/**
+ * The sizing print. It is recomputed from what will actually be dispatched, and it is the number a
+ * human reads beside `maxAgents` — so it has to agree with workflow.js's own `fanOut`.
+ *
+ * ONE lens: the 4-10 parallel lenses plus one refuter per finding were 55% of a round's agents and
+ * changed 0 verdicts (measured 2026-09-29/30). The per-prior-finding refuter term is gone with them:
+ * carried findings are ruled on by that same one lens and cost no agents of their own.
+ */
+describe('the fan-out sizing print counts one lens and no refuters', () => {
+  test('lens=1 whatever the plan declares, and no prior-refuter term', () => {
+    const f = fixture({ redCommand: 'bash scripts/check.sh' })
+    script(f.dir, 'check.sh', 'echo "1 failed"\nexit 1')
+    const r = dispatch(f)
+    expect(r.code).toBe(0)
+    expect(r.out).toMatch(/lens=1\b/)
+    expect(r.out).not.toMatch(/lenses=/)
+    expect(r.out).not.toMatch(/\bprior=/)
+    // 2 (implementer+verifier) + 2 (red probes) + 1 lens + 1 mechanical check = 6.
+    expect(r.out).toMatch(/fan-out floor 6 vs maxAgents 50/)
+  })
+
+  test('carried findings are reported but add nothing to the floor', () => {
+    const f = fixture({
+      redCommand: 'bash scripts/check.sh',
+      extraArgs: {
+        carriedFindings: [{ title: 'a', severity: 'major', detail: 'd' },
+                          { title: 'b', severity: 'major', detail: 'd' }],
+        priorFindings: [{ title: 'c', severity: 'major', detail: 'd' }],
+      },
+    })
+    script(f.dir, 'check.sh', 'echo "1 failed"\nexit 1')
+    const r = dispatch(f)
+    expect(r.code).toBe(0)
+    expect(r.out).toMatch(/carried=3\b/)
+    expect(r.out).toMatch(/fan-out floor 6 vs maxAgents 50/)
+  })
+
+  test('the fan-out print counts attempts', () => {
+    const f = fixture({
+      redCommand: 'bash scripts/check.sh',
+      extraArgs: {
+        attempts: [
+          { prompt: 'a', refs: [], agentType: 'Explore' },
+          { prompt: 'b', refs: [], agentType: 'Explore' },
+          { prompt: 'c', refs: [], agentType: 'Explore' }
+        ]
+      },
+    })
+    script(f.dir, 'check.sh', 'echo "1 failed"\nexit 1')
+    const r = dispatch(f)
+    if (r.code !== 0) console.log(r.out)
+    expect(r.code).toBe(0)
+    expect(r.out).toMatch(/attempts=3\b/)
+    expect(r.out).toMatch(/fan-out floor 9 vs maxAgents 50/)
+  })
+
+  // M1. A task carrying a PROVEN red pair is not re-probed by workflow.js, so it must not be counted
+  // here either — a sizing that charges for probes nobody runs is a sizing the gate does not read.
+  test('a carried proven red costs no probe in the floor', () => {
+    const f = fixture({
+      redCommand: 'bash scripts/check.sh',
+      extraArgs: { priorResults: { red: [{ id: 'T1', command: 'bash scripts/check.sh', verdict: 'red-green' }] } },
+    })
+    script(f.dir, 'check.sh', 'echo "1 failed"\nexit 1')
+    const r = dispatch(f)
+    expect(r.code).toBe(0)
+    expect(r.out).toMatch(/red: 1 gated/)      // still red-GATED
+    expect(r.out).toMatch(/red=0\b/)           // but no probe is charged for
+    expect(r.out).toMatch(/fan-out floor 4 vs maxAgents 50/)
+  })
+})
+
+/**
+ * M1's dispatch-time half. A task whose PROVEN red pair is carried in priorResults.red has already
+ * been made to pass by its implementer, so probing it again observes exit 0, the classifier calls it
+ * `red-not-red`, and the ROUND IS REFUSED over a task that is fixed. That was the measured dead end.
+ */
+describe('the red probe skips a task carrying a proven red adjudication', () => {
+  test('onlyTasks [] dispatches no red probe even without a carried red record', () => {
+    const f = fixture({
+      redCommand: 'bash scripts/check.sh',
+      extraArgs: {
+        onlyTasks: [],
+        priorResults: { implemented: [{ id: 'T1', done: true }], verified: [{ id: 'T1', pass: true }] },
+      },
+    })
+    script(f.dir, 'check.sh', 'echo probed > probe-ran\necho "1 passed"\nexit 0')
+    const r = dispatch(f)
+    expect(r.code).toBe(0)
+    expect(existsSync(join(f.dir, 'probe-ran'))).toBe(false)
+    expect(r.out).toMatch(/no active task needs a probe/)
+    expect(r.out).toMatch(/fan-out floor 2 vs maxAgents 50/)
+  })
+
+  test('a PASSING redCommand with a carried red-green is skipped, not refused', () => {
+    const f = fixture({
+      redCommand: 'bash scripts/check.sh',
+      extraArgs: { priorResults: { red: [{ id: 'T1', command: 'bash scripts/check.sh', verdict: 'red-green' }] } },
+    })
+    script(f.dir, 'check.sh', 'echo "1 passed"\nexit 0')   // the FIXED command
+    const r = dispatch(f)
+    expect(r.code).toBe(0)
+    expect(r.out).toMatch(/red-probe T1: carried red-green — not re-probed/)
+    expect(r.out).not.toMatch(/red-not-red/)
+  })
+
+  test('a carried red proof for a different command does not skip the current command', () => {
+    const f = fixture({
+      redCommand: 'bash scripts/check.sh',
+      extraArgs: { priorResults: { red: [{ id: 'T1', command: 'bash scripts/old.sh', verdict: 'red-green' }] } },
+    })
+    script(f.dir, 'check.sh', 'echo probed > probe-ran\necho "1 failed"\nexit 1')
+    const r = dispatch(f)
+    expect(r.code).toBe(0)
+    expect(existsSync(join(f.dir, 'probe-ran'))).toBe(true)
+    expect(r.out).toMatch(/red-probe T1: red \(exit 1\)/)
+    expect(r.out).not.toMatch(/red-probe T1: carried/)
+    expect(r.out).toMatch(/red=1\b/)
+    expect(r.out).toMatch(/fan-out floor 6 vs maxAgents 50/)
+  })
+
+  test('a stale red proof cannot bypass refusal of a currently passing command', () => {
+    const f = fixture({
+      redCommand: 'bash scripts/check.sh',
+      extraArgs: { priorResults: { red: [{ id: 'T1', command: 'bash scripts/old.sh', verdict: 'red-green' }] } },
+    })
+    script(f.dir, 'check.sh', 'echo probed > probe-ran\necho "1 passed"\nexit 0')
+    const r = dispatch(f)
+    expect(r.code).toBe(3)
+    expect(existsSync(join(f.dir, 'probe-ran'))).toBe(true)
+    expect(r.out).toMatch(/red-not-red/)
+    expect(existsSync(f.argsPath)).toBe(false)
+  })
+
+  test('a legacy carried red proof with no command does not skip the probe', () => {
+    const f = fixture({
+      redCommand: 'bash scripts/check.sh',
+      extraArgs: { priorResults: { red: [{ id: 'T1', verdict: 'red-green' }] } },
+    })
+    script(f.dir, 'check.sh', 'echo probed > probe-ran\necho "1 failed"\nexit 1')
+    const r = dispatch(f)
+    expect(r.code).toBe(0)
+    expect(existsSync(join(f.dir, 'probe-ran'))).toBe(true)
+    expect(r.out).toMatch(/red-probe T1: red \(exit 1\)/)
+    expect(r.out).toMatch(/red=1\b/)
+  })
+
+  test('the same fixture WITHOUT the carried adjudication is refused as red-not-red', () => {
+    const f = fixture({ redCommand: 'bash scripts/check.sh' })
+    script(f.dir, 'check.sh', 'echo "1 passed"\nexit 0')
+    const r = dispatch(f)
+    expect(r.code).toBe(3)
+    expect(r.out).toMatch(/red-not-red/)
+  })
+
+  // Only a PROVEN pair skips. A carried failure verdict is not evidence of anything.
+  test('a carried NON-proven verdict does not skip the probe', () => {
+    const f = fixture({
+      redCommand: 'bash scripts/check.sh',
+      extraArgs: { priorResults: { red: [{ id: 'T1', command: 'bash scripts/check.sh', verdict: 'red-unproven' }] } },
+    })
+    script(f.dir, 'check.sh', 'echo "1 passed"\nexit 0')
+    const r = dispatch(f)
+    expect(r.code).toBe(3)
+    expect(r.out).toMatch(/red-not-red/)
+  })
+
+  test('every gated task carrying a proven pair leaves nothing to probe, and the message says so', () => {
+    const f = fixture({
+      redCommand: 'bash scripts/check.sh',
+      extraArgs: { priorResults: { red: [{ id: 'T1', command: 'bash scripts/check.sh', verdict: 'red-green' }] } },
+    })
+    script(f.dir, 'check.sh', 'echo "1 passed"\nexit 0')
+    const r = dispatch(f)
+    expect(r.out).toMatch(/no active task needs a probe/)
   })
 })

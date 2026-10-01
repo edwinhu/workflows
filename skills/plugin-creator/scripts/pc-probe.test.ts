@@ -194,36 +194,88 @@ describe('I1 — at most one deterministic engine per domain', () => {
   })
 })
 
-// ------------------------------------------------------------------ I2
+// ------------------------------------------------------------------ I2 (retired)
 
-describe('I2 — at most one lens per domain', () => {
-  // Modelled on the prose-register lens and the slide-register system making the same claim about
-  // the same three string literals: two lenses that quote the same literal are one claim, twice.
-  test('two lenses quoting the same literal is a finding', () => {
-    const lens = (key: string, quoted: string) =>
-      `  reviewLenses: [\n    { key: "${key}", agentType: "Explore", refs: [], prompt: "Judge the register; flag a bullet like ${quoted}." },\n  ],\n`
-    const dir = fixture({
-      'plugin.json': PLUGIN_JSON,
-      'skills/writing/SKILL.md': skillMd('writing', '```js\nWorkflow({\n' + lens('prose-register', "'The answer:'") + '})\n```'),
-      'skills/slides/SKILL.md': skillMd('slides', '```js\nWorkflow({\n' + lens('slide-register', "'The answer:'") + '})\n```'),
-    })
-    const i2 = findingsFor(probe.runProbe(dir), 'I2')
-    expect(i2.length).toBe(1)
-    expect(i2[0].detail).toContain('The answer:')
+describe('I2 — retired: a domain has one lens, so it has no rival to duplicate', () => {
+  // The fixture I2 was named after: two skills whose lenses quote the same literal. `work` takes one
+  // `lens` per args object now, so this is no longer a rivalry the probe adjudicates — and the check
+  // is GONE rather than returning [], because a predicate that can never fire reads as one that passed.
+  test('the I2 predicate no longer exists', () => {
+    expect(probe.checkSingleLens).toBeUndefined()
   })
 
-  test('two lenses with distinct claims draw nothing', () => {
+  test('two skills whose single lenses quote the same literal draw no I2 finding', () => {
+    const lens = (quoted: string) =>
+      `  lens: { agentType: "Explore", refs: [], prompt: "Judge the register; flag a bullet like ${quoted}." },\n`
     const dir = fixture({
       'plugin.json': PLUGIN_JSON,
-      'skills/writing/SKILL.md': skillMd(
-        'writing',
-        '```js\nWorkflow({\n  reviewLenses: [\n' +
-          '    { key: "scope-fidelity", agentType: "Explore", refs: [], prompt: "Did the changes stay inside the plan?" },\n' +
-          '    { key: "writing-judgement", agentType: "Explore", refs: [], prompt: "Judge COVER, FIDELITY, TRANSITION and COUNTER." },\n' +
-          '  ],\n})\n```',
-      ),
+      'skills/writing/SKILL.md': skillMd('writing', '```js\nWorkflow({\n' + lens("'The answer:'") + '})\n```'),
+      'skills/slides/SKILL.md': skillMd('slides', '```js\nWorkflow({\n' + lens("'The answer:'") + '})\n```'),
     })
-    expect(findingsFor(probe.runProbe(dir), 'I2').length).toBe(0)
+    const result = probe.runProbe(dir)
+    expect(findingsFor(result, 'I2')).toEqual([])
+    // NON-VACUITY: both lenses were still PARSED, so the silence is the retirement and not a parser
+    // that stopped seeing lenses at all.
+    expect(result.lenses.length).toBe(2)
+  })
+})
+
+// ------------------------------------------------------------------ parseLenses
+
+describe('parseLenses reads the single `lens:` object', () => {
+  test('it reads prompt and refs off a lens object and ignores a reviewLenses array', () => {
+    const text =
+      '```js\nWorkflow({\n  lens: { agentType: "Explore", refs: ["a.md", "b.md"], prompt: "judge it" },\n})\n```\n'
+    const lenses = probe.parseLenses('skills/x/SKILL.md', text, '')
+    expect(lenses.length).toBe(1)
+    expect(lenses[0].prompt).toBe('judge it')
+    expect(lenses[0].refs).toBe('"a.md", "b.md"')
+
+    const old = '```js\nWorkflow({\n  reviewLenses: [\n    { key: "gate", refs: [], prompt: "judge it" },\n  ],\n})\n```\n'
+    expect(probe.parseLenses('skills/x/SKILL.md', old, '')).toEqual([])
+  })
+
+  test('a `lens: {` written inside a prompt string is not a second lens', () => {
+    const text = '```js\nWorkflow({\n  lens: { refs: [], prompt: "the arg is spelled lens: { prompt } — say so" },\n})\n```\n'
+    expect(probe.parseLenses('skills/x/SKILL.md', text, '').length).toBe(1)
+  })
+
+  test('a closing brace inside the single lens prompt does not drop the lens or its refs', () => {
+    const text = '```js\nconst args = { lens: { prompt: "flag it } or route it", refs: ["rules.md"] } }\n```'
+    const lenses = probe.parseLenses('skills/x/SKILL.md', text, '')
+    expect(lenses).toHaveLength(1)
+    expect(lenses[0].prompt).toBe('flag it } or route it')
+    expect(lenses[0].refs).toBe('"rules.md"')
+  })
+
+  test('a lens object named in a string is not a declared lens', () => {
+    const text = [
+      '```js',
+      `const note = 'example lens: { prompt: "not a lens", refs: [] }'`,
+      'const args = { lens: { prompt: "judge it", refs: [] } }',
+      '```',
+    ].join('\n')
+    expect(probe.parseLenses('skills/x/SKILL.md', text, '').map((l: any) => l.prompt)).toEqual(['judge it'])
+  })
+
+  test('a lens declaration in a code comment is not a declared lens', () => {
+    const text = '```js\n// lens: { prompt: "not a lens", refs: [] }\nconst args = { lens: { prompt: "judge it", refs: [] } }\n```'
+    expect(probe.parseLenses('skills/x/SKILL.md', text, '').map((l: any) => l.prompt)).toEqual(['judge it'])
+  })
+
+  test('the single lens reports its own agentType, not an agentType named in its prompt or a sibling', () => {
+    const text = [
+      '```js',
+      'const args = {',
+      `  lens: { prompt: 'do not dispatch agentType: "ghost"', agentType: "Explore", refs: [] },`,
+      '  implementerAgentType: "ds",',
+      '}',
+      '```',
+    ].join('\n')
+    const lenses = probe.parseLenses('skills/x/SKILL.md', text, '')
+    expect(lenses).toHaveLength(1)
+    expect(lenses[0].agentType).toBe('Explore')
+    expect(probe.parseLenses('skills/x/SKILL.md', text.replace('agentType: "Explore", ', ''), '')[0].agentType).toBe(null)
   })
 })
 
@@ -404,9 +456,9 @@ describe('I6 — a lens prompt may not quote a literal a pattern table already d
       'plugin.json': PLUGIN_JSON,
       'skills/slides/SKILL.md': skillMd(
         'slides',
-        '```js\nWorkflow({\n  reviewLenses: [\n' +
-          '    { key: "prose-register", agentType: "Explore", refs: [], prompt: "Flag a bullet whose whole content announces the list beneath it, like \'The answer:\'." },\n' +
-          '  ],\n})\n```',
+        '```js\nWorkflow({\n' +
+          '  lens: { agentType: "Explore", refs: [], prompt: "Flag a bullet whose whole content announces the list beneath it, like \'The answer:\'." },\n' +
+          '})\n```',
       ),
       'skills/slides/references/slide-register.py': tableModule('slide-register', [
         '    (r"^\\s*-\\s*The answer:\\s*$", "slide-register: announce"),',
@@ -427,14 +479,47 @@ describe('I6 — a lens prompt may not quote a literal a pattern table already d
     expect(i6[0].detail).toContain('The answer:')
   })
 
+  test.each([
+    String.raw`'Flag a bullet like "The answer:".'`,
+    String.raw`'Flag a bullet like \'The answer:\'.'`,
+  ])('I6 checks a single-quoted lens prompt: %s', (prompt: string) => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'skills/slides/SKILL.md': skillMd('slides', `\`\`\`js\nconst args = { lens: { refs: [], prompt: ${prompt} } }\n\`\`\``),
+      'skills/slides/references/slide-register.py': tableModule('slide-register', [
+        '    (r"^\\s*-\\s*The answer:\\s*$", "slide-register: announce"),',
+      ]),
+    })
+    const result = probe.runProbe(dir)
+    expect(result.lenses).toHaveLength(1)
+    expect(findingsFor(result, 'I6')).toHaveLength(1)
+  })
+
+  test('I6 still checks the single lens when its prompt contains a closing brace', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'skills/slides/SKILL.md': skillMd('slides', [
+        '```js',
+        `const args = { lens: { refs: [], prompt: "Flag } then inspect a bullet like 'The answer:'." } }`,
+        '```',
+      ].join('\n')),
+      'skills/slides/references/slide-register.py': tableModule('slide-register', [
+        '    (r"^\\s*-\\s*The answer:\\s*$", "slide-register: announce"),',
+      ]),
+    })
+    const result = probe.runProbe(dir)
+    expect(result.lenses).toHaveLength(1)
+    expect(findingsFor(result, 'I6')).toHaveLength(1)
+  })
+
   test('a lens that carries only routing and scope draws nothing', () => {
     const dir = fixture({
       'plugin.json': PLUGIN_JSON,
       'skills/slides/SKILL.md': skillMd(
         'slides',
-        '```js\nWorkflow({\n  reviewLenses: [\n' +
-          '    { key: "prose-register", agentType: "Explore", refs: ["${CLAUDE_PLUGIN_ROOT}/skills/slides/references/slide-register.py"], prompt: "Apply the literal-phrase test in the refs; do not restate it." },\n' +
-          '  ],\n})\n```',
+        '```js\nWorkflow({\n' +
+          '  lens: { agentType: "Explore", refs: ["${CLAUDE_PLUGIN_ROOT}/skills/slides/references/slide-register.py"], prompt: "Apply the literal-phrase test in the refs; do not restate it." },\n' +
+          '})\n```',
       ),
       'skills/slides/references/slide-register.py': tableModule('slide-register', [
         '    (r"^\\s*-\\s*The answer:\\s*$", "slide-register: announce"),',
@@ -891,9 +976,8 @@ describe('the clean fixture', () => {
       'plugin.json': PLUGIN_JSON,
       'skills/writing/SKILL.md': skillMd(
         'writing',
-        '```js\nWorkflow({\n  reviewLenses: [\n' +
-          '    { key: "writing-judgement", agentType: "Explore", refs: ["${CLAUDE_PLUGIN_ROOT}/skills/writing/rules/writing-checks.md"], prompt: "Judge only the checks no runner can settle, against the definitions in the refs." },\n' +
-          '  ],\n' +
+        '```js\nWorkflow({\n' +
+          '  lens: { agentType: "Explore", refs: ["${CLAUDE_PLUGIN_ROOT}/skills/writing/rules/writing-checks.md"], prompt: "Judge only the checks no runner can settle, against the definitions in the refs." },\n' +
           '  mechanicalChecks: [\n' +
           '    { name: "prose", cmd: "python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/prose-gate.py" },\n' +
           '  ],\n})\n```',
@@ -1034,21 +1118,23 @@ test('a heading or a path is shared vocabulary, not a claim', () => {
   expect(probe.quotedLiterals("flag a bullet like 'The answer: it depends'")).toContain('The answer: it depends')
 })
 
-test('identical prompts over different refs are FAN-OUT, not rival lenses', () => {
+// Was "identical prompts over different refs are FAN-OUT, not rival lenses" — the distinction I2
+// drew between fan-out and duplication. A fan-out declared as N lenses is not a shape `work` accepts
+// any more (one `lens` per args object, enumerated items inside its one prompt), so what is asserted
+// here is that TWO fences of one skill each yield their own lens and neither is adjudicated against
+// the other.
+test('each work-args fence of a skill yields its own lens, and neither rules on the other', () => {
   const d = mkdtempSync(join(tmpdir(), 'pc-probe-fanout-'))
   try {
-    const lens = (k: string, ref: string) =>
-      `    { key: "${k}", agentType: "Explore", refs: ["${ref}"], prompt: "Judge it; flag a bullet like 'The answer: it depends'." },\n`
+    const fence = (ref: string) =>
+      '```js\nWorkflow({\n  lens: { agentType: "Explore", refs: ["' + ref +
+      '"], prompt: "Judge it; flag a bullet like \'The answer: it depends\'." },\n})\n```\n'
     mkdirSync(join(d, 'skills', 'exams'), { recursive: true })
     writeFileSync(join(d, 'skills', 'exams', 'SKILL.md'),
-      '---\nname: exams\ndescription: x\n---\n\n```js\nWorkflow({\n  reviewLenses: [\n' +
-      lens('sf-01', 'q/01.typ') + lens('sf-02', 'q/02.typ') + '  ],\n})\n```\n')
-    expect(probe.runProbe(d).findings.filter((f: any) => f.rule.startsWith('I2'))).toEqual([])
-    // The same two lenses over the SAME refs are rivals again.
-    writeFileSync(join(d, 'skills', 'exams', 'SKILL.md'),
-      '---\nname: exams\ndescription: x\n---\n\n```js\nWorkflow({\n  reviewLenses: [\n' +
-      lens('sf-01', 'q/01.typ') + lens('sf-02', 'q/01.typ') + '  ],\n})\n```\n')
-    expect(probe.runProbe(d).findings.filter((f: any) => f.rule.startsWith('I2')).length).toBe(1)
+      '---\nname: exams\ndescription: x\n---\n\n' + fence('q/01.typ') + '\nprose\n\n' + fence('q/01.typ'))
+    const r = probe.runProbe(d)
+    expect(r.lenses.length).toBe(2)
+    expect(r.findings.filter((f: any) => f.rule.startsWith('I2'))).toEqual([])
   } finally { rmSync(d, { recursive: true, force: true }) }
 })
 

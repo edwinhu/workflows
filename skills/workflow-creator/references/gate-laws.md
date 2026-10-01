@@ -35,7 +35,7 @@ vacuously, letting a violating artifact survive.
 
 **(c) Carry-forward is a union that writes corrections back.** Returned results (next iteration's
 `priorResults`) must be `[...live, ...carried]`, with any correction made this run written into the carried
-record. **Incident:** without the write-back a refuted finding phantom-reflags forever — corrected every run,
+record. **Incident:** without the write-back a closed finding phantom-reflags forever — corrected every run,
 never sticking. Omitting the union instead shrank prior results on each re-run.
 
 ## L3 — `overallPass === false` must imply a non-empty selector
@@ -92,7 +92,7 @@ The cheap real smoke test: launch the script with a bogus target and confirm it 
 arg-validation error, not a crash inside prompt construction. Keep runnable docstring examples; they double as
 free regression tests.
 
-Adversarial verification is not a rubber stamp — across two campaigns it refuted roughly a quarter of
+Adversarial verification is not a rubber stamp — across two campaigns it overturned roughly a quarter of
 plausible finder claims. **Failure mode:** verified against synthetic inputs it rubber-stamps; one campaign
 caught three finder claims built on fabricated inputs a synthetic-input verifier would have waved through.
 Exercise it against **real** inputs, and keep it permanent rather than launch-time-only.

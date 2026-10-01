@@ -28,8 +28,12 @@ afterAll(() => {
 
 type Round = {
   blocking: number; generated?: number; titles?: string[]; files?: string[]
-  /** The three re-run selectors, as `work` writes them — what the failure signature is built from. */
+  /** The re-run selectors, as `work` writes them — what the failure signature is built from. */
   tasksThatFlagged?: string[]; red?: { id: string; verdict: string }[]; mechFailed?: string[]
+  /** Blocking items whose owner is the PLAN. A selector of its own, so part of the signature. */
+  planFindings?: { title: string }[]
+  /** Keys the one-lens gate added to the score table. The sequence must stay comparable across them. */
+  scoreTableExtra?: Record<string, unknown>
 }
 
 /** A run dir: one result-round<N>.json per entry, plus the args.json the rounds ran under. */
@@ -46,11 +50,15 @@ function mkRun(rounds: Round[], tasks: unknown[] = [{ id: 'T1', name: 'n', work:
     writeFileSync(join(dir, `result-round${i + 1}.json`), JSON.stringify({
       overallPass: r.blocking === 0,
       verdict: r.blocking === 0 ? 'PASS' : 'FAIL',
-      scoreTable: { survivingBlocking: r.blocking, lensFindings: r.generated ?? titles.length },
+      scoreTable: {
+        survivingBlocking: r.blocking, lensFindings: r.generated ?? titles.length,
+        ...(r.scoreTableExtra ?? {}),
+      },
       findings,
       ...(r.tasksThatFlagged ? { tasksThatFlagged: r.tasksThatFlagged } : {}),
       ...(r.red ? { red: r.red } : {}),
       ...(r.mechFailed ? { mechanicalThatFailed: r.mechFailed.map(name => ({ name, exitCode: 1 })) } : {}),
+      ...(r.planFindings ? { planFindings: r.planFindings } : {}),
     }, null, 2))
   })
   return dir
@@ -81,6 +89,16 @@ test('a dir with no result files at all cannot judge and says so', () => {
   const r = run(dir)
   expect(r.code).toBe(2)
   expect(r.stdout + r.stderr).toContain('too short to judge')
+})
+
+test('a non-object result is excluded from the sequence without crashing', () => {
+  const dir = mkRun([{ blocking: 2 }, { blocking: 0 }])
+  writeFileSync(join(dir, 'result.json'), 'null\n')
+  const r = run(dir, '--json')
+  expect(r.code).toBe(0)
+  expect(JSON.parse(r.stdout).blocking).toEqual([2, 0])
+  expect(r.stderr).toContain('excluded from the sequence')
+  expect(r.stderr).not.toContain('TypeError')
 })
 
 test('a nonexistent run dir is refused on stderr', () => {
@@ -226,4 +244,64 @@ test('--json emits the whole diagnosis and the verdict, and prints nothing else'
   expect(r.rounds).toBe(2)
   expect(r.blocking).toEqual([2, 1])
   expect(Array.isArray(r.reasons)).toBe(true)
+})
+
+// ---------------------------------------------------------------- the one-lens score table
+
+/**
+ * The one-lens gate replaced the refuter counts with `routes`, `carriedSubmitted`, `carriedOpen`,
+ * `planFindings`, `lensMode` and `dispositions`. A sequence spans rounds run under BOTH tables — a
+ * run whose spine was upgraded mid-loop — so the two numbers this script reads must keep working and
+ * the unknown keys must be ignored rather than counted.
+ */
+test('the new scoreTable keys are tolerated and the sequence still reads', () => {
+  const extra = {
+    lensMode: 'GREEN', routes: 0, carriedSubmitted: 3, carriedOpen: 1, planFindings: 0,
+    dispositions: 4, dispositionsRoutedFromFindings: 0, lensesRun: 1, lensesReported: 1,
+  }
+  const r = json(mkRun([
+    { blocking: 3, scoreTableExtra: extra },
+    { blocking: 1, scoreTableExtra: { ...extra, carriedOpen: 1, routes: 2 } },
+  ]))
+  expect(r.verdict).toBe('CONVERGING')
+  expect(r.blocking).toEqual([3, 1])
+})
+
+test('a sequence mixing an old table with a new one is still comparable', () => {
+  const r = json(mkRun([
+    { blocking: 3 },                                                        // pre-one-lens round
+    { blocking: 1, scoreTableExtra: { lensMode: 'RED', routes: 2, carriedOpen: 1 } },
+  ]))
+  expect(r.rounds).toBe(2)
+  expect(r.blocking).toEqual([3, 1])
+  expect(r.verdict).toBe('CONVERGING')
+})
+
+/**
+ * `planFindings` is a SELECTOR, so it belongs in the failure signature: a run that routes the same
+ * item to the plan twice is a run whose plan was never amended, and that is the most specific
+ * non-convergence there is.
+ */
+test('a repeated plan-routed item is a repeated failure', () => {
+  const routed = [{ title: 'the artifact is outside every writablePath' }]
+  const r = json(mkRun([
+    { blocking: 1, titles: ['a'], planFindings: routed },
+    { blocking: 1, titles: ['b'], planFindings: routed },
+  ]))
+  expect(r.verdict).toBe('NOT CONVERGING')
+  expect(r.reasons.join(' ')).toMatch(/repeated round 1/)
+  expect(r.repeatedFailure[0].signature.join(',')).toContain('plan:the artifact is outside every writablePath')
+})
+
+// The shared stripper handles the RANGE form too: `src/thing.ts:12-18` is a deliverable finding, not
+// an unattributed one. Fixing only `:12` is how the range form stayed broken in the scoping path.
+test('a finding file with a line RANGE still counts as a deliverable finding', () => {
+  const r = json(mkRun(
+    [
+      { blocking: 2, titles: ['a', 'b'], files: ['src/thing.ts:12-18', 'src/other.ts:3:9'] },
+      { blocking: 1, titles: ['c'], files: ['docs/README.md'] },
+    ],
+    [{ id: 'T1', name: 'n', work: 'w', acceptance: 'a', writablePaths: ['src/'] }],
+  ))
+  expect(r.split).toEqual({ deliverable: 2, gate: 1, unattributed: 0 })
 })

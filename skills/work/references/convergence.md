@@ -148,9 +148,9 @@ The levers, ranked by yield per token:
      `--provider`, which swaps the CLIProxyAPI wrapper. The wrapper remaps the **tier names** —
      `codex-code` exports `ANTHROPIC_DEFAULT_SONNET_MODEL=gpt-5.6-terra`, opus→`gpt-5.6-sol` — so
      every `model: 'sonnet'` already in `workflow.js` follows with no arg change. Implementers,
-     verifiers, lenses, refuters and probes all move together.
+     verifiers, the lens and the probes all move together.
    - **Granularity is the whole run, and that is structural.** There is no way to put implementers on
-     one provider and lenses on another: the provider is chosen when the spine is launched, before
+     one provider and the lens on another: the provider is chosen when the spine is launched, before
      `workflow.js` runs. Not a gap to fill — a split run would be two gates.
    - **The provider is never written to `args.json`.** It is a property of the dispatch, not the plan,
      and the point of the lever is to DIFFER between rounds; a sticky value would silently pin round 4
@@ -172,3 +172,26 @@ The levers, ranked by yield per token:
 paid for N times instead of once.** A specification failure is infeasible for every model equally; N
 agents in parallel hit one wall N times and return N confident wrong answers. Diversity and racing
 buy capability, and capability was never what was short.
+
+## Postscript, 2026-09-30 — one lens replaces parallel lenses and refuters
+
+The measurements above describe the earlier gate and remain unchanged. The 2026-09-29/30 sample
+found 35 blocking findings surviving refutation: 8 changed correctness, 0 changed a verdict, and 14
+were rule-letter findings about ds-constraints or DQ judgement. The 4–10 parallel lenses and one
+refuter per finding consumed 55% of a round's agents. A single Sonnet 5.5 lens with one open-ended
+prompt re-found 7/7 reconstructed correctness defects. The observed correctness yield, review cost
+and replay support one lens rather than parallel readers plus refutation. The replay does not
+establish exhaustive coverage or a new convergence rate.
+
+`work` now waits for verification and mechanical checks, then runs one lens: RED diagnoses each
+observed failure into a route to an owner task or `"plan"`; GREEN makes one open-ended pass. Both
+modes rule each carried id `open|closed` with evidence. Silence, empty closure evidence or a dead
+lens leaves the claim open, and a dead lens also synthesizes a gating critical. There is no refuter
+leg, so the review contributes one predictable agent to sizing.
+
+The run's carry now enters through `carriedFindings`; `priorFindings` is reserved for external
+claims. The freeze defers fresh blocking findings to residue for the current round, while open
+carried claims still gate. Redispatch re-derives the carry from the previous verdict, so residue can
+enter the carry if another round runs; this is not a permanently fixed round-1 list. The current
+round cap defaults to 6. The historical counts, repeat rates and earlier default of 3 above are not
+measurements of this new gate.

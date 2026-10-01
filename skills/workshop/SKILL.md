@@ -19,7 +19,7 @@ nothing else. (Absence of the plugin degrades this index but does not bypass a g
 !`k=slides,notes,workshop; command -v typst-rules >/dev/null 2>&1 && exec typst-rules "$k"; r=$HOME/.claude/skills/typst/scripts/load-constraints; [ -x "$r" ] && exec "$r" "$k"; r=$HOME/projects/typst/scripts/load-constraints; [ -x "$r" ] && exec "$r" "$k"; echo "(typst corpus unavailable: NO Typst rule is listed here — a deck graded against no corpus is not a deck that passed. Install the typst plugin, or start a new session so its bin/ reaches PATH)"`
 
 The lifecycle is [`work`](${CLAUDE_PLUGIN_ROOT}/skills/work/SKILL.md). Read it and follow it.
-This file is a **delta**: it supplies the domain — the CLARIFY axes, the plan grammar, the lenses,
+This file is a **delta**: it supplies the domain — the CLARIFY axes, the plan grammar, the lens,
 the mechanical checks, the refs, the authority text. It ships no `workflow.js` and restates none of
 `work`'s mechanics.
 
@@ -81,9 +81,9 @@ Four domain requirements on the plan:
   - **Probe-parsed, FAIL CLOSED when absent, empty or unparseable** — `## Source Paper`,
     `## Source Inventory`, `## Slide Spec`, `## Outputs and Verification`. `workshop-deck.py` parses
     these four and nothing else; a heading spelled differently is an absent heading.
-  - **Grammar-required and read by the lenses, not by the probe** — `## Presentation Intent`,
+  - **Grammar-required and read by the review lens, not by the probe** — `## Presentation Intent`,
     `## Audience, Venue, Duration, and Proportions`, `## Review Surfaces`. No computed check fires on
-    their absence: `deck-convention` and Phase 5 are what consume them, and a plan
+    their absence: the lens's CONV item and Phase 5 are what consume them, and a plan
     missing one is not ready for implementation. Do not claim a check here that does not exist.
 - **The plan grammar** — the seven-column Slide Spec, the three-column `## Source Inventory`, the
   two-column `## Source Paper`, the four mandatory `## Outputs and Verification` rows, the inventory
@@ -91,7 +91,7 @@ Four domain requirements on the plan:
   malformed/unparseable clauses — is specified once, in
   [references/slide-spec-grammar.md](${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/slide-spec-grammar.md).
   Read it in full before drafting the plan.
-- **`refs` per task row and per lens** — required, may be empty. Write `refs: []` to state "no
+- **`refs` on every task row and on the lens** — required, may be empty. Write `refs: []` to state "no
   domain rules" rather than omitting the key.
 
 The `Section` column is the task decomposition: one implementation task per distinct `Section`
@@ -175,51 +175,21 @@ resolves them against no particular directory; `writablePaths` and every `mechan
       cmd: "bash ${CLAUDE_PLUGIN_ROOT}/skills/workshop/scripts/check.sh --plan <the planPath above, substituted when args.json is written> --project-dir ." },
   ],
 
-  // Judged BEFORE any slide is generated; a surviving critical returns FAIL having built nothing.
-  // workshop-deck.py parses these four sections, so a defect here un-gates SPEC, NOTE and INV at
-  // once. The CRITICAL criterion is bounded to a named concrete input, or plan review does not
-  // terminate.
-  // Passing reviewLenses REPLACES `work`'s defaults, so the two defaults are spelled out here.
-  // deck-fidelity, deck-convention and visual-integrity OWN FID, CONV and VIS — the probe computes
-  // none of the three and emits a MODEL-EVALUATED line for each, so these lenses are the run's ONLY
-  // fidelity coverage.
-  reviewLenses: [
-    { key: "criteria-vs-artifacts",
-      agentType: "Explore",
-      refs: [],
-      prompt: "Judge the deliverable strictly against the success criteria in the plan and goal: for each criterion, is there an artifact in the working tree that satisfies it? Missing or partial satisfaction is a finding. Severity: MAJOR at minimum, CRITICAL where the unsatisfied criterion is one the deliverable cannot stand without." },
-
-    { key: "scope-fidelity",
-      agentType: "Explore",
-      refs: [],
-      prompt: "Judge scope fidelity: did the changes stay inside the plan's task table and writable paths? Out-of-scope edits, unrequested features, and silently skipped plan items are findings. Severity: MAJOR at minimum, CRITICAL where an edit landed outside every declared writable path." },
-
-    { key: "deck-fidelity",
-      agentType: "Explore",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/workshop-checks.md"],
-      prompt: "You OWN check FID, defined in the refs. Read them in full first, along with the built slides.typ and notes.typ and the plan's ## Source Inventory. Also read the source paper itself, at the path this run's plan names under ## Source Paper — it is not in refs because refs is a static list of paths and the paper differs per run, so read it from the plan rather than expecting it injected. FID is MODEL-EVALUATED: report it as MODEL-EVALUATED with the evidence you actually read — never as PASS, and never as N/A, which is not a third kind of pass. Findings: a number, holding or conclusion on a slide that traces to no declared Source Inventory ID or to the paper; a slide overstating what its source supports. MAJOR min; CRITICAL where the deck asserts a result the paper does not contain. Quote the claim text with a file:line." },
-
-    { key: "deck-convention",
-      agentType: "Explore",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/workshop-checks.md",],
-      prompt: "You OWN check CONV, defined in the refs. Read them in full first, along with the built deck and notes and the plan's ## Audience, Venue, Duration, and Proportions and ## Slide Spec. CONV is MODEL-EVALUATED: report it as MODEL-EVALUATED with the evidence you actually read — never as PASS, and never as N/A, which is not a third kind of pass. Findings: a convention violation the constraint modules cannot catch — a takeaway that is not a claim, a bullet restating its title, notes duplicating the slide instead of expanding it. MAJOR min. Quote the offending text with a file:line." },
-
-    { key: "visual-integrity",
-      agentType: "Explore",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/workshop-checks.md"],
-      prompt: "You OWN check VIS, defined in the refs. Read them in full first, along with the built slides.typ and the Visual cell of each ## Slide Spec row. VIS is MODEL-EVALUATED: report it as MODEL-EVALUATED with the evidence you actually read — never as PASS, and never as N/A, which is not a third kind of pass. Findings, judged on the Typst diagram source: clipped or overlapping labels, arrows routed through nodes, illegible sizing, a diagram contradicting its caption. MAJOR min. Source, not a render — look_at.py is not vendored, so say what you could not determine from source rather than papering over it." },
-
-    // This lens does NOT pin Explore. Explore is a built-in agent with a PREDEFINED prompt that no
-    // preloaded skill reaches, and it skips the CLAUDE.md hierarchy. workshop-reviewer's body is a
-    // file this repo controls, and it is read-only by tools allowlist AND by
-    // tests/agent-contract.test.mjs — the same structural property Explore is pinned for, in an
-    // agent whose prompt can be told what it is grading. The modules are not vendored into
-    // any skill: they reach this lens as refs, from their one canonical home.
-    { key: "deck-constraints",
-      agentType: "workshop-reviewer",
-      refs: [],
-      prompt: "Grade the built slides.typ and notes.typ against the Typst constraint corpus indexed in your context by the typst:typst skill — never a count you carry, and never a subset — and ONLY on the judgement half no checker reaches: a takeaway that names a topic instead of asserting a claim, a bullet restating its own slide title, notes duplicating the slide instead of carrying the spoken words, outline fragments where speakable sentences belong, a section hierarchy the argument does not have, a table whose numbers are not traceable to the paper or whose synthesis is undocumented, and diagram legibility judged on the Typst SOURCE — clipped or overlapping labels, arrows through nodes, illegible sizing, a diagram contradicting its caption. Do NOT re-derive what run-constraints.py already computed. Report every finding with the quoted text and a file:line, naming the module, and list every module you considered including those you judged satisfied. NEVER report a module judgement as a computation and never as N/A — it is MODEL-EVALUATED, with the evidence you actually read. MAJOR min; CRITICAL where the deck asserts something its source does not support." },
-  ],
+  // One lens after verification and mechanical checks; its checklist covers all six dimensions.
+  // FID, CONV and VIS are checklist items of this one lens, not separate lenses. workshop-deck.py
+  // computes none of the three; it emits MODEL-EVALUATED, so dropping an item removes its coverage.
+  //
+  // It does NOT pin Explore. Explore is a built-in agent with a PREDEFINED prompt that no preloaded
+  // skill reaches, and it skips the CLAUDE.md hierarchy. workshop-reviewer's body is a file this
+  // repo controls, and it is read-only by tools allowlist AND by tests/agent-contract.test.mjs — the
+  // same structural property Explore is pinned for, in an agent whose prompt can be told what it is
+  // grading. The Typst modules are not vendored into any skill: they reach the lens through the
+  // typst:typst skill its agent definition preloads.
+  lens: {
+    agentType: "workshop-reviewer",
+    refs: ["${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/workshop-checks.md"],
+    prompt: "Judge the built deck and its speaker notes against the approved plan and the goal. Read workshop-checks.md in full first, along with the built slides.typ and notes.typ. CHECKLIST, every item in scope on every run: (1) CRITERIA vs ARTIFACTS — for each success criterion in the plan and goal, is there an artifact in the working tree that satisfies it? Missing or partial satisfaction is a finding, CRITICAL where the deliverable cannot stand without it. (2) SCOPE fidelity — did the changes stay inside the plan's task table and writable paths? Out-of-scope edits, unrequested features and silently skipped plan items are findings, CRITICAL where an edit landed outside every declared writable path. (3) FID, against the plan's ## Source Inventory and the source paper itself at the path this run's plan names under ## Source Paper — the paper is not in refs because refs is a static list and the paper differs per run, so read it from the plan rather than expecting it injected. Findings: a number, holding or conclusion on a slide that traces to no declared Source Inventory ID or to the paper; a slide overstating what its source supports. CRITICAL where the deck asserts a result the paper does not contain. (4) CONV, against the plan's ## Audience, Venue, Duration, and Proportions and its ## Slide Spec: a convention violation the constraint modules cannot catch — a takeaway that is not a claim, a bullet restating its title, notes duplicating the slide instead of expanding it. (5) VIS, judged on the Typst diagram SOURCE against the Visual cell of each ## Slide Spec row: clipped or overlapping labels, arrows routed through nodes, illegible sizing, a diagram contradicting its caption. Source, not a render — look_at.py is not vendored, so say what you could not determine from source rather than papering over it. (6) DECK CONSTRAINTS — grade slides.typ and notes.typ against the Typst constraint corpus indexed in your context by the typst:typst skill, never a count you carry and never a subset, and ONLY on the judgement half no checker reaches: a takeaway that names a topic instead of asserting a claim, a bullet restating its own slide title, notes duplicating the slide instead of carrying the spoken words, outline fragments where speakable sentences belong, a section hierarchy the argument does not have, a table whose numbers are not traceable to the paper or whose synthesis is undocumented. Do NOT re-derive what run-constraints.py already computed; name the module for each constraint finding and list every module you considered including those you judged satisfied. FID, CONV and VIS are MODEL-EVALUATED: report each as MODEL-EVALUATED with the evidence you actually read — never as PASS, and never as N/A, which is not a third kind of pass. Quote the offending text with a file:line for every finding. Severity across the whole checklist is MAJOR at minimum, CRITICAL where the deck asserts something its source does not support. MODE — RED (a task was flagged or a mechanical check failed): diagnose EVERY failure in the digest and route it, naming cause and fix, to the task id whose writablePaths own the file, or to 'plan' when no task can own the fix. MODE — GREEN (everything passed): make one open-ended pass over the whole checklist and report each finding with an ownerTask. In both modes, rule every carried finding open or closed against evidence you actually read; silence leaves it open.",
+  },
 
   authorityExtra: [
     "THE TYPST CORPUS IS ONE COMMAND AWAY, AND IS NOT IN YOUR REFS. Run `typst-rules slides,notes,workshop` for the index — every rule that governs a deck and its speaker notes, with an openable path — then read the ones your edit touches. It is on PATH because the harness puts every enabled plugin's bin/ there, so it needs no path and no plugin variable. Do NOT work from a paraphrase of these rules in a brief: a paraphrase is a lossy copy of a corpus that moves.",
@@ -247,11 +217,11 @@ reads — prose, not code. An agent is justified only by a custom prompt, hooks 
 `workshop` earns it on the first, and it preloads `typst:typst`, whose bang line indexes the
 canonical Typst modules.
 
-`verifierAgentType` and the five FID/CONV/VIS-and-generic lenses pin `Explore` because it has no Edit
-and no Write: a judge that structurally cannot modify the tree beats a prompt asking it not to. The
-`deck-constraints` lens buys the same property a different way — `workshop-reviewer` is
-read-only by tools allowlist — because Explore's prompt is predefined and no preloaded skill or
-CLAUDE.md reaches it.
+`verifierAgentType` pins `Explore` because it has no Edit and no Write: a judge that structurally
+cannot modify the tree beats a prompt asking it not to. The lens buys the same property a different
+way — `workshop-reviewer` is read-only by tools allowlist — because Explore's prompt is predefined
+and no preloaded skill or CLAUDE.md reaches it, and the lens's constraint item has to be told what it
+is grading.
 
 ## Phase 5 — HUMAN REVIEW
 
