@@ -1479,11 +1479,28 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 			blankRun, nonRowRun, sinceRow := 0, 0, 0
 			var lone []int // a lone lead-in row set aside; see below
 			hdrAfterLone, loneHdr := false, 0
+			pastTable := false // the scan has crossed a table another anchor took
 			// The block's own column header, normalised, filled in once the first row
 			// is seen. A table that runs over a page break REPRINTS it on the new
 			// page, which is the only thing distinguishing a page break from the end
 			// of the table.
 			var ownHdrSet map[string]bool
+			// One row and then a run of prose: the row was a sentence in the lead-in
+			// ("The following table sets forth, as of March 31, 1995,"), and the
+			// table under this heading may still be below. Set it aside and keep
+			// scanning; the rows found instead are kept only if a column-header line
+			// separates them from it -- the lead-in sits ABOVE the table's header --
+			// so a sole 5% holder followed by its footnotes and another table still
+			// stands.
+			setAside := func() bool {
+				if len(block) != 1 || lone != nil {
+					return false
+				}
+				lone, block, ownHdrSet = block, nil, nil
+				loneHdr = len(header)
+				nonRowRun, sinceRow = 0, 0
+				return true
+			}
 			resume := func() bool {
 				if ownHdrSet == nil {
 					return false
@@ -1500,6 +1517,7 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 					if stackedHeader && len(block) == 0 {
 						break
 					}
+					pastTable = true
 					continue
 				}
 				lt := strings.TrimSpace(clean[j])
@@ -1511,6 +1529,13 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 							if resume() {
 								continue
 							}
+							// A lead-in sentence row still followed by prose, then the
+							// blank lines a <TABLE>/<CAPTION> wrapper leaves behind. A
+							// lead-in sits above its table, so never once the scan is
+							// past a table: that lone row is a footnote under it.
+							if nonRowRun >= 2 && !pastTable && setAside() {
+								continue
+							}
 							break
 						}
 					}
@@ -1519,7 +1544,7 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 				blankRun = 0
 				if reHdrLineCue.MatchString(lt) && len(block) == 0 {
 					header = append(header, clean[j])
-					if lone != nil {
+					if lone != nil && columnarHdrLine(lt) {
 						hdrAfterLone = true
 					}
 				}
@@ -1545,18 +1570,7 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 						if resume() {
 							continue
 						}
-						// One row and then a run of prose: the row was a sentence
-						// in the lead-in ("The following table sets forth, as of
-						// March 31, 1995,"), and the table under this heading may
-						// still be below. Set it aside and keep scanning; the rows
-						// found instead are kept only if a column-header line
-						// separates them from it -- the lead-in sits ABOVE the
-						// table's header -- so a sole 5% holder followed by its
-						// footnotes and another table still stands.
-						if len(block) == 1 && lone == nil {
-							lone, block, ownHdrSet = block, nil, nil
-							loneHdr = len(header)
-							nonRowRun, sinceRow = 0, 0
+						if setAside() {
 							continue
 						}
 						break
@@ -2368,6 +2382,13 @@ func isAddressLine(s string) bool {
 // numeric row, a rule or a line indented right of the label (a section heading
 // centred over the table); the holder is the top line of the cell plus the
 // lines that continue it, up to the first address line.
+// columnarHdrLine reports a column-header line: a header cue on a line laid
+// out in columns (or short enough to be one cell). A justified sentence, such
+// as a footnote under a table, also says "shares" but is not one.
+func columnarHdrLine(lt string) bool {
+	return reHdrLineCue.MatchString(lt) && (reWideGap.MatchString(lt) || len(lt) <= 40)
+}
+
 func holderOverClassLine(clean []string, ln, depth int) (string, int, bool) {
 	if depth > 4 {
 		return "", -1, false
