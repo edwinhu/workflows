@@ -4674,3 +4674,51 @@ func TestHTMLColspanRecoveryPreservesOtherTablesInFiling(t *testing.T) {
 		}
 	}
 }
+
+// The closing parenthesis of a shares footnote is a separate HTML cell in
+// 0001144204-08-025904. Dropping it makes every holding look like a header.
+func TestHTMLSplitFootnoteClosingCellKeepsOwnership(t *testing.T) {
+	body := `<html><body><p>Security Ownership of Certain Beneficial Owners and Management</p><table>
+<tr><td>Name and Address of Beneficial Owner</td><td></td><td colspan="2">Number of Shares (1) Beneficially Owned</td><td></td><td colspan="2">Percentage Beneficially Owned</td><td></td></tr>
+<tr><td></td><td></td><td colspan="2"></td><td></td><td colspan="2"></td><td></td></tr>
+<tr><td>Howard H. Hill<br>7610 Miramar Road, Ste. 6000<br>San Diego, CA 92126-4202</td><td></td><td></td><td>245,871(2</td><td>)</td><td></td><td>6.9</td><td>%</td></tr>
+<tr><td>John R. Ehret<br>7610 Miramar Road, Ste. 6000<br>San Diego, CA 92126-4202</td><td></td><td></td><td>28,000(3</td><td>)</td><td></td><td>0.8</td><td>%</td></tr>
+<tr><td>Robert Jacobs<br>7610 Miramar Road, Ste. 6000<br>San Diego, CA 92126-4202</td><td></td><td></td><td>8,000(4</td><td>)</td><td></td><td>0.2</td><td>%</td></tr>
+<tr><td>Marvin H. Fink<br>7610 Miramar Road, Ste. 6000<br>San Diego, CA 92126-4202</td><td></td><td></td><td>37,165(5</td><td>)</td><td></td><td>1.1</td><td>%</td></tr>
+<tr><td>Linde Kester<br>7610 Miramar Rd., Ste. 6000<br>San Diego, CA 92126-4202</td><td></td><td></td><td>91,472(6</td><td>)</td><td></td><td>2.7</td><td>%</td></tr>
+<tr><td>William Reynolds<br>7610 Miramar Rd., Ste. 6000<br>San Diego, CA 92126-4202</td><td></td><td></td><td>20,300(7</td><td>)</td><td></td><td>0.6</td><td>%</td></tr>
+<tr><td>All Directors and Officers as a Group (6 Persons)</td><td></td><td></td><td>430,808(8</td><td>)</td><td></td><td>11.8</td><td>%</td></tr>
+<tr><td>Hytek International, Ltd<br>PO Box 10927 APO<br>George Town<br>Cayman Islands</td><td></td><td></td><td>450,930(9</td><td>)</td><td></td><td>13.7</td><td>%</td></tr>
+<tr><td>Walrus Partners, LLC<br>8014 Olson Memorial, #232<br>Golden Valley, MN 55427</td><td></td><td></td><td>248,583 (10</td><td>)</td><td></td><td>7.5</td><td>%</td></tr>
+<tr><td>Citigroup Inc.<br>399 Park Avenue<br>New York, NY 10043</td><td></td><td></td><td>216,175(11</td><td>)</td><td></td><td>6.6</td><td>%</td></tr>
+</table></body></html>`
+	rows := ScreenRows(run(t, body))
+	if len(rows) != 10 {
+		t.Fatalf("want 10 literal beneficial holdings, got %d: %+v", len(rows), rows)
+	}
+	for _, want := range []struct {
+		name        string
+		shares, pct float64
+	}{
+		{"Howard H. Hill", 245871, 6.9}, {"John R. Ehret", 28000, 0.8}, {"Robert Jacobs", 8000, 0.2},
+		{"Marvin H. Fink", 37165, 1.1}, {"Linde Kester", 91472, 2.7}, {"William Reynolds", 20300, 0.6},
+		{"All Directors and Officers as a Group", 430808, 11.8}, {"Hytek International, Ltd", 450930, 13.7},
+		{"Walrus Partners, LLC", 248583, 7.5}, {"Citigroup Inc", 216175, 6.6},
+	} {
+		found := 0
+		for _, r := range rows {
+			if strings.HasPrefix(r.HolderName, want.name) {
+				found++
+				if r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+					t.Errorf("%s: want %g/%g got %+v", want.name, want.shares, want.pct, r)
+				}
+				if strings.HasPrefix(want.name, "All Directors") && (!r.IsGroupRow || r.GroupN != 6) {
+					t.Errorf("want six-person group: %+v", r)
+				}
+			}
+		}
+		if found != 1 {
+			t.Errorf("want exactly one %s holding, got %d: %+v", want.name, found, rows)
+		}
+	}
+}

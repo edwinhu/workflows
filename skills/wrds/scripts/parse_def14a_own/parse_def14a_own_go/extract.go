@@ -199,6 +199,8 @@ func compact(g *Grid) *compacted {
 	return compactColumns(g, false)
 }
 
+var reSplitSharesFootnote = regexp.MustCompile(`^[0-9][0-9, ]*\(\s*/?\s*(?:[0-9]{1,2}[a-zA-Z]?|[a-zA-Z])\s*/?\s*$`)
+
 func compactColumns(g *Grid, compareAll bool) *compacted {
 	// 1. Drop footnote rows: a rowspan/colspan-expanded full-width paragraph
 	//    repeats one long string across every column and would otherwise
@@ -219,7 +221,19 @@ func compactColumns(g *Grid, compareAll bool) *compacted {
 		if len(distinct) == 1 && maxLen > 90 && len(g.Rows[i]) > 2 {
 			continue
 		}
-		keepRows = append(keepRows, g.Rows[i])
+		row := g.Rows[i]
+		if compareAll {
+			row = append([]string(nil), row...)
+			// Repair a footnote split across cells before header detection;
+			// otherwise its unfinished shares token makes a data row invisible.
+			for j := 1; j < len(row); j++ {
+				if strings.TrimSpace(row[j]) == ")" && reSplitSharesFootnote.MatchString(flat(row[j-1])) {
+					row[j-1] += ")"
+					row[j] = ""
+				}
+			}
+		}
+		keepRows = append(keepRows, row)
 	}
 
 	ncol := 0
