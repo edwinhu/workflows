@@ -140,6 +140,34 @@
       "counterexample": "0000910472-08-000038 is NOT excluded: the source prints a genuine As a Group | Corporate/Government Bond Fund-N Class | 0.04% | 2,103 table. Missing old shares is a parser defect, not an exclusion. Broad X7 also catches other real ownership tables, so it is guarded by a mixed zero-percent/share-only old-group shape, source grant labels, and absence of a non-grant table group cell. 0001104659-05-035182 has paired old group values but every group name is actually Director of LB&T in the Position column; X9, not X7, corrects it.",
       "denominators": "207912 old and new manifests, 207912 matched (100%), no unmatched. Candidates 1893 unchanged; old candidate rows 38136. Set (a) 648 -> 648; set (b) gated 83 -> 77; share-only diagnostic 1054 -> 1054. Existing exclusions 437 -> 443; X7=1, X8=4, X9=1. Every candidate stays in the unchanged 1893-filing regress_filelist and 22856-filing round_filelist (sha256 e4ac8ec66217ba10db98be6c343dac9da2830136a9ef0eb37aae32a328ce4b0b / da8e15b431a9828ba58c046e514a9e249fa10149df923c27b392256ec9b8a133). Repeated rebuilds byte-identical.",
       "thresholds": "All minimums, maximums, and sample per-year yield floors unchanged; both regression minimums remain 0.95. No parser edits, grind start, grid round, or push."
+    },
+    {
+      "date": "2026-09-30",
+      "round": "SET-(a) X10-X13 correction (operator, outside stopped grind); no threshold change",
+      "change": "Additional old-row-only exclusions: X10 repeated fund compensation, X11 audit-billing entities, X12 partnership accounting, X13 purchase-narrative/year spillover. X10-X13 affect only set (a); set (b) gated and diagnostic membership unchanged. Excluded candidates stay submitted and reported as pooled/per-clause diagnostics and named clauses in regress_dev.tsv.",
+      "rules": {
+        "X10": "No old percent; all old share_class empty; all table_kind combined; >=3 distinct table_index; >=2 distinct holder names each has an identical (holder_name, shares) pair occurring >=3 times",
+        "X11": "No old percent; normalized set of old holder_name equals exactly {fund, entities n/a}",
+        "X12": "No old percent; an old name begins Allocation of Income/Loss, Allocation of Income or Loss, Reimbursements to General Partners, Property management fees paid, Rental income, or Interest income",
+        "X13": "Exactly one old row; no percent; name begins The Company purchased; shares is an integer calendar year 1900-2000",
+        "field_semantics": "No percent means empty old TSV field, not numerical zero. Normalize whitespace/case for name labels; identical X10 holder/share pairs use original fields. No recovery flags or accession whitelist enter production predicates."
+      },
+      "evidence": "/home/eh/projects/r2000/scratch/zero_row_residue.md, section Proposed mechanical rules from old rows only; independently re-verified on this run against all 1893 candidate keys and all 513 currently recovered set-(a) keys",
+      "verified_catches": {
+        "X10_new": 5,
+        "X11_new": 3,
+        "X12_new": 5,
+        "X13_new": 1,
+        "new_union": 14,
+        "recovered_caught": 0,
+        "recovered_tested": 513,
+        "X10_all_candidates": 45
+      },
+      "denominators": "207912 old and new manifests, 207912 matched; old rows 2903798 -> 38136 candidate rows -> 1893 filing aggregates. Candidates unchanged 1893 (a=1070, b=1181). Set (a) 648 -> 634; (b) gated 77 -> 77; (b) share-only diagnostic 1054 -> 1054. Excluded total 443 -> 457; excluded zero-row candidates 422 -> 436. Newly removed keys exactly the named 14, disjoint across rules. X10 also labels 40 candidates already excluded by earlier clauses; its full diagnostic denominator is 45.",
+      "snapshot_correction": "The proposal used 136 unrecovered filings; the fresh existing-output check has 513 recovered and 135 unrecovered out of 648. All 14 proposed accessions remain unrecovered; none of the 513 recovered keys is excluded.",
+      "determinism": "Two consecutive builder runs produced identical gold_regress.tsv and gold_regress.json hashes. Parser filelists unchanged: regress_filelist.tsv e4ac8ec66217ba10db98be6c343dac9da2830136a9ef0eb37aae32a328ce4b0b; round_filelist.tsv da8e15b431a9828ba58c046e514a9e249fa10149df923c27b392256ec9b8a133.",
+      "thresholds": "All minimums, maximums, per-year yield floors, diagnostic definitions and gold/sample populations unchanged. Both regression minimums remain 0.95. No parser edit, grid round, grind start, holdout score or push.",
+      "journal_note": "operator-x10-x13-installed"
     }
   ],
   "_baseline_2026_09_28_dev": {
