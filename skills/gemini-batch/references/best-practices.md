@@ -1,18 +1,50 @@
-# Best Practices
+# Developer Batch API patterns
 
-## Contents
+Source: [Batch API](https://ai.google.dev/gemini-api/docs/batch-api.md.txt), [rate limits](https://ai.google.dev/gemini-api/docs/rate-limits.md.txt). This is the Gemini Developer API, **not** Cloud batch prediction. Batch still uses generateContent; Interactions Batch is not yet available.
 
-- [1. Implement Idempotent Request IDs](#1-implement-idempotent-request-ids)
-- [2. Track Processing State](#2-track-processing-state)
-- [3. Validate Before Submission](#3-validate-before-submission)
-- [4. Handle Partial Failures Gracefully](#4-handle-partial-failures-gracefully)
-- [5. Use Appropriate Batch Sizes](#5-use-appropriate-batch-sizes)
+## Keyed file input
 
-Production-tested patterns for reliable Gemini Batch API usage.
+Each JSONL row contains a unique `key` and a complete generateContent `request`. Inline `src` requests are also supported when the total request stays under 20MB. Input JSONL files can be up to 2GB; Files project storage is 20GB. Shard by token quotas and retry isolation rather than assuming a universal 10,000-row limit.
 
----
+```json
+{"key":"doc-1","request":{"contents":[{"role":"user","parts":[{"text":"Extract the dates from this excerpt..."}]}],"generationConfig":{"responseMimeType":"application/json"}}}
+```
 
-## 1. Implement Idempotent Request IDs
+```python
+from google import genai
+
+client = genai.Client()
+uploaded = client.files.upload(
+    file="requests.jsonl", config={"mime_type": "application/jsonl"}
+)
+job = client.batches.create(
+    model="gemini-3.5-flash-lite",
+    src=uploaded.name,
+    config={"display_name": "extraction-v1"},
+)
+# Later, using the SAME client:
+job = client.batches.get(name=job.name)
+if job.state == "JOB_STATE_SUCCEEDED":
+    output = client.files.download(file=job.dest.file_name)
+```
+
+For structured schemas use the documented pattern in [structured-output.md](structured-output.md). Uploaded source media may be referenced within each JSONL request; a GCS URI is not mandatory for Developer Batch. Do not supply a Cloud `config.dest` here.
+
+## Correlation and retries
+
+- Build keys from the domain identifier plus content/prompt/model/schema version; join outputs by `key`, never line order. A repeated key is a local validation error, not guaranteed server-side idempotency.
+- Reconcile missing/duplicate output keys and per-row errors even if the job succeeds. Preserve original keys when retrying failed rows.
+- Use the existing project job/result store; audit existing state before adding another manifest. Derive pending rows from outputs and errors rather than recording competing status files.
+- Validate JSONL locally with `scripts/validate_jsonl.py --backend developer`; run a same-model synchronous request, then 5–10 rows through Batch before scaling.
+- Keep one Client alive for upload, create, get and download. Use the harness's background notification mechanism for long monitoring, not a model session spending tokens on repeated status narration.
+
+## Quotas
+
+Developer Batch: 100 concurrent batch requests, 2GB input file, 20GB file storage, plus per-model/tier enqueued-token limits across active jobs. As checked 2026-09-30, Tier 1 enqueued limits include 10M tokens for 3.5 Flash-Lite, 3M for 3.8 Flash and 5M for 3.1 Pro Preview. Recheck your actual project tier before sizing a job. Flex/Standard/Priority use non-Batch limits; Flex does not inherit these expanded quotas.
+
+Cloud batch has separate limits (200,000 requests, 1GB GCS input), regional/global endpoints and a shared capacity pool: see [vertex-ai.md](vertex-ai.md).
+
+## Deterministic keys and optional existing-store adapter
 
 Use deterministic request IDs based on file content and prompt version to enable:
 - Safe retries without duplicate processing
@@ -20,6 +52,9 @@ Use deterministic request IDs based on file content and prompt version to enable
 - Incremental processing of new files only
 
 ```python
+import hashlib
+from pathlib import Path
+
 def get_idempotent_request_id(file_path: str, prompt: str) -> str:
     """Generate idempotent request ID."""
     with open(file_path, 'rb') as f:
@@ -30,11 +65,12 @@ def get_idempotent_request_id(file_path: str, prompt: str) -> str:
 
 ---
 
-## 2. Track Processing State
+### Existing SQLite store adapter
 
-Maintain a manifest of processed files to avoid reprocessing:
+If the project already uses SQLite, adapt its existing store; do not add a competing state file. Keys aid correlation/caching, not server-side exactly-once execution:
 
 ```python
+import json
 import sqlite3
 
 class ProcessingTracker:
@@ -81,73 +117,6 @@ class ProcessingTracker:
         return cursor.fetchone() is not None
 ```
 
----
-
-## 3. Validate Before Submission
-
-Always validate JSONL files before submitting to catch errors early:
-
-```python
-def validate_batch_file(jsonl_path: str) -> tuple[bool, list[str]]:
-    """Validate batch JSONL file.
-
-    Returns:
-        Tuple of (is_valid, list of error messages)
-    """
-    errors = []
-    request_ids = set()
-
-    with open(jsonl_path, 'r') as f:
-        for line_num, line in enumerate(f, 1):
-            line = line.strip()
-
-            # Check for empty lines
-            if not line:
-                errors.append(f"Line {line_num}: Empty line")
-                continue
-
-            # Parse JSON
-            try:
-                data = json.loads(line)
-            except json.JSONDecodeError as e:
-                errors.append(f"Line {line_num}: Invalid JSON - {e}")
-                continue
-
-            # Check required fields
-            if "request" not in data:
-                errors.append(f"Line {line_num}: Missing 'request' field")
-                continue
-
-            request = data["request"]
-            if "contents" not in request:
-                errors.append(f"Line {line_num}: Missing 'contents' in request")
-
-            contents = request.get("contents", [])
-            if not contents or contents[0].get("role") != "user":
-                errors.append(f"Line {line_num}: First content must have role='user'")
-
-            # Check for file URI format
-            parts = contents[0].get("parts", []) if contents else []
-            for part in parts:
-                if "fileData" in part:
-                    uri = part["fileData"].get("fileUri", "")
-                    if not uri.startswith("gs://"):
-                        errors.append(f"Line {line_num}: fileUri must start with 'gs://'")
-
-            # Check request ID uniqueness
-            request_id = data.get("metadata", {}).get("request_id")
-            if request_id:
-                if request_id in request_ids:
-                    errors.append(f"Line {line_num}: Duplicate request_id '{request_id}'")
-                request_ids.add(request_id)
-            else:
-                errors.append(f"Line {line_num}: Missing request_id in metadata")
-
-    return len(errors) == 0, errors
-```
-
----
-
 ## 4. Handle Partial Failures Gracefully
 
 Some requests may fail while others succeed. Always handle mixed results:
@@ -182,52 +151,6 @@ def process_results_with_retry(
     return successful, failed
 ```
 
----
+### Shard sizing
 
-## 5. Use Appropriate Batch Sizes
-
-Balance between job overhead and failure isolation:
-
-| Scenario | Recommended Batch Size |
-|----------|------------------------|
-| Testing/Development | 10-50 requests |
-| Production (small files) | 1,000-5,000 requests |
-| Production (large PDFs) | 100-500 requests |
-| Critical data | 100-200 requests |
-
-```python
-def optimal_batch_size(
-    file_count: int,
-    avg_file_size_mb: float,
-    criticality: str = "normal"
-) -> int:
-    """Calculate optimal batch size.
-
-    Args:
-        file_count: Total number of files
-        avg_file_size_mb: Average file size in MB
-        criticality: "low", "normal", or "high"
-
-    Returns:
-        Recommended batch size
-    """
-    # Base limits
-    max_size = 10000  # API limit
-
-    # Adjust for file size
-    if avg_file_size_mb > 10:
-        max_size = min(max_size, 500)
-    elif avg_file_size_mb > 5:
-        max_size = min(max_size, 1000)
-
-    # Adjust for criticality
-    criticality_factors = {"low": 1.0, "normal": 0.5, "high": 0.2}
-    factor = criticality_factors.get(criticality, 0.5)
-    max_size = int(max_size * factor)
-
-    # Don't create too many small batches
-    min_batches = max(1, file_count // max_size)
-    optimal = file_count // min_batches
-
-    return min(optimal, max_size)
-```
+Operational starting points, not API limits: small-file production 1,000–5,000 rows; large PDFs 100–500; critical data 100–200. Prefer token-quota/byte-aware sharding with retry isolation; test on 5–10 rows first.

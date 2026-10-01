@@ -2,11 +2,11 @@
 
 > **Official docs:** https://ai.google.dev/gemini-api/docs/file-search.md.txt
 > **SDK:** `@google/genai` (TypeScript) / `google-genai` (Python)
-> **Last verified:** April 2026
+> **Last verified:** 2026-09-30
 
 ## Overview
 
-File Search stores provide persistent document storage with semantic search. Upload PDFs/text, then query them via the `fileSearch` tool in `generateContent`.
+File Search stores provide persistent document storage with semantic search. Upload PDFs/text, then query them via Interactions `file_search`. Legacy generateContent uses a different tool shape; do not mix them.
 
 ## Store Management
 
@@ -131,31 +131,25 @@ while (true) {
 ## Querying with File Search
 
 ```typescript
-const response = await client.models.generateContent({
-  model: "gemini-3.1-flash-lite-preview",
-  contents: "Does this source support the claim?",
-  config: {
-    tools: [{
-      fileSearch: {
-        fileSearchStoreNames: [storeName],
-        metadataFilter: 'bibkey="Author2024-ab"',  // optional: scope to specific doc
-      },
-    }],
-    responseMimeType: "application/json",
-    responseJsonSchema: { /* see structured-output.md */ },
+const interaction = await client.interactions.create({
+  model: "gemini-3.8-flash",
+  input: "Does this source support the claim?",
+  tools: [{
+    type: "file_search",
+    file_search_store_names: [storeName],
+    metadata_filter: 'bibkey="Author2024-ab"',
+  }],
+  response_format: {
+    type: "text",
+    mime_type: "application/json",
+    schema: { /* see structured-output.md */ },
   },
 });
 ```
 
-### Grounding Metadata
+### Grounding metadata
 
-Responses include grounding chunks showing which passages were used:
-
-```typescript
-const metadata = response.candidates?.[0]?.groundingMetadata;
-const chunks = metadata?.groundingChunks ?? [];
-// Each chunk: { retrievedContext: { uri, title }, customMetadata: [...] }
-```
+Read Interactions model_output text blocks and their citation annotations from `interaction.steps`; do not read legacy candidates from this response. For legacy generateContent responses only, citations remain under `candidates[].groundingMetadata`. See the current [File Search docs](https://ai.google.dev/gemini-api/docs/file-search.md.txt) and [grounding step parsing](flex-inference.md).
 
 ## Limits
 
@@ -168,5 +162,7 @@ const chunks = metadata?.groundingChunks ?? [];
 
 ## Incompatibilities
 
-- File Search cannot combine with Grounding with Google Search
+- File Search cannot combine with Google Search or URL Context in the same request
 - File Search is not supported in the Live API
+
+Current project storage tiers: Free 1GB, Tier 1 10GB, Tier 2 100GB, Tier 3 1TB. Stored size includes generated embeddings (typically about 3× input size); Google recommends keeping each store below 20GB for retrieval latency. Historical upload/pagination workarounds above are observations, not permanent service limits.

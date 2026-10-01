@@ -1,26 +1,34 @@
 #!/usr/bin/env -S uv run python3
-"""Example: Batch vision analysis of icon images using Vertex AI.
+"""Example: Batch vision analysis of icon images using Gemini Enterprise Agent Platform.
 
 This example demonstrates:
 1. Uploading image files to GCS
 2. Creating JSONL with image file URIs (not inline data)
-3. Submitting batch job via Vertex AI
+3. Submitting batch job via Gemini Enterprise Agent Platform
 4. Polling for completion
 5. Downloading and parsing results
 
 Based on real-world icon matching use case.
 """
 
-import os
+from __future__ import annotations
+
 import json
 import sys
 import time
+from functools import lru_cache
 from pathlib import Path
 from google.cloud import storage
-import google.generativeai as genai
+from google import genai
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts" / "lib"))
 from gemini_models import resolve_model
+
+
+@lru_cache(maxsize=None)
+def cloud_client(project_id: str):
+    """Keep the Cloud SDK client alive across submit/poll calls."""
+    return genai.Client(vertexai=True, project=project_id, location="global")
 
 
 def upload_images_to_gcs(
@@ -32,7 +40,7 @@ def upload_images_to_gcs(
 
     Args:
         local_dir: Local directory containing images
-        bucket_name: GCS bucket name (must be us-central1)
+        bucket_name: GCS bucket readable by the Cloud batch service
         gcs_prefix: Prefix for GCS paths
 
     Returns:
@@ -42,7 +50,7 @@ def upload_images_to_gcs(
     bucket = client.bucket(bucket_name)
 
     uploaded = []
-    image_extensions = ('.png', '.jpg', '.jpeg', '.svg', '.webp')
+    image_extensions = ('.png', '.jpg', '.jpeg', '.webp')
 
     for file_path in Path(local_dir).rglob("*"):
         if file_path.suffix.lower() in image_extensions:
@@ -82,8 +90,6 @@ def create_vision_jsonl(
             gen_config = {
                 "responseMimeType": "application/json"
             }
-            if "gemini-3" not in model:
-                gen_config["temperature"] = 0.0
 
             request = {
                 "request": {
@@ -122,7 +128,6 @@ def get_mime_type(filename: str) -> str:
         ".png": "image/png",
         ".jpg": "image/jpeg",
         ".jpeg": "image/jpeg",
-        ".svg": "image/svg+xml",
         ".webp": "image/webp",
     }
     return mime_types.get(ext, "image/png")
@@ -134,7 +139,7 @@ def submit_vertex_batch_job(
     project_id: str,
     model: str | None = None
 ) -> genai.types.BatchJob:
-    """Submit batch job via Vertex AI.
+    """Submit batch job via Gemini Enterprise Agent Platform.
 
     Args:
         jsonl_path: Local JSONL file path
@@ -149,11 +154,7 @@ def submit_vertex_batch_job(
     model = resolve_model("bulk", model)
 
     # CRITICAL: vertexai=True requires ADC (gcloud auth application-default login)
-    client = genai.Client(
-        vertexai=True,
-        project=project_id,
-        location="us-central1"
-    )
+    client = cloud_client(project_id)
 
     # Upload JSONL to GCS
     storage_client = storage.Client()
@@ -170,14 +171,9 @@ def submit_vertex_batch_job(
     print(f"Input URI: {input_uri}")
     print(f"Output URI: {output_uri}")
 
-    # Submit batch job.
-    # NOTE: In current google-genai SDK, `dest` is a FIELD of CreateBatchJobConfig,
-    # NOT a top-level kwarg. Older versions accepted `dest=` directly; the new
-    # signature is `create(model, src, config)`. Putting `dest` inside `config`
-    # is the only correct pattern. Use `inspect.signature(client.batches.create)`
-    # to verify your SDK before changing.
+    # Cloud destinations belong in the job config.
     job = client.batches.create(
-        model=model,
+        model=f"publishers/google/models/{model.removeprefix('publishers/google/models/')}",
         src=input_uri,
         config={
             "display_name": f"vision-batch-{timestamp}",
@@ -206,11 +202,7 @@ def wait_for_completion(
     Returns:
         Completed job
     """
-    client = genai.Client(
-        vertexai=True,
-        project=project_id,
-        location="us-central1"
-    )
+    client = cloud_client(project_id)
 
     start = time.time()
 
@@ -288,28 +280,28 @@ def parse_vision_results(jsonl_path: str) -> dict[str, dict]:
             candidates = response.get("candidates", [])
 
             if candidates:
-                text = (
-                    candidates[0]
-                    .get("content", {})
-                    .get("parts", [{}])[0]
-                    .get("text", "")
+                text = "".join(
+                    part["text"]
+                    for part in candidates[0].get("content", {}).get("parts", [])
+                    if isinstance(part.get("text"), str) and not part.get("thought")
                 )
 
                 # Try to parse JSON response
                 try:
                     parsed = json.loads(text)
                 except json.JSONDecodeError:
-                    parsed = {"raw_text": text}
+                    parsed = None
 
                 results[request_id] = {
-                    "success": True,
+                    "success": parsed is not None and candidates[0].get("finishReason") == "STOP",
                     "data": parsed,
+                    "raw_text": text,
                     "finish_reason": candidates[0].get("finishReason")
                 }
             else:
                 results[request_id] = {
                     "success": False,
-                    "error": response.get("error"),
+                    "error": entry.get("error") or response.get("error"),
                     "data": None
                 }
 
@@ -320,7 +312,7 @@ def main():
     """Run complete vision batch pipeline."""
 
     # Configuration
-    BUCKET_NAME = "your-batch-bucket"  # Must be in us-central1
+    BUCKET_NAME = "your-batch-bucket"  # Runbook bucket default: us-central1
     PROJECT_ID = "your-project-id"
     LOCAL_ICONS_DIR = "./icons"
     MODEL = resolve_model("bulk")
@@ -367,7 +359,7 @@ def main():
     print("Step 5: Download results")
     print("=" * 60)
     # Extract output URI from job
-    output_uri = f"gs://{BUCKET_NAME}/batch_outputs/"
+    output_uri = job.dest.gcs_uri
     result_files = download_results(output_uri)
 
     print("\n" + "=" * 60)
@@ -403,7 +395,7 @@ if __name__ == "__main__":
     print("1. gcloud auth login")
     print("2. gcloud auth application-default login")
     print("3. gcloud services enable aiplatform.googleapis.com")
-    print("4. GCS bucket in us-central1")
+    print("4. Readable GCS bucket and supported Cloud endpoint")
     print()
 
     # Check ADC exists
