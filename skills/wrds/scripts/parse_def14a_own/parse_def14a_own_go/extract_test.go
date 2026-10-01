@@ -5378,3 +5378,91 @@ func TestHTMLFragmentedOneRowOwnershipTables(t *testing.T) {
 		t.Fatalf("exact fragment copy must not add holdings: %+v", got)
 	}
 }
+
+// 0001036050-98-000626 uses /(n)/ footnotes in literal share-count cells.
+func TestASCIISlashParenthesisShareFootnotes(t *testing.T) {
+	body := `PRINCIPAL STOCKHOLDERS
+
+     The following table sets forth certain information regarding the beneficial
+  ownership of the Company's Common Stock as of February 13, 1998 by (a) each
+  stockholder known to the Company to be the beneficial owner, as defined in
+  Rule 13d-3 under the Exchange Act, of more than 5% of the Common Stock, based
+  upon Company records or Securities and Exchange Commission filings, (b) each
+  director and director nominee of the Company, (c) each of the Named Officers
+  and (d) all executive officers and directors of the Company as a group.  Each
+  of the stockholders named below has sole voting power and sole investment
+  power with respect to the shares indicated as beneficially owned, unless
+  otherwise indicated.
+<TABLE>
+<CAPTION>
+ 
+                                                                         SHARES OWNED
+                                                                  -------------------------
+                    NAME OF BENEFICIAL OWNER                          NUMBER       PERCEN
+                    ------------------------                      ---------------  --------
+<S>                                                               <C>              <C>
+ 
+               Warburg, Pincus Ventures, L.P.                      6,095,238/(1)/     26.2%
+                  466 Lexington Avenue
+                  New York, NY 10017-3147
+ 
+               Robert S. Hillas, Director                          6,095,238/(2)/     26.2
+                  466 Lexington Avenue
+                  New York, NY 10017-3147
+ 
+               Allen & Company Incorporated                        2,625,511/(3)/     11.1
+                  711 Fifth Avenue
+                  New York, NY 10022
+ 
+               William C. Smith, Director and                      1,048,619/(4)/      4.5
+                  Named Officer
+ 
+               Douglas W. Jacobson, Named Officer                  1,047,619           4.5
+ 
+               Robert F. Johnston, Director                          430,000/(5)/      1.8
+ 
+               Robert C. Miller, Director                            262,610/(6)/      1.1
+ 
+               Robert F. Hendrickson, Director                       189,000/(7)/        *
+                                                                                        
+               Ronald Unterman, Named Officer                        151,420/(8)/        *
+                                                                                        
+               David N. Enegess, Named Officer                       111,220/(9)/        *
+                                                                                        
+               Harcharan S. Gill, Former Director                     90,000/(10)/       *
+                  and Named Officer
+ 
+               Peter E. Nangeroni, Named Officer                      37,960/(11)/       *
+                                                                                      
+               William J. Guarini, Named Officer                      28,140/(12)/       *
+                                                                                      
+               Peter J. Neff, Director                                 7,165/(13)/       *
+                                                                                      
+               Nicholas J. Lowcock, Director Nominee                           --        *
+ 
+               All executive officers and directors as a group     9,362,891/(14)/    39.6
+                  (nine persons)
+</TABLE>`
+	rows := ScreenRows(run(t, body))
+	if len(rows) != 15 {
+		t.Fatalf("want15positive-share holdings, got %+v", rows)
+	}
+	for _, want := range []struct {
+		name     string
+		shares   float64
+		footnote string
+	}{{"Warburg, Pincus Ventures", 6095238, "1"}, {"Robert S. Hillas", 6095238, "2"}, {"Allen & Company", 2625511, "3"}, {"William C. Smith", 1048619, "4"}, {"Douglas W. Jacobson", 1047619, ""}, {"Robert F. Johnston", 430000, "5"}, {"Robert C. Miller", 262610, "6"}, {"Robert F. Hendrickson", 189000, "7"}, {"Ronald Unterman", 151420, "8"}, {"David N. Enegess", 111220, "9"}, {"Harcharan S. Gill", 90000, "10"}, {"Peter E. Nangeroni", 37960, "11"}, {"William J. Guarini", 28140, "12"}, {"Peter J. Neff", 7165, "13"}, {"All executive officers and directors as a group", 9362891, "14"}} {
+		found := 0
+		for _, r := range rows {
+			if strings.HasPrefix(r.HolderName, want.name) {
+				found++
+				if r.Shares == nil || *r.Shares != want.shares || r.Footnotes != want.footnote {
+					t.Errorf("want %+v got %+v", want, r)
+				}
+			}
+		}
+		if found != 1 {
+			t.Errorf("wantone %+v got%d", want, found)
+		}
+	}
+}
