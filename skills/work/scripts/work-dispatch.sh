@@ -588,6 +588,14 @@ while :; do
 done
 
 plan="${1:-}"
+if [ -n "${1:-}" ]; then
+  shift
+  if [ "$#" -gt 0 ]; then
+    echo "work-dispatch.sh: unexpected argument(s) after the plan path: $* — flags go BEFORE the plan path" >&2
+    exit 2
+  fi
+fi
+
 if [ -z "$plan" ]; then
   plan=$(bash "$SKILL/scripts/work-pending.sh" "$PWD" | cut -f1)
   [ -n "$plan" ] || { echo "no armed work run in $PWD (and no plan given)" >&2; exit 2; }

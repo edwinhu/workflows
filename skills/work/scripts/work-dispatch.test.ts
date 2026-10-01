@@ -78,6 +78,26 @@ function dispatch(f: { dir: string; plan: string }, ...extra: string[]) {
   }
 }
 
+describe('argument parsing', () => {
+  test('a flag after the plan path is refused, not ignored', () => {
+    const f = fixture({ redCommand: 'bash scripts/check.sh' })
+    script(f.dir, 'check.sh', 'echo "1 failed, 0 passed"\nexit 1')
+    try {
+      execFileSync('bash', [SCRIPT, f.plan, '--provider', 'gemini'], {
+        encoding: 'utf8', cwd: f.dir, env: { ...process.env, WORK_DISPATCH_DRYRUN: '1' },
+      })
+      throw new Error('should have failed')
+    } catch (e: any) {
+      expect(e.status).toBe(2)
+      const out = (e.stdout || '') + (e.stderr || '')
+      expect(out).toMatch(/unexpected argument\(s\) after the plan path/)
+      expect(out).toMatch(/--provider gemini/)
+      // It should fail before any side effects (run dir is not created)
+      expect(existsSync(f.runDir)).toBe(false)
+    }
+  })
+})
+
 describe('the goal names the round budget work actually enforces', () => {
   /**
    * The clause reads `args.rounds` — the per-round counter work-redispatch increments and hard-stops
