@@ -1,8 +1,10 @@
 # Gemini File Search API Reference
 
-> **Official docs:** https://ai.google.dev/gemini-api/docs/file-search.md.txt
+> **Developer API, not for production — docs:** https://ai.google.dev/gemini-api/docs/file-search.md.txt
 > **SDK:** `@google/genai` (TypeScript) / `google-genai` (Python)
 > **Last verified:** 2026-09-30
+
+**Developer-only historical reference; not a production route.** Production Gemini batch uses Vertex with ADC/GCS, never these File API/store calls. See [Cloud batch](vertex-ai.md).
 
 ## Overview
 
@@ -149,7 +151,7 @@ const interaction = await client.interactions.create({
 
 ### Grounding metadata
 
-Read Interactions model_output text blocks and their citation annotations from `interaction.steps`; do not read legacy candidates from this response. For legacy generateContent responses only, citations remain under `candidates[].groundingMetadata`. See the current [File Search docs](https://ai.google.dev/gemini-api/docs/file-search.md.txt) and [grounding step parsing](flex-inference.md).
+Read Interactions model_output text blocks and their citation annotations from `interaction.steps`; do not read legacy candidates from this response. For legacy generateContent responses only, citations remain under `candidates[].groundingMetadata`. See the current [Developer API, not for production: File Search docs](https://ai.google.dev/gemini-api/docs/file-search.md.txt) and [grounding step parsing](flex-inference.md).
 
 ## Limits
 

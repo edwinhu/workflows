@@ -54,15 +54,20 @@ class ModernizationTests(unittest.TestCase):
             for parameter in ("temperature", "top_p", "top_k"):
                 self.assertNotIn(f'"{parameter}"', path.read_text(), str(path))
 
-    def test_tier_routing_and_partial_pilot(self):
+    def test_vertex_production_routing(self):
         text = (SKILL / "SKILL.md").read_text()
-        self.assertIn("## Choose the tier", text)
-        for tier in ("Batch", "Flex", "Standard", "Priority"):
-            self.assertIn(f"| {tier}", text)
-        for measurement in ("0/138", "2/10", "92/138", "8/8"):
-            self.assertIn(measurement, text)
-        self.assertNotIn("JSON-only format blocks", text)
-        self.assertIn("not yet", text)
+        self.assertIn("NEVER USE AI STUDIO / THE GEMINI DEVELOPER API FOR PRODUCTION RUNS", text)
+        for fact in ("ADC", "GCS", "vertexai=True", "1,307", "2,111", "200,000", "1 GB"):
+            self.assertIn(fact, text)
+        self.assertIn("Cloud Flex PayGo (Preview)", text)
+        self.assertIn("Cloud Priority PayGo", text)
+        self.assertIn("X-Vertex-AI-LLM-Shared-Request-Type", text)
+        self.assertIn("one synchronous Cloud request", text)
+        self.assertIn("not a promise that every batch+search+schema combination works", text)
+        self.assertNotIn("ai.google.dev", text)
+        gotchas = (SKILL / "references/gotchas.md").read_text()
+        for fact in ("0/138", "10/10", "over 40 minutes", "9 rows/hour", "No predefined quota limits"):
+            self.assertIn(fact, gotchas)
 
     def test_retained_measurements_and_guards(self):
         skill = (SKILL / "SKILL.md").read_text()
@@ -70,7 +75,8 @@ class ModernizationTests(unittest.TestCase):
         pdf = (SKILL / "references/files-api.md").read_text()
         for fact in ("send the PDF", "5,519,394", "7,050,563", "21,393", "1,313", "22%"):
             self.assertIn(fact, pdf)
-        models = (SKILL / "references/models-and-pricing.md").read_text()
+        models = (SKILL / "references/model-selection.md").read_text()
+        self.assertIn("Gemini Developer API (not Cloud)", models)
         for fact in ("47%", "62%", "70%", "97.9%", "95.2%", "94.3%", "85.0%", "unresolved"):
             self.assertIn(fact, models)
         flex = (SKILL / "references/flex-inference.md").read_text()
@@ -130,76 +136,39 @@ class ModernizationTests(unittest.TestCase):
                 vertexai=True, project="project", location="global"
             )
 
-    def test_flex_retry_and_grounding_snippets_offline(self):
+    def test_all_runnable_clients_are_vertex(self):
+        import ast
         import re
 
-        class APIError(Exception):
-            def __init__(self, code):
-                self.code = code
+        sources = [(str(p), p.read_text()) for p in SKILL.rglob("*.py")]
+        for path in (SKILL / "references").glob("*.md"):
+            sources.extend((f"{path}:block-{i}", block) for i, block in enumerate(
+                re.findall(r"^```python\n(.*?)^```$", path.read_text(), re.MULTILINE | re.DOTALL)
+            ))
+        clients = 0
+        for name, source in sources:
+            for node in ast.walk(ast.parse(source)):
+                if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Attribute):
+                    continue
+                if (node.func.attr == "Client" and isinstance(node.func.value, ast.Name)
+                        and node.func.value.id == "genai"):
+                    clients += 1
+                    flags = {kw.arg: kw.value for kw in node.keywords}
+                    self.assertIn("vertexai", flags, name)
+                    self.assertIsInstance(flags["vertexai"], ast.Constant, name)
+                    assert isinstance(flags["vertexai"], ast.Constant)
+                    self.assertIs(flags["vertexai"].value, True, name)
+        self.assertGreater(clients, 0)
 
-        genai = types.ModuleType("google.genai")
-        fake_client = MagicMock()
-        genai.__dict__.update(
-            Client=MagicMock(return_value=fake_client),
-            errors=types.SimpleNamespace(APIError=APIError),
-        )
-        blocks = re.findall(
-            r"```python\n(.*?)```",
-            (SKILL / "references/flex-inference.md").read_text(),
-            re.DOTALL,
-        )
-        env = {}
-        with patch.dict(
-            sys.modules, {"google": types.ModuleType("google"), "google.genai": genai}
-        ):
-            exec(blocks[0], env)  # noqa: S102 -- bundled snippet, fake SDK only
-            genai.__dict__["Client"].assert_called_once_with(
-                http_options={"timeout": 900000}
-            )
-            fake_client.interactions.create.assert_called_once_with(
-                model="gemini-3.8-flash",
-                input="Who founded Airbnb? Cite reliable sources.",
-                tools=[{"type": "google_search"}],
-                service_tier="flex",
-            )
-            exec(blocks[1], env)  # noqa: S102 -- bundled snippet, fake SDK only
-            fake_client.interactions.create.reset_mock()
-            fake_client.interactions.create.side_effect = [
-                APIError(429),
-                APIError(503),
-                "ok",
-            ]
-            with patch("time.sleep"):
-                self.assertEqual(env["flex_lookup"]("prompt"), "ok")
-            self.assertEqual(fake_client.interactions.create.call_count, 3)
-            fake_client.interactions.create.side_effect = APIError(400)
-            with self.assertRaises(APIError):
-                env["flex_lookup"]("prompt")
-            fake_client.interactions.create.side_effect = APIError(503)
-            with patch("time.sleep"), self.assertRaises(APIError):
-                env["flex_lookup"]("prompt", max_attempts=2)
-            citation = types.SimpleNamespace(
-                type="url_citation",
-                url="https://example.org",
-                title="source",
-                start_index=0,
-                end_index=6,
-            )
-            text = types.SimpleNamespace(
-                type="text", text="answer", annotations=[citation]
-            )
-            env["interaction"] = types.SimpleNamespace(
-                steps=[
-                    types.SimpleNamespace(
-                        type="google_search_call",
-                        arguments=types.SimpleNamespace(queries=["query"]),
-                    ),
-                    types.SimpleNamespace(type="model_output", content=[text]),
-                ]
-            )
-            exec(blocks[2], env)  # noqa: S102 -- bundled snippet, fake response only
-            self.assertTrue(env["grounded_with_citations"])
-            self.assertEqual(env["citations"][0]["text"], "answer")
+    def test_retired_embedding_cli_stops_before_artifacts_or_api(self):
+        module = load_example("embeddings_batch")
+        with tempfile.TemporaryDirectory() as directory:
+            args = types.SimpleNamespace(input="missing.json", out=str(Path(directory) / "job.json"))
+            with self.assertRaisesRegex(SystemExit, "Developer embedding batch is disabled"):
+                module.submit(args)
+            self.assertEqual(list(Path(directory).iterdir()), [])
+            with self.assertRaisesRegex(SystemExit, "Developer embedding batch is disabled"):
+                module._production_client()
 
     def test_cloud_parsers_ignore_thoughts_and_reject_truncation(self):
         processor_module = load_example("batch_processor")
@@ -227,6 +196,52 @@ class ModernizationTests(unittest.TestCase):
             self.assertFalse(next(processor.parse_results(str(path)))["success"])
             self.assertFalse(icon_module.parse_vision_results(str(path))["row-1"]["success"])
 
+    def test_cloud_status_errors_and_missing_identity(self):
+        processor_module = load_example("batch_processor")
+        icon_module = load_example("icon_batch_vision")
+        processor = processor_module.GeminiBatchProcessor.__new__(processor_module.GeminiBatchProcessor)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "results.jsonl"
+            row = {"metadata": {"request_id": "row-1"}, "status": "Bad Request: INVALID_ARGUMENT", "response": {}}
+            path.write_text(json.dumps(row) + "\n")
+            result = next(processor.parse_results(str(path)))
+            self.assertFalse(result["success"])
+            self.assertEqual(result["error"], row["status"])
+            self.assertEqual(icon_module.parse_vision_results(str(path))["row-1"]["error"], row["status"])
+            row["response"] = {"candidates": [{"finishReason": "STOP", "content": {"parts": [{"text": '{"value":1}'}]}}]}
+            path.write_text(json.dumps(row) + "\n")
+            self.assertFalse(next(processor.parse_results(str(path)))["success"])
+            self.assertFalse(icon_module.parse_vision_results(str(path))["row-1"]["success"])
+            del row["metadata"]
+            path.write_text(json.dumps(row) + "\n")
+            with self.assertRaisesRegex(ValueError, "Missing output request_id"):
+                next(processor.parse_results(str(path)))
+            with self.assertRaisesRegex(ValueError, "Missing output request_id"):
+                icon_module.parse_vision_results(str(path))
+
+    def test_developer_links_are_explicitly_nonproduction(self):
+        for path in SKILL.rglob("*.md"):
+            for line in path.read_text().splitlines():
+                if "ai.google.dev" in line:
+                    self.assertIn("Developer API, not for production", line, str(path))
+
+    def test_reference_clients_are_vertex(self):
+        import ast
+        import re
+
+        for path in [SKILL / "SKILL.md", *(SKILL / "references").glob("*.md")]:
+            blocks = re.findall(r"^```python\n(.*?)^```$", path.read_text(), re.MULTILINE | re.DOTALL)
+            for block in blocks:
+                for call in ast.walk(ast.parse(block)):
+                    if (isinstance(call, ast.Call) and isinstance(call.func, ast.Attribute)
+                            and call.func.attr == "Client" and isinstance(call.func.value, ast.Name)
+                            and call.func.value.id == "genai"):
+                        flags = {keyword.arg: keyword.value for keyword in call.keywords}
+                        self.assertIn("vertexai", flags, str(path))
+                        self.assertIsInstance(flags["vertexai"], ast.Constant, str(path))
+                        assert isinstance(flags["vertexai"], ast.Constant)
+                        self.assertIs(flags["vertexai"].value, True, str(path))
+
     def test_embedding2_omits_task_type(self):
         module = load_example("embeddings_batch")
         with tempfile.TemporaryDirectory() as directory:
@@ -241,6 +256,28 @@ class ModernizationTests(unittest.TestCase):
                 json.loads(path.read_text())["request"]["task_type"],
                 "SEMANTIC_SIMILARITY",
             )
+
+    def test_cloud_validator_documented_envelope(self):
+        spec = importlib.util.spec_from_file_location("validator", SKILL / "scripts/validate_jsonl.py")
+        assert spec is not None and spec.loader is not None
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "requests.jsonl"
+            row = {"request": {"contents": [{"parts": [{"fileData": {
+                "fileUri": "gs://bucket/a.pdf", "mimeType": "application/pdf",
+            }}]}]}}
+            path.write_text(json.dumps(row) + "\n")
+            self.assertEqual(module.validate_jsonl(str(path)), (True, []))
+            path.write_text((json.dumps(row) + "\n") * 2)
+            valid, errors = module.validate_jsonl(str(path))
+            self.assertFalse(valid)
+            self.assertTrue(any("Duplicate" in e for e in errors))
+            row["request"]["contents"][0]["parts"][0]["fileData"]["fileUri"] = "files/developer"
+            path.write_text(json.dumps(row) + "\n")
+            valid, errors = module.validate_jsonl(str(path))
+            self.assertFalse(valid)
+            self.assertTrue(any("Invalid cloud file URI" in e for e in errors))
 
     def test_developer_validator_keys_and_files(self):
         spec = importlib.util.spec_from_file_location(

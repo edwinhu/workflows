@@ -6,7 +6,7 @@
 - **Without upmd** these are plain bash blocks: run `verify` by hand.
 
 This Cloud GCS batch path uses ADC (`gcloud auth application-default login`), project and IAM; it is not Developer API-key setup. The product is Gemini Enterprise Agent Platform; `aiplatform.googleapis.com` remains its service identifier.
-The runbook defaults `BUCKET_LOCATION` to us-central1. Select a supported Cloud endpoint separately (global for base Gemini models, regional for residency); this is not a universal us-central1-only rule. See [Cloud batch docs](https://cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/batch-prediction-gemini).
+The runbook defaults `BUCKET_LOCATION` to us-central1. Select a supported Cloud endpoint separately (global for base Gemini models, regional for residency); this is not a universal us-central1-only rule. See [Cloud batch docs](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/batch-inference).
 
 ## Prerequisites — install gcloud
 

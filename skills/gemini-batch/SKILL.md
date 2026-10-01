@@ -1,61 +1,97 @@
 ---
 name: gemini-batch
 version: 1.0
-description: "Use when the user says 'run this prompt over all the documents', 'process thousands of PDFs', 'extract fields from every filing', 'bulk LLM job', 'submit a batch job', 'Gemini Batch API', 'upload files to Gemini', 'flex', 'flex tier', 'Interactions API', 'cheap async Gemini', or 'grounded lookups at scale', 'hand-code these', 'gold set', 'gold standard', 'code each filing', 'label / annotate these documents', 'have agents read each document', or 'coders', or needs large-scale Gemini extraction, classification or enrichment."
+description: "Use when the user says 'run this prompt over all the documents', 'process thousands of PDFs', 'extract fields from every filing', 'bulk LLM job', 'submit a batch job', 'Gemini Batch API', 'upload files to Gemini', 'flex', 'flex tier', 'Interactions API', 'cheap async Gemini', 'grounded lookups at scale', 'hand-code these', 'gold set', 'gold standard', 'code each filing', 'label / annotate these documents', 'have agents read each document', or 'coders', or needs large-scale Gemini extraction, classification or enrichment."
 user-invocable: false
 ---
 
-# Gemini Batch and Inference Tiers
+# Gemini production batch
 
-## Choose the tier
+<EXTREMELY-IMPORTANT>
+## IRON LAW: NEVER use AI Studio for production runs
 
-| Tier | Latency / availability | Token price vs Standard | Tools and grounding | Rate limits / per-row volume |
-|---|---|---|---|---|
-| Batch | Async; target up to 24h | 50% discount | generateContent tools supported, but search rarely grounded the measured entity tasks | Separate Batch quotas; large independent document volumes, keyed JSONL |
-| Flex (Recommended for grounded lookups) | Synchronous calls; 1–15 min target, best-effort capacity | 50% discount | Interactions tools, including Google Search; validate search steps and citations per row | General API quotas, not expanded Batch quotas; bounded concurrency for entity lookups and dependent chains |
-| Standard | Seconds to minutes | Full price | Interactions tools and grounding | General API quotas; one-row smoke tests and interactive work |
-| Priority | Low latency (seconds), prioritized capacity | Premium; model-specific (75–100% more in tier overview) | Interactions tools and grounding | Own limit: default 0.3× Standard per model/tier, also counts toward interactive limits; latency-critical rows, not cheap bulk extraction |
+**NEVER USE AI STUDIO / THE GEMINI DEVELOPER API FOR PRODUCTION RUNS.** Production batch runs use **Gemini Enterprise Agent Platform (formerly Vertex AI)**: `genai.Client(vertexai=True, project=..., location=...)`, Application Default Credentials (ADC), and GCS input/output. Substituting API-key/Files batch is not a shortcut: it sends the production workload to the wrong service.
 
-Sources: [Batch](https://ai.google.dev/gemini-api/docs/batch-api.md.txt), [Flex](https://ai.google.dev/gemini-api/docs/flex-inference.md.txt), [Priority](https://ai.google.dev/gemini-api/docs/priority-inference.md.txt), [rate limits](https://ai.google.dev/gemini-api/docs/rate-limits.md.txt). Search charges are separate from token discounts; check [pricing](https://ai.google.dev/gemini-api/docs/pricing.md.txt).
+- **2026-10-01, Developer API:** a 2,111-row grounded batch returned 1,307 `code 9 "Precondition check failed"` rows; its retry queue stalled over 40 minutes. Tier 1's `gemini-3.8-flash` queue cap was 3M tokens. Repeating that production route recreates the failure, not a cheaper solution. These are Developer limits, not Cloud quotas.
+</EXTREMELY-IMPORTANT>
 
-**Measured routing rule:** web-grounded per-entity lookups go to Flex, not Batch. On Gemini 3.8 Flash: Batch JSON 0/138 grounded, Batch markdown 2/10, synchronous Standard markdown 92/138. The 10-row Flex test had 8/8 successful calls grounded and all returned tier=flex; the user reports two HTTP 400 copyright/recitation refusals. The captured report identifies one 400 without a row ID, so it cannot independently assign both refusals. The 138-row pilot did not finish. Successful-call latency was 5–377 s; roughly 17 searches/row makes search charges material, so cap searches in the prompt. JSON does not categorically block search; enabling a tool does not force its use.
+[Product name](https://docs.cloud.google.com/gemini-enterprise-agent-platform/vertex-ai-name-changes); SDK `vertexai=True`, `aiplatform.googleapis.com` and IAM `roles/aiplatform.*` retain their technical identifiers. Developer examples retained in references are **not for production**.
 
-**Interactions is Google's recommended API; generateContent is legacy but supported. Batch is not yet available in Interactions.** Use generateContent request shapes for Batch, and Interactions for Flex/Standard/Priority. Read [API boundaries and gotchas](references/gotchas.md) before mixing them.
+## Choose the Cloud tier
+
+| Tier | Use | Price / availability | Request path |
+|---|---|---|---|
+| Cloud Batch (Recommended for bulk) | Independent extraction/classification and tested grounded lookups | 50% off real-time; shared capacity; up to 72h queued, then most jobs finish within 24h running | GCS JSONL → `client.batches.create`; `config.dest` → GCS |
+| Cloud Standard PayGo | Same-model synchronous smoke tests; interactive search | Standard Cloud tariff; capacity/model-dependent | `client.models.generate_content` with ADC |
+| Cloud Flex PayGo (Preview) | Small, synchronous, latency-tolerant lookups | 50% off Standard; higher throttling; global only; timeout up to 30 min | Vertex header `X-Vertex-AI-LLM-Shared-Request-Type: flex` |
+| Cloud Priority PayGo | Latency-sensitive work, not cheap bulk | Higher model-specific tariff; global and supported us/eu multi-regions, not regional endpoints | Same Vertex header, value `priority` |
+
+Sources: [Batch](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/batch-inference), [Flex](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/flex-paygo), [Priority](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/priority-paygo), [Cloud pricing](https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing). Cloud Flex/Priority are documented equivalents, **not** the Developer Interactions `service_tier` recipe or its quotas; read [tier request patterns](references/flex-inference.md).
+
+Cloud [Interactions](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/interactions) is Preview; `generateContent` remains fully supported. Production batch uses GenerateContentRequest JSONL, not `interactions.create` or an Interactions background task.
 
 **What this skill carries** — grep `references/` for any subject the names below miss:
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
 ## Before writing code
 
-**NO BULK SUBMISSION WITHOUT A SAME-MODEL SMOKE TEST AND A 5–10-ROW END-TO-END TEST.** Skipping these checks scales bad prompts, misaligned keys and ungrounded answers into a bad dataset.
+**READ EXAMPLES BEFORE WRITING ANY CODE. NO EXCEPTIONS.**
 
-**READ EXAMPLES BEFORE WRITING ANY CODE. NO EXCEPTIONS.** Skipping the working patterns creates preventable backend/parameter errors.
+**NO BULK SUBMISSION WITHOUT A SAME-MODEL CLOUD SMOKE TEST AND A 5–10-ROW CLOUD END-TO-END TEST.** Skipping these scales bad prompts, lost identifiers and ungrounded answers into a bad dataset.
 
-1. Read the matching reference/example: [Flex + search](references/flex-inference.md), [Developer Batch](references/best-practices.md), or [Cloud batch](references/vertex-ai.md) plus `examples/batch_processor.py` / `examples/icon_batch_vision.py`. Copy the backend's documented shape, not a different API's parameters.
-2. Fetch current [models](https://ai.google.dev/gemini-api/docs/models.md.txt), [pricing](https://ai.google.dev/gemini-api/docs/pricing.md.txt) and [thinking](https://ai.google.dev/gemini-api/docs/thinking.md.txt). New-project defaults: `gemini-3.5-flash-lite` for cheap extraction, `gemini-3.8-flash` for harder extraction/search. Pin the chosen model explicitly; existing project pins and embeddings must not silently change.
-   Default to Flash/Flash-Lite for extraction; Pro under-extracted in a measured comparison, see references/model-selection.md
-3. **For Gemini 3.x, omit temperature, top_p and top_k.** Older 3.x guidance keeps defaults; current 3.8 migration removes those sampling parameters. Control effort with model-supported thinking levels, not copied constants. 3.8 Flash accepts low/medium/high, not minimal; see [models and prices](references/models-and-pricing.md).
-4. For PDFs, **send the PDF, not pdftotext output**; see the measured cost/layout evidence in [Files](references/files-api.md). Pre-cut relevant sections from text-native filings or select relevant native PDF pages, never truncate away evidence.
-5. Run one synchronous test on the exact model/input/schema, then 5–10 requests through the actual selected tier. Check content, errors, finish reasons, usage, keys, and search/citations if required. Read [scale-up testing](references/scale-up-testing.md) before the full run.
+1. Read [Cloud batch](references/vertex-ai.md), the [ADC/GCS setup runbook](references/gcs-setup-runbook.md), and `examples/batch_processor.py` or `examples/icon_batch_vision.py`. Verify project, API enablement, ADC, IAM and readable input/writable output GCS paths. gcloud user login alone is not ADC.
+2. Fetch current Cloud [model cards](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models), [locations](https://docs.cloud.google.com/gemini-enterprise-agent-platform/resources/locations), [batch support](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/batch-inference), [thinking](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/thinking) and [pricing](https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing). New-project extraction defaults: `gemini-3.5-flash-lite` for cheap extraction, `gemini-3.8-flash` for harder extraction/search. Preserve existing model pins; Flash/Flash-Lite is the measured extraction default, not Pro. See [model-selection evidence](references/model-selection.md).
+3. **For Gemini 3.x, omit temperature, top_p and top_k.** Use exact-model-supported thinking levels: 3.8 Flash supports low/medium/high, not minimal. See [Cloud model guidance](references/models-and-pricing.md).
+4. Send relevant native PDF pages via GCS `fileData.fileUri`; preserve layout/scans. For text-native filings, pre-cut relevant sections without truncating target evidence. Historical PDF cost observations are in [Files](references/files-api.md), not a universal tokens/page tariff.
+5. Run one synchronous Cloud request with the exact model/input/schema, then 5–10 rows through the actual Cloud batch/tier. Inspect content, per-row `status` errors, finish reasons, usage, identifier round-trip and grounding if required. Follow [scale-up testing](references/scale-up-testing.md).
 
-## Execution and acceptance
+## Production request pattern
 
-- Bulk per-document extraction is one Gemini Batch job over pre-cut inputs, **never an interactive-agent fan-out or improvised proxy/model scripts**. A 297-prospectus coder run consumed all three shared Claude accounts; it belonged in Batch.
-- Keep **one shared `genai.Client`** alive across submissions, polling and retries. Developer API uses API keys and Files; Gemini Enterprise Agent Platform (formerly Vertex AI) Cloud batch uses ADC, a project, and GCS/BigQuery. SDK `vertexai=True`, API/service names and IAM roles keep their historical identifiers.
-- Developer JSONL rows use unique `key` + `request`; join outputs by key, never order. Cloud metadata and request formats are separate. Validate with `scripts/validate_jsonl.py --backend developer|cloud`.
-- Flex: retry 429/503 with bounded exponential backoff; record row failures, persist successful rows, and never silently fall back to full-price Standard. A 400 recitation error is not a capacity retry.
-- After submission, use the harness's background execution/notification mechanism for monitoring, with the same client. Treat terminal job state as distinct from per-row success; reconcile every input key before claiming completion.
-- Reject ungrounded entity rows, but distinguish search-query evidence from recoverable citations. Interactions uses `steps`/`url_citation`; legacy Batch uses `candidates[].groundingMetadata`. See [Flex](references/flex-inference.md) and [structured output](references/structured-output.md).
-- Embeddings: read [embeddings](references/embeddings.md) and use `examples/embeddings_batch.py`; file-based keys and sentinel verification protect alignment. Embedding 2 does not accept `task_type`.
+```python
+from google import genai
 
-## STOP flags
+client = genai.Client(vertexai=True, project="your-project-id", location="global")
+job = client.batches.create(
+    model="publishers/google/models/gemini-3.5-flash-lite",
+    src="gs://your-bucket/requests.jsonl",
+    config={"display_name": "extraction", "dest": "gs://your-bucket/outputs/"},
+)
+```
+
+Keep this client alive through submission, polling and retries. `dest` is a GCS prefix **inside config**, not a filename or top-level kwarg; after completion use the job's returned destination. Cloud input has `request` plus the examples' scalar correlation metadata, not Developer Files semantics. Validate with `scripts/validate_jsonl.py --backend cloud`; see [request/output format](references/vertex-ai.md) and [schema](references/structured-output.md).
+
+## Cloud batch limits
+
+| Limit | Current Cloud Gemini batch |
+|---|---|
+| Requests/job | 200,000 |
+| GCS JSONL input | One file, up to 1 GB |
+| Concurrent Gemini jobs / enqueued tokens | No predefined quota; dynamically shared model capacity (not Developer Tier 1 caps) |
+| Queue expiry | Up to 72h before starting |
+| Running time | Most complete within 24h; incomplete jobs cancelled after 24h running, charged for completed requests |
+| Endpoint | Global for base models; supported regional endpoints for residency; global does not satisfy residency |
+| Unsupported batch features | Provisioned Throughput, explicit caching, RAG; tuned Gemini 3+ models |
+
+Sources: [batch limits](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/batch-inference), [quotas](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/quotas). Embedding batch has separate [Cloud limits/schema](references/embeddings.md). BigQuery is a documented alternative, with regional constraints; GCS is this skill's production default.
+
+## Grounding and acceptance
+
+- Configure Google Search through the Cloud GenerateContentRequest tool shape and inspect `candidates[].groundingMetadata` per row. [Cloud grounding](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/grounding/grounding-with-google-search) and model support are not a promise that every batch+search+schema combination works; the exact Cloud end-to-end sample must prove it. Cloud batch excludes RAG/File Search.
+- **Measured on Developer API, not a Cloud availability claim:** past-tense founder framing grounded 0/138; fresh framing (“Search the web NOW for current pages… report what they say TODAY”) grounded **10/10**, 1.9 searches/row. Flex shed load with 503s at peak, about 9 rows/hour. Prefer fresh framing and verify the Cloud sample; do not route bulk to Flex merely because an old prompt failed. More evidence: [gotchas](references/gotchas.md).
+- Bulk per-document extraction is one Cloud Batch job over pre-cut inputs, **never an interactive-agent fan-out**. A 297-prospectus coder run consumed all three shared Claude accounts; it belonged in Batch.
+- Reconcile every input identifier, duplicate/missing output and row error; preserve IDs on retry. A succeeded job or valid JSON is not correctness evidence. Budget input/output and search separately from Cloud pilot usage; a prompt search cap is not an enforced quota.
+- Use the harness's background notification mechanism for long monitoring, not a model session repeatedly narrating status. Do not switch backend, model, schema or location to clear an error without retesting.
+
+## Red flags — STOP
 
 | About to | Do instead |
 |---|---|
-| Put Batch requests into `interactions.create` | Batch still uses generateContent; Flex is synchronous, not an Interactions Batch API |
-| Fix Batch grounding by demanding markdown | Use Flex and inspect search steps/citations; markdown Batch only grounded 2/10 in the measured test |
-| Copy minimal thinking to every Flash model | Check the exact model; 3.8/3.7 Flash reject minimal |
-| Claim a succeeded job means every row succeeded | Inspect errors, truncation, key coverage and grounding row by row |
-| Change model, region, schema or tier to clear an error | Re-run the same-model/tier end-to-end sample before scaling |
+| Use `genai.Client()` without `vertexai=True` for a production batch | **STOP.** Use explicit Cloud client, project/location and ADC |
+| File API upload for a production job | **STOP.** Use private GCS input and output |
+| Pass `dest=` to create, or use a filename as output | **STOP.** Put the GCS output prefix in `config.dest`; retrieve this job's actual destination |
+| Use a bare model resource after a Cloud batch 404 | **STOP.** Use `publishers/google/models/<id>` and verify the exact endpoint |
+| Infer batch availability from `models.list()` or downgrade to clear 404 | **STOP.** Check Cloud support and run the same-model Cloud batch sample |
+| Put Batch requests into `interactions.create` | **STOP.** Batch uses GenerateContentRequest JSONL and `client.batches.create` |
+| Accept a succeeded job without row reconciliation | **STOP.** Inspect status, content, finish reason, identifiers and grounding |
 
-Setup/operations: [Cloud setup runbook](references/gcs-setup-runbook.md), [GCS](references/gcs-setup.md), [CLI](references/cli-reference.md), [troubleshooting](references/troubleshooting.md), [File Search](references/file-search.md). The Cloud examples retain the shared model-role resolver; pass an explicit current model for a new project rather than changing all plugin roles.
+Operations: [GCS](references/gcs-setup.md), [CLI](references/cli-reference.md), [troubleshooting](references/troubleshooting.md), [production patterns](references/best-practices.md). Historical [Developer File Search](references/file-search.md) and Files/Interactions/embedding examples are **not for production**; never use them as production fallbacks.

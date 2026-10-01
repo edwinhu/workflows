@@ -1,6 +1,6 @@
 # CLI Commands Reference
 
-These GCS/gcloud commands are for Gemini Enterprise Agent Platform Cloud batch, not Developer Batch or Flex. SDK/service identifiers keep their historical spelling; current docs: https://cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/batch-prediction-gemini.
+These GCS/gcloud commands are for Gemini Enterprise Agent Platform Cloud batch, not Developer Batch or Developer Flex. SDK/service identifiers keep their historical spelling; current docs: https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/batch-inference.
 
 ## GCS Operations
 
@@ -34,7 +34,7 @@ gcloud ai batch-predictions describe JOB_ID --region="$CLOUD_LOCATION"
 
 ```bash
 python skills/gemini-batch/scripts/validate_jsonl.py requests.jsonl --backend cloud
-# Developer Files input uses keys/Files URIs instead:
+# Historical Developer-format validation only; never submit this backend in production:
 python skills/gemini-batch/scripts/validate_jsonl.py requests.jsonl --backend developer
 ```
 
