@@ -322,11 +322,42 @@ func stripEntities(s string) string {
 }
 
 // ExtractText runs the ASCII path over a proxy body.
+var reASCIISlashParenNote = regexp.MustCompile(`/\(\s*([0-9]{1,2})\s*\)/`)
+
 func ExtractText(body string, base Row) ([]Row, int, int) {
+	rows, seen, used := extractText(body, base, false)
+	if len(rows) != 0 || !reASCIISlashParenNote.MatchString(body) || len(ScreenRows(ExtractProse(body, base))) != 0 {
+		return rows, seen, used
+	}
+	return extractText(body, base, true)
+}
+
+func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, int) {
 	body = stripEntities(body)
 	lines := strings.Split(body, "\n")
 	clean := make([]string, len(lines))
+	inTable, headerDone, slashEligible := false, false, false
+	var tableHeader []string
 	for i, l := range lines {
+		raw := strings.ToLower(l)
+		if strings.Contains(raw, "<table") {
+			inTable = true
+			headerDone = false
+			slashEligible = false
+			tableHeader = nil
+		}
+		if inTable && !headerDone {
+			tableHeader = append(tableHeader, reAnyTag.ReplaceAllString(l, ""))
+			if reASCIIColumnMark.MatchString(l) {
+				hdr := strings.ToLower(flat(strings.Join(tableHeader, " ")))
+				slashEligible = strings.Contains(hdr, "name of beneficial owner") && strings.Contains(hdr, "shares owned")
+				headerDone = true
+			}
+		}
+		if strings.Contains(raw, "</table") {
+			inTable = false
+			slashEligible = false
+		}
 		l = reTxtTag.ReplaceAllString(l, "")
 		l = reAnyTag.ReplaceAllString(l, "")
 		// Dot leaders are the ASCII table's column separator ("Ellison(2).....
@@ -335,6 +366,11 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 		l = reDotLeader.ReplaceAllStringFunc(l, func(m string) string {
 			return strings.Repeat(" ", len(m))
 		})
+		// Preserve the footnote while removing its slash delimiters before
+		// numeric-tail detection, only after the legacy filing parsed to zero.
+		if slashParenRecovery && slashEligible {
+			l = reASCIISlashParenNote.ReplaceAllString(l, "($1)")
+		}
 		clean[i] = strings.ReplaceAll(l, "\t", "    ")
 	}
 	out, consumed, bioBlocks := textBiographicalOwnership(lines, clean, base)
@@ -665,7 +701,12 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 					rw.GroupN = gn
 					rw.noHolder = noHolder
 					rw.Parser = "text_table"
-					rw.Footnotes = strings.Join(fns, ",")
+					if slashParenRecovery {
+						for _, m := range reASCIISlashParenNote.FindAllStringSubmatch(lines[ln], -1) {
+							fns = append(fns, m[1])
+						}
+					}
+					rw.Footnotes = strings.Join(uniq(fns), ",")
 					if cells[k].shares != nil {
 						vv := *cells[k].shares
 						rw.Shares = &vv
