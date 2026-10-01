@@ -3,9 +3,11 @@
 # run_baseline.sh — one full pass over the gold-linked filings on the WRDS grid,
 # fetched back and scored.
 #
-# Build -> stage -> qsub array -> wait -> fetch -> score. Every step prints what
-# it did; the SGE array is the only thing that touches /wrds/sec/archives, and
-# nothing runs on the login node.
+# Build -> local shards OR stage/qsub/wait/fetch -> score.
+#   DEF14A_LOCAL=1 forces local; =0 forces grid; unset auto-selects local only
+#   when every round filing exists under DEF14A_FILINGS (default below).
+#   DEF14A_LOCAL_PROCESSES defaults to 28 single-core, single-filing workers.
+#   --fetch-only always fetches grid output, regardless of local settings.
 #
 #   DEF14A_ROOT  scratch root on WRDS   (default /scratch/nyu/eddyhu/parse_def14a_own)
 #   DEF14A_WORK  local work dir         (default /data/def14a_own/work)
@@ -119,6 +121,38 @@ echo "== build =="
 (cd "$HERE/parse_def14a_own_go" && go vet ./... && go test ./... &&
  CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -buildvcs=false -o parse_def14a_own_go .)
 
+LOCAL=0
+FILINGS="${DEF14A_FILINGS:-/data/def14a_own/filings}"
+case "${DEF14A_LOCAL:-auto}" in
+    0) ;;
+    1|auto)
+        if python3 - "$GOLD/$FILELIST" "$FILINGS" <<'PY'
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+import sys
+paths = [line.split('\t', 1)[0] for line in Path(sys.argv[1]).read_text().splitlines()]
+root = Path(sys.argv[2])
+with ThreadPoolExecutor(max_workers=28) as pool:
+    present = sum(pool.map(lambda p: (root / p).is_file(), paths))
+print("local coverage: listed=%d present=%d missing=%d" % (len(paths), present, len(paths)-present))
+sys.exit(0 if paths and present == len(paths) else 1)
+PY
+        then
+            LOCAL=1
+        elif [[ "${DEF14A_LOCAL:-auto}" == "1" ]]; then
+            echo "ERROR: missing local filings under $FILINGS; refusing forced local round" >&2
+            exit 1
+        fi
+        ;;
+    *) echo "ERROR: DEF14A_LOCAL must be 0, 1 or auto" >&2; exit 2 ;;
+esac
+
+if (( LOCAL )); then
+    echo "== local shards =="
+    gate_write_state "local"
+    bash "$HERE/local_shards.sh" "$GOLD/$FILELIST" "$FILINGS" "$WORK"
+else
+
 echo "== stage =="
 ssh "$HOST" "mkdir -p $ROOT/{bin,filelists/shards,out,logs,sge}"
 scp -q "$HERE"/sge/* "$HOST:$ROOT/sge/"
@@ -149,6 +183,7 @@ if [[ "$FAIL" != "0" ]]; then
     exit 1
 fi
 
+fi   # local/grid
 fi   # end of the build/stage/submit block skipped by --fetch-only
 
 echo "== fetch =="
@@ -158,9 +193,13 @@ mkdir -p "$WORK/out" "$WORK/shard_logs"
 # glob over $WORK/out, and a directory in there makes that line fail under `set -e`.
 # The glob is *.tsv.gz and NOT `*`: round-jobs.tsv / round-state.json live in the
 # same directory and are what gate.sh reads if this process is killed.
-rm -f "$WORK"/out/*.tsv.gz "$WORK"/shard_logs/*
-scp -q "$HOST:$ROOT/out/*.tsv.gz" "$WORK/out/"
-scp -q "$HOST:$ROOT/out/*.log" "$WORK/shard_logs/"
+if [[ "${LOCAL:-0}" == "0" ]]; then
+    rm -f "$WORK"/out/*.tsv.gz "$WORK"/shard_logs/*
+    scp -q "$HOST:$ROOT/out/*.tsv.gz" "$WORK/out/"
+    scp -q "$HOST:$ROOT/out/*.log" "$WORK/shard_logs/"
+else
+    echo "local output already under $WORK/out; skipping grid fetch"
+fi
 ROWS=$(zcat "$WORK"/out/*[0-9].tsv.gz | grep -vc '^accession' || true)
 MAN=$(zcat "$WORK"/out/*.manifest.tsv.gz | grep -vc '^accession' || true)
 FILES_IN=$(wc -l < "$GOLD/$FILELIST")
