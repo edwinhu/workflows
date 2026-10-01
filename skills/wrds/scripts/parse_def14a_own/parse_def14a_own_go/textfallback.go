@@ -1621,6 +1621,33 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 					}
 				}
 			}
+			// The column header can be read while the lead-in row still stood,
+			// before the run of prose under it set the row aside; it still
+			// separates the two. Only a one-line header: under a stacked
+			// header (grouped classes, a <CAPTION>) the generic row parser
+			// misreads the columns and the layout parsers below take the table.
+			if lone != nil && len(block) > 0 && !hdrAfterLone {
+				hk := -1
+				for k := lone[0] + 1; k < block[0]; k++ {
+					if !consumed[k] && columnarHdrLine(strings.TrimSpace(clean[k])) {
+						if hk >= 0 {
+							hk = -2
+							break
+						}
+						hk = k
+					}
+				}
+				if hk >= 0 && oneLineOwnershipHdr(strings.TrimSpace(clean[hk])) {
+					// The header lines the scan would have kept had the lead-in
+					// row not stood: they carry the class.
+					for k := lone[0] + 1; k < block[0]; k++ {
+						if !consumed[k] && reHdrLineCue.MatchString(strings.TrimSpace(clean[k])) {
+							header = append(header, clean[k])
+						}
+					}
+					hdrAfterLone = true
+				}
+			}
 			if lone != nil && (len(block) == 0 || !hdrAfterLone) {
 				block, header = lone, header[:loneHdr]
 			}
@@ -3396,6 +3423,16 @@ func textStandaloneClassCaption(lines []string, row int) string {
 		header = append(header, text)
 	}
 	return ""
+}
+
+var reHdrHolderCue = regexp.MustCompile(`(?i)\bname\b|beneficial\s+owner`)
+var reHdrHoldingCue = regexp.MustCompile(`(?i)\bshares\b|\bamount\b|\bnumber\b`)
+
+// oneLineOwnershipHdr reports a whole ownership header on one line: three or
+// more cells naming the holder column and the holding column. A prose line
+// that mentions shares is not one.
+func oneLineOwnershipHdr(lt string) bool {
+	return len(reWideGap.FindAllStringIndex(lt, -1)) >= 2 && reHdrHolderCue.MatchString(lt) && reHdrHoldingCue.MatchString(lt)
 }
 
 // pageFooterAt reports a bare page number directly above the <PAGE> marker:
