@@ -10777,3 +10777,214 @@ func TestASCIIHolderNameEndsInTitleOfClass(t *testing.T) {
 		}
 	}
 }
+
+// 0000751978-99-000007: the lead-in paragraph's "a total of 41,324,482 shares"
+// sentence parses as a row, and the <TABLE>/<CAPTION> wrapper lines below it
+// strip to a blank run that used to end the scan before the table was reached.
+const asciiLeadInRowThenTableWrapperLines = `
+
+                      PRINCIPAL AND MANAGEMENT STOCKHOLDERS
+
+     The   following   table  sets  forth  the   beneficial   ownership  of  the
+Corporation's  Common  Stock and Class B Common Stock held by (i) each person or
+entity that is known to the Corporation to be the beneficial  owner of more than
+five  percent of the  outstanding  shares of either  class of the  Corporation's
+common stock, (ii) each Director of the Corporation, (iii) each of the executive
+officers of the Corporation  named in the Summary  Compensation  Table, and (iv)
+all Directors and executive officers as a group, based on representations of the
+Directors  and  executive  officers of the  Corporation  as of March 31, 1999, a
+review of filings on Schedules  13D, 13F and 13G under the  Securities  Exchange
+Act of 1934,  as amended (the  "Exchange  Act"),  and  holdings  reported by the
+National Association of Securities Dealers Automated Quotation System ("NASDAQ")
+with  respect to December 31, 1998.  Except as  otherwise  specified,  the named
+beneficial  owner has sole  voting and  investment  power over the  shares.  The
+information  in the table  reflects  shares  outstanding of each class of common
+stock on March 31, 1999, and does not, except as otherwise indicated below, take
+into account  conversions after such date of shares of Class B Common Stock into
+Common Stock.  Subsequent  conversions of Class B Common Stock into Common Stock
+will increase the voting  control of persons who retain shares of Class B Common
+Stock.  The percentages have been determined in accordance with Rule 13d-3 under
+the Exchange Act. As of March 31, 1999, a total of  41,324,482  shares of common
+stock were outstanding, of which 29,282,073 were shares of Common Stock entitled
+to one vote  per  share  and  12,042,409  were  shares  of Class B Common  Stock
+entitled  to ten  votes  per  share.  Each  share  of  Class B  Common  Stock is
+convertible into one share of Common Stock. 
+
+<TABLE> 
+<CAPTION>
+
+                                                                         Percent of   Percent of Class B
+                                                        Total           Common Stock    Common Stock        Percent
+                           Name of                      Number          Beneficially    Beneficially      of Voting
+                     Beneficial Owner (1)             of Shares (2)(3)      Owned           Owned            Power
+                     --------------------             ----------------   -----------    ------------      ----------
+<S>                                                   <C>                   <C>             <C>            <C>    
+Patrizio Vinciarelli ...............................    20,986,650           34.0%           91.5%           80.3%
+Estia J. Eichten ...................................     1,247,964(4)         1.9%            5.7%            5.0%
+M. Michael Ansour ..................................        29,000            *               *               *
+David T. Riddiford .................................       208,736(5)         *               *               *
+Richard E. Beede ...................................       114,102(6)         *               *               *
+Jay M. Prager ......................................       144,868            *               *               *
+David W. Nesbitt ...................................        85,653            *               *               *
+Barry Kelleher .....................................        56,982            *               *               *
+All Directors and executive officers as a group
+     (12 persons) ..................................    22,848,227           37.7%           98.0%           85.6%
+Nevis Capital Management, Inc ......................     3,148,444           10.8%            *               2.1%
+   119 St. Paul Street, Baltimore, MD 21202
+
+</TABLE>
+- -----------------
+   * Less than 1%
+
+(1) The address of Mr.  Eichten is: c/o Fermi National  Accelerator  Laboratory,
+    Kirk Road and Pine  Street,  Batavia,  IL 60510.  The  address of each other
+    person  named  in the  table,  but not  specified  therein,  is:  c/o  Vicor
+    Corporation, 25 Frontage Road, Andover, MA 01810.
+
+(2) Includes  shares  issuable  upon  the  exercise  of stock  options  that are
+    exercisable  or will  become  exercisable  on or before May 30,  1999 in the
+    following  amounts:  Mr.  Vinciarelli,  6,014  shares of Common  Stock;  Mr.
+    Eichten,  6,000 shares of Common Stock;  Mr. Ansour,  6,000 shares of Common
+`
+
+func TestASCIILeadInRowBeforeTableWrapperIsSetAside(t *testing.T) {
+	raw, _, _ := ExtractText(asciiLeadInRowThenTableWrapperLines, Row{})
+	got := map[string]float64{}
+	for _, r := range raw {
+		if r.Shares == nil {
+			t.Fatalf("row without shares: %+v", r)
+		}
+		if r.HolderName == "" || strings.Contains(r.HolderName, "Exchange Act") || strings.Contains(r.HolderName, "outstanding") {
+			t.Fatalf("lead-in prose taken as a holder: %q", r.HolderName)
+		}
+		got[r.HolderName] = *r.Shares
+	}
+	for name, shares := range map[string]float64{
+		"Patrizio Vinciarelli": 20986650,
+		"Estia J. Eichten":     1247964,
+		"Barry Kelleher":       56982,
+		"All Directors and executive officers as a group (12 persons)": 22848227,
+		"Nevis Capital Management, Inc":                                3148444,
+	} {
+		if g, ok := got[name]; !ok || g != shares {
+			t.Errorf("%s: got %v (present=%v), want %v; rows=%v", name, g, ok, shares, got)
+		}
+	}
+	if len(raw) != 10 {
+		t.Errorf("want 10 rows, got %d: %v", len(raw), got)
+	}
+}
+
+// 0000882184-96-000012: a later lead-in anchor crosses the table an earlier
+// anchor took and lands on footnote (1); the justified footnote sentences below
+// it say "shares" but are not the column header of a second table.
+const asciiFootnotesAfterTakenTableLines = `<PAGE>
+
+                     BENEFICIAL OWNERSHIP OF COMMON STOCK
+
+  The following  table sets forth certain  information  regarding the beneficial
+ownership  of the  Company's  Common  Stock as of  December  4,  1996 by (i) all
+persons who are beneficial  owners of greater than 5% of the Common Stock,  (ii)
+all directors and nominees of the Company, (iii) all named executive officers of
+the Company,  and (iv) all directors and executive  officers of the Company as a
+group. Unless stated otherwise,  the named beneficial owners possess sole voting
+and investment power with respect to the shares set forth in the table.
+
+
+<TABLE>
+<CAPTION>
+      NAME OF BENEFICIAL OWNER                  NUMBER         PERCENT
+      ------------------------              ----------------  -------------
+                                            SHARES BENEFICIALLY OWNED
+                                            -------------------------------
+<S>                                         <C>               <C>
+Donald R. Horton...........................      6,763,060(1)      20.90%
+Richard Beckwitt...........................         72,321(2)          *
+Richard I. Galland.........................              915           *
+Terrill J. Horton..........................      6,852,744(3)      21.18%
+Richard L. Horton..........................          762,806        2.36%
+David J. Keller............................        128,680(4)          *
+Francine I. Neff...........................              363           *
+Scott J. Stone.............................          388,263        1.20%
+Donald J. Tomnitz..........................         89,108(5)          *
+All directors and named executive officers
+ as a group (9 persons)....................     15,058,260(6)      46.13%
+</TABLE>
+- --------
+*Less than 1%.
+
+  (1) These shares of Common Stock include an aggregate of 478,579 shares
+      owned by Mr. Horton's children. Mr. Horton's address is D.R. Horton,
+      Inc., 1901 Ascension Blvd., Suite 100, Arlington, Texas 76006.
+
+  (2) These shares of Common Stock  represent  shares issuable upon the exercise
+      of outstanding stock options.
+
+  (3) These  shares of Common Stock  include an  aggregate of 5,763,898  shares,
+      consisting of 413,254 shares of Common Stock owned of record by the Donald
+      Ray Horton  Trust,  376,893  shares of Common Stock owned of record by the
+      Martha Elizabeth  Horton Trust,  2,069,702 shares of Common Stock owned of
+      record by the Donald Ray Horton Trust Number Two, 953,811 shares of Common
+      Stock owned of record by the Martha  Elizabeth Horton Trust Number Two and
+      975,119  shares of Common Stock owned of record by each of the Donald Ryan
+      Horton Trust and the Douglas Reagan Horton Trust. Mr. Horton serves as the
+      sole  trustee for each of the  foregoing  trusts.  These  shares of Common
+      Stock also include 9,159 shares owned by Mr.  Horton's  son. Mr.  Horton's
+      address is D.R. Horton,  Inc., 1901 Ascension Blvd., Suite 100, Arlington,
+      Texas 76006.
+
+  (4) These shares of Common Stock  include  4,718 shares held by Mr. Keller for
+      the benefit of his children and 123,962 shares  issuable upon the exercise
+      of outstanding stock options.
+
+  (5) These shares of Common  Stock  include  81,774  shares  issuable  upon the
+      exercise of outstanding stock options.
+
+  (6) These shares of Common  Stock  include all shares of Common Stock owned or
+      controlled by Terrill J. Horton,  including  those owned by the trusts and
+      Mr. Horton's  children as set forth in note 3 above,  all shares of Common
+      Stock owned or controlled by David J. Keller,  including those shares held
+      on  behalf of Mr.  Keller's  children  as set  forth in note 4 above,  and
+      278,057  shares of Common Stock  issuable upon the exercise of outstanding
+      stock  options  held by Richard  Beckwitt,  David J.  Keller and Donald J.
+      Tomnitz.
+
+
+                                       5
+<PAGE>
+
+                            EXECUTIVE COMPENSATION
+
+  The  following  tables set forth,  with respect to the President and the other
+executive officers of the Company, all plan and non-plan  compensation  awarded,
+earned or paid for all services  rendered in all  capacities  to the Company and
+its subsidiaries during the periods indicated.
+
+`
+
+func TestASCIIFootnoteSentencesAreNotASecondTableHeader(t *testing.T) {
+	raw, _, _ := ExtractText(asciiFootnotesAfterTakenTableLines, Row{})
+	got := map[string]float64{}
+	for _, r := range raw {
+		if strings.HasPrefix(r.HolderName, "These shares") {
+			t.Fatalf("footnote sentence taken as a holder: %q", r.HolderName)
+		}
+		if r.Shares != nil {
+			got[r.HolderName] = *r.Shares
+		}
+	}
+	for name, shares := range map[string]float64{
+		"Donald R. Horton":   6763060,
+		"Richard I. Galland": 915,
+		"Francine I. Neff":   363,
+		"Donald J. Tomnitz":  89108,
+		"All directors and named executive officers as a group (9 persons)": 15058260,
+	} {
+		if g, ok := got[name]; !ok || g != shares {
+			t.Errorf("%s: got %v (present=%v), want %v; rows=%v", name, g, ok, shares, got)
+		}
+	}
+	if len(raw) != 10 {
+		t.Errorf("want 10 rows, got %d: %v", len(raw), got)
+	}
+}
