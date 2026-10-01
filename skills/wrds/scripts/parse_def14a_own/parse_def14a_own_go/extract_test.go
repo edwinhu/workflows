@@ -9340,3 +9340,1440 @@ func TestProsePassiveGroupCountRejectsVoteOutcomesAndPayments(t *testing.T) {
 		}
 	}
 }
+
+// Transcribed from 0000009342-99-000001 (Baldor Electric 1999), source lines
+// 437-493 and 569-614. The ownership table's lead-in says it covers "each of the
+// executive officers named in the Summary Compensation Table", a reference to the
+// named executive officers. That phrase sits in the header lines read above the
+// block, so the compensation cue fired on the reference and the real table (14
+// rows) was rejected comp_cue. The Summary Compensation Table itself follows as
+// the negative control: it must still emit nothing.
+var asciiOwnLeadInNamesSCT = `
+
+                              SECURITY OWNERSHIP OF
+                    CERTAIN BENEFICIAL OWNERS AND MANAGEMENT
+
+The following table sets forth  information as of March 17, 1999,  regarding all
+persons  known to the  Company  to be the  beneficial  owners  of more than five
+percent  of the  Company's  Common  Stock.  The  table  also  includes  security
+ownership for each director of the Company,  nominees for election as directors,
+each of the  executive  officers  named in the Summary  Compensation  Table (the
+"Named  Executive  Officers"),  and all  executive  officers and  directors as a
+group.
+
+                                              Number of             Percent of
+            Name                                Shares               Class (1)
+ ------------------------------             ----------------        --------
+
+ The Baldor Electric Company
+ Profit Sharing and Savings Plan              4,182,905   (2)         10.0 %
+     P. O. Box 2400
+     Fort Smith, Arkansas 72902
+
+ Fred C. Ballman                              3,025,904   (3)          8.4 %
+     P. O. Box 6638
+     Fort Smith, Arkansas 72906
+
+ R. S. Boreham, Jr.                           1,618,104   (4)          4.5 %
+
+ O. A. Baumann                                  618,298   (5)          1.7 %
+
+ Lloyd G. Davis                                 282,575   (6)            *
+
+ R. L. Qualls                                   267,588   (7)            *
+
+ John A. McFarland                              239,017   (8)            *
+
+ James R. Kimzey                                235,063   (9)            *
+
+ Jefferson W. Asher, Jr.                         74,059   (10)           *
+
+ Robert L. Proost                                59,640   (11)           *
+
+ Robert J. Messey                                42,489   (12)           *
+
+ Willis J. Wheat                                 25,853   (13)           *
+
+ Richard E. Jaudes                                1,066   (14)           *
+
+ All executive officers and directors
+     as a group (19 persons)                  7,033,492   (15)        18.8 %
+
+- ---------------
+
+ *       Less than 1%.
+
+
+                                        6
+
+` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 40) + `
+
+
+                             EXECUTIVE COMPENSATION
+
+The following table sets forth certain information  regarding  compensation paid
+during each of the  Company's  last three fiscal years to each of the  Company's
+Named Executive Officers.
+
+<TABLE>
+
+                                                  Summary Compensation Table
+<CAPTION>
+
+                                                                           Long Term Compensation
+                                                                           ----------------------
+                                              Annual Compensation                      Awards   Payouts
+                                              -------------------                      ------   -------
+                                                               Other    Restricted   Securities             All
+                                                              Annual       Stock     Underlying   LTIP      Other
+Name and Principal Position          Year  Salary   Bonus  Compensation   Awards      Options   Payouts  Compensation (1)
+- ---------------------------          ----  ------   -----  ------------   ------      -------   -------  ----------------
+                                             ($)     ($)         ($)         ($)        (#)       ($)       ($)
+
+<S>                                  <C>   <C>     <C>            <C>         <C>      <C>         <C>     <C>
+R. S. Boreham, Jr.                   1998  350,000 332,710        0           0        25,000      0       58,657
+Chairman of the Board of Directors   1997  325,000 320,287        0           0        26,000      0      102,512
+                                     1996  275,000 282,030        0           0        37,332      0       98,749
+
+
+John A. McFarland                    1998  190,000 171,108        0           0        25,000      0       19,230
+President                            1997  160,000 147,825        0           0        26,000      0       20,977
+                                     1996  132,000 110,761        0           0        22,000      0       20,431
+
+
+R. L. Qualls                         1998  175,000 166,355        0           0        17,000      0       34,256
+Vice Chairman of the                 1997  315,000 310,432        0           0        26,000      0       42,642
+ Board of Directors                  1996  300,000 307,669        0           0        37,332      0       62,046
+
+
+Lloyd G. Davis                       1998  160,000 129,282        0           0        17,000      0       21,113
+Chief Financial Officer,             1997  149,000 118,260        0           0        17,333      0       23,241
+Executive Vice President - Finance,  1996  132,000 110,761        0           0        22,000      0       22,729
+Secretary, and Treasurer
+
+
+James R. Kimzey                      1998  157,000 118,825        0           0        17,000      0       19,061
+` + strings.Repeat("\nplain ascii line of proxy text with no table structure at all here.", 250)
+
+func TestASCIIOwnershipLeadInReferencingSummaryCompensationTable(t *testing.T) {
+	rows := run(t, asciiOwnLeadInNamesSCT)
+	for _, want := range []struct {
+		name string
+		sh   float64
+		pct  float64
+	}{
+		{"Fred C. Ballman", 3025904, 8.4},
+		{"O. A. Baumann", 618298, 1.7},
+	} {
+		got := find(rows, want.name, "")
+		if got == nil || got.Shares == nil || *got.Shares != want.sh ||
+			got.Percent == nil || *got.Percent != want.pct {
+			t.Fatalf("holder %q wrong: %+v (all rows: %+v)", want.name, got, rows)
+		}
+	}
+	if got := find(rows, "Richard E. Jaudes", ""); got == nil || got.Shares == nil || *got.Shares != 1066 {
+		t.Fatalf("Jaudes 1,066 missing: %+v", rows)
+	}
+	for _, r := range rows {
+		if r.Shares != nil && (*r.Shares == 350000 || *r.Shares == 332710 || *r.Shares == 1998) {
+			t.Fatalf("Summary Compensation Table row emitted: %+v", r)
+		}
+	}
+	if len(rows) != 14 {
+		t.Fatalf("want 14 ownership rows, got %d: %+v", len(rows), rows)
+	}
+}
+
+// A nature-of-ownership column is a column, not a sentence. 0000905729-97-000065
+// (Hastings Mfg.) sets each holder's shares cell beside a NATURE OF BENEFICIAL
+// OWNERSHIP column -- "640 shares   Sole voting and investment power   0.16%" --
+// so the row's tail carries five words. The footnote-sentence rule read that as
+// prose and the filing lost every row. Lines 300-347 and 403 of the source,
+// literal; the footnotes between are cut.
+const asciiNatureOfOwnershipColumn = `SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS
+
+     The following persons beneficially owned more than five percent of
+the outstanding shares of Hastings Common Stock as of March 21, 1997:
+
+
+
+
+
+
+
+
+
+
+                                     -2-
+<PAGE>
+<TABLE>
+<CAPTION>
+  NAME AND ADDRESS                    AMOUNT OF                      NATURE OF                       PERCENT OF
+    OF BENEFICIAL                     BENEFICIAL                     BENEFICIAL                      OUTSTANDING
+OWNER OF COMMON STOCK                 OWNERSHIP                      OWNERSHIP                         SHARES
+- ---------------------                 ---------                      ---------                       -----------
+<S>                               <C>                     <C>                                         <C>
+Stephen I. Johnson                     640 shares          Sole voting and investment power             0.16%
+907 West Madison                   117,345 shares<F1>      Shared voting and investment power          30.02%
+Hastings, MI 49058
+
+The Stephen I. Johnson                 -0- shares          Sole voting and investment power                --
+Family Group <F2>                  177,747 shares          Shared voting and investment power          45.47%
+c/o Stephen I. Johnson
+907 West Madison
+Hastings, MI 49058
+
+Dimensional Fund                    27,900 shares          Sole voting and investment power             7.14%
+Advisors, Inc. <F3>                    -0- shares          Shared voting and investment power              --
+1299 Ocean Ave.
+Suite 650
+Santa Monica, CA 90401
+
+Amici Associates and                35,600 shares          Sole voting and investment power             9.10%
+The Collectors' Fund <F4>              -0- shares          Shared voting and investment power              --
+100 Park Avenue
+New York, New York 10017
+
+Mark R. S. Johnson <F5>             26,726 shares          Sole voting and investment power             6.84%
+c/o Hastings Mfg. Co.                  -0- shares          Shared voting and investment power              --
+325 North Hanover
+Hastings, MI 49058
+</TABLE>`
+
+func TestASCIINatureOfOwnershipColumnIsNotProse(t *testing.T) {
+	rows := run(t, asciiNatureOfOwnershipColumn)
+	for _, want := range []struct {
+		name string
+		sh   float64
+		pct  float64
+	}{
+		{"Stephen I. Johnson", 640, 0.16},
+		{"Dimensional Fund", 27900, 7.14},
+		{"Amici Associates and", 35600, 9.1},
+		{"Mark R. S. Johnson", 26726, 6.84},
+	} {
+		got := find(rows, want.name, "")
+		if got == nil || got.Shares == nil || *got.Shares != want.sh ||
+			got.Percent == nil || *got.Percent != want.pct {
+			t.Fatalf("holder %q wrong: %+v (all rows: %+v)", want.name, got, rows)
+		}
+	}
+	// The row form, line by line: a shares cell followed by the nature column.
+	for _, l := range []string{
+		"Stephen I. Johnson                     640 shares          Sole voting and investment power             0.16%",
+		"         Morgan Stanley Group Inc.                481,300 shares with shared voting power and 659,000              7.54%",
+		"Charles S. Seel                      30,000 (3)       Common        Sole Voting and Disposition",
+	} {
+		if _, _, _, ok := parseTextRowAt(l); !ok {
+			t.Errorf("nature-of-ownership row rejected: %q", l)
+		}
+	}
+	// Footnote prose naming a voting power is still prose.
+	for _, l := range []string{
+		"(3)  Mr.  Nolen's total  includes  26,940 shares held with sole  investment  and",
+		"     additional  100,000  common  shares  at  a  price of $0.30 per share, which",
+	} {
+		if _, _, _, ok := parseTextRowAt(l); ok {
+			t.Errorf("footnote sentence read as a table row: %q", l)
+		}
+	}
+}
+
+// A lone "row" in a table's lead-in is not the start of the table. 0000018255-95-
+// 000010 (Cato) opens "The following table sets forth, as of March 31, 1995,",
+// which splits at a wide gap into a name and a tail "31, 1995,"; the eight lines
+// of prose that follow end that one-row block before the table under the same
+// heading is reached. Lines 226-280 of the source, literal.
+const asciiLeadInLoneRow = `
+
+            SECURITY OWNERSHIP OF CERTAIN BENEFICIAL
+                      OWNERS AND MANAGEMENT
+                                
+      The  following  table sets forth, as  of  March  31,  1995,
+certain  information regarding the ownership of  the  outstanding
+shares  of  Class A Stock and Class B Stock by (i) each  director
+and  nominee, (ii) each person who is known by the Company to own
+more  than  5% of such stock, (iii) executive officers listed  in
+the  Summary  Compensation  Table, and  (iv)  all  directors  and
+executive officers as a group.  Unless otherwise indicated in the
+footnotes  below,  each stockholder named  has  sole  voting  and
+investment power with respect to such stockholder's shares.
+
+                                                         Percent
+                         Shares Beneficially Owned(1)(2)     of Total
+                        Class A Stock       Class B Stock   Voting
+Name                    Number   Percent    Number  Percent  Power
+
+Wayland H.Cato,Jr.(3)(4)   3,495,106   15.0%   3,732,284  61.2% 48.4%
+Edgar T. Cato(5)           1,734,653    7.5    1,785,534  33.4  25.5
+Linda McFarland Jenkins(6)   186,090     *         -        -     *
+John P.   Derham Cato(7)     214,837     *        85,965   1.6   1.4
+Clarice Cato Goodyear(8)     266,465    1.1      190,515   3.6   2.9
+Thomas E.Cato(9)             142,869     *        95,925   1.8   1.5
+Alan E. Wiley(10)             17,300     *          -        -    *
+David Kempert(11)             53,603     *          -        -    *
+Howard    A. Severson(12)     23,698     *          -        -    *
+George S. Currin              11,287     *          -        -    *
+James H. Shaw                 10,500     *          -        -    *
+Robert L. Kirby                  450     *          -        -    *
+Robert W. Bradshaw,Jr.           500     *          -        -    *
+Grant L. Hamrick               3,000     *          -        -    *
+Paul Fulton                    1,000     *          -        -    *
+A.F.(Pete)Sloan                1,200     *          -        -    *
+All directors and executive officers
+as a group(17 persons)(13) 6,182,752   25.8     5,890,973  95.2 75.8
+
+Jurika and Voyles,Inc.(14) 1,702,519    7.4          -       -   2.2
+NBD Bancorp,Inc.(15)       1,393,950    6.0          -       -   1.8 
+* Less than 1%
+
+(1)  Includes the vested interest of executive officers  in  the
+     Company's  Employee  Stock Ownership Plan. The aggregate
+     vested  amount credited to their accounts as of March 31, 1995
+     was 210,893 shares of Class A Stock.
+
+(2)  Share amounts shown as subject to stock  options in the
+     footnotes below cover shares under options that are
+     presently  exercisable or will become exercisable within 60 days
+     after March 1,1995.
+
+(3)  The business address of this stockholder is 8100 Denmark
+     Road, Charlotte, North Carolina 28273-5975.`
+
+func TestASCIILeadInSentenceDoesNotEndTheBlockBeforeTheTable(t *testing.T) {
+	rows := run(t, asciiLeadInLoneRow)
+	for _, want := range []struct {
+		name string
+		sh   float64
+		pct  float64
+	}{
+		{"Wayland H.Cato,Jr", 3495106, 15.0},
+		{"Edgar T. Cato", 1734653, 7.5},
+		{"NBD Bancorp,Inc", 1393950, 6.0},
+	} {
+		got := find(rows, want.name, "")
+		if got == nil || got.Shares == nil || *got.Shares != want.sh ||
+			got.Percent == nil || *got.Percent != want.pct {
+			t.Fatalf("holder %q wrong: %+v (all rows: %+v)", want.name, got, rows)
+		}
+	}
+	for _, r := range rows {
+		if strings.HasPrefix(r.HolderName, "The following") || (r.Shares != nil && *r.Shares == 31) {
+			t.Fatalf("lead-in sentence emitted as a row: %+v", r)
+		}
+	}
+}
+
+// The lead-in names the table's executives by the Summary Compensation Table's
+// TITLE inside a sentence -- 'named in the table under "Executive Compensation
+// and Other Information--Summary Compensation Table" and (iv) all Directors' --
+// and the sentence is cut at a line break, so the verb that marks it as a
+// reference is not in the block's header text. A title inside a sentence (after
+// "the", or followed by more of the sentence) is a reference; the table's own
+// title stands on its line above its column header. 0000891092-98-000009 lines
+// 242-323, then 503-530 (its Summary Compensation Table, a negative control).
+const asciiOwnLeadInSCTTitleInSentence = `                     VOTING SECURITIES AND PRINCIPAL HOLDERS
+
+      The table  below sets forth  information  concerning  the shares of Common
+Stock  beneficially  owned as of the Record Date by (i) each person known by the
+Company to be the beneficial  owner of more than five (5%) percent of the Common
+Stock of the  Company;  (ii) each  Director  of the  Company;  (iii) each of the
+executive  officers named in the table under  "Executive  Compensation and Other
+Information--Summary  Compensation  Table" and (iv) all  Directors and executive
+officers as a group.
+
+                                         Amount and Nature
+   Name and Address                        of Beneficial           Percent of
+  of Beneficial Owner                      Ownership (1)          Common Stock
+  -------------------                    -----------------       --------------
+LEONARD A. TRUGMAN....................       906,184(2)              11.0%
+c/o Del Global Technologies Corp.                                    
+1 Commerce Park                                                      
+Valhalla, NY  10595                                                  
+                                                                     
+NATAN V. BERTMAN......................       102,659(3)               1.4%
+c/o Bertman & Levine                                                 
+945 Manhattan Avenue                                                    
+Brooklyn, NY  11222                                               
+
+
+                                       1
+<PAGE>
+
+                                         Amount and Nature
+   Name and Address                        of Beneficial           Percent of
+  of Beneficial Owner                      Ownership (1)          Common Stock
+  -------------------                    -----------------        -------------
+DAVID ENGEL                                   16,263(4)                *
+c/o Del Global Technologies Corp.                                  
+1 Commerce Park                                                    
+Valhalla, NY  10595                                                
+                                                                   
+LOUIS J. FARIN, SR....................        48,977(5)                *
+c/o Del Global Technologies Corp.                                  
+1 Commerce Park                                                    
+Valhalla, NY  10595                                                
+                                                                   
+PAUL J. LIESMAN.......................         7,738(6)                *
+c/o Bertan High Voltage Corp.                                      
+121 New South Road                                                 
+Hicksville, NY  11801                                              
+                                                                   
+JOHN MANKOWICH (7)....................            --                   *
+c/o Gendex-Del Medical Imaging Corp.                               
+11550 West King Street                                             
+Franklin Park, IL  60131                                           
+                                                                   
+DAVID MICHAEL.........................       160,450(8)               2.1%
+c/o David Michael & Co., P.C.                                      
+Seven Penn Plaza                                                   
+New York, NY  10001                                                
+                                                                   
+SEYMOUR RUBIN.........................       161,680(9)               2.1%
+c/o RFI Corporation                                                
+100 Pine Aire Drive                                                
+Bay Shore, NY  11706                                               
+                                                                   
+MICHAEL TABER.........................         7,248(10)               *
+c/o Del Global Technologies Corp.                                  
+1 Commerce Park                                                    
+Valhalla, NY  10595                                                
+                                                                   
+JAMES TIERNAN.........................         8,733(11)               *
+7 Patriot Court                                                    
+New City, NY  10956                                                
+                                                                   
+All officers and Directors (10)                                    
+  as a group..........................     1,419,932(12)             16.5%
+                                                                   
+OTHERS                                                             
+                                                                   
+PUTNAM INVESTMENTS, INC...............       456,063                  6.1%
+One Post Office Square                                             
+Boston, MA 02109                                            
+- ----------
+  *   Represents less than 1% of the  outstanding  shares of Common Stock of the
+      Company  including  shares  issuable  under  options  which are  presently
+
+                           SUMMARY COMPENSATION TABLE
+<TABLE>
+<CAPTION>
+
+                                                                                  Long-term
+                                          Annual Compensation                 Compensation Awards
+                             ---------------------------------------------  -----------------------
+                                                                    Other                Securities
+        Name and                                                   Annual   Restricted   Underlying  All  Other
+        Principal                       Salary          Bonus      Compen-     Stock      Options/     Compen-
+        Position             Year         ($)            ($)      sation($)  Awards($)    SARS (#)  sation ($)(1)
+        ---------            -----     --------      -----------  --------  ----------    ---------  ------------
+<S>                          <C>        <C>           <C>          <C>         <C>          <C>        <C>
+LEONARD A. TRUGMAN           1997       303,876       488,541(2)     --         --            --       43,313
+  Chairman of the Board,     1996       289,406       343,318(2)     --         --            --       39,708
+  Chief Executive Officer    1995       275,625       257,273(2)     --         --          56,275     40,356
+  and President
+
+SEYMOUR RUBIN                1997       225,000        50,000        --         --           5,150     14,124
+  Vice President             1996       223,379        32,284        --         --          10,609      7,274
+  and President of           1995       210,000        50,000        --         --          11,255      8,539
+  RFI Corporation
+
+MICHAEL TABER                1997       104,000        15,000      62,821(3)    --           5,150      9,655
+  Vice President - Finance,  1996       100,000        12,500        --         --           7,957      3,002
+  Secretary and Chief        1995        92,500        10,000        --         --           5,628      3,002
+  Accounting Officer
+`
+
+func TestASCIIOwnershipLeadInQuotingSummaryCompensationTitle(t *testing.T) {
+	rows := run(t, asciiOwnLeadInSCTTitleInSentence)
+	for _, want := range []struct {
+		name string
+		sh   float64
+		pct  float64
+	}{
+		{"LEONARD A. TRUGMAN", 906184, 11.0},
+		{"NATAN V. BERTMAN", 102659, 1.4},
+		{"PUTNAM INVESTMENTS, INC", 456063, 6.1},
+	} {
+		got := find(rows, want.name, "")
+		if got == nil || got.Shares == nil || *got.Shares != want.sh ||
+			got.Percent == nil || *got.Percent != want.pct {
+			t.Fatalf("holder %q wrong: %+v (all rows: %+v)", want.name, got, rows)
+		}
+	}
+	for _, r := range rows {
+		if r.Shares != nil && (*r.Shares == 303876 || *r.Shares == 1997 || *r.Shares == 488541) {
+			t.Fatalf("Summary Compensation Table row emitted: %+v", r)
+		}
+	}
+	for _, s := range []string{
+		`officers named in the table under "Executive Compensation and Other Information--Summary  Compensation  Table" and (iv) all`,
+		`Owner Beneficial Ownership(1) Percent of Class in the Summary Compensation Table and by all officers and directors`,
+		`appearing below (the "Summary Compensation Table") and (iv) all directors`,
+	} {
+		if reCompCue.MatchString(reSCTReference.ReplaceAllString(s, " ")) {
+			t.Errorf("cross-reference read as a compensation header: %q", s)
+		}
+	}
+	for _, s := range []string{
+		"SUMMARY COMPENSATION TABLE\n  Name and Principal Position   Year   Salary   Bonus",
+		"Summary Compensation Table\n- --------------------------",
+	} {
+		if !reCompCue.MatchString(reSCTReference.ReplaceAllString(s, " ")) {
+			t.Errorf("Summary Compensation Table title no longer a compensation cue: %q", s)
+		}
+	}
+}
+
+// The Marcus Corporation 2001 (0000897069-01-500415), lines 438-534: each holder
+// is a bare name line, and the holdings sit on the lines below it, one per class,
+// labelled only with the class ("Common Shares....", "Class B Shares....").
+// The percent of class is on the line under the total column; the percent at the
+// far right is aggregate voting power.
+const asciiHolderOverClassLines = `<PAGE>
+                    STOCK OWNERSHIP OF MANAGEMENT AND OTHERS
+
+     The following table sets forth information as of the Record Date as to the
+Common Shares and Class B Shares beneficially owned by (i) each director of the
+Company; (ii) each executive officer named in the Summary Compensation Table set
+forth below under "Executive Compensation -- Summary Compensation;" (iii) all
+directors and executive officers of the Company as a group; and (iv) all other
+persons or entities known by the Company to be the beneficial owner of more than
+5% of either class of the Company's outstanding capital stock. A row for Class B
+Share ownership is not included for individuals or entities who do not
+beneficially own any Class B Shares.
+<TABLE>
+<CAPTION>
+                                                                                                 Total Share        Percentage of
+                                                       Sole Voting          Shared Voting       Ownership and         Aggregate
+Name of Individual or                                 and Investment        and Investment       Percentage of         Voting
+Group/Class of Stock                                     Power(1)             Power(1)             Class(1)            Power(1)
+- ----------------------                                 ------------         ------------         ------------       -------------
+
+                                                                           Directors and Named Executive Officers
+Stephen H. Marcus(2)
+<S>                                                    <C>                    <C>               <C>                      <C>
+ Common Shares...................................          25,478(3)               6,003             31,481(3)
+                                                                                                          *                61.9%
+ Class B Shares..................................       2,654,458              4,692,099          7,346,557
+                                                                                                     (73.8%)
+Diane Marcus Gershowitz(2)
+ Common Shares...................................          83,929(4)                   0             83,929(4)
+                                                                                                          *                48.7%
+ Class B Shares..................................       1,742,238              4,029,647          5,771,885
+                                                                                                     (58.0%)
+Daniel F. McKeithan, Jr.
+ Common Shares...................................           9,909(4)                   0              9,909(4)
+                                                                                                          *                   *
+Allan H. Selig
+ Common Shares...................................           7,884(4)                   0              7,884(4)
+                                                                                                          *                   *
+Timothy E. Hoeksema
+ Common Shares...................................           7,659(4)                   0              7,659(4)
+                                                                                                          *
+Philip L. Milstein
+ Common Shares...................................          56,799(4)(5)                0             56,799(4)(5)
+                                                                                                          *                   *
+ Class B Shares..................................          39,601                      0             39,601
+                                                                                                          *
+Bronson J. Haase
+ Common Shares...................................           3,284(4)                   0              3,284 (4)
+                                                                                                          *                   *
+
+Bruce J. Olson
+ Common Shares...................................         122,245(3)(6)           30,856            153,101(3)(6)
+                                                                                                          *                   *
+H. Fred Delmenhorst
+ Common Shares...................................          48,264(3)(6)            3,806             52,070(3)(6)
+                                                                                                          *                   *
+Thomas F. Kissinger
+ Common Shares...................................          31,951(3)(6)                0             31,951(3)(6)
+                                                                                                          *                   *
+</TABLE>
+                                        5
+<PAGE>
+<TABLE>
+<CAPTION>
+                                                                                                 Total Share        Percentage of
+                                                       Sole Voting          Shared Voting       Ownership and         Aggregate
+Name of Individual or                                 and Investment        and Investment       Percentage of         Voting
+Group/Class of Stock                                     Power(1)             Power(1)             Class(1)            Power(1)
+- ----------------------                                 ------------         ------------         ------------       -------------
+<S>                                                    <C>                    <C>               <C>                      <C>
+Douglas A. Neis
+ Common Shares...................................          37,699(3)(6)            6,417             44,116(3)(6)
+                                                                                                          *                   *
+James D. Ericson
+ Common Shares...................................           1,500(4)                   0              1,500(4)
+                                                                                                          *                   *
+All directors and executive officers as a group
+(12 persons)(7)
+ Common Shares(8)................................         436,601(3)              47,082            483,683(3)
+                                                                                                      (2.5%)               80.0%
+ Class B Shares..................................       4,436,297              5,013,738          9,450,035
+                                                                                                     (95.0%)
+<CAPTION>
+                                                   Other Five Percent Shareholders
+<S>                                                    <C>                    <C>               <C>                      <C>
+Private Capital Management, Inc.(9)
+  Common Shares(10)..............................          76,850              6,250,586          6,327,436                 5.3%
+                                                                                                     (32.9%)
+Lord Abbett & Co.(11)
+  Common Shares(12)..............................       1,750,000                      0          1,750,000
+                                                                                                      (9.1%)                1.5%
+Dimensional Fund Advisors(13)
+  Common Shares(14)..............................       1,198,892                      0          1,198,892
+                                                                                                      (6.2%)                1.0%
+- -----------------
+ * Less than 1%.
+(1)  Includes, in some cases, shares over which a person has or shares voting power and/or investment power, as to which
+`
+
+func TestASCIIHolderNameOverClassLabelLines(t *testing.T) {
+	raw, _, _ := ExtractText(asciiHolderOverClassLines, Row{})
+	for _, r := range raw {
+		if reClassLabelLine.MatchString(r.HolderName) {
+			t.Errorf("class label taken as the holder: %+v", r)
+		}
+	}
+	classB := 0
+	for _, r := range raw {
+		if r.HolderName == "Stephen H. Marcus" && strings.Contains(r.ShareClass, "Class B") {
+			classB++
+			if r.Shares == nil || *r.Shares != 7346557 || r.Percent == nil || *r.Percent != 73.8 {
+				t.Errorf("Class B holding misread: %+v", r)
+			}
+		}
+	}
+	if classB != 1 {
+		t.Errorf("want one Class B holding for Stephen H. Marcus, got %d", classB)
+	}
+	rows := ScreenRows(raw)
+	for _, want := range []struct {
+		name   string
+		shares float64
+		pct    float64 // -1: the percent of class is "*"
+	}{
+		{"Stephen H. Marcus", 31481, -1},
+		{"Diane Marcus Gershowitz", 83929, -1},
+		{"Philip L. Milstein", 56799, -1},
+		{"Bruce J. Olson", 153101, -1},
+		{"Douglas A. Neis", 44116, -1},
+		{"James D. Ericson", 1500, -1},
+		{"All directors and executive officers as a group (12 persons)", 483683, 2.5},
+		{"Private Capital Management, Inc", 6327436, 32.9},
+		{"Lord Abbett & Co", 1750000, 9.1},
+		{"Dimensional Fund Advisors", 1198892, 6.2},
+	} {
+		found := 0
+		for _, r := range rows {
+			if r.HolderName != want.name || strings.Contains(r.ShareClass, "Class B") {
+				continue
+			}
+			found++
+			if r.Shares == nil || *r.Shares != want.shares {
+				t.Errorf("want %+v, got %+v", want, r)
+			}
+			if want.pct < 0 && (r.Percent != nil || r.PctMarker != "*") {
+				t.Errorf("want the * marker for %s, got %+v", want.name, r)
+			}
+			if want.pct >= 0 && (r.Percent == nil || *r.Percent != want.pct) {
+				t.Errorf("want percent of class %v for %s (not voting power), got %+v", want.pct, want.name, r)
+			}
+		}
+		if found != 1 {
+			t.Errorf("want exactly one common holding for %s, got %d in %v", want.name, found, holderNames(rows))
+		}
+	}
+}
+
+// Badger Meter 1999 (0000950124-99-001962), lines 440-620: the same layout with
+// the class label wrapped over two lines ("Class B" / "Common Stock....."), a
+// holder cell carrying an address between the name and its holdings, and the
+// table split over two blocks.
+const asciiHolderOverWrappedClassLines = `                    STOCK OWNERSHIP OF MANAGEMENT AND OTHERS
+ 
+     The following table sets forth, as of March 1, 1999, the number of shares
+of the Company's Common Stock and Class B Common Stock beneficially owned by (i)
+each director of the Company, (ii) each of the executive officers named in the
+Summary Compensation Table set forth below, (iii) all directors and officers of
+the Company as a group, and (iv) each person known to the Company to be the
+beneficial owner of more than 5% of the Company's Common Stock and/or Class B
+Common Stock (as reported to the Securities and Exchange Commission). Beneficial
+ownership of shares is reported in the following table and footnotes in
+accordance with the beneficial ownership rules promulgated by the Securities and
+Exchange Commission. Such rules define "beneficial owner" of a security to
+include any person who has or shares voting power or investment power with
+respect to such security.
+ 
+     Compliance with these rules results in overlapping beneficial ownership of
+shares. Therefore, certain shares set forth in the table below are reported as
+being beneficially owned by more than one person. Although the beneficial owners
+of shares of Class B Common Stock are deemed to beneficially own an equal number
+of shares of Common Stock, due to the convertibility of Class B Common Stock
+into Common Stock, no "double counting" with respect to the two classes of
+Common Stock is reported.
+ 
+     In the aggregate, approximately 246,003 shares of Common Stock and 945,694
+shares of Class B Common Stock, representing an aggregate of 9,703,373 votes or
+approximately 71.7% of the votes represented by the aggregate outstanding shares
+of Common Stock and Class B Common Stock, are beneficially held by directors and
+officers of the Company as a group.
+ 
+                                        4
+<PAGE>   7
+ 
+        AMOUNT AND NATURE OF BENEFICIAL OWNERSHIP OF BADGER METER, INC.
+          COMMON STOCK(1) (UNLESS DESIGNATED AS CLASS B COMMON STOCK)
+ 
+<TABLE>
+<CAPTION>
+                                                                                        NUMBER OF SHARES
+                                          OPTIONS                                         BENEFICIALLY
+                                        EXERCISABLE       SOLE            SHARED           OWNED AND
+                                          WITHIN       BENEFICIAL       BENEFICIAL      PERCENT OF CLASS
+NAME                                      60 DAYS     OWNERSHIP(2)     OWNERSHIP(2)       OUTSTANDING
+- ----                                    -----------   ------------     ------------     ----------------
+<S>                                     <C>           <C>              <C>              <C>
+JAMES O. WRIGHT
+  Common Stock(1).....................      2,500         8,580(4)        21,994(6)(7)       33,074
+                                                                                                1.3%
+  Class B
+     Common Stock.....................                                   590,814(5)(6)      590,814
+                                                                                               54.6%
+JAMES L. FORBES
+  Common Stock(1).....................                   15,279(3)(4)     38,902(3)(5)       44,291
+                                                                                                1.7%
+  Class B
+     Common Stock.....................                   81,696(3)       945,694(3)(5)      945,694
+                                                                                               87.4%
+ROBERT M. HOFFER
+  Common Stock(1).....................      8,500         2,500                              11,000
+                                                                                                0.4%
+CHARLES F. JAMES, JR.
+  Common Stock(1).....................      8,500         1,500              600             10,600
+                                                                                                0.4%
+KENNETH P. MANNING
+  Common Stock(1).....................      7,700         2,507                              10,207
+                                                                                                0.4%
+ANDREW J. POLICANO
+  Common Stock(1).....................      9,000         1,000                              10,000
+                                                                                                0.4%
+DONALD J. SCHUENKE
+  Common Stock(1).....................      8,500         4,500                              13,000
+                                                                                                0.5%
+JOHN J. STOLLENWERK
+  Common Stock(1).....................      8,500         4,422            2,383             15,305
+                                                                                                0.6%
+PAMELA B. STROBEL
+  Common Stock(1).....................      8,500         3,400                              11,900
+                                                                                                0.4%
+JAMES O. WRIGHT, JR.
+  Common Stock(1).....................      8,500         2,250                              10,750
+                                                                                                0.4%
+  Class B
+     Common Stock.....................                    5,400(5)       590,814(5)(6)      590,814
+                                                                                               54.6%
+ROBERT D. BELAN
+  Common Stock(1).....................     15,400         4,978(3)(4)                        20,378
+                                                                                                0.8%
+  Class B
+     Common Stock.....................                   21,236(3)                           21,236
+                                                                                                2.0%
+</TABLE>
+ 
+                                        5
+<PAGE>   8
+ 
+<TABLE>
+<CAPTION>
+                                                                                        NUMBER OF SHARES
+                                          OPTIONS                                         BENEFICIALLY
+                                        EXERCISABLE       SOLE            SHARED           OWNED AND
+                                          WITHIN       BENEFICIAL       BENEFICIAL      PERCENT OF CLASS
+NAME                                      60 DAYS     OWNERSHIP(2)     OWNERSHIP(2)       OUTSTANDING
+- ----                                    -----------   ------------     ------------     ----------------
+<S>                                     <C>           <C>              <C>              <C>
+RONALD H. DIX
+  Common Stock(1).....................      7,400        14,359(3)(4)     38,902(3)          59,577
+                                                                                                2.4%
+  Class B
+     Common Stock.....................                   24,696(3)       354,880(3)         354,880
+                                                                                               32.8%
+RICHARD A. MEEUSEN
+  Common Stock(1).....................     10,000         1,191(3)(4)     38,902(3)          49,141
+                                                                                                1.9%
+  Class B
+     Common Stock.....................                   11,304(3)       354,880(3)         354,880
+                                                                                               32.8%
+WILLIAM H. VANDER HEYDEN
+  Common Stock(1).....................      5,400         5,635(3)(4)        400             11,636
+                                                                                                0.5%
+  Class B
+     Common Stock.....................                   51,124(3)                           51,124
+                                                                                                4.7%
+  All Directors and Officers as a
+     Group (16 persons, including
+     those named above)
+     Common Stock(1)..................    126,200        76,833(3)(4)     61,496(3)(5)      246,033
+                                                                                (6)(7)          9.6%
+  Class B
+     Common Stock.....................                  205,676(3)(5)    945,694(3)(5)      945,694
+                                                                                (6)           84.41%
+WILLIAM H. ALVERSON
+  780 N. Water Street
+  Milwaukee, WI 53202
+  Class B
+     Common Stock.....................                                    86,368(5)(6)       86,368
+                                                                                                8.0%
+WILLIAM C. WRIGHT
+  11740 N. Port Washington Road
+  Mequon, WI 53092
+  Common Stock........................                      750                                 750
+                                                                                                .02%
+  Class B
+     Common Stock.....................                                    86,368(5)(6)       86,368
+                                                                                                8.0%
+Dimensional Fund Advisors Inc.
+  1299 Ocean Avenue
+  11th Floor
+  Santa Monica, CA
+  90401
+  Common Stock(1)(8)..................                  166,400                             166,400
+                                                                                                6.5%
+  Class B
+     Common Stock(8)..................                   58,000                              58,000
+                                                                                                5.4%
+</TABLE>
+ 
+                                        6
+<PAGE>   9
+ 
+<TABLE>
+<CAPTION>
+                                                                                        NUMBER OF SHARES
+                                          OPTIONS                                         BENEFICIALLY
+                                        EXERCISABLE       SOLE            SHARED           OWNED AND
+                                          WITHIN       BENEFICIAL       BENEFICIAL      PERCENT OF CLASS
+NAME                                      60 DAYS     OWNERSHIP(2)     OWNERSHIP(2)       OUTSTANDING
+- ----                                    -----------   ------------     ------------     ----------------
+<S>                                     <C>           <C>              <C>              <C>
+Heartland Advisors, Inc.
+  790 N. Milwaukee Street
+  Milwaukee, WI 53202
+  Common Stock(1)(9)..................                  156,900          372,600            372,600
+                                                                                               14.5%
+M&I Trust Company
+  1000 N. Water St
+  Milwaukee, WI 53202
+  Common Stock(1).....................                    2,800          465,425            468,225
+                                                                                               18.3%
+  Class B
+     Common Stock.....................                    6,000(6)       332,272(5)(6)      338,272
+                                                                                (10)           31.3%
+</TABLE>
+`
+
+func TestASCIIHolderOverWrappedClassLabel(t *testing.T) {
+	raw, _, _ := ExtractText(asciiHolderOverWrappedClassLines, Row{})
+	type key struct {
+		name   string
+		shares float64
+	}
+	got := map[key][]Row{}
+	for _, r := range raw {
+		if r.Shares != nil {
+			k := key{r.HolderName, *r.Shares}
+			got[k] = append(got[k], r)
+		}
+	}
+	for _, want := range []struct {
+		name   string
+		shares float64
+		pct    float64
+		classB bool
+	}{
+		{"JAMES L. FORBES", 44291, 1.7, false},
+		{"JAMES L. FORBES", 945694, 87.4, true},
+		{"JAMES O. WRIGHT, JR", 10750, 0.4, false},
+		{"JAMES O. WRIGHT, JR", 590814, 54.6, true},
+		{"ROBERT D. BELAN", 21236, 2.0, true},
+		{"All Directors and Officers as a Group (16 persons, including those named above)", 246033, 9.6, false},
+		{"Dimensional Fund Advisors Inc", 166400, 6.5, false},
+		{"Dimensional Fund Advisors Inc", 58000, 5.4, true},
+		{"M&I Trust Company", 468225, 18.3, false},
+		{"M&I Trust Company", 338272, 31.3, true},
+	} {
+		rs := got[key{want.name, want.shares}]
+		if len(rs) != 1 {
+			t.Errorf("want one row %+v, got %d", want, len(rs))
+			continue
+		}
+		r := rs[0]
+		if r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("want percent %v for %+v, got %+v", want.pct, want, r)
+		}
+		if strings.Contains(r.ShareClass, "Class B") != want.classB {
+			t.Errorf("want classB=%v for %+v, got class %q", want.classB, want, r.ShareClass)
+		}
+	}
+	// Every holding has exactly the holder its own cell names: none may be
+	// carried over from another holder's rows.
+	for _, r := range raw {
+		if r.HolderName == "JAMES L. FORBES" && r.Shares != nil && *r.Shares != 44291 && *r.Shares != 945694 {
+			t.Errorf("holding attributed to the wrong holder: %+v", r)
+		}
+	}
+}
+
+// Badger Meter 1995 (0000950124-95-001001): the class label is a whole
+// "Class B Common Stock........" row under the holder, not a wrapped pair.
+const asciiHolderOverWholeClassLabelLines = `                    STOCK OWNERSHIP OF MANAGEMENT AND OTHERS
+ 
+     The following table sets forth, as of March 1, 1995, the number of shares
+of the Company's Common Stock and Class B Common Stock beneficially owned by (i)
+each director of the Company, (ii) each of the executive officers named in the
+Summary Compensation Table set forth below, (iii) all directors and officers of
+the Company as a group, and (iv) each person known to the Company to be the
+beneficial owner of more than 5% of the Company's Common Stock and/or Class B
+Common Stock (as reported to the Securities and Exchange Commission). Beneficial
+ownership of shares is reported in the following table and footnotes in
+accordance with the beneficial ownership rules promulgated by the Securities and
+Exchange Commission. Such rules define "beneficial owner" of a security to
+include any person who has or shares voting power or investment power with
+respect to such security.
+ 
+     Compliance with these rules results in overlapping beneficial ownership of
+shares. Therefore, certain shares set forth in the table below are reported as
+being beneficially owned by more than one person. Although the beneficial owners
+of shares of Class B Common Stock are deemed to beneficially own an equal number
+of shares of Common Stock, due to the convertibility of Class B Common Stock
+into Common Stock, no "double counting" with respect to the two classes of
+Common Stock is reported.
+ 
+     In the aggregate, approximately 106,622 shares of Common Stock and 512,085
+shares of Class B Common Stock, representing an aggregate of 5,227,472 votes or
+approximately 76.2% of the votes represented
+ 
+                                        3
+<PAGE>   6
+ 
+by the aggregate outstanding shares of Common Stock and Class B Common Stock,
+are held by directors and officers of the Company as a group.
+ 
+        AMOUNT AND NATURE OF BENEFICIAL OWNERSHIP OF BADGER METER, INC.
+          COMMON STOCK(1) (UNLESS DESIGNATED AS CLASS B COMMON STOCK)
+ 
+<TABLE>
+<CAPTION>
+                                                                                         NUMBER OF SHARES
+                                                                                           BENEFICIALLY
+                                    OPTIONS             SOLE             SHARED             OWNED AND
+                                  EXERCISABLE        BENEFICIAL        BENEFICIAL        PERCENT OF CLASS
+             NAME                WITHIN 60 DAYS     OWNERSHIP(2)      OWNERSHIP(2)         OUTSTANDING
+- - ------------------------------   --------------     ------------      -------------      ----------------
+<S>                                <C>            <C>              <C>                    <C>
+James O. Wright
+  Common Stock(1).............        3,000            542(4)          53,823(3)(6)(8)         57,365
+                                                                                                  4.8%
+  Class B Common Stock........                                        511,985(3)(5)(6)        511,985
+                                                                                                 91.0%
+James L. Forbes
+  Common Stock(1).............        2,700         16,310(3)(4)       52,823(3)(6)            58,005
+                                                                                                  4.9%
+  Class B Common Stock........                      27,400(3)         511,985(3)(5)(6)        511,985
+                                                                                                 91.0%
+Robert M. Hoffer
+  Common Stock(1).............        3,000            500                                      3,500
+                                                                                                  0.3%
+Charles F. James, Jr.
+  Common Stock(1).............        3,000                               300                   3,300
+                                                                                                  0.3%
+Donald J. Schuenke
+  Common Stock(1).............        3,000          1,500                                      4,500
+                                                                                                  0.3%
+Warren R. Stumpe
+  Common Stock(1).............        3,000          1,000                                      4,000
+                                                                                                  0.3%
+Edwin P. Wiley
+  Common Stock(1).............        3,000                               200                   3,200
+                                                                                                  0.3%
+  Class B Common Stock........                         100            286,200(5)(7)           286,300
+                                                                                                 50.9%
+James O. Wright, Jr.
+  Common Stock(1).............        3,000             25                                      3,025
+                                                                                                  0.2%
+  Class B Common Stock........                       6,156(5)         425,163(5)(7)           425,163
+                                                                                                 75.5%
+Robert D. Belan
+  Common Stock(1).............        3,533            639(3)(4)                                4,172
+                                                                                                  0.4%
+  Class B Common Stock........                       5,830(3)                                   5,830
+                                                                                                  1.0%
+Ronald H. Dix
+  Common Stock(1).............        3,533          3,856(3)(4)       66,523(3)(6)            71,232
+                                                                                                  6.0%
+  Class B Common Stock........                       8,992(3)          86,822(3)(6)            86,822
+                                                                                                 15.4%
+`
+
+func TestASCIIWholeClassLabelRowKeepsClassB(t *testing.T) {
+	raw, _, _ := ExtractText(asciiHolderOverWholeClassLabelLines, Row{})
+	type key struct {
+		name   string
+		shares float64
+	}
+	got := map[key][]Row{}
+	for _, r := range raw {
+		if r.Shares != nil {
+			k := key{r.HolderName, *r.Shares}
+			got[k] = append(got[k], r)
+		}
+	}
+	classB := map[float64]bool{}
+	for _, want := range []struct {
+		name   string
+		shares float64
+		pct    float64
+		classB bool
+	}{
+		{"James O. Wright", 57365, 4.8, false},
+		{"James L. Forbes", 58005, 4.9, false},
+		{"James L. Forbes", 511985, 91.0, true},
+		{"Edwin P. Wiley", 286300, 50.9, true},
+		{"James O. Wright, Jr", 425163, 75.5, true},
+		{"Robert D. Belan", 5830, 1.0, true},
+		{"Ronald H. Dix", 71232, 6.0, false},
+		{"Ronald H. Dix", 86822, 15.4, true},
+	} {
+		if want.classB {
+			classB[want.shares] = true
+		}
+		rs := got[key{want.name, want.shares}]
+		if len(rs) != 1 {
+			t.Errorf("want one row %+v, got %d", want, len(rs))
+			continue
+		}
+		r := rs[0]
+		if r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("want percent %v for %+v, got %+v", want.pct, want, r)
+		}
+		if strings.Contains(r.ShareClass, "Class B") != want.classB {
+			t.Errorf("want classB=%v for %+v, got class %q", want.classB, want, r.ShareClass)
+		}
+	}
+	for _, r := range raw {
+		if r.Shares != nil && classB[*r.Shares] && !strings.Contains(r.ShareClass, "Class B") {
+			t.Errorf("Class B holding labelled %q: %+v", r.ShareClass, r)
+		}
+	}
+}
+
+// American Bancshares 1995 (0000352801-95-000005): a one-row group table whose
+// only row starts with the title of class; above it is the column header.
+const asciiClassLeadGroupLines = `Shareholders of record as of March 28, 1995, are entitled to vote their
+shares on action proposed at the meeting, with each of the 229,564
+shares of common stock outstanding entitled to one vote.  Of the 738
+shareholders as of March 28, 1995, three own over five percent of the
+total outstanding shares:
+
+                                       Amount and Nature of
+                                       Beneficial Ownership
+  Title of   Name and Address of   (Voting_and_Investment_Power)    Percent
+  Class___   Beneficial_Owner___    _Sole_   _Shared_   _Total_     Of_Class
+
+  Common     A. Moore Cook           12,808    1,411     14,219       6.2%
+             P. O. Box 4173
+             Houma, LA.  70361
+
+  Common     Conrad J. Lirette        2,259   11,028     13,287       5.8%
+             P. O. Box 371
+             Houma, LA.   70361
+
+  Common     Wm. Clifford Smith      29,266      278     29,544      12.9%
+             P. O. Box 2266
+             Houma, LA.  70361
+
+ 
+ELECTION_OF_DIRECTORS
+
+The Company's Articles of Incorporation, as amended, provide that
+the Board of Directors be composed of not less than five (5) and no
+more than twenty (20) directors.  The Board of Directors has set the
+number of directors to be elected to serve a one year term on the
+Board at thirteen (13).  The nominees are the thirteen directors of
+American Bank and Trust Company of Houma (American Bank or the Bank)
+and are listed on pages 2 and 3 of this proxy statement.
+
+
+
+
+
+
+DIRECTORS_AND_EXECUTIVE_OFFICERS
+
+The nominees for director of American Bancshares represent a cross-
+section of the Terrebonne Parish economy.  Individuals in farming,
+energy, insurance, retail sales and other professional careers are
+included in the following table, which also discloses the year
+directorship was attained and the number and percentage of American
+Bancshares outstanding common stock held as of March 28, 1995.
+
+                                         Amount and Nature of
+                           Bank          Beneficial Ownership
+Name, Age and              Director  (Voting_and_Investment_Power)  Percent
+Principal_Occupation       Since___   _Sole_   _Shared_   _Total_   Of_Class
+
+Robert W. Boquet (age 51)      1984      999       300    1,299       0.6%
+ President and Chief
+  Executive Officer of the
+  Company and American Bank
+  and Trust Co. of Houma
+
+Francis O. Bourg, Jr. (age 72) 1975    8,681       ---    8,681       3.8%
+ President, Bourg Bros.
+  Moving and Storage
+
+Russel J. Brien (age 69)       1968    2,783       ---    2,783       1.2%
+ President, Russel Brien Farms,
+  Inc.
+
+A. Moore Cook (age 69)         1972   12,808     1,411   14,219       6.2%*
+ Chairman of the Board of
+  the Company and American
+  Bank and Trust Co. of Houma
+ Consulting Petroleum Engineer
+
+Dr. Allen J. Ellender (age 74) 1972      377       ---      377       0.2%
+ Retired Physician
+
+Philip E. Henderson (age 61)   1979    4,905       ---    4,905       2.1%
+ Vice Chairman of the Board
+  of the Company
+ Attorney, Henderson, Hanemann
+  & Morris, A Professional Law
+   Corporation
+
+Conrad J. Lirette (age 84)     1967    2,259    11,028   13,287       5.8%*
+ President, Bayou Barge
+  Company, Inc.
+
+John B. Marceaux (age 67)      1979    3,805       700    4,505       2.0%
+ Marketing Specialist,
+  Bayou Oaks Hospital
+
+W. R. Norman, Sr. (age 76)     1968    2,509       ---    2,509       1.1%
+ President, Best Equipment
+  Company, Inc.
+
+Charles A. Page (age 73)       1964      755       ---      755       0.3%
+ President, Charles A. Page
+  & Sons Insurance Agency, Inc.
+
+Sidney A. Pellegrin (age 77)   1964    1,308       ---    1,308       0.6%
+ Real Estate and Office Rentals
+
+Wm. Clifford Smith (age 59)    1965   29,266       278   29,544      12.9%*
+ President, T. Baker Smith &
+  Son, Inc., Civil Engineers
+
+Earl Williams (age 66)         1977    1,500       ---    1,500       0.7%
+ President, Earl Williams
+  Clothing Store, Inc.
+
+*Directors Cook, Lirette and Smith are the only shareholders owning more than
+five percent of American Bancshares' outstanding common stock.
+ 
+The following directors are the executive officers of American
+Bancshares:
+
+                                 Officer
+Name__________________    Age    Since__    Current_Position___________
+
+ A. Moore Cook            69      1977       Chairman of the Board
+ Philip E. Henderson      61      1986       Vice Chairman of the Board
+ Robert W. Boquet         51      1984       President and
+                                             Chief Executive Officer
+ Russel J. Brien          69      1984       Secretary
+ Conrad J. Lirette        84      1977       Treasurer
+
+Each director listed above has been engaged in the principal occupation
+set forth below his name or employed by the company shown in a similar
+capacity for the past five years.
+
+THE BOARD OF DIRECTORS RECOMMENDS A VOTE FOR THE ELECTION OF THE
+THIRTEEN (13) NOMINEES PREVIOUSLY LISTED.
+
+The Board of Directors of American Bancshares met three times during
+the fiscal year ended December 31, 1994.  Each director of American
+Bancshares also serves on the Board of Directors of American Bank,
+which met thirteen times in 1994.
+
+The Board of Directors of the Bank has an Audit Committee which meets
+with the Bank's Internal Auditor on a regular basis, supervises the
+Bank's continuous audit program, and directs an examination of the Bank
+at least annually.  The committee also reviews and advises the Board
+with respect to the audit and non-audit services rendered by the Bank's
+independent certified public accountants and the financial information
+used by the Board and disseminated to the shareholders and others.  The
+Audit Committee, which met two times in 1994, is composed of Messrs.
+Francis O.  Bourg, Jr., Russel J.  Brien, Conrad J. Lirette, Charles A.
+Page, and Earl Williams (Chairman).
+
+The American Bank Board also has an Executive Committee which met
+eighteen times in 1994 to consider various matters to be brought before
+the Bank's Board of Directors.  The committee also sets the annual
+compensation of the Bank's Chief Executive Officer and approves the
+Bank's total salaries and employee benefits budget which is
+administered by the Chief Executive Officer.  The Executive Committee
+is composed of Messrs.  Robert W.  Boquet, A. Moore Cook, Philip E.
+Henderson, F. O. Bourg, Russel Brien, Sidney A.  Pellegrin, and Wm.
+Clifford Smith.
+
+The Boards of Directors serve as Nominating Committees, responsible for
+nominating directors and officers (for one year terms unless successors
+are elected and qualified) for American Bancshares and American Bank.
+
+One of the directors, Wm. Clifford Smith, holds a directorship in
+Entergy Corporation and two of its subsidiaries, Entergy Operations,
+Inc. and Louisiana Power and Light Company.  Entergy Corporation has a
+class of securities registered under Section 12 of the Securities
+Exchange Act of 1934, as amended.
+ 
+The following schedule reflects the common stock ownership of all
+American Bancshares directors and officers as a group:
+
+                          Amount and Nature of
+                            Beneficial Ownership
+Title                 (Voting_and_Investment_Power)           Percent
+Of_Class               _Sole_    _Shared_  _Total_            Of_Class
+
+Common                 71,955     13,717    85,672             37.3%
+
+
+`
+
+// MAXXAM 1994 (0000900421-94-000019): the holding is written inline after the
+// name ("Common Stock--2,746,642"), the second class on a label line below.
+const asciiInlineHoldingClassLines = `
+     <CAPTION>
+
+     OWNERSHIP OF CERTAIN BENEFICIAL OWNERS--CUMULATIVE (1985 SERIES B) PREFERENCE STOCK
+
+                  Name and Address of             Amount and Nature of     Percent
+                   Beneficial Owner               Beneficial Ownership   of Class(1)
+      <S>                                         <C>                   <C>
+      Kaiser Aluminum Salaried                           62,127 shares      44.4%
+                Employee Stock Ownership Plan(2)
+                c/o Mellon Bank, N.A.
+                Pittsburgh, Pennsylvania
+
+     <FN>
+     -------------------- 
+     (1)  The "Percent of Class" is computed using the shares outstanding on March 31, 1994.
+
+     (2)  Individual participants in the Plan may direct the Plan's Trustee how to vote their shares; undirected shares are voted by
+                    the Trustee in the same proportion as shares voted upon participant direction.
+
+     <CAPTION> 
+
+
+     OWNERSHIP OF MANAGEMENT--CUMULATIVE (1985 SERIES B) PREFERENCE STOCK
+                  Name and Address of             Amount and Nature of     Percent
+                   Beneficial Owner               Beneficial Ownership   of Class(1)
+
+      <S>                                         <C>                   <C>
+
+      All directors and officers of the Company         77.1135 shares        *
+
+     <FN>
+     -------------------- 
+     *    Less than 1%
+
+     (1)  The "Percent of Class" is computed using the shares outstanding on March 31, 1994.
+     </TABLE> 
+
+
+     OWNERSHIP OF CERTAIN PARENTS OF KAC
+
+               As of March 31, 1994, MAXXAM owned approximately 60% of the
+     issued and outstanding capital stock in KAC on a fully diluted basis. 
+     The following table sets forth, as of March 31, 1994, the beneficial
+
+     <PAGE>
+
+     ownership of the Common Stock and Class A $.05 Non-Cumulative
+     Participating Convertible Preferred Stock ("Class A Preferred Stock") of
+     MAXXAM by the directors and nominees for director of the Company, and by
+     the Company's directors and executive officers as a group: 
+
+
+
+     <TABLE>
+     <CAPTION>
+
+                                                                                        PERCENT OF
+                                                                                         COMBINED
+                      NAME OF                     AMOUNT AND NATURE OF        PERCENT     VOTING
+                 BENEFICIAL OWNER               BENEFICIAL OWNERSHIP (1)     OF CLASS   POWER (2)
+
+      <S>                                     <C>                            <C>        <C>
+
+      Charles E. Hurwitz                      Common Stock--2,746,642(3)(4)      31.3%
+                                              Class A Preferred Stock--                      59.9%
+                                                   657,917(3)(4)                 97.0%
+      Ezra G. Levin                           Common Stock--1,000(3)(5)           *           *
+
+      All directors and executive officers
+      of the Company as a group (19 persons)  Common Stock--2,768,228            31.6%
+                                              Class A Preferred Stock--                      60.1%
+                                                   657,917                       97.0%
+
+     <FN>
+     -------------------- 
+     *    Less than 1%.
+     (1)  Except as may otherwise be indicated, beneficial owners have sole voting and investment power with respect to the shares
+                    listed in the table.
+     (2)  MAXXAM's Class A preferred stock is generally entitled to ten votes per share on matters presented to a vote of that
+                    company's stockholders.
+`
+
+// Methode 1995 (0000950131-95-002150): the name line ends in the title of
+// class ("Common Stock"); the holdings are "Class A" / "Class B" rows below.
+const asciiNameOverClassRowsLines = `    granted but not yet vested pursuant to the Incentive Stock Award Plan as to
+    which he has sole voting power.
+(3) Beneficial ownership is disclaimed due to restrictions on the trustee's
+    voting and investment power with respect to these shares. Includes 87,228
+    shares and 7,638 shares of Class A and Class B Common Stock, respectively,
+    held for the account of Mr. W. McGinley.
+(4) Based solely upon a Schedule 13D provided to the Company.
+ 
+  The following table sets forth information regarding the Class A and Class B
+Common Stock of the Company beneficially owned as of July 19, 1995 by: (i) each
+Director and nominee of the Company; (ii) each of the Named Executives
+identified in the Summary Compensation Table under "Executive Compensation";
+and (iii) all Directors and executive officers of the Company as a group.
+ 
+<TABLE>
+<CAPTION>
+                                                  NUMBER OF SHARES
+                                                   AND NATURE OF
+                                       TITLE OF      BENEFICIAL    PERCENT
+BENEFICIAL OWNER                        CLASS       OWNERSHIP(1)   OF CLASS
+----------------                     ------------ ---------------- --------
+<S>                                  <C>          <C>              <C>
+William J. McGinley(2).............. Common Stock
+                                     Class A          242,628(3)     1.1%
+                                     Class B          890,902(3)    70.2%
+William T. Jensen................... Common Stock
+                                     Class A          316,046(4)     1.4%
+                                     Class B           27,333(4)     2.2%
+</TABLE>
+ 
+                                       2
+<PAGE>
+ 
+<TABLE>   
+<CAPTION>
+                                                NUMBER OF SHARES
+                                                 AND NATURE OF
+                                     TITLE OF      BENEFICIAL    PERCENT
+BENEFICIAL OWNER                      CLASS       OWNERSHIP(1)   OF CLASS
+----------------                   ------------ ---------------- --------
+<S>                                <C>          <C>              <C>
+George C. Wright.................. Common Stock
+                                   Class A            45,766(5)     .2%
+                                   Class B             5,040(5)     .4%
+Raymond J. Roberts................ Common Stock
+                                   Class A            61,400        .3%
+                                   Class B             6,200        .5%
+William C. Croft.................. Common Stock
+                                   Class A            62,140        .3%
+                                   Class B             2,020        .2%
+Michael G. Andre.................. Common Stock
+                                   Class A           131,056(6)     .6%
+                                   Class B             3,800(6)     .3%
+Kevin J. Hayes.................... Common Stock
+                                   Class A           106,019(7)     .5%
+                                   Class B             3,368(7)     .3%
+James W. McGinley(2).............. Common Stock
+                                   Class A            43,793(8)     .2%
+                                   Class B                21(8)     --
+James W. Ashley, Jr............... Common Stock
+                                   Class A                 0        --
+                                   Class B                 0        --
+All Directors and Executive
+ Officers as                       Common Stock
+ a Group (9 individuals).......... Class A         1,008,848       4.6%
+                                   Class B           938,684      74.0%
+</TABLE>    
+`
+
+func TestASCIIClassLabelRowNeverTakesHeaderAsHolder(t *testing.T) {
+	raw, _, _ := ExtractText(asciiClassLeadGroupLines, Row{})
+	cook := false
+	for _, r := range raw {
+		if strings.Contains(r.HolderName, "_") || strings.Contains(r.HolderName, "Of_Class") {
+			t.Errorf("column header taken as holder: %+v", r)
+		}
+		if strings.HasPrefix(r.HolderName, "A. Moore Cook") && r.Shares != nil && *r.Shares == 14219 {
+			cook = true
+		}
+	}
+	if !cook {
+		t.Errorf("want A. Moore Cook 14,219 kept")
+	}
+}
+
+func TestASCIIClassLabelRowRejectsInlineHoldingStub(t *testing.T) {
+	raw, _, _ := ExtractText(asciiInlineHoldingClassLines, Row{})
+	for _, r := range raw {
+		if strings.Contains(r.ShareClass, "Preferred") && strings.ContainsAny(r.HolderName, "0123456789") {
+			t.Errorf("label row inherited a holding as its holder: %+v", r)
+		}
+	}
+}
+
+func TestASCIIHolderNameEndsInTitleOfClass(t *testing.T) {
+	raw, _, _ := ExtractText(asciiNameOverClassRowsLines, Row{})
+	type key struct {
+		name   string
+		shares float64
+	}
+	got := map[key][]Row{}
+	for _, r := range raw {
+		if strings.Contains(r.HolderName, "Common Stock") {
+			t.Errorf("title of class left in the holder name: %+v", r)
+		}
+		if r.Shares != nil {
+			k := key{r.HolderName, *r.Shares}
+			got[k] = append(got[k], r)
+		}
+	}
+	for _, want := range []struct {
+		name   string
+		shares float64
+		pct    float64
+		class  string
+	}{
+		{"William J. McGinley", 242628, 1.1, "Class A"},
+		{"William J. McGinley", 890902, 70.2, "Class B"},
+		{"William T. Jensen", 316046, 1.4, "Class A"},
+		{"William T. Jensen", 27333, 2.2, "Class B"},
+		{"George C. Wright", 45766, 0.2, "Class A"},
+		{"George C. Wright", 5040, 0.4, "Class B"},
+	} {
+		rs := got[key{want.name, want.shares}]
+		if len(rs) != 1 {
+			t.Errorf("want one row %+v, got %d", want, len(rs))
+			continue
+		}
+		r := rs[0]
+		if r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("want percent %v for %+v, got %+v", want.pct, want, r)
+		}
+		if !strings.Contains(r.ShareClass, want.class) {
+			t.Errorf("want class %q for %+v, got %q", want.class, want, r.ShareClass)
+		}
+	}
+}
