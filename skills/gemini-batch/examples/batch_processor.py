@@ -138,6 +138,12 @@ class GeminiBatchProcessor:
             }
             mime_type = mime_types.get(ext, "application/octet-stream")
 
+        gen_config = {
+            "responseMimeType": "application/json"
+        }
+        if "gemini-3" not in self.model:
+            gen_config["temperature"] = 0.0
+
         return {
             "request": {
                 "contents": [
@@ -156,9 +162,7 @@ class GeminiBatchProcessor:
                         ]
                     }
                 ],
-                "generationConfig": {
-                    "responseMimeType": "application/json"
-                }
+                "generationConfig": gen_config
             },
             "metadata": {
                 "request_id": request_id,

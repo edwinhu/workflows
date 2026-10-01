@@ -61,6 +61,7 @@ def upload_images_to_gcs(
 def create_vision_jsonl(
     images: list[tuple[str, str]],
     prompt: str,
+    model: str,
     output_path: str = "/tmp/vision_batch.jsonl"
 ) -> str:
     """Create JSONL file for vision batch processing.
@@ -68,6 +69,7 @@ def create_vision_jsonl(
     Args:
         images: List of (filename, gcs_uri) tuples
         prompt: Vision analysis prompt
+        model: Model identifier
         output_path: Output JSONL path
 
     Returns:
@@ -76,6 +78,13 @@ def create_vision_jsonl(
     with open(output_path, 'w') as f:
         for filename, gcs_uri in images:
             # CRITICAL: Use fileData.fileUri, not inline image data
+
+            gen_config = {
+                "responseMimeType": "application/json"
+            }
+            if "gemini-3" not in model:
+                gen_config["temperature"] = 0.0
+
             request = {
                 "request": {
                     "contents": [
@@ -94,9 +103,7 @@ def create_vision_jsonl(
                             ]
                         }
                     ],
-                    "generationConfig": {
-                        "responseMimeType": "application/json"
-                    }
+                    "generationConfig": gen_config
                 },
                 "metadata": {
                     "request_id": Path(filename).stem
@@ -344,7 +351,7 @@ def main():
     print("\n" + "=" * 60)
     print("Step 2: Create JSONL request file")
     print("=" * 60)
-    jsonl_path = create_vision_jsonl(images, PROMPT)
+    jsonl_path = create_vision_jsonl(images, PROMPT, MODEL)
 
     print("\n" + "=" * 60)
     print("Step 3: Submit batch job")
