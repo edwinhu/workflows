@@ -10988,3 +10988,286 @@ func TestASCIIFootnoteSentencesAreNotASecondTableHeader(t *testing.T) {
 		t.Errorf("want 10 rows, got %d: %v", len(raw), got)
 	}
 }
+
+// 0000910650-96-000005: the lead-in says the table omits "stock options granted
+// under the ... Equity Compensation Plan". That justified sentence is not a
+// column header and must not mark the ownership table as compensation.
+const asciiCompCueInLeadInSentenceLines = `
+
+
+Securities Ownership of Certain Beneficial Owners and Management
+The following table sets forth certain information concerning ownership of the
+Common Stock of the Company as of March 8, 1996 by (a) each shareholder known by
+the Company to beneficially own more than five percent of the Common Stock, (b)
+each director and each nominee for election as a director of the Company, (c)
+each executive officer of the Company and (d) all directors and executive
+officers of the Company as a group.  Except as otherwise noted, each person
+listed below, either alone or together with such person's family, had sole
+voting and investment power with respect to the shares listed next to such
+person's name.  This table does not include shares underlying stock options
+granted under the Quipp, Inc. 1996 Equity  Compensation Plan, which is subject
+to shareholder approval.  See  Proposal to Adopt Quipp, Inc. 1996 Equity
+Compensation Plan .
+
+      Name and Address of            Beneficially            Percent of
+       Beneficial Owner                 Owned                  Class
+
+      Louis D. Kipp (1)                       101,705             6.2%
+
+      Jack D. Finley                           44,875             2.7%
+
+      William L. Rose                          10,550             *
+
+      Ralph M. Branca                           2,000             *
+
+      Richard H. Campbell                           0             *
+
+      Cristina H. Kepner (2)                    3,000             *
+
+      Kenneth G. Langone (3)                  146,500            9.0%
+
+      James E. Pruitt (4)                     103,706            6.3%
+
+      All directors and officers
+        as a group                            412,336            25.2%
+
+
+      * Less than 1 %
+
+
+(1)   The address of Mr. Kipp is Quipp, Inc., 4800 NW 157 Street, Miami, Florida
+33014.
+
+(2)   Does not include shares held by Invemed Associates, Inc. (see Note 3).
+Ms. Kepner is Executive Vice President of Invemed Associates, Inc.
+
+(3)   Includes 45,400 shares held by Invemed Associates, Inc.  Mr. Langone is
+the President of Invemed Associates, Inc. and 81 % owner of its corporate
+parent. The address of Mr. Langone is Invemed Associates, Inc., 375 Park Avenue,
+`
+
+func TestASCIICompCueInLeadInSentenceIsNotAHeader(t *testing.T) {
+	raw, _, _ := ExtractText(asciiCompCueInLeadInSentenceLines, Row{})
+	got := map[string]float64{}
+	for _, r := range raw {
+		if r.Shares == nil {
+			t.Fatalf("row without shares: %+v", r)
+		}
+		got[r.HolderName] = *r.Shares
+	}
+	for name, shares := range map[string]float64{
+		"Louis D. Kipp":                         101705,
+		"Kenneth G. Langone":                    146500,
+		"James E. Pruitt":                       103706,
+		"All directors and officers as a group": 412336,
+	} {
+		if g, ok := got[name]; !ok || g != shares {
+			t.Errorf("%s: got %v (present=%v), want %v; rows=%v", name, g, ok, shares, got)
+		}
+	}
+	// Eight: the bare "0" holding of Richard H. Campbell is not read as a row.
+	if len(raw) != 8 {
+		t.Errorf("want 8 rows, got %d: %v", len(raw), got)
+	}
+}
+
+// 0001009448-05-000083: an option footnote under the table ends in a price range,
+// "exercise price of between  $.8125-$3.00", which splits off at a wide gap like a
+// value column. A dollar amount is never a holding or a percent of class.
+const asciiFootnotePriceTailLines = `
+<TABLE>
+<CAPTION>
+
+                                                               Amount and Nature of
+  Name and Address of Beneficial Owner      Title of Class      Beneficial Ownership        Percentage
+- ---------------------------------------    ---------------- ---------------------------   ----------------
+<S>                                                                 <C>     <C>               <C>
+Franklin C. Karp                               Common               234,500 (3)               6.3%
+c/o Harvey Electronics, Inc.
+205 Chubb Avenue
+Lyndhurst, NJ 07071
+
+Joseph J. Calabrese                            Common               201,702 (4)               5.4%
+c/o Harvey Electronics, Inc.
+205 Chubb Avenue
+Lyndhurst, NJ 07071
+
+Michael A. Beck                                Common               197,500 (4)               5.3%
+c/o Harvey Electronics, Inc.
+205 Chubb Avenue
+Lyndhurst, NJ 07071
+
+Roland W. Hiemer                               Common               107,500 (5)               3.0%
+c/o Harvey Electronics, Inc.
+205 Chubb Avenue
+Lyndhurst, NJ 07071
+
+- --------------------------------------------------------------------------------------------------
+
+All Directors and Officers as a group          Common             1,101,919 (7)              24.4%
+(10 Persons)
+
+All Beneficial Owners as a group               Common             1,296,819 (7)              28.7%
+- --------------------------------------------------------------------------------------------------
+</TABLE>
+
+(1)  Includes  43,932  shares  of the  Company's  Common  Stock  owned by Harvey
+     Acquisition  Company LLC  ("HAC"),  of which Mr.  Recca is a member and the
+     sole  manager,  plus  options  to  purchase  up to  160,000  shares  of the
+     Company's   Common  Stock  which  are  exercisable  at  prices  of  between
+     $.8937-$1.925 per share.
+
+(2)  Includes  options to purchase up to 40,000 shares of the  Company's  Common
+     Stock, which are exercisable at prices of between $.8125-$1.375 per share.
+
+(3)  Includes  options to purchase up to 212,500 shares of the Company's  Common
+     Stock,  which are exercisable at an exercise price of between  $.8125-$3.00
+     per share.
+
+(4)  Includes  options to purchase up to 190,000 shares of the Company's  Common
+     Stock,  which are exercisable at an exercise price of between  $.8125-$3.00
+     per share.
+
+(5)  Includes  options to purchase up to 105,000 shares of the Company's  Common
+     Stock,  which are exercisable at an exercise price of between  $.8125-$3.00
+     per share.
+
+`
+
+func TestASCIIFootnotePriceTailIsNotARow(t *testing.T) {
+	raw, _, _ := ExtractText(asciiFootnotePriceTailLines, Row{})
+	got := map[string]float64{}
+	for _, r := range raw {
+		if strings.Contains(r.HolderName, "exercisable") || strings.Contains(r.HolderName, "exercise price") {
+			t.Fatalf("footnote sentence taken as a holder: %q", r.HolderName)
+		}
+		if r.Shares != nil {
+			got[r.HolderName] = *r.Shares
+		}
+	}
+	for name, shares := range map[string]float64{
+		"Franklin C. Karp":                 234500,
+		"Roland W. Hiemer":                 107500,
+		"All Beneficial Owners as a group": 1296819,
+	} {
+		if g, ok := got[name]; !ok || g != shares {
+			t.Errorf("%s: got %v (present=%v), want %v; rows=%v", name, g, ok, shares, got)
+		}
+	}
+}
+
+// 0000914317-02-000478: a proxy with one 5% holder. The footnote under the row
+// carries a dollar amount ("$43,750 of"), which is a price, not a second row.
+const asciiSoleHolderOverPriceFootnoteLines = `
+
+PRINCIPAL STOCKHOLDERS
+
+     The following table sets forth information as of April 22, 2002, concerning
+the persons who are known by the Company to own beneficially more than 5 percent
+of the outstanding shares of Common Stock, other than persons who are identified
+under the heading "Security Ownership of Management".
+
+Name and Address of                Amount of Beneficial         Percentage of
+    Beneficial Owner                     Ownership            Outstanding Shares
+    ----------------                     ---------            ------------------
+
+Fusion Capital Fund II, LLC (1)          3,500,000                   6.1%
+222 Merchandise Mart Plaza
+Suite 9-112
+Chicago, IL 60654
+_______________
+
+(1)  Consists  of  2,500,000  shares of Common  Stock and  warrants  to purchase
+     1,000,000  shares of Common Stock,  which are exercisable  immediately.  In
+     addition,  Fusion is  obligated  to purchase  from the  Company  $43,750 of
+     Common  Stock per trading day for  approximately  two years  beginning  May
+     2001, subject to the Company's right to reduce or suspend such purchases.
+`
+
+func TestASCIISoleHolderOverPriceFootnoteIsKept(t *testing.T) {
+	raw, _, _ := ExtractText(asciiSoleHolderOverPriceFootnoteLines, Row{})
+	if len(raw) != 1 {
+		t.Fatalf("want the one 5%% holder row, got %d: %+v", len(raw), raw)
+	}
+	r := raw[0]
+	if r.HolderName != "Fusion Capital Fund II, LLC" || r.Shares == nil || *r.Shares != 3500000 || r.Percent == nil || *r.Percent != 6.1 {
+		t.Errorf("got %q shares=%v pct=%v", r.HolderName, r.Shares, r.Percent)
+	}
+}
+
+// 0000914317-07-001110: a related-party loan table. Setting its price-only row
+// aside leaves one line, but that line is money, not a one-holder table.
+const asciiLoanTableOneLineLeftLines = `
+     are 15,038 shares available for future issuance pursuant to the 2003
+     Recognition and Retention Plan and 16,475 shares underlying options
+     available for future issuance pursuant to the 2003 Stock Option Plan.
+
+Section 16(a) Beneficial Ownership Reporting Compliance
+
+         The common stock of Citizens South Banking Corporation is registered
+with the Securities and Exchange Commission pursuant to Section 12(g) of the
+Securities Exchange Act of 1934. The officers and directors of Citizens South
+Banking Corporation and beneficial owners of greater than 10% of Citizens South
+Banking Corporation's common stock ("10% beneficial owners") are required to
+file reports on Forms 3, 4, and 5 with the Securities and Exchange Commission
+disclosing beneficial ownership and changes in beneficial ownership of the
+common stock. Securities and Exchange Commission rules require disclosure in
+Citizens South Banking Corporation's Proxy Statement or Annual Report on Form
+10-K of the failure of an officer, director, or 10% beneficial owner of Citizens
+South Banking Corporation's common stock to file a Form 3, 4, or 5 on a timely
+basis. Based on Citizens South Banking Corporation's review of ownership
+reports, none of Citizens South Banking Corporation's officers or directors
+failed to file these reports on a timely basis for 2006.
+
+Transactions with Certain Related Persons
+
+         Federal law and regulation generally requires that all loans or
+extensions of credit to executive officers and directors must be made on
+substantially the same terms, including interest rates and collateral, as those
+prevailing at the time for comparable transactions with the general public and
+must not involve more than the normal risk of repayment or present other
+unfavorable features. However, pursuant to federal regulations permitting
+executive officers and directors to receive the same terms through benefit or
+compensation plans that are widely available to other employees as long as the
+director or executive officer is not given preferential treatment compared to
+the other participating employees, Citizens South Bank extended loans to bank
+officer Huffstetler (summarized in the table below). Citizens South Bank no
+longer provides loans to executive officers and directors on preferential terms
+when compared to persons who are not affiliated with Citizens South Bank.
+
+                                       35
+<page>
+
+         Set forth below is certain information as to loans made by Citizens
+South Bank to certain of its directors and executive officers, or their
+affiliates, whose aggregate indebtedness to Citizens South Bank exceeded
+$120,000 at any time since January 1, 2006. Other than these loans, all loans to
+our executive officers and directors that exceeded $120,000 at any time since
+January 1, 2006 were made in the ordinary course of business on substantially
+the same terms, including interest rate and collateral, as those prevailing at
+the time for comparable loans with persons not related to Citizens South Bank.
+Management believes that the loans set forth below, and all other loans to our
+executive officers and directors, neither involve more than the normal risk of
+collectibility nor present other unfavorable features
+
+<table>
+<caption>
+                                                        Highest   Balance     Principal                 Interest
+                                           Original     Balance      on         Paid       Interest     Rate on
+  Name of                       Date         Loan       During    December     During     Paid During  December 31,
+ Individual      Loan Type   Originated     Amount       2006     31, 2006      2006         2006         2006
+- ------------   ------------  ----------   ---------   ---------   --------   ----------   ----------   ------------
+<s>            <c>               <c>       <c>         <c>           <c>      <c>           <c>            <c>
+J. Stephen     Residential      7/97      $ 170,000   $ 146,096     $ 0      $  146,096    $    948       5.75%
+Huffstetler    Home             2/00      $  50,800   $  32,285     $ 0      $   32,285    $     70       Prime
+               equity line
+               of credit
+</table>
+`
+
+func TestASCIILoanTableIsNotASoleHolder(t *testing.T) {
+	raw, _, _ := ExtractText(asciiLoanTableOneLineLeftLines, Row{})
+	for _, r := range raw {
+		t.Errorf("loan row taken as a holder: %q shares=%v pct=%v", r.HolderName, r.Shares, r.Percent)
+	}
+}
