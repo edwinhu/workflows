@@ -7,8 +7,8 @@ before submitting a full batch job.
 Usage:
     python test_single.py <gcs_uri> "<prompt>"
 
-    # With environment variable for API key
-    GOOGLE_API_KEY=xxx python test_single.py gs://bucket/doc.pdf "Extract the title"
+    # Cloud GCS smoke test, using ADC and the same model as the batch
+    GOOGLE_CLOUD_PROJECT=my-project python test_single.py gs://bucket/doc.pdf "Extract the title"
 
 Example:
     python test_single.py gs://my-bucket/documents/sample.pdf "Extract as JSON: {title, date, summary}"
@@ -18,7 +18,7 @@ import os
 import sys
 from pathlib import Path
 
-import google.generativeai as genai
+from google import genai
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts" / "lib"))
 from gemini_models import resolve_model
@@ -37,12 +37,11 @@ def test_single_request(gcs_uri: str, prompt: str, model: str | None = None) -> 
         Response text from model
     """
     model = resolve_model("bulk", model)
-    api_key = os.environ.get("GOOGLE_API_KEY")
-    if not api_key:
-        raise ValueError("GOOGLE_API_KEY environment variable not set")
-
-    genai.configure(api_key=api_key)
-    model_instance = genai.GenerativeModel(model)
+    client = genai.Client(
+        vertexai=True,
+        project=os.environ.get("GOOGLE_CLOUD_PROJECT"),
+        location=os.environ.get("GOOGLE_CLOUD_LOCATION", "global"),
+    )
 
     # Detect MIME type from URI
     mime_type = "application/pdf"
@@ -56,10 +55,14 @@ def test_single_request(gcs_uri: str, prompt: str, model: str | None = None) -> 
     print(f"  Prompt: {prompt[:100]}...")
     print("-" * 50)
 
-    response = model_instance.generate_content([
-        {"file_data": {"file_uri": gcs_uri, "mime_type": mime_type}},
-        prompt
-    ])
+    response = client.models.generate_content(
+        model=model,
+        contents=[
+            {"file_data": {"file_uri": gcs_uri, "mime_type": mime_type}},
+            prompt,
+        ],
+        config={"response_mime_type": "application/json"},
+    )
 
     print("Response:")
     print(response.text)

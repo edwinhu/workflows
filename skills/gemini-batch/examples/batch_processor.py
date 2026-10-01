@@ -27,7 +27,7 @@ from pathlib import Path
 from datetime import datetime
 from typing import Iterator, Optional
 
-import google.generativeai as genai
+from google import genai
 from google.cloud import storage
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts" / "lib"))
@@ -41,23 +41,25 @@ class GeminiBatchProcessor:
         self,
         bucket_name: str,
         model: str = None,
-        api_key: str = None
+        project: str = None,
+        location: str = "global"
     ):
         """Initialize processor.
 
         Args:
-            bucket_name: GCS bucket in us-central1
+            bucket_name: GCS bucket readable by the Cloud batch service
             model: Gemini model override; None resolves the 'bulk' role
-            api_key: Google API key (or set GOOGLE_API_KEY env var)
+            project: Cloud project ID (or GOOGLE_CLOUD_PROJECT)
+            location: Supported Cloud batch endpoint; global for base models
         """
         self.bucket_name = bucket_name
         self.model = resolve_model("bulk", model)
 
-        # Configure API
-        api_key = api_key or os.environ.get("GOOGLE_API_KEY")
-        if not api_key:
-            raise ValueError("API key required")
-        genai.configure(api_key=api_key)
+        self.client = genai.Client(
+            vertexai=True,
+            project=project or os.environ.get("GOOGLE_CLOUD_PROJECT"),
+            location=location,
+        )
 
         # Initialize GCS client
         self.storage_client = storage.Client()
@@ -133,7 +135,6 @@ class GeminiBatchProcessor:
                 ".png": "image/png",
                 ".jpg": "image/jpeg",
                 ".jpeg": "image/jpeg",
-                ".gif": "image/gif",
                 ".webp": "image/webp",
             }
             mime_type = mime_types.get(ext, "application/octet-stream")
@@ -141,8 +142,6 @@ class GeminiBatchProcessor:
         gen_config = {
             "responseMimeType": "application/json"
         }
-        if "gemini-3" not in self.model:
-            gen_config["temperature"] = 0.0
 
         return {
             "request": {
@@ -233,12 +232,9 @@ class GeminiBatchProcessor:
 
         output_uri = f"gs://{self.bucket_name}/batch_outputs/{job_name}/"
 
-        # `dest` lives inside `config` in the current google-genai SDK.
-        # Signature: create(model, src, config). Older SDKs accepted `dest=`
-        # as a kwarg; the new SDK raises TypeError. Verify with
-        # `inspect.signature(client.batches.create)` before changing.
-        job = genai.batches.create(
-            model=self.model,
+        # Cloud destinations belong to the job config, not create kwargs.
+        job = self.client.batches.create(
+            model=f"publishers/google/models/{self.model.removeprefix('publishers/google/models/')}",
             src=input_uri,
             config={
                 "display_name": job_name,
@@ -271,7 +267,7 @@ class GeminiBatchProcessor:
         start = time.time()
 
         while True:
-            job = genai.batches.get(name=job_name)
+            job = self.client.batches.get(name=job_name)
             elapsed = time.time() - start
 
             print(f"[{elapsed:.0f}s] Job state: {job.state}")
@@ -332,11 +328,10 @@ class GeminiBatchProcessor:
                 candidates = response.get("candidates", [])
 
                 if candidates:
-                    text = (
-                        candidates[0]
-                        .get("content", {})
-                        .get("parts", [{}])[0]
-                        .get("text", "")
+                    text = "".join(
+                        part["text"]
+                        for part in candidates[0].get("content", {}).get("parts", [])
+                        if isinstance(part.get("text"), str) and not part.get("thought")
                     )
 
                     # Try to parse JSON from response
@@ -344,7 +339,7 @@ class GeminiBatchProcessor:
 
                     yield {
                         "request_id": request_id,
-                        "success": True,
+                        "success": parsed is not None and candidates[0].get("finishReason") == "STOP",
                         "raw_text": text,
                         "parsed_data": parsed,
                         "finish_reason": candidates[0].get("finishReason")
@@ -353,7 +348,7 @@ class GeminiBatchProcessor:
                     yield {
                         "request_id": request_id,
                         "success": False,
-                        "error": response.get("error"),
+                        "error": entry.get("error") or response.get("error"),
                         "raw_text": None,
                         "parsed_data": None
                     }
@@ -440,7 +435,7 @@ class GeminiBatchProcessor:
         # Step 5: Download results
         print("=" * 50)
         print("Step 5: Downloading results...")
-        output_prefix = f"gs://{self.bucket_name}/batch_outputs/"
+        output_prefix = job.dest.gcs_uri
         result_files = self.download_results(output_prefix, output_dir)
 
         # Step 6: Parse results

@@ -1,118 +1,23 @@
-# Scale-Up Testing for Gemini Batch Pipelines
+# Scale-up testing
 
-Gemini-specific patterns for the incremental scale-up testing protocol defined in `skills/ds/references/etl-enforcement.md`.
+## Same-model, same-tier checks
 
-## Stage 0 — Local Prototyping with LangExtract
+1. Read existing project request builders and outputs before writing another pipeline. Choose Batch for independent document extraction; Flex for per-entity web lookups. Do not substitute a different model or format in the test.
+2. Pre-cut relevant sections for text extraction; retain relevant PDF pages for layout/scans. Protect target evidence from character caps and truncation.
+3. Make **one synchronous same-model smoke request**, inspect schema, source evidence, finish reason and token usage. This is a paid API request, not a free/local prototype.
+4. Run **5–10 rows through the actual production tier/backend**, including long/short and difficult inputs. For Batch, inspect each row after downloading; for Flex, inspect search steps, annotations, returned tier and errors. Reconcile keys end to end.
+5. Run an intermediate sample (~100 rows) only after the end-to-end sample passes. Measure failure/truncation/ungrounded rates and review outputs against independent ground truth. Reserve model-family comparisons for a fixed held-out sample; never show the scored system's answers to the gold coder.
+6. Scale when acceptance criteria pass; keep failures visible and retry only the relevant rows. A succeeded job or syntactically valid JSON is not correctness evidence.
 
-Before submitting anything to the batch API, validate your prompt and schema locally using [LangExtract](https://github.com/google/langextract).
+## Costs and concurrency
 
-**Why:** Your prompt/schema is identical from prototype through production. No mismatch between "what I tested interactively" and "what I submitted to batch" — which is how you end up with 21K empty responses from a schema that uses `["type", "null"]` instead of `"nullable": true`.
+Compute input/output/thinking/cached tokens from actual usage; use current [model/tier prices](models-and-pricing.md), and budget search separately. Input-dominated work may not save much by changing only output prices. Keep one Client and bound I/O concurrency by project quotas; Flex uses general limits, not Batch enqueued-token limits.
 
-```python
-from langextract import Extractor
+Persist each completed row before another future can fail. The Flex smoke test recovered only eight responses from ten inputs after a 400 aborted the process, losing full citations and input/output splits; a 138-row pilot and scaled cost estimate were therefore not available.
 
-# Prototype on 2-3 representative documents
-extractor = Extractor(
-    instructions="Extract ...",
-    examples=[...],  # few-shot examples defining expected output schema
-    language_model="gemini-2.5-flash",
-)
+## Changes require retesting
 
-# Run locally — no batch API, no GCS, instant feedback
-result = extractor.extract(document_text)
-
-# Inspect with interactive HTML visualization
-# Shows every extraction grounded to its source location
-result.to_html("prototype_review.html")
-```
-
-**Gate:** Open the HTML, verify extractions are grounded correctly in source text. Iterate on prompt/schema until satisfied.
-
-## Stage 1 — Test Batch (~10 items)
-
-Same LangExtract config, still local, but on 10 representative documents:
-
-```python
-# Run on 10 docs — still local, no batch API
-test_docs = documents[:10]
-results = [extractor.extract(doc) for doc in test_docs]
-
-# Validate every result
-for i, r in enumerate(results):
-    print(f"Doc {i+1}: {len(r.entities)} entities extracted")
-    r.to_html(f"review_{i}.html")
-
-# Check: any empty extractions? Any missing expected fields?
-empty = sum(1 for r in results if len(r.entities) == 0)
-print(f"Empty: {empty}/{len(results)}")
-assert empty / len(results) <= 0.1, "Too many empty extractions — fix prompt"
-```
-
-**Gate:** Read every output. Success rate ≥ 90%. Extractions make sense.
-
-## Stage 2 — Intermediate Batch (~100 items) via Vertex AI Batch
-
-Now switch to the batch API — same prompt/schema, different execution mode:
-
-```python
-# Same extractor, now with Vertex AI batch enabled
-extractor = Extractor(
-    instructions="Extract ...",  # identical to Stage 0/1
-    examples=[...],
-    language_model="gemini-2.5-flash",
-    language_model_params={
-        "vertexai": True,
-        "batch": {"enabled": True},
-    },
-)
-
-results = extractor.extract_batch(documents[:100])
-```
-
-### LLM-as-Judge Quality Review
-
-Randomly sample 10 outputs and send to a stronger model for scoring:
-
-```python
-import random
-from google import genai
-
-client = genai.Client()
-# Verify this ID against https://ai.google.dev/gemini-api/docs/models.md.txt before running.
-# An earlier revision of this file said "gemini-3-pro" — that ID never existed.
-JUDGE_MODEL = "gemini-3.1-pro-preview"
-
-RUBRIC = """Score this extraction output on a 0-1 scale:
-- 1.0 = correct, complete, all entities grounded in source
-- 0.5 = partially correct or missing entities
-- 0.0 = wrong, empty, or hallucinated entities
-
-Task: {task_description}
-Expected schema: {expected_format}
-
-Source document (excerpt): {input_text}
-Extraction output: {output_text}
-
-Respond with ONLY a JSON object: {{"score": <float>, "reason": "<one sentence>"}}"""
-
-sample = random.sample(results, min(10, len(results)))
-scores = []
-for i, r in enumerate(sample):
-    prompt = RUBRIC.format(
-        task_description="...",
-        expected_format="...",
-        input_text=r.source_text[:2000],
-        output_text=str(r.entities)[:2000],
-    )
-    response = client.models.generate_content(model=JUDGE_MODEL, contents=prompt)
-    judgment = json.loads(response.text)
-    scores.append(judgment["score"])
-    print(f"Sample {i+1}: {judgment['score']} — {judgment['reason']}")
-
-avg_quality = sum(scores) / len(scores)
-print(f"\nJudge quality: {avg_quality:.0%} avg across {len(sample)} samples")
-assert avg_quality >= 0.8, f"Judge quality {avg_quality:.0%} below 80% threshold"
-```
+A new model, thinking level, schema, tool, backend, endpoint, tier or prompt is a new end-to-end test, not a cosmetic change. Schema/retry examples must be checked against current Google docs. Do not assume a third-party extraction wrapper has a Batch mode or executes locally without model calls.
 
 ### Gate Design: a verbatim-quote gate rewards under-extraction
 
@@ -134,49 +39,6 @@ output_side = mean_output_tokens * output_price_per_token
 print(f"input ${input_side:.5f} vs output ${output_side:.5f}")
 ```
 
-If input dominates (e.g. ~16,700 in / ~350 out), a Pro → Flash switch moves almost nothing — Flash's big discount is on output. Only Flash-Lite cuts the input price materially. See the model-selection section of `SKILL.md` for the measured numbers.
+If input dominates (e.g. ~16,700 in / ~350 out), a Pro → Flash switch moves almost nothing — Flash's big discount is on output. Only Flash-Lite cuts the input price materially. See [models and prices](models-and-pricing.md) for the measured numbers.
 
-```python
-# Estimate full run from Stage 2 metrics
-per_item_cost = stage2_cost / len(stage2_items)
-per_item_sec = stage2_duration_sec / len(stage2_items)
-total_items = len(documents)
-print(f"Estimated full run: {total_items} items")
-print(f"  Time: {(per_item_sec * total_items) / 3600:.1f} hours")
-print(f"  Cost: ${per_item_cost * total_items:.2f}")
-```
-
-**Gate:** Success rate ≥ 95%. Judge quality ≥ 80%. Cost/time acceptable. No systematic failures.
-
-## Stage 3 — Large Test Batch (~1,000 items)
-
-Same config as Stage 2. Focus on scale-specific issues:
-
-```python
-results = extractor.extract_batch(documents[:1000])
-
-# Check for rate limiting
-# Check judge quality is consistent with Stage 2
-# Confirm cost tracking matches extrapolation
-```
-
-**Gate:** Success rate ≥ 95%. Judge quality consistent with Stage 2. No rate limit issues. Cost confirmed.
-
-## Full Batch — Submit with Confidence
-
-```python
-# Same extractor config validated through Stages 0-3
-results = extractor.extract_batch(documents)
-```
-
-## Key Principle
-
-The prompt, schema, and extraction logic are **identical** across all stages. Only the execution mode changes:
-
-| Stage | Execution | Items | Quality Check |
-|-------|-----------|-------|---------------|
-| 0 (prototype) | Local, interactive | 2-3 | HTML visualization, manual review |
-| 1 (test) | Local, programmatic | ~10 | Read every output |
-| 2 (intermediate) | Vertex AI batch | ~100 | LLM-as-judge on random sample |
-| 3 (large test) | Vertex AI batch | ~1,000 | LLM-as-judge, compare to Stage 2 |
-| Full | Vertex AI batch | All | Confidence from prior stages |
+For a larger (~1,000-row) test, confirm quality, failure rates and measured cost remain consistent with the intermediate sample before full submission. Define acceptance thresholds for the task in advance; a model judge is advisory, not ground truth. An optional judge rubric is: correct/complete/source-grounded=1.0, partial or missing=0.5, wrong/empty/hallucinated=0.0. Score against complete relevant evidence, not arbitrary 2,000-character truncations.

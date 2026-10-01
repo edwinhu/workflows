@@ -1,6 +1,6 @@
 # CLI Commands Reference
 
-Quick reference for command-line operations with Gemini Batch API.
+These GCS/gcloud commands are for Gemini Enterprise Agent Platform Cloud batch, not Developer Batch or Flex. SDK/service identifiers keep their historical spelling; current docs: https://cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/batch-prediction-gemini.
 
 ## GCS Operations
 
@@ -8,7 +8,7 @@ Quick reference for command-line operations with Gemini Batch API.
 # Check GCS bucket region
 gsutil ls -L -b gs://your-bucket | grep "Location"
 
-# Create bucket in correct region
+# Create bucket in the runbook default region (not a universal restriction)
 gsutil mb -l us-central1 gs://your-batch-bucket
 
 # Upload files to GCS
@@ -21,32 +21,21 @@ gsutil -m cp -r gs://your-bucket/batch_outputs/* ./results/
 ## Job Management
 
 ```bash
-# List batch jobs (via gcloud)
-gcloud ai batch-predictions list --region=us-central1
+# Use the endpoint actually selected for this Cloud job
+CLOUD_LOCATION=global
+# List Cloud batch jobs (via gcloud)
+gcloud ai batch-predictions list --region="$CLOUD_LOCATION"
 
 # View job details
-gcloud ai batch-predictions describe JOB_ID --region=us-central1
+gcloud ai batch-predictions describe JOB_ID --region="$CLOUD_LOCATION"
 ```
 
 ## JSONL Validation
 
 ```bash
-# Count lines in JSONL
-wc -l batch_requests.jsonl
-
-# Validate JSONL syntax
-python -c "
-import json
-import sys
-with open('batch_requests.jsonl') as f:
-    for i, line in enumerate(f, 1):
-        try:
-            json.loads(line)
-        except:
-            print(f'Error line {i}')
-            sys.exit(1)
-print('Valid JSONL')
-"
+python skills/gemini-batch/scripts/validate_jsonl.py requests.jsonl --backend cloud
+# Developer Files input uses keys/Files URIs instead:
+python skills/gemini-batch/scripts/validate_jsonl.py requests.jsonl --backend developer
 ```
 
 ## Results Analysis
