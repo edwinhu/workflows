@@ -5876,3 +5876,192 @@ Blair Example                  200,000            24.0%
 		}
 	})
 }
+
+const asciiInlineAgeNomineeFixture = `<TABLE>
+<CAPTION>
+
+   
+                         Name, age, business experience                                                          Shares Owned at
+               during the past five years and other directorships                     Position with Fund           May 17, 1996
+               --------------------------------------------------                     ------------------         ---------------
+    
+
+                                Class I Directors
+                (Nominated to be Elected for Term Expiring 1999)
+<S>                                                                                        <C>                         <C>
+Olarn  Chaipravat  (51),  President and Chief  Executive  Officer (since October           Director                    -0-
+1992),  Director and Senior Executive Vice President (July  1990-September 1992)
+and  Senior  Executive  Vice  President  (September  1987-June  1990),  The Siam
+Commercial Bank, Public Company Limited, Thailand. 
+
+   
+Michael J. Downey (52), Private Investor, previously,  Chairman (August 1990-May           Director                    4,674      
+1993),  Chief Executive  Officer and Director (June 1987-May 1993) and President
+of PMF (June 1987-July  1990);  Director of Prudential  Securities  Group,  Inc.
+(July 1991-May 1993);  President,  Asset  Management Group (July 1991-May 1993);
+Executive Vice President,  (May 1989-May  1993),  Director (July 1985-June 1991)
+and Senior Vice  President  (December  1983-May  1989) of Prudential  Securities
+Incorporated (PSI); Director,  International Imaging Materials, Inc., The Merger
+Fund, Value Asset Management, Inc. and The Simba Fund Limited.
+    
+
+</TABLE>
+
+                                       2
+<PAGE>
+
+<TABLE>
+<CAPTION>
+
+   
+                         Name, age, business experience                                                          Shares Owned at
+               during the past five years and other directorships                     Position with Fund           May 17, 1996
+               --------------------------------------------------                     ------------------         ---------------
+<S>                                                                                        <C>                         <C>
+John A. Morrell (68),  Principal, John  Morrell & Associates; Director,  Mercury           Director                    -0-
+International  Investment Trust Ltd.; Govett Oriental Trust Plc; Govett Emerging
+Markets  Investment  Trust Plc.;  Govett High Income  Investment  Trust Plc; HCG
+Lloyds  Investment  Trust Plc;  Invesco Japan Discovery Trust Plc; Law Debenture
+Corporation Plc.;  Lowland Investment Company Plc; Johnson Fry Utilities trusts;
+PRICOA Worldwide  Investors  Portfolio;  Fidelity Asian Values Investment Trust;
+The Romanian Fund and Fidelity Japan Values Trust; Member, Advisory Board to the
+Trustees of the Atlantic Richfield Pension Fund. Previously, Executive Chairman,
+Baring International Investment Ltd.; Director,  Baring International Investment
+(Far East) Ltd.; Baring Asset Management Ltd.; Drayton Asia Trust Ltd. and Inner
+London Board of National Westminster Bank.
+    
+
+
+                               Class II Directors
+                              (Term Expiring 1997)
+
+   
+Robert H. Burns (66),  Chairman,  Robert H. Burns Holdings  Limited,  Hong Kong;           Director                   28,000
+previously,  Chairman and Chief Executive Officer,  Regent International Hotels,
+Limited, Hong Kong.
+
+Douglas Tong Hsu (50), Director and President, Far Eastern Textile Ltd., Taiwan;           Director                    -0-
+Director, the Baring Taiwan Fund Limited (since 1993).
+
+*David G. P. Scholfield  (52),  Chairman,  Baring Mutual Fund  Management  S.A.;        President and                 11,700
+Director, International Fund Managers UK Limited; Baring Asset Management (C.I.)           Director                   
+Limited;  European and Asian Fund  Management  S.A.;  The Baring  Chrysalis Fund
+Limited;  The Simba Fund Limited;  The Baring  Peacock Fund Limited;  The Baring
+Taiwan Fund  Limited;  World Value Fund SICAF and  Divisional  Director,  Baring
+International  Investment  Management  Limited.  Previously,  Managing Director,
+Baring  International  Asset  Administration  Limited  and  Baring  Mutual  Fund
+Management (Ireland) Limited and Director, The Greater China Fund, Inc.
+</TABLE>
+    
+
+
+                                       3
+<PAGE>
+
+<TABLE>
+<CAPTION>
+
+   
+                         Name, age, business experience                                                          Shares Owned at
+               during the past five years and other directorships                     Position with Fund           May 17, 1996
+               --------------------------------------------------                     ------------------         ---------------
+<S>                                                                                        <C>                         <C>
+                               Class III Directors
+                              (Term Expiring 1998)
+
+*Robert F. Gunia (49),  Director  (since  January  1989),  Chief  Administrative           Vice President             1,200
+Officer  (since July 1990) and  Executive  Vice  President,  Treasurer and Chief            and Director                
+Financial  Officer (since June 1987),  Prudential  Mutual Fund Management,  Inc.
+(PMF)  and  Senior  Vice  President  of PSI;  Director  (since  February  1992),
+Nicholas-Applegate Growth Equity Fund, Inc.
+
+*David J. Brennan (38),  Managing  Director,  Baring Asset  Management  Holdings          Vice President               -0- 
+Limited;  Baring Asset  Management  Limited;  Chairman,  Baring Asset Management           and Director
+(Asia)  Limited;   Baring  Asset  Management  (Asia)  Holdings  Limited;  Baring
+International Fund Managers Limited;  and Baring  International  Investment (Far
+East) Limited;  Divisional Director, Baring International Investment Limited and
+Baring  International  Investment  Management Limited;  Director,  Austin Assets
+Limited; Baring International Fund Managers (Bermuda) Limited; Baring Korea Fund
+Limited.
+
+Don G. Hoff (60), Chairman  and  Chief Executive Officer, Intertec,  Inc. (since            Chairman of                690
+1975);  Chairman  and  Chief  Executive  Officer,  Electronic Hair Styling, Inc.             the Board
+(since  1995);  Director,  Prudential  Global  Fund,  Inc.;  Prudential  Pacific            and Director
+Growth  Fund,  Inc.;  Prudential Global  Limited  Maturity  Fund,  Inc. and  The
+Greater China Fund, Inc.
+    
+
+<FN>
+- -----------------
+*Indicates "interested" Directors of the Fund, as defined in the Investment Company Act of 1940, as amended (the Investment Company
+Act). Messrs. Scholfield and Brennan are deemed to be "interested" Directors of the Fund, by reason of their affiliations with
+Baring International Investment (Far East) Limited. Mr. Gunia is deemed to be an "interested" Director of the Fund, by reason of his
+affiliation with PMF.
+</FN>
+</TABLE>`
+
+func TestASCIIInlineAgeNomineeShareCounts(t *testing.T) {
+	rows, _, _ := ExtractText(asciiInlineAgeNomineeFixture, Row{})
+	rows = ScreenRows(rows)
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{
+		{"Olarn Chaipravat", 0},
+		{"Michael J. Downey", 4674},
+		{"John A. Morrell", 0},
+		{"Robert H. Burns", 28000},
+		{"Douglas Tong Hsu", 0},
+		{"David G. P. Scholfield", 11700},
+		{"Robert F. Gunia", 1200},
+		{"David J. Brennan", 0},
+		{"Don G. Hoff", 690},
+	} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent != nil || r.TableKind != "management" {
+			t.Errorf("missing literal nominee holding %s shares=%v: %+v", want.name, want.shares, r)
+		}
+	}
+	if len(rows) != 9 {
+		t.Errorf("want 9 literal holdings including disclosed zeroes; got %d: %+v", len(rows), rows)
+	}
+}
+
+func TestASCIIInlineAgeNomineeGuards(t *testing.T) {
+	t.Run("ownership header required", func(t *testing.T) {
+		body := strings.ReplaceAll(asciiInlineAgeNomineeFixture, "Shares Owned at", "Compensation at")
+		rows, _ := textNomineeShareCounts(body, Row{})
+		if len(rows) != 0 {
+			t.Fatalf("nonownership table accepted: %+v", rows)
+		}
+	})
+	t.Run("money cannot become shares", func(t *testing.T) {
+		body := strings.ReplaceAll(asciiInlineAgeNomineeFixture, "4,674", "$4,674")
+		body = strings.ReplaceAll(body, "Shares Owned at", "Dollar Range of Shares Owned at")
+		rows, _ := textNomineeShareCounts(body, Row{})
+		if len(rows) != 0 {
+			t.Fatalf("money table accepted: %+v", rows)
+		}
+	})
+	t.Run("nonzero legacy preserved", func(t *testing.T) {
+		body := `<TABLE><CAPTION>SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS
+Name of Beneficial Owner       Shares Owned       Percent of Class
+<S>                            <C>                <C>
+Alex Example                   100,000            12.0%
+Blair Example                  200,000            24.0%
+</TABLE>` + asciiInlineAgeNomineeFixture
+		rows, _, _ := ExtractText(body, Row{})
+		rows = ScreenRows(rows)
+		if find(rows, "Alex Example", "") == nil || find(rows, "Blair Example", "") == nil || find(rows, "Michael J. Downey", "") != nil {
+			t.Fatalf("retry changed legacy-emitting filing: %+v", rows)
+		}
+	})
+	t.Run("interested-director asterisk is not percent", func(t *testing.T) {
+		rows, _, _ := ExtractText(asciiInlineAgeNomineeFixture, Row{})
+		for _, r := range rows {
+			if r.PctMarker != "" || r.Percent != nil || r.ShareClass != "" {
+				t.Errorf("invented percentage or class: %+v", r)
+			}
+		}
+	})
+}
