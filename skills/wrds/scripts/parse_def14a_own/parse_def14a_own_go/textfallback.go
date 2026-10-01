@@ -329,6 +329,9 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 	if len(ScreenRows(rows)) != 0 || len(ScreenRows(ExtractProse(body, base))) != 0 {
 		return rows, seen, used
 	}
+	if rr, blocks := textSeparateClassCounts(body, base); len(ScreenRows(rr)) != 0 {
+		return rr, blocks, blocks
+	}
 	if rebuilt, ok := textClassAddressRows(body); ok {
 		if rr, ss, uu := extractText(rebuilt, base, false); len(ScreenRows(rr)) != 0 {
 			return rr, ss, uu
@@ -343,6 +346,129 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 		return rr, blocks, blocks
 	}
 	return rows, seen, used
+}
+
+// Count-count-percent-percent ASCII columns must be paired by class, not proximity.
+// This retry is available only when the legacy filing has no screened holdings.
+var reASCIIPageNumber = regexp.MustCompile(`^[0-9]{1,3}$`)
+var reASCIIGroupCount = regexp.MustCompile(`(?i)\(\s*[0-9]{1,3}\s+(?:persons?|people|individuals?)\s*\)`)
+var reASCIIStreetNumber = regexp.MustCompile(`^\d{1,6}(?:-\d{1,6})?[A-Za-z]?\s+[A-Za-z]`)
+
+func textSeparateClassCounts(body string, base Row) ([]Row, int) {
+	raw := strings.Split(stripEntities(body), "\n")
+	var out []Row
+	blocks, priorEnd := 0, -1
+	var priorMarks []int
+	for start := 0; start < len(raw); start++ {
+		if !strings.Contains(strings.ToLower(raw[start]), "<table>") {
+			continue
+		}
+		end := start + 1
+		for end < len(raw) && !strings.Contains(strings.ToLower(raw[end]), "</table>") {
+			end++
+		}
+		if end == len(raw) {
+			break
+		}
+		mark := -1
+		var marks []int
+		var header []string
+		explicit := false
+		for j := start + 1; j < end; j++ {
+			m := reASCIIColumnMark.FindAllStringIndex(raw[j], -1)
+			if len(m) == 5 {
+				mark = j
+				for _, c := range m {
+					marks = append(marks, c[0])
+				}
+				break
+			}
+			line := reAnyTag.ReplaceAllString(raw[j], "")
+			if reRuleLine.MatchString(strings.TrimSpace(line)) {
+				continue
+			}
+			header = append(header, line)
+			g := splitHdrGroups(line)
+			if len(g) == 5 && strings.Contains(strings.ToLower(g[0].text), "beneficial owner") &&
+				strings.EqualFold(g[1].text, "Common Stock") && strings.EqualFold(g[2].text, "Preferred Stock") &&
+				strings.EqualFold(g[3].text, "Common Stock") && strings.EqualFold(g[4].text, "Stock") {
+				explicit = true
+			}
+		}
+		hdr := hdrColumnText(header)
+		explicit = explicit && reTextBeneficialHeader.MatchString(hdr) && reHdrPctCue.MatchString(hdr) &&
+			!reCompCue.MatchString(hdr) && !reOptDetailCue.MatchString(hdr)
+		continuation := mark >= 0 && priorEnd >= 0 && len(priorMarks) == len(marks)
+		if continuation {
+			for k := range marks {
+				if marks[k]-priorMarks[k] < -2 || marks[k]-priorMarks[k] > 2 {
+					continuation = false
+				}
+			}
+			gap := strings.TrimSpace(reAnyTag.ReplaceAllString(strings.Join(raw[priorEnd+1:start], " "), ""))
+			continuation = continuation && (gap == "" || reScreenDate.MatchString(gap) || reASCIIPageNumber.MatchString(gap)) && strings.TrimSpace(strings.Join(header, " ")) == ""
+		}
+		if mark < 0 || (!explicit && !continuation) || strings.Contains(strings.Join(raw[start:end], " "), "$") {
+			priorEnd, priorMarks = -1, nil
+			start = end
+			continue
+		}
+		var rows []Row
+		var nameLines []string
+		for j := mark + 1; j < end; j++ {
+			line := reAnyTag.ReplaceAllString(raw[j], "")
+			t := strings.TrimSpace(line)
+			if t == "" || reRuleLine.MatchString(t) {
+				nameLines = nil
+				continue
+			}
+			g := splitHdrGroups(line)
+			if len(g) == 5 && g[1].lo >= marks[1]-8 && g[2].lo >= marks[2]-8 && g[3].lo >= marks[3]-8 && g[4].lo >= marks[4]-8 {
+				shares, ok := ParseShares(g[1].text)
+				pct, parsed, marker, _ := ParsePercent(g[3].text)
+				if !ok || shares <= 0 || (!parsed && marker == "") {
+					nameLines = nil
+					continue
+				}
+				stub := strings.TrimSpace(g[0].text)
+				if !isAddressLine(stub) {
+					nameLines = append(nameLines, stub)
+				}
+				name := norm(strings.Join(nameLines, " "))
+				grp, gn := isGroupRow(name)
+				nm, notes := StripFootnotes(name)
+				if gn > 0 {
+					nm = reASCIIGroupCount.ReplaceAllString(nm, "")
+					nm = norm(nm)
+				}
+				if nm == "" || reSkipName.MatchString(nm) || reHdrLineCue.MatchString(nm) || isAddressLine(nm) {
+					nameLines = nil
+					continue
+				}
+				r := base
+				r.HolderName, r.ShareClass, r.TableKind = nm, "Common Stock", "management"
+				r.TableIndex, r.RowIndex, r.Parser = start, j, "text_table"
+				r.Shares, r.PctMarker, r.IsGroupRow, r.GroupN = &shares, marker, grp, gn
+				if parsed {
+					r.Percent = &pct
+				}
+				r.Footnotes = strings.Join(notes, ",")
+				rows = append(rows, r)
+				nameLines = nil
+			} else if len(g) == 1 && g[0].lo < marks[1]-8 && !isAddressLine(t) && !reASCIIStreetNumber.MatchString(t) && !strings.HasPrefix(strings.ToLower(t), "c/o ") {
+				nameLines = append(nameLines, t)
+			}
+		}
+		if len(rows) >= 2 {
+			out = append(out, rows...)
+			blocks++
+			priorEnd, priorMarks = end, marks
+		} else {
+			priorEnd, priorMarks = -1, nil
+		}
+		start = end
+	}
+	return out, blocks
 }
 
 var reNomineeAgeYear = regexp.MustCompile(`^(.+?)\s+([0-9]{1,3})\s+\(([12][0-9]{3})\)$`)

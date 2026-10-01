@@ -5724,3 +5724,155 @@ Blair Example                  200,000            24.0%
 		t.Fatalf("nonzero legacy filing must be unchanged: %+v", rows)
 	}
 }
+
+const asciiSeparateClassCountsFixture = `SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS AND MANAGEMENT
+
+      The following table sets forth certain information with respect to the
+beneficial ownership of the capital stock of the Company as of May 20, 2000 for
+(i) each person who is known by the Company to beneficially own more than 5% of
+any class of capital stock; (ii) each named executive officer listed in the
+Summary Compensation Table below; (iii) each director of the Company; and (iv)
+all directors and executive officers of the Company as a group. Except as
+otherwise indicated, each listed person has sole voting power and investment
+power over the respective shares owned.
+
+<TABLE>
+<CAPTION>
+- ----------------------------------------------------------------------------------------------------------
+                                  Amount and Nature    Amount and Nature                       Percent of
+                                    of Beneficial        of Beneficial         Percent of       Class of
+Name and Address of                 Ownership of          Ownership of          Class of       Preferred
+Beneficial Owner(1)                 Common Stock        Preferred Stock       Common Stock       Stock
+- ----------------------------------------------------------------------------------------------------------
+<S>                                    <C>                <C>                    <C>              <C>
+Louis S. Beck(2)                       2,927,499          12,866.06              33.8%            77%
+- ----------------------------------------------------------------------------------------------------------
+Harry G. Yeaggy(3)                     1,182,500           5,022.02              13.6%            30%
+- ----------------------------------------------------------------------------------------------------------
+Vincent W. Hatala, Jr                      --                 --                  --              --
+- ----------------------------------------------------------------------------------------------------------
+Arthur Lubell                              --                 --                  --              --
+- ----------------------------------------------------------------------------------------------------------
+Richard P. Lerner                          --                 --                  --              --
+- ----------------------------------------------------------------------------------------------------------
+C. Scott Bartlett, Jr                      5,000              --                   *              --
+- ----------------------------------------------------------------------------------------------------------
+Lucille Hart-Brown                         --                 --                  --              --
+- ----------------------------------------------------------------------------------------------------------
+Richard A. Tonges                          --                 --                  --              --
+- ----------------------------------------------------------------------------------------------------------
+Michael M. Nanosky                         --                 --                  --              --
+- ----------------------------------------------------------------------------------------------------------
+Paul Tipps                                 2,000              --                   *              --
+- ----------------------------------------------------------------------------------------------------------
+The United States Lines, Inc. and
+United States Lines (S.A.), Inc.
+Reorganization Trust, John Paulyson,
+Trustee (4)
+    184-186 North Avenue East
+Cranford, New Jersey 07016               816,944              --                  9.4%            --
+- ----------------------------------------------------------------------------------------------------------
+</TABLE>
+
+
+                                       2
+<PAGE>
+
+<TABLE>
+<S>                                    <C>                <C>                    <C>             <C>
+- ----------------------------------------------------------------------------------------------------------
+Beck Hospitality Inc. III (5)
+    8534 E. Kemper Road
+    Cincinnati, Ohio 45249               310,000              1,100               3.6%             7%
+- ----------------------------------------------------------------------------------------------------------
+Daewoo Corporation (6)
+c/o Lubell & Koven
+    350 Fifth Avenue
+    New York, New York 10118             623,911              --                  7.2%            --
+- ----------------------------------------------------------------------------------------------------------
+All directors and executive officers
+as a group (10 persons)                3,806,999          16,788.08              43.9%           100%
+- ----------------------------------------------------------------------------------------------------------
+</TABLE>
+
+`
+
+func TestASCIISeparateClassCountsAndPercents(t *testing.T) {
+	rows, _, _ := ExtractText(asciiSeparateClassCountsFixture, Row{})
+	raw := rows
+	rows = ScreenRows(rows)
+	for _, want := range []struct {
+		name        string
+		shares, pct float64
+		marker      string
+	}{
+		{"Louis S. Beck", 2927499, 33.8, ""},
+		{"Harry G. Yeaggy", 1182500, 13.6, ""},
+		{"C. Scott Bartlett, Jr", 5000, 0, "*"},
+		{"Paul Tipps", 2000, 0, "*"},
+		{"The United States Lines, Inc. and United States Lines (S.A.), Inc. Reorganization Trust, John Paulyson, Trustee", 816944, 9.4, ""},
+		{"Beck Hospitality Inc. III", 310000, 3.6, ""},
+		{"Daewoo Corporation", 623911, 7.2, ""},
+		{"All directors and executive officers as a group", 3806999, 43.9, ""},
+	} {
+		if find(raw, want.name, "") == nil {
+			t.Errorf("literal pre-screen holder missing: %q", want.name)
+		}
+		name := want.name
+		if group, _ := isGroupRow(name); !group {
+			name = cleanHolderName(name)
+		}
+		r := find(rows, name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.PctMarker != want.marker || (want.marker == "" && (r.Percent == nil || *r.Percent != want.pct)) || r.ShareClass != "Common Stock" {
+			t.Errorf("missing literal common holding %s shares=%v pct=%v marker=%q: %+v", want.name, want.shares, want.pct, want.marker, r)
+
+		}
+	}
+	if len(rows) != 8 {
+		t.Errorf("want 8 disclosed nonzero common holdings; got %d: %+v", len(rows), rows)
+	}
+}
+
+func TestASCIISeparateClassCountsGuards(t *testing.T) {
+	t.Run("money never becomes shares", func(t *testing.T) {
+		body := strings.ReplaceAll(asciiSeparateClassCountsFixture, "2,927,499", "$2,927,499")
+		rows, _ := textSeparateClassCounts(body, Row{})
+		if len(rows) != 0 {
+			t.Fatalf("money table accepted by recovery: %+v", rows)
+		}
+	})
+	t.Run("ownership captions required", func(t *testing.T) {
+		body := strings.ReplaceAll(asciiSeparateClassCountsFixture, "of Beneficial", "of Compensation")
+		rows, _ := textSeparateClassCounts(body, Row{})
+		if len(rows) != 0 {
+			t.Fatalf("nonownership header accepted: %+v", rows)
+		}
+	})
+	t.Run("nonzero legacy preserved", func(t *testing.T) {
+		body := `<TABLE><CAPTION>SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS
+Name of Beneficial Owner       Shares Owned       Percent of Class
+<S>                            <C>                <C>
+Alex Example                   100,000            12.0%
+Blair Example                  200,000            24.0%
+</TABLE>` + asciiSeparateClassCountsFixture
+		rows, _, _ := ExtractText(body, Row{})
+		rows = ScreenRows(rows)
+		if find(rows, "Alex Example", "") == nil || find(rows, "Blair Example", "") == nil || find(rows, "Louis S. Beck", "") != nil {
+			t.Fatalf("recovery changed emitting legacy filing: %+v", rows)
+		}
+	})
+	t.Run("group and footnotes", func(t *testing.T) {
+		rows, _, _ := ExtractText(asciiSeparateClassCountsFixture, Row{})
+		rows = ScreenRows(rows)
+		group := find(rows, "All directors and executive officers as a group", "")
+		if group == nil || !group.IsGroupRow || group.GroupN != 10 {
+			t.Fatalf("group count lost: %+v", group)
+		}
+		for name, note := range map[string]string{"Louis S. Beck": "2", "Harry G. Yeaggy": "3", "Beck Hospitality Inc. III": "5", "Daewoo Corporation": "6"} {
+			r := find(rows, name, "")
+			if r == nil || r.Footnotes != note {
+				t.Errorf("footnote %s %s: %+v", name, note, r)
+			}
+		}
+	})
+}
