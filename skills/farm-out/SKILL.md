@@ -108,7 +108,7 @@ Agents live in `~/.claude/agents/`: `ds`, `writing`, `writing-econ`, `writing-le
 
 **A `--workflow` run takes no `--agent`** — it picks agents PER LEG, which is the point:
 `agent(prompt, {agentType: "ds"})` inside the script, or `implementerAgentType` /
-`verifierAgentType` / `reviewLenses[].agentType` in a `work` args file. One top-level
+`verifierAgentType` / `lens.agentType` in a `work` args file. One top-level
 persona could only apply to every leg, when what you want is `ds` implementing and
 `ds-reviewer` or `Explore` judging. Note `workflow.js` strips the `Agent` tool from every
 leg regardless of agentType, so legs cannot nest further delegation; fan-out is the

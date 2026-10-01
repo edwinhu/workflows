@@ -1,0 +1,69 @@
+"""X10-X13 use old-row fields only; each conjunction has negative controls."""
+import unittest
+
+from build_regress_set import zero_row_exclusion_flags
+
+
+class ZeroExclusionTests(unittest.TestCase):
+    def row(self, name="Jane Smith", shares="1234", percent="", table="1", kind="combined", share_class=""):
+        return {"holder_name": name, "shares": shares, "percent": percent,
+                "table_index": table, "table_kind": kind, "share_class": share_class}
+
+    def repeated(self):
+        return [self.row(name, shares, table=str(table))
+                for table in range(3)
+                for name, shares in [("Jane Smith", "1234"), ("John Doe", "5678")]]
+
+    def test_x10_repeated_compensation(self):
+        self.assertEqual(zero_row_exclusion_flags(self.repeated()), (1, 0, 0, 0))
+
+    def test_x10_each_conjunct_required(self):
+        for field, value in [("percent", "0"), ("share_class", "Common"), ("table_kind", "management")]:
+            rows = self.repeated()
+            rows[0][field] = value
+            with self.subTest(field=field):
+                self.assertEqual(zero_row_exclusion_flags(rows), (0, 0, 0, 0))
+        rows = self.repeated()
+        for row in rows:
+            row["table_index"] = "1"
+        self.assertEqual(zero_row_exclusion_flags(rows), (0, 0, 0, 0))
+        rows = self.repeated()
+        rows[-1]["shares"] = "5679"
+        self.assertEqual(zero_row_exclusion_flags(rows), (0, 0, 0, 0))
+        rows = [r for r in self.repeated() if r["holder_name"] == "Jane Smith"]
+        self.assertEqual(zero_row_exclusion_flags(rows), (0, 0, 0, 0))
+
+    def test_x11_exact_normalized_names(self):
+        rows = [self.row("  FUND "), self.row("Entities   N/A")]
+        self.assertEqual(zero_row_exclusion_flags(rows), (0, 1, 0, 0))
+        self.assertEqual(zero_row_exclusion_flags(rows + [self.row("Jane Smith")]), (0, 0, 0, 0))
+        self.assertEqual(zero_row_exclusion_flags(rows[:1]), (0, 0, 0, 0))
+
+    def test_x12_all_named_prefixes(self):
+        for name in ["Allocation of Income/Loss", "Allocation of Income or Loss", "Reimbursements to General Partners", "Property management fees paid", "Rental income", "Interest income"]:
+            with self.subTest(name=name):
+                self.assertEqual(zero_row_exclusion_flags([self.row(name + " (1998)")]), (0, 0, 1, 0))
+                self.assertEqual(zero_row_exclusion_flags([self.row("Jane " + name)]), (0, 0, 0, 0))
+
+    def test_x13_integer_year_and_single_row(self):
+        for year in ["1900", "1998", "2000"]:
+            self.assertEqual(zero_row_exclusion_flags([self.row("The Company purchased shares", year)]), (0, 0, 0, 1))
+        self.assertEqual(zero_row_exclusion_flags([self.row("The Company  purchased shares", "1987")]), (0, 0, 0, 1))
+        for shares in ["1899", "2001", "1998.5", "", "1998.0"]:
+            self.assertEqual(zero_row_exclusion_flags([self.row("The Company purchased shares", shares)]), (0, 0, 0, 0))
+        self.assertEqual(zero_row_exclusion_flags([self.row("The Company purchased shares", "1998"), self.row()]), (0, 0, 0, 0))
+        self.assertEqual(zero_row_exclusion_flags([self.row("Jane: The Company purchased shares", "1998")]), (0, 0, 0, 0))
+
+    def test_percent_including_zero_blocks_all_rules(self):
+        fixtures = [self.repeated(), [self.row("Fund"), self.row("Entities N/A")],
+                    [self.row("Rental income")], [self.row("The Company purchased shares", "1998")]]
+        for rows in fixtures:
+            rows[0]["percent"] = "0"
+            self.assertEqual(zero_row_exclusion_flags(rows), (0, 0, 0, 0))
+
+    def test_empty_rows(self):
+        self.assertEqual(zero_row_exclusion_flags([]), (0, 0, 0, 0))
+
+
+if __name__ == "__main__":
+    unittest.main()

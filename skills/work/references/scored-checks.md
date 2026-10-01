@@ -214,10 +214,12 @@ never `undefined` while every neighbouring one is an explicit `null`.
 
 ## S7 — No new selector channel
 
-Because the scores cannot fail the run, they add nothing to `tasksThatFlagged` /
-`mechanicalThatFailed` / `lensesThatFlagged`. `work`'s law that `overallPass ===
-false` implies a non-empty selector is therefore untouched — which is itself the proof that this
-channel does not gate.
+Scores add no selector. Task and mechanical failures use `tasksThatFlagged` and
+`mechanicalThatFailed`; standing blocking review findings use `lensesThatFlagged: ['lens']`.
+The lens routes valid task owners into `tasksThatFlagged` and plan-owned diagnoses or standing
+blocking findings into `planFindings`. Scored results choose neither RED/GREEN mode nor owner tasks,
+and never enter that routing or the gate, even when an agent dies. `overallPass === false` still
+requires at least one non-empty selector from the gating dimensions.
 
 ## Why advisory — and why there is no threshold
 
@@ -230,7 +232,7 @@ parameter left open. From `slides-diagnose.js`, on the gate it deliberately does
 
 A knob whose documented history is that using it made things worse should not exist. The convergent
 signal is the substrate: deterministic checks (`mechanicalChecks`) and categorical blocking on
-`critical|major` lens findings. Score the run to read it; gate it on something that can be wrong in
-only one direction.
+`critical|major` findings from the one review lens. Score the run to read it; gate it on something
+that can be wrong in only one direction.
 
 `work`'s precedent for the shape is `thirdParty`: advisory, reported, never in the gate arithmetic.

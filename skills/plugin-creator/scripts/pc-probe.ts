@@ -27,7 +27,8 @@
  * another name, it can disagree with the thing it describes, and then the tiebreak rule becomes the
  * bug. What cannot be derived is REPORTED (see `UnresolvedRef`), never guessed.
  *
- *   LENS   an entry in a `reviewLenses:` array in a SKILL.md. Domain: the skill directory it is in.
+ *   LENS   the `lens:` object of a work-args object in a SKILL.md — `work` takes exactly one.
+ *          Domain: the skill directory it is in.
  *   ENGINE an executable that produces findings, identified by any of — a `CONSTRAINT` /
  *          `APPLIES_TO` / `SEVERITY` module contract; appearing in a `mechanicalChecks` entry;
  *          being spawned by a hook in `hooks/hooks.json`. Domain: below.
@@ -49,14 +50,10 @@
  *           its table symbols. Consuming a table's SYMBOLS is the relation that makes two engines
  *           rivals; SPAWNING a file is delegation, and is exempt.
  *
- * I2  At most ONE lens per domain — decided as: two lenses quoting the SAME string literal make the
- *     same claim twice.
- *     Defect: the `prose-register` lens (teaching) and the `slide-register` system (workflows) now
- *     make the same claim about the same three string literals at two severities, with no dedup
- *     path between a work finding and a span id (sweep 3, F1).
- *     NOT "one lens per skill directory": `/writing` carries four lenses whose columns are
- *     genuinely different (one reads the plan, one the register), and a rule that flagged those
- *     would fire on correct structure. The shared literal is what makes two lenses one claim.
+ * I2  RETIRED. It required at most ONE lens per domain, decided as two lenses quoting the SAME
+ *     string literal over the same refs. `work` takes one `lens` object per args object now, so a
+ *     domain has no second lens to duplicate the first and the rule has no subject. What it caught
+ *     that still exists — a lens restating a rule a script already decides — is I6.
  *
  * I3  Every engine has at least one LIVE caller. A comment, a CHANGELOG line, a doc, or a test that
  *     names but never invokes it is NOT a caller.
@@ -225,9 +222,11 @@ export interface Engine {
 export interface Lens {
   file: string
   line: number
+  /** The lens has no key of its own, so this is the skill it belongs to — what a finding names it by. */
   key: string
   prompt: string
-  /** The entry's `refs:` array, verbatim. Two lenses with different refs judge different SUBJECTS. */
+  agentType: string | null
+  /** The lens's `refs:` array, verbatim — the SUBJECT it judges. */
   refs: string
   /** Skill directory it lives in, relative to the target, or null. */
   skill: string | null
@@ -380,7 +379,7 @@ const blankRun = (arr: string[], a: number, b: number) => {
   for (let k = a; k < b && k < arr.length; k++) if (arr[k] !== '\n') arr[k] = ' '
 }
 
-export function jsCodeView(src: string): string {
+export function jsCodeView(src: string, maskStrings = false): string {
   const out = src.split('')
   let i = 0
   while (i < src.length) {
@@ -410,6 +409,8 @@ export function jsCodeView(src: string): string {
         if (src[j] === '\n' && c !== '`') break
         j++
       }
+      // Structural scans need delimiters, not literal contents; caller discovery needs both.
+      if (maskStrings) blankRun(out, i + 1, j)
       i = Math.min(j, src.length) + 1
       continue
     }
@@ -560,21 +561,27 @@ export function parsePatternTable(file: string, text: string, target: string): P
   return { file, symbols, regexes, skill: skillOf(file, target) }
 }
 
-/** Lens entries of a `reviewLenses:` array. */
+/**
+ * The single `lens:` object of every work-args object in the file.
+ *
+ * `work` takes ONE lens — `lens: {prompt, refs, agentType?, model?, effort?}` — so a lens has no
+ * `key` to be named by and there is at most one per args object. It is identified by its declaring
+ * key and labelled by the skill it belongs to.
+ */
 export function parseLenses(file: string, text: string, target: string): Lens[] {
   const out: Lens[] = []
   const skill = skillOf(file, target)
-  for (const anchor of text.matchAll(/reviewLenses\s*:\s*\[/g)) {
+  // Brace-match over a view with string contents blanked, so a `}` inside a prompt cannot end the
+  // object early.
+  const masked = jsCodeView(codeView(file, text), true)
+  for (const anchor of masked.matchAll(/(?<![\w$.'"-])lens\s*:\s*\{/g)) {
     const start = (anchor.index ?? 0) + anchor[0].length - 1
-    // Bracket-match over a view with string contents blanked, so a `]` inside a prompt cannot end
-    // the array early.
-    const masked = jsCodeView(text)
     let depth = 0
     let end = -1
     for (let i = start; i < text.length; i++) {
       const c = masked[i]
-      if (c === '[') depth++
-      else if (c === ']') {
+      if (c === '{') depth++
+      else if (c === '}') {
         depth--
         if (depth === 0) {
           end = i
@@ -583,23 +590,28 @@ export function parseLenses(file: string, text: string, target: string): Lens[] 
       }
     }
     if (end === -1) end = text.length
-    const span = text.slice(start, end)
-    const keys = [...span.matchAll(/\bkey\s*:\s*"([^"]*)"/g)].map(m => m[1])
-    const prompts = [...span.matchAll(/\bprompt\s*:\s*"((?:\\.|[^"\\])*)"/g)]
-    // Positional, and only trusted when every entry carries one — a partial list would misalign
-    // refs with prompts and turn fan-out into duplication or the reverse.
-    const refsAll = [...span.matchAll(/\brefs\s*:\s*\[([^\]]*)\]/g)].map(m => m[1].replace(/\s+/g, ' ').trim())
-    const refs = refsAll.length === prompts.length ? refsAll : null
-    for (let i = 0; i < prompts.length; i++) {
-      out.push({
-        file,
-        line: lineOf(text, start + (prompts[i].index ?? 0)),
-        key: keys[i] ?? `lens#${i + 1}`,
-        prompt: prompts[i][1],
-        refs: refs ? refs[i] : '',
-        skill,
-      })
+    const code = masked.slice(start, end)
+    const stringField = (key: string): { value: string; index: number } | null => {
+      const head = new RegExp(`(?<![\\w$])${key}\\s*:\\s*(['"])`).exec(code)
+      if (!head) return null
+      const index = start + head.index
+      const valueStart = index + head[0].length - 1
+      const value = /^(['"])((?:\\.|(?!\1)[^\\])*)\1/.exec(text.slice(valueStart, end))
+      return value ? { value: value[2], index } : null
     }
+    const prompt = stringField('prompt')
+    if (!prompt) continue
+    const refsHead = /(?<![\w$])refs\s*:\s*\[/.exec(code)
+    const refs = refsHead ? /^\[([^\]]*)\]/.exec(text.slice(start + refsHead.index + refsHead[0].length - 1, end)) : null
+    out.push({
+      file,
+      line: lineOf(text, prompt.index),
+      key: skill ?? 'lens',
+      prompt: prompt.value,
+      agentType: stringField('agentType')?.value ?? null,
+      refs: refs ? refs[1].replace(/\s+/g, ' ').trim() : '',
+      skill,
+    })
   }
   return out
 }
@@ -650,11 +662,11 @@ export function parseHookRegistry(target: string): string[] {
 // ---------------------------------------------------------------- literals
 
 /**
- * Quoted phrases inside a lens PROMPT — the prompt is itself a double-quoted string, so its own
- * quoting is single quotes, backticks or escaped doubles.
+ * Quoted phrases inside a lens PROMPT — single quotes, double quotes or backticks,
+ * with any quotes escaped for the enclosing JS literal.
  *
  * Length >= 8 and at least one space, because a one-word quotation in a prompt is vocabulary and a
- * phrase is a rule. That threshold is what keeps I2 and I6 off correct structure.
+ * phrase is a rule. That threshold is what keeps I6 off correct structure.
  */
 /**
  * Quoted spans of `text`, paired SEQUENTIALLY: the 1st quote with the 2nd, the 3rd with the 4th.
@@ -690,9 +702,10 @@ export function quotedLiterals(prompt: string): string[] {
     if (/^#{1,6}\s/.test(t) || /^[.~/]?[\w.-]+\//.test(t)) return
     out.add(t)
   }
-  for (const s of pairedSpans(prompt, "'")) add(s)
-  for (const s of pairedSpans(prompt, '`')) add(s)
-  for (const m of prompt.matchAll(/\\"([^"]{8,}?)\\"/g)) add(m[1])
+  const text = prompt.replace(/\\(['"])/g, '$1')
+  for (const quote of ["'", '"', '`']) {
+    for (const s of pairedSpans(text, quote)) add(s)
+  }
   return [...out]
 }
 
@@ -1033,44 +1046,14 @@ export function checkSingleEngine(
   return findings
 }
 
-/** I2: two lenses quoting the same literal make the same claim twice. */
-export function checkSingleLens(lenses: readonly Lens[], target: string): Finding[] {
-  // Grouped case-insensitively, REPORTED as written: a finding that renames the literal it found
-  // costs the reader the grep that would confirm it.
-  //
-  // TWO LENSES MAKE ONE CLAIM TWICE ONLY IF THEY JUDGE THE SAME SUBJECT. Identical prompt text over
-  // DIFFERENT `refs` is FAN-OUT — one rule applied per subject, not a rival: exams dispatches
-  // source-fidelity-01/02/03, whose prompts differ only in a question number, over three separate
-  // question files. Cross-skill pairs stay in scope deliberately (the F1 defect was one).
-  const byLiteral = new Map<string, { shown: string; lenses: Lens[] }>()
-  for (const l of lenses) {
-    for (const lit of quotedLiterals(l.prompt)) {
-      const key = `${l.refs}\u0000${lit.toLowerCase().replace(/\s+/g, ' ')}`
-      const slot = byLiteral.get(key) ?? { shown: lit, lenses: [] }
-      if (!slot.lenses.some(x => x.file === l.file && x.key === l.key)) slot.lenses.push(l)
-      byLiteral.set(key, slot)
-    }
-  }
-  const findings: Finding[] = []
-  const reported = new Set<string>()
-  for (const [, slot] of [...byLiteral].sort((a, b) => a[0].localeCompare(b[0]))) {
-    const list = slot.lenses
-    if (list.length < 2) continue
-    const pair = list.map(l => `${l.file}#${l.key}`).sort().join('|')
-    if (reported.has(pair)) continue
-    reported.add(pair)
-    findings.push({
-      rule: 'I2 one lens per domain',
-      severity: 'major',
-      file: list[1].file,
-      line: list[1].line,
-      detail: `lenses ${list.map(l => `"${l.key}" (${relative(target, l.file)})`).join(' and ')} both quote ${JSON.stringify(slot.shown)} — one claim, two lenses`,
-      remedy:
-        'one lens owns the claim; the other routes to it. Two lenses over one literal report it at two severities with no key joining them, and each surviving finding costs a refuter agent',
-    })
-  }
-  return findings
-}
+// I2 "one lens per domain" was RETIRED. It decided rivalry as "two lenses quote the same string
+// literal over the same refs", which needed two lenses to compare. `work` now takes ONE `lens`
+// object per args object, so a domain cannot declare a second lens for the first to duplicate, and
+// the rule's subject no longer exists. Its live half survives as I6: a single lens prompt quoting a
+// literal a deterministic table already decides is still a copy.
+//
+// `checkSingleLens` is gone rather than left returning `[]`. A predicate that can never fire reads
+// as a check that passes, which is the failure this whole file is about.
 
 /** I3: an engine with no live caller. */
 export function checkEngineCallers(
@@ -1189,7 +1172,7 @@ export function checkLensLiteralInTable(
           severity: 'major',
           file: l.file,
           line: l.line,
-          detail: `lens "${l.key}" quotes ${JSON.stringify(lit)}, which ${relative(target, t.file)} already decides deterministically`,
+          detail: `the lens in ${relative(target, l.file)} quotes ${JSON.stringify(lit)}, which ${relative(target, t.file)} already decides deterministically`,
           remedy:
             'narrow the lens to the undecidable residue and point it at the table through refs. A lens carries routing and scope, never a rule the engine beside it already matches',
         })
@@ -1651,7 +1634,7 @@ export function runProbe(target: string, opts: ProbeOptions = {}): ProbeResult {
 
   // ---- run the predicates
   findings.push(...checkSingleEngine(engines, tables, consumersOf, delegates, root))
-  findings.push(...checkSingleLens(lenses, root))
+  // No I2 leg: see the retirement note above `checkLensLiteralInTable`.
   findings.push(...checkEngineCallers(engines, callersOf, discoveryRunners, root))
   findings.push(...checkComputedPaths([...engineMap.keys(), ...tables.map(t => t.file)], textOf))
   findings.push(...checkSuppressionLists(suppress, [...labels], unresolvedRefs))
