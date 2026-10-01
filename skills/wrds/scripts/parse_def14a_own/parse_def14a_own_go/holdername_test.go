@@ -37,6 +37,8 @@ func TestCleanHolderNameStripsRoleDegreeAndFootnote(t *testing.T) {
 		{"David H. Anderson (also a director)", "David H. Anderson", "0001193125-22-105360"},
 		// NOT decorations: an institutional holder is built from words the role
 		// clause must never claim, and a two-word person has nothing to strip.
+		{"General Electric Company", "General Electric Company", "0000950123-01-505784"},
+		{"Major Investments, LLC", "Major Investments, LLC", "synthetic corporate-rank guard"},
 		{"Capital Research and Management Company", "Capital Research and Management Company", "-"},
 		{"Wellington Management Company, LLP", "Wellington Management Company, LLP", "-"},
 		{"The Vanguard Group, Inc.", "The Vanguard Group, Inc.", "-"},
