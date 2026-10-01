@@ -4722,3 +4722,450 @@ func TestHTMLSplitFootnoteClosingCellKeepsOwnership(t *testing.T) {
 		}
 	}
 }
+
+// 0000950123-05-003612 states share counts in millions, including .97 million.
+func TestHTMLMillionShareCounts(t *testing.T) {
+	body := `<html><body><p>SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS AND MANAGEMENT</p><TABLE width="100%" align="center" cellspacing="0" cellpadding="0" border="0" style="font-size: 10pt; margin-top: 6pt; ">
+
+<TR style="font-size: 1pt;">
+    <TD width="3%">&nbsp;</TD>
+    <TD width="21%">&nbsp;</TD>
+    <TD width="3%">&nbsp;</TD>
+    <TD width="6%">&nbsp;</TD>
+    <TD width="1%">&nbsp;</TD>
+    <TD width="5%">&nbsp;</TD>
+    <TD width="3%">&nbsp;</TD>
+    <TD width="6%">&nbsp;</TD>
+    <TD width="1%">&nbsp;</TD>
+    <TD width="6%">&nbsp;</TD>
+    <TD width="3%">&nbsp;</TD>
+    <TD width="6%">&nbsp;</TD>
+    <TD width="1%">&nbsp;</TD>
+    <TD width="5%">&nbsp;</TD>
+    <TD width="3%">&nbsp;</TD>
+    <TD width="6%">&nbsp;</TD>
+    <TD width="1%">&nbsp;</TD>
+    <TD width="6%">&nbsp;</TD>
+    <TD width="3%">&nbsp;</TD>
+    <TD width="5%">&nbsp;</TD>
+    <TD width="1%">&nbsp;</TD>
+    <TD width="5%">&nbsp;</TD>
+</TR>
+
+<TR style="font-size: 7pt;">
+    <TD colspan="2">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Shares of Class&nbsp;A</B></TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Percent of Class&nbsp;A</B></TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Shares of Class&nbsp;B</B></TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Percent of Class&nbsp;B</B></TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Percent of Total</B></TD><TD></TD>
+</TR>
+
+<TR style="font-size: 7pt;">
+    <TD colspan="2">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Redeemable</B></TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Redeemable</B></TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Convertible</B></TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Convertible</B></TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Outstanding</B></TD><TD></TD>
+</TR>
+
+<TR style="font-size: 7pt;">
+    <TD colspan="2">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Common Stock</B></TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Common Stock</B></TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Common Stock</B></TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Common Stock</B></TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Common Stock</B></TD><TD></TD>
+</TR>
+
+<TR style="font-size: 7pt;">
+    <TD colspan="2" align="center" nowrap><B>Name and Address of</B></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Beneficially</B></TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Beneficially</B></TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Beneficially</B></TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Beneficially</B></TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Beneficially</B></TD><TD></TD>
+</TR>
+
+<TR style="font-size: 7pt;">
+    <TD colspan="2" align="center" nowrap><B>Beneficial Owner</B></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Owned</B></TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Owned</B></TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Owned</B></TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Owned</B></TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap><B>Owned</B></TD><TD></TD>
+</TR>
+
+<TR valign="bottom" style="font-size: 1px">
+    <TD colspan="2" align="center" nowrap style="border-top: 1pt solid #000000;">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap style="border-top: 1pt solid #000000;">&nbsp;</TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap style="border-top: 1pt solid #000000;">&nbsp;</TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap style="border-top: 1pt solid #000000;">&nbsp;</TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap style="border-top: 1pt solid #000000;">&nbsp;</TD><TD></TD>
+    <TD>&nbsp;</TD>
+    <TD colspan="2" align="center" nowrap style="border-top: 1pt solid #000000;">&nbsp;</TD><TD></TD>
+</TR>
+
+<TR>
+    <TD colspan="2" align="left" valign="top">
+    <DIV style="margin-left: 10px; text-indent: -10px">
+    JPMorgan Chase&nbsp;&#38;
+    Co.<SUP style="font-size: 85%; vertical-align: text-top">(1)(2)</SUP></DIV>
+    </TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>9.85&nbsp;million</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>11.7</TD>
+    <TD align="left" valign="bottom" nowrap>%</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>1.88&nbsp;million</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>11.7</TD>
+    <TD align="left" valign="bottom" nowrap>%</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>11.7</TD>
+    <TD align="left" valign="bottom" nowrap>%</TD>
+</TR>
+
+<TR>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">
+    270 Park Avenue<BR>
+    New York, NY 10017</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+</TR>
+
+<TR>
+    <TD colspan="2" align="left" valign="top">
+    <DIV style="margin-left: 10px; text-indent: -10px">
+    Citigroup,
+    Inc.<SUP style="font-size: 85%; vertical-align: text-top">(3)</SUP></DIV>
+    </TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>5.23&nbsp;million</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>6.2</TD>
+    <TD align="left" valign="bottom" nowrap>%</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>1.00&nbsp;million</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>6.2</TD>
+    <TD align="left" valign="bottom" nowrap>%</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>6.2</TD>
+    <TD align="left" valign="bottom" nowrap>%</TD>
+</TR>
+
+<TR>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">
+    399 Park Avenue<BR>
+    New York, NY 10043</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+</TR>
+
+<TR>
+    <TD colspan="2" align="left" valign="top">
+    <DIV style="margin-left: 10px; text-indent: -10px">
+    Bank of America Corporation
+    <SUP style="font-size: 85%; vertical-align: text-top">(4)</SUP></DIV>
+    </TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>5.08&nbsp;million</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>6.0</TD>
+    <TD align="left" valign="bottom" nowrap>%</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>.97&nbsp;million</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>6.0</TD>
+    <TD align="left" valign="bottom" nowrap>%</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>6.0</TD>
+    <TD align="left" valign="bottom" nowrap>%</TD>
+</TR>
+
+<TR>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">
+    100 North Tryon Street<BR>
+    Charlotte, NC 28255</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+</TR>
+
+<TR>
+    <TD colspan="2" align="left" valign="top">
+    <DIV style="margin-left: 10px; text-indent: -10px">
+    EURO Kartensysteme
+    GmbH<SUP style="font-size: 85%; vertical-align: text-top">(5)</SUP></DIV>
+    </TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>4.39&nbsp;million</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>5.2</TD>
+    <TD align="left" valign="bottom" nowrap>%</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>.84&nbsp;million</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>5.2</TD>
+    <TD align="left" valign="bottom" nowrap>%</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>5.2</TD>
+    <TD align="left" valign="bottom" nowrap>%</TD>
+</TR>
+
+<TR>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">
+    Solmsstrasse 6<BR>
+    60486 Frankfurt/ Main<BR>
+    Germany</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+</TR>
+
+<TR>
+    <TD colspan="2" align="left" valign="top">
+    <DIV style="margin-left: 10px; text-indent: -10px">
+    Europay France
+    S.A.S.<SUP style="font-size: 85%; vertical-align: text-top">(6)</SUP></DIV>
+    </TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>4.22&nbsp;million</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>5.0</TD>
+    <TD align="left" valign="bottom" nowrap>%</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>.80&nbsp;million</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>5.0</TD>
+    <TD align="left" valign="bottom" nowrap>%</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>5.0</TD>
+    <TD align="left" valign="bottom" nowrap>%</TD>
+</TR>
+
+<TR>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">
+    44, rue Cambronne 75740 Paris Cedex 15<BR>
+    France</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="bottom">&nbsp;</TD>
+    <TD align="right" valign="bottom" nowrap>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+</TR>
+
+</TABLE></body></html>`
+	rows := ScreenRows(run(t, body))
+	for _, want := range []struct {
+		name, class string
+		shares, pct float64
+	}{
+		{"JPMorgan Chase", "Shares of Class A", 9850000, 11.7},
+		{"JPMorgan Chase", "Shares of Class B", 1880000, 11.7},
+		{"Citigroup", "Shares of Class A", 5230000, 6.2},
+		{"Citigroup", "Shares of Class B", 1000000, 6.2},
+		{"Bank of America", "Shares of Class A", 5080000, 6.0},
+		{"Bank of America", "Shares of Class B", 970000, 6.0},
+		{"EURO Kartensysteme", "Shares of Class A", 4390000, 5.2},
+		{"EURO Kartensysteme", "Shares of Class B", 840000, 5.2},
+		{"Europay France", "Shares of Class A", 4220000, 5.0},
+		{"Europay France", "Shares of Class B", 800000, 5.0},
+	} {
+		found := 0
+		for _, r := range rows {
+			if strings.HasPrefix(r.HolderName, want.name) && r.ShareClass == want.class {
+				found++
+				if r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+					t.Errorf("want %+v got %+v", want, r)
+				}
+			}
+		}
+		if found != 1 {
+			t.Errorf("want exactly one %+v, found %d among %+v", want, found, rows)
+		}
+	}
+
+	if len(rows) != 15 {
+		t.Fatalf("want 10 class holdings plus 5 total-percent disclosures, got %+v", rows)
+	}
+	for _, r := range rows {
+		if r.ShareClass == "Common Stock" && r.Shares != nil {
+			t.Errorf("total-percent column carries no share count: %+v", r)
+		}
+	}
+	first := strings.Index(body, "JPMorgan Chase")
+	start := strings.LastIndex(body[:first], "<TR>")
+	end := first + strings.Index(body[first:], "</TR>") + len("</TR>")
+	duplicate := strings.Replace(body, "</TABLE>", body[start:end]+"</TABLE>", 1)
+	if got := ScreenRows(run(t, duplicate)); len(got) != 15 {
+		t.Errorf("identical source-row copy must not add or drop holdings: %+v", got)
+	}
+	alreadyEmitting := strings.Replace(simpleHTML, "</body></html>", body, 1)
+	before, after := ScreenRows(run(t, simpleHTML)), ScreenRows(run(t, alreadyEmitting))
+	if len(before) != len(after) {
+		t.Fatalf("million recovery must not reinterpret an emitting filing: before=%d after=%d", len(before), len(after))
+	}
+	for i := range before {
+		if rowTSV(before[i]) != rowTSV(after[i]) {
+			t.Errorf("emitting filing changed: %s -> %s", rowTSV(before[i]), rowTSV(after[i]))
+		}
+	}
+}

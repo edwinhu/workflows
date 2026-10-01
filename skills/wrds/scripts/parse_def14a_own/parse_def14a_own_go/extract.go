@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -37,6 +38,10 @@ type Row struct {
 	// numberedHolder identifies a numeric-leading holder from explicit
 	// Share Holdings / Percentage Owned columns, never an address or amount.
 	numberedHolder bool
+
+	// commonColumn records an explicit common-stock header over this value
+	// pair, even when the identifying class label occupies another header row.
+	commonColumn bool
 
 	// classHint is a class / series / fund label recovered from a column
 	// header rather than from a class-shaped value. It is copied onto
@@ -199,6 +204,8 @@ func compact(g *Grid) *compacted {
 	return compactColumns(g, false)
 }
 
+var reMillionShares = regexp.MustCompile(`(?i)^([0-9]+(?:\.[0-9]+)?|\.[0-9]+)\s+million$`)
+
 var reSplitSharesFootnote = regexp.MustCompile(`^[0-9][0-9, ]*\(\s*/?\s*(?:[0-9]{1,2}[a-zA-Z]?|[a-zA-Z])\s*/?\s*$`)
 
 func compactColumns(g *Grid, compareAll bool) *compacted {
@@ -224,6 +231,17 @@ func compactColumns(g *Grid, compareAll bool) *compacted {
 		row := g.Rows[i]
 		if compareAll {
 			row = append([]string(nil), row...)
+			// Expand the explicit unit before detecting headers. Match before
+			// StripFootnotes trims .97 million's leading decimal point.
+			for j, cell := range row {
+				if m := reMillionShares.FindStringSubmatch(strings.TrimSpace(reFootnote.ReplaceAllString(flat(cell), ""))); m != nil {
+					v, err := strconv.ParseFloat(m[1], 64)
+					if err != nil {
+						panic(err)
+					}
+					row[j] = strconv.FormatFloat(v*1e6, 'f', -1, 64)
+				}
+			}
 			// Repair a footnote split across cells before header detection;
 			// otherwise its unfinished shares token makes a data row invisible.
 			for j := 1; j < len(row); j++ {
@@ -1771,6 +1789,14 @@ func extractGridColumns(g *Grid, tableText string, base Row, tableIdx int, prev 
 					hint = withSeries(hint, norm(vcls))
 				}
 				rw.ShareClass = cl
+				for _, j := range []int{p.shares, p.pct} {
+					if j >= 0 {
+						header := strings.Join(c.roles[j].hdrCells, " ")
+						if base.colspanRecovery && reScreenCommonWord.MatchString(header) && !reScreenOtherSecurity.MatchString(header) {
+							rw.commonColumn = true
+						}
+					}
+				}
 				rw.classHint = cleanClassLabel(hint)
 				rw.Footnotes = strings.Join(uniq(allFns), ",")
 				sig := rw.HolderName + "\x00" + rw.ShareClass + "\x00" + rw.classHint +
