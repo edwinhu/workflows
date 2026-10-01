@@ -337,9 +337,8 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 		})
 		clean[i] = strings.ReplaceAll(l, "\t", "    ")
 	}
-	var out []Row
-	blocksSeen, blocksUsed := 0, 0
-	consumed := map[int]bool{}
+	out, consumed, bioBlocks := textBiographicalOwnership(lines, clean, base)
+	blocksSeen, blocksUsed := bioBlocks, bioBlocks
 	// A fund-family proxy in ASCII prints the fund's name on its own line above
 	// each per-fund holder table. Record which fund is in force at every line so
 	// a block can be labelled with it: without the fund, the same record holder
@@ -721,6 +720,155 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 		}
 	}
 	return out, blocksSeen, blocksUsed
+}
+
+var (
+	reASCIIColumnMark = regexp.MustCompile(`(?i)<(?:S|C)>`)
+	reASCIISlashNote  = regexp.MustCompile(`/([0-9]{1,2})/`)
+	reBioOccupation   = regexp.MustCompile(`(?i)principal\s+(?:occupation|operation)`)
+	reSixtyDays       = regexp.MustCompile(`(?i)(?:60|sixty)\s+days`)
+)
+
+// SGML column markers preserve the biography/ownership boundary. Vested
+// 60-day options are additive, not a replacement for the owned-share column.
+func textBiographicalOwnership(raw, clean []string, base Row) ([]Row, map[int]bool, int) {
+	consumed := map[int]bool{}
+	var out []Row
+	blocks := 0
+	for start := 0; start < len(raw); start++ {
+		if !strings.Contains(strings.ToUpper(raw[start]), "<TABLE>") {
+			continue
+		}
+		end := start + 1
+		for end < len(raw) && !strings.Contains(strings.ToUpper(raw[end]), "</TABLE>") {
+			end++
+		}
+		if end == len(raw) {
+			continue
+		}
+		marker := -1
+		var spans [][]int
+		for ln := start + 1; ln < end; ln++ {
+			if m := reASCIIColumnMark.FindAllStringIndex(raw[ln], -1); len(m) == 7 {
+				marker, spans = ln, m
+				break
+			}
+		}
+		if marker < 0 {
+			continue
+		}
+		cell := func(l string, col int) string {
+			// A right-aligned count can straddle the nominal marker by one
+			// character. Never cut a token in half at a column boundary.
+			boundary := func(pos int) int {
+				if pos >= len(l) {
+					return len(l)
+				}
+				for pos > 0 && l[pos] != ' ' && l[pos-1] != ' ' {
+					pos--
+				}
+				return pos
+			}
+			lo, hi := boundary(spans[col][0]), len(l)
+			if col+1 < len(spans) {
+				hi = boundary(spans[col+1][0])
+			}
+			if lo >= hi {
+				return ""
+			}
+			return strings.TrimSpace(l[lo:hi])
+		}
+		headers := make([]string, 7)
+		for col := range headers {
+			var parts []string
+			for ln := start + 1; ln < marker; ln++ {
+				parts = append(parts, cell(clean[ln], col))
+			}
+			headers[col] = norm(strings.Join(parts, " "))
+		}
+		hdr := norm(strings.Join(clean[start+1:marker], " "))
+		if !strings.Contains(strings.ToLower(hdr), "beneficially owned") ||
+			!strings.Contains(strings.ToLower(hdr), "common stock") ||
+			!reBioOccupation.MatchString(headers[1]) ||
+			!strings.Contains(strings.ToLower(headers[0]), "names and offices") ||
+			!strings.Contains(strings.ToLower(headers[2]), "age") ||
+			!strings.Contains(strings.ToLower(headers[3]), "director") ||
+			!strings.Contains(strings.ToLower(headers[4]), "number") ||
+			!strings.Contains(strings.ToLower(headers[4]), "shares") ||
+			!strings.Contains(strings.ToLower(hdr), "vested option") ||
+			!strings.Contains(strings.ToLower(headers[5]), "option") ||
+			!strings.Contains(strings.ToLower(headers[5]), "shares") ||
+			!strings.Contains(strings.ToLower(headers[6]), "percentage") ||
+			reCompCue.MatchString(hdr) || reOptDetailCue.MatchString(hdr) {
+			continue
+		}
+		lo, hi := start-100, end+100
+		if lo < 0 {
+			lo = 0
+		}
+		if hi > len(clean) {
+			hi = len(clean)
+		}
+		if !reSixtyDays.MatchString(strings.Join(clean[lo:hi], " ")) {
+			continue
+		}
+		var rows []Row
+		for ln := marker + 1; ln < end; ln++ {
+			name := cell(clean[ln], 0)
+			ownedText := reASCIISlashNote.ReplaceAllString(cell(clean[ln], 4), "")
+			optionText := reASCIISlashNote.ReplaceAllString(cell(clean[ln], 5), "")
+			pctText := reASCIISlashNote.ReplaceAllString(cell(clean[ln], 6), "")
+			if name == "" || strings.Contains(ownedText+optionText, "$") || !strings.Contains(pctText, "%") {
+				continue
+			}
+			owned, ok := ParseShares(ownedText)
+			if !ok || owned < 0 {
+				continue
+			}
+			options, ok := ParseShares(optionText)
+			if !ok || options < 0 {
+				continue
+			}
+			pct, ok, _, _ := ParsePercent(pctText)
+			if !ok {
+				continue
+			}
+			// Only the collective stub wraps forward; biography continuation text
+			// below a person's name is their office, not part of their identity.
+			if strings.Contains(strings.ToLower(name), "directors and executive") {
+				for k := ln + 1; k < end && k <= ln+3; k++ {
+					tail := cell(clean[k], 0)
+					if tail == "" || cell(clean[k], 4) != "" {
+						break
+					}
+					name += " " + tail
+				}
+			}
+			name, fns := StripFootnotes(reASCIISlashNote.ReplaceAllString(name, "($1)"))
+			grp, gn := isGroupRow(name)
+			total := owned + options
+			r := base
+			r.TableIndex, r.RowIndex = start, ln
+			r.HolderName, r.ShareClass = name, "Common Stock"
+			r.Shares, r.Percent = &total, &pct
+			r.IsGroupRow, r.GroupN = grp, gn
+			r.Footnotes, r.Parser = strings.Join(fns, ","), "text_table"
+			rows = append(rows, r)
+		}
+		if len(rows) < 2 {
+			continue
+		}
+		blocks++
+		for ln := start; ln <= end; ln++ {
+			consumed[ln] = true
+		}
+		for k := range rows {
+			rows[k].TableKind = "management"
+		}
+		out = append(out, rows...)
+		start = end
+	}
+	return out, consumed, blocks
 }
 
 func sliceLines(clean []string, idx []int) []string {
