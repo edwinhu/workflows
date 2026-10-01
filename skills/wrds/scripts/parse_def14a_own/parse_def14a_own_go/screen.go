@@ -27,7 +27,9 @@ var (
 	// sentence's tail, or the "Sole Voting Power" style sub-heading.
 	reScreenProse = regexp.MustCompile(`(?i)\b(?:known\s+to\s+the\s+(?:company|registrant)|beneficial\s+owner(?:s)?\s+of\s+more\s+than|as\s+(?:investment\s+)?advis[eo]r|sole\s+(?:voting|dispositive)|shared\s+(?:voting|dispositive)|dispositive\s+power|voting\s+power)\b`)
 	// A foreign address line: a Canadian/UK postal code, or a country tail.
-	reScreenForeign = regexp.MustCompile(`(?i)\b[A-Z]\d[A-Z]\s*\d[A-Z]\d\b|\b(?:canada|england|scotland|united\s+kingdom|switzerland|netherlands|germany|japan|france|australia|bermuda|cayman\s+islands)\s*$`)
+	reScreenForeign      = regexp.MustCompile(`(?i)\b[A-Z]\d[A-Z]\s*\d[A-Z]\d\b|\b(?:canada|england|scotland|united\s+kingdom|switzerland|netherlands|germany|japan|france|australia|bermuda|cayman\s+islands)\s*$`)
+	reScreenPersonalName = regexp.MustCompile(`^[A-Z][a-z]+(?:\s+[A-Z]\.)+\s+[A-Z][a-z]+$`)
+	reScreenESOP         = regexp.MustCompile(`(?i)\besop\b`)
 	// A share class that is not the common stock blockw records. "Class A" is
 	// left out on purpose: it is routinely the only common class there is.
 	// "Series" followed by a DESIGNATOR -- Series A, Series 1, Series AA -- is a
@@ -182,6 +184,9 @@ func screenNames(rows []Row) []Row {
 				if r.Shares != nil {
 					sig += "|" + strconv.FormatFloat(*r.Shares, 'f', -1, 64)
 				}
+			}
+			if r.styledTabs {
+				sig += "|" + r.TableKind
 			}
 			if seen[sig] {
 				if screenDropReasons != nil {
@@ -434,9 +439,9 @@ func screenDropWhy(r Row, t *screenTable) string {
 		return "index_or_date"
 	case reScreenProse.MatchString(name):
 		return "prose"
-	case reScreenForeign.MatchString(name):
+	case reScreenForeign.MatchString(name) && !(r.captionPerson && reScreenPersonalName.MatchString(name)):
 		return "foreign"
-	case reScreenNonCommon.MatchString(name):
+	case reScreenNonCommon.MatchString(name) && !(r.commonColumn && strings.EqualFold(r.ShareClass, "Common Stock") && !reScreenNonCommon.MatchString(reScreenESOP.ReplaceAllString(name, ""))):
 		return "non_common_name"
 	case isNonCommonClass(r.ShareClass) && !((r.commonColumn || r.fundRegistration) && !reScreenOtherSecurity.MatchString(r.ShareClass)):
 		return "non_common_class"
