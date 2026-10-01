@@ -172,6 +172,14 @@ func screenNames(rows []Row) []Row {
 		// routinely disclose the same holding, and both reach the output.
 		if r.Percent != nil {
 			sig := screenFold(r.HolderName) + "|" + strconv.FormatFloat(*r.Percent, 'f', -1, 64)
+			if r.commonColumn {
+				// Explicit common-stock columns are distinct holdings, even when
+				// their percents coincide. Keep exact copies suppressed.
+				sig += "|" + screenClassKey(r)
+				if r.Shares != nil {
+					sig += "|" + strconv.FormatFloat(*r.Shares, 'f', -1, 64)
+				}
+			}
 			if seen[sig] {
 				if screenDropReasons != nil {
 					screenDropReasons["same_holder_pct"]++
@@ -270,6 +278,7 @@ func screenTables(rows []Row) map[int]*screenTable {
 	explicitClasses := map[int]map[string]bool{}
 	dateRows := map[int]int{}
 	indexRows := map[int]int{}
+	pctHolders := map[int]map[float64]map[string]bool{}
 	for _, r := range rows {
 		t := tabs[r.TableIndex]
 		if t == nil {
@@ -284,8 +293,19 @@ func screenTables(rows []Row) map[int]*screenTable {
 			if reScreenDate.MatchString(name) {
 				dateRows[r.TableIndex]++
 			}
-			if r.Percent != nil && *r.Percent >= 5.0 {
+			if r.Percent != nil && *r.Percent >= 5.0 && !r.colspanRecovery {
 				t.pctRepeats[*r.Percent]++
+			}
+			if r.Percent != nil && *r.Percent >= 5.0 && r.colspanRecovery {
+				if pctHolders[r.TableIndex] == nil {
+					pctHolders[r.TableIndex] = map[float64]map[string]bool{}
+				}
+				if pctHolders[r.TableIndex][*r.Percent] == nil {
+					pctHolders[r.TableIndex][*r.Percent] = map[string]bool{}
+				}
+				holders := pctHolders[r.TableIndex][*r.Percent]
+				holders[screenFold(name)] = true
+				t.pctRepeats[*r.Percent] = len(holders)
 			}
 		}
 		if r.Parser == "text_prose" {
@@ -400,7 +420,7 @@ func screenDropWhy(r Row, t *screenTable) string {
 		return "foreign"
 	case reScreenNonCommon.MatchString(name):
 		return "non_common_name"
-	case isNonCommonClass(r.ShareClass):
+	case isNonCommonClass(r.ShareClass) && !(r.commonColumn && !reScreenOtherSecurity.MatchString(r.ShareClass)):
 		return "non_common_class"
 	}
 	// A holder name never starts with a lower-case letter; a name that does is
@@ -466,7 +486,8 @@ func isNonCommonClass(cls string) bool {
 }
 
 var (
-	reScreenCommonWord = regexp.MustCompile(`(?i)\bcommon\b|\bordinary\b`)
+	reScreenCommonWord    = regexp.MustCompile(`(?i)\bcommon\b|\bordinary\b`)
+	reScreenOtherSecurity = regexp.MustCompile(`(?i)\bpreferred\b|\besop\b|\bdebenture|\bwarrant|\bdepositary\b|\bjunior\b|\boption\b`)
 	// Securities that are never the common stock, whatever else the label says.
 	reScreenHardNonCommon = regexp.MustCompile(`(?i)\bpreferred\b|\besop\b|\bdebenture|\bwarrant|\bdepositary\b|\bconvertible\b|\bjunior\b|\boption\b`)
 )
