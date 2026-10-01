@@ -95,7 +95,6 @@ def create_vision_jsonl(
                         }
                     ],
                     "generationConfig": {
-                        "temperature": 0.0,
                         "responseMimeType": "application/json"
                     }
                 },

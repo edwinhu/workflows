@@ -198,6 +198,8 @@ See the Red Flags in the first Iron Law section above — the same gotchas apply
 | **RuntimeError: Cannot send a request, as the client has been closed** | **Hold ONE `genai.Client` for the process; an inline/per-call client is GC'd mid-request** |
 | **Vertex batch: 404 `The PublisherModel <id> does not exist`** | **Qualify it: `publishers/google/models/<id>` — the bare id works only on the Standard API** |
 | **Vertex batch 404 on a model `models.list()` SHOWS in the region** | **Listing ≠ batch-servable. Fix the LOCATION, not the model: `location="global"` for 3.x — it accepts a us-central1 src/dest. Downgrading a tier silently changes output** |
+| **Gemini 3.x temp/top_p/top_k causes loops/degradation** | **Never set temperature, top_p, or top_k for Gemini 3.x. Use default 1.0** |
+| **Batch search grounding 0/138 with JSON output** | **Demand markdown/text output instead. JSON-only format blocks the search tool entirely** |
 
 **Top 3 mistakes** (bolded above):
 1. Using nested objects in metadata instead of flat primitives

@@ -157,7 +157,6 @@ class GeminiBatchProcessor:
                     }
                 ],
                 "generationConfig": {
-                    "temperature": 0.0,
                     "responseMimeType": "application/json"
                 }
             },
