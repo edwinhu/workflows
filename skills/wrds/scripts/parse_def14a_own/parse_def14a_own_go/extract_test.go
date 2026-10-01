@@ -5466,3 +5466,129 @@ func TestASCIISlashParenthesisShareFootnotes(t *testing.T) {
 		}
 	}
 }
+
+// Literal name-above-address cells from 0000950144-01-508559.
+const asciiClassAddressFixture = `                          SECURITY OWNERSHIP OF CERTAIN
+                        BENEFICIAL OWNERS AND MANAGEMENT
+
+         Unless otherwise indicated, the following table sets forth certain
+information available to the Company as of September 28, 2001, regarding (a) the
+ownership of the Company's common stock by (i) each of the Company's directors
+and nominees; (ii) each of the Company's named executive officers; and (iii) all
+directors and executive officers of the Company as a group; and (b) the
+ownership of the Company's common stock by all those known by the Company to be
+beneficial owners of more than five percent (5%) of its outstanding common
+stock.
+
+<TABLE>
+<CAPTION>
+- -------------------------------------------------------------------------------------------------------------------------
+   TITLE OF CLASS            NAME AND ADDRESS OF               AMOUNT AND NATURE OF           PERCENTAGE OF CLASS (8)
+                              BENEFICIAL OWNER                 BENEFICIAL OWNERSHIP
+- -------------------------------------------------------------------------------------------------------------------------
+<S>                   <C>                                      <C>                           <C>
+                      Phil Dubois
+Common Shares         Suite 200,  1727 West Broadway             3,063,050 (1),(7)                   13.0% (8)
+                      Vancouver, BC V6J 4W6
+- -------------------------------------------------------------------------------------------------------------------------
+                      Ken Bradley
+Common Shares         Suite 200,  1727 West Broadway             3,103,050 (2),(7)                   13.1% (8)
+                      Vancouver, BC V6J 4W6
+- -------------------------------------------------------------------------------------------------------------------------
+                      Brent Forgeron
+Common Shares         23-1243 Thurlow Street                       875,000 (9)                        3.8% (8)
+                      Vancouver, BC V6E 1X4
+- -------------------------------------------------------------------------------------------------------------------------
+                      Ken Spencer
+Common Shares         Suite 200,  1727 West Broadway             1,975,480 (3),(7) (10)               8.2% (8)
+                      Vancouver BC V6J 4W6
+- -------------------------------------------------------------------------------------------------------------------------
+                      Jim MacKay
+Common Shares         Suite 200,  1727 West Broadway               250,000 (4)                        1.1% (8)
+                      Vancouver BC V6J 4W6
+- -------------------------------------------------------------------------------------------------------------------------
+                      Bob Smart
+Common Shares         Suite 200,  1727 West Broadway                75,000 (6)                        0.3% (8)
+                      Vancouver BC V6J 4W6
+- -------------------------------------------------------------------------------------------------------------------------
+                      Ian Thomas
+Common Shares         Suite 200,  1727 West Broadway                75,000 (6)                        0.3% (8)
+                      Vancouver BC V6J 4W6
+- -------------------------------------------------------------------------------------------------------------------------
+ALL OFFICERS AND DIRECTORS AS A GROUP (7)                        9,416,580                           37.1% (8)
+- -------------------------------------------------------------------------------------------------------------------------
+</TABLE>`
+
+func TestASCIIClassAddressNameAboveValues(t *testing.T) {
+	rows, _, _ := ExtractText(asciiClassAddressFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 8 {
+		t.Fatalf("want eight literal common-share holdings, got %+v", rows)
+	}
+	for _, want := range []struct {
+		name        string
+		shares, pct float64
+	}{
+		{"Phil Dubois", 3063050, 13}, {"Ken Bradley", 3103050, 13.1}, {"Brent Forgeron", 875000, 3.8}, {"Ken Spencer", 1975480, 8.2}, {"Jim MacKay", 250000, 1.1}, {"Bob Smart", 75000, 0.3}, {"Ian Thomas", 75000, 0.3}, {"ALL OFFICERS AND DIRECTORS AS A GROUP", 9416580, 37.1},
+	} {
+		found := 0
+		for _, r := range rows {
+			if strings.HasPrefix(r.HolderName, want.name) {
+				found++
+				if r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+					t.Errorf("want %+v, got %+v", want, r)
+				}
+				if want.name != "ALL OFFICERS AND DIRECTORS AS A GROUP" && r.ShareClass != "Common Shares" {
+					t.Errorf("want Common Shares class, got %+v", r)
+				}
+			}
+		}
+		if found != 1 {
+			t.Errorf("want exactly one %+v got %d", want, found)
+		}
+	}
+}
+
+func TestASCIIClassAddressNumericFootnotes(t *testing.T) {
+	rows, _, _ := ExtractText(asciiClassAddressFixture, Row{})
+	rows = ScreenRows(rows)
+	for _, want := range []struct{ name, notes string }{
+		{"Phil Dubois", "1,7,8"}, {"Ken Bradley", "2,7,8"}, {"Brent Forgeron", "8,9"},
+		{"Ken Spencer", "10,3,7,8"}, {"Jim MacKay", "4,8"}, {"Bob Smart", "6,8"}, {"Ian Thomas", "6,8"},
+	} {
+		r := find(rows, want.name, "Common Shares")
+		if r == nil || r.Footnotes != want.notes {
+			t.Errorf("want %s notes %s got %+v", want.name, want.notes, r)
+		}
+	}
+}
+
+func TestASCIIClassAddressRetryPreservesExistingRows(t *testing.T) {
+	body := `<TABLE><CAPTION>SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS
+Name of Beneficial Owner       Shares Owned       Percent of Class
+<S>                            <C>                <C>
+Alex Example                   100,000            12.0%
+Blair Example                  200,000            24.0%
+</TABLE>` + asciiClassAddressFixture
+	rows, _, _ := ExtractText(body, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 2 {
+		t.Fatalf("retry must not change a nonzero legacy filing: %+v", rows)
+	}
+	if find(rows, "Alex Example", "") == nil || find(rows, "Blair Example", "") == nil {
+		t.Fatalf("lost legacy holdings: %+v", rows)
+	}
+}
+
+func TestASCIIClassAddressRequiresOwnershipCaption(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(asciiClassAddressFixture, "BENEFICIAL OWNERSHIP", "DOLLAR COMPENSATION"),
+		strings.ReplaceAll(asciiClassAddressFixture, "TITLE OF CLASS", "YEAR OF AWARD"),
+		strings.ReplaceAll(asciiClassAddressFixture, "NAME AND ADDRESS OF", "PRINCIPAL POSITION OF"),
+	} {
+		rows, _, _ := ExtractText(body, Row{})
+		if rows = ScreenRows(rows); len(rows) != 0 {
+			t.Errorf("nonownership caption must not enable class/address recovery: %+v", rows)
+		}
+	}
+}
