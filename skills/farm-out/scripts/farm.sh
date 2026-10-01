@@ -22,16 +22,31 @@
 # load-bearing logic in the SDK runner, is the anti-simulation clause and
 # artifact verification.
 #
-#   farm.sh --tasks tasks.json --cwd /repo   # JSON array; one row or many, run in parallel
+#   farm.sh --tasks tasks.json --cwd /repo   # JSON array; one row or many, run in parallel.
+#                                            # Each row is routed by scripts/lib/route.ts on its
+#                                            # "kind" (or its own "provider"/"model"); a row with
+#                                            # neither is refused and nothing runs.
 #   farm.sh --workflow /abs/wf.js --args /abs/args.json --out /abs/result.json
-#   farm.sh --provider claude|codex|gemini
+#   farm.sh --provider claude|codex|gemini   # legacy whole-run override: that wrapper for every
+#                                            # row, route.ts never consulted (--workflow needs it)
+#   farm.sh --verdict <rowId> correct|wrong "<why>"   # label a finished row; runs nothing
 #   farm.sh --no-cron                        # --workflow: skip the hourly heartbeat printout
 #                                            # (--tasks never prints one)
 #   WORK_LOOP_INTERVAL_MINUTES=30            # heartbeat period, whole minutes (default 60)
+#   FARM_OUTCOMES=/path.jsonl                # outcome + verdict log (default below)
 #
 set -uo pipefail
 
 declare -A WRAPPERS=( [claude]=claude-code [codex]=codex-code [gemini]=gemini-code )
+
+# skills/farm-out/scripts/farm.sh -> the plugin root, four levels up. Resolved from this file, not
+# CLAUDE_PLUGIN_ROOT, so a worktree's farm.sh runs that worktree's route.ts and watchdog.
+PLUGIN_ROOT=$(dirname "$(dirname "$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")")")")")
+
+# One machine-wide, append-only JSONL: a `row` line per finished --tasks row and a `verdict` line
+# per --verdict. It is the labelled dataset Jev is graded on, so it outlives the farm-events files
+# and never holds prompt text.
+OUTCOMES=${FARM_OUTCOMES:-${HOME:-}/.local/state/workflows/farm-outcomes.jsonl}
 
 # Without this, a delegated run will report success it never observed.
 ANTI_SIM='
@@ -52,11 +67,33 @@ NOBODY IS WATCHING THIS RUN. There is no one to answer a question, accept an off
 # Exit 2 is "you called me wrong" -- distinct from 1, "the delegation failed".
 refuse() { printf '%s\n' "$*" >&2; exit 2; }
 
+now_iso() { date -u +%Y-%m-%dT%H:%M:%SZ; }
+
+# Append one line to $OUTCOMES in ONE write(2) on an O_APPEND descriptor. Rows finish in parallel
+# and other farm.sh runs share the file; a shell redirect goes through a stdio buffer that splits a
+# long line into several writes, which concurrent writers can interleave. The line arrives on
+# stdin, never argv.
+append_outcome() {
+  mkdir -p -- "$(dirname -- "$OUTCOMES")" 2>/dev/null || return 1
+  printf '%s\n' "$1" | python3 -c '
+import os, sys
+data = sys.stdin.buffer.read()
+fd = os.open(sys.argv[1], os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o600)
+try:
+    n = os.write(fd, data)
+finally:
+    os.close(fd)
+sys.exit(0 if n == len(data) else 1)' "$OUTCOMES"
+}
+
 PROVIDER="" CWD=$PWD TASKS= WORKFLOW= ARGSFILE= OUT= CRON=1 BUDGET="" ; EXPECT=()
+VERDICT_MODE=0 VERDICT_ID= VERDICT= VERDICT_WHY=
 while [ $# -gt 0 ]; do
   case "$1" in
     --no-cron)  CRON=0; shift ;;
     --cron)     CRON=1; shift ;;   # accepted no-op alias -- the cron is the default
+    --verdict)  [ $# -ge 4 ] || refuse "usage: farm.sh --verdict <rowId> correct|wrong \"<why>\""
+                VERDICT_MODE=1 VERDICT_ID=$2 VERDICT=$3 VERDICT_WHY=$4; shift 4 ;;
     --provider) PROVIDER="${2:?--provider needs a value}"; shift 2 ;;
     --cwd)      CWD="${2:?--cwd needs a value}";           shift 2 ;;
     --tasks)    TASKS="${2:?--tasks needs a value}";       shift 2 ;;
@@ -69,12 +106,41 @@ while [ $# -gt 0 ]; do
   esac
 done
 
+# A verdict labels a row that already ran; it never runs anything. Only a row line can be judged,
+# so an id with no row line is refused -- a label for a row nobody can find is noise in the holdout.
+if [ "$VERDICT_MODE" = 1 ]; then
+  [ -z "$TASKS$WORKFLOW$ARGSFILE$OUT$PROVIDER" ] && [ "${#EXPECT[@]}" -eq 0 ] \
+    || refuse "--verdict stands alone: no --tasks, --workflow, --args, --out, --provider or --expect"
+  case "$VERDICT" in correct|wrong) ;; *) refuse "--verdict: verdict must be correct or wrong, not '$VERDICT'" ;; esac
+  [ -n "$VERDICT_WHY" ] || refuse "--verdict: give a reason, e.g. --verdict $VERDICT_ID $VERDICT \"the tests it claimed pass fail\""
+  found=""
+  if [ -f "$OUTCOMES" ]; then
+    # grep -F first: the file only grows, and jq over every line of it per verdict is the slow part.
+    found=$(grep -F -- "$VERDICT_ID" "$OUTCOMES" 2>/dev/null \
+      | jq -Rr --arg id "$VERDICT_ID" 'fromjson? | select(type == "object" and .type == "row" and .rowId == $id) | .rowId' 2>/dev/null \
+      | head -n 1)
+  fi
+  [ -n "$found" ] || refuse "--verdict: no row line with rowId '$VERDICT_ID' in $OUTCOMES"
+  line=$(jq -cn --arg rowId "$VERDICT_ID" --arg verdict "$VERDICT" --arg why "$VERDICT_WHY" --arg ts "$(now_iso)" \
+    '{type: "verdict", rowId: $rowId, verdict: $verdict, why: $why, ts: $ts}') \
+    || { printf 'farm: could not build the verdict line\n' >&2; exit 1; }
+  append_outcome "$line" || { printf 'farm: could not append to %s\n' "$OUTCOMES" >&2; exit 1; }
+  printf 'farm: VERDICT %s %s\n' "$VERDICT_ID" "$VERDICT" >&2
+  exit 0
+fi
+
 # All validation runs before the wrapper is touched: a refusal must not depend
 # on the proxy being reachable.
-[ -n "$PROVIDER" ] || refuse "--provider is required (gemini is recommended)"
-WRAPPER="${WRAPPERS[$PROVIDER]:-}"
-[ -n "$WRAPPER" ] || refuse "unknown provider $PROVIDER; use claude|codex|gemini"
-command -v "$WRAPPER" >/dev/null || refuse "$WRAPPER not on PATH"
+#
+# No --provider means 'route': each --tasks row gets its own provider and model from route.ts.
+# --provider is the legacy whole-run override -- that wrapper for every row, route.ts never asked.
+PROVIDER=${PROVIDER:-route}
+WRAPPER=""
+if [ "$PROVIDER" != route ]; then
+  WRAPPER="${WRAPPERS[$PROVIDER]:-}"
+  [ -n "$WRAPPER" ] || refuse "unknown provider $PROVIDER; use claude|codex|gemini, or omit --provider to route each row by its kind"
+  command -v "$WRAPPER" >/dev/null || refuse "$WRAPPER not on PATH"
+fi
 [ -d "$CWD" ] || refuse "--cwd $CWD: no such directory"
 # ONE task mode, not two. The only caller is a model reading the skill doc, so an inline
 # --task saved nobody anything -- and a machine-written prompt passed as a shell argument
@@ -88,6 +154,9 @@ command -v "$WRAPPER" >/dev/null || refuse "$WRAPPER not on PATH"
 # CAN be named -- a workflow picks its agents per leg instead. One way to say it.
 
 if [ -n "$WORKFLOW" ]; then
+  # route.ts routes ROWS; a workflow has none, and its legs pick their own agents and models.
+  [ "$PROVIDER" != route ] \
+    || refuse "--workflow needs --provider claude|codex|gemini: routing applies to --tasks rows"
   # A workflow's value is a structured return. Relaying it as prose puts a model in the
   # gate path, so the child writes the object to --out and we check the file.
   [ -n "$OUT" ] || refuse "--workflow requires --out <path>: the returned object is the result, not the summary"
@@ -229,9 +298,13 @@ claim() {
 # One delegated run. Emits a JSON object on stdout; the transcript goes to a
 # temp file so tool_use events can be counted -- 0 tool calls on a work task is
 # a fabrication smell, the same signal the old SDK runner read off its stream.
+#
+# provider picks the wrapper for THIS row (rows of one --tasks run may differ). meta is the row's
+# outcome record minus what only the run can say; empty means record nothing (--workflow).
 run_one() {
-  local label="$1" prompt="$2" agent="$3" model="$4" budget="$5" max_turns="$6"; shift 6
-  local expects=("$@") log err rc text calls models missing stderr_tail
+  local label="$1" prompt="$2" agent="$3" model="$4" budget="$5" max_turns="$6" provider="$7" meta="$8"; shift 8
+  local expects=("$@") log err rc text calls models missing stderr_tail result
+  local wrapper="${WRAPPERS[$provider]}"
   log=$(mktemp -t farm-out.XXXXXX.jsonl)
   err=$(mktemp -t farm-out.XXXXXX.err)
 
@@ -262,14 +335,14 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
   # No --permission-mode: the runner inherits the user's default (auto), which keeps hard_deny --
   # the FERPA and licensed-data rules -- applying inside a dispatched run. The farmOutOnly policy
   # that used to fight this lives in main-thread-guard.sh now, and a hook can read FARM_OUT_CHILD.
-  local -a cmd=("$WRAPPER" -p "${prompt}${ANTI_SIM}${CHILD_STANDING}" --output-format stream-json --verbose)
+  local -a cmd=("$wrapper" -p "${prompt}${ANTI_SIM}${CHILD_STANDING}" --output-format stream-json --verbose)
   [ -n "$agent" ] && cmd+=(--agent "$agent")
   # Per-row model override. Absent leaves the wrapper's own default -- which is what every
   # existing caller gets, since no row carried one until now.
   [ -n "$model" ] && cmd+=(--model "$model")
   
   # Cross-provider guard
-  if [ "$PROVIDER" = "gemini" ] || [ "$PROVIDER" = "codex" ]; then
+  if [ "$provider" = "gemini" ] || [ "$provider" = "codex" ]; then
     cmd+=( -p "Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint, no LLM-calling scripts); do the work yourself." )
   fi
   touch "$log.stamp"
@@ -280,8 +353,7 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
   local child_pid=$!
   
   local wd_out
-  ROOT=$(dirname "$(dirname "$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")")")")")
-  wd_out=$(python3 "$ROOT/skills/farm-out/scripts/watchdog.py" "$child_pid" "$log" "${budget:-4000000}" "${max_turns:-250}")
+  wd_out=$(python3 "$PLUGIN_ROOT/skills/farm-out/scripts/watchdog.py" "$child_pid" "$log" "${budget:-4000000}" "${max_turns:-250}")
   wait "$child_pid" 2>/dev/null || true
   rc=$?
   
@@ -290,7 +362,7 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
   local wd_exceeded=$(printf '%s' "$wd_out" | jq -r '.budgetExceeded // false')
   
   local cross_provider=false
-  if [ "$PROVIDER" = "gemini" ] || [ "$PROVIDER" = "codex" ]; then
+  if [ "$provider" = "gemini" ] || [ "$provider" = "codex" ]; then
     if find "$CWD" -newer "$log.stamp" -type f -exec grep -lE 'v1/messages|ANTHROPIC_AUTH_TOKEN' {} + 2>/dev/null | grep -q .; then
       cross_provider=true
       rc=1
@@ -319,7 +391,7 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
     emit "DONE $(enc "$label") fail rc=$rc missing=${#missing[@]} toolCalls=${calls:-0} W=$wd_tokens"
   fi
 
-  jq -n --arg label "$label" --arg result "$text" --argjson toolCalls "${calls:-0}" \
+  result=$(jq -n --arg label "$label" --arg result "$text" --argjson toolCalls "${calls:-0}" \
         --argjson models "${models:-[]}" --argjson exit "$rc" \
         --arg stderr "$stderr_tail" \
         --argjson tokensW "$wd_tokens" --argjson budgetExceeded "$wd_exceeded" \
@@ -327,14 +399,32 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
         --argjson missing "$(printf '%s\n' "${missing[@]:-}" | jq -Rsc 'split("\n") | map(select(length>0))')" \
     '{label:$label, ok: (($missing|length)==0 and $exit==0 and ($budgetExceeded | not) and ($crossProvider | not)), exit:$exit,
       toolCalls:$toolCalls, models:$models, missing:$missing, result:$result, tokensW:$tokensW, budgetExceeded:$budgetExceeded, crossProvider:$crossProvider}
-     + (if $exit != 0 and ($stderr|length) > 0 then {stderr:$stderr} else {} end)'
+     + (if $exit != 0 and ($stderr|length) > 0 then {stderr:$stderr} else {} end)')
+
+  # The outcome line takes only the verdict fields: `result` is the child's own text and can quote
+  # the prompt back, so it never reaches the outcomes file. The result goes in on stdin.
+  if [ -n "$meta" ]; then
+    local line
+    if ! line=$(printf '%s' "$result" | jq -c --argjson m "$meta" --arg ts "$(now_iso)" --arg cwd "$CWD_ABS" \
+        '. as $r | {type: "row", rowId: $m.rowId, ts: $ts, cwd: $cwd, label: $m.label, kind: $m.kind,
+                    route: $m.route, shadow: $m.shadow, promptSha256: $m.promptSha256, promptLength: $m.promptLength,
+                    exit: $r.exit, ok: $r.ok, missing: $r.missing, toolCalls: $r.toolCalls, models: $r.models}') \
+       || ! append_outcome "$line"; then
+      printf 'farm: could not record the outcome of row %s in %s\n' "$(printf '%s' "$meta" | jq -r '.rowId')" "$OUTCOMES" >&2
+    fi
+  fi
+  printf '%s\n' "$result"
 }
 
 if [ -n "$TASKS" ]; then
-  # Fan out. Each task writes its object to its own file so parallel writers
-  # cannot interleave on stdout.
-  dir=$(mktemp -d -t farm-out-fan.XXXXXX)
   n=$(jq 'length' "$TASKS")
+  # Three passes: validate every row, route every row, THEN run any. A refusal in row 9 must not
+  # arrive after rows 0-8 are already spending, and a refused row never falls through to a default.
+  declare -a ROW_L=() ROW_P=() ROW_A=() ROW_M=() ROW_B=() ROW_PROV=() ROW_META=() ROW_ID=()
+  RUN_STAMP=$(date -u +%Y%m%dT%H%M%SZ)
+  RUN_RAND=$(od -An -N4 -tx1 /dev/urandom 2>/dev/null | tr -d ' \n'); RUN_RAND=${RUN_RAND:-$RANDOM}
+  # CDPATH empty: a relative --cwd matched through CDPATH makes cd print it, doubling the value.
+  CWD_ABS=$(CDPATH='' cd -- "$CWD" && pwd) || CWD_ABS=$CWD
   for i in $(seq 0 $((n - 1))); do
     p=$(jq -r ".[$i].prompt" "$TASKS")
     [ "$p" != "null" ] || refuse "--tasks $TASKS: task $i has no string \"prompt\""
@@ -361,8 +451,97 @@ if [ -n "$TASKS" ]; then
       *[$'\n\r\t']*|*[$'\001'-$'\010']*)
         refuse "task $i model contains a control character; not allowed in the event stream" ;;
     esac
+    ROW_L[i]=$l ROW_P[i]=$p ROW_A[i]=$a ROW_M[i]=$m ROW_B[i]=$b
+    # Filesystem-safe and unique: run start, our pid, a random word, the row index.
+    ROW_ID[i]="${RUN_STAMP}-$$-${RUN_RAND}-${i}"
+  done
+
+  # promptSha256/promptLength cover the RAW row prompt, read from the file rather than from $p
+  # (command substitution strips trailing newlines). Length counts UTF-16 units, as route.ts's
+  # Jev state does, so one row's two records agree.
+  mapfile -t ROW_HASH < <(python3 -c '
+import hashlib, json, sys
+for r in json.load(open(sys.argv[1], encoding="utf-8")):
+    p = r.get("prompt") if isinstance(r, dict) else None
+    if not isinstance(p, str):
+        p = "" if p is None else json.dumps(p, separators=(",", ":"))
+    print(hashlib.sha256(p.encode("utf-8", "surrogatepass")).hexdigest(),
+          len(p.encode("utf-16-le", "surrogatepass")) // 2)' "$TASKS")
+  [ "${#ROW_HASH[@]}" -eq "$n" ] || refuse "--tasks $TASKS: could not hash the row prompts"
+
+  rdir=$(mktemp -d -t farm-route.XXXXXX)
+  if [ "$PROVIDER" = route ]; then
+    command -v bun >/dev/null || { rm -rf -- "$rdir"; refuse "bun not on PATH: routing a row needs it (or pass --provider claude|codex|gemini)"; }
+    ROUTE_TS="$PLUGIN_ROOT/scripts/lib/route.ts"
+    [ -f "$ROUTE_TS" ] || { rm -rf -- "$rdir"; refuse "$ROUTE_TS: no such file"; }
+    # In parallel: each route.ts makes at most one Jev call, capped at jev.timeoutSeconds, so the
+    # routing pass costs one timeout, not one per row. The row reaches route.ts as ONE argv
+    # element -- never through a shell string.
+    declare -a RPID=()
+    for i in $(seq 0 $((n - 1))); do
+      bun "$ROUTE_TS" --row "$(jq -c ".[$i]" "$TASKS")" >"$rdir/$i.json" 2>"$rdir/$i.err" &
+      RPID[i]=$!
+    done
+    refused=0 broken=0
+    for i in $(seq 0 $((n - 1))); do
+      wait "${RPID[i]}"; rrc=$?
+      if [ "$rrc" -eq 0 ] && ! jq -e 'type == "object" and (.provider | type == "string")' "$rdir/$i.json" >/dev/null 2>&1; then
+        printf 'route.ts exited 0 without a decision object\n' >>"$rdir/$i.err"; rrc=1
+      fi
+      case "$rrc" in
+        0) ;;
+        2) refused=$((refused + 1))
+           { printf 'farm: task %s refused by route.ts:\n' "$i"; cat -- "$rdir/$i.err"; } >&2 ;;
+        *) broken=$((broken + 1))
+           { printf 'farm: route.ts failed on task %s (exit %s):\n' "$i" "$rrc"; cat -- "$rdir/$i.err"; } >&2 ;;
+      esac
+    done
+    if [ "$refused" -gt 0 ]; then
+      rm -rf -- "$rdir"; refuse "farm: $refused of $n row(s) refused; no row was run"
+    fi
+    if [ "$broken" -gt 0 ]; then
+      rm -rf -- "$rdir"; printf 'farm: routing failed for %s of %s row(s); no row was run\n' "$broken" "$n" >&2; exit 1
+    fi
+  else
+    # Legacy --provider: that wrapper for every row and the row's own model, exactly as before.
+    for i in $(seq 0 $((n - 1))); do
+      jq -c --argjson i "$i" --arg p "$PROVIDER" --arg m "${ROW_M[i]}" \
+        '.[$i] | {provider: $p, model: (if $m == "" then null else $m end),
+                  kind: ((if type == "object" then .kind else null end) | if type == "string" then . else null end),
+                  candidate: null, source: "flag",
+                  shadow: {unavailable: "--provider flag: route.ts was not consulted"}}' "$TASKS" >"$rdir/$i.json"
+    done
+  fi
+
+  for i in $(seq 0 $((n - 1))); do
+    prov=$(jq -r '.provider' "$rdir/$i.json")
+    w="${WRAPPERS[$prov]:-}"
+    [ -n "$w" ] || { rm -rf -- "$rdir"; refuse "task $i: provider '$prov' has no wrapper; use claude|codex|gemini"; }
+    command -v "$w" >/dev/null || { rm -rf -- "$rdir"; refuse "$w not on PATH"; }
+    mdl=$(jq -r '.model // ""' "$rdir/$i.json")
+    case "$mdl" in
+      *[$'\n\r\t']*|*[$'\001'-$'\010']*)
+        rm -rf -- "$rdir"; refuse "task $i: routed model contains a control character" ;;
+    esac
+    ROW_PROV[i]=$prov ROW_M[i]=$mdl
+    read -r sha len <<<"${ROW_HASH[i]}"
+    ROW_META[i]=$(jq -c --arg rowId "${ROW_ID[i]}" --arg label "${ROW_L[i]}" --arg sha "$sha" --argjson len "$len" \
+      '{rowId: $rowId, label: $label, kind: .kind,
+        route: {source: .source, provider: .provider, model: .model, candidate: .candidate},
+        shadow: .shadow, promptSha256: $sha, promptLength: $len}' "$rdir/$i.json") \
+      || { rm -rf -- "$rdir"; refuse "task $i: could not read its routing decision"; }
+  done
+  rm -rf -- "$rdir"
+
+  # Fan out. Each task writes its object to its own file so parallel writers
+  # cannot interleave on stdout.
+  dir=$(mktemp -d -t farm-out-fan.XXXXXX)
+  for i in $(seq 0 $((n - 1))); do
+    # The rowId is what --verdict takes; this line is where the caller learns it.
+    printf 'farm: ROW %s %s\n' "${ROW_L[i]}" "${ROW_ID[i]}" >&2
     mapfile -t e < <(jq -r ".[$i].expect // [] | if type==\"array\" then .[] else . end" "$TASKS")
-    run_one "$l" "$p" "$a" "$m" "$b" "${FARM_MAX_TURNS:-250}" "${e[@]:-}" > "$dir/$i.json" &
+    run_one "${ROW_L[i]}" "${ROW_P[i]}" "${ROW_A[i]}" "${ROW_M[i]}" "${ROW_B[i]}" "${FARM_MAX_TURNS:-250}" \
+      "${ROW_PROV[i]}" "${ROW_META[i]}" "${e[@]:-}" > "$dir/$i.json" &
   done
   wait
   out=$(jq -s '.' "$dir"/*.json); rm -rf "$dir"
@@ -431,7 +610,7 @@ $(cat "$ARGSFILE")"
 CRITICAL — Workflow returns IMMEDIATELY with a task id and then keeps running in the background. If you end your turn at that point the session exits and the entire run is destroyed. You MUST NOT end your turn until the workflow has actually returned. It may take 20-60 minutes.
 After calling Workflow, stay alive by polling: run \`sleep 120\` via Bash, then check whether it finished (ToolSearch for \"select:TaskList,TaskGet,TaskOutput\" and use those, or read the workflow transcript directory named in the Workflow result). Repeat for as long as it takes. Never emit a final text message while the workflow is still running.
 
-When it returns, write the SCRIPT'S OWN RETURN VALUE to $OUT as a single JSON document using the Write tool — verbatim, no commentary, no summarising. The Workflow tool wraps it: the tool result is an envelope {summary, agentCount, logs, totalTokens, result, …} and the script's return value is the object under its \`result\` key. Write THAT object, unwrapped, as the whole document. Do not write the envelope, and do not add a \`result\` key of your own. If Workflow throws, write {\"error\": \"<exact error text>\"} to that same path. Do not retry with invented arguments." "" "" "$BUDGET" "${FARM_MAX_TURNS:-250}" "${EXPECT[@]:-}" "$OUT")
+When it returns, write the SCRIPT'S OWN RETURN VALUE to $OUT as a single JSON document using the Write tool — verbatim, no commentary, no summarising. The Workflow tool wraps it: the tool result is an envelope {summary, agentCount, logs, totalTokens, result, …} and the script's return value is the object under its \`result\` key. Write THAT object, unwrapped, as the whole document. Do not write the envelope, and do not add a \`result\` key of your own. If Workflow throws, write {\"error\": \"<exact error text>\"} to that same path. Do not retry with invented arguments." "" "" "$BUDGET" "${FARM_MAX_TURNS:-250}" "$PROVIDER" "" "${EXPECT[@]:-}" "$OUT")
   # Non-empty is not structured: a child that wrote its summary would pass the artifact
   # check and hand prose to the caller as the workflow's return value.
   if printf '%s' "$out" | jq -e '.ok' >/dev/null 2>&1; then
