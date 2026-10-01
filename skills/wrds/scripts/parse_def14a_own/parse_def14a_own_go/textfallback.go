@@ -350,6 +350,23 @@ func stripEntities(s string) string {
 var reASCIISlashParenNote = regexp.MustCompile(`/\(\s*([0-9]{1,2})\s*\)/`)
 
 func ExtractText(body string, base Row) ([]Row, int, int) {
+	hf, spans := textHolderFundColumns(body, base)
+	if len(ScreenRows(hf)) == 0 {
+		return extractTextLayouts(body, base)
+	}
+	// The holder-by-fund tables are read; the generic scan would fuse the
+	// holder and fund cells into one name, so it sees the rest of the body.
+	lines := strings.Split(body, "\n")
+	for _, sp := range spans {
+		for k := sp[0]; k <= sp[1]; k++ {
+			lines[k] = ""
+		}
+	}
+	rows, seen, used := extractTextLayouts(strings.Join(lines, "\n"), base)
+	return append(rows, hf...), seen + len(spans), used + len(spans)
+}
+
+func extractTextLayouts(body string, base Row) ([]Row, int, int) {
 	rows, seen, used := extractText(body, base, false)
 	if len(ScreenRows(rows)) != 0 || len(ScreenRows(ExtractProse(body, base))) != 0 {
 		return rows, seen, used
@@ -557,7 +574,9 @@ func textFundRegistrationCounts(body string, base Row) ([]Row, int) {
 
 var reASCIIBraceNote = regexp.MustCompile(`\{\(([0-9]+)\)\}`)
 var reASCIICaptionShares = regexp.MustCompile(`(?i)beneficially\s+owned|shares\s+owned|number\s+of\s+(?:common\s+)?shares|amount\s+and\s+nature\s+of\s+beneficial\s+ownership`)
-var reASCIICaptionPercent = regexp.MustCompile(`(?i)(?:percent|%)\s+(?:of\s+)?(?:class|shares|outstanding)|^shares\s+outstanding$`)
+var reLessThanHead = regexp.MustCompile(`(?i)^less\s+than$`)
+
+var reASCIICaptionPercent = regexp.MustCompile(`(?i)(?:percent|%)\s+(?:of\s+)?(?:class|shares|outstanding)|^shares\s+outstanding$|\bpercent\s+owned\b`)
 var reASCIICountOnly = regexp.MustCompile(`^(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})+|--|-0-)$`)
 var reASCIICaptionCount = regexp.MustCompile(`^(?:(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})+)(?:\.[0-9]+)?|--|-0-)$`)
 var reASCIICaptionAge = regexp.MustCompile(`(?i),\s*age\s+[0-9]{1,3}.*$`)
@@ -759,6 +778,10 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 			pctText := ""
 			if !countOnly {
 				pctText = cell(clean[j], pctCol)
+				// "Less than" / "1/4 of 1%": the percent cell wraps onto the next line.
+				if reLessThanHead.MatchString(pctText) && j+1 < end {
+					pctText += " " + cell(clean[j+1], pctCol)
+				}
 			}
 			if strings.Contains(count, "$") || (countOnly && strings.Contains(clean[j], "$")) {
 				money = true
@@ -903,6 +926,184 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 	return out, blocks
 }
 
+var (
+	reHFFundHdr   = regexp.MustCompile(`(?i)\bfunds?\b|\bportfolios?\b`)
+	reHFHolderHdr = regexp.MustCompile(`(?i)shareholder|stockholder|beneficial\s+owner\b|record\s+(?:holder|owner)|name\s+and\s+address`)
+	reHFPctHdr    = regexp.MustCompile(`(?i)percent`)
+	reHFSharesHdr = regexp.MustCompile(`(?i)\bshares\b|\bamount\b`)
+)
+
+// markerCell cuts column col of an SGML-wrapped ASCII table line at the
+// <S>/<C> marker offsets, widened left to the start of a word a marker splits.
+func markerCell(line string, spans []int, col int) string {
+	boundary := func(pos int) int {
+		if pos >= len(line) {
+			return len(line)
+		}
+		for pos > 0 && line[pos] != ' ' && line[pos-1] != ' ' {
+			pos--
+		}
+		return pos
+	}
+	lo, hi := boundary(spans[col]), len(line)
+	if col+1 < len(spans) {
+		hi = boundary(spans[col+1])
+	}
+	if lo >= hi {
+		return ""
+	}
+	return strings.TrimSpace(line[lo:hi])
+}
+
+// textHolderFundColumns reads a fund complex's 5% table laid out by holder
+// and fund: an SGML-wrapped table whose columns name the holder, the fund
+// and the percent held (and optionally the shares), one row per holding,
+// the fund as the share class. It returns the rows and the line span of
+// each table it read.
+func textHolderFundColumns(body string, base Row) ([]Row, [][2]int) {
+	raw := strings.Split(body, "\n")
+	var out []Row
+	var spans [][2]int
+	for start := 0; start < len(raw); start++ {
+		if !strings.Contains(strings.ToLower(raw[start]), "<table") {
+			continue
+		}
+		end := start + 1
+		for end < len(raw) && !strings.Contains(strings.ToLower(raw[end]), "</table") {
+			end++
+		}
+		if end == len(raw) {
+			break
+		}
+		if rows := holderFundTable(raw, start, end, base); rows != nil {
+			out = append(out, rows...)
+			spans = append(spans, [2]int{start, end})
+		}
+		start = end
+	}
+	return out, spans
+}
+
+// holderFundTable reads one holder-by-fund table between raw[start] and
+// raw[end], or returns nil. A holder stub (NAME AND ADDRESS) wraps the
+// holder's name over lines that may carry further holdings, and the address
+// or a blank line ends the name; an interior holder column starts a holder
+// on every line with a percent. A fund name wrapped onto the next line
+// joins the fund above it.
+func holderFundTable(raw []string, start, end int, base Row) []Row {
+	marker := -1
+	var cols []int
+	for j := start + 1; j < end; j++ {
+		if m := reASCIIColumnMark.FindAllStringIndex(raw[j], -1); len(m) > 0 {
+			marker = j
+			for _, c := range m {
+				cols = append(cols, c[0])
+			}
+			break
+		}
+	}
+	if marker < 0 || len(cols) < 3 || len(cols) > 4 || strings.Contains(strings.Join(raw[start:end], " "), "$") {
+		return nil
+	}
+	headers := make([]string, len(cols))
+	for j := start + 1; j < marker; j++ {
+		line := stripEntities(reAnyTag.ReplaceAllString(raw[j], ""))
+		if reRuleLine.MatchString(strings.TrimSpace(line)) {
+			continue
+		}
+		for c := range headers {
+			headers[c] += " " + markerCell(line, cols, c)
+		}
+	}
+	fundCol, holderCol, pctCol, sharesCol := -1, -1, -1, -1
+	for c, h := range headers {
+		fund, holder := reHFFundHdr.MatchString(h), reHFHolderHdr.MatchString(h)
+		switch {
+		case fund && !holder && fundCol < 0:
+			fundCol = c
+		case holder && !fund && holderCol < 0:
+			holderCol = c
+		case reHFPctHdr.MatchString(h) && !fund && !holder && pctCol < 0:
+			pctCol = c
+		case reHFSharesHdr.MatchString(h) && !fund && !holder && sharesCol < 0:
+			sharesCol = c
+		default:
+			return nil
+		}
+	}
+	if fundCol < 0 || holderCol < 0 || pctCol < 0 {
+		return nil
+	}
+	var names, funds [][]string
+	var rows []Row
+	var rowName, rowFund []int
+	cur, addressed, fundLine := -1, false, -1
+	for j := marker + 1; j < end; j++ {
+		if strings.Contains(raw[j], "<") {
+			continue
+		}
+		line := stripEntities(raw[j])
+		if strings.TrimSpace(line) == "" {
+			addressed = true
+			continue
+		}
+		h, f, p := markerCell(line, cols, holderCol), markerCell(line, cols, fundCol), markerCell(line, cols, pctCol)
+		if reRuleLine.MatchString(strings.TrimSpace(line)) {
+			addressed = true // a rule closes the holder record, as a blank line does
+			continue
+		}
+		if f != "" {
+			if p == "" && fundLine == j-1 {
+				funds[len(funds)-1] = append(funds[len(funds)-1], f)
+			} else {
+				funds = append(funds, []string{f})
+			}
+			fundLine = j
+		}
+		if h != "" {
+			switch {
+			case isAddressLine(h) || reASCIIStreetNumber.MatchString(h) || reHFOrdinalStreet.MatchString(h) || reHFCityStateZip.MatchString(h):
+				addressed = true
+			case cur < 0 || addressed || (p != "" && holderCol != 0):
+				names = append(names, []string{h})
+				cur, addressed = len(names)-1, false
+			default:
+				names[cur] = append(names[cur], h)
+			}
+		}
+		if p == "" {
+			continue
+		}
+		pct, parsed, _, _ := ParsePercent(p)
+		if !parsed || pct <= 0 || pct > 100 || cur < 0 || len(funds) == 0 {
+			return nil
+		}
+		r := base
+		if sharesCol >= 0 {
+			shares, ok := ParseShares(markerCell(line, cols, sharesCol))
+			if !ok {
+				return nil
+			}
+			r.Shares = &shares
+		}
+		r.Percent, r.fundRegistration = &pct, true
+		r.TableIndex, r.RowIndex, r.TableKind, r.Parser = start, j, "5pct_holders", "text_table"
+		rows = append(rows, r)
+		rowName, rowFund = append(rowName, cur), append(rowFund, len(funds)-1)
+	}
+	if len(rows) < 2 {
+		return nil
+	}
+	for i := range rows {
+		name := norm(strings.Join(names[rowName[i]], " "))
+		if strings.Contains(name, "$") || !hasWords(name, 1) {
+			return nil
+		}
+		rows[i].HolderName, rows[i].ShareClass = name, norm(strings.Join(funds[rowFund[i]], " "))
+	}
+	return rows
+}
+
 var reASCIIMatrixCount = regexp.MustCompile(`^[0-9][0-9,]*(?:\([0-9]+\))?$`)
 
 // SGML table boundaries isolate explicit share-count matrices from adjacent money tables.
@@ -1041,6 +1242,14 @@ func textFundShareMatrix(body string, base Row) ([]Row, int) {
 // This retry is available only when the legacy filing has no screened holdings.
 var reASCIIPageNumber = regexp.MustCompile(`^[0-9]{1,3}$`)
 var reASCIIGroupCount = regexp.MustCompile(`(?i)\(\s*[0-9]{1,3}\s+(?:persons?|people|individuals?)\s*\)`)
+
+// reHFOrdinalStreet is a street line whose name is an ordinal ("707 2nd Avenue"),
+// which reASCIIStreetNumber misses because the second token opens on a digit.
+var reHFOrdinalStreet = regexp.MustCompile(`(?i)^\d{1,6}\s+\d{1,3}(?:st|nd|rd|th)\s+[a-z]`)
+
+// reHFCityStateZip is a comma-less "HARTFORD CT  06103-2833" city line.
+var reHFCityStateZip = regexp.MustCompile(`^[A-Za-z][A-Za-z .'-]*\s[A-Z]{2}\s+\d{5}(?:-\d{4})?$`)
+
 var reASCIIStreetNumber = regexp.MustCompile(`^\d{1,6}(?:-\d{1,6})?[A-Za-z]?\s+[A-Za-z]`)
 
 func textSeparateClassCounts(body string, base Row) ([]Row, int) {
