@@ -348,7 +348,211 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 	if rr, blocks := textFundShareMatrix(body, base); len(ScreenRows(rr)) != 0 {
 		return rr, blocks, blocks
 	}
+	if rr, blocks := textCaptionOwnershipCounts(body, base); len(ScreenRows(rr)) != 0 {
+		return rr, blocks, blocks
+	}
 	return rows, seen, used
+}
+
+var reASCIIBraceNote = regexp.MustCompile(`\{\(([0-9]+)\)\}`)
+var reASCIICaptionShares = regexp.MustCompile(`(?i)beneficially\s+owned|shares\s+owned|number\s+of\s+(?:common\s+)?shares|amount\s+and\s+nature\s+of\s+beneficial\s+ownership`)
+var reASCIICaptionPercent = regexp.MustCompile(`(?i)(?:percent|%)\s+(?:of\s+)?(?:class|shares|outstanding)|^shares\s+outstanding$`)
+var reASCIICountOnly = regexp.MustCompile(`^(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})+|--|-0-)$`)
+
+// Caption columns, not numeric-tail alignment, distinguish shares from age,
+// position and election-year columns. Retry only when the legacy filing is empty.
+func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
+	raw := strings.Split(stripEntities(body), "\n")
+	clean := make([]string, len(raw))
+	for i, line := range raw {
+		clean[i] = reAnyTag.ReplaceAllString(line, "")
+	}
+	var out []Row
+	blocks := 0
+	for start := 0; start < len(raw); start++ {
+		if !strings.Contains(strings.ToLower(raw[start]), "<table>") {
+			continue
+		}
+		end := start + 1
+		for end < len(raw) && !strings.Contains(strings.ToLower(raw[end]), "</table") && !strings.Contains(strings.ToLower(raw[end]), "<fn>") {
+			end++
+		}
+		if end == len(raw) {
+			break
+		}
+		marker := -1
+		var spans []int
+		for j := start + 1; j < end; j++ {
+			if m := reASCIIColumnMark.FindAllStringIndex(raw[j], -1); len(m) >= 3 {
+				marker = j
+				for _, col := range m {
+					spans = append(spans, col[0])
+				}
+				break
+			}
+		}
+		if marker < 0 {
+			start = end
+			continue
+		}
+		cell := func(line string, col int) string {
+			boundary := func(pos int) int {
+				if pos >= len(line) {
+					return len(line)
+				}
+				for pos > 0 && line[pos] != ' ' && line[pos-1] != ' ' {
+					pos--
+				}
+				return pos
+			}
+			lo, hi := boundary(spans[col]), len(line)
+			if col+1 < len(spans) {
+				hi = boundary(spans[col+1])
+			}
+			if lo >= hi {
+				return ""
+			}
+			return strings.TrimSpace(line[lo:hi])
+		}
+		headers := make([]string, len(spans))
+		for j := start + 1; j < marker; j++ {
+			if reRuleLine.MatchString(strings.TrimSpace(clean[j])) {
+				continue
+			}
+			for col := range headers {
+				headers[col] += " " + cell(clean[j], col)
+			}
+		}
+		shareCol, pctCol, nameCol, classCol := -1, -1, -1, -1
+		for col, hdr := range headers {
+			headers[col] = norm(hdr)
+			if strings.Contains(strings.ToLower(headers[col]), "name") {
+				if nameCol != -1 {
+					nameCol = -2
+					break
+				}
+				nameCol = col
+			}
+			if strings.EqualFold(headers[col], "Title of Class") {
+				classCol = col
+			}
+			if col > 0 && reASCIICaptionShares.MatchString(norm(strings.ReplaceAll(headers[col], "%", ""))) {
+				if shareCol != -1 {
+					shareCol = -2
+					break
+				}
+				shareCol = col
+			}
+			if col > 0 && col != shareCol && reASCIICaptionPercent.MatchString(headers[col]) {
+				if pctCol != -1 {
+					pctCol = -2
+					break
+				}
+				pctCol = col
+			}
+		}
+		hdr := strings.Join(headers, " ")
+		if os.Getenv("DEF14A_DEBUG_TEXTBLOCK") != "" {
+			fmt.Fprintf(os.Stderr, "--- caption columns=%q shares=%d percent=%d\n", headers, shareCol, pctCol)
+		}
+		if nameCol < 0 || (nameCol != 0 && classCol != 0) || shareCol < 0 || pctCol < 0 || shareCol == pctCol || nameCol == shareCol || nameCol == pctCol ||
+			reCompCue.MatchString(hdr) || reOptDetailCue.MatchString(hdr) || strings.Contains(strings.ToLower(hdr), "dollar") {
+			start = end
+			continue
+		}
+		ctxStart := start - 12
+		if ctxStart < 0 {
+			ctxStart = 0
+		}
+		commonClass := classCol >= 0 && strings.Contains(strings.ToLower(norm(strings.Join(clean[ctxStart:marker], " "))), "common stock")
+		class := ""
+		if strings.Contains(strings.ToLower(headers[shareCol]), "common stock") {
+			class = "Common Stock"
+		}
+		var rows []Row
+		var groupHead []string
+		pendingName := ""
+		money := false
+		for j := marker + 1; j < end; j++ {
+			nm := cell(clean[j], nameCol)
+			count := cell(clean[j], shareCol)
+			pctText := cell(clean[j], pctCol)
+			if strings.Contains(count, "$") {
+				money = true
+				break
+			}
+			count = reASCIIBraceNote.ReplaceAllString(count, "($1)")
+			count, notes := StripFootnotes(count)
+			count = strings.TrimSpace(count)
+			if !reASCIICountOnly.MatchString(count) {
+				if nm != "" && !reRuleLine.MatchString(nm) && (len(groupHead) > 0 || strings.HasPrefix(strings.ToLower(nm), "all ")) {
+					groupHead = append(groupHead, nm)
+				} else if count == "" && pctText == "" && nm != "" && hasWords(nm, 2) && !isAddressLine(nm) && !reSkipName.MatchString(nm) {
+					pendingName = nm
+				}
+				continue
+			}
+			pct, parsed, markerText, _ := ParsePercent(pctText)
+			shares, ok := ParseShares(count)
+			if !ok || (!parsed && markerText == "" && pctText != "--") {
+				groupHead, pendingName = nil, ""
+				continue
+			}
+			if nm == "" {
+				nm = pendingName
+			}
+			pendingName = ""
+			if len(groupHead) > 0 {
+				nm = norm(strings.Join(groupHead, " ") + " " + nm)
+				groupHead = nil
+			}
+			nm = norm(reDotLeader.ReplaceAllString(nm, " "))
+			nm, nameNotes := StripFootnotes(nm)
+			if nm == "" || !hasWords(nm, 1) || reSkipName.MatchString(nm) || isAddressLine(nm) || reRuleLine.MatchString(nm) {
+				continue
+			}
+			if strings.HasPrefix(strings.ToLower(nm), "all ") {
+				for k := j + 1; k < end && k <= j+3; k++ {
+					if cell(clean[k], shareCol) != "" || cell(clean[k], pctCol) != "" {
+						break
+					}
+					tail := cell(clean[k], nameCol)
+					if tail == "" {
+						continue
+					}
+					joined := norm(nm + " " + tail)
+					if grp, _ := isGroupRow(joined); grp {
+						nm = joined
+						break
+					}
+				}
+			}
+			rowClass := class
+			if classCol >= 0 {
+				rowClass, _ = StripFootnotes(reDotLeader.ReplaceAllString(cell(clean[j], classCol), " "))
+				if !reClassVal.MatchString(rowClass) {
+					continue
+				}
+			}
+			grp, gn := isGroupRow(nm)
+			r := base
+			r.HolderName, r.ShareClass, r.TableKind = nm, rowClass, "management"
+			r.commonColumn = commonClass
+			r.TableIndex, r.RowIndex, r.Parser = start, j, "text_table"
+			r.Shares, r.PctMarker, r.IsGroupRow, r.GroupN = &shares, markerText, grp, gn
+			if parsed {
+				r.Percent = &pct
+			}
+			r.Footnotes = strings.Join(append(nameNotes, notes...), ",")
+			rows = append(rows, r)
+		}
+		if !money && len(rows) >= 2 {
+			out = append(out, rows...)
+			blocks++
+		}
+		start = end
+	}
+	return out, blocks
 }
 
 var reASCIIMatrixCount = regexp.MustCompile(`^[0-9][0-9,]*(?:\([0-9]+\))?$`)

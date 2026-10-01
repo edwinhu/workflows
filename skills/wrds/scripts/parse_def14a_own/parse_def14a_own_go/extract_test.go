@@ -6204,3 +6204,293 @@ Blair Example                  200,000            24.0%
 		}
 	})
 }
+
+const asciiCaptionBraceFootnotesFixture = `<TABLE>
+<CAPTION>
+                                                            COMMON STOCK      PERCENT OF
+ NAME                                                    BENEFICIALLY OWNED     CLASS
+ <S>                                                          <C>              <C>
+ Walter Alexander                                                31,212 {(1)}      *
+ Harry R. Baker                                                  28,473 {(1)}      *
+ Gary W. Freels                                                 995,085 {(2)}   1.93%
+ Thomas J. Howatt                                               506,041 {(1)}      *
+ Dennis J. Kuester                                               15,000 {(3)}      *
+ San W. Orr, Jr.                                              1,195,820 {(4)}   2.31%
+ Richard L. Radt                                                 48,546 {(1)}      *
+ David B. Smith, Jr.                                          2,417,491 {(5)}   4.69%
+ Stuart R. Carlson                                              129,791 {(1)}      *
+ David L. Canavera                                              167,514 {(1)}      *
+ Dennis M. Urbanek                                              148,369 {(1)}      *
+ John J. Schievelbein                                           100,000 {(1)}      *
+
+ All directors and executive officers as a group (15 persons) 5,994,080 {(6)}  11.31%
+</TABLE>`
+
+const asciiCaptionAgePositionFixture = `<TABLE>
+<CAPTION>
+                                                                                         POSITIONS
+NAME                                            NUMBER OF           % SHARES                WITH            DIRECTOR
+                                       AGE        SHARES           OUTSTANDING             COMPANY          SINCE(1)
+                                       ---        ------           -----------             -------          --------
+
+<S>                                    <C>     <C>                        <C>        <C>                      <C>
+Ronald K. Earnest                      48      113,256  (2)                5.4%        President and          1998
+381 Halton Road                                                                           Director
+Greenville, S.C.
+
+Harold E. Garrett                      34       46,830                     2.2%           Director            1998
+Fountain Inn, S.C.
+
+Mason Y. Garrett                       60      161,271  (3)                7.7%         Chairman and          1998
+325 South Main Street                                                                 Chief Executive
+Fountain Inn, S.C.                                                                        Officer
+
+Michael L. Gault                       47       28,875  (4)                1.4%           Director            1998
+Fountain Inn, S.C.
+
+Baety O. Gross, Jr.                    55       28,182  (5)                1.3%           Director            1998
+Simpsonville, S.C.
+
+S. Hunter Howard, Jr.                  50       11,550                        *           Director            2000
+Columbia, S.C.
+
+S. Blanton Phillips                    34        2,310                        *           Director            2001
+Fountain Inn, S.C.
+                                              ---------
+All Directors, nominees and
+executive officers as a group
+(7 persons)                                    392,274                    18.7%
+</TABLE>`
+
+func TestASCIICaptionOwnershipDiscovery(t *testing.T) {
+	for _, tc := range []struct {
+		label, body, name, class string
+		shares                   float64
+		count                    int
+	}{
+		{"brace footnotes", asciiCaptionBraceFootnotesFixture, "Gary W. Freels", "Common Stock", 995085, 13},
+		{"age and position columns", asciiCaptionAgePositionFixture, "Ronald K. Earnest", "", 113256, 8},
+	} {
+		t.Run(tc.label, func(t *testing.T) {
+			rows, _, _ := ExtractText(tc.body, Row{})
+			rows = ScreenRows(rows)
+			r := find(rows, tc.name, tc.class)
+			if r == nil || r.Shares == nil || *r.Shares != tc.shares {
+				t.Errorf("missing caption holding %s shares=%v: %+v", tc.name, tc.shares, rows)
+			}
+			if len(rows) != tc.count {
+				t.Errorf("want %d literal ownership rows, got %d", tc.count, len(rows))
+			}
+			groups := 0
+			for _, row := range rows {
+				if row.IsGroupRow {
+					groups++
+					if row.Percent == nil {
+						t.Error("lost group percentage")
+					}
+				}
+			}
+			if groups != 1 {
+				t.Errorf("want one disclosed group, got %d", groups)
+			}
+		})
+	}
+}
+
+func TestASCIICaptionOwnershipGuards(t *testing.T) {
+	for _, tc := range []struct{ label, old, replacement string }{
+		{"currency rejected", "995,085", "$995,085"},
+		{"dollar caption rejected", "COMMON STOCK", "DOLLAR RANGE OF COMMON STOCK"},
+		{"ownership label required", "BENEFICIALLY OWNED", "PAYMENT RECEIVED"},
+		{"percent header required", "PERCENT OF", "SIZE OF"},
+	} {
+		t.Run(tc.label, func(t *testing.T) {
+			body := strings.ReplaceAll(asciiCaptionBraceFootnotesFixture, tc.old, tc.replacement)
+			rows, _, _ := ExtractText(body, Row{})
+			if len(ScreenRows(rows)) != 0 {
+				t.Fatalf("nonownership caption accepted: %+v", rows)
+			}
+		})
+	}
+	t.Run("malformed count not partially parsed", func(t *testing.T) {
+		body := strings.ReplaceAll(asciiCaptionBraceFootnotesFixture, "995,085", "995x085")
+		rows, _, _ := ExtractText(body, Row{})
+		rows = ScreenRows(rows)
+		if len(rows) != 12 || find(rows, "Gary W. Freels", "Common Stock") != nil {
+			t.Fatalf("malformed count read: %+v", rows)
+		}
+	})
+	t.Run("legacy emitting table preserved", func(t *testing.T) {
+		body := `<TABLE><CAPTION>SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS
+Name of Beneficial Owner       Shares Owned       Percent of Class
+<S>                            <C>                <C>
+Alex Example                   100,000            12.0%
+Blair Example                  200,000            24.0%
+</TABLE>
+` + asciiCaptionBraceFootnotesFixture
+		rows, _, _ := ExtractText(body, Row{})
+		rows = ScreenRows(rows)
+		if len(rows) != 2 || find(rows, "Alex Example", "") == nil || find(rows, "Gary W. Freels", "Common Stock") != nil {
+			t.Fatalf("retry changed legacy output: %+v", rows)
+		}
+	})
+}
+
+const asciiCaptionEmptyPercentFixture = `<TABLE>
+<CAPTION>
+                                                                          Number of Shares  Percent of Class
+                      Name                               Position        Beneficially Owned (if more than 1%)
+                      ----                        ---------------------- ------------------ -----------------
+<S>                                               <C>                    <C>                <C>
+Susan B. Bayh.................................... Director                        0                --
+Larry C. Glasscock............................... President and Chief
+                                                  Executive Officer and
+                                                  Director                        0                --
+William B. Hart.................................. Director                        0                --
+Allan B. Hubbard................................. Director                        0                --
+Victor S. Liss................................... Director                        0                --
+L. Ben Lytle..................................... Chairman of the Board
+                                                  of Directors                    0                --
+William G. Mays.................................. Director                        0                --
+James W. McDowell, Jr............................ Director                        0                --
+B. LaRae Orullian................................ Director                        0                --
+Senator Donald W. Riegle, Jr..................... Director                        0                --
+William J. Ryan.................................. Director                        0                --
+George A. Schaefer, Jr........................... Director                        0                --
+Dennis J. Sullivan, Jr........................... Director                        0                --
+David R. Frick................................... Executive Vice
+                                                  President and Chief
+                                                  Legal and
+                                                  Administrative Officer          0                --
+Michael L. Smith................................. Executive Vice
+                                                  President and Chief
+                                                  Financial and
+                                                  Accounting Officer              0                --
+Marjorie W. Dorr................................. President, Anthem East          0                --
+Keith R. Faller.................................. President, Anthem
+                                                  Midwest                         0                --
+All current directors and executive officers as a
+  group (22 persons).............................                                24                --
+</TABLE>`
+
+func TestASCIICaptionZeroCountsWithPositionWrap(t *testing.T) {
+	rows, _, _ := ExtractText(asciiCaptionEmptyPercentFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 18 {
+		t.Errorf("want 18 literal zero/small holdings, got %d: %+v", len(rows), rows)
+	}
+	for _, name := range []string{"Susan B. Bayh", "Larry C. Glasscock", "L. Ben Lytle", "David R. Frick", "Michael L. Smith", "Keith R. Faller"} {
+		r := find(rows, name, "")
+		if r == nil || r.Shares == nil || *r.Shares != 0 || r.Percent != nil {
+			t.Errorf("lost disclosed zero for %s: %+v", name, r)
+		}
+	}
+	groups := 0
+	for _, r := range rows {
+		if r.IsGroupRow {
+			groups++
+			if r.GroupN != 22 || r.Shares == nil || *r.Shares != 24 || r.Percent != nil {
+				t.Errorf("wrong literal group: %+v", r)
+			}
+		}
+	}
+	if groups != 1 {
+		t.Errorf("want one group, got %d", groups)
+	}
+}
+
+const asciiCaptionClassStubFixture = `         SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS AND MANAGEMENT
+
+     The following table sets forth certain information known to us with respect
+to beneficial ownership of the Company's Common Stock as of July 26, 2001 by (1)
+each stockholder known by the Company to be the beneficial owner of more than
+five percent of either class; (2) each of the Directors and named executive
+officers and (3) the Directors and named executive officers as a group.
+
+<Table>
+<Caption>
+                                                                       AMOUNT AND NATURE OF
+TITLE OF CLASS                 NAME AND ADDRESS OF BENEFICIAL OWNER    BENEFICIAL OWNERSHIP   % OF CLASS
+- --------------                 ------------------------------------    --------------------   ----------
+<S>                           <C>                                      <C>                    <C>
+Class B(1)..................  Vincent K. McMahon(2)                         56,100,330           99.0%
+Class A.....................  General Electric Company(3)                    2,307,692           14.2%
+                              3135 Easton Turnpike
+                              Fairfield, CT 06431
+Class A.....................  Viacom Inc.(4)                                 2,281,492           14.0%
+                              1515 Broadway
+                              New York, New York 10036
+Class A.....................  Citigroup Inc.(5)                              1,133,976            7.0%
+                              399 Park Avenue
+                              New York, New York 10043
+Class A.....................  Capital Group International, Inc.(6)           1,409,750            8.7%
+                              Capital Guardian Trust Company
+                              11100 Santa Monica Blvd.
+                              Los Angeles, CA 90025
+Class A.....................  Mario J. Gabelli and Marc J. Gabelli(7)          822,800            5.1%
+                              One Corporate Center
+                              Rye, New York 10580
+Class B(1)..................  Linda E. McMahon                                 566,770(8)         1.0%
+Class A.....................  Stuart C. Snyder                                  75,000(9)           *
+Class A.....................  August J. Liguori                                 75,000(9)           *
+Class A.....................  David Kenin                                       12,500(9)           *
+Class A.....................  Joseph Perkins                                    12,500(9)           *
+Class A.....................  Lowell P. Weicker, Jr.                            14,500(9)           *
+Class A and Class B(10).....  All Named Executive Officers and              56,856,600           78.0%
+                              Directors as a Group (7 persons)
+</Table>`
+
+func TestASCIICaptionClassStubCounts(t *testing.T) {
+	rows, _, _ := ExtractText(asciiCaptionClassStubFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 13 {
+		t.Errorf("want 13 class-specific holdings, got %d", len(rows))
+	}
+	for _, want := range []struct {
+		name, class string
+		shares      float64
+	}{
+		{"Vincent K. McMahon", "Class B", 56100330},
+		{"General Electric Company", "Class A", 2307692},
+		{"Viacom Inc", "Class A", 2281492},
+		{"Linda E. McMahon", "Class B", 566770},
+	} {
+		r := find(rows, want.name, want.class)
+		if r == nil || r.Shares == nil || *r.Shares != want.shares {
+			t.Errorf("missing literal class holding %+v: %+v", want, r)
+		}
+	}
+	groups := 0
+	for _, r := range rows {
+		if r.IsGroupRow {
+			groups++
+			if r.GroupN != 7 || r.ShareClass != "Class A and Class B" || r.Shares == nil || *r.Shares != 56856600 || r.Percent == nil || *r.Percent != 78 {
+				t.Errorf("wrong group: %+v", r)
+			}
+		}
+	}
+	if groups != 1 {
+		t.Errorf("want one forward-wrapped group, got %d", groups)
+	}
+}
+
+func TestASCIICaptionClassContextAndCurrencyGuards(t *testing.T) {
+	t.Run("common class requires source evidence", func(t *testing.T) {
+		body := strings.ReplaceAll(asciiCaptionClassStubFixture, "Company's Common Stock", "Company's Securities")
+		rows, _, _ := ExtractText(body, Row{})
+		rows = ScreenRows(rows)
+		if find(rows, "Linda E. McMahon", "Class B") != nil || find(rows, "Vincent K. McMahon", "Class B") != nil {
+			t.Fatal("unsupported common class exemption")
+		}
+		if find(rows, "Viacom Inc", "Class A") == nil {
+			t.Fatal("unrelated class A holding lost")
+		}
+	})
+	t.Run("share currency forbidden in class table", func(t *testing.T) {
+		body := strings.ReplaceAll(asciiCaptionClassStubFixture, "2,281,492", "$2,281,492")
+		rows, _, _ := ExtractText(body, Row{})
+		if len(ScreenRows(rows)) != 0 {
+			t.Fatal("currency read as class holding")
+		}
+	})
+}

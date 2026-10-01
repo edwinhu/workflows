@@ -55,7 +55,7 @@ var (
 		rep gov governor amb ambassador gen general adm admiral
 		col colonel capt captain lt maj major sgt sir honorable`)
 
-	reNameWord = regexp.MustCompile(`[A-Za-z0-9'&.]+`)
+	reNameWord  = regexp.MustCompile(`[A-Za-z0-9'&.]+`)
 	reNameParen = regexp.MustCompile(`\s*\([^()]*\)`)
 	// A footnote marker glued to the end of a name word: "Barnes1", "Forman4,5".
 	// Anchored on a letter so a share count or a year is never touched.
@@ -150,6 +150,11 @@ func stripLeadingHonorific(s string) string {
 	for {
 		w := nameWords(s)
 		if len(w) < 2 || !honorificWord[w[0].fold] {
+			return s
+		}
+		// A rank before a corporate name is part of that name, not a person's title.
+		switch w[len(w)-1].fold {
+		case "COMPANY", "CO", "CORP", "CORPORATION", "INC", "INCORPORATED", "LLC", "LLP", "LP", "LTD", "LIMITED", "PLC":
 			return s
 		}
 		s = strings.TrimLeft(s[w[0].end:], " .,")
