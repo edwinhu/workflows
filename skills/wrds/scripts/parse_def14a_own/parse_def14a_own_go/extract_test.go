@@ -5169,3 +5169,212 @@ func TestHTMLMillionShareCounts(t *testing.T) {
 		}
 	}
 }
+
+// 0001052918-04-000521 aligns table columns with overlapping styled paragraphs.
+func TestHTMLOverlappingParagraphOwnership(t *testing.T) {
+	body := `<html><body><TABLE style="margin-right:72pt" cellspacing=0><TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=271.2><P style="margin:0pt; font-family:Tahoma"><BR></P>
+<P style="margin:0pt; font-family:Tahoma"><U>Name and Position</U></P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=157.2><P style="margin:0pt; font-family:Tahoma"><BR></P>
+<P style="margin:0pt; font-family:Tahoma"><U>Dollar Value (1)</U></P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=210><P style="margin:0pt; font-family:Tahoma">Number of Stock Options, <U>Granted Under the Restated Plan</U></P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=271.2><P style="margin:0pt; font-family:Tahoma">Maisonneuve, Andr&#233;,</P>
+<P style="margin:0pt; font-family:Tahoma">&nbsp;&nbsp;&nbsp;Director, Chairman, President and Chief &nbsp;&nbsp;&nbsp;&nbsp;Executive Officer(2)</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=157.2><P style="margin:0pt; font-family:Tahoma"><BR></P>
+<P style="margin:0pt; font-family:Tahoma"><BR></P>
+<P style="margin:0pt; font-family:Tahoma">$623,100</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=210><P style="margin:0pt; font-family:Tahoma"><BR></P>
+<P style="margin:0pt; font-family:Tahoma"><BR></P>
+<P style="margin:0pt; font-family:Tahoma">1,005,000</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=271.2><P style="margin:0pt; font-family:Tahoma">Weishaar, Tom,</P>
+<P style="margin:0pt; font-family:Tahoma">&nbsp;&nbsp;&nbsp;Vice-President-Business Development (3)</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=157.2><P style="margin:0pt; font-family:Tahoma"><BR></P>
+<P style="margin:0pt; font-family:Tahoma">$623,100</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=210><P style="margin:0pt; font-family:Tahoma"><BR></P>
+<P style="margin:0pt; font-family:Tahoma">1,005,000</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=271.2><P style="margin:0pt; font-family:Tahoma">All current executive officers as a group</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=157.2><P style="margin:0pt; font-family:Tahoma">$1,246,200</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=210><P style="margin:0pt; font-family:Tahoma">2,010,000</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=271.2><P style="margin:0pt; font-family:Tahoma">All current directors who are not executive &nbsp;&nbsp;&nbsp;officers as a group</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=157.2><P style="margin:0pt; font-family:Tahoma"><BR></P>
+<P style="margin:0pt; font-family:Tahoma">$0.00</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=210><P style="margin:0pt; font-family:Tahoma"><BR></P>
+<P style="margin:0pt; font-family:Tahoma">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</P>
+</TD></TR>
+<TR><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=271.2><P style="margin:0pt; font-family:Tahoma">All employees as a group (including all &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;current officers who are not executive &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;officers, but excluding executive officers)</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=157.2><P style="margin:0pt; font-family:Tahoma"><BR></P>
+<P style="margin:0pt; font-family:Tahoma"><BR></P>
+<P style="margin:0pt; font-family:Tahoma">$674,127.24</P>
+</TD><TD style="padding-left:7.2pt; padding-top:0pt; padding-right:7.2pt; padding-bottom:0pt" valign=top width=210><P style="margin:0pt; font-family:Tahoma"><BR></P>
+<P style="margin:0pt; font-family:Tahoma"><BR></P>
+<P style="margin:0pt; font-family:Tahoma">1,087,302</P>
+</TD></TR>
+</TABLE><P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; width:540pt; font-family:Tahoma" align=center><B>SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS AND MANAGEMENT</B></P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; width:540pt; font-family:Tahoma; font-size:8pt"><BR></P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; text-indent:36pt; width:540pt; font-family:Tahoma">The following table sets forth information as of December 15, 2004, with respect to any person known by us to own beneficially more than 5% of our Common Stock, Common Stock beneficially owned by each of our officers named in &#147;Executive Compensation,&#148; and each of our directors, and the amount of Common Stock beneficially owned by our officers and directors as a group. </P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; width:540pt; font-family:Tahoma; font-size:8pt"><BR></P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; text-indent:353.3pt; width:540pt; font-family:Tahoma" align=justify>Approximate Percent</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; width:540pt; font-family:Tahoma">Name &amp; Address of</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; text-indent:247.85pt; width:540pt; font-family:Tahoma">&nbsp;&nbsp;Number of Shares </P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; text-indent:356.8pt; width:540pt; font-family:Tahoma">&nbsp;&nbsp;of Common Stock</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; width:540pt; font-family:Tahoma" align=justify><U>&nbsp;&nbsp;Beneficial Owner &nbsp;</U></P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; text-indent:247.85pt; width:540pt; font-family:Tahoma" align=justify><U>Beneficially Owned</U></P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; text-indent:363.2pt; width:540pt; font-family:Tahoma" align=justify><U>Outstanding &nbsp;(1)</U></P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; width:540pt; font-family:Tahoma; font-size:4pt" align=justify><BR></P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; width:540pt; font-family:Tahoma">Bruce Benn* (2) (7)</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; text-indent:268pt; width:540pt; font-family:Tahoma">3,080,000</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; text-indent:380.6pt; width:540pt; font-family:Tahoma">10.19%</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; width:540pt; font-family:Tahoma; font-size:4pt" align=justify><BR></P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; width:540pt; font-family:Tahoma" align=justify>Waycross Corp. &nbsp;(3)</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; text-indent:268pt; width:540pt; font-family:Tahoma" align=justify>3,400,000</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; text-indent:383.1pt; width:540pt; font-family:Tahoma" align=justify>11.3%</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; width:540pt; font-family:Tahoma" align=justify>29 Rue des Deux Communes</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; width:540pt; font-family:Tahoma" align=justify>1226 Thonex-Geneva</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; width:540pt; font-family:Tahoma" align=justify>Switzerland</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; width:540pt; font-family:Tahoma; font-size:4pt" align=justify><BR></P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; width:540pt; font-family:Tahoma" align=justify>Valdosta Corp. (2)</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; text-indent:268pt; width:540pt; font-family:Tahoma" align=justify>3,400,000</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; text-indent:383.1pt; width:540pt; font-family:Tahoma" align=justify>11.3%</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; width:540pt; font-family:Tahoma" align=justify>P.O. Box 30592</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; width:540pt; font-family:Tahoma" align=justify>Cayside, 2nd Floor, Harbour Drive</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; width:540pt; font-family:Tahoma" align=justify>Georgetown, Grand Cayman</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; width:540pt; font-family:Tahoma" align=justify>Cayman Islands, BWI</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; width:540pt; font-family:Tahoma; font-size:4pt" align=justify><BR></P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; width:540pt; font-family:Tahoma" align=justify>Echo Technologies S.A. (4)</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; text-indent:268pt; width:540pt; font-family:Tahoma" align=justify>2,183,788</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; text-indent:384.35pt; width:540pt; font-family:Tahoma" align=justify>6.9% </P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; width:540pt; font-family:Tahoma" align=justify>Rte. de St. Cergue</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; width:540pt; font-family:Tahoma" align=justify>297-1260 Nyon-Switzerland</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; width:540pt; font-family:Tahoma; font-size:4pt" align=justify><BR></P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; width:540pt; font-family:Tahoma" align=justify>Henrik Olsen*(4)</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; text-indent:268pt; width:540pt; font-family:Tahoma" align=justify>2,183,788</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; text-indent:385.6pt; width:540pt; font-family:Tahoma" align=justify>6.9%</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; width:540pt; font-family:Tahoma; font-size:4pt" align=justify><BR></P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; width:540pt; font-family:Tahoma" align=justify>Andr&#233; Maisonneuve* (5)</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; text-indent:268pt; width:540pt; font-family:Tahoma" align=justify>1,662,500</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; text-indent:385.6pt; width:540pt; font-family:Tahoma" align=justify>5.4%</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; width:540pt; font-family:Tahoma; font-size:4pt" align=justify><BR></P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; width:540pt; font-family:Tahoma" align=justify>Tom Weishaar* (6)</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; text-indent:268pt; width:540pt; font-family:Tahoma" align=justify>1,005,000</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; text-indent:385.6pt; width:540pt; font-family:Tahoma" align=justify>3.2%</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; width:540pt; font-family:Tahoma; font-size:4pt" align=justify><BR></P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; width:540pt; font-family:Tahoma" align=justify>Ron Benn* (7)</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; text-indent:271.75pt; width:540pt; font-family:Tahoma" align=justify>575,500</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; text-indent:385.6pt; width:540pt; font-family:Tahoma" align=justify>1.9%</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; width:540pt; font-family:Tahoma; font-size:4pt" align=justify><BR></P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; width:540pt; font-family:Tahoma" align=justify>All Executive Officers and Directors </P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; width:540pt; font-family:Tahoma" align=justify>As a Group </P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; text-indent:260.9pt; width:540pt; font-family:Tahoma" align=justify>9,594,090 (8)</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; text-indent:383.1pt; width:540pt; font-family:Tahoma" align=justify>28.2%</P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:-12pt; width:540pt; font-family:Tahoma" align=justify><U>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</U></P>
+<P style="margin-top:0pt; margin-right:72pt; margin-bottom:0pt; text-indent:144pt; width:540pt; font-family:Tahoma" align=justify><U><BR></U></P>
+</body></html>`
+	if !IsHTML(body) {
+		t.Fatal("literal source context must enter the HTML production path")
+	}
+	rows := ScreenRows(run(t, body))
+	if len(rows) != 9 {
+		t.Fatalf("want nine literal paragraph-aligned holdings, got %+v", rows)
+	}
+	for _, want := range []struct {
+		name        string
+		shares, pct float64
+	}{
+		{"Bruce Benn", 3080000, 10.19}, {"Waycross Corp", 3400000, 11.3}, {"Valdosta Corp", 3400000, 11.3}, {"Echo Technologies", 2183788, 6.9}, {"Henrik Olsen", 2183788, 6.9}, {"André Maisonneuve", 1662500, 5.4}, {"Tom Weishaar", 1005000, 3.2}, {"Ron Benn", 575500, 1.9}, {"All Executive Officers and Directors As a Group", 9594090, 28.2},
+	} {
+		found := 0
+		for _, r := range rows {
+			if strings.HasPrefix(r.HolderName, want.name) {
+				found++
+				if r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+					t.Errorf("want %+v got %+v", want, r)
+				}
+			}
+		}
+		if found != 1 {
+			t.Errorf("want one %+v got %d among %+v", want, found, rows)
+		}
+	}
+}
+
+// 0001049108-05-000227 puts each holding in a separate one-row table.
+func TestHTMLFragmentedOneRowOwnershipTables(t *testing.T) {
+	body := `<html><body><p>SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS, DIRECTORS, DIRECTOR NOMINEES AND EXECUTIVE OFFICERS</p><table border="0" cellspacing=0 cellpadding=0 width="611" style='border-collapse:collapse'>
+    <tr >
+        <td width="240" valign=top >
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><u><b><font size=2>Name of Beneficial Owner</font></b></u></p> </td>
+        <td width="240" valign=top >
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><u><b><font size=2>of Beneficial Ownership (1)</font></b></u></p> </td>
+        <td width="131" valign=top >
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><u><b><font size=2>Percent of Class (2)</font></b></u></p> </td> </tr></table><table border="0" cellspacing=0 cellpadding=0 width="572" style='border-collapse:collapse'>
+    <tr >
+        <td width="276" valign=top >
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=2>Molly Shi Boren</font></p> </td>
+        <td width="204" valign=top >
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=2>33,411 (3)</font></p> </td>
+        <td width="92" valign=top >
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=2>Less than 1%</font></p> </td> </tr></table><table border="0" cellspacing=0 cellpadding=0 width="572" style='border-collapse:collapse'>
+    <tr >
+        <td width="276" valign=top >
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=2>Thomas P. Capo</font></p> </td>
+        <td width="204" valign=top >
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=2>33,208 (4)</font></p> </td>
+        <td width="92" valign=top >
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=2>Less than 1%</font></p> </td> </tr></table><table border="0" cellspacing=0 cellpadding=0 width="527" style='border-collapse:collapse'>
+    <tr >
+        <td  colspan="2" valign=top >
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=2>All directors and executive</font></p> </td>
+        <td width="220" valign=top >
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=2>1,094,944</font></p> </td>
+        <td width="47" valign=top >
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=2>4.3%</font></p> </td> </tr>
+    <tr >
+        <td width="119" valign=top >
+            <p style='margin-left:0pt;text-indent:0pt;text-align:justify;margin-top:0pt;margin-bottom:0pt'><font size=2>officers as a group</font></p> </td>
+        <td   colspan="3">
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=1>&nbsp;</font></td> </tr>
+    <tr>
+        <td width="119" ></td>
+
+        <td width="141" ></td>
+
+        <td width="220" ></td>
+
+        <td width="47" ></td> </tr> </table></body></html>`
+	rows := ScreenRows(run(t, body))
+	if len(rows) != 3 {
+		t.Fatalf("want two literal directors and group from one-row table fragments, got %+v", rows)
+	}
+	for _, want := range []struct {
+		name   string
+		shares float64
+		marker string
+	}{{"Molly Shi Boren", 33411, "<1%"}, {"Thomas P. Capo", 33208, "<1%"}, {"All directors and executive officers as a group", 1094944, ""}} {
+		found := 0
+		for _, r := range rows {
+			if strings.EqualFold(r.HolderName, want.name) {
+				found++
+				if r.Shares == nil || *r.Shares != want.shares || r.PctMarker != want.marker {
+					t.Errorf("want %+v got %+v", want, r)
+				}
+				if want.marker == "" && (r.Percent == nil || *r.Percent != 4.3 || !r.IsGroupRow) {
+					t.Errorf("want group total4.3%% got %+v", r)
+				}
+			}
+		}
+		if found != 1 {
+			t.Errorf("missing %+v", want)
+		}
+	}
+
+	first := strings.Index(body, "Molly Shi Boren")
+	start := strings.LastIndex(body[:first], "<table")
+	end := first + strings.Index(body[first:], "</table>") + len("</table>")
+	copied := strings.Replace(body, "</body>", body[start:end]+"</body>", 1)
+	if got := ScreenRows(run(t, copied)); len(got) != 3 {
+		t.Fatalf("exact fragment copy must not add holdings: %+v", got)
+	}
+}

@@ -198,6 +198,10 @@ var blockAtoms = map[atom.Atom]bool{
 // A table with fewer than 2 rows or 2 columns is layout, not data, so its text
 // is folded into the text stream where headings live.
 func DocumentItems(doc *html.Node) []Item {
+	return documentItems(doc, false)
+}
+
+func documentItems(doc *html.Node, includeSingleton bool) []Item {
 	var items []Item
 	var buf strings.Builder
 	pos := 0
@@ -222,7 +226,7 @@ func DocumentItems(doc *html.Node) []Item {
 			}
 			if n.DataAtom == atom.Table {
 				g := buildGrid(n)
-				if len(g.Rows) >= 2 && g.NCol() >= 2 {
+				if (len(g.Rows) >= 2 || includeSingleton && len(g.Rows) == 1) && g.NCol() >= 2 {
 					flush()
 					g.Pos = pos
 					items = append(items, Item{Kind: "table", Grid: g, Text: textOf(n), Pos: pos})
@@ -261,4 +265,193 @@ func DocumentItems(doc *html.Node) []Item {
 	walk(doc)
 	flush()
 	return items
+}
+
+var (
+	rePositionIndent  = regexp.MustCompile(`(?i)(?:^|;)\s*text-indent\s*:\s*([0-9]+(?:\.[0-9]+)?)\s*(pt|in)\b`)
+	rePositionOverlap = regexp.MustCompile(`(?i)(?:^|;)\s*margin-bottom\s*:\s*-[0-9]+(?:\.[0-9]+)?\s*pt\b`)
+)
+
+// positionedOwnershipItems reconstructs columns made from overlapping paragraphs,
+// only for the zero-filing retry. Numeric paragraphs must share the name's line
+// and occupy successively greater indents under explicit ownership headers.
+func positionedOwnershipItems(doc *html.Node, firstPos int) []Item {
+	type paragraph struct {
+		text    string
+		indent  float64
+		overlap bool
+	}
+	var ps []paragraph
+	var walk func(*html.Node)
+	walk = func(n *html.Node) {
+		if n.Type == html.ElementNode {
+			if n.DataAtom == atom.Table || n.DataAtom == atom.Script || n.DataAtom == atom.Style {
+				return
+			}
+			if n.DataAtom == atom.P {
+				p := paragraph{text: textOf(n)}
+				for _, a := range n.Attr {
+					if a.Key == "style" {
+						p.overlap = rePositionOverlap.MatchString(a.Val)
+						if m := rePositionIndent.FindStringSubmatch(a.Val); m != nil {
+							v, err := strconv.ParseFloat(m[1], 64)
+							if err != nil {
+								panic(err)
+							}
+							p.indent = v
+							if strings.EqualFold(m[2], "in") {
+								p.indent *= 72
+							}
+						}
+					}
+				}
+				ps = append(ps, p)
+				return
+			}
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			walk(c)
+		}
+	}
+	walk(doc)
+	var out []Item
+	var rows [][]string
+	header := ""
+	active, age := false, 0
+	flush := func() {
+		if len(rows) >= 2 {
+			g := &Grid{Rows: append([][]string{{"Common Stock", "Common Stock", "Common Stock"}, {"Name and Address of Beneficial Owner", "Number of Shares Beneficially Owned", "Percent of Class"}}, rows...), Pos: firstPos + len(out)}
+			out = append(out, Item{Kind: "table", Grid: g, Text: header, Pos: g.Pos})
+		}
+		rows = nil
+	}
+	for i := 0; i < len(ps); i++ {
+		p := ps[i]
+		if isHeadingChunk(p.text) {
+			flush()
+			header = p.text
+			active = true
+			age = 0
+			continue
+		}
+		if !active {
+			continue
+		}
+		age++
+		if age > 100 {
+			flush()
+			active = false
+			continue
+		}
+		if len(rows) == 0 {
+			header += " " + p.text
+		}
+		if i+2 >= len(ps) || !p.overlap || p.indent != 0 || !hasWords(p.text, 1) {
+			continue
+		}
+		sh, pc := ps[i+1], ps[i+2]
+		if !sh.overlap || sh.indent <= 0 || pc.indent <= sh.indent {
+			continue
+		}
+		v, ok := ParseShares(sh.text)
+		_, _, _, pctish := ParsePercent(pc.text)
+		if !ok || v < 100 || !pctish || !(strings.Contains(pc.text, "%") || reStar.MatchString(pc.text) || reLessThan.MatchString(pc.text)) {
+			continue
+		}
+		if !reHdrNameCol.MatchString(header) || !strings.Contains(strings.ToLower(header), "beneficially owned") || !strings.Contains(strings.ToLower(header), "common stock") || !reHdrPct.MatchString(header) {
+			continue
+		}
+		name := p.text
+		if grp, _ := isGroupRow(name); grp {
+			for back := i - 1; back >= 0 && back >= i-2 && ps[back].indent == 0; back-- {
+				if previous, _ := isGroupRow(ps[back].text); !previous {
+					break
+				}
+				name = ps[back].text + " " + name
+			}
+		}
+		rows = append(rows, []string{name, sh.text, pc.text})
+		i += 2
+	}
+	flush()
+	return out
+}
+
+// A headed ownership table can be serialized as one separate HTML table per
+// holding. Join only three-column, complete share/percent fragments following
+// an explicit standalone header; retain the normal multi-row ownership guards.
+func fragmentedOwnershipItems(items []Item, firstPos int) []Item {
+	var out []Item
+	var header string
+	var rows [][]string
+	seen := map[string]bool{}
+	flush := func() {
+		group := false
+		if len(rows) == 1 {
+			group, _ = isStrongGroupRow(rows[0][0])
+		}
+		if header != "" && (len(rows) >= 2 || group) {
+			g := &Grid{Rows: append([][]string{{"Name of Beneficial Owner", "Amount and Nature of Beneficial Ownership", "Percent of Class"}}, rows...), Pos: firstPos + len(out)}
+			out = append(out, Item{Kind: "table", Grid: g, Text: header, Pos: g.Pos})
+		}
+		header = ""
+		rows = nil
+		seen = map[string]bool{}
+	}
+	for _, it := range items {
+		if it.Kind != "table" {
+			continue
+		}
+		c := compactColumns(it.Grid, true)
+		ndata := 0
+		for _, r := range c.rows {
+			if rowIsData(r) {
+				ndata++
+			}
+		}
+		if ndata == 0 && reHdrNameCol.MatchString(it.Text) && reOwnCue.MatchString(it.Text) && reHdrPct.MatchString(it.Text) && !reOptDetailCue.MatchString(it.Text) && !reCompCue.MatchString(it.Text) {
+			flush()
+			header = it.Text
+			continue
+		}
+		if header == "" {
+			continue
+		}
+		if ndata != 1 {
+			flush()
+			continue
+		}
+		matched := false
+		for i, r := range c.rows {
+			if len(r) != 3 || !hasWords(r[0], 1) {
+				continue
+			}
+			if _, ok := ParseShares(r[1]); !ok {
+				continue
+			}
+			_, _, _, pctish := ParsePercent(r[2])
+			if !pctish || !(strings.Contains(r[2], "%") || reStar.MatchString(r[2]) || reLessThan.MatchString(r[2])) {
+				continue
+			}
+			name := r[0]
+			if i+1 < len(c.rows) && len(c.rows[i+1]) == 3 && c.rows[i+1][1] == "" && c.rows[i+1][2] == "" {
+				if grp, _ := isStrongGroupRow(name + " " + c.rows[i+1][0]); grp {
+					name += " " + c.rows[i+1][0]
+				}
+			}
+			fragment := []string{name, r[1], r[2]}
+			sig := strings.Join(fragment, "\x00")
+			if !seen[sig] {
+				rows = append(rows, fragment)
+				seen[sig] = true
+			}
+			matched = true
+			break
+		}
+		if !matched {
+			flush()
+		}
+	}
+	flush()
+	return out
 }

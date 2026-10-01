@@ -195,6 +195,10 @@ func extractHTML(body string, base Row) ([]Row, int, int) {
 		return nil, 0, 0
 	}
 	items := DocumentItems(doc)
+	if base.colspanRecovery {
+		items = append(items, positionedOwnershipItems(doc, len(items))...)
+		items = append(items, fragmentedOwnershipItems(documentItems(doc, true), len(items))...)
+	}
 	var out []Row
 	tablesSeen, tablesUsed := 0, 0
 	used := map[int]bool{}
