@@ -1562,7 +1562,10 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 					continue
 				}
 				lt := strings.TrimSpace(clean[j])
-				if lt == "" {
+				// A page break under a lone lead-in row is blank: the lead-in's
+				// table can start on the next page. Under a real table it is not,
+				// so the scan can still cross to the table's continuation.
+				if lt == "" || (len(block) == 1 && lone == nil && pageFooterAt(lines, clean, j)) {
 					blankRun++
 					if len(block) > 0 {
 						sinceRow++
@@ -3393,6 +3396,23 @@ func textStandaloneClassCaption(lines []string, row int) string {
 		header = append(header, text)
 	}
 	return ""
+}
+
+// pageFooterAt reports a bare page number directly above the <PAGE> marker:
+// page-break residue, blank to the table scan rather than a line of prose.
+func pageFooterAt(lines, clean []string, j int) bool {
+	if !reASCIIPageNumber.MatchString(strings.TrimSpace(clean[j])) {
+		return false
+	}
+	for k := j + 1; k < len(lines) && k <= j+2; k++ {
+		if strings.Contains(strings.ToLower(lines[k]), "<page>") {
+			return true
+		}
+		if strings.TrimSpace(lines[k]) != "" {
+			return false
+		}
+	}
+	return false
 }
 
 // textDollarOnlyTail reports a value tail whose every number carries a "$".

@@ -11904,3 +11904,83 @@ func TestASCIIBeneficialOwnerStubColumn(t *testing.T) {
 		}
 	}
 }
+
+// 0000767920-02-000026 file lines 536-591: the lead-in sentence row
+// ("... as of February 28, 2002, 60 days after") is followed by prose and a
+// page break, and the run of non-row lines ends on the table's own column
+// header. The bare page number above <PAGE> is page-break residue.
+const asciiLeadInRunEndsOnHeaderLines = `Image Processing Group at MPR Teltech from 1987 to 1995.
+
+
+       COMMON STOCK OWNERSHIP OF CERTAIN BENEFICIAL OWNERS AND MANAGEMENT
+
+         The following table sets forth information, as of December 30, 2001
+concerning:
+
+         o   beneficial  ownership of PMC's Common Stock by all persons known to
+             PMC to be the  beneficial  owners  of 5% or  more of  PMC's  Common
+             Stock;
+
+         o   beneficial  ownership of PMC's Common  Stock by all  directors  and
+             executive officers named in the Summary  Compensation Table herein;
+             and
+
+         o   beneficial  ownership of PMC's Common  Stock by all  directors  and
+             executive officers as a group.
+
+         The  number  of  shares  beneficially  owned  by each  entity,  person,
+director  or  executive  officer  is  determined  under  the  rules  of the U.S.
+Securities  and Exchange  Commission,  and the  information  is not  necessarily
+indicative of  beneficial  ownership  for any other  purpose.  Under such rules,
+beneficial ownership includes any shares as to which the individual has the sole
+or  shared  voting  power or  investment  power  and also any  shares  which the
+individual  has the right to  acquire as of  February  28,  2002,  60 days after
+December  30,  2001,  through the  exercise of any stock  option or other right.
+Unless otherwise indicated, each person has sole investment and voting power, or
+shares such powers with his or her spouse,  with respect to the shares set forth
+in the following table.
+
+                                       6
+<PAGE>
+
+                                                                     Approximate
+                                                                     Percentage
+                        Name (1)                    Number of Shares  Ownership
+- --------------------------------------------------  ---------------- -----------
+Putnam Investments, LLC(2)(3).....................    22,497,619        13.4%
+Capital Research and Management Company(2)(4).....    19,624,970        11.7%
+Oak Associates(2)(5)..............................    18,343,000        11.0%
+Capital Group International(2)(6).................     9,671,780         5.8%
+Robert Bailey(7)..................................     3,194,182         1.9%
+James Diller(8)...................................     2,985,155         1.8%
+Gregory Aasen(9)..................................     1,916,881         1.1%
+Steffen Perna(10) ................................       935,073          *
+Thomas Riordan(11) ...............................       497,316          *
+Haresh Patel(12) .................................       320,073          *
+Frank Marshall(13)................................       290,728          *
+Alexandre Balkanski(14)...........................       190,929          *
+Colin Beaumont(15)................................       102,436          *
+Lewis Wilks(16)...................................             0          *
+All current directors and executive officers
+ as a group(12 persons)(17).......................    10,825,724         6.2%
+
+`
+
+func TestASCIILeadInRunEndsOnColumnHeader(t *testing.T) {
+	raw, _, _ := ExtractText(asciiLeadInRunEndsOnHeaderLines, Row{})
+	rows := ScreenRows(raw)
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{{"Putnam Investments, LLC", 22497619}, {"Capital Research and Management Company", 19624970}, {"Robert Bailey", 3194182}, {"Colin Beaumont", 102436}} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares {
+			t.Errorf("holder lost: %s %g; rows=%+v", want.name, want.shares, rows)
+		}
+	}
+	for _, r := range rows {
+		if r.Shares != nil && (*r.Shares == 2002 || *r.Shares == 60) {
+			t.Errorf("lead-in sentence read as a holder: %+v", r)
+		}
+	}
+}
