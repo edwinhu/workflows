@@ -1,0 +1,97 @@
+{
+  "_comment": "Trimmed from .work/1001-farm-routing/result.json (2026-10-01): ids, pass and red verdicts kept verbatim, evidence and output cut. Input for tests/work-outcomes.test.ts.",
+  "overallPass": true,
+  "verdict": "PASS",
+  "implemented": [
+    {
+      "id": "T1",
+      "done": true,
+      "changedFiles": [
+        "scripts/lib/route.ts",
+        "scripts/lib/routing.json",
+        "hooks/work-hold.ts"
+      ],
+      "evidence": "Spec hash check (matches the authority hash):\n$ bash /home/eh/.claude/skills/workflows/skills/work/scripts/work-dispatch.sh --spec-hash .../.planning/breezy-see \u2026[trimmed]"
+    },
+    {
+      "id": "T2",
+      "done": true,
+      "changedFiles": [
+        "scripts/lib/route.ts"
+      ],
+      "evidence": "SPEC HASH CHECK\n$ bash /home/eh/.claude/skills/workflows/skills/work/scripts/work-dispatch.sh --spec-hash .../.planning/breezy-seeking-moon.md\n1a60f1395557fd729 \u2026[trimmed]"
+    },
+    {
+      "id": "T3",
+      "done": true,
+      "changedFiles": [
+        "skills/farm-out/scripts/farm.sh"
+      ],
+      "evidence": "SPEC HASH (bash .../work-dispatch.sh --spec-hash .../breezy-seeking-moon.md):\n1a60f1395557fd729df02a87dff57c193e2f8fc03c7f39cd6b9d0092a8396fe1   (matches the au \u2026[trimmed]"
+    },
+    {
+      "id": "T4",
+      "done": true,
+      "changedFiles": [
+        "skills/farm-out/SKILL.md",
+        "skills/farm-out/reference.md",
+        "docs/DESIGN-routing.md"
+      ],
+      "evidence": "Spec hash check:\n$ bash .../work-dispatch.sh --spec-hash .../.planning/breezy-seeking-moon.md\n1a60f1395557fd729df02a87dff57c193e2f8fc03c7f39cd6b9d0092a8396fe1   \u2026[trimmed]"
+    }
+  ],
+  "verified": [
+    {
+      "id": "T1",
+      "pass": true,
+      "evidence": "spec hash output: 1a60f1395557fd729df02a87dff57c193e2f8fc03c7f39cd6b9d0092a8396fe1 (matches). bun test tests/route.test.ts tests/early-stop.test.ts skills/work/ \u2026[trimmed]",
+      "failures": []
+    },
+    {
+      "id": "T2",
+      "pass": true,
+      "evidence": "bun test tests/route-refresh.test.ts tests/route.test.ts -> \"41 pass 0 fail 229 expect() calls. Ran 41 tests across 2 files.\" EXIT=0. git status shows scripts/l \u2026[trimmed]",
+      "failures": []
+    },
+    {
+      "id": "T3",
+      "pass": true,
+      "evidence": "spec-hash output: 1a60f1395557fd729df02a87dff57c193e2f8fc03c7f39cd6b9d0092a8396fe1 (matches). bun test v1.4.0 (34cbb9a40): 30 pass, 0 fail, 117 expect() calls.  \u2026[trimmed]",
+      "failures": []
+    },
+    {
+      "id": "T4",
+      "pass": true,
+      "evidence": "spec hash: 1a60f1395557fd729df02a87dff57c193e2f8fc03c7f39cd6b9d0092a8396fe1 (matches)\nrg 'route.ts' SKILL.md -> lines 161,166,174, rc=0\nrg -- '--verdict' SKILL. \u2026[trimmed]",
+      "failures": []
+    }
+  ],
+  "red": [
+    {
+      "id": "T1",
+      "command": "bun test tests/route.test.ts",
+      "verdict": "red-green",
+      "beforeExit": 1,
+      "afterExit": 0
+    },
+    {
+      "id": "T2",
+      "command": "bun test tests/route-refresh.test.ts",
+      "verdict": "red-green",
+      "beforeExit": 1,
+      "afterExit": 0
+    },
+    {
+      "id": "T3",
+      "command": "bun test tests/farm-routing.test.ts",
+      "verdict": "red-green",
+      "beforeExit": 1,
+      "afterExit": 0
+    }
+  ],
+  "findings": [],
+  "tasksThatFlagged": [],
+  "mechanicalThatFailed": [],
+  "lensesThatFlagged": [],
+  "mechanical": []
+}

@@ -61,9 +61,15 @@ const taskList = Array.isArray(tasks) ? tasks : []
 // post-adjudication mutation). Newline is rejected for the same reason `;` is.
 const RED_COMMAND_OPERATORS = /[;&|`$><(){}\n\r]/
 const isRedGated = t => typeof t.redCommand === 'string'
+// task.kind picks the implementer's entry in args.routing.kindModels; absent means judgement. Checked
+// with or without a routing map, so a typo'd kind fails here rather than silently routing as judgement.
+const TASK_KINDS = ['script', 'judgement', 'review', 'bulk']
 for (const t of taskList) {
   if (!t.id || !t.name || !t.work || !t.acceptance) {
     throw new Error(`work: task missing id/name/work/acceptance: ${JSON.stringify(t)}`)
+  }
+  if (t.kind !== undefined && t.kind !== null && !TASK_KINDS.includes(t.kind)) {
+    throw new Error(`work: task ${t.id}: kind must be one of ${TASK_KINDS.join('|')}: ${JSON.stringify(t.kind)}`)
   }
   if (t.redCommand !== undefined && t.redCommand !== null) {
     if (typeof t.redCommand !== 'string' || !t.redCommand.trim()) {
@@ -352,20 +358,35 @@ const refLines = (refs, intro) =>
   Array.isArray(refs) && refs.length ? ['', intro, ...refs.map(p => `- ${p}`)] : []
 const IMPL_REFS_INTRO = 'Domain rules governing this task. Read each of these files IN FULL before doing any work:'
 const JUDGE_REFS_INTRO = 'The rules this judgement is made against. Read each of these files IN FULL before judging:'
-// Probe model. A mechanical/red/third-party probe RUNS A COMMAND and reports {name, exitCode,
-// output}; the JS reads the exit code and no probe asserts a pass. There is no judgement to
+// Per-leg model, highest first: (1) an explicit model in args, a non-empty string; (2)
+// args.routing.kindModels — the implementer takes its task's kind (default judgement), the verifier
+// and every probe take script, the lens takes review; (3) the defaults below. null or a missing key
+// falls through. The dispatcher resolves the map through routing.json, because this file has no fs
+// and agent() takes only a model id. A flag-form routing ({source:'flag'}) carries no kindModels.
+const isModel = v => typeof v === 'string' && v.length > 0
+const routingArg = args.routing && typeof args.routing === 'object' ? args.routing : {}
+const kindModels = routingArg.kindModels && typeof routingArg.kindModels === 'object' && !Array.isArray(routingArg.kindModels)
+  ? routingArg.kindModels : {}
+const routedModel = (explicit, kind, fallback) =>
+  isModel(explicit) ? explicit : (isModel(kindModels[kind]) ? kindModels[kind] : fallback)
+// Probe model. A mechanical/red/third-party/scored/rules probe RUNS A COMMAND and reports {name,
+// exitCode, output}; the JS reads the exit code and no probe asserts a pass. There is no judgement to
 // downgrade, so the session's top tier is spent on process supervision — and probes outnumber
 // every other non-refuter leg. Default sonnet; pass null to inherit the session model.
-const probeModel = args.probeModel === undefined ? 'sonnet' : (args.probeModel || null)
+const probeModel = routedModel(args.probeModel, 'script', args.probeModel === undefined ? 'sonnet' : (args.probeModel || null))
 // A verifier judges ONE task against ONE stated acceptance criterion, with the criterion and the
 // evidence both handed to it — bounded, like refutation, and one per task. Default sonnet.
-const verifierModel = args.verifierModel === undefined ? 'sonnet' : (args.verifierModel || null)
+const verifierModel = routedModel(args.verifierModel, 'script', args.verifierModel === undefined ? 'sonnet' : (args.verifierModel || null))
 // Implementers default to INHERIT: they write the artifact the whole gate then judges.
-const implementerModel = args.implementerModel || null
+const implementerModelFor = t => routedModel(args.implementerModel, t.kind ?? 'judgement', args.implementerModel || null)
 // lensModel is the fallback for a lens that names no model of its own. The lens's own `model` key
-// wins, and its documented default ('sonnet') is what the one-lens replay was measured on, so this
-// dial only bites when the lens object omits `model` explicitly as null.
+// wins, and its documented default ('sonnet') is what the one-lens replay was measured on, so with
+// no review model routed this dial only bites when the lens object omits `model` explicitly as null.
+// With one routed, the order is lens.model, lensModel, kindModels.review.
 const lensModel = args.lensModel || null
+const lensLegModel = isModel(lensArg.model) ? lensArg.model
+  : isModel(kindModels.review) ? (isModel(lensModel) ? lensModel : kindModels.review)
+  : (lens.model || lensModel)
 // Per-leg reasoning effort: null omits the key and inherits the session default. Implementers write
 // the artifact the whole gate then judges, and xhigh is the documented level for long-horizon
 // agentic coding. Verifiers judge ONE task against ONE criterion with the evidence handed to them —
@@ -894,7 +915,7 @@ const runLensLeg = async digest => {
     {
       label: LENS_KEY, phase: 'Verify', schema,
       ...agentTypeOpt(reviewAgentType(lens.agentType)),
-      ...optIf('model', lens.model || lensModel),
+      ...optIf('model', lensLegModel),
       ...optIf('effort', lens.effort),
     }
   )
@@ -998,7 +1019,7 @@ for (const wave of IMPLEMENT_WAVES) {
       '- A separate verifier will judge the files themselves without seeing this report — your report cannot substitute for the work.',
       '- If blocked, set done=false and list blockers; do not loosen the acceptance to pass.',
     ].join('\n'),
-    { label: `implement:${t.id}`, phase: 'Implement', schema: IMPL_SCHEMA, ...agentTypeOpt(implementerAgentType), ...optIf('model', implementerModel), ...optIf('effort', implementerEffort) }
+    { label: `implement:${t.id}`, phase: 'Implement', schema: IMPL_SCHEMA, ...agentTypeOpt(implementerAgentType), ...optIf('model', implementerModelFor(t)), ...optIf('effort', implementerEffort) }
   )
   // The agent's own id is not evidence — this leg was dispatched for a known task, so stamp it.
   const record = r ? { ...r, id: t.id } : { id: t.id, done: false, changedFiles: [], evidence: '', blockers: ['agent died or was skipped'] }

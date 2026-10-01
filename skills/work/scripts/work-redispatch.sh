@@ -6,7 +6,8 @@
 #   work-redispatch.sh … --dispatch --full                # re-run every task
 #   work-redispatch.sh … --dispatch --no-lint             # skip lint and red probe
 #   work-redispatch.sh … --dispatch --no-red-probe        # keep lint, skip red probe
-#   work-redispatch.sh … --dispatch --provider codex      # provider for this round
+#   work-redispatch.sh … --dispatch --provider codex      # whole-round override; without it the
+#                                                         # kind map is re-resolved via route.ts
 #   WORK_REDISPATCH_DRYRUN=1                              # gates only; write nothing
 #   WORK_FARM=PATH                                        # farm.sh override
 #   WORK_NO_SCOPE=1                                       # plain setsid dispatch
@@ -52,9 +53,10 @@ die() { printf 'work-redispatch: %s\n' "$1" >&2; exit 1; }
 [ $# -ge 2 ] || die "usage: work-redispatch.sh <plan.md> <args.json> [--dispatch] [--no-lint]"
 PLAN=$1; ARGS=$2; shift 2
 DISPATCH=""; LINT=1; REDPROBE=1; FULL=0
-# See work-dispatch.sh for what this actually swaps. Per-invocation, never sticky: switching
-# provider between rounds is the whole point, so a round inherits nothing from its predecessor.
-PROVIDER=claude
+# See work-dispatch.sh for what this actually swaps. Per-invocation, never sticky: a round inherits
+# nothing from its predecessor. Empty means the claude wrapper hosts the round and args.routing is
+# re-resolved through route.ts, so a refreshed table takes effect next round.
+PROVIDER=""
 while [ $# -gt 0 ]; do
   case "$1" in
     # Boolean. A provider after it is the --provider flag misspelled; say so rather than dying on
@@ -686,6 +688,18 @@ MSG
   fi
 fi
 
+# The kind map, re-resolved every round on the staged args through work-dispatch.sh's one
+# implementation. The flag form replaces the whole object, so a previous round's kindModels cannot
+# survive into a --provider round. A refusal spends nothing, exactly like the gates around it.
+if [ "$DISPATCH" = "--dispatch" ]; then
+  bash "$SKILL/scripts/work-dispatch.sh" --resolve-routing "$STAGE" "$(basename "$RUN_DIR")" "$PROVIDER" || {
+    rr=$?
+    rm -f "$STAGE"
+    printf '\nNothing was spent: args.json is unchanged, the counters above were NOT written, result.json is unrotated.\n' >&2
+    exit "$rr"
+  }
+fi
+
 # TIER 2, on the staged args and still before anything is committed: the same probe work-dispatch.sh
 # runs, invoked as its subcommand so there is one implementation of the classification.
 if [ "$DISPATCH" = "--dispatch" ] && [ "$REDPROBE" = 1 ]; then
@@ -769,8 +783,11 @@ else
   scope_unit="work-$(printf '%s' "$RUN_ID" | tr -c '[:alnum:]_.\-' '_')-$$.scope"
 fi
 
+# The wrapper hosting the round: the override when given, else claude running the kind map's ids.
+HOST=${PROVIDER:-claude}
+
 # One argument vector, so the two dispatch paths cannot drift apart.
-farm_cmd=(bash "$FARM" --provider "$PROVIDER"
+farm_cmd=(bash "$FARM" --provider "$HOST"
     --workflow "$SKILL/workflow.js"
     --args "$ARGS_ABS" --out "$RESULT" --cwd "$(pwd)")
 
@@ -791,5 +808,5 @@ fi
 # the round that later dies without a verdict, so the fact has to be in the output either way.
 echo "scope: $scope${scope_unit:+ ($scope_unit)}${scope_why:+ — $scope_why}"
 
-printf 'dispatched, log: %s (provider: %s)\n' "$LOG" "$PROVIDER"
+printf 'dispatched, log: %s (provider: %s)\n' "$LOG" "$HOST"
 printf 'wait with a Monitor on %s, then run work-result.sh on it\n' "$RESULT"

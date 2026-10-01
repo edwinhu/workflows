@@ -147,6 +147,17 @@ print("  planFindings:         " + routed(r.get("planFindings")))
 PY
 }
 
+# work-outcomes.ts appends to the farm outcomes file. Its exit code is deliberately discarded: the
+# loop's exit code is the gate's verdict, and a bookkeeping failure must not change it.
+record_outcomes() {
+  local out orc
+  out=$(bun "$SKILL/scripts/work-outcomes.ts" "$RUN_DIR" 2>&1)
+  orc=$?
+  [ -n "$out" ] && printf '%s\n' "$out"
+  [ "$orc" -eq 0 ] || printf 'work-loop: work-outcomes.ts exited %s — round %s outcomes not recorded; continuing\n' "$orc" "$round" >&2
+  return 0
+}
+
 round=1
 while :; do
   echo "work-loop: round $round of $LOOPS — waiting on $RESULT"
@@ -173,6 +184,9 @@ while :; do
 
   bash "$SKILL/scripts/work-result.sh" "$RESULT"
   rc=$?
+  # An accepted round (PASS or FAIL, never a refusal) records its per-task outcomes and automatic
+  # labels BEFORE any exit below can end the loop. Advisory: a failure is logged, never propagated.
+  case "$rc" in 0|1) record_outcomes ;; esac
   case "$rc" in
     0) echo "work-loop: PASS on round $round"; exit 0 ;;
     2) echo "work-loop: work-result.sh REFUSED the return — see its reasons above" >&2; exit 2 ;;

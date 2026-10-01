@@ -1,7 +1,7 @@
 # Farm-out provider routing
 
-Design record. Settled 2026-10-01 (run 1: `route.ts`, `routing.json`, `farm.sh`). Deferred to
-run 2: per-step routing in work-dispatch, the grind runner choice, farm-team's duplicate map.
+Design record. Settled 2026-10-01 (run 1: `route.ts`, `routing.json`, `farm.sh`; run 2: per-step
+routing in `work`). Deferred to run 3: the grind runner choice, farm-team's duplicate map.
 
 ## The problem
 
@@ -56,3 +56,24 @@ writes, and no line holds prompt text. The boundary is load-bearing:
   lives outside every repo, never in `.planning/`.
 - **It outlives the farm-events files**, which are evicted once 60 minutes old with their pid gone.
 - **Nothing existing holds per-row outcomes**: in `--tasks` mode they reached stdout only.
+
+## Work runs
+
+A `work` run is one host session executing `workflow.js`, which has no fs or process access, and
+its `agent()` takes only a model id; the proxy routes full ids across families. So the dispatcher
+routes: before `args.json` is written, `work-dispatch.sh` (and `work-redispatch.sh`, every round)
+calls `route.ts --row` once per kind, labelled `work:<runId>:<kind>` (judgement, script, review,
+plus bulk when a task declares it: at most four calls, never per task or step), and injects
+`args.routing` `{kindModels, source: table|jev, decisions}`. The claude wrapper hosts the run and
+each step names its kind's full id. A refusal for any kind blocks the round before anything runs.
+`--provider` stays the whole-run override: `{source: flag, provider}`, `route.ts` not consulted.
+Step to kind: an implementer is `judgement` or its task's `kind`; the verifier and every probe (red,
+mechanical, third-party, scored, rules) are `script`; the lens is `review`. An explicit model wins.
+
+`skills/work/scripts/work-outcomes.ts <run-dir>` runs from `work-loop.sh` after each accepted round
+(`work-result.sh` exit 0 or 1, never 2; its failure never changes the loop's exit). It appends to
+the same outcomes file a `row` per task, rowId `work:<runId>:r<round>:<taskId>`, never twice, and,
+where the verifier reached the task, an automatic `verdict` (`auto: true`): `correct` iff it passed
+and the task has no `redCommand` or its red pair was `red-green`, else `wrong`. The label comes from
+the run's own gates, never a labelling call; no task text is written. A carried task (one outside
+`args.onlyTasks`) gets no lines: its judging round wrote them. Grind and farm-team are run 3.

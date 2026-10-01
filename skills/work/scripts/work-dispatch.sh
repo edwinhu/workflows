@@ -16,7 +16,10 @@
 #   work-dispatch.sh --no-mech-probe  skip only the mechanical baseline probe; keep plan-lint
 #   work-dispatch.sh --no-suite-lint  skip only the suite-lint report; keep every gate
 #   work-dispatch.sh --run-dir DIR    put args/result/log under DIR/<run-id> instead of $PWD/.work/
-#   work-dispatch.sh --provider claude|codex|gemini  the whole spine's provider (required)
+#   work-dispatch.sh --provider claude|codex|gemini  whole-run override: that wrapper hosts every
+#                                      step and route.ts is not consulted. Without it the claude
+#                                      wrapper hosts the run and each step takes its model from
+#                                      args.routing.kindModels, resolved through route.ts
 #   work-dispatch.sh --no-cron        do NOT print the CronCreate call; the farm-runs plugin monitor
 #                                      becomes the only wake (and it dies with the session)
 #   work-dispatch.sh --cron           accepted no-op alias — the cron is the default
@@ -28,6 +31,8 @@
 #   work-dispatch.sh --red-probe ARGS run the red-gate probe on an args.json and exit 0/3 (reused
 #                                      by work-redispatch.sh so there is one implementation)
 #   work-dispatch.sh --archive-plan SRC DIR HASH  archive a plan into a run dir (same reuse)
+#   work-dispatch.sh --resolve-routing ARGS RUNID [PROVIDER]  write args.routing into ARGS in place;
+#                                      exit 3 when route.ts refuses a kind (same reuse)
 #   work-dispatch.sh --spec-hash PLAN print the plan's spec hash and nothing else
 #   work-dispatch.sh --scaffold PLAN PATH is PATH declared in scaffoldPaths? 0 yes, 1 no, 2 undecidable
 #   work-dispatch.sh --covers PLAN PATH  is PATH inside some task's writablePaths? 0 yes, 1 no,
@@ -86,6 +91,8 @@ set -uo pipefail
 
 # Self-locating: the skill root is this script's parent, so the copy runs wherever it is installed.
 SKILL=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+# skills/work -> the plugin root, so a worktree's dispatcher routes through that worktree's route.ts.
+PLUGIN_ROOT=$(cd "$SKILL/../.." && pwd)
 # farm-out ships alongside work; a sibling copy wins, an installed one is the fallback, and
 # WORK_FARM overrides both.
 FARM=${WORK_FARM:-}
@@ -523,6 +530,99 @@ archive_plan() {
   echo "plan:  $dest"
 }
 
+# ---------------------------------------------------------------- the kind map, resolved per round
+# resolve_routing <args.json> <run-id> [provider] — sets args.routing in place, once per round.
+# workflow.js has no fs or process access and agent() takes only a model id, so the map has to be
+# resolved HERE, before the args are handed over. One route.ts call per KIND, never per task or step,
+# run in parallel so the pass costs one Jev timeout. judgement, script and review are always
+# resolved; bulk only when a task declares it, so a bulk task always has a model.
+#   no provider    {kindModels:{kind: model}, source: jev|table, decisions:{kind: route.ts output}}
+#   --provider X   {source:'flag', provider:X}; route.ts is not consulted
+# A route.ts failure for any kind exits 3 with the args file untouched: nothing may launch on a
+# partial map. The row reaches route.ts as ONE argv element, built by json.dumps — never a shell string.
+resolve_routing() {
+  python3 - "$1" "$2" "${3:-}" "$PLUGIN_ROOT/scripts/lib/route.ts" <<'PY'
+import json, os, subprocess, sys
+
+args_path, run_id, provider, route_ts = sys.argv[1:5]
+try:
+    with open(args_path) as fh:
+        a = json.load(fh)
+except (OSError, json.JSONDecodeError) as exc:
+    sys.exit(f"routing: cannot read {args_path} ({exc})")
+if not isinstance(a, dict):
+    sys.exit(f"routing: {args_path} is not a JSON object")
+
+if provider:
+    routing = {"source": "flag", "provider": provider}
+    summary = f"routing: --provider {provider} hosts every step; route.ts not consulted"
+else:
+    kinds = ["judgement", "script", "review"]
+    if any(isinstance(t, dict) and t.get("kind") == "bulk" for t in (a.get("tasks") or [])):
+        kinds.append("bulk")
+    procs, failed, decisions = {}, [], {}
+    for k in kinds:
+        row = json.dumps({"kind": k, "label": f"work:{run_id}:{k}"})
+        try:
+            procs[k] = subprocess.Popen(["bun", route_ts, "--row", row], stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE, text=True, errors="replace")
+        except OSError as exc:
+            failed.append((k, "n/a", f"could not run bun {route_ts}: {exc}"))
+    for k, p in procs.items():
+        # A backstop only: route.ts caps its one Jev call at jev.timeoutSeconds itself.
+        try:
+            out, err = p.communicate(timeout=120)
+        except subprocess.TimeoutExpired:
+            p.kill()
+            out, err = p.communicate()
+            failed.append((k, "n/a", "route.ts still running after 120s"))
+            continue
+        if p.returncode != 0:
+            failed.append((k, p.returncode, err.strip() or "(no stderr)"))
+            continue
+        try:
+            d = json.loads(out)
+        except json.JSONDecodeError:
+            d = None
+        if not (isinstance(d, dict) and isinstance(d.get("model"), str) and d["model"]):
+            failed.append((k, 0, "route.ts exited 0 without a decision naming a model"))
+            continue
+        decisions[k] = d
+    if failed:
+        w = sys.stderr
+        for k, code, why in failed:
+            print(f"routing: route.ts could not route kind {k} (exit {code}):", file=w)
+            print("  " + why.replace("\n", "\n  "), file=w)
+        names = ", ".join(k for k, _, _ in failed)
+        print(f"\nBLOCKED: no model for kind(s) {names}. Nothing dispatched; the args file is unchanged.\n"
+              "Fix the routing table (bun scripts/lib/route.ts --refresh re-derives availability), or\n"
+              "override the whole run with --provider claude|codex|gemini.", file=w)
+        raise SystemExit(3)
+    routing = {
+        "kindModels": {k: decisions[k]["model"] for k in kinds},
+        "source": "jev" if any(d.get("source") == "jev" for d in decisions.values()) else "table",
+        "decisions": {k: decisions[k] for k in kinds},
+    }
+    summary = f"routing: {routing['source']} — " + ", ".join(f"{k} {m}" for k, m in routing["kindModels"].items())
+
+# Injected, never read from the plan block: a stale map there would be a lie about this round.
+a["routing"] = routing
+tmp = f"{args_path}.routing.{os.getpid()}"
+try:
+    with open(tmp, "w") as fh:
+        json.dump(a, fh, indent=2, ensure_ascii=False)
+        fh.write("\n")
+    os.replace(tmp, args_path)
+except OSError as exc:
+    try:
+        os.unlink(tmp)
+    except OSError:
+        pass
+    sys.exit(f"routing: could not write {args_path} ({exc})")
+print("  " + summary)
+PY
+}
+
 # Subcommand forms, so work-redispatch.sh reuses these rather than growing a second copy of them.
 if [ "${1:-}" = "--archive-plan" ]; then
   [ -f "${2:-}" ] && [ -d "${3:-}" ] && [ -n "${4:-}" ] \
@@ -540,6 +640,13 @@ if [ "${1:-}" = "--red-probe" ]; then
   red_probe_gate "$2"
   exit $?
 fi
+if [ "${1:-}" = "--resolve-routing" ]; then
+  [ -f "${2:-}" ] && [ -n "${3:-}" ] || { echo "--resolve-routing needs <args.json> <run-id> [provider]" >&2; exit 2; }
+  case "${4:-}" in ''|claude|codex|gemini) ;;
+    *) echo "--resolve-routing: provider must be claude|codex|gemini, got: $4" >&2; exit 2 ;; esac
+  resolve_routing "$2" "$3" "${4:-}"
+  exit $?
+fi
 
 mode=dispatch
 cron=1
@@ -550,12 +657,12 @@ suitelint=1
 rundir=""
 # Empty means "not stated": resolved from the args' maxRounds (or 3) once args.json exists.
 loops=""
-# The whole spine's provider. farm.sh maps it to a CLIProxyAPI wrapper, and that wrapper remaps the
-# TIER NAMES (ANTHROPIC_DEFAULT_SONNET_MODEL=gpt-5.6-terra under codex), so every `model: 'sonnet'`
-# in workflow.js follows without a single arg changing. Whole-run granularity by construction: there
-# is no way to put implementers on one provider and lenses on another, and mixing them would mean two
-# gates. Deliberately NOT recorded in args.json — it is a property of this dispatch, not of the plan,
-# and the point of the lever is to differ between rounds.
+# --provider is the WHOLE-RUN OVERRIDE. Given, farm.sh hosts the run on that CLIProxyAPI wrapper,
+# which remaps the tier names (ANTHROPIC_DEFAULT_SONNET_MODEL=gpt-5.6-terra under codex), route.ts is
+# not consulted, and args.routing records {source:'flag', provider}. Absent, the claude wrapper hosts
+# the run and resolve_routing writes the kind map, so each step names a full model id the proxy routes
+# across families. Either way args.routing is injected per dispatch and re-resolved by
+# work-redispatch.sh every round: it describes this round, never the plan, so it can change between rounds.
 provider=""
 while :; do
   case "${1:-}" in
@@ -706,6 +813,13 @@ MSG
     exit 3
   fi
 fi
+
+# The kind map, still before $out exists: a route.ts refusal leaves args.json absent and the run
+# armed. After plan-lint, which is free, and before the probes, which are not. Not a gate tier, so
+# --no-lint does not skip it — the args are incomplete without it.
+resolve_routing "$tmp" "$runid" "$provider"
+rr=$?
+if [ "$rr" -ne 0 ]; then rm -f "$tmp"; exit "$rr"; fi
 
 # TIER 2, still before $out exists, so a refusal leaves args.json exactly as it was (or absent) and
 # the run armed. Skipped under --print: that mode promises to build and stop, not to run commands.
@@ -890,13 +1004,12 @@ else
   scope_unit="work-$(printf '%s' "$runid" | tr -c '[:alnum:]_.\-' '_')-$$.scope"
 fi
 
-# One argument vector, so the two dispatch paths cannot drift apart.
-if [ -z "$provider" ]; then
-  echo "work-dispatch.sh requires an explicit --provider (gemini is recommended)" >&2
-  exit 2
-fi
+# The wrapper hosting the run: the override when given, else claude, whose steps then name the full
+# model ids args.routing.kindModels carries.
+host=${provider:-claude}
 
-farm_cmd=(bash "$FARM" --provider "$provider"
+# One argument vector, so the two dispatch paths cannot drift apart.
+farm_cmd=(bash "$FARM" --provider "$host"
   --workflow "$SKILL/workflow.js"
   --args "$R/args.json" --out "$R/result.json" --cwd "$PWD")
 
@@ -915,7 +1028,7 @@ echo "scope: $scope${scope_unit:+ ($scope_unit)}${scope_why:+ — $scope_why}"
 
 sleep 2
 if bash "$SKILL/scripts/farm-alive.sh" "$R/result.json" > /dev/null; then
-  echo "dispatched: $runid (provider: $provider)"
+  echo "dispatched: $runid (provider: $host${provider:+, --provider override})"
 else
   echo "WARNING: no live dispatch for $runid two seconds in — check $R/run.log" >&2
 fi
@@ -939,6 +1052,8 @@ fi
 # Above zero the loop is LAUNCHED DETACHED rather than printed, because a foreground loop turns a
 # caller's 600 s Bash-tool cap into a SIGKILL of the whole run; zero is the printed wait loop.
 if [ "$loops" -gt 0 ]; then
+  # An empty provider is passed as-is: work-loop.sh then redispatches without --provider, so every
+  # round re-resolves the kind map.
   setsid nohup bash -c '
     bash "$1" --run-dir "$2" --plan "$3" --loops "$4" --provider "$5"
     echo $? > "$2/loop.exit"

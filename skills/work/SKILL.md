@@ -328,7 +328,7 @@ hold. Run it, then skip to the Monitor; the rest of these two phases is what it 
 and what to check when it reports something odd:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-dispatch.sh --provider gemini  # armed plan; or pass one
+bash ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-dispatch.sh                    # armed plan; or pass one
 bash ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-dispatch.sh --provider codex   # "run work through codex"
 ```
 
@@ -336,17 +336,22 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-dispatch.sh --provider codex
 named in `$ARGUMENTS`, however it is spelled — `--provider codex`, `--dispatch codex`, "run this on
 gpt" — is `--provider codex` on the dispatch line, whether `work` was invoked directly or through `/dev`,
 `/ds`, `/writing`, `/notes`, `/slides` or `/exams`. Those skills print their own dispatch recipe, so
-each carries the flag too; dropping it fails because an explicit provider is required.
+each carries the flag too; dropping it silently routes the run by kind instead of on the named provider.
 `--provider` is the ONE spelling: `work-dispatch.sh --dispatch` and `work-redispatch.sh --dispatch
 codex` each exit 2 naming it, rather than dying on "unknown flag" or accepting a synonym.
 
-**`--provider claude|codex|gemini` (required, `gemini` recommended) runs the WHOLE spine on that provider** — it
-reaches `farm.sh --provider`, whose wrapper remaps the tier names, so every `model: 'sonnet'` in
-`workflow.js` follows with no arg change. Same flag on `work-redispatch.sh`, which is where it earns
-its keep: when a round repeats its predecessor's failure exactly, a different provider is the lever
-for framing lock-in (`references/convergence.md`). Whole-run granularity is structural — the provider
-is chosen before `workflow.js` runs, so implementers and the lens cannot differ. It is deliberately not
-written to `args.json`: differing between rounds is the point.
+**With no `--provider`, each step routes by kind through `scripts/lib/routing.json`.** Before
+`args.json` is written the dispatcher calls `route.ts --row` once per kind and injects the kind map
+as `args.routing` (`kindModels`, `source`, per-kind `decisions`); the claude wrapper hosts the run and
+`workflow.js` gives each step its kind's full model id — an implementer `judgement` or its task's
+`kind`, the verifier and every probe `script`, the lens `review`. An explicit model arg still wins
+(the model rows below). A `route.ts` refusal for any kind blocks the dispatch before anything runs.
+**`--provider claude|codex|gemini` is the whole-run override**: that wrapper hosts every step,
+`route.ts` is not consulted, `args.routing` is `{source: 'flag', provider}`, and the wrapper remaps
+the tier names so every `'sonnet'` default follows. `work-redispatch.sh` takes the same flag and
+re-resolves `args.routing` every round, so a refreshed table takes effect next round, and when a round
+repeats its predecessor's failure exactly, a different provider is the lever for framing lock-in
+(`references/convergence.md`). Design: `docs/DESIGN-routing.md`.
 
 It needs nothing from the session's context, which is the point: a run whose context was cleared at
 plan approval is recovered by this one command, with no re-exploration.
@@ -431,7 +436,7 @@ governs what a generated workflow declares — is declared away for this region 
   mechanicalChecks: [{name: "node-check", cmd: "node --check foo.js"}, ...],  // optional
   scoredChecks: [{key, items, prompt, schema, components, passthrough, refs, agentType}, ...], // optional; advisory, never gates
   lens: {prompt: "<what the ONE review judges>", refs: [], agentType: "Explore",
-         model: "sonnet", effort: "high"},                        // optional; ONE object, defaults shown
+         effort: "high"},                     // optional; ONE object; a `model` here pins it over the kind map
   attempts: [{key: "a1", prompt: "<task for the blind probe>", refs: [], agentType: "Explore"}], // optional
   authorityExtra: "<domain rule appended to every agent's AUTHORITY block>",  // optional
   implementerAgentType: "…", verifierAgentType: "Explore",        // optional
@@ -532,12 +537,12 @@ make the result unverified, not a PASS.
 | `tasks[].refs` | `string[]` (absolute paths) | Files the implementer must Read in full before working. Absent or `[]` injects nothing into the prompt. |
 | `lens.refs` | `string[]` (absolute paths) | The rules the lens judges against. **It is told to read them IN FULL** — it is the only reader of them, so a ref it skips is a rule nothing applied. Absent or `[]` injects nothing. Keep the set to what the judgement actually needs: one agent pays for all of it, and distilling a ref into a summary copy is the drift `spine-fidelity` exists to catch. |
 | `maxAgents` | `number` (default `50`) | Hard ceiling on the fan-out floor, checked at arg-validation. **Throws before any agent is dispatched**; the error names each dimension's count. Raise it deliberately, in the plan — see the sizing note above. |
-| `lens` | `{prompt?, refs?, agentType?, model?, effort?}` | One object, one agent, after the verify/mechanical/scored/third-party barrier. The digest contains flagged tasks, verifier failures, red outcomes, failed mechanical checks (`name`, `exitCode`, last 60 output lines) and carried findings. Absent or blank prompt uses correctness, spec fidelity, tests and methodology; review cannot be disabled. Defaults: model `'sonnet'`, effort `'high'`. Null effort inherits; null model uses `lensModel` if set, otherwise inherits. JS selects RED for task/mechanical failures: return `routes[] {failure, ownerTask, cause, fix}`, no fresh findings. GREEN: return `findings[] {title, severity, file, line?, detail, ownerTask}`, no routes. Severity is `critical｜major｜minor`; owner is a task id or `"plan"`. Both modes return `carried[] {id, status: open｜closed, evidence}`. Lines belong in `line`, not `file`. Satisfied checks belong in `dispositions`, reported but never gated; `defect: false` and explicit non-defect labels are routed there as a backstop. A dead lens synthesizes a gating critical and leaves all carried claims open. Arrays and the retired array argument are refused. |
+| `lens` | `{prompt?, refs?, agentType?, model?, effort?}` | One object, one agent, after the verify/mechanical/scored/third-party barrier. The digest contains flagged tasks, verifier failures, red outcomes, failed mechanical checks (`name`, `exitCode`, last 60 output lines) and carried findings. Absent or blank prompt uses correctness, spec fidelity, tests and methodology; review cannot be disabled. Model: see `lensModel` below (`kindModels.review` when routed, else `'sonnet'`). Effort defaults to `'high'`; null effort inherits. JS selects RED for task/mechanical failures: return `routes[] {failure, ownerTask, cause, fix}`, no fresh findings. GREEN: return `findings[] {title, severity, file, line?, detail, ownerTask}`, no routes. Severity is `critical｜major｜minor`; owner is a task id or `"plan"`. Both modes return `carried[] {id, status: open｜closed, evidence}`. Lines belong in `line`, not `file`. Satisfied checks belong in `dispositions`, reported but never gated; `defect: false` and explicit non-defect labels are routed there as a backstop. A dead lens synthesizes a gating critical and leaves all carried claims open. Arrays and the retired array argument are refused. |
 | `attempts` | `[{key, prompt, refs, agentType? default Explore, model?, effort?}]` | Parallel, blind probe agents. Each returns `{key, answer}` without writing to disk, and their results are passed to the lens; the return and scoreTable carry attempts `[{key, reported}]`. An attempt is BLIND: it gets only its own prompt and its own refs, not the task context or the full plan. A dead, thrown or empty attempt yields a synthesized critical finding (`deadAttemptFinding`) that gates even under `freezeFindingSet`. Counted in the fan-out formula. |
 | `carriedFindings` | `[{id?, title, severity, detail, file?, ownerTask?}]` | The run's own carry, derived by `work-redispatch.sh --dispatch` from previous blocking findings plus existing carry, minus evidenced closures. Existing ids are preserved; missing ids are derived from `(lens, title, file)`. External claims stay in `priorFindings`, not duplicated here. The lens rules the merged pool; `carriedSubmitted` and `carriedOpen` count it. No additional agents. |
-| `probeModel` | `string｜null` (default `'sonnet'`) | Model for the **probe** legs — `mechanical:*`, `red:*`, `third-party:*`. A probe runs a command and reports `{name, exitCode, output}`; the JS reads the exit code and no probe asserts a pass, so there is no judgement to downgrade and the session's top tier would be spent supervising a subprocess. On a check-heavy run they outnumber every other leg. Pass `null` to inherit the session model. **Recommended: `'gemini-3.1-flash-lite'`** — measured 2026-09-12 at 2/2 correct exit codes with a valid `MECHANICAL_SCHEMA` report on both a passing and a failing command, and it draws on a quota pool nothing else in the run uses, so a probe cannot push a real leg into a cooldown. `gpt-5.6-luna` scored the same but shares the Codex pool; `gpt-oss-120b-medium` failed both cases (Antigravity 500, and Claude Code logs `unrecognized_model`). |
-| `verifierModel` | `string｜null` (default `'sonnet'`) | Model for `verify:*`. A verifier judges ONE task against ONE stated acceptance criterion, with both the criterion and the evidence handed to it — bounded, and one per task. Pass `null` to inherit. |
-| `implementerModel` / `lensModel` | `string｜null` (default `null`) | Implementers inherit unless set. `lensModel` is a fallback only when `lens.model` is null; omitting `lens.model` uses `'sonnet'` even when this fallback is set. Declare model changes in the plan. |
+| `probeModel` | `string｜null` (default `args.routing.kindModels.script`, else `'sonnet'`) | Model for the **probe** legs — `mechanical:*`, `red:*`, `third-party:*`, plus `scored:*` and `rules:*`, which read the same setting. A probe runs a command and reports `{name, exitCode, output}`; the JS reads the exit code and no probe asserts a pass, so there is no judgement to downgrade and the session's top tier would be spent supervising a subprocess. On a check-heavy run they outnumber every other leg. Order: a non-empty string here, then `args.routing.kindModels.script` (the dispatcher's kind map), then `'sonnet'`; `null` falls through to the map and inherits the session model only when there is none (a `--provider` run). Which model probes should run on is the `script` kind in `scripts/lib/routing.json`, not advice here: change the reviewed table, never pin `probeModel` in a plan to follow a recommendation. |
+| `verifierModel` | `string｜null` (default `args.routing.kindModels.script`, else `'sonnet'`) | Model for `verify:*`. A verifier judges ONE task against ONE stated acceptance criterion, with both the criterion and the evidence handed to it — bounded, and one per task. Same order as `probeModel`: `null` falls through to the kind map and inherits only without one. |
+| `implementerModel` / `lensModel` | `string｜null` (default `null`) | An implementer takes a non-empty `implementerModel`, then `args.routing.kindModels[task.kind ?? 'judgement']`, else inherits; `task.kind` must be `script｜judgement｜review｜bulk`, or the run throws before any agent. The lens takes `lens.model`, then `lensModel`, then `kindModels.review`; with no kind map, omitting `lens.model` uses `'sonnet'` even when `lensModel` is set, and `lensModel` only fills a `lens.model` of null. Declare model changes in the plan. |
 | `taskFixes` | `{"<taskId>": [finding｜route｜string, …]}` | Redispatch groups the previous verdict's routes and blocking findings by valid `ownerTask`, replacing stale fixes even on FULL rounds. Each task's implementer sees them under `FIX FIRST (from last round's review):`, with title/failure, location, detail/cause/fix. Unknown task ids or non-array values throw. |
 | `implementerEffort` | `string｜null` (default `'xhigh'`) | Reasoning effort for `implement:*`. Implementers write the artifact the whole gate then judges, and `xhigh` is the documented level for long-horizon agentic coding. Pass `null` to omit the key and inherit the session default. |
 | `verifierEffort` | `string｜null` (default `'medium'`) | Reasoning effort for `verify:*`. A verifier judges ONE task against ONE criterion with the evidence handed to it — bounded. Pass `null` to omit the key and inherit. |
