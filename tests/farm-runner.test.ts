@@ -23,7 +23,7 @@ function runFarm(expectPath: string, opts: { writeRelative?: string } = {}) {
   const res = spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', agentCwd], {
     encoding: 'utf8',
     cwd: root,                                   // deliberately NOT agentCwd
-    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1' },
+    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1', FARM_OUTCOMES: join(root, 'farm-outcomes.jsonl') },
   })
   const parsed = JSON.parse(res.stdout || '[]')
   rmSync(root, { recursive: true, force: true })
@@ -58,7 +58,7 @@ function runRow(row: Record<string, unknown>) {
   const res = spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', agentCwd], {
     encoding: 'utf8',
     cwd: root,
-    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1' },
+    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1', FARM_OUTCOMES: join(root, 'farm-outcomes.jsonl') },
   })
   let argv: string[] = []
   try { argv = readFileSync(argvFile, 'utf8').split('\n').filter(Boolean) } catch { /* never invoked */ }
@@ -106,7 +106,7 @@ function runFanout(rows: Record<string, unknown>[], spend: number | null = 0, en
     return spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', agentCwd], {
       encoding: 'utf8', cwd: root,
       env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, TMPDIR: root,
-        CLAUDE_CODE_SESSION_ID: 'estimate-test', FARM_OUT_CHILD: '1',
+        CLAUDE_CODE_SESSION_ID: 'estimate-test', FARM_OUT_CHILD: '1', FARM_OUTCOMES: join(root, 'farm-outcomes.jsonl'),
         FARM_TASK_BUDGET: '4000000', FARM_SESSION_BUDGET: '20000000',
         FARM_TASK_ESTIMATE: '750000', FARM_BUDGET_OVERRIDE: '0', ...env },
     })
