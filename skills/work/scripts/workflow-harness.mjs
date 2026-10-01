@@ -33,20 +33,18 @@ export async function run(args, agentReply, path = WORKFLOW, overrides = {}) {
   const dispatched = []
   const logs = []
   const prompts = new Map()
+  const optsMap = new Map()
   const agent = async (prompt, opts) => {
     dispatched.push(opts.label)
     prompts.set(opts.label, prompt)
+    optsMap.set(opts.label, opts)
     return agentReply(opts.label, prompt, opts)
   }
   const phase = () => {}
-  // Sequential, but a throwing thunk resolves to null — the contract parallel() actually offers.
-  const parallel = async thunks => {
-    const out = []
-    for (const th of thunks) {
-      try { out.push(await th()) } catch { out.push(null) }
-    }
-    return out
-  }
+  // Match the real concurrent barrier, including null slots for throwing thunks.
+  const parallel = thunks => Promise.all(thunks.map(async th => {
+    try { return await th() } catch { return null }
+  }))
   const pipeline = async (items, ...stages) => {
     const out = []
     for (let i = 0; i < items.length; i++) {
@@ -61,7 +59,7 @@ export async function run(args, agentReply, path = WORKFLOW, overrides = {}) {
   const log = m => logs.push(m)
   const hooks = { agent, phase, parallel, pipeline, log, ...overrides }
   const result = await load(path)(args, hooks.agent, hooks.phase, hooks.parallel, hooks.pipeline, hooks.log)
-  return { result, dispatched, logs, prompts }
+  return { result, dispatched, logs, prompts, optsMap }
 }
 
 /** Throws-or-not, without losing what got dispatched first. */
@@ -82,16 +80,18 @@ export const task = (over = {}) => ({ id: 'T1', name: 'n', work: 'w', acceptance
 /**
  * Default replies: everything succeeds. Override per label to model failure or death.
  * @param over  {label-prefix or exact label: result|null}, plus `red: {before, after}` exit codes.
- *              `rank` stubs the Jev refuter-ordering leg: a RANKER_SCHEMA object, or null for a dead
- *              leg. Defaults to null — the fallback path — so a test that does not care about
- *              ordering never accidentally asserts on a ranking it did not mean to create.
+ *              `lens` is ONE value, not a map — there is one lens and its label is exactly `lens`.
+ *              Pass null for a dead lens, or a LENS_SCHEMA object ({routes?, findings?, carried?,
+ *              dispositions?}) for a lens that reported. Default: a lens that ran and found nothing.
  */
-export function replies({ red = {}, impl = {}, verify = {}, lens = {}, mech = {}, refute, rank } = {}) {
+export function replies({ red = {}, impl = {}, verify = {}, lens, mech = {}, attempt = {} } = {}) {
   return (label, _prompt, _opts) => {
     const [kind, rest] = [label.split(':')[0], label.split(':').slice(1).join(':')]
     if (kind === 'implement') return impl[rest] !== undefined ? impl[rest] : { id: rest, done: true, changedFiles: ['x'], evidence: 'e' }
     if (kind === 'verify') return verify[rest] !== undefined ? verify[rest] : { id: rest, pass: true, evidence: 'e', failures: [] }
-    if (kind === 'lens') return lens[rest] !== undefined ? lens[rest] : { findings: [] }
+    // The single lens. `label` is the bare key, so there is no `rest` to route on.
+    if (label === 'lens') return lens !== undefined ? lens : { routes: [], findings: [], carried: [], dispositions: [] }
+    if (kind === 'attempt') return attempt[rest] !== undefined ? attempt[rest] : { key: rest, answer: 'default answer' }
     if (kind === 'mechanical' || kind === 'mech') return mech[rest] !== undefined ? mech[rest] : { name: rest, exitCode: 0, output: '' }
     if (kind === 'red') {
       // Labels are red:before:<id> / red:after:<id>. Default to the HEALTHY pair (fails before,
@@ -102,11 +102,13 @@ export function replies({ red = {}, impl = {}, verify = {}, lens = {}, mech = {}
       const v = red[side]
       return v === null ? null : { name: rest, exitCode: v, output: 'o' }
     }
-    if (kind === 'refute') return refute !== undefined ? refute : { refuted: true, reason: 'r' }
-    if (kind === 'rank') {
-      if (rank === undefined) return null
-      return typeof rank === 'function' ? rank(rest) : rank
-    }
     return null
   }
 }
+
+/** Every carried finding ruled `closed` with evidence — the "the fixes landed" lens reply. */
+export const closes = (ids, extra = {}) => ({
+  routes: [], findings: [], dispositions: [],
+  carried: ids.map(id => ({ id, status: 'closed', evidence: 'ran the command; it passes' })),
+  ...extra,
+})

@@ -81,8 +81,14 @@ round_log() {
   printf '%s\n' "${newest:-$LOG}"
 }
 
-# The three selectors the next round is scoped from. work-result.sh prints the verdict and the
-# score table and none of these, so a caller reading only its output cannot say WHAT failed.
+# The selectors the next round is scoped from. work-result.sh prints the verdict and the score table
+# and none of these, so a caller reading only its output cannot say WHAT failed.
+#
+# `routes` and `planFindings` are printed beside them because they are what the one-lens gate added and
+# what the next round is actually NARROWED by: a route names the task that owns a failure the checks
+# found, and a planFinding names an item NO task can fix — so a reader who sees only the three arrays
+# cannot tell a round that will re-run T2 from one that work-redispatch.sh is about to refuse with
+# "amend the plan". Both are printed on every FAIL, empty included.
 selectors() {
   python3 - "$RESULT" <<'PY'
 import json, sys
@@ -98,6 +104,18 @@ def names(v):
             out.append(str(x))
     return ", ".join(out) or "(none)"
 
+def routed(v):
+    """A route or a plan-routed item, as `owner <- what failed`: the owner is the whole point."""
+    out = []
+    for x in v or []:
+        if isinstance(x, dict):
+            what = x.get("failure") or x.get("title") or x.get("id") or "(unlabelled)"
+            owner = x.get("ownerTask") or "(no ownerTask)"
+            out.append(f"{owner} <- {what}")
+        else:
+            out.append(str(x))
+    return "; ".join(out) or "(none)"
+
 try:
     r = json.load(open(sys.argv[1]))
 except Exception as e:
@@ -107,6 +125,8 @@ except Exception as e:
 print("  tasksThatFlagged:     " + names(r.get("tasksThatFlagged")))
 print("  mechanicalThatFailed: " + names(r.get("mechanicalThatFailed")))
 print("  lensesThatFlagged:    " + names(r.get("lensesThatFlagged")))
+print("  routes:               " + routed(r.get("routes")))
+print("  planFindings:         " + routed(r.get("planFindings")))
 PY
 }
 

@@ -39,7 +39,12 @@ type Plan = {
    * one dispatch earlier than the arm would.
    */
   goalCheck?: string
-  reviewLenses: Lens[]
+  /**
+   * THE single review lens — `args.lens`, or the `Review lens:` line of the Run-sizing block.
+   * `null` when the plan declares none, which is legal: `work` supplies a default prompt. Optional
+   * on the type so a fixture built before the one-lens change still constructs a Plan.
+   */
+  lens?: Lens | null
   successCriteria: string[]
   verification: string[]
   testFirst: Record<string, string>
@@ -207,19 +212,25 @@ const parseMarkdown = (md: string): Plan => {
     const m = e.match(/^(\S+)\s*[—-]\s*(.*)$/)
     return { name: m ? m[1] : e, cmd: m ? (cleanCmd(m[2]) ?? '') : '' }
   })
-  const lensesOf = (label: RegExp): Lens[] =>
-    blockEntries(rs, label).flatMap(e => {
-      // A bare comma list names keys and states no condition; the normal form is `key — description`.
-      if (!/[—-]\s/.test(e) && e.includes(','))
-        return e.split(',').map(k => ({ key: k.trim(), text: '' }))
-      const m = e.match(/^(\S+)\s*[—-]\s*([\s\S]*)$/)
-      return [m ? { key: m[1], text: m[2] } : { key: e.trim(), text: '' }]
-    }).filter(l => l.key && !/\s/.test(l.key))
+  // ONE lens. `Review lens:` is the current label; `Review lenses:` is still read so a plan written
+  // against the old spine lints rather than silently losing its lens. Either way the whole block is
+  // the lens's CONDITION — R9/R10 grade that text, so a prose line is graded instead of discarded,
+  // which is what happened when the parser insisted on a whitespace-free `key — description` form.
+  const lensOf = (label: RegExp): Lens | null => {
+    const entries = blockEntries(rs, label)
+    if (!entries.length) return null
+    const joined = entries.join(' ').trim()
+    if (!joined) return null
+    // The separator must be a dash WITH whitespace on both sides. A bare `-` matches inside a word, so
+    // `gate-integrity, spine-fidelity` otherwise parses as key `gate` and condition `integrity, …`.
+    const m = joined.match(/^(\S+)\s+[—–-]\s+([\s\S]*)$/)
+    return m && m[2].trim() ? { key: m[1], text: m[2].trim() } : { key: 'lens', text: joined }
+  }
 
   return {
     tasks,
     mechanicalChecks: mech,
-    reviewLenses: lensesOf(/^\s*Review lenses:\s*/),
+    lens: lensOf(/^\s*Review lens(?:es)?:\s*/),
     successCriteria: sectionItems(md, /Success criteria/i),
     verification: sectionItems(md, /Verification/i),
     testFirst,
@@ -271,7 +282,13 @@ const parseArgs = (j: any): Plan => ({
   })),
   // Absent is the common case and legal; a present-but-unusable value is a finding, not a silent ''.
   goalCheck: j.goalCheck === undefined || j.goalCheck === null ? undefined : String(j.goalCheck),
-  reviewLenses: (j.reviewLenses ?? []).map((l: any) => ({ key: l.key ?? '', text: l.prompt ?? '' })),
+  // `args.lens` — one object, so there is one lens to grade. A caller still passing the retired
+  // `reviewLenses` array supplies NO lens here; workflow.js refuses that arg outright, so the loud
+  // failure is there rather than in a lint rule that would have to guess which entry was meant.
+  lens:
+    j.lens && typeof j.lens === 'object' && !Array.isArray(j.lens)
+      ? { key: 'lens', text: typeof j.lens.prompt === 'string' ? j.lens.prompt : '' }
+      : null,
   successCriteria: [],
   verification: [],
   testFirst: Object.fromEntries(
@@ -356,6 +373,16 @@ const pathOverlap = (a: string, b: string): boolean => {
 
 const coveredBy = (path: string, globs: string[]): boolean =>
   globs.some(g => pathOverlap(path, g.replace(/\*+$/, '').replace(/\/+$/, '')))
+
+/**
+ * M1. A finding's `file` is written by a model reading a diff, so it routinely carries a location:
+ * `a/b.go:135`, `a/b.go:135-140`, `a/b.go:135:8`. `writablePaths` name PATHS, so the suffix has to come
+ * off before `coveredBy` — with it on, every located finding maps to no task, the round falls back to
+ * FULL, and FULL re-probes red commands the last round already fixed (`red-not-red`). The loop dead-ends
+ * on work that is done. ONE implementation, exported, because a second spelling of this regex is how
+ * the range form (`:135-140`) stayed unhandled after the single-line form was fixed.
+ */
+const stripLineSuffix = (file: string): string => String(file ?? '').replace(/:\d+(?:-\d+)?(?::\d+)?$/, '')
 
 /**
  * Layered the way `workflow.js implementWaves` layers: Kahn rounds, tasks[] order within a wave,
@@ -731,20 +758,23 @@ const lint = (p: Plan): Finding[] => {
             )
     }
 
-  // R9/R10 — a lens with no severity cannot block, and one with no condition cannot fire.
-  for (const l of p.reviewLenses) {
-    if (!l.text.trim())
+  // R9/R10 — the lens's prompt, since there is exactly one: a lens with no severity cannot block, and
+  // one with no condition cannot fire. An ABSENT lens is silent here: `work` supplies a default prompt,
+  // so declaring none is a choice rather than a defect.
+  const lens = p.lens
+  if (lens) {
+    if (!lens.text.trim())
       add(
         'lens-missing-condition',
         'major',
-        `review lens ${l.key}`,
+        `review lens ${lens.key}`,
         'lens is named with no finding condition, so what it reports is undefined',
       )
-    else if (!SEVERITY.test(l.text))
+    else if (!SEVERITY.test(lens.text))
       add(
         'lens-missing-severity',
         'major',
-        `review lens ${l.key}`,
+        `review lens ${lens.key}`,
         'lens states no severity; work blocks only on critical|major, so a lens without one is decorative',
       )
   }
@@ -933,4 +963,4 @@ const main = () => {
 
 if (import.meta.main) main()
 
-export { lint, parseMarkdown, parseArgs, runContext, taskGraph, formatGraph, commandsIn, coveredBy, type Plan, type Finding, type TaskGraph }
+export { lint, parseMarkdown, parseArgs, runContext, taskGraph, formatGraph, commandsIn, coveredBy, stripLineSuffix, type Plan, type Finding, type TaskGraph }

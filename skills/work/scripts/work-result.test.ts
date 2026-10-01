@@ -38,12 +38,18 @@ const valid = () => ({
     tasksJudgedThisRun: 2,
     implementedDone: 2,
     verifyPassed: 2,
-    lensesRun: 3,
-    lensesReported: 3,
+    // ONE lens: lensesRun is always 1 and lensesReported is 1 or 0. `refuted` is gone with the
+    // refuter leg; `routes`, `carriedSubmitted`, `carriedOpen` and `planFindings` are what replaced it.
+    lensesRun: 1,
+    lensesReported: 1,
+    lensMode: 'GREEN',
     lensFindings: 1,
-    refuted: 1,
+    routes: 0,
     survivingBlocking: 0,
     survivingMinor: 0,
+    carriedSubmitted: 0,
+    carriedOpen: 0,
+    planFindings: 0,
     mechanicalRun: 2,
     mechanicalPassed: 2,
     thirdPartyAdvisoryFindings: 0,
@@ -171,6 +177,38 @@ describe('work-result.sh accepts a well-formed gate return', () => {
     for (const bad of ['2', 2, {}, null]) {
       expect(runJson({ ...valid(), residue: bad }).code).toBe(2)
     }
+  })
+
+  // `routes` and `planFindings` are the one-lens gate's two new channels: a RED-mode diagnosis per
+  // failure, and the blocking items no task's writablePaths can reach. OPTIONAL, not required — a
+  // result transcribed off an older spine carries neither, and requiring them would turn a real verdict
+  // into exit 2 (could-not-run), the one code a caller cannot act on.
+  test('a result carrying routes and planFindings adjudicates', () => {
+    const r = runJson({
+      ...validFail(),
+      routes: [{ failure: 'mechanical check tests exited 1', ownerTask: 'T1', cause: 'c', fix: 'x' }],
+      planFindings: [{ title: 'outside every writablePath', severity: 'major', detail: 'd', ownerTask: 'plan' }],
+    })
+    expect(r.code).toBe(1)     // FAIL, adjudicated — not refused
+    expect(r.stdout).toContain('verdict: FAIL')
+  })
+
+  test('a result with neither routes nor planFindings still adjudicates', () => {
+    expect(runJson(valid()).code).toBe(0)
+  })
+
+  test('routes or planFindings of the wrong type is refused', () => {
+    for (const bad of ['[]', 3, {}, null]) {
+      expect(runJson({ ...valid(), routes: bad }).code).toBe(2)
+      expect(runJson({ ...valid(), planFindings: bad }).code).toBe(2)
+    }
+  })
+
+  // The refuter leg is gone, so nothing in the contract may still demand its key.
+  test('a result with no `refuted` key is not refused for missing it', () => {
+    const v = valid()
+    expect('refuted' in v).toBe(false)
+    expect(runJson(v).code).toBe(0)
   })
 
   test('extra keys beyond the required set do not refuse', () => {
@@ -556,13 +594,12 @@ const emptyMechanical = () => ({
     lensesRun: null,
     lensesReported: null,
     lensFindings: null,
-    refuted: null,
     survivingBlocking: null,
     survivingMinor: null,
     mechanicalRun: 0,
     mechanicalPassed: 0,
   },
-  findings: [{ lens: 'scope-fidelity', severity: 'critical', what: 'out-of-scope edit' }],
+  findings: [{ lens: 'lens', severity: 'critical', what: 'out-of-scope edit' }],
   mechanical: [],
 })
 

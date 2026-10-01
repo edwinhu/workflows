@@ -16,17 +16,23 @@ and independently verify, then put the result in front of the human in tuicr. Hu
 routes back to CLARIFY.
 
 ```
- ┌────────── human REJECT / criteria wrong ──────────────────────────────┐
- ▼                                                                       │
-CLARIFY ─► PLAN ─► GOAL ─► workflow.js ──PASS──► HUMAN REVIEW (tuicr) ──┤
- (ask)    (draft,  (self-   IMPLEMENT, then       │ approved → done   │
-           user     send)   VERIFY ∥ MECHANICAL   │ findings → fix ─► re-run
-           edits)           ∥ third-party (opt-in,│            workflow.js (subset)
-                            advisory) → JS gate   │
-                              ▲    │
-                              └─fix┘ FAIL — re-run selector is tasksThatFlagged
-                                    + mechanicalThatFailed + lensesThatFlagged
+CLARIFY ─► PLAN ─► GOAL ─► workflow.js ──PASS──► HUMAN REVIEW (tuicr)
+   ▲                           ▲    │              │
+   └── human REJECT ────────────┼────┼──────────────┤
+                               └─fix┘ FAIL        └─ findings → fix → re-run
+
+workflow.js:
+IMPLEMENT ─► [VERIFY ∥ MECHANICAL ∥ SCORED ∥ THIRD-PARTY ∥ ATTEMPTS] ─► one LENS ─► JS gate
+                     optional legs finish at a barrier       │
+                   RED: diagnose and route; GREEN: open-ended pass
+FAIL selectors: tasksThatFlagged + mechanicalThatFailed + lensesThatFlagged + planFindings
 ```
+
+The review lens runs after the per-task verifiers and all optional check legs finish. RED means a
+task flagged or a mechanical check failed: the lens diagnoses each failure into `routes`, naming its
+owner task or `"plan"`. GREEN means those checks passed: the lens makes one open-ended pass. Both
+modes rule on carried findings. Scored and third-party results are advisory; they do not choose the
+mode or decide the gate. There is no refuter leg.
 
 **Plan review is computed and happens before dispatch, not inside it** — `plan-lint.ts` over the
 built args and `plan-preflight.ts` executing their commands at baseline, enforced by
@@ -90,12 +96,12 @@ the request already answers; batch up to 4 per call):
    moment; a plan approved without the opt-in line never runs third-party.*
 7. **Read-only runs only — use an agent team for discovery? (default yes.)** Ask this axis only
    when the run is an audit (`readOnly: true`); for a run that writes, the answer is always no and
-   the axis is skipped. The honest tradeoff: a team of communicating auditors catches **cross-file**
-   defects that isolated lenses structurally cannot see — each lens judges alone and no lens holds
-   two files at once. The cost is that a team's findings are **correlated**, so refutation must stay
-   **outside** the team. Answering no is a real option; it costs discovery breadth, not gate
-   integrity. For where the team runs and how its findings reach the gate, see *Where the agent team
-   lives*.
+   the axis is skipped. The honest tradeoff: a team of communicating auditors covers more **cross-file**
+   surface than one lens reading alone, because its members can hand each other what they found. The
+   cost is that a team's findings are **correlated**, so the adjudication — the lens ruling each claim
+   `open|closed` with evidence — stays **outside** the team. Answering no is a real option; it costs
+   discovery breadth, not gate integrity. For where the team runs and how its findings reach the gate,
+   see *Where the agent team lives*.
 
 Gate: you can plan without guessing. If answers surface a trivial task, say so and exit the
 loop — see red flags.
@@ -119,7 +125,7 @@ EnterPlanMode. Explore, then draft a plan that MUST contain:
 
   ```
   ## Run sizing
-  Review lenses:     criteria-vs-artifacts, scope-fidelity   (+ one line per added lens, with the risk it covers)
+  Review lens:       <the dimensions the ONE lens judges — merge every named risk into that one prompt>
   Mechanical checks: <name> — `<exact command>`              (omit the section if none)
   Scored checks:     <key> — <what it scores>, ADVISORY: never gates  (opt-in, no default; omit if none)
   Test-first:        <task id> — `<redCommand>`               (one line per red-gated task; omit if none)
@@ -127,24 +133,25 @@ EnterPlanMode. Explore, then draft a plan that MUST contain:
   Third-party review: codex                                   (only if opted in at CLARIFY)
   ```
 
-Every task fans out to 1 implementer + 1 verifier, plus 2 probes if it carries a `redCommand`; every
-lens to 1 reviewer + up to `refutersPerLens` refuters, plus one ordering leg if it overflows that cap
-**and** `refuterRanker` is opted in to `'jev'` (off by default — see `refuterRanker`); **every `priorFindings` entry costs one
-refuter**; every `scoredChecks` item costs one agent, advisory or not. If that runs past ~50, the
-plan is too coarse-grained for one gate: split it into sequenced work runs.
+Each active task costs 1 implementer + 1 verifier, plus 2 probes if its current `redCommand` has no
+carried proven `red-green` adjudication. **The review lens is exactly 1 agent**; it rules on both
+`carriedFindings` and external `priorFindings` without additional agents. Each mechanical check,
+scored item and opted-in third-party provider costs one agent. Above ~50, split the plan into
+sequenced work runs.
 
-**This is enforced, not advised.** `workflow.js` computes its own fan-out floor
-(`2·tasks + 2·redGatedTasks + lenses + mechanicalChecks + scoredItems + priorFindings + thirdParty`)
+**This is enforced, not advised.** `workflow.js` computes the fan-out
+(`2·activeTasks + 2·redProbedTasks + 1 (the lens) + mechanicalChecks + scoredItems + thirdParty + attempts`;
+active task and red-probe counts are zero under `readOnly` or `onlyTasks: []`)
 at arg-validation and **throws before dispatching anything** if it exceeds `maxAgents` (default 50);
 the error prints the per-dimension breakdown. Raising `maxAgents` is legitimate; raising it silently
 at dispatch time is what the throw prevents, because sizing is the user's call at approval time.
 
-**Sizing lives in the plan because it shapes the gate.** Choosing lenses or dropping a mechanical
+**Sizing lives in the plan because it shapes the gate.** Rewriting the lens or dropping a mechanical
 check after approval would weaken the verdict without changing a byte the user signed off on — the
 hash covers the `work:dispatch` spec block, so anything that decides PASS/FAIL has to be inside it.
 
 **An audit needs a plan too.** `readOnly` still requires `planPath` + `specHash`, and the plan it
-hashes is a **charter**, not a work order: what is being audited, which lenses judge it, which
+hashes is a **charter**, not a work order: what is being audited, what the lens judges it against, which
 mechanical checks run, and the standing instruction that nothing may be written. The task table may
 be empty. Do **not** shortcut by hashing the artifact under audit instead: the AUTHORITY block tells
 every agent the hashed file is its *only authority*, so hashing the audited file would tell each lens
@@ -337,7 +344,7 @@ reaches `farm.sh --provider`, whose wrapper remaps the tier names, so every `mod
 `workflow.js` follows with no arg change. Same flag on `work-redispatch.sh`, which is where it earns
 its keep: when a round repeats its predecessor's failure exactly, a different provider is the lever
 for framing lock-in (`references/convergence.md`). Whole-run granularity is structural — the provider
-is chosen before `workflow.js` runs, so implementers and lenses cannot differ. It is deliberately not
+is chosen before `workflow.js` runs, so implementers and the lens cannot differ. It is deliberately not
 written to `args.json`: differing between rounds is the point.
 
 It needs nothing from the session's context, which is the point: a run whose context was cleared at
@@ -345,9 +352,10 @@ plan approval is recovered by this one command, with no re-exploration.
 
 **The plan-review gates run before `args.json` is written, exiting 3 with the run still armed and
 every artifact byte-identical.** Tier 1 is `plan-lint.ts` on the built args. The two probe gates
-execute disjoint command sets, each command exactly once: **tier 2 runs every active task's
-`redCommand`** through the script's own classifier, refusing `red-not-red` (exit 0 — the gate already
-passes) and `could-not-run` (exit 127, a missing runner, `pytest` exit 4/5, or no test output at
+execute disjoint command sets, each command exactly once: tier 2 runs active tasks' `redCommand`s
+unless they carry proven `red-green` adjudications for that exact current command. Its classifier
+refuses `red-not-red` (exit 0 — the gate already passes) and `could-not-run` (exit 127, a missing runner,
+`pytest` exit 4/5, or no test output at
 all), so only non-zero *with* a real test result proceeds; **tier 2b runs every `mechanicalChecks`
 cmd** at baseline via `plan-preflight.ts --only mechanical`, where only a `critical` refuses.
 Acceptance commands are `plan-preflight`'s third probe kind and **no dispatch gate runs them** — run
@@ -421,18 +429,18 @@ governs what a generated workflow declares — is declared away for this region 
   thirdParty: ["codex"],          // ONLY if the plan carries the opt-in line; else omit
   mechanicalChecks: [{name: "node-check", cmd: "node --check foo.js"}, ...],  // optional
   scoredChecks: [{key, items, prompt, schema, components, passthrough, refs, agentType}, ...], // optional; advisory, never gates
-  reviewLenses: [{key, prompt, refs, agentType}, ...],            // optional; default is 2 lenses
-  // Standard, and the one to carry on any multi-task plan. `work-dispatch.sh` PRINTS the wave shape
-  // `dependsOn` produces; this asks whether it has to be that shape. MAJOR-capped, so it never blocks:
-  // {key: "plan-parallelism", agentType: "Explore", refs: [],
-  //  prompt: "Judge ONLY the approved plan's dependsOn edges. MAJOR at most, never CRITICAL — this is advisory. Given each task's `work`, `writablePaths` and `refs`: is any dependsOn edge unnecessary — could the two tasks run in the same wave? One finding per edge you would remove, naming the dependent, the dependency, and what the dependent actually needs from the dependency; if that is a BEHAVIOUR (an exit code, an observable effect) rather than a file the dependency writes, say so — an edge is a READ ordering, so a behaviour need is not one. Be specific or silent: a finding that names no concrete pair and no concrete reason is not a finding, and 'consider parallelising' is not one. Never argue for removing a test-first edge — the task that writes a failing test before the task that makes it pass — collapsing that means writing a test beside its fix, which is exactly what red-gating exists to prevent. Report nothing if every edge is load-bearing."},
+  lens: {prompt: "<what the ONE review judges>", refs: [], agentType: "Explore",
+         model: "sonnet", effort: "high"},                        // optional; ONE object, defaults shown
+  attempts: [{key: "a1", prompt: "<task for the blind probe>", refs: [], agentType: "Explore"}], // optional
   authorityExtra: "<domain rule appended to every agent's AUTHORITY block>",  // optional
   implementerAgentType: "…", verifierAgentType: "Explore",        // optional
   readOnly: true,                                                 // optional; audit an existing tree
-  priorFindings: [{title, severity, detail, file, lens}, ...],    // optional; discoveries made outside this run
-  freezeFindingSet: true, maxRounds: 3,                           // optional; set by work-redispatch.sh, not by hand
-  maxAgents: 50, refutersPerLens: 8,                              // optional; fan-out ceilings — throws if the floor exceeds maxAgents
-  refuterModel: "sonnet", refuterEffort: "medium",                // optional; null on either inherits the session default
+  priorFindings: [{id, title, severity, detail, file, ownerTask}, ...],  // optional; claims made OUTSIDE this run
+  carriedFindings: [...same shape...], taskFixes: {"<taskId>": [...]},   // derived by work-redispatch.sh
+  onlyTasks: ["<taskId>"], priorResults: {implemented: [], verified: [], red: []}, // derived re-run scope
+  // onlyTasks: [] is a zero-implementer round only when every task has carried records
+  freezeFindingSet: true, maxRounds: 6,                           // freeze is derived; cap defaults to 6
+  maxAgents: 50,                                                  // optional; fan-out ceiling — throws if the floor exceeds it
   implementerEffort: "xhigh", verifierEffort: "medium",           // optional; null omits the key and inherits
   scoredEffort: "low", thirdPartyEffort: "low",                   // optional; null omits the key and inherits
 }
@@ -468,11 +476,11 @@ done
 bash ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-result.sh "$PWD/$R/result.json"
 ```
 
-**`--loops N` executes that wait instead of printing it.** After dispatch `work-dispatch.sh --loops
-N` hands the run to `work-loop.sh`, which polls with the liveness leg above, reads the verdict,
-consults `converge-check.ts` every round, and redispatches to a cap of N rounds. N defaults to the
-args `maxRounds` value, or 3 when absent; a non-numeric value is refused with exit 2 naming the flag.
-`--loops 0` is the printed path unchanged — the wait loop above prints and the script exits 0.
+`--loops N` launches `work-loop.sh` detached to execute that wait and drive redispatch, recording
+its exit code in `<run-dir>/loop.exit`. It checks liveness, adjudicates each verdict and consults
+`converge-check.ts` each round, up to N rounds. N defaults to the args `maxRounds` value, or 6 when
+absent; a non-numeric value is refused with exit 2 naming the flag. `--loops 0` prints the wait loop
+instead and exits 0.
 
 The driver's exit codes: **0** PASS; **exit 1** the dispatch died with no verdict (see the run log it
 names); **exit 2** `work-result.sh` refused the verdict; **exit 5** `converge-check.ts` reported NOT
@@ -497,8 +505,11 @@ only — not at dispatch, not at round boundaries.
 readable JSON) and non-zero when `--out` came back missing or not a JSON object. `work-result.sh`
 then refuses (exit 2) unless the file is one object carrying `overallPass`, `verdict`, `scoreTable`,
 `findings`, `tasksThatFlagged`, `mechanicalThatFailed` and `lensesThatFlagged` with the right types,
-and prints the verdict and the score table on success. All three selectors are required: a return
-dropping one channel would make a FAIL carried solely by that channel read as a clean run.
+and prints the verdict and the score table on success. Those three selectors are REQUIRED: a return
+dropping one channel would make a FAIL carried solely by that channel read as a clean run. `routes`
+and `planFindings` are **optional and type-checked when present**, so an older verdict on disk still
+reads — but a FAIL with a non-empty `planFindings` is the one a re-dispatch cannot close, so consume
+it too.
 
 **State the residual plainly: mechanical claims are adjudicated, the rest is shape, not fidelity.**
 A model transcribes the workflow's returned object into `--out`, so a fabricated object with the
@@ -509,32 +520,32 @@ make the result unverified, not a PASS.
 | param | type | effect |
 |---|---|---|
 | `goalCheck` | `string` (optional) | The ONE command that settles the whole PLAN — not a round. `workflow.js` never reads it; `work-dispatch.sh` arms the hold on it, so it is a specification and is linted as one: `plan-lint` runs it through `hold-lint.ts` and a CRITICAL (a round verdict, an apostrophe, milestone phrasing, a human-closed clause) BLOCKS the dispatch, one step before the arm. Omit it when the plan has no such command and the hold becomes the judge alone on `goal`; a declared-but-empty string is refused rather than read as absent. |
-| `readOnly` | `boolean` (default `false`) | Audit mode. **No Implement phase and no per-task verifiers are dispatched**, so `tasks[]` may be empty or absent (it is still required when `readOnly` is false). Lenses ∥ mechanical ∥ third-party run as usual, and **every dispatched leg** — lenses, refuters, mechanical probes and third-party runners — defaults to the `Explore` agent type, structurally no Edit/Write, unless a per-lens `agentType` says otherwise. `Explore` keeps `Bash`, so a probe can still run its command. **Residuals**, all from `Bash`, and this list is open rather than exhaustive: a `mechanicalChecks` `cmd` runs VERBATIM; any reference this spine tells a leg to follow can itself instruct a write; and `authorityExtra` and `reviewLenses[].prompt` are caller-supplied free text handed to every Bash-capable leg. What the agent type pins is the agent's volition — never what it is *told* to do. Anything a `readOnly` run hands a leg must itself be read-only. `meta.phases` is a **static five-entry literal** (`Implement, Verify, Mechanical, Third-party, Gate`) in both modes — the harness parses `meta` without running the script and rejects any computed value, so a mode-specific phase list is not expressible. `Implement` is therefore advertised and then never opened on a `readOnly` run; that is `workflow.js`'s own progress display and is cosmetic. `work`'s lifecycle **Phase 1–5** (CLARIFY, PLAN, GOAL, workflow.js, HUMAN REVIEW) is a different axis and is unaffected. The task dimensions become **n/a** (`null`), not empty-and-clean: see the score-table note below. |
-| `priorFindings` | `[{title, severity, detail, file?, lens?}]` | Findings discovered **outside** this run — typically by a main-chat agent team. They are not trusted: each is refuted by the same adversarial path a lens finding takes (same schema, same default-to-refuted-when-ambiguous, same fail-closed rule that a dead refuter keeps the finding), and only survivors reach the gate, where they are gated identically to lens findings. An entry with no `lens` is attributed to the reserved key `unattributed` — the same key an unkeyed `reviewLenses` entry falls back to, since it is the same situation — so a survivor always names a `lensesThatFlagged` entry. Set `lens` explicitly to get a more specific label. **`file?` is the path the finding is _about_** — it is rendered into the refuter's prompt as `[path]` for context and is never opened by `work`. It is **not** a location `work` reads findings from; for where a team actually writes them, see *Where the agent team lives*. `severity` must be `critical｜major｜minor`; a malformed entry throws at arg-validation, before any agent is dispatched. An optional `agentType` on an entry overrides the refuter's agent type for that finding alone. **Each entry costs one refuter agent**, and the fan-out is bounded by nothing but the array you pass — so the count feeds the ~50-agent ceiling below. A `minor` entry cannot change the verdict (only `critical｜major` reach `survivingBlocking`), so it spends a full agent to move a display counter: submit `critical`/`major` unless you specifically want the minor counted. `scoreTable` then carries `priorFindingsSubmitted` / `priorFindingsSurviving`. |
+| `readOnly` | `boolean` (default `false`) | Audit mode: no Implement phase, red probes or per-task verifiers; `tasks[]` may be empty/absent. Mechanical, scored and third-party legs still run, then the lens. Review/probe legs default to `Explore` unless a supported agent-type override is set. No Edit/Write does not remove Bash: commands, refs and caller prompts must themselves be read-only. Task score dimensions are n/a (`null`), not checked-and-clean. The static five-entry `meta.phases` literal remains unchanged, but Implement is never opened. Both audit verdicts go to human review, not the fix loop. |
+| `priorFindings` | `[{id?, title, severity, detail, file?, ownerTask?}]` | External claims, such as discovery-team or human findings. Merged with `carriedFindings` for the lens to rule `open｜closed` with evidence; open `critical｜major` claims gate even under the freeze. Missing rulings, empty closure evidence or a dead lens leave claims open. Required: title, detail and severity `critical｜major｜minor`. Missing ids are minted; duplicate ids across both inputs throw. Prefer a stable id and `ownerTask`; put line numbers in `line`, not `file`. Redispatch preserves this external-claims input rather than overwriting it with the run's carry. No additional agents. |
 | `mechanicalChecks` | `[{name: string, cmd: string}]` | Adds a `Mechanical` phase running in parallel with Verify. One low-effort probe agent per check runs `cmd` **verbatim** and reports `{name, exitCode, output}`; **the JS reads the exit code** — no agent asserts a pass. Fail closed: a dead or skipped probe is `exitCode: -1`, which counts as failed. Missing `name` or `cmd` throws. **A probe's report is still a claim, and the claim is adjudicated in a shell**: work-result.sh re-runs EVERY declared check — a claimed failure included, since the file is a model's transcription of the gate object — and refuses (exit 2) when the observed exit code disagrees, or when a claimed non-zero exit sits beside `overallPass: true`. The refusal names **which direction** the disagreement went, because they mean opposite things: a claimed FAILURE that passes on re-run is a probe-side flake — re-run the gate, do not re-plan — while a claimed PASS that fails on re-run is the case the adjudicator exists for. Both still exit 2; passing a non-reproducing failure would wave a genuinely flaky gate through. Re-running one command to confirm a claim is cheap and re-running N is not — which is why a workflow declares **one** mechanical entry point whose exit code is its whole mechanical verdict, never a list of commands (a list also drops a check silently, and nothing reports a check it never knew about). **A check's `cmd` must finish inside ~10 minutes, because it is run TWICE by two different callers that both cap there**: a probe agent runs it through its Bash tool (hard ceiling 600s, not tunable) and `work-result.sh` re-runs it to adjudicate the claim. A check that outlives that returns 124/137/143 — a kill, not an exit — which scored as a *failing gate* until work-result.sh learned to refuse it. Anything genuinely long (a scale run, a soak) goes **behind** the gate, not inside it: run it detached (`run_in_background`, or a `Monitor` when you want per-event notice) writing an artifact, and let `cmd` be the fast read of that artifact. **`overallPass` in `result.json` is NOT the verdict and must never be read directly, without exception** — the verdict is `work-result.sh`'s exit code (0 pass, 1 fail, 2 refused), and any caller that reads the file another way is a defect. |
 | `scoredChecks` | `[{key, items, prompt, schema, components, refs, agentType?}]` (default off) | Weighted 0–10 scores, one agent per `items` entry, running in parallel with Verify. **The agent returns RAW COUNTS and `work` computes every score in JS** from the caller-declared `components`, so no agent ever sees the formula it is scored by — an agent that reports its own score inflates it. **It is advisory and structurally cannot gate**: `overallPass` is computed without reading any scored value, there is no threshold and no `blockBelow`, it adds no selector channel, and even a dead agent does not flip the verdict. An unmeasured, dead or partially-reported item scores `null` with a reason — never `base`, never `0`. Absent or `[]` opens no phase and dispatches nothing, and the return then carries `scores: []` with `scoresRun`/`scoresReported` as `null` (n/a — render it as such, never `0`). A schema key that is not a declared count, a score-shaped name, or a `penalties` key the schema does not declare all throw at arg-validation, before any dispatch. **`passthrough: [<field>, …]`** declares the evidence a score never reads — the numeric denominators a finding is stated against and the item lists it is built from — which a count-only whitelist cannot express; it stays a whitelist (an undeclared field is still refused, a field cannot be both a penalty and passthrough, and the score-shaped-name check applies to it too). Declared fields come back on that item's entry under **`evidence`** — nested, so nothing can collide with a component name; absent entirely when none was declared or reported; present on a `null`-scored item and never on a dead agent. Each item counts against `maxAgents`. Contract, arithmetic and worked example: [`references/scored-checks.md`](${CLAUDE_PLUGIN_ROOT}/skills/work/references/scored-checks.md). |
-| `tasks[].redCommand` | `string` (optional) | Test-first gate that is **executed**, never asserted: a probe agent runs the string verbatim before the implementer — the JS requires a **non-zero** exit — and a second probe runs it after, where the JS requires **zero**. Three failure verdicts, each fails the task and puts its id in `tasksThatFlagged`: `red-unproven` (a probe died or was skipped, `exitCode: -1`), `red-not-red` (exit 0 before, so the test proves nothing), `green-not-green` (non-zero after). Must be **one invocation** — the shell operators `` ; & \| ` $ > < ( ) { } `` and newlines throw at arg-validation, because the probe runs the string with its own authority and a shell program can fabricate RED; flags and quotes are fine, a multi-step check goes in a script you name. Costs **2 agents** against `maxAgents`; no probe is dispatched under `readOnly`. `scoreTable` then carries `redGated`, `redProven`, `redUnproven`, `redNotRed`, `greenNotGreen`, and the return carries `red` — feed it back as `priorResults.red` so a carried task keeps its adjudication instead of re-reading as unproven. It does **not** close everything: the command loads code the implementer may control, so keep `writablePaths` narrow. Absent leaves every existing caller byte-identical. |
+| `tasks[].redCommand` | `string` (optional) | Test-first gate that is **executed**, never asserted: a probe agent runs the string verbatim before the implementer — the JS requires a **non-zero** exit — and a second probe runs it after, where the JS requires **zero**. Three failure verdicts, each fails the task and puts its id in `tasksThatFlagged`: `red-unproven` (a probe died or was skipped, `exitCode: -1`), `red-not-red` (exit 0 before, so the test proves nothing), `green-not-green` (non-zero after). Must be **one invocation** — the shell operators `` ; & \| ` $ > < ( ) { } `` and newlines throw at arg-validation, because the probe runs the string with its own authority and a shell program can fabricate RED; flags and quotes are fine, a multi-step check goes in a script you name. Costs 2 agents unless `priorResults.red` carries `verdict: 'red-green'` for the same task id **and** `record.command === task.redCommand`; then neither in-run probe runs. Changed or missing command records are dropped, so the current command must be probed anew. No probe is dispatched under `readOnly`. `scoreTable` then carries `redGated`, `redProven`, `redUnproven`, `redNotRed`, `greenNotGreen`, and the return carries `red` — feed it back as `priorResults.red` so a carried task keeps its adjudication instead of re-reading as unproven. It does **not** close everything: the command loads code the implementer may control, so keep `writablePaths` narrow. Absent leaves every existing caller byte-identical. |
 | `tasks[].redDisposition` | `string` (optional) | The filed reason a task carries **no** red gate — for work already complete, where any `redCommand` would be refused `red-not-red`. plan-lint accepts it INSTEAD of `redCommand` (both declared is `red-both-declared`, MAJOR; neither is `redcommand-missing`, MAJOR; empty/whitespace reads as absent), and dispatch echoes it verbatim. **Its content is never validated** — non-empty is the whole check; grading prose is the non-terminating shape. Inert to workflow.js: no probe, no agent, no score field. |
 | `scaffoldPaths` | `string[]` (optional) | Paths the plan authors **before** the dispatch, even though a task also writes them. Read only by `main-thread-guard.sh` via `work-dispatch.sh --scaffold` (0 declared, 1 not, 2 undecidable → the guard fails closed); it changes nothing about how implementers run, and `writablePaths` still governs who may write what during the run. Exists for the greenfield red gate: a `redCommand` on a surface that does not exist yet fails to import, which is `could-not-run`, so a stub has to be on disk before wave 1 — and a stub is the implementer's output, so `--covers` alone can only deny it. Keep it to the specific file: a scaffold covering a task's whole writable surface is `scaffold-swallows-task` (major) at plan-lint. Absent leaves every existing caller byte-identical. |
 | `tasks[].dependsOn` | `string[]` (task ids, optional) | A **read ordering**: declare it when this task's `refs`, tests or inputs are files another task writes. IMPLEMENT then runs in waves — concurrent within a wave, waves in order. **Absent everywhere leaves every existing caller byte-identical**: one wave, `tasks[]` order. Refused at arg-validation, before any dispatch: a non-array or self-referencing value, an **unknown id** (a typo would silently drop the ordering it was written to enforce), a **cycle** (named with every id in it — a cycle means two tasks each need the other's output), and a wave whose tasks claim **overlapping `writablePaths`** (prefix-aware). An edge to a task outside `onlyTasks` is **satisfied, not unschedulable** — a prior run implemented it and its output is on disk, so refusing it would make every scoped re-run impossible. A `redCommand` still brackets its own implementer inside a wave, never a sibling's. |
 | `tasks[].refs` | `string[]` (absolute paths) | Files the implementer must Read in full before working. Absent or `[]` injects nothing into the prompt. |
-| `reviewLenses[].refs` | `string[]` (absolute paths) | The rules the lens judges against. **The lens is told to read them IN FULL; its refuters are only told the paths**, with an instruction not to open them unless the finding's own quoted evidence is insufficient (and to say so if they do). A lens is one agent doing open-ended reading; refuters are one agent *per finding*, so handing each the full ref set multiplies the run's largest read by the finding count. Absent or `[]` injects nothing either way. |
+| `lens.refs` | `string[]` (absolute paths) | The rules the lens judges against. **It is told to read them IN FULL** — it is the only reader of them, so a ref it skips is a rule nothing applied. Absent or `[]` injects nothing. Keep the set to what the judgement actually needs: one agent pays for all of it, and distilling a ref into a summary copy is the drift `spine-fidelity` exists to catch. |
 | `maxAgents` | `number` (default `50`) | Hard ceiling on the fan-out floor, checked at arg-validation. **Throws before any agent is dispatched**; the error names each dimension's count. Raise it deliberately, in the plan — see the sizing note above. |
-| `refutersPerLens` | `number` (default `8`) | Cap on refuters dispatched per lens — the one fan-out term `maxAgents` cannot predict, since a lens returns as many findings as it finds. Findings are refuted **severity-first**, so the cap can never spend its budget on minors and drop a critical. Anything over the cap is reported as **submitted but not refuted** and **still stands** (`refuted: false`, with the reason saying so) — the same fail-closed rule a dead refuter gets, because in both cases no refutation happened. Never silently truncated. |
-| `refuterRanker` | `'severity'｜'jev'` (default `'severity'`) | Which findings the capped refuter slots go to, **within** a severity. Severity always dominates — a ranked minor never displaces a critical. `'severity'` is the default and dispatches no ordering leg at all: the slots go to the findings in the order the reviewer reported them. `'jev'` is the opt-in, and dispatches ONE ordering leg per lens that OVERFLOWS `refutersPerLens`, which shells out to `scripts/jev-rank.ts` for one batched Decisions call (~$0.00003) and orders the findings likeliest-defect-first. No lens overflowing ⇒ no leg either way. **Jev never settles or drops a finding**: findings past the cap keep the fail-closed treatment above whatever their probability, and if Jev is unavailable, unparseable or dead the run falls back to severity-only order and `log()`s one line. **Why it is off by default**: measured 2026-09-27 over 3,137 findings, AUC 0.639 against refuter verdicts — enough to rank, nowhere near enough to adjudicate (at its most confident bin the refuter upheld only 53.7%), which is why it was never on the gate; and measured 2026-09-28 over 65 batches, batching does not degrade it (batched AUC 0.637 vs 0.619 single-call) but on the 18 real overflowing batches it moved **−0.001** refuter-upheld findings into the top 8 against a random within-severity draw, CI [−0.064, +0.060]. With 9.8 findings for 8 slots there are only ~0.6 upheld findings in play per overflow, so even a perfect ranker has almost nothing to win — and the price is a full agent leg. |
-| `probeModel` | `string｜null` (default `'sonnet'`) | Model for the **probe** legs — `mechanical:*`, `red:*`, `third-party:*`. A probe runs a command and reports `{name, exitCode, output}`; the JS reads the exit code and no probe asserts a pass, so there is no judgement to downgrade and the session's top tier would be spent supervising a subprocess. Probes outnumber every other non-refuter leg on a check-heavy run. Pass `null` to inherit the session model. **Recommended: `'gemini-3.1-flash-lite'`** — measured 2026-09-12 at 2/2 correct exit codes with a valid `MECHANICAL_SCHEMA` report on both a passing and a failing command, and it draws on a quota pool nothing else in the run uses, so a probe cannot push a real leg into a cooldown. `gpt-5.6-luna` scored the same but shares the Codex pool; `gpt-oss-120b-medium` failed both cases (Antigravity 500, and Claude Code logs `unrecognized_model`). |
-| `verifierModel` | `string｜null` (default `'sonnet'`) | Model for `verify:*`. A verifier judges ONE task against ONE stated acceptance criterion, with both the criterion and the evidence handed to it — bounded, like refutation, and one per task. Pass `null` to inherit. |
-| `implementerModel` / `lensModel` | `string｜null` (default inherit) | Set **deliberately**; default inherit so no caller's gate weakens silently. `lensModel` is where a downgrade costs most — lenses are the open-ended readers that find what nothing else does, so a cheaper lens is a weaker gate rather than a cheaper one. Implementers write the artifact the whole gate then judges. |
-| `refuterModel` / `refuterEffort` | `string｜null` (defaults `'sonnet'` / `'medium'`) | Model and reasoning effort for refuters only. Refutation is a bounded judgement against quoted evidence, not open-ended investigation, and refuters usually outnumber every other agent kind combined. Pass `null` to omit the key and inherit the session default — what a run wanting a maximally hard gate does. Lenses, implementers and verifiers are unaffected. |
+| `lens` | `{prompt?, refs?, agentType?, model?, effort?}` | One object, one agent, after the verify/mechanical/scored/third-party barrier. The digest contains flagged tasks, verifier failures, red outcomes, failed mechanical checks (`name`, `exitCode`, last 60 output lines) and carried findings. Absent or blank prompt uses correctness, spec fidelity, tests and methodology; review cannot be disabled. Defaults: model `'sonnet'`, effort `'high'`. Null effort inherits; null model uses `lensModel` if set, otherwise inherits. JS selects RED for task/mechanical failures: return `routes[] {failure, ownerTask, cause, fix}`, no fresh findings. GREEN: return `findings[] {title, severity, file, line?, detail, ownerTask}`, no routes. Severity is `critical｜major｜minor`; owner is a task id or `"plan"`. Both modes return `carried[] {id, status: open｜closed, evidence}`. Lines belong in `line`, not `file`. Satisfied checks belong in `dispositions`, reported but never gated; `defect: false` and explicit non-defect labels are routed there as a backstop. A dead lens synthesizes a gating critical and leaves all carried claims open. Arrays and the retired array argument are refused. |
+| `attempts` | `[{key, prompt, refs, agentType? default Explore, model?, effort?}]` | Parallel, blind probe agents. Each returns `{key, answer}` without writing to disk, and their results are passed to the lens; the return and scoreTable carry attempts `[{key, reported}]`. An attempt is BLIND: it gets only its own prompt and its own refs, not the task context or the full plan. A dead, thrown or empty attempt yields a synthesized critical finding (`deadAttemptFinding`) that gates even under `freezeFindingSet`. Counted in the fan-out formula. |
+| `carriedFindings` | `[{id?, title, severity, detail, file?, ownerTask?}]` | The run's own carry, derived by `work-redispatch.sh --dispatch` from previous blocking findings plus existing carry, minus evidenced closures. Existing ids are preserved; missing ids are derived from `(lens, title, file)`. External claims stay in `priorFindings`, not duplicated here. The lens rules the merged pool; `carriedSubmitted` and `carriedOpen` count it. No additional agents. |
+| `probeModel` | `string｜null` (default `'sonnet'`) | Model for the **probe** legs — `mechanical:*`, `red:*`, `third-party:*`. A probe runs a command and reports `{name, exitCode, output}`; the JS reads the exit code and no probe asserts a pass, so there is no judgement to downgrade and the session's top tier would be spent supervising a subprocess. On a check-heavy run they outnumber every other leg. Pass `null` to inherit the session model. **Recommended: `'gemini-3.1-flash-lite'`** — measured 2026-09-12 at 2/2 correct exit codes with a valid `MECHANICAL_SCHEMA` report on both a passing and a failing command, and it draws on a quota pool nothing else in the run uses, so a probe cannot push a real leg into a cooldown. `gpt-5.6-luna` scored the same but shares the Codex pool; `gpt-oss-120b-medium` failed both cases (Antigravity 500, and Claude Code logs `unrecognized_model`). |
+| `verifierModel` | `string｜null` (default `'sonnet'`) | Model for `verify:*`. A verifier judges ONE task against ONE stated acceptance criterion, with both the criterion and the evidence handed to it — bounded, and one per task. Pass `null` to inherit. |
+| `implementerModel` / `lensModel` | `string｜null` (default `null`) | Implementers inherit unless set. `lensModel` is a fallback only when `lens.model` is null; omitting `lens.model` uses `'sonnet'` even when this fallback is set. Declare model changes in the plan. |
+| `taskFixes` | `{"<taskId>": [finding｜route｜string, …]}` | Redispatch groups the previous verdict's routes and blocking findings by valid `ownerTask`, replacing stale fixes even on FULL rounds. Each task's implementer sees them under `FIX FIRST (from last round's review):`, with title/failure, location, detail/cause/fix. Unknown task ids or non-array values throw. |
 | `implementerEffort` | `string｜null` (default `'xhigh'`) | Reasoning effort for `implement:*`. Implementers write the artifact the whole gate then judges, and `xhigh` is the documented level for long-horizon agentic coding. Pass `null` to omit the key and inherit the session default. |
-| `verifierEffort` | `string｜null` (default `'medium'`) | Reasoning effort for `verify:*`. A verifier judges ONE task against ONE criterion with the evidence handed to it — bounded, like refutation, so it sits where refuters sit. Pass `null` to omit the key and inherit. |
-| `scoredEffort` / `thirdPartyEffort` | `string｜null` (defaults `'low'` / `'low'`) | Reasoning effort for `scored:*` and `third-party:*`. The scored leg reports **count fields** and the JS computes the composite; the third-party leg only shells out to an external CLI and parses its output. Neither has a judgement to downgrade. Pass `null` on either to omit the key and inherit. The `mechanical:*` and `red:*` probes are pinned at `low` and are not dialable; there is deliberately no global `lensEffort` — a lens sets `effort` on its own entry or inherits. |
-| `authorityExtra` | `string` | Appended to the `AUTHORITY` block every dispatched agent receives — implementers, verifiers, lenses, refuters. Absent leaves `AUTHORITY` byte-identical. |
-| `implementerAgentType` / `verifierAgentType` / `reviewLenses[].agentType` | `string` | Passed through as `agentType`. Use to pin a structurally read-only agent (`Explore` has no Edit/Write) for judges instead of trusting a prompt that says "modify nothing". Absent passes no key at all, so the dispatcher default applies. |
-| `reviewLenses` | `[{key, prompt, model?, effort?}]` | Whole-deliverable review lenses. Defaults to 2 (`criteria-vs-artifacts`, `scope-fidelity`) when absent **or empty** — passing `[]` does not disable review. **A lens may carry its own `model` and `effort`**, so one run can mix providers — cheap lenses on a small model, expensive ones on a large one. `model` falls back to `lensModel` and then to inherit; `effort` has no global to fall back to (there is no `lensEffort`), so absent means the key is omitted and the leg inherits. Neither changes `lensModel`'s own semantics: it remains the default for every lens that names no model. Add one per named risk the defaults can't see; unfocused lenses mostly produce findings that get refuted. **A lens has two output channels**: `findings` is defect claims ONLY, and `dispositions` is "I checked X and it holds" — reported in full, never refuted, never gated. A lens prompt that asks for every constraint to be *accounted for* must not push satisfied constraints into `findings`: a refuter cannot refute a true statement, so it returns `refuted: false` and the non-defect gates the run. Measured 2026-09-27 over 3,137 refuted findings: 2.8% were positive dispositions and ~47 survived into gates. Two backstops route rather than delete — `defect: false` on a finding, and a narrow self-label pattern over the title and the detail's opening — and both land the entry in `dispositions` with `routedFromFinding: true`, so nothing is silently dropped. A non-zero `scoreTable.dispositionsRoutedFromFindings` means a lens prompt is still pushing satisfied checks into the wrong channel. On a **scoped re-run** the set may be narrowed to the dispatch's blast radius — see the scoping rule above, whose three conditions (deterministic floor intact, scope recorded in the plan, no lens whose refs or subject changed) are what make it safe rather than a silent weakening. |
+| `verifierEffort` | `string｜null` (default `'medium'`) | Reasoning effort for `verify:*`. A verifier judges ONE task against ONE criterion with the evidence handed to it — bounded. Pass `null` to omit the key and inherit. |
+| `scoredEffort` / `thirdPartyEffort` | `string｜null` (defaults `'low'` / `'low'`) | Reasoning effort for `scored:*` and `third-party:*`. The scored leg reports **count fields** and the JS computes the composite; the third-party leg only shells out to an external CLI and parses its output. Neither has a judgement to downgrade. Pass `null` on either to omit the key and inherit. The `mechanical:*` and `red:*` probes are pinned at `low` and are not dialable; there is deliberately no global `lensEffort` — the lens sets `effort` on its own object (default `'high'`) or inherits. |
+| `authorityExtra` | `string` | Appended to the `AUTHORITY` block every dispatched agent receives — implementers, verifiers, the lens. Absent leaves `AUTHORITY` byte-identical. |
+| `implementerAgentType` / `verifierAgentType` / `lens.agentType` | `string` | Passed through as `agentType`. Use to pin a structurally read-only agent (`Explore` has no Edit/Write) for judges instead of trusting a prompt that says "modify nothing". Absent passes no key at all, so the dispatcher default applies. |
 | `thirdParty` | `["codex"｜"gemini"]` | Advisory only — never enters the gate arithmetic. Supply only if the plan carries the opt-in line. |
-| `freezeFindingSet` + `maxRounds` | `boolean`, `int` (default 6) | The fix loop's exit condition. **Do not hand-write either: `work-redispatch.sh --dispatch` sets them** — see *The frozen finding set and the round cap*. Under the freeze a surviving *lens* finding of blocking severity goes to the return's `residue[]` and to `scoreTable.residue` instead of `survivingBlocking`; surviving `priorFindings` still gate, and the task and mechanical channels are untouched. |
-| `onlyTasks` + `priorResults` | `string[]`, `{implemented, verified, red}` | Scopes a re-run after FAIL or human findings. **Do not hand-write these: `work-redispatch.sh --dispatch` derives both** from the previous verdict — `onlyTasks` is `tasksThatFlagged` closed under **transitive dependents** (a carried "verified" downstream of a re-run task was earned against code that no longer exists), plus any task the verdict settles no `implemented`/`verified`/`red` record for; `priorResults` carries the rest. An absent, unreadable or unparseable previous verdict falls back to a full re-run and says so. `--full` opts out. **Carry `red` too** — a red-gated task carried without it re-reads as `redUnproven` and fails a verdict the previous run already settled. |
+| `freezeFindingSet` + `maxRounds` | `boolean` (default `false`), positive `int` (default `6`) | Redispatch sets the freeze from round 2. Open blocking carried findings gate; fresh blocking lens findings become reported `residue`, not gates for that round. Task/mechanical failures and the synthesized dead-lens critical still gate. The cap belongs in the approved plan; redispatch refuses a round beyond it with exit 4. See *The frozen finding set and the round cap*. |
+| `onlyTasks` + `priorResults` | `string[]`, `{implemented, verified, red}` | Redispatch derives the selected task ids from all selectors, closes them under transitive dependents, and adds tasks with missing records. The remaining task records are carried. Absent/unreadable verdicts or `--full` mean FULL; proven `red-green` records for the exact current command are still carried from round 2 and skip both dispatch-time and in-run re-probes. A changed command invalidates its old proof and selects the task for a new probe pair; missing current-command red evidence fails closed. Absent `onlyTasks` runs all tasks; a non-empty array selects its slice. `onlyTasks: []` runs no implementer or per-task verifier, but re-runs checks and the lens; it throws unless every task has carried implemented+verified records, whose verdicts still gate. |
 
 Every knob is read off the plan's **Run sizing** block — no line there means the default stands.
 Choosing one at dispatch time changes the verdict without changing the bytes the user approved.
@@ -542,24 +553,9 @@ Choosing one at dispatch time changes the verdict without changing the bytes the
 `mechanicalChecks` are **whole-deliverable**: they always run, including under `onlyTasks`, and are
 never carried forward from `priorResults` — carrying an empty set forward would be a vacuous pass.
 
-**`reviewLenses` may be scoped to a dispatch's blast radius — and only because `mechanicalChecks`
-cannot be.** Running all lenses every round is the right *default*. But a re-run that rewrites one
-test file still pays every lens to re-read tens of thousands of tokens of refs to re-decide a
-question nothing touched, and the review phase does not shrink under `onlyTasks` at all — measured at
-~34 agents of every ~45-minute round. So a scoped dispatch may run the subset of lenses whose
-**judgement could have changed**, provided all three hold:
-
-1. **The deterministic floor is intact.** Every `mechanicalCheck` still runs, unconditionally. Lens
-   scoping trades some *judgement* coverage while keeping **all** deterministic coverage — that is
-   the only reason it is safe, and it is void the moment a run also trims its mechanical checks.
-2. **The scope is in the approved plan's Run sizing**, naming which lenses ran, which did not, and
-   why. Deciding it at dispatch time is the weaken-the-gate-after-approval move this file forbids.
-3. **A lens whose refs or subject changed is NOT scoped out.** If the dispatch edited a file a lens
-   reads, or the rule it judges against, that lens runs.
-
-`scoreTable.lensesRun` reports what was dispatched, so a scoped round is visible in the verdict
-rather than inferred. **A dropped lens is not a clean lens** — render it as *n/a*, never as zero
-findings.
+The lens always re-runs, including on a zero-implementer round. `scoreTable.lensesRun` is `1`;
+`lensesReported` is `1` or `0`. Zero means no review reported: the gate synthesizes a critical and
+leaves every carried finding open. It never means reviewed-and-clean.
 
 ### Plan review — computed, over the args, before anything is spent
 
@@ -599,8 +595,8 @@ so give it a quiet tree. Live-service and network commands are skipped unless `-
 - **`redCommand`s** (TIER 2, its own richer classifier): `red-not-red` (exit 0 — the gate already
   passes) and `could-not-run` refuse. **A red gate must produce real test-framework output**: an
   absence grep, or a `-t` filter matching nothing, exits 1 having run nothing and is `could-not-run`,
-  never red. Every active task is probed at dispatch, *before any task runs* — so a gate pointing at
-  a file a later task creates is refused too, and a run's failing tests must exist before it starts —
+  never red. Each active task without carried proven RED for its current command is probed before any task runs — so a gate
+  pointing at a file a later task creates is refused too, and failing tests must exist before the run —
   author them before dispatching, which the guard permits because no task's `writablePaths` covers a
   suite that gates the run (one that did would be `self-gating-task`).
   **A suite that never loaded is `could-not-run`, not red**: a collection or import error means the
@@ -623,9 +619,9 @@ so give it a quiet tree. Live-service and network commands are skipped unless `-
 
 The script throws on missing plan/hash/tasks — never "fix" that by inventing args; re-derive them
 from the plan file. It runs IMPLEMENT, then VERIFY ∥ MECHANICAL ∥ THIRD-PARTY (blind per-task
-verifiers + review lenses with adversarial refutation, alongside the deterministic probes and the
-advisory external reviewers), and returns a **JS-computed gate**. IMPLEMENT runs in the waves
-`dependsOn` declares.
+verifiers alongside the deterministic probes and the advisory external reviewers), THEN the single
+review lens over task/mechanical outcomes and carried claims, and returns a JS-computed gate. IMPLEMENT
+runs in the waves `dependsOn` declares.
 
 **One tree, still.** Worktrees are deliberately not used: `workflow.js` has no filesystem, so it
 could not merge them, and a merge agent's silent slip is indistinguishable from an implementer's
@@ -642,7 +638,7 @@ never write at the same time.
 stripped from every workflow leg regardless of type**; `SendMessage` survives, so a leg can message
 something that already exists but cannot create anything to talk to. So on a `readOnly` run where
 CLARIFY answered yes to the team axis, the team runs **before** the Phase 4 dispatch and hands its
-discoveries in as `priorFindings`. Discovery gets the team; refutation and the gate stay outside it.
+discoveries in as `priorFindings`. Discovery gets the team; the adjudication and the gate stay outside it.
 
 It also cannot run in this session: the guard denies the `Agent` tool outside its allowlist
 (`Explore`, `Plan`, `librarian`, `codex:rescue`, `statusline-setup`, `plugin-dev:*`), so named
@@ -665,115 +661,115 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/farm-out/scripts/farm-team.sh --cwd "$PWD" \
 [{ "title": "…", "severity": "critical|major|minor", "detail": "…", "file": "src/app.rs" }]
 ```
 
-Omit `lens` — it is the filename, and the lead stamps it while concatenating `findings/*.json` into
-`priorFindings`. **A teammate that found nothing writes `[]`**: that is what makes "found nothing"
-distinguishable from "died", and it is the whole reason the file exists rather than the message.
+The lead concatenates `findings/*.json` into `priorFindings`, stamping each entry with a stable `id`
+(the filename plus an index does) so the lens can rule on it by id across rounds, and an `ownerTask`
+wherever the teammate named one. **A teammate that found nothing writes `[]`**: that is what makes
+"found nothing" distinguishable from "died", and it is the whole reason the file exists rather than
+the message.
 
 **The file count is the runner's exit code, not the lead's diligence.** One `--expect` per teammate
 makes `farm-team.sh` exit non-zero naming every findings file that is missing or empty. Do not start
 Phase 4 on a non-zero exit — name the teammate to the user. Do not file the missing teammate as a
-`priorFinding` either: entries there are refuted with *default to refuted when ambiguous*, and no
-evidence in the tree can confirm a negative about an agent that is gone, so the run would read clean.
+`priorFinding` either: the lens closes an entry only on evidence it can point at, and no evidence in
+the tree can confirm a negative about an agent that is gone — so the entry would sit open forever,
+failing every round for a reason no task can fix.
 
 On the result:
 
-- Render the score table and verdict to the user — including `scoreTable.tasksTotal`,
-  `survivingMinor` (survived refutation but too minor to block) and `thirdPartyAdvisoryFindings`
-  (advisory, never in the gate arithmetic). `scoreTable.mechanicalRun` / `mechanicalPassed` are `0/0`
-  when the phase was skipped — nothing checked, not everything clean.
-- `scoreTable.lensesRun` / `lensesReported` are lenses **dispatched** vs lenses that came back. When
-  `lensesReported < lensesRun`, each missing one contributes a synthesized `critical` finding (title:
-  *lens agent died or was skipped — this review dimension did not run*) attributed to its lens key,
-  so it appears in `findings` and in `lensesThatFlagged`, and fails the gate. A lens that ran and
-  found nothing is counted in `lensesReported` — silence from a dead lens is never read as clean.
+- Render the verdict and `scoreTable`, including task counts, `lensMode`, `routes`, `planFindings`,
+  `carriedSubmitted`/`carriedOpen`, `survivingBlocking`, `survivingMinor`, and advisory counts.
+  `mechanicalRun`/`mechanicalPassed` at `0/0` means the phase was skipped, not checked-and-clean.
+- `scoreTable.lensesRun` is `1`; `lensesReported: 0` synthesizes a critical, fails the gate through
+  `lensesThatFlagged`, and leaves every carried finding open. A lens that returned no findings is
+  reported as `1`, not `0`. Show the actual `routes`, `planFindings` and carried rulings too.
 - **Third-party findings are advisory**: file each as a task with model attribution (`[codex] …`).
   They never block. A `status: unavailable` leg is reported as such, not as clean.
 - **On a `readOnly` run** `tasksJudgedThisRun`, `implementedDone` and `verifyPassed` are `null` — the
   dimension **does not apply**, nothing was dispatched along it. That is neither zero nor clean:
   render it as *n/a*, because a `0` printed beside real counts reads as "checked and clean".
-  `tasksThatFlagged` is correspondingly `[]` by design, and **both verdicts go to Phase 5** via the
-  findings file — a FAIL there is not a defect to fix (see the note under the fix loop).
-- **FAIL** → the re-run selector is all three of `tasksThatFlagged`, `mechanicalThatFailed` and
-  `lensesThatFlagged`. Consume all three. See below. **PASS** → Phase 5.
+  An audit with `tasks: []` has no task owners, so `tasksThatFlagged` is `[]`; any declared task
+  owners can still appear through lens routing. Both verdicts go to Phase 5 via the findings file,
+  not to the fix loop.
+- **FAIL** → the selector is `tasksThatFlagged`, `mechanicalThatFailed`, `lensesThatFlagged` **and
+  `planFindings`**. Consume all four. See below. **PASS** → Phase 5.
 
-### The FAIL fix loop — three selectors, not one
+### The FAIL fix loop — three selectors plus planFindings
 
-`overallPass === false` ⟺ at least one selector is non-empty. The gate fails on three independent
-dimensions and two of them own no task: neither a failing mechanical check nor a surviving lens
-finding — a judgment about the whole deliverable — can appear in `tasksThatFlagged`, so an empty
-selector on a failing run means "re-run everything", not "nothing to fix".
+The JS gate passes only when `tasksThatFlagged`, `mechanicalThatFailed` and the standing blocking
+finding set are empty. A FAIL therefore has at least one non-empty selector. Consume all three
+existing selectors and `planFindings`; the latter names fixes outside every task's writable scope.
 
-**A lens-only FAIL is still scoped, by FILE.** `work-redispatch.sh --dispatch` maps each surviving
-blocking finding to the task(s) whose `writablePaths` contain its `file` and re-runs those, closed
-under dependents. One finding that maps to no task, or any failed mechanical check, falls back to FULL
-and says why. Without this, FULL re-probed the red commands the last round had already fixed, they
-exited 0, and `red-not-red` refused the dispatch outright.
+The lens routes RED failures and GREEN blocking findings by `ownerTask`. Valid task owners join
+`tasksThatFlagged`; `"plan"` owners enter `planFindings`. Redispatch builds `taskFixes` from those
+routes and blocking findings so each selected implementer sees why it is re-running. Task selection
+includes transitive dependents and tasks with missing implemented/verified/red records.
 
-| selector | what it names | how you fix it |
+| selector | what it names | next action |
 |---|---|---|
-| `tasksThatFlagged` | task ids that were not done, failed verification, or whose implementer/verifier never reported | fix the work, re-invoke with `onlyTasks: [<those ids>]` + `priorResults: {implemented, verified, red}` from the last run — dropping `red` makes every carried red-gated task re-read as unproven |
-| `mechanicalThatFailed` | `{name, exitCode, output}` for each check whose exit code was not 0 | **re-run the CHECK, not a task.** Fix the underlying issue the command reported, then re-invoke with the same `mechanicalChecks` — they always re-run, including under `onlyTasks`, so no extra selector arg is needed |
-| `lensesThatFlagged` | distinct `lens` keys of findings that survived refutation (`findings[]` carries the detail) | **re-run the LENS, not a task.** Fix what the finding reported, then re-judge by re-invoking with those lenses still in `reviewLenses` — a lens judges the whole deliverable, so it re-runs on every invocation and needs no extra selector arg |
+| `tasksThatFlagged` | incomplete, unverified, unreported or red-failing tasks, plus valid lens-routed owners | Redispatch selects those tasks and their dependents; `priorResults` carries the rest and `taskFixes` supplies the fixes. |
+| `mechanicalThatFailed` | `{name, exitCode, output}` for each failed check; `-1` means unchecked/dead, not passed | Fix the diagnosed cause. Checks always re-run; a lens route to a task narrows implementation to that owner. An unattributed mechanical failure forces FULL. |
+| `lensesThatFlagged` | `['lens']` when a blocking finding stands, including an open carried claim or a dead-lens critical | Act on the finding's owner; the lens always re-runs. Fresh findings held as residue do not set this selector. |
+| `planFindings` | routes or standing blocking findings owned by `"plan"` | Amend the dispatch spec: add the required path to a task's `writablePaths`, or reword the requirement, then re-hash. Unchanged spec hash refuses redispatch with exit 3, spending no round or rotating the result. After an amendment, an all-plan failure permits `onlyTasks: []` when all task records are carried. |
 
-So a FAIL is handled as: fix the work behind `tasksThatFlagged`, fix whatever each entry in
-`mechanicalThatFailed` reported (`exitCode: -1` means the probe died or was skipped — unchecked,
-never passed), fix each surviving finding and let its lens in `lensesThatFlagged` re-judge it, then
-re-invoke with `onlyTasks` scoped to the flagged ids **and** the unchanged `mechanicalChecks` and
-`reviewLenses`. If all three selectors are empty on a FAIL, that is a bug in your reading of the
-result — re-run everything. **A defect in the PLAN is not a gate verdict**: it is caught by tiers 1
-and 2 before dispatch, and the remedy is to amend the plan file, re-hash it (`--spec-hash`) and
-re-dispatch — amending by **REPLACEMENT, never accretion**, since a plan that grows every round
-manufactures new surface for the next one. `plan-lint` computes this: a `work` cell carrying more
-than one `ROUND <n>` marker is a MAJOR (`work-accretion`), and a tier-1 MAJOR refuses the dispatch.
+Use `work-redispatch.sh <plan> <run>/args.json --dispatch`, not hand-written scope args. For a
+lens-only failure lacking a valid owner, redispatch falls back to `file`→`writablePaths`, stripping
+`:\d+(-\d+)?(:\d+)?$` first (`:135`, `:135-140`, `:135:8`). An unmapped finding forces FULL.
+Proven `red-green` adjudications for the exact current command are carried on scoped and FULL rounds
+from round 2; neither the dispatch gate nor the in-run probes re-prove RED against already-fixed code.
+Changed or commandless records are dropped; task-id equality alone never certifies an amended command.
+
+An invalid owner is logged, not silently discarded. A FAIL with all four selectors empty violates
+the return contract; investigate it rather than treating it as clean. Pre-dispatch lint/probe
+refusals are separate from returned `planFindings`, but both require correcting the plan and
+re-hashing. Amend by replacement, not accretion: more than one `ROUND <n>` marker in a work cell is
+`plan-lint`'s blocking `work-accretion` finding.
 
 ### The frozen finding set and the round cap
 
-**"This round's lenses raised nothing" is not an exit condition.** Findings never repeat between
-rounds and generation does not fall as fixes land, so that test is a draw from a constant-rate
-generator — see `references/convergence.md`. The exit condition is instead **"is the round-1 blocking
-set closed?"**, which is finite and shrinks.
+The historical measurements in `references/convergence.md` explain why a dry fresh-finding pass is
+not a reliable exit condition. From round 2, redispatch sets `freezeFindingSet` and derives
+`carriedFindings` from the previous blocking findings plus existing carry, removing evidenced
+closures. Existing ids survive; missing ids are derived from `(lens, title, file)`. External claims
+remain in `priorFindings` and are merged into the same adjudication pool by the spine.
 
-`work-redispatch.sh --dispatch` implements it; do not hand-wire any of it:
+The lens rules each carried id `open|closed` with evidence. A closed entry appears in `carried[]`
+but not in standing `findings[]`; a missing ruling, empty closure evidence or dead lens leaves it
+open. Under the freeze only open blocking carried claims gate the finding channel. Fresh blocking
+findings remain in `findings[]` and are also reported as `residue[]`, without gating that round.
+Task/mechanical failures and the synthesized dead-lens critical still gate.
 
-- From **round 2** on, `priorFindings` is **the previous verdict's survivors**: its blocking
-  `findings` (already filtered to the unrefuted by `workflow.js`) merged with still-open carried
-  entries, deduped by `lens`+`title`+`file`. A finding the last round's refuters killed **drops out**;
-  one a later round raised is **carried**, not lost. `freezeFindingSet` is set with it. Each entry is
-  adversarially refuted every round, so a fixed finding is one the refuter can now refute; that is what
-  "closed" means, and refutation — not the round number — is what shrinks the set. `maxRounds` stops
-  the run.
-- From round 2, a fresh **lens** finding is reported as `residue` and does not gate. It is real and it
-  is not lost — it is the input to a follow-up run's `priorFindings`.
-- `maxRounds` **defaults to 6**. The dispatch that would exceed it exits 4, spends no round, rotates
-  no result and prints what is still open as a paste-ready `priorFindings` block. Another round after
-  that is a human's decision (add `"maxRounds": <n>` to `args.json`), not the loop's.
-- At round ≥ 3, or when the run dir's oldest archive is over 2 h old, it prints
-  `scripts/converge-check.ts` — a computed diagnosis over the run's own `result-round*.json`
-  (blocking sequence, generation slope, repeat rate, deliverable-vs-gate split, accretion markers).
-  **Advisory**: it explains why a run had to be stopped, it does not stop one. Run it by hand any
-  time: `bun ~/.claude/skills/workflows/skills/work/scripts/converge-check.ts <run-dir> [--json]` — exit 0
-  CONVERGING, 1 NOT CONVERGING with reasons, 2 too short to judge.
+The carry is re-derived, not a permanently fixed round-1 list: a fresh finding in the previous
+verdict can enter the next round's carry, including one previously reported as residue. Thus the
+freeze limits what gates the current round; it does not guarantee a monotonically shrinking set.
+If the run ends, remaining residue can be supplied to a fresh run as external `priorFindings`.
+
+`maxRounds` defaults to 6. Redispatch beyond that cap exits 4, spends no round, rotates no result,
+and prints a paste-ready `priorFindings` block containing still-open claims and residue for a fresh
+run. Raising the cap is a human decision, not the loop's.
+
+At round ≥ 3, or with an archive older than 2 h, redispatch prints the `converge-check.ts` command.
+Run it as `bun ~/.claude/skills/workflows/skills/work/scripts/converge-check.ts <run-dir> [--json]`:
+exit 0 CONVERGING, 1 NOT CONVERGING with reasons, 2 too short to judge. The report itself is advisory;
+`work-loop.sh` consumes it and stops with exit 5 on NOT CONVERGING.
 
 ### Text-only findings: fix inline, confirm with `readOnly`
 
-When **every** surviving finding is a text defect in an already-built artifact — a doc that
+When **every** standing finding is a text defect in an already-built artifact — a doc that
 contradicts the code, a command template that is wrong as written — re-dispatching implementers
 rebuilds finished work to re-judge a few sentences. Instead:
 
 1. **Fix the text inline.** The orchestrator may edit it; no implementer is needed.
 2. **Verify each finding directly**, by the evidence the finding itself names — diff the two files,
    run the corrected command and show its exit code. Not "it looks right now".
-3. **Confirm with a `readOnly` re-judge, sized to the fix — ONE reader, not the fleet.**
-   `readOnly: true`, `tasks: []`, the unchanged `mechanicalChecks`, and **a single lens scoped to the
-   findings that were fixed and the text that changed**: does each named defect actually close, and
-   did the edit introduce a new contradiction? Record it in the plan's Run sizing and re-hash — the
-   gate changed shape, so the user's approved sizing must say so.
+3. **Confirm with a `readOnly` re-judge, sized to the fix.** `readOnly: true`, `tasks: []`, the
+   unchanged `mechanicalChecks`, and a `lens.prompt` **narrowed to the findings that were fixed and
+   the text that changed**: does each named defect actually close, and did the edit introduce a new
+   contradiction? Hand the fixed findings back as `carriedFindings` so the lens has to rule each one
+   `closed` with evidence rather than merely not re-raise it. Record the narrowed prompt in the plan's
+   dispatch spec and its Run sizing, then re-hash — changing prose alone does not change the gate.
 
-   Do **not** re-run the whole `reviewLenses` set: four lenses plus refuters is up to ~40 agents to
-   confirm a few sentences, against ~10 for one scoped lens and the probes. Refutation stays at full
-   strength on that one lens — the cap is what makes an unrefuted finding stand. The probes stay
-   dispatched rather than run inline: the JS gates on a probe's exit code, and an orchestrator running
-   its own checks is back to self-report.
+   The probes stay dispatched rather than run inline: the JS gates on a probe's exit code, and an
+   orchestrator running its own checks is back to self-report.
 
 **The confirming pass is not optional.** Fixing findings inline and declaring victory is the
 orchestrator certifying its own edits — the same self-report the gate exists to replace.
@@ -843,13 +839,16 @@ verdict from `verdict`. **Organise; do not grade.**
 | section | source | rule |
 |---|---|---|
 | verdict + one-line scope | `verdict`, `judged` | verbatim |
-| coverage | `scoreTable.lensesRun` vs `lensesReported` | **name every lens that did not report.** A missing dimension is not a clean one, and omitting it is silence that reads as clean |
-| refutation | `scoreTable.lensFindings` and `refuted` | both numbers, so the kill rate is visible: 14 findings / 0 survivors is not the same run as one that found nothing |
-| surviving findings | `findings[]` (already filtered to `!refuted`) | grouped by severity, each carrying its `lens` |
-| refuted findings | `refuted[]` | title + `refuteReason` — kept, not dropped |
-| positive dispositions | `dispositions[]` | the satisfied checks a lens reported: title + detail, each with its `lens`. **These are not defects and do not gate.** An entry carrying `routedFromFinding: true` arrived in `findings` and was routed out — print its `claimedSeverity` and `routedBecause` too, so a real defect that was misrouted is visible to you rather than buried |
-| mechanical | `mechanical[]` | `name`, `exitCode`, `output` |
-| not checked | the plan's scope vs what actually ran | explicit, not omitted |
+| coverage | `scoreTable`, including `lensesReported` and `lensMode` | Print counts verbatim; `lensesReported: 0` means unreviewed, not clean. Render null task/score dimensions as n/a. |
+| carried rulings | `carried[]` | Every id with status and evidence, closed entries included. |
+| standing findings | `findings[]` | Fresh lens findings plus open carried claims, grouped by severity with owner task and location. |
+| residue | `residue[]` when the freeze is enabled | Mark fresh blocking findings as reported but not gating this round; do not relabel them minor. |
+| diagnoses and plan amendments | `routes[]`, `planFindings[]` | Failure → owner, cause and fix. Routes are empty on GREEN; plan-owned items require amending the dispatch spec and re-hashing. |
+| positive dispositions | `dispositions[]` | Satisfied checks, not defects or gates. For routed entries include `routedFromFinding`, `claimedSeverity` and `routedBecause`. |
+| mechanical | `mechanical[]` | Name, exit code and output. |
+| advisory | `thirdParty[]`, `scores[]` | Model-attributed external findings and JS-computed scores/evidence; neither gates. |
+| task records | `implemented[]`, `verified[]`, `red[]` when present | Distinguish carried records from work judged this round; an audit dispatches none. |
+| not checked | the plan's scope vs what actually ran | Explicit, not omitted. |
 
 Blocks until the user quits tuicr, then prints one verdict JSON:
 
@@ -877,8 +876,8 @@ descope with the user rather than guessing a third time.
 |---|---|---|
 | Trivial edit (one file, obvious) | run the full loop | say it's overkill; just do it |
 | Verifier needed for a task | let the implementer self-certify | separate verifier agent, blind to the report |
-| Task is test-first | let the implementer report "RED confirmed", or make RED a review lens | give the task a `redCommand` — probes execute it on both sides of the implementer and the JS reads the two exit codes. A lens runs after the work and structurally cannot observe RED |
-| Sizing not in the approved plan | pick lenses/checks at dispatch time | it shapes the gate — put it in the plan, re-hash, then dispatch |
+| Task is test-first | let the implementer report "RED confirmed", or make RED the review lens's job | give the task a `redCommand` — probes execute it on both sides of the implementer and the JS reads the two exit codes. A lens runs after the work and structurally cannot observe RED |
+| Sizing not in the approved plan | write the lens prompt or pick the checks at dispatch time | it shapes the gate — put it in the plan, re-hash, then dispatch |
 | Tasks feel like they could run in parallel | fan out implementers yourself, or give each a worktree | declare `dependsOn` and let IMPLEMENT wave them — concurrent within a wave, and arg-validation refuses a wave whose `writablePaths` overlap, so safety is checked rather than trusted. Worktrees stay out: `workflow.js` cannot merge them (no filesystem), and a merge agent's silent slip reads as an implementer's omission |
 | A task reads a file another task writes | rely on `tasks[]` array order | array order is not a contract the script enforces — declare `dependsOn: ['<id>']`. An unknown id and a cycle both throw before dispatch; an edge to a task outside `onlyTasks` is treated as satisfied, since a prior run put its output on disk |
 | Write `args.goalCheck` as this run's `work-result.sh` / `result.json` | "that is what settles the run" | a round verdict cannot certify the goal and outlives an abandoned run; `plan-lint` runs it through `hold-lint.ts` and blocks. State the plan's own measurement, or state none and let the judge rule on `args.goal` |
@@ -900,20 +899,25 @@ descope with the user rather than guessing a third time.
 | Tasks look like they need to talk to each other | reach for agent teams | **On a run that writes, no teams** — for the mechanical reason given under *IMPLEMENT runs in waves* above, not as a style preference. Tasks needing to talk means the plan under-specifies the boundary; fix the task table, re-hash. **The ban does not apply to `readOnly`**, where nothing writes and a team is the default (CLARIFY axis 7); see *Where the agent team lives* |
 | Fan-out estimate > ~50 agents | widen the workflow anyway | split into sequenced work runs, one gate each |
 | Third-party found a "critical" | let it flip the gate | file as advisory task; gate stays JS-only |
-| Treating tasksThatFlagged as the whole selector | re-run only the flagged task ids — or, if that list is empty on a FAIL, conclude there is nothing to fix | **The selector has three dimensions and only one of them owns tasks.** A failing mechanical check and a surviving lens finding each own no task, so neither can appear in `tasksThatFlagged`; an empty selector on a failing run means "re-run everything". Consume all three — `tasksThatFlagged` **and** `mechanicalThatFailed` **and** `lensesThatFlagged`. **On a `readOnly` run `tasksThatFlagged` is `[]` by design** (no task channel exists), so there the selector is the other two and at least one is guaranteed non-empty on a FAIL |
-| A mechanical check failed | re-run the task nearest to it, or drop the check | fix what the command reported and re-invoke with the same `mechanicalChecks` — a failed check re-runs the CHECK |
-| A lens finding survived refutation | hunt for the task to blame, or re-run everything | `lensesThatFlagged` names the lens; fix what `findings[]` reported and let that lens re-judge — a surviving finding re-runs the LENS |
+| Consume only `tasksThatFlagged` | treat an empty list on FAIL as nothing to fix | Consume `mechanicalThatFailed`, `lensesThatFlagged` and `planFindings` too. An audit with `tasks: []` has no task owner channel. |
+| A mechanical check failed | guess the nearest task, drop the check or force FULL | Follow the lens's route to its owner; checks always re-run. An unattributed failure falls back to FULL. |
+| A blocking lens finding stands | scope by file before reading its owner | Prefer `ownerTask`: a task id enters `tasksThatFlagged`, `"plan"` enters `planFindings`. Redispatch supplies `taskFixes` to the selected implementer. |
+| Pass an array of lenses | retain parallel readers and their refuters | Pass one `lens` object; merge the dimensions into its prompt. Arrays and the retired argument throw. Measurement: `references/convergence.md`'s 2026-09-30 postscript. |
+| A finding's `file` reads `src/a.go:135` | map the location as a path | Prefer `ownerTask`; separate `file` and `line`. Redispatch strips a trailing `:135`/`:135-140`/`:135:8` before its fallback path map. |
+| `planFindings` is non-empty | redispatch the unchanged brief | Unchanged hash exits 3. Amend the dispatch spec's writable paths or requirement, re-hash, then redispatch; all-plan routing with carried task records permits a zero-implementer round. |
+| A FULL fix round has proven RED records | re-probe an unchanged command, or trust an old proof for an amended command | Redispatch carries proven `red-green` adjudications from round 2 only when `record.command === task.redCommand`. Matching proofs skip both probe gates; changed or missing commands are re-probed. |
+| The lens ruled a carried claim closed | drop it without reading the evidence | Only an evidenced closure removes it; silence or an empty closure remains open. Read `carried[]`, not just fresh findings. |
 | A `scoredChecks` composite comes back low | add a threshold or `blockBelow` so it fails the run, or read the score into some other gate | no such knob exists and adding one is not a configuration choice this parameter left open — gating on a composite chases redundancy minors. Read the score; gate on `mechanicalChecks` and on `critical｜major` lens findings, which can be wrong in only one direction |
 | `mechanicalRun: 0` in the score table | read it as "mechanics clean" | the phase was skipped; nothing was checked |
-| `lensesReported < lensesRun` in the score table | read the missing lens's zero findings as a clean dimension | that lens never ran; the gate synthesizes a `critical` finding for it and fails. Re-run it — an unreviewed dimension is not a reviewed one |
+| `lensesReported: 0` in the score table | read its zero findings as a clean dimension | the one review never reported; the gate synthesizes a `critical`, fails, and leaves every carried finding open. Re-run it — an unreviewed deliverable is not a reviewed one |
 | tuicr quit with 0 comments, 0 reviewed files | treat as approval | `unreviewed` — ask the user |
 | Phase 5 on a `readOnly` run | `-w` over a tree nothing wrote to | there is no diff, so that always returns `unreviewed` — write `.work/<run-id>/findings.md` and review it with `--file`, per *The read-only path* |
 | A `readOnly` run returned FAIL | send it to the fix loop | that is the audit's successful outcome — it found defects. Take it to Phase 5; fixing is a separate writing run with its own plan and gate |
 | PR review surface mid-loop | push new commits to the branch | don't — tuicr sessions key on head_sha; finish the loop first |
 | Plan edited after approval | keep going | agents will halt on hash mismatch anyway — re-hash and restart Phase 4. `scripts/work-redispatch.sh <plan> <args.json> [--dispatch] [--full] [--no-lint] [--no-red-probe]` does the re-hash, refuses when the args name a different plan, and rotates a stale `result.json` so a previous verdict cannot be read as this run's. With `--dispatch` it runs both dispatch gates on the final args and exits 3 on a major/critical or a refused red probe, and exits 4 past `maxRounds`, spending no round and rotating nothing in either case |
-| Review phase dominates every round | drop lenses, cheapen `lensModel`, or cut `refutersPerLens` | scope the lens SET to the dispatch's blast radius, recorded in the plan — the deterministic floor keeps running, so you trade judgement coverage and keep all mechanical coverage. Cheapening the lens model buys a weaker gate, not a cheaper one, and cutting refuters multiplies the survivors you then verify by hand |
-| A lens ref is huge and slow to read | distil it into a summary ref | a condensed copy of `work`'s doctrine drifts and is what `spine-fidelity` exists to catch — the optimisation flags itself. Scope how often the lens runs; never fork what it reads |
-| The plan looks wrong and you want an agent to review it | dispatch a lens that reads the plan markdown and blocks on what it finds | that loop does not terminate — the fix for round *n* is new surface round *n+1* finds real defects in (see *Plan review*). Plan review is `plan-lint.ts` + `plan-preflight.ts` over the args, and anything a reader would have caught belongs there as a rule |
+| Change lens cost or coverage after approval | silently downgrade `lens.model` or drop a dimension | The lens counts as one agent. Model, effort and prompt changes belong in the dispatch spec and Run sizing before re-hashing. |
+| A lens ref is huge and slow to read | distil it into a summary ref | a condensed copy of `work`'s doctrine drifts and is what `spine-fidelity` exists to catch — the optimisation flags itself. The lens reads its refs once per round; never fork what it reads |
+| The plan looks wrong and you want an agent to review it | point the lens at the plan markdown and block on what it finds | that loop does not terminate — the fix for round *n* is new surface round *n+1* finds real defects in (see *Plan review*). Plan review is `plan-lint.ts` + `plan-preflight.ts` over the args, and anything a reader would have caught belongs there as a rule |
 | An acceptance clause already passes at baseline | ship it — the criterion holds | `acceptance-green-at-baseline`: nothing distinguishes "the work landed" from "the work was never started". Give the task a `redCommand`, or state a clause the work has to make true |
 | Red gate is `grep -q <thing that should not exist>` | call it red because it exits 1 | that is `could-not-run` — no test framework ran. A red gate must produce real test output; write the assertion as a test |
 | workflow.js throws on args | patch args from memory | re-derive from `.claude/plans/<slug>.md` |

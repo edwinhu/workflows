@@ -1,23 +1,30 @@
 #!/usr/bin/env bun
 /**
- * dev-lens-contract.test.ts — the dev template's lens set and its per-task authority.
+ * dev-lens-contract.test.ts — the dev template's ONE lens and its per-task authority.
  *
  *   bun test ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/dev-lens-contract.test.ts
  *
- * The tests LENS is retired: four mechanical shapes it used to catch late are now computed before
- * dispatch, and the eleven Warning Signs it cannot mechanise are better spent shaping tests as they
- * are written than judging them after they exist. So the vendored writing-good-tests.md moves into
- * the per-task refs and authorityExtra, where every implementer reads it before writing a test.
+ * `work` takes ONE `lens`, so the four dimensions dev declared as four parallel `reviewLenses`
+ * entries are a CHECKLIST inside one prompt. What survived is what each of those four judged, not
+ * the array that carried them: criteria, scope, security and performance are each asked for BY NAME,
+ * and a dimension dropped out of the prompt is a review nobody runs.
  *
  * NOTHING HERE READS `git show HEAD:` — deliberately. An earlier draft took its baseline from HEAD
  * and asserted the baseline still shipped a tests lens; that holds only while the change is
  * uncommitted, so the suite would have gone permanently red on the first commit and taken the whole
  * work mechanical check (`bun test .../skills/work/scripts/`) with it. A suite whose verdict
- * depends on whether the tree has been committed is not a contract.
+ * depends on whether the tree has been committed is not a contract. (That sentence is cited by
+ * line number in docs/investigations/2026-08-27_suite-lint-false-positives.md, so it stays put.)
  *
- * Non-vacuity is proved instead by MUTATION: the same parser is run over a synthetic template that
- * still carries a tests lens, and must report it. A parser that silently found nothing would fail
- * that test, so "no tests lens remains" cannot pass by accident.
+ * The tests LENS stays retired: four mechanical shapes it used to catch late are computed before
+ * dispatch, and the eleven Warning Signs it cannot mechanise are better spent shaping tests as they
+ * are written than judging them after they exist. So the vendored writing-good-tests.md lives in the
+ * per-task refs and authorityExtra, where every implementer reads it before writing a test.
+ *
+ * Non-vacuity is proved instead by MUTATION: the same parsers are run over synthetic templates that
+ * still carry the old `reviewLenses` array, or that drop a checklist dimension, and must report
+ * them. A parser that silently found nothing would fail those tests, so "the array is gone" and
+ * "all four dimensions are asked for" cannot pass by accident.
  *
  * skills/dev/SKILL.md is context-loaded on EVERY dev invocation, so every line is a recurring token
  * cost paid by every agent. The ceiling below is absolute rather than HEAD-relative for the same
@@ -26,45 +33,37 @@
 import { describe, expect, test } from 'bun:test'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { parseLenses } from '../../plugin-creator/scripts/pc-probe.ts'
 
 const REPO = join(import.meta.dir, '..', '..', '..')
 const SKILL = join(REPO, 'skills/dev/SKILL.md')
 const now = readFileSync(SKILL, 'utf8')
 
 const DOC = 'writing-good-tests.md'
-const SURVIVING = ['criteria-vs-artifacts', 'scope-fidelity', 'security', 'performance']
 
 /**
- * The template was 232 lines when the tests lens came out and 233 when this landed. The ceiling is
- * headroom for ordinary edits, not licence for a new section: every line here is re-read by every
- * agent on every dev invocation.
+ * The checklist dimensions the four retired lenses judged. Each must be asked for BY NAME in the one
+ * prompt — the words are the contract, because a dimension that is not named is not judged.
  */
-const LINE_CEILING = 240
+const DIMENSIONS = ['CRITERIA', 'SCOPE', 'SECURITY', 'PERFORMANCE'] as const
 
-/** The `reviewLenses: [ … ]` array of the shipped args block, brace-balanced rather than line-guessed. */
-function lensEntries(md: string): { key: string; text: string }[] {
+/**
+ * The template was 232 lines when the tests lens came out, 233 when that landed, and 223 once four
+ * lenses collapsed into one. The ceiling is headroom for ordinary edits, not licence for a new
+ * section: every line here is re-read by every agent on every dev invocation.
+ */
+const LINE_CEILING = 232
+
+/** Use the same fenced-code parser the agent and plugin contracts exercise. */
+const declaredLenses = (md: string) => parseLenses(SKILL, md, REPO)
+
+/** Keys of a `reviewLenses: [{ key: "…" }]` array — the retired shape, detected so it cannot return. */
+function retiredLensKeys(md: string): string[] {
   const start = md.indexOf('reviewLenses: [')
-  if (start < 0) throw new Error('the dev template ships no reviewLenses array')
-  const out: { key: string; text: string }[] = []
-  let i = start
-  for (;;) {
-    const open = md.indexOf('{ key:', i)
-    if (open < 0) break
-    let depth = 0, end = open
-    for (; end < md.length; end++) {
-      if (md[end] === '{') depth++
-      else if (md[end] === '}') { depth--; if (depth === 0) { end++; break } }
-    }
-    const text = md.slice(open, end)
-    const key = /\{ key: "([^"]+)"/.exec(text)?.[1]
-    if (!key) break
-    out.push({ key, text })
-    i = end
-    const nextOpen = md.indexOf('{ key:', i)
-    const close = md.indexOf('\n  ],', i)
-    if (close >= 0 && (nextOpen < 0 || close < nextOpen)) break
-  }
-  return out
+  if (start < 0) return []
+  const end = md.indexOf('\n  ],', start)
+  const body = md.slice(start, end < 0 ? md.length : end)
+  return [...body.matchAll(/\{\s*key:\s*"([^"]+)"/g)].map(m => m[1])
 }
 
 /** Everything between `tasks: [` and the array's close — where a per-task `refs` lives. */
@@ -84,39 +83,81 @@ function authorityExtra(md: string): string {
   return md.slice(start, end)
 }
 
-/** The shipped template with a tests lens spliced back in — the mutation these tests must detect. */
-function withTestsLens(md: string): string {
-  const anchor = '  ],\n\n  authorityExtra: ['
+/** The shipped template with the retired array spliced back in — the mutation these tests must detect. */
+function withReviewLensesArray(md: string): string {
+  const anchor = '  authorityExtra: ['
   expect(md).toContain(anchor)
   return md.replace(anchor,
-    '\n    { key: "tests",\n      agentType: "Explore",\n      refs: [],\n' +
-    '      prompt: "Judge only the tests covering this change." },\n' + anchor)
+    '  reviewLenses: [\n    { key: "security",\n      agentType: "Explore",\n      refs: [],\n' +
+    '      prompt: "Judge only the security of the changed code." },\n  ],\n\n' + anchor)
 }
 
-describe('the tests lens is retired', () => {
-  test('no reviewLenses entry with key `tests` remains', () => {
-    expect(lensEntries(now).map(l => l.key)).not.toContain('tests')
+describe('dev declares exactly ONE lens', () => {
+  test('the shipped template carries exactly one `lens` object', () => {
+    expect(declaredLenses(now)).toHaveLength(1)
   })
 
-  test('MUTATION: the same parser DOES report a tests lens when one is present', () => {
-    // Without this, "not.toContain('tests')" would pass just as well against a parser that
-    // returned an empty array for every input.
-    const keys = lensEntries(withTestsLens(now)).map(l => l.key)
-    expect(keys).toContain('tests')
-    expect(keys).toEqual([...SURVIVING, 'tests'])
+  test('MUTATION: a second lens is detected', () => {
+    const duplicate = now.replace('  authorityExtra: [',
+      '  lens: { agentType: "Explore", refs: [], prompt: "extra dimension" },\n\n  authorityExtra: [')
+    expect(declaredLenses(duplicate)).toHaveLength(2)
   })
 
-  test('exactly the four surviving lenses ship, in order', () => {
-    expect(lensEntries(now).map(l => l.key)).toEqual(SURVIVING)
+  test('no `reviewLenses` array remains', () => {
+    expect(now).not.toContain('reviewLenses')
+    expect(retiredLensKeys(now)).toEqual([])
   })
 
-  test('each surviving lens still carries the agentType, refs and prompt `work` needs', () => {
-    for (const l of lensEntries(now)) {
-      expect(l.text).toContain('agentType: "Explore"')
-      expect(l.text).toMatch(/refs: \[/)
-      expect(l.text).toMatch(/prompt: "/)
-      expect(l.text).toMatch(/Severity: /)
+  test('MUTATION: the same parser DOES report a reviewLenses array when one is present', () => {
+    // Without this, `toEqual([])` would pass just as well against a parser that returned an empty
+    // array for every input.
+    expect(retiredLensKeys(withReviewLensesArray(now))).toEqual(['security'])
+  })
+
+  test('the lens carries the agentType, refs and prompt `work` needs', () => {
+    const lens = declaredLenses(now)[0]!
+    expect(lens.agentType).toBe('Explore')
+    expect(lens.refs).not.toBe('')
+    expect(lens.prompt).toContain('Severity')
+  })
+
+  test('a brace inside the prompt does not truncate the lens object', () => {
+    const fixture = '```js\n  lens: {\n    prompt: "route it to {taskId} or \'plan\'",\n    agentType: "Explore",\n  },\n```\n'
+    expect(declaredLenses(fixture)[0]?.agentType).toBe('Explore')
+  })
+})
+
+describe('the one prompt still asks for all four retired dimensions', () => {
+  const lens = declaredLenses(now)[0]!
+
+  for (const dim of DIMENSIONS) {
+    test(`the checklist names ${dim}`, () => {
+      expect(lens.prompt).toContain(dim)
+    })
+  }
+
+  test('MUTATION: dropping a dimension from the prompt is detectable', () => {
+    for (const dim of DIMENSIONS) {
+      const mutated = now.replace(lens.prompt, lens.prompt.split(dim).join(''))
+      expect(declaredLenses(mutated)[0]?.prompt).not.toContain(dim)
     }
+  })
+
+  test('both per-dimension reference files are refs of the one lens', () => {
+    for (const ref of ['lens-security.md', 'lens-performance.md']) {
+      expect(lens.refs).toContain(ref)
+      expect(readFileSync(join(REPO, 'skills/dev/references', ref), 'utf8').length).toBeGreaterThan(0)
+    }
+  })
+
+  test('both review modes state their outputs and carried-finding rulings', () => {
+    expect(lens.prompt).toMatch(/RED.*diagnose EVERY failure.*route it.*task id.*'plan'/)
+    expect(lens.prompt).toMatch(/GREEN.*open-ended pass.*ownerTask/)
+    expect(lens.prompt).toMatch(/carried finding open or closed.*evidence/)
+  })
+
+  test('no `tests` dimension came back with the merge', () => {
+    expect(lens.prompt).not.toMatch(/\bTESTS\b/)
   })
 })
 

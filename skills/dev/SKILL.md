@@ -11,7 +11,7 @@ allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanM
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
 The lifecycle is [`work`](${CLAUDE_PLUGIN_ROOT}/skills/work/SKILL.md). Read it and follow it.
-This file is a **delta**: it supplies the domain — the CLARIFY axes, the task-row shape, the lenses,
+This file is a **delta**: it supplies the domain — the CLARIFY axes, the task-row shape, the lens,
 the mechanical checks, the refs, the authority text. It ships no `workflow.js` and restates none of
 `work`'s mechanics.
 
@@ -102,7 +102,7 @@ Three domain requirements on the table:
 - **`redCommand` per implementation task** — one invocation, no shell operators, failing now for the
   intended missing behaviour and passing once the task is done. It goes in the plan's Run sizing
   `Test-first:` block too, because it costs 2 agents against the fan-out ceiling.
-- **`refs` per task row and per lens** — required, may be empty. `work`'s spine does not validate it;
+- **`refs` on every task row and on the lens** — required, may be empty. `work`'s spine does not validate it;
   `wc-probe` P7 refuses an absent key in THIS file, so a live run assembled from an approved plan is
   unchecked. Write `refs: []` to state "no domain rules" rather than omitting the key.
 - **Narrow `writablePaths`** — the probe runs a command that loads code the implementer can edit, so
@@ -163,31 +163,13 @@ Omitting it silently runs the user's codex request on claude.
       cmd: "bash ${CLAUDE_PLUGIN_ROOT}/skills/dev/scripts/check.sh --project-dir <projectDir> --test-cmd \"<the project's test command>\" [--lint-cmd \"<lint>\"] [--build-cmd \"<build>\"]" },
   ],
 
-  // Judged BEFORE any implementer is dispatched; a surviving critical|major returns FAIL having
-  // built nothing. Cheap: a spec defect costs a few read-only agents instead of a whole round.
-  // Passing reviewLenses REPLACES `work`'s defaults, so the two defaults are spelled out here
-  // rather than elided — an array of three would silently drop them.
-  reviewLenses: [
-    { key: "criteria-vs-artifacts",
-      agentType: "Explore",
-      refs: [],
-      prompt: "Judge the deliverable strictly against the success criteria in the plan and goal: for each criterion, is there an artifact in the working tree that satisfies it? Missing or partial satisfaction is a finding. Severity: MAJOR at minimum, CRITICAL where the unsatisfied criterion is one the deliverable cannot stand without." },
-
-    { key: "scope-fidelity",
-      agentType: "Explore",
-      refs: [],
-      prompt: "Judge scope fidelity: did the changes stay inside the plan's task table and writable paths? Out-of-scope edits, unrequested features, and silently skipped plan items are findings. Severity: MAJOR at minimum, CRITICAL where an edit landed outside every declared writable path." },
-
-    { key: "security",
-      agentType: "Explore",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/dev/references/lens-security.md"],
-      prompt: "Judge only the security of the changed code, against the finding classes in the refs. Read them in full first. A finding names a file and line and states the concrete attack vector: the input an attacker controls, the path it travels, and what it reaches. Pre-existing defects this change did not introduce are out of scope. Severity: CRITICAL where the vector reaches attacker-controlled input on a production path; MAJOR otherwise." },
-
-    { key: "performance",
-      agentType: "Explore",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/dev/references/lens-performance.md"],
-      prompt: "Judge only the runtime cost of the changed code, against the finding classes in the refs. Read them in full first. A finding names a file and line, sits on a path that runs often enough to matter, and states the cost as Big-O over the input that actually grows or as concrete latency/memory. Speculation without a growing input is not a finding. Severity: MAJOR at minimum, CRITICAL where the growth makes a production path unusable at realistic input size." },
-  ],
+  // One lens after verification and mechanical checks; its checklist covers all four dimensions.
+  lens: {
+    agentType: "Explore",
+    refs: ["${CLAUDE_PLUGIN_ROOT}/skills/dev/references/lens-security.md",
+           "${CLAUDE_PLUGIN_ROOT}/skills/dev/references/lens-performance.md"],
+    prompt: "Judge the change in the working tree against the approved plan and the goal. CHECKLIST, every item in scope on every run: (1) CRITERIA vs ARTIFACTS — for each success criterion in the plan and goal, is there an artifact in the tree that satisfies it? Missing or partial satisfaction is a finding, CRITICAL where the deliverable cannot stand without it. (2) SCOPE fidelity — did the changes stay inside the plan's task table and writable paths? Out-of-scope edits, unrequested features and silently skipped plan items are findings, CRITICAL where an edit landed outside every declared writable path. (3) SECURITY of the changed code, against the finding classes in the first ref — read it in full first. A finding names a file and line and states the concrete attack vector: the input an attacker controls, the path it travels, and what it reaches. Pre-existing defects this change did not introduce are out of scope. CRITICAL where the vector reaches attacker-controlled input on a production path. (4) PERFORMANCE — the runtime cost of the changed code, against the finding classes in the second ref, read in full first. A finding names a file and line, sits on a path that runs often enough to matter, and states the cost as Big-O over the input that actually grows or as concrete latency/memory; speculation without a growing input is not a finding. CRITICAL where the growth makes a production path unusable at realistic input size. Severity is MAJOR at minimum for all four. MODE — RED (a task was flagged or a mechanical check failed): diagnose EVERY failure in the digest and route it, naming cause and fix, to the task id whose writablePaths own the file, or to 'plan' when no task can own the fix. MODE — GREEN (everything passed): make one open-ended pass over the whole checklist and report each finding with an ownerTask. In both modes, rule every carried finding open or closed against evidence you actually read; silence leaves it open.",
+  },
 
   authorityExtra: [
     "TDD RULE — no implementation before a genuine RED observation.",
@@ -201,7 +183,7 @@ Omitting it silently runs the user's codex request on claude.
 }
 ```
 
-`verifierAgentType` and every lens `agentType` pin `Explore` because it has no Edit and no Write: a
+`verifierAgentType` and the lens `agentType` pin `Explore` because it has no Edit and no Write: a
 judge that structurally cannot modify the tree beats a prompt asking it not to.
 
 **`implementerAgentType` is deliberately unset here, and that is not the oversight it is in a prose
@@ -234,6 +216,6 @@ Handle the result per `work`'s Phase 4 — including that a `red-not-red`, `red-
 | No test harness in the repo | proceed and test by hand | test infrastructure is the first task, decided at CLARIFY — absence of tests is never a waiver |
 | The failing test needs two steps | `redCommand: "build && test"` | `work` throws on shell operators; put the steps in a script and name the script |
 | Task's real test would drive a browser or an app | assert on source or logs | the runtime references are refs on that task; a screenshot with no assertion is not evidence |
-| Adding domain lenses | pass the three and let `work` add its own | passing `reviewLenses` REPLACES the defaults — spell all five out |
+| Adding a domain review dimension | declare a second lens beside this one | `work` takes ONE `lens`; add the dimension to its checklist, or make it a leg of `check.sh` when an exit code can decide it |
 | RED reported by the implementer | accept it | probes execute `redCommand` on both sides; the verdict is the JS's, never the doer's |
 | Something `work` does not obviously do | write a `dev/workflow.js` | ask which `work` parameter is missing — `redCommand` itself came from exactly this question |

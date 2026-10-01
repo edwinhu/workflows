@@ -1,61 +1,33 @@
 #!/usr/bin/env bash
-# Re-hash an amended plan into an existing args.json, and optionally re-dispatch work.
+# Re-sync and re-hash the plan's canonical work:dispatch spec into args.json.
 #
-# The FAIL loop is: fix, amend the plan, re-hash, re-dispatch. Doing that by hand is where a
-# specHash gets typed from a stale copy, and where an args file drifts from the plan it names.
-# The hash is over the plan's CANONICAL work:dispatch spec (work-dispatch.sh --spec-hash), so a
-# prose-only amendment between rounds moves nothing.
+#   work-redispatch.sh <plan.md> <args.json>              # re-hash only
+#   work-redispatch.sh … --dispatch                      # dispatch detached
+#   work-redispatch.sh … --dispatch --full                # re-run every task
+#   work-redispatch.sh … --dispatch --no-lint             # skip lint and red probe
+#   work-redispatch.sh … --dispatch --no-red-probe        # keep lint, skip red probe
+#   work-redispatch.sh … --dispatch --provider codex      # provider for this round
+#   WORK_REDISPATCH_DRYRUN=1                              # gates only; write nothing
+#   WORK_FARM=PATH                                        # farm.sh override
+#   WORK_NO_SCOPE=1                                       # plain setsid dispatch
+#   WORK_SYSTEMD_RUN=PATH                                 # scope probe override
 #
-# Re-hashing is not enough on its own, so this also RE-SYNCS the plan's `work:dispatch` block into
-# the args: `redCommand` is executed from args.json and `work` is what the implementer is handed, so
-# a plan amendment that never reached the args is an amendment that never ran. Run-local keys
-# (onlyTasks, priorResults, priorFindings, freezeFindingSet, maxAgents, maxRounds) are not in the
-# plan and are preserved.
+# Selection is closed under transitive dependents: their verification predates the upstream fix.
+# Blocking findings map by ownerTask, then location-stripped file containment in writablePaths.
+# Mechanical failures narrow only with a valid lens route. Unreadable results and unmapped items
+# fall back to FULL. The lens and mechanical checks always judge the whole deliverable.
 #
-#   work-redispatch.sh <plan.md> <args.json>              # re-hash only, print old -> new
-#   work-redispatch.sh <plan.md> <args.json> --dispatch   # re-hash, then dispatch detached
-#   work-redispatch.sh … --dispatch --full                # re-run every task, not just the flagged
-#   work-redispatch.sh … --dispatch --no-lint             # skip BOTH gates below
-#   work-redispatch.sh … --dispatch --no-red-probe        # skip only the red probe; keep plan-lint
-#   work-redispatch.sh … --dispatch --provider codex      # run this round's whole spine on GPT-5.6
-#   WORK_REDISPATCH_DRYRUN=1                              # gates only: writes NOTHING, prints what would
-#                                                         # be advanced, archived and rotated
-#   WORK_FARM=PATH                                        # the farm.sh a real dispatch invokes
-#   WORK_NO_SCOPE=1                                       # force the plain setsid dispatch
-#   WORK_SYSTEMD_RUN=PATH                                 # the binary the scope probe uses
+# Proven red survives FULL round >= 2 only for the same command: fixed code cannot reproduce RED.
+# Unchanged spec + planFindings refuses with exit 3. All-plan routing after an amendment permits
+# onlyTasks: [] only when every task is carried. taskFixes delivers routed items to their implementers.
 #
-# SELECTIVE RE-RUN, with --dispatch and derived here rather than remembered: `onlyTasks` is the
-# previous verdict's `tasksThatFlagged` CLOSED UNDER TRANSITIVE DEPENDENTS, and `priorResults` (with
-# `red`, so a carried task keeps its adjudication) carries everything else. The closure is the
-# soundness condition: a carried "verified" for a task downstream of a re-run one was earned against
-# code that no longer exists. A previous result that is absent, unreadable, or whose
-# `tasksThatFlagged` cannot be parsed falls back to a FULL re-run and says so — a scope built from a
-# verdict nobody could read is the vacuous pass work exists to prevent. Lenses and mechanical checks
-# judge the whole deliverable and are never narrowed.
+# From round 2, carriedFindings holds the previous verdict's blocking survivors, with evidenced
+# closes removed; priorFindings remains the external-claims channel. freezeFindingSet defers fresh
+# lens findings to residue. maxRounds (default 6) refuses the next round with exit 4 and prints a
+# paste-ready priorFindings block containing still-open carried entries and residue for human review.
 #
-# A LENS-ONLY FAIL still narrows. `tasksThatFlagged` is [] when no implementer, verifier or red gate
-# failed, and FULL then re-probes every red command — including the ones the last round fixed, which
-# now exit 0 and are refused as `red-not-red`, so the round cannot be dispatched at all. Each
-# surviving blocking finding is mapped to the task(s) whose `writablePaths` contain its `file`; one
-# finding that maps to nothing, or any failed mechanical check, falls back to FULL and says why.
-#
-# With --dispatch, the run directory is args.json's own directory; result.json there is rotated to
-# result-<n>.json first so a stale verdict can never be read as this run's.
-#
-# FROZEN FINDING SET + ROUND CAP, both with --dispatch. From round 2 on, `priorFindings` is the
-# PREVIOUS VERDICT'S SURVIVORS — its blocking `findings`, which workflow.js already filtered to the
-# unrefuted, merged with still-open carried entries and deduped by lens+title+file — and
-# `freezeFindingSet` is set. So the loop asks whether that carried set is closed (each entry is
-# adversarially refuted every round) rather than whether this round's lenses raised anything, findings
-# the refuters killed drop out, and ones a later round raised are carried rather than lost. Fresh
-# blocking lens findings are reported as `residue` and do not gate. `maxRounds` (default 6) is a hard stop: the
-# dispatch that would exceed it is refused with exit 4, prints what is still open as a paste-ready
-# priorFindings block for a fresh run, and hands the run to human review.
-#
-# TIER 1 GATE, mirroring work-dispatch.sh: with --dispatch, plan-lint.ts runs on the FINAL args —
-# after the plan block is re-synced and the counters advanced — and a major/critical exits 3. It
-# fails CLOSED. The mutations are STAGED until it passes: a refusal spends no round, rotates no
-# result and does not touch args.json, so the run is left exactly as it was.
+# Mutations are staged until both gates pass: a refusal spends no round and rotates no result.
+# Dispatch rotates result.json to result-round<N>.json inside args.json's run directory.
 set -euo pipefail
 
 
@@ -160,8 +132,10 @@ if not isinstance(cap, int) or isinstance(cap, bool) or cap < 1:
 # redNotRed against a test the author had already corrected.
 #
 # Run-local keys are NOT in the plan and are preserved: they are how a FAIL loop scopes its re-run.
-RUN_LOCAL = {"onlyTasks", "priorResults", "priorFindings", "maxAgents", "rounds",
-             "freezeFindingSet", "maxRounds"}
+# `carriedFindings` and `taskFixes` are derived from the PREVIOUS VERDICT below and in the selection
+# block; a plan never declares either, so syncing them would mean deleting the round's own carry.
+RUN_LOCAL = {"onlyTasks", "priorResults", "priorFindings", "carriedFindings", "taskFixes",
+             "maxAgents", "rounds", "freezeFindingSet", "maxRounds"}
 synced = []
 try:
     import re
@@ -180,6 +154,12 @@ if plan_args is not None:
         if args.get(key) != value:
             args[key] = value
             synced.append(key)
+    # The ONE key the sync has to be able to REMOVE. `reviewLenses` is refused outright by workflow.js,
+    # so an args file carrying it from an earlier round while the amended plan declares `lens` throws
+    # before a single agent is dispatched — the round cannot run at all, on a plan that is correct. The
+    # sync otherwise only ever sets keys, which is why this needs saying once rather than generalising.
+    if "reviewLenses" not in plan_args and args.pop("reviewLenses", None) is not None:
+        synced.append("-reviewLenses (retired; the plan declares no such key)")
 
 import os, re
 run_dir = os.path.dirname(os.path.abspath(args_path))
@@ -193,84 +173,102 @@ else:
     )
     prev_result = rotated[-1][1] if rotated else None
 
-# ---- the frozen finding set ------------------------------------------------------------------
-# From round 2 the question is whether the CARRIED blocking set is closed, not whether this round's
-# lenses raised anything: the second is a draw from a generator whose rate does not fall as fixes
-# land, so the loop terminates by luck. Round 1's blocking findings become priorFindings — each one
-# adversarially refuted every round, kept when ambiguous — and freezeFindingSet holds fresh lens
-# findings as residue instead of gating on them.
-#
-# RE-DERIVED EVERY ROUND, from the previous verdict's SURVIVORS. It used to be set once, on the
-# advance to round 2, and never touched again — which meant a finding the round-3 refuters killed was
-# still carried into round 4 as an open gate, and blocking findings the later rounds raised were never
-# carried at all. The set was frozen against the generator and also against the evidence.
-#
-# The bound is refutation, not the calendar. `workflow.js` puts every carried finding through the same
-# adversarial refuter as a fresh lens finding and returns the survivors in `findings`, so what comes
-# back is smaller than what went out unless a finding genuinely still stands; `refuted` names the ones
-# that fell, and they drop out here. `maxRounds` is what stops the run.
+# ---- the carried finding set ------------------------------------------------------------------
+# Only an evidenced closed ruling removes a carried entry; silence keeps it open.
+# Preserve ids across rounds so the lens's ruling continues to name the same finding.
 freeze_note = ""
 if dispatch == "--dispatch" and args["rounds"] >= 2:
+    import hashlib
     BLOCKING = ("critical", "major")
-    # lens+title+file: the same finding re-reported by the same lens about the same file is one
-    # finding. Two lenses raising the same title about one file are two, and stay two.
-    def key(f):
-        return (f.get("lens") or "carried", f.get("title"), f.get("file") or "")
+
+    def mint(f):
+        """A stable id from what identifies the finding, for an entry that arrived without one."""
+        raw = "|".join([str(f.get("lens") or "carried"), str(f.get("title") or ""),
+                        str(f.get("file") or "")])
+        return "c-" + hashlib.sha1(raw.encode("utf-8")).hexdigest()[:10]
 
     def normalise(f):
-        """A priorFindings entry, or None when workflow.js would refuse it."""
+        """A carriedFindings entry, or None when workflow.js would refuse it."""
         if not isinstance(f, dict) or f.get("severity") not in BLOCKING:
             return None
-        # workflow.js REFUSES a priorFinding missing any of these, which would kill the run before an
+        # workflow.js REFUSES a carried entry missing any of these, which would kill the run before an
         # agent is dispatched. A malformed entry is dropped and counted, not passed on.
         if not (f.get("title") and f.get("detail")):
             return None
-        entry = {"title": f["title"], "severity": f["severity"], "detail": f["detail"],
+        fid = f.get("id")
+        entry = {"id": fid if isinstance(fid, str) and fid.strip() else mint(f),
+                 "title": f["title"], "severity": f["severity"], "detail": f["detail"],
                  "lens": f.get("lens") or "carried"}
+        # `file` scopes the next round and `ownerTask` narrows it — both are load-bearing downstream, so
+        # losing either here is losing the narrowing the one-lens gate exists to provide.
         if f.get("file"):
             entry["file"] = f["file"]
+        if isinstance(f.get("ownerTask"), str) and f["ownerTask"].strip():
+            entry["ownerTask"] = f["ownerTask"].strip()
         return entry
 
-    carried, dropped, was = [], 0, list(args.get("priorFindings") or [])
+    # External claims remain in priorFindings; copying them into the carry duplicates the spine's ids.
+    was = list(args.get("carriedFindings") or [])
+    external = list(args.get("priorFindings") or [])
+    carried, dropped, closed = None, 0, 0
     if prev_result:
         try:
             with open(prev_result) as fh:
                 prev = json.load(fh)
-            # `findings` in the gate return is ALREADY the surviving pool — refuted entries are in
-            # `refuted` and never here — and it holds surviving carried findings and surviving lens
-            # findings alike, which is exactly the still-open blocking set.
-            seen = set()
-            for f in prev.get("findings", []) or []:
+            if not isinstance(prev, dict):
+                raise ValueError("the previous result is not a JSON object")
+            rulings = prev.get("carried") or []
+            external_ids = {f.get("id") for f in external + rulings
+                            if isinstance(f, dict) and f.get("id")
+                            and (f in external or f.get("source") == "prior")}
+            # Legacy returns may lack source/id. Match id-less external claims by provenance.
+            def identity(f):
+                return (f.get("lens") or "carried", f.get("title"), f.get("file") or "")
+            external_keys = {identity(f) for f in external if isinstance(f, dict) and not f.get("id")}
+            def is_external(f):
+                return (f.get("source") == "prior" or f.get("id") in external_ids
+                        or identity(f) in external_keys)
+            ruled_closed = {f.get("id") for f in rulings
+                            if isinstance(f, dict) and f.get("status") == "closed"
+                            and isinstance(f.get("evidence"), str) and f["evidence"].strip()}
+            closed = len([i for i in ruled_closed if i and i not in external_ids])
+            carried, seen = [], set()
+            # Silence never closes a carried entry, including when it was not echoed in findings.
+            for f in list(prev.get("findings") or []) + was:
+                if isinstance(f, dict) and is_external(f):
+                    continue
                 entry = normalise(f)
                 if entry is None:
                     if isinstance(f, dict) and f.get("severity") in BLOCKING:
                         dropped += 1
                     continue
-                if key(entry) in seen:
+                if entry["id"] in seen or entry["id"] in ruled_closed:
                     continue
-                seen.add(key(entry))
+                seen.add(entry["id"])
                 carried.append(entry)
-            # A carried finding the previous round never judged — the refute leg died, or the verdict
-            # predates it — is still OPEN. Only an explicit refutation removes one.
-            refuted = {key(f) for f in (prev.get("refuted") or []) if isinstance(f, dict)}
-            for f in was:
-                entry = normalise(f)
-                if entry is None or key(entry) in seen or key(entry) in refuted:
-                    continue
-                seen.add(key(entry))
-                carried.append(entry)
-        except (OSError, json.JSONDecodeError) as exc:
-            print(f"WARNING: previous result {prev_result} unreadable ({exc}); the finding set is NOT frozen",
+        except (OSError, ValueError) as exc:
+            print(f"WARNING: previous result {prev_result} unreadable ({exc}); the carried set is unchanged",
                   file=sys.stderr)
             carried = None
     if carried is not None:
-        closed = len([f for f in was if normalise(f) and key(normalise(f)) not in {key(c) for c in carried}])
-        args["priorFindings"] = carried
+        args["carriedFindings"] = carried
         args["freezeFindingSet"] = True
-        freeze_note = (f"frozen:   {len(carried)} blocking finding(s) carried as priorFindings"
-                       + (f" ({closed} refuted last round and dropped)" if closed else "")
+        freeze_note = (f"carried:  {len(carried)} blocking finding(s) as carriedFindings"
+                       + (f" ({closed} ruled closed with evidence last round and dropped)" if closed else "")
                        + (f" ({dropped} malformed dropped)" if dropped else "")
                        + " — fresh lens findings are residue this round, not gates")
+    else:
+        # The previous result was unreadable, so nothing could be re-derived. Whatever the LAST round
+        # carried is left EXACTLY as it was, and `freezeFindingSet` with it. Emptying the carried set
+        # while the freeze stays on would leave the freeze's only gating channel empty and hold every
+        # fresh blocking finding as residue — the round would PASS on a set nobody could read, which is
+        # precisely the vacuous pass the freeze exists inside a gate to prevent.
+        freeze_note = ("carried:  UNCHANGED — the previous verdict could not be read, so the carried set "
+                       f"is left at the {len(args.get('carriedFindings') or [])} entry(ies) the last round set")
+else:
+    # Round 1, or a re-hash that dispatches nothing: there is no previous verdict to carry from, and a
+    # carry left over from an earlier run is not this round's evidence.
+    args.pop("carriedFindings", None)
 
 with open(stage_path, "w") as fh:
     json.dump(args, fh, indent=2, ensure_ascii=False)
@@ -323,32 +321,97 @@ if [ "$DISPATCH" = "--dispatch" ] && [ "$ROUND" -gt "$MAX_ROUNDS" ]; then
     printf '\nBLOCKED: round %s would exceed maxRounds %s. Nothing dispatched; the run stays armed.\n' "$ROUND" "$MAX_ROUNDS"
     printf 'Nothing was spent: args.json is unchanged, the counters above were NOT written, result.json is unrotated.\n'
     printf 'Take what is still open to HUMAN REVIEW. What survived the last round, as a paste-ready\n'
-    printf 'priorFindings block for a fresh work run (residue first — those never gated):\n\n'
-    if [ -n "$PREV_RESULT" ] && [ -f "$PREV_RESULT" ]; then
-      python3 -c '
+    printf 'priorFindings block for a fresh work run — the CARRIED entries the lens could not close, the\n'
+    printf 'standing findings, and the RESIDUE (blocking findings the freeze held out of the verdict, so\n'
+    printf 'they gated nothing and would otherwise be lost). `priorFindings` is the door for a FRESH run;\n'
+    printf 'inside a run the same pool arrives as `carriedFindings`:\n\n'
+    python3 - "$PREV_RESULT" "$ARGS_ABS" <<'PY'
 import json, sys
-try:
-    with open(sys.argv[1]) as fh: r = json.load(fh)
-except (OSError, json.JSONDecodeError) as exc:
-    sys.exit(f"  (the previous result is unreadable: {exc})")
+with open(sys.argv[2]) as fh:
+    a = json.load(fh)
+r = {}
+if sys.argv[1]:
+    try:
+        with open(sys.argv[1]) as fh:
+            r = json.load(fh)
+        if not isinstance(r, dict):
+            raise ValueError("the previous result is not a JSON object")
+    except (OSError, ValueError) as exc:
+        print(f"  (the previous result is unreadable: {exc}; retaining the input carry)", file=sys.stderr)
+        r = {}
+# Include the input carry: a verdict omitting an entry is not a ruling that closed it.
+rulings = r.get("carried") or []
+closed = {f.get("id") for f in rulings if isinstance(f, dict) and f.get("status") == "closed"
+          and isinstance(f.get("evidence"), str) and f["evidence"].strip()}
+carried_open = [f for f in rulings if isinstance(f, dict) and f.get("id") not in closed]
 seen, out = set(), []
-for f in list(r.get("residue") or []) + list(r.get("findings") or []):
+pool = (list(r.get("residue") or []) + carried_open + list(r.get("findings") or [])
+        + list(a.get("carriedFindings") or []) + list(a.get("priorFindings") or []))
+for f in pool:
     if not isinstance(f, dict) or f.get("severity") not in ("critical", "major"): continue
-    if not (f.get("title") and f.get("detail")) or f["title"] in seen: continue
-    seen.add(f["title"])
+    if not (f.get("title") and f.get("detail")) or f.get("id") in closed: continue
+    k = f["id"] if isinstance(f.get("id"), str) and f["id"].strip() else f["title"]
+    if k in seen: continue
+    seen.add(k)
     e = {"title": f["title"], "severity": f["severity"], "detail": f["detail"], "lens": f.get("lens") or "carried"}
+    if isinstance(f.get("id"), str) and f["id"].strip(): e["id"] = f["id"]
     if f.get("file"): e["file"] = f["file"]
+    if isinstance(f.get("ownerTask"), str) and f["ownerTask"].strip(): e["ownerTask"] = f["ownerTask"]
     out.append(e)
-print(json.dumps({"priorFindings": out}, indent=2, ensure_ascii=False))' "$PREV_RESULT"
-    else
-      printf '  (no previous result in %s to read the open findings from)\n' "$RUN_DIR"
-    fi
+print(json.dumps({"priorFindings": out}, indent=2, ensure_ascii=False))
+PY
     printf '\nOverride, once a human has decided another round is worth it:\n'
     printf '  add "maxRounds": <n> to %s\n' "$ARGS_ABS"
   } >&2
   exit 4
 fi
-[ "$OLD_HASH" != "$NEW_HASH" ] || printf 'note:     spec hash unchanged — the dispatch block was not edited\n'
+HASH_CHANGED=1
+if [ "$OLD_HASH" = "$NEW_HASH" ]; then
+  HASH_CHANGED=0
+  printf 'note:     spec hash unchanged — the dispatch block was not edited\n'
+fi
+
+# Plan-owned findings cannot close under the same spec: refuse before committing any mutation.
+if [ "$DISPATCH" = "--dispatch" ] && [ "$HASH_CHANGED" = 0 ] \
+   && [ -n "$PREV_RESULT" ] && [ -f "$PREV_RESULT" ]; then
+  PLAN_ROUTED=$(python3 -c '
+import json, sys
+try:
+    with open(sys.argv[1]) as fh: r = json.load(fh)
+except (OSError, json.JSONDecodeError):
+    raise SystemExit(0)      # unreadable is the FULL-re-run fallback below, not this refusal
+items = r.get("planFindings")
+if not isinstance(items, list) or not items:
+    raise SystemExit(0)
+paths, lines = [], []
+for x in items:
+    if not isinstance(x, dict):
+        lines.append(f"  - {x}")
+        continue
+    what = x.get("title") or x.get("failure") or x.get("id") or "(unlabelled item)"
+    where = x.get("file") or ""
+    if where:
+        paths.append(str(where))
+    lines.append(f"  - {what}" + (f" [{where}]" if where else " (names no file)"))
+print(len(items))
+print(", ".join(dict.fromkeys(paths)) or "(none named)")
+print("\n".join(lines))' "$PREV_RESULT") || PLAN_ROUTED=""
+  if [ -n "$PLAN_ROUTED" ]; then
+    rm -f "$STAGE"
+    {
+      printf '\nBLOCKED: %s item(s) in %s are routed to the PLAN, and the spec hash is unchanged.\n' \
+        "$(printf '%s\n' "$PLAN_ROUTED" | head -1)" "$PREV_RESULT"
+      printf 'Nothing dispatched; the run stays armed. Nothing was spent: args.json is unchanged, the\n'
+      printf 'counters above were NOT written, result.json is unrotated.\n'
+      printf '%s\n' "$(printf '%s\n' "$PLAN_ROUTED" | tail -n +3)"
+      printf "amend the plan: add <path> to a task's writablePaths (or reword), then re-hash\n"
+      printf '  path(s) named: %s\n' "$(printf '%s\n' "$PLAN_ROUTED" | sed -n 2p)"
+      printf 'No task can close these: re-dispatching the same brief re-derives the same gap, and FULL\n'
+      printf 'would re-probe red commands the last round already fixed. Amend, then run this command again.\n'
+    } >&2
+    exit 3
+  fi
+fi
 
 # ---------------------------------------------------------------- the selective re-run, derived
 # On the staged args, so a gate below can still refuse without having committed the scope. Only on
@@ -359,15 +422,19 @@ fi
 # graph closed over here is the graph that will run. A cycle is refused by falling back, not by
 # laying out half of an unschedulable plan.
 if [ "$DISPATCH" = "--dispatch" ]; then
-  SEL=$(WORK_SEL_STAGE="$STAGE" WORK_SEL_PREV="$PREV_RESULT" WORK_SEL_FULL="$FULL" WORK_SKILL="$SKILL" bun -e '
+  SEL=$(WORK_SEL_STAGE="$STAGE" WORK_SEL_PREV="$PREV_RESULT" WORK_SEL_FULL="$FULL" \
+        WORK_SEL_ROUND="$ROUND" WORK_SEL_HASH_CHANGED="$HASH_CHANGED" WORK_SKILL="$SKILL" bun -e '
 import { readFileSync, writeFileSync } from "node:fs"
 // coveredBy is plan-lint’s own writablePaths containment test — the one the lint rules use to decide
 // which task delivers which artifact. Mapping a finding’s file by a second rule would scope a round
-// by a boundary the plan is not linted against.
-const { parseArgs, taskGraph, coveredBy } = await import(process.env.WORK_SKILL + "/scripts/plan-lint.ts")
+// by a boundary the plan is not linted against. stripLineSuffix is that same file’s one implementation
+// of the location strip, shared with converge-check so the scope here and the split there agree.
+const { parseArgs, taskGraph, coveredBy, stripLineSuffix } = await import(process.env.WORK_SKILL + "/scripts/plan-lint.ts")
 
 const stage = process.env.WORK_SEL_STAGE!
 const prevPath = process.env.WORK_SEL_PREV || ""
+const round = Number(process.env.WORK_SEL_ROUND || "1") || 1
+const hashChanged = process.env.WORK_SEL_HASH_CHANGED === "1"
 const args = JSON.parse(readFileSync(stage, "utf8"))
 
 const commit = (lines: string[]) => {
@@ -375,90 +442,173 @@ const commit = (lines: string[]) => {
   console.log(lines.join("\n"))
   process.exit(0)
 }
+
+const tasks = parseArgs(args).tasks
+const byId = new Map(tasks.map(t => [t.id, t]))
+const PLAN_OWNER = "plan"
+const ownerOf = (x: any) => (x && typeof x.ownerTask === "string" ? x.ownerTask.trim() : "")
+const isBlocking = (f: any) => !!f && (f.severity === "critical" || f.severity === "major")
+
+// ---- the previous verdict, read ONCE -----------------------------------------------------------
+let prev: any = null
+let unreadable = ""
+if (prevPath) {
+  try { prev = JSON.parse(readFileSync(prevPath, "utf8")) }
+  catch (e) { unreadable = `previous result ${prevPath} is unreadable (${(e as Error).message})` }
+  if (!unreadable && (prev === null || typeof prev !== "object" || Array.isArray(prev))) {
+    prev = null
+    unreadable = `previous result ${prevPath} is not a JSON object`
+  }
+}
+const rec = (k: string) => (prev && Array.isArray(prev[k]) ? prev[k] : [])
+const routes = rec("routes").filter((r: any) => r && typeof r === "object")
+const planRouted = rec("planFindings").filter((x: any) => x && typeof x === "object")
+
+// Build fixes before selection so FULL carries them too; stale fixes must not survive a round.
+// Only declared owners are valid taskFixes keys in workflow.js.
+delete args.taskFixes
+const taskFixes: Record<string, any[]> = {}
+for (const x of [...routes, ...rec("findings").filter(isBlocking)]) {
+  const owner = ownerOf(x)
+  if (!owner || !byId.has(owner)) continue
+  if (!taskFixes[owner]) taskFixes[owner] = []
+  taskFixes[owner].push(x)
+}
+const fixNote: string[] = []
+if (Object.keys(taskFixes).length) {
+  args.taskFixes = taskFixes
+  fixNote.push(`  taskFixes -> implementer prompts (M3): ${Object.entries(taskFixes).map(([id, xs]) => `${id}:${xs.length} item(s)`).join(", ")}`)
+}
+
+// ---- M1: PROVEN red adjudications, carried even on a FULL re-run -------------------------------
+// An id alone cannot certify an amended redCommand; filter before every carry/settlement path.
+const validRed = rec("red").filter((r: any) => {
+  const task = r && byId.get(r.id)
+  return task && task.redCommand && r.command === task.redCommand
+})
+const provenRed = validRed.filter((r: any) => r.verdict === "red-green")
+
 const fullRun = (why: string) => {
   delete args.onlyTasks
   delete args.priorResults
-  commit([`selection: FULL re-run — ${why}`])
+  const lines = [`selection: FULL re-run — ${why}`]
+  // Carry proven RED independently of task scope; re-probing fixed code would refuse the round.
+  if (round >= 2 && provenRed.length) {
+    args.priorResults = { implemented: [], verified: [], red: provenRed }
+    lines.push(`  carried red adjudications, NOT re-probed (M1): ${provenRed.map((r: any) => r.id).join(", ")}`)
+  }
+  commit([...lines, ...fixNote])
 }
 
 if (process.env.WORK_SEL_FULL === "1") fullRun("--full was given")
 if (args.readOnly) fullRun("readOnly run — there is no task channel to scope")
 if (!prevPath) fullRun("no previous result.json or result-round<N>.json in the run dir to scope from")
-
-let prev: any
-try {
-  prev = JSON.parse(readFileSync(prevPath, "utf8"))
-} catch (e) {
-  fullRun(`previous result ${prevPath} is unreadable (${(e as Error).message})`)
-}
-if (!prev || typeof prev !== "object") fullRun(`previous result ${prevPath} is not a JSON object`)
+if (unreadable) fullRun(unreadable)
 
 const reported = prev.tasksThatFlagged
 if (!Array.isArray(reported) || reported.some((x: unknown) => typeof x !== "string"))
   fullRun(`previous result ${prevPath} has no readable tasksThatFlagged`)
 
-const tasks = parseArgs(args).tasks
-const byId = new Map(tasks.map(t => [t.id, t]))
+// Mechanical checks always re-run; narrowing needs a route for every failed check.
+const mechFailed: string[] = rec("mechanicalThatFailed").map((m: any) =>
+  m && typeof m === "object" ? String(m.name ?? "(unnamed)") : String(m))
+const routeFor = (name: string) => routes.find((r: any) => {
+  const o = ownerOf(r)
+  return (o === PLAN_OWNER || byId.has(o)) && String(r.failure ?? "").toLowerCase().includes(name.toLowerCase())
+})
+const mechNote: string[] = []
+const mechToTask = mechFailed.filter(n => byId.has(ownerOf(routeFor(n))))
+if (mechToTask.length)
+  mechNote.push(`  mechanical failure(s) the lens routed to an owner (M2): ${mechToTask.map(n => `${n} -> ${ownerOf(routeFor(n))}`).join(", ")}`)
+// Unioned in rather than read out of `tasksThatFlagged` alone: workflow.js already puts a route’s valid
+// owner in that selector, and doing it again here costs nothing and keeps the narrowing alive for a
+// verdict transcribed without the union. An owner the lens NAMED is an owner.
+const routedOwners = [...new Set(routes.map(ownerOf).filter((o: string) => byId.has(o)))]
+// A failed check the lens routed to NOTHING is attributable to nothing: narrowing would leave the fix
+// outside the implementer’s reach, and mechanical checks re-run whatever the scope, so the round would
+// fail on the same check with nobody able to touch it.
+const unroutedMech = mechFailed.filter(n => !routeFor(n))
+if (unroutedMech.length)
+  fullRun(`the previous verdict has ${unroutedMech.length} mechanical check(s) failed with no lens route to a valid owner (${unroutedMech.join(", ")}) — an unattributed failure’s fix must not be scoped out`)
 
-// ---- a lens-only FAIL, narrowed by the FILES its findings name --------------------------------
-// A FAIL carried entirely by review lenses names no task: `tasksThatFlagged` is [] because no
-// implementer, verifier or red gate failed. Selection then fell back to FULL, and FULL re-probes
-// every red command — including the ones the last round FIXED, which now exit 0 and are refused as
-// `red-not-red`. The round could not be dispatched at all, on a verdict whose findings were confined
-// to two files.
-//
-// A blocking finding names a `file`, and a task declares the paths it may write. That is the mapping,
-// and it is the only honest one available: a lens finding has no owning task, but the task whose
-// writable surface contains the file is the one that has to change for the finding to close. Closed
-// under dependents below, exactly like a flagged task.
-let flagged = reported
+// Prefer ownerTask to file containment; both selections are closed under dependents below.
+let flagged = [...new Set([...reported, ...routedOwners])]
 let lensScoped = ""
+if (routedOwners.length && reported.length !== flagged.length)
+  mechNote.push(`  route owner(s) unioned into the scope: ${routedOwners.filter((o: string) => !reported.includes(o)).join(", ")}`)
 if (flagged.length === 0) {
-  const blocking = (Array.isArray(prev.findings) ? prev.findings : [])
-    .filter((f: any) => f && (f.severity === "critical" || f.severity === "major"))
-  // A failed mechanical check is attributable to no task and no file. Narrowing there would leave
-  // the fix outside the implementer’s reach — mechanical checks are re-run whatever the scope, so the
-  // round would fail on the same check with nobody able to touch it.
-  const mechFailed = (Array.isArray(prev.mechanicalThatFailed) ? prev.mechanicalThatFailed : []).length
+  const blocking = rec("findings").filter(isBlocking)
+
+  // A plan-only amendment needs re-judging, not implementation, with every task record carried.
+  if (planRouted.length && !unroutedMech.length && blocking.every((f: any) => ownerOf(f) === PLAN_OWNER)) {
+    if (!hashChanged)
+      fullRun("every open item is routed to the plan and the spec hash did not change — nothing in a round can close them")
+    // workflow.js REFUSES onlyTasks: [] unless priorResults carries every task, because the task
+    // dimensions would otherwise read as clean against an empty set. Checked here so the refusal is a
+    // fallback to FULL rather than a round that dies after dispatch.
+    const missing = tasks
+      .filter(t => !rec("implemented").some((r: any) => r && r.id === t.id) ||
+                   !rec("verified").some((r: any) => r && r.id === t.id) ||
+                   (t.redCommand && !validRed.some((r: any) => r.id === t.id)))
+      .map(t => t.id)
+    if (missing.length)
+      fullRun(`every open item is routed to the plan, but the previous verdict settles no implemented/verified/current-command red record for ${missing.join(", ")} — a zero-implementer round would judge those dimensions against an empty set`)
+    args.onlyTasks = []
+    args.priorResults = { implemented: rec("implemented"), verified: rec("verified"), red: validRed }
+    commit([
+      `selection: ZERO-IMPLEMENTER round — ${planRouted.length} open item(s) routed to the plan, and the spec hash CHANGED`,
+      "  onlyTasks: [] — no implementer is dispatched; the mechanical checks and the lens re-judge the amended tree",
+      `  all ${tasks.length} task(s) carried with their implemented/verified/red records: ${tasks.map(t => t.id).join(", ")}`,
+      ...mechNote, ...fixNote,
+    ])
+  }
+
   if (!blocking.length)
     fullRun("the previous verdict flagged no task and carries no surviving blocking finding — a readOnly run, or a FAIL there is nothing to scope from")
-  if (mechFailed)
-    fullRun(`the previous verdict flagged no task and ${mechFailed} mechanical check(s) failed — a mechanical failure is attributable to no task’s files, so the fix must not be scoped out`)
 
   // Findings may name an absolute path while writablePaths are project-relative.
   const root = typeof args.projectDir === "string" ? args.projectDir.replace(/\/+$/, "") + "/" : ""
   const rel = (p: string) => (root && p.startsWith(root) ? p.slice(root.length) : p)
 
-  const owners = new Map<string, string[]>()
+  const scopedTo = new Set<string>()
+  const mapped: string[] = []
   const orphan: string[] = []
   for (const f of blocking) {
-    const file = typeof f.file === "string" && f.file.trim() ? rel(f.file.trim()) : ""
+    const declared = ownerOf(f)
+    if (byId.has(declared)) {
+      scopedTo.add(declared)
+      mapped.push(`${f.title || "(untitled)"} -> ${declared} (ownerTask)`)
+      continue
+    }
+    // Finding files may include :line[-line][:column]; writablePaths contain paths, not locations.
+    const raw = typeof f.file === "string" ? f.file.trim() : ""
+    const file = raw ? stripLineSuffix(rel(raw)) : ""
     const owns = file ? tasks.filter(t => coveredBy(file, t.writablePaths)).map(t => t.id) : []
     if (!owns.length) { orphan.push(`${f.lens || "?"}: ${f.title || "(untitled)"}${file ? ` (${file})` : " (names no file)"}`); continue }
-    owners.set(file, owns)
+    for (const id of owns) scopedTo.add(id)
+    mapped.push(`${file} -> ${owns.join("/")}`)
   }
   // ONE unmapped finding is enough to fall back: scoping to the rest would carry a task the
   // unmapped finding may be about, and its "verified" record was earned before the fix.
   if (orphan.length)
     fullRun(`a lens-only FAIL, but ${orphan.length} blocking finding(s) map to no task’s writablePaths — ${orphan.join("; ")}`)
 
-  flagged = [...new Set([...owners.values()].flat())]
-  lensScoped = `  lens-only FAIL: ${blocking.length} blocking finding(s) in ${owners.size} file(s) map to ${flagged.join(", ")}`
+  flagged = [...scopedTo]
+  lensScoped = `  lens-only FAIL: ${blocking.length} blocking finding(s) map to ${flagged.join(", ")} — ${mapped.join("; ")}`
 }
 
 if (flagged.length === 0)
-  fullRun("the previous verdict flagged no task — a readOnly run, or a FAIL carried entirely by lenses or mechanical checks, which name no task to scope to")
+  fullRun("the previous verdict flagged no task — a readOnly run, or a FAIL carried entirely by the lens or the mechanical checks, which name no task to scope to")
 
 const unknown = flagged.filter((id: string) => !byId.has(id))
 if (unknown.length) fullRun(`the previous verdict flags ${unknown.join(", ")}, absent from tasks[]`)
 if (taskGraph(tasks).cycle)
   fullRun(`dependsOn cycle among ${taskGraph(tasks).cycle!.join(", ")} — dependents cannot be closed`)
 
-const rec = (k: string) => (Array.isArray(prev[k]) ? prev[k] : [])
 const has = (k: string, id: string) => rec(k).some((r: any) => r && r.id === id)
 /** A carried task must be PROVEN settled by the previous verdict, or it is not independent. */
 const settled = (t: { id: string; redCommand: string | null }) =>
-  has("implemented", t.id) && has("verified", t.id) && (!t.redCommand || has("red", t.id))
+  has("implemented", t.id) && has("verified", t.id) && (!t.redCommand || validRed.some((r: any) => r.id === t.id))
 
 const why = new Map<string, string>(flagged.map((id: string) => [id, "flagged"]))
 const selected = new Set<string>(flagged)
@@ -481,18 +631,27 @@ const only = tasks.filter(t => selected.has(t.id)).map(t => t.id)
 const carried = tasks.filter(t => !selected.has(t.id)).map(t => t.id)
 if (!carried.length) fullRun(`every task is selected (${only.join(", ")}) — nothing left to carry`)
 
+// M1 again, on the scoped path: a re-run task whose PROVEN red pair is carried is not re-probed either,
+// so its adjudication has to travel even though it is not in `carried`.
 const carry = (k: string) => rec(k).filter((r: any) => r && carried.includes(r.id))
+const carryRed = [...validRed.filter((r: any) => carried.includes(r.id)),
+                  ...provenRed.filter((r: any) => !carried.includes(r.id))]
 args.onlyTasks = only
-args.priorResults = { implemented: carry("implemented"), verified: carry("verified"), red: carry("red") }
+args.priorResults = { implemented: carry("implemented"), verified: carry("verified"), red: carryRed }
 
 const lines = [`selection: ${only.length} of ${tasks.length} tasks re-run — ${only.join(", ")}`,
   `  flagged by ${prevPath.replace(/^.*\//, "")}: ${pick("flagged").join(", ")}`]
 if (lensScoped) lines.push(lensScoped)
+lines.push(...mechNote)
 if (pick("dependent").length) lines.push(`  + transitive dependents:  ${pick("dependent").join(", ")}`)
 if (pick("unproven").length)
   lines.push(`  + unproven if carried:    ${pick("unproven").join(", ")} (the previous verdict settles no implemented/verified/red record for them)`)
 lines.push(`  carried with their red adjudication: ${carried.join(", ")}`)
-lines.push("  lenses and mechanical checks judge the whole deliverable and are NOT narrowed")
+const reprobed = only.filter(id => { const t = byId.get(id); return t && t.redCommand && !provenRed.some((r: any) => r.id === id) })
+if (provenRed.length)
+  lines.push(`  proven red carried, NOT re-probed (M1): ${provenRed.map((r: any) => r.id).join(", ")}${reprobed.length ? `; re-probed: ${reprobed.join(", ")}` : ""}`)
+lines.push(...fixNote)
+lines.push("  the lens and the mechanical checks judge the whole deliverable and are NOT narrowed")
 commit(lines)
 ') || die "selective re-run derivation failed — refusing to dispatch an unscoped round"
   printf '%s\n' "$SEL"

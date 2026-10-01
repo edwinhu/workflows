@@ -46,7 +46,7 @@ authority in a course reader.
 checker's computed output. Never before, never from an estimate.
 
 Both are stated in full in `references/authenticity.md`, which is the `refs` entry every implementer
-and the fidelity lens must read. Refactoring this file never weakens them.
+and the advisory fidelity reviewer must read. Refactoring this file never weakens them.
 </EXTREMELY-IMPORTANT>
 
 ## Phase 1 — CLARIFY: three questions, asked with AskUserQuestion, never self-answered
@@ -132,10 +132,10 @@ mechanical leg can refuse to proceed past CLARIFY. Do not close the gap with a s
   `// elide-unchecked:` marker in the `.typ` is no longer honoured and its presence is itself a
   FAIL naming the reading.
 - **Run sizing** naming the one mechanical entry point, the two `scoredChecks` keys on the `Scored
-  checks:` line marked ADVISORY, the two `work` default lenses on the `Review lenses:` line, and the
+  checks:` line marked ADVISORY, the criteria/scope checklist on the `Review lens:` line, and the
   task rows. R readings give R + 2 tasks — one `retrieve`, R `cut-<slug>`, one `compile-table` — and
-  2R scored items; with `work`'s two default lenses and one mechanical check the floor is
-  2(R + 2) + 1 + 2 + 2R = 4R + 7 agents — 11 for a single reading, 19 for four readings.
+  2R scored items; with one lens and one mechanical check the floor is
+  2(R + 2) + 1 + 1 + 2R = 4R + 6 agents — 10 for a single reading, 22 for four readings.
 - **The wave assignment, stated**: `retrieve` in wave 1, every `cut-<slug>` in wave 2, `compile-table`
   in wave 3. `work-dispatch.sh` prints the wave graph it computes; if it does not match those three
   lines, the `dependsOn` edges are wrong, not the prose.
@@ -298,9 +298,9 @@ added.
   ],
 
   // ── legibility and fidelity are `scoredChecks`, and that is WHY they are advisory. ──
-  // A `reviewLenses` entry gates by construction: the work skill's workflow.js computes overallPass FROM
-  // surviving lens findings, so declaring these two as lenses and calling them advisory in prose
-  // would be a claim about the spine rather than a parameter to it. `scoredChecks` is the mechanism
+  // The `lens` gates by construction: the work skill's workflow.js computes overallPass FROM the
+  // blocking lens findings that stand, so folding these two into the lens prompt and calling them
+  // advisory in prose would be a claim about the spine rather than a parameter to it. `scoredChecks` is the mechanism
   // that carries the property: overallPass is computed without reading any scored value, there is no
   // threshold and no blockBelow, it opens no selector channel, and a dead agent does not flip the
   // verdict (work/references/scored-checks.md, S6/S7). That is ~/.claude/CLAUDE.md rule 9 satisfied
@@ -361,15 +361,12 @@ added.
     },
   ],
 
-  // ── reviewLenses is DELIBERATELY ABSENT, not `[]`. ──
-  // Passing `[]` does not disable review: the work skill falls back to its own two defaults,
-  // `criteria-vs-artifacts` and `scope-fidelity`, and they gate. That fallback is CHOSEN here. Those
-  // two judge whether the plan's own stated criteria were met and whether the run stayed inside
-  // `addenda/`, `output/addenda/` and `docs/` — both decidable against the plan text, both bounded,
-  // and the second is the only thing standing between a dispatched implementer and `notes/`. What
-  // must NOT gate is the open-ended prose reading of the excerpt, and that is precisely what moved
-  // to `scoredChecks` above.
-
+  // One lens after verification and mechanical checks; legibility and fidelity remain advisory above.
+  lens: {
+    agentType: "Explore",
+    refs: [],
+    prompt: "Judge the delivered artifacts against the approved plan and the goal. CHECKLIST: (1) CRITERIA vs ARTIFACTS — for each success criterion in the plan and goal, is there an artifact that satisfies it? Missing or partial satisfaction is a finding, CRITICAL where the deliverable cannot stand without it. (2) SCOPE FIDELITY — did the changes stay inside the plan's task table and writable paths, limited to addenda/, output/addenda/ and docs/? Out-of-scope edits, unrequested features and silently skipped readings are findings, CRITICAL where an edit landed outside every declared writable path. Severity is MAJOR at minimum. Legibility and fidelity are advisory scoredChecks, not additional checklist items here. MODE — RED (a task was flagged or a mechanical check failed): diagnose EVERY failure in the digest and route it with cause and fix to its owner task id, or to 'plan' when no task can own the fix. MODE — GREEN (everything passed): make one open-ended pass over the checklist and report each finding with an ownerTask. In both modes, rule every carried finding open or closed against evidence you actually read; silence leaves it open.",
+  },
 
   authorityExtra: "DOMAIN RULE — every word of the excerpt is authentic reporter text, cut from the .westlaw.docx retrieved THIS RUN into docs/ and projected to text in memory — never from a .txt written beside it, which is not produced. Never from memory, a Teacher's Manual summary, a casebook note, or a previous excerpt. DOMAIN RULE — the summary table is written after the compile, from the checker's computed rows; never hand-edit a range to make the checker pass. WRITE SURFACE — addenda/, output/addenda/ and docs/ only. notes/, slides/ and templates/ are excluded, and notes/07-security.typ may be open in the user's editor. THE TYPST CORPUS IS ONE COMMAND AWAY, AND IS NOT IN YOUR REFS. Run `typst-rules notes,prose` for the index, then read the ones your edit touches; it is on PATH and needs no path or plugin variable. Do not work from a paraphrase of these rules.",
 
@@ -401,12 +398,12 @@ The field is `composite`, not `score` — `work` emits one `scores[]` entry per 
 mean or total to read.
 
 **This is an INSTRUCTION, not a gate, and the distinction is the whole design.** The scores cannot
-fail the run by construction — that is exactly why they are `scoredChecks` and not `reviewLenses` —
+fail the run by construction — that is exactly why they are `scoredChecks` and not the `lens` —
 and therefore a reviewer who does not run that command does not see them. That is the accepted cost
 of their not gating, and it is stated here rather than papered over with a sentence claiming they are
 "reported".
 
-**If that cost is unacceptable on a given run, the remedy is NOT to move them back to `reviewLenses`**
+**If that cost is unacceptable on a given run, the remedy is NOT to fold them into the `lens` prompt**
 — that reinstates the non-terminating prose gate rule 9 forbids — it is for the instructor to read
 the excerpt himself, which is what Phase 5 is for.
 
@@ -442,11 +439,11 @@ Three rules on the rendering, because each is a way the output silently stops me
 The reviewer decides what to do with all of it. A low score re-runs nothing by itself — see *The FAIL
 loop*.
 
-## The FAIL loop — `work`'s three selectors, and where the per-reading granularity comes from
+## The FAIL loop — `work`'s selectors, and where the per-reading granularity comes from
 
-The selector is `work`'s own, all three channels, consumed together: `tasksThatFlagged`,
-`mechanicalThatFailed` and `lensesThatFlagged`. A scoped re-run is `onlyTasks` + `priorResults`,
-derived by `work-redispatch.sh` from those three. **There is no caption channel** — `work` scopes by
+The selector is `work`'s own, all four channels, consumed together: `tasksThatFlagged`,
+`mechanicalThatFailed`, `lensesThatFlagged` and `planFindings`. A scoped re-run is `onlyTasks` +
+`priorResults`, derived by `work-redispatch.sh` from the result. **There is no caption channel** — `work` scopes by
 task id and nothing else, so a re-run instruction phrased as "re-cut the failing caption" names a
 dimension `work` does not have and cannot be executed.
 
@@ -455,17 +452,18 @@ Because each reading is its own task row, a reading that fails puts its own id i
 and `onlyTasks` re-runs exactly that reading. A four-reading addendum keeps the three readings the
 gate already adjudicated — re-cutting them manufactures new surface for the next round.
 
-`mechanicalThatFailed` names `elide-check`, whose leg lines name the failing reading; map that name
-back to its task id to read what `onlyTasks` will hold. Two domain rules on the fix, both in
-`references/verification.md`:
+`mechanicalThatFailed` names `elide-check`, whose leg lines name the failing reading. The lens routes
+each failure to its owner task or to `plan`; task routes narrow the re-run, while `planFindings`
+require amending and re-hashing the plan. Two domain rules on the fix, both in `references/verification.md`:
 
 - A miss rate above roughly a quarter is the wrong source, not bad sentences. **Re-cut the reading
   from `docs/<name>.westlaw.docx`; never patch sentence by sentence.**
 - Never trust a corruption tell you have not grepped for in **both** files.
 
-`lensesThatFlagged` names `work`'s own two defaults, `criteria-vs-artifacts` and `scope-fidelity` —
-the only lenses this run declares. **The legibility and fidelity scores appear in no selector at
-all**: `scoredChecks` opens no channel, which is the same fact as their not gating. A low score is
+`lensesThatFlagged` is `["lens"]` whenever a blocking finding of the criteria/scope lens still stands,
+and `[]` otherwise. **The legibility and fidelity
+scores appear in no selector at all**: `scoredChecks` opens no channel, which is the same fact as
+their not gating. A low score is
 read by the human at Phase 5 and acted on there or not at all; it never re-runs anything by itself.
 A `null` score with a stated reason means the item was unreliable or its agent died — not clean.
 
@@ -474,8 +472,8 @@ A `null` score with a stated reason means the item was unreliable or its agent d
 **Any property this file asserts about `work` must be traceable to a parameter `work` reads or to a
 command's exit code. Otherwise it is decoration.** Three times in this skill's construction a property
 was written as a sentence and bound nothing, and a fourth is recorded below: a re-run selector declared to be a "caption", a dimension
-`work` has no channel for; two lenses declared ADVISORY while sitting in `reviewLenses`, which `work`
-gates on; and an interview refusal declared absolute when no mechanism could carry it — the plan is
+`work` has no channel for; two review dimensions declared ADVISORY while sitting in the gating
+review lens, which `work` computes `overallPass` from; and an interview refusal declared absolute when no mechanism could carry it — the plan is
 written by the orchestrator, so a grep of it cannot identify the answerer, and `mechanicalChecks` run
 after IMPLEMENT, so none of them can stop a run at CLARIFY. The first two now rest on a parameter —
 the task-id selector and `scoredChecks`. The third was **scoped down** instead: `check.sh --plan`
@@ -502,8 +500,8 @@ command that makes X true — and if there is none, say so plainly where the cla
 | Type a `--target` on a real run, or invent a range to fit the excerpt | The target lives in the plan, per reading. With `--plan` the flag is ignored and said to be ignored; `--target` is the `--no-plan` fixture override |
 | Leave a `## Readings In Scope` page target blank or `TBD` | The `--plan` leg FAILS naming the row. Ask question 3, or take the 2-6 default |
 | Let a legibility or fidelity finding block the run | They are `scoredChecks`, which `work`'s `overallPass` never reads — the deterministic gate is the entry point's exit code |
-| Declare legibility or fidelity in `reviewLenses` because it "reads like a lens" | A lens gates by construction; the advisory property has to be a parameter, not a sentence. Keep them in `scoredChecks` |
-| Pass `reviewLenses: []` to turn review off | `[]` falls back to `work`'s two defaults. Omit the key and say in the plan that those two are the chosen set |
+| Add legibility or fidelity to the `lens` prompt because it "reads like a lens" | The lens gates by construction; the advisory property has to be a parameter, not a sentence. Keep them in `scoredChecks` |
+| Omit `lens` or pass `{}` to turn review off | both select `work`'s generic default. Keep the explicit criteria/scope checklist, with legibility and fidelity only in `scoredChecks` |
 | Add a threshold or `blockBelow` to a scored check | No such knob exists, and adding one chases minors. Read the score; gate on the entry point |
 | Add a second `mechanicalChecks` entry | The verdict is one command; P10 refuses a list, and a list drops a check without reporting it |
 | Write a `workflow.js` for this skill | `work`'s spine takes a parameter for it. Name the missing parameter and generalize `work` |
@@ -511,7 +509,7 @@ command that makes X true — and if there is none, say so plainly where the cla
 | Write "this workflow does X" with nothing reading X | Name the parameter or the exit code that makes it true, or record that none does — see *The rule for whoever edits this next* |
 | Write that the scores "are reported to the human" | Nothing reports them. They sit in `result.json` under `scores[]`; Phase 5 names the `jq` command that prints them, and a reviewer who does not run it does not see them |
 | Re-cut every reading after one FAIL | Re-run `onlyTasks` on the flagged reading's task id — one task per reading is what makes that possible |
-| Scope a re-run "by caption" | `work` has no caption channel; the selector is `tasksThatFlagged` + `mechanicalThatFailed` + `lensesThatFlagged` |
+| Scope a re-run "by caption" | `work` has no caption channel; consume `tasksThatFlagged`, `mechanicalThatFailed`, `lensesThatFlagged` and `planFindings` |
 | Silently skip a reading that has no reporter source | Stop and report it. The instructor declares it in the plan's `## Non-court readings` section; an undeclared one FAILS, which is the point |
 | Write `// elide-unchecked:` into the `.typ` to quiet a reading | That marker is self-exempting and is no longer honoured — its presence FAILS. Non-court text is declared in the plan, by the instructor |
 | Omit both `--plan` and `--no-plan` from the entry point's `cmd` | That is a FAIL naming the missing flag — the leg fails closed. Pass `--plan <md>` on a real run; `--no-plan` is the fixture escape and prints a loud NOT CHECKED line |
