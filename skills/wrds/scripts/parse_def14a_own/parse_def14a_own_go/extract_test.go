@@ -5,6 +5,35 @@ import (
 	"testing"
 )
 
+// Street numbers in a holder-and-address cell must not vote it into a
+// percentage column. Transcribed from 0001019687-08-001942's ownership table.
+func TestTitleOfClassWithNumericHolderAddresses(t *testing.T) {
+	body := `<html><body>
+<p>SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS AND MANAGEMENT</p>
+<table>
+<tr><td>Title of<br>Class</td><td>Name and Address<br>(1)</td><td></td><td>SharesBeneficially<br>Owned<br>(2)</td><td></td><td>Percentage of<br>Class<br>(2)</td></tr>
+<tr><td></td><td>Beneficial Owners<br>of<br>More than<br>5%:</td><td></td><td>4,747,245</td><td></td><td></td></tr>
+<tr><td>Common<br>Stock</td><td>Odyssey<br>Value Advisors, LLC<br>601<br>Montgomery Street, Suite 1112<br>San<br>Francisco, CA 94111</td><td></td><td>2,141,745</td><td></td><td>9.98%</td></tr>
+<tr><td>Common<br>Stock</td><td>Susan<br>Jeffs<br>Third<br>Floor, 346 Kensington High Street, London, W14 8NS, United<br>Kingdom</td><td></td><td>1,500,000</td><td></td><td>6.99%</td></tr>
+</table></body></html>`
+	rows := ScreenRows(run(t, body))
+	if len(rows) != 2 {
+		t.Fatalf("want two real common-stock holders, got %d: %+v", len(rows), rows)
+	}
+	for _, want := range []struct {
+		name        string
+		shares, pct float64
+	}{
+		{"Odyssey Value Advisors, LLC", 2141745, 9.98},
+		{"Susan Jeffs", 1500000, 6.99},
+	} {
+		r := find(rows, want.name, "Common Stock")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("holder %q: want shares=%g percent=%g class=Common Stock; got %+v; all rows=%+v", want.name, want.shares, want.pct, r, rows)
+		}
+	}
+}
+
 func run(t *testing.T, body string) []Row {
 	t.Helper()
 	base := Row{Accession: "acc", CIK: "cik", Company: "Co", FilingDate: "2010-01-01"}

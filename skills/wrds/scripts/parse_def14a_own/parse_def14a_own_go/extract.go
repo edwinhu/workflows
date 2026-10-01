@@ -555,8 +555,23 @@ func (c *compacted) repoint() {
 		}
 	}
 	if nc >= 0 && !isNameHdr(nc) {
+		pctCols, shareCols := 0, 0
 		for j := range c.roles {
-			if j == nc || c.roles[j].role != "other" {
+			switch c.roles[j].role {
+			case "pct":
+				pctCols++
+			case "shares":
+				shareCols++
+			}
+		}
+		for j := range c.roles {
+			h := c.roles[j].header
+			// Rescue a numeric-address vote only beside one shares/percent pair;
+			// percent-only and numeric-footnote layouts need their own role fix.
+			addressPct := pctCols == 2 && shareCols == 1 && reHdrClassCol.MatchString(c.roles[nc].header) &&
+				c.roles[j].role == "pct" && !c.pctFlag[j] &&
+				!reHdrPct.MatchString(h) && !reHdrShares.MatchString(h)
+			if j == nc || (c.roles[j].role != "other" && !addressPct) {
 				continue
 			}
 			if isNameHdr(j) && c.colWords(j) > 0 {
@@ -1191,7 +1206,9 @@ func holderName(cell string) string {
 	}
 	addr := -1
 	for i := 1; i < len(lines); i++ {
-		if reAddrLine.MatchString(strings.TrimSpace(lines[i])) {
+		// A floor address can wrap between its ordinal and "Floor".
+		floor := strings.Join(lines[i:min(i+2, len(lines))], " ")
+		if reAddrLine.MatchString(strings.TrimSpace(lines[i])) || reFloorAddress.MatchString(floor) {
 			addr = i
 			break
 		}
@@ -1220,6 +1237,7 @@ func holderName(cell string) string {
 }
 
 var (
+	reFloorAddress = regexp.MustCompile(`(?i)^\s*(?:first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|\d+(?:st|nd|rd|th))\s+floor\s*,?\s+\d+\b`)
 	// A trailing city or state part of a "Name, City, ST" line.
 	reCityOrState = regexp.MustCompile(`^(?:[A-Z]{2}|[A-Z][A-Za-z.\-]*(?:\s+[A-Z][A-Za-z.\-]*)?)(?:\s+\d{5}(?:-\d{4})?)?$`)
 	// A line whose HEAD is a real street address or post-office box: nothing in
