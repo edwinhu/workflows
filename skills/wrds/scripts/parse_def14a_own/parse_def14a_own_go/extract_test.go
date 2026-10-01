@@ -5592,3 +5592,135 @@ func TestASCIIClassAddressRequiresOwnershipCaption(t *testing.T) {
 		}
 	}
 }
+
+// Literal three-column nominee/biography ownership tables, 0001005477-00-002041.
+const asciiNomineeShareFixture = `Nominees: *
+
+      The following information, as of February 11, 2000, is provided with
+respect to the nominees for election to the Board.
+
+<TABLE>
+<CAPTION>
+                                                                                                Shares of
+                                                                                              Common Stock
+Name, Age & Year of                                                                           Beneficially
+Election as Director**                          Business Experience                         Owned 2/11/99***
+<S>                                     <C>                                                     <C>
+Class I (to be elected for a three-year term expiring 2003):
+
+William S. Aichele  49  (1990)          President and CEO of the Corporation and                105,776 (1)
+                                            President and CEO of Union National Bank
+
+Norman L. Keller  62  (1974)            Executive Vice President of the                          37,356 (2)
+                                            Corporation and President and CEO of
+                                                Pennview Savings Bank
+
+Thomas K. Leidy  61  (1984)             Chairman & President, Leidy's, Inc.                     144,407 (3)
+                                            (Pork Processing)
+
+Merrill S. Moyer  65  (1984)            Chairman of the Corporation and                         155,426 (4)
+                                            Chairman of Union National Bank
+
+Alternate Directors (to be elected for a one-year term expiring 2001):
+
+Richard W. Godshall  66  (1999)         Physician, Upper Bucks Orthopaedic Association            1,886
+
+H. Ray Mininger  59  (1995)             President, H. Mininger & Son, Inc.                        6,298
+                                            (General Contractor)
+
+Margaret K. Zook  54  (1999)            Administrator, Souderton Mennonite Homes                    200
+                                            (Retirement Community)
+</TABLE>
+
+
+                                       2
+<PAGE>
+
+The following directors are not subject to election now as they were elected in
+prior years for terms expiring in future years.
+
+<TABLE>
+<S>                                     <C>                                                     <C>
+Class II (continuing for a term expiring 2001):
+
+James L. Bergey  64  (1984)             President, Abram W. Bergey and Sons, Inc.                13,988 (5)
+                                            (Floor Coverings)
+
+Charles H. Hoeflich  85  (1962)         Chairman Emeritus of the Corporation                    226,479
+
+Clair W. Clemens  69  (1984)            Retired, Hatfield Quality Meats, Inc.                     9,495
+                                            (Pork Processing)
+
+John U. Young  61  (1988)               President, Alderfer Bologna Co. Inc.                      8,350
+                                            (Meat Processing)
+
+Class III (continuing for a term expiring 2002):
+
+Marvin A. Anders  60  (1996)            Vice Chairman of the Corporation                        130,167 (6)
+                                            and Vice Chairman of Union National Bank
+
+R. Lee Delp  53  (1994)                 President and CEO, Moyer Packing Company                  4,011
+                                            (Beef Packers and Renderers)
+
+Harold M. Mininger  81  (1957)          Retired--H. Mininger & Son, Inc.                        111,305 (7)
+                                            (General Contractor)
+
+P. Gregory Shelly  54  (1985)           President, Shelly Enterprises, Inc.                      41,105 (8)
+                                            (Building Materials)
+</TABLE>
+
+`
+
+func TestASCIINomineeBiographyCommonShareCounts(t *testing.T) {
+	rows, _, _ := ExtractText(asciiNomineeShareFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 15 {
+		t.Fatalf("want all fifteen literal nominee and continuing-director holdings, got %+v", rows)
+	}
+	for _, want := range []struct {
+		name   string
+		shares float64
+		notes  string
+	}{
+		{"William S. Aichele", 105776, "1"}, {"Norman L. Keller", 37356, "2"}, {"Thomas K. Leidy", 144407, "3"}, {"Merrill S. Moyer", 155426, "4"}, {"Richard W. Godshall", 1886, ""}, {"H. Ray Mininger", 6298, ""}, {"Margaret K. Zook", 200, ""}, {"James L. Bergey", 13988, "5"}, {"Charles H. Hoeflich", 226479, ""}, {"Clair W. Clemens", 9495, ""}, {"John U. Young", 8350, ""}, {"Marvin A. Anders", 130167, "6"}, {"R. Lee Delp", 4011, ""}, {"Harold M. Mininger", 111305, "7"}, {"P. Gregory Shelly", 41105, "8"},
+	} {
+		r := find(rows, want.name, "Common Stock")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent != nil || r.Footnotes != want.notes {
+			t.Errorf("want %+v got %+v", want, r)
+		}
+	}
+}
+
+func TestASCIINomineeShareCountCaptionAndContinuationGuards(t *testing.T) {
+	for _, tc := range []struct {
+		name, body string
+		count      int
+	}{
+		{"no common-stock count", strings.ReplaceAll(asciiNomineeShareFixture, "Common Stock", "Preferred Stock"), 0},
+		{"no beneficial count", strings.ReplaceAll(asciiNomineeShareFixture, "Beneficially", "Compensation"), 0},
+		{"no biography header", strings.ReplaceAll(asciiNomineeShareFixture, "Business Experience", "Cash Compensation"), 0},
+		{"no continuation evidence", strings.ReplaceAll(asciiNomineeShareFixture, "prior years", "subsequent years"), 7},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			rows, _, _ := ExtractText(tc.body, Row{})
+			rows = ScreenRows(rows)
+			if len(rows) != tc.count {
+				t.Fatalf("want%d literal holdings got %+v", tc.count, rows)
+			}
+		})
+	}
+}
+
+func TestASCIINomineeShareRetryPreservesNonzeroFiling(t *testing.T) {
+	body := `<TABLE><CAPTION>SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS
+Name of Beneficial Owner       Shares Owned       Percent of Class
+<S>                            <C>                <C>
+Alex Example                   100,000            12.0%
+Blair Example                  200,000            24.0%
+</TABLE>` + asciiNomineeShareFixture
+	rows, _, _ := ExtractText(body, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 2 || find(rows, "Alex Example", "") == nil || find(rows, "Blair Example", "") == nil {
+		t.Fatalf("nonzero legacy filing must be unchanged: %+v", rows)
+	}
+}

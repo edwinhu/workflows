@@ -335,9 +335,127 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 		}
 	}
 	if len(rows) == 0 && reASCIISlashParenNote.MatchString(body) {
-		return extractText(body, base, true)
+		if rr, ss, uu := extractText(body, base, true); len(ScreenRows(rr)) != 0 {
+			return rr, ss, uu
+		}
+	}
+	if rr, blocks := textNomineeShareCounts(body, base); len(ScreenRows(rr)) != 0 {
+		return rr, blocks, blocks
 	}
 	return rows, seen, used
+}
+
+var reNomineeAgeYear = regexp.MustCompile(`^(.+?)\s+([0-9]{1,3})\s+\(([12][0-9]{3})\)$`)
+
+// Three SGML columns separate name/age/election year, business experience,
+// and common shares owned. A headerless continuation must repeat those exact
+// spans and be introduced as directors elected in prior years.
+func textNomineeShareCounts(body string, base Row) ([]Row, int) {
+	raw := strings.Split(stripEntities(body), "\n")
+	clean := make([]string, len(raw))
+	for i, line := range raw {
+		clean[i] = reAnyTag.ReplaceAllString(line, "")
+	}
+	var out []Row
+	blocks, priorEnd := 0, -1
+	var priorSpans []int
+	for start := 0; start < len(raw); start++ {
+		if !strings.Contains(strings.ToLower(raw[start]), "<table>") {
+			continue
+		}
+		end := start + 1
+		for end < len(raw) && !strings.Contains(strings.ToLower(raw[end]), "</table>") {
+			end++
+		}
+		if end == len(raw) {
+			break
+		}
+		marker := -1
+		var spans []int
+		for j := start + 1; j < end; j++ {
+			if m := reASCIIColumnMark.FindAllStringIndex(raw[j], -1); len(m) == 3 {
+				marker = j
+				for _, col := range m {
+					spans = append(spans, col[0])
+				}
+				break
+			}
+		}
+		if marker < 0 {
+			priorEnd, priorSpans = -1, nil
+			start = end
+			continue
+		}
+		cell := func(line string, col int) string {
+			boundary := func(pos int) int {
+				if pos >= len(line) {
+					return len(line)
+				}
+				for pos > 0 && line[pos] != ' ' && line[pos-1] != ' ' {
+					pos--
+				}
+				return pos
+			}
+			lo, hi := boundary(spans[col]), len(line)
+			if col+1 < len(spans) {
+				hi = boundary(spans[col+1])
+			}
+			if lo >= hi {
+				return ""
+			}
+			return strings.TrimSpace(line[lo:hi])
+		}
+		headers := make([]string, 3)
+		for col := range headers {
+			for j := start + 1; j < marker; j++ {
+				headers[col] += " " + cell(clean[j], col)
+			}
+			headers[col] = strings.ToLower(norm(headers[col]))
+		}
+		hdr := strings.Join(headers, " ")
+		explicit := strings.Contains(headers[0], "name") && strings.Contains(headers[0], "age") &&
+			strings.Contains(headers[0], "year") && strings.Contains(headers[0], "director") &&
+			strings.Contains(headers[1], "business experience") && strings.Contains(headers[2], "shares of common stock") &&
+			strings.Contains(headers[2], "beneficially owned")
+		continuation := false
+		if priorEnd >= 0 && len(priorSpans) == 3 && spans[0] == priorSpans[0] && spans[1] == priorSpans[1] && spans[2] == priorSpans[2] && strings.TrimSpace(hdr) == "" {
+			between := strings.ToLower(strings.Join(clean[priorEnd+1:start], " "))
+			continuation = strings.Contains(between, "directors") && strings.Contains(between, "elected") && strings.Contains(between, "prior years")
+		}
+		if (!explicit && !continuation) || reCompCue.MatchString(hdr) || reOptDetailCue.MatchString(hdr) {
+			priorEnd, priorSpans = -1, nil
+			start = end
+			continue
+		}
+		var rows []Row
+		for j := marker + 1; j < end; j++ {
+			name := reNomineeAgeYear.FindStringSubmatch(cell(clean[j], 0))
+			count := cell(clean[j], 2)
+			if name == nil || cell(clean[j], 1) == "" || strings.ContainsAny(count, "$%") {
+				continue
+			}
+			shares, ok := ParseShares(count)
+			if !ok || shares < 0 {
+				continue
+			}
+			nm, _ := StripFootnotes(name[1])
+			_, notes := StripFootnotes(count)
+			r := base
+			r.TableIndex, r.RowIndex = start, j
+			r.HolderName, r.ShareClass, r.TableKind = nm, "Common Stock", "management"
+			r.Shares, r.Parser, r.Footnotes = &shares, "text_table", strings.Join(notes, ",")
+			rows = append(rows, r)
+		}
+		if len(rows) >= 2 {
+			out = append(out, rows...)
+			blocks++
+			priorEnd, priorSpans = end, spans
+		} else {
+			priorEnd, priorSpans = -1, nil
+		}
+		start = end
+	}
+	return out, blocks
 }
 
 // Move the name at the head of a four-column name/address cell onto its
