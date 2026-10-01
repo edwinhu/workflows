@@ -56,8 +56,9 @@ type screenTable struct {
 	// Per CLASS medians. A multi-class or per-fund table has one outstanding
 	// total per class, tens of times apart, so a single table-wide median
 	// throws away every class but the largest.
-	medianByClass map[string]float64
-	pctRepeats    map[float64]int // how many distinct non-group rows carry each percent
+	medianByClass        map[string]float64
+	registeredPctRepeats map[string]map[float64]int
+	pctRepeats           map[float64]int // how many distinct non-group rows carry each percent
 }
 
 // ScreenRows returns the rows of one filing that survive the layout screen, in
@@ -152,7 +153,9 @@ func screenNames(rows []Row) []Row {
 			out = append(out, r)
 			continue
 		}
-		screenRepairPair(&r)
+		if !r.fundRegistration {
+			screenRepairPair(&r)
+		}
 		if screenNoHolderWithNumberedHolder(strings.TrimSpace(r.HolderName), r.numberedHolder) {
 			if screenDropReasons != nil {
 				screenDropReasons["no_holder"]++
@@ -172,8 +175,8 @@ func screenNames(rows []Row) []Row {
 		// routinely disclose the same holding, and both reach the output.
 		if r.Percent != nil {
 			sig := screenFold(r.HolderName) + "|" + strconv.FormatFloat(*r.Percent, 'f', -1, 64)
-			if r.commonColumn {
-				// Explicit common-stock columns are distinct holdings, even when
+			if r.commonColumn || r.fundRegistration {
+				// Explicit class columns and registered fund accounts are distinct holdings when
 				// their percents coincide. Keep exact copies suppressed.
 				sig += "|" + screenClassKey(r)
 				if r.Shares != nil {
@@ -190,7 +193,12 @@ func screenNames(rows []Row) []Row {
 		}
 		// The cell names the holder AND says who he is; only the name is the
 		// holder. Runs last so every drop rule above still sees the raw cell.
-		r.HolderName = cleanHolderName(r.HolderName)
+		if r.fundRegistration {
+			// Plan and trust identifiers are account identity, not name footnotes.
+			r.HolderName = strings.Trim(stripLeadingHonorific(r.HolderName), nameTrimCut+" ")
+		} else {
+			r.HolderName = cleanHolderName(r.HolderName)
+		}
 		out = append(out, r)
 	}
 	return out
@@ -293,7 +301,7 @@ func screenTables(rows []Row) map[int]*screenTable {
 			if reScreenDate.MatchString(name) {
 				dateRows[r.TableIndex]++
 			}
-			if r.Percent != nil && *r.Percent >= 5.0 && !r.colspanRecovery {
+			if r.Percent != nil && *r.Percent >= 5.0 && !r.colspanRecovery && !r.fundRegistration {
 				t.pctRepeats[*r.Percent]++
 			}
 			if r.Percent != nil && *r.Percent >= 5.0 && r.colspanRecovery {
@@ -307,6 +315,16 @@ func screenTables(rows []Row) map[int]*screenTable {
 				holders[screenFold(name)] = true
 				t.pctRepeats[*r.Percent] = len(holders)
 			}
+		}
+		if r.fundRegistration && r.Percent != nil && *r.Percent >= 5.0 {
+			if t.registeredPctRepeats == nil {
+				t.registeredPctRepeats = map[string]map[float64]int{}
+			}
+			cls := screenClassKey(r)
+			if t.registeredPctRepeats[cls] == nil {
+				t.registeredPctRepeats[cls] = map[float64]int{}
+			}
+			t.registeredPctRepeats[cls][*r.Percent]++
 		}
 		if r.Parser == "text_prose" {
 			t.prose = true
@@ -420,7 +438,7 @@ func screenDropWhy(r Row, t *screenTable) string {
 		return "foreign"
 	case reScreenNonCommon.MatchString(name):
 		return "non_common_name"
-	case isNonCommonClass(r.ShareClass) && !(r.commonColumn && !reScreenOtherSecurity.MatchString(r.ShareClass)):
+	case isNonCommonClass(r.ShareClass) && !((r.commonColumn || r.fundRegistration) && !reScreenOtherSecurity.MatchString(r.ShareClass)):
 		return "non_common_class"
 	}
 	// A holder name never starts with a lower-case letter; a name that does is
@@ -436,7 +454,7 @@ func screenDropWhy(r Row, t *screenTable) string {
 	// count is fractional by convention (Oakmark 2016: 55 correctly aligned rows,
 	// each with its fund, its class and its percent, all discarded by this rule).
 	// Two or more fractional rows in one table is the convention, not a mis-read.
-	if r.Shares != nil && *r.Shares != math.Trunc(*r.Shares) && !(t != nil && (t.fracShares >= 2 || t.prose)) {
+	if r.Shares != nil && *r.Shares != math.Trunc(*r.Shares) && !r.captionCount && !(t != nil && (t.fracShares >= 2 || t.prose)) {
 		return "fractional_shares"
 	}
 	if r.Percent == nil {
@@ -444,7 +462,14 @@ func screenDropWhy(r Row, t *screenTable) string {
 	}
 	// Three or more distinct holders in one table carrying the identical percent
 	// is one value broadcast down a mis-aligned column.
-	if t != nil && !t.prose && t.pctRepeats[*r.Percent] >= 3 {
+	repeats := 0
+	if t != nil {
+		repeats = t.pctRepeats[*r.Percent]
+		if r.fundRegistration {
+			repeats = t.registeredPctRepeats[screenClassKey(r)][*r.Percent]
+		}
+	}
+	if t != nil && !t.prose && repeats >= 3 {
 		return "pct_repeats"
 	}
 	// shares and percent must imply the same outstanding total as the rest of
