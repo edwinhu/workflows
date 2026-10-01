@@ -6065,3 +6065,142 @@ Blair Example                  200,000            24.0%
 		}
 	})
 }
+
+const asciiFundShareMatrixFixture = `<Table>
+<Caption>
+                          FUND SHARES OWNED BY BOARD MEMBERS AND OFFICERS(1)
+- -----------------------------------------------------------------------------------------------------
+BOARD MEMBER                   QUALITY       QUALITY       QUALITY         TAX-       GLOBAL   GLOBAL
+NOMINEES                     PREFERRED   PREFERRED 2   PREFERRED 3   ADVANTAGED   GOVERNMENT    VALUE
+
+- -----------------------------------------------------------------------------------------------------
+<S>                          <C>         <C>           <C>           <C>          <C>          <C>
+
+Robert P. Bremner.........         0             0            0        12,500           0          0
+Lawrence H. Brown.........     1,000         1,000        1,000             0           0          0
+Jack B. Evans.............         0         4,400            0             0           0          0
+William C. Hunter.........         0             0            0         3,675           0          0
+Daniel J. Kundert.........         0             0            0             0           0          0
+William J. Schneider......         0             0        7,500             0         500          0
+Timothy R. Schwertfeger...         0        50,000            0        71,032           0          0
+Judith M. Stockdale.......         0             0            0             0         250          0
+Carole E. Stone(2)........         0             0            0             0           0          0
+Eugene S. Sunshine........     2,075(3)      2,490(3)         0         4,545           0          0
+ALL BOARD MEMBERS AND
+  OFFICERS AS A GROUP.....     3,075        57,890        8,500        92,052         750        900
+</Table>`
+
+func TestASCIIFundShareMatrixBoundedCounts(t *testing.T) {
+	body := `<TABLE><CAPTION>DOLLAR RANGE OF EQUITY SECURITIES
+BOARD MEMBER                QUALITY PREFERRED
+<S>                         <C>
+Robert P. Bremner           $10,001 - $50,000
+Lawrence H. Brown           Over $100,000
+</TABLE>
+` + asciiFundShareMatrixFixture
+	rows, _, _ := ExtractText(body, Row{})
+	rows = ScreenRows(rows)
+	for _, want := range []struct {
+		name, class string
+		shares      float64
+	}{
+		{"Robert P. Bremner", "QUALITY PREFERRED", 0},
+		{"Robert P. Bremner", "TAX- ADVANTAGED", 12500},
+		{"Lawrence H. Brown", "QUALITY PREFERRED 2", 1000},
+		{"Eugene S. Sunshine", "QUALITY PREFERRED", 2075},
+		{"ALL BOARD MEMBERS AND OFFICERS AS A GROUP", "QUALITY PREFERRED 2", 57890},
+	} {
+		r := find(rows, want.name, want.class)
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent != nil {
+			t.Errorf("missing literal matrix count %s / %s = %v: %+v", want.name, want.class, want.shares, r)
+		}
+	}
+	if len(rows) != 66 {
+		t.Errorf("want 11 holders x 6 distinct funds = 66 rows, got %d: %+v", len(rows), rows)
+	}
+}
+func TestASCIIFundShareMatrixRejectMoney(t *testing.T) {
+	body := strings.ReplaceAll(asciiFundShareMatrixFixture, "FUND SHARES OWNED", "DOLLAR RANGE OF FUND SHARES OWNED")
+	rows, _, _ := ExtractText(body, Row{})
+	if len(ScreenRows(rows)) != 0 {
+		t.Fatalf("dollar-range matrix accepted: %+v", rows)
+	}
+}
+
+const asciiFundMatrixSuperheaderFixture = `<Table>
+<Caption>
+                      FUND SHARES OWNED BY BOARD MEMBERS AND OFFICERS(1)
+- ----------------------------------------------------------------------------------------------
+                                                        NEW YORK
+BOARD MEMBER                  NEW YORK     NEW YORK   INVESTMENT   NEW YORK           NEW YORK
+NOMINEES                      DIVIDEND   DIVIDEND 2      QUALITY      VALUE   PERFORMANCE PLUS
+
+- ----------------------------------------------------------------------------------------------
+<S>                           <C>        <C>          <C>          <C>        <C>
+
+Robert P. Bremner...........      0           0            0           0              0
+Lawrence H. Brown...........      0           0            0           0              0
+Jack B. Evans...............      0           0            0           0              0
+William C. Hunter...........      0           0            0           0              0
+David J. Kundert............      0           0            0           0              0
+William J. Schneider........      0           0            0           0              0
+Timothy R. Schwertfeger.....      0           0            0           0              0
+Judith M. Stockdale.........      0           0            0           0              0
+Carole E. Stone(2)..........      0           0            0           0              0
+Eugene S. Sunshine..........      0           0            0           0              0
+ALL BOARD MEMBERS AND
+  OFFICERS AS A GROUP.......      0           0            0           0              0
+- ----------------------------------------------------------------------------------------------
+
+</Table>`
+
+func TestASCIIFundMatrixSuperheader(t *testing.T) {
+	rows, _, _ := ExtractText(asciiFundMatrixSuperheaderFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 55 {
+		t.Fatalf("want 11 holders x 5 funds, got %d", len(rows))
+	}
+	r := find(rows, "Robert P. Bremner", "NEW YORK INVESTMENT QUALITY")
+	if r == nil || r.Shares == nil || *r.Shares != 0 {
+		t.Fatalf("lost top line of fund header: %+v", rows)
+	}
+}
+
+func TestASCIIFundShareMatrixGuards(t *testing.T) {
+	t.Run("money in explicit share caption", func(t *testing.T) {
+		body := strings.Replace(asciiFundShareMatrixFixture, "12,500", "$12,500", 1)
+		rows, _, _ := ExtractText(body, Row{})
+		if len(ScreenRows(rows)) != 0 {
+			t.Fatal("currency accepted as share counts")
+		}
+	})
+	t.Run("caption required", func(t *testing.T) {
+		body := strings.ReplaceAll(asciiFundShareMatrixFixture, "FUND SHARES OWNED BY BOARD MEMBERS AND OFFICERS(1)", "PAYMENTS TO BOARD MEMBERS AND OFFICERS")
+		rows, _, _ := ExtractText(body, Row{})
+		if len(ScreenRows(rows)) != 0 {
+			t.Fatal("nonownership matrix accepted")
+		}
+	})
+	t.Run("legacy emitting filing unchanged", func(t *testing.T) {
+		body := `<TABLE><CAPTION>SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS
+Name of Beneficial Owner       Shares Owned       Percent of Class
+<S>                            <C>                <C>
+Alex Example                   100,000            12.0%
+Blair Example                  200,000            24.0%
+</TABLE>
+` + asciiFundShareMatrixFixture
+		rows, _, _ := ExtractText(body, Row{})
+		rows = ScreenRows(rows)
+		if len(rows) != 2 || find(rows, "Alex Example", "") == nil || find(rows, "Blair Example", "") == nil {
+			t.Fatalf("retry changed legacy holdings: %d", len(rows))
+		}
+	})
+	t.Run("malformed value rejects whole row", func(t *testing.T) {
+		body := strings.Replace(asciiFundShareMatrixFixture, "12,500", "unknown", 1)
+		rows, _, _ := ExtractText(body, Row{})
+		rows = ScreenRows(rows)
+		if len(rows) != 60 || find(rows, "Robert P. Bremner", "QUALITY PREFERRED") != nil {
+			t.Fatalf("partially read malformed row: %d", len(rows))
+		}
+	})
+}

@@ -345,7 +345,144 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 	if rr, blocks := textNomineeShareCounts(body, base); len(ScreenRows(rr)) != 0 {
 		return rr, blocks, blocks
 	}
+	if rr, blocks := textFundShareMatrix(body, base); len(ScreenRows(rr)) != 0 {
+		return rr, blocks, blocks
+	}
 	return rows, seen, used
+}
+
+var reASCIIMatrixCount = regexp.MustCompile(`^[0-9][0-9,]*(?:\([0-9]+\))?$`)
+
+// SGML table boundaries isolate explicit share-count matrices from adjacent money tables.
+func textFundShareMatrix(body string, base Row) ([]Row, int) {
+	raw := strings.Split(stripEntities(body), "\n")
+	var out []Row
+	blocks := 0
+	for start := 0; start < len(raw); start++ {
+		if !strings.Contains(strings.ToLower(raw[start]), "<table>") {
+			continue
+		}
+		end := start + 1
+		for end < len(raw) && !strings.Contains(strings.ToLower(raw[end]), "</table>") {
+			end++
+		}
+		if end == len(raw) {
+			break
+		}
+		marker, header := -1, -1
+		var spans []int
+		for j := start + 1; j < end; j++ {
+			if strings.HasPrefix(strings.TrimSpace(strings.ToUpper(raw[j])), "BOARD MEMBER") {
+				header = j
+			}
+			if m := reASCIIColumnMark.FindAllStringIndex(raw[j], -1); len(m) >= 3 {
+				marker = j
+				for _, col := range m {
+					spans = append(spans, col[0])
+				}
+				break
+			}
+		}
+		text := strings.ToLower(strings.Join(raw[start:end], " "))
+		if marker < 0 || header < 0 || header >= marker ||
+			!strings.Contains(text, "fund shares owned by board members") ||
+			strings.ContainsAny(text, "$%") || strings.Contains(text, "dollar") ||
+			reCompCue.MatchString(strings.Join(raw[start:marker], " ")) {
+			start = end
+			continue
+		}
+		cell := func(line string, col int) string {
+			boundary := func(pos int) int {
+				if pos >= len(line) {
+					return len(line)
+				}
+				for pos > 0 && line[pos] != ' ' && line[pos-1] != ' ' {
+					pos--
+				}
+				return pos
+			}
+			lo, hi := boundary(spans[col]), len(line)
+			if col+1 < len(spans) {
+				hi = boundary(spans[col+1])
+			}
+			if lo >= hi {
+				return ""
+			}
+			return strings.TrimSpace(line[lo:hi])
+		}
+		// Upper fund-name lines may precede the board-member stub.
+		for header > start+1 && !strings.HasPrefix(strings.TrimSpace(raw[header-1]), "-") && !strings.Contains(raw[header-1], "<") {
+			header--
+		}
+		labels := make([]string, len(spans))
+		distinct := map[string]bool{}
+		for col := 1; col < len(spans); col++ {
+			for j := header; j < marker; j++ {
+				if strings.TrimSpace(raw[j]) == "" || strings.HasPrefix(strings.TrimSpace(raw[j]), "-") {
+					continue
+				}
+				labels[col] += " " + cell(raw[j], col)
+			}
+			labels[col] = norm(labels[col])
+			if labels[col] != "" {
+				distinct[labels[col]] = true
+			}
+		}
+		if len(distinct) != len(spans)-1 {
+			start = end
+			continue
+		}
+		var rows []Row
+		pending := ""
+		for j := marker + 1; j < end; j++ {
+			line := reDotLeader.ReplaceAllStringFunc(raw[j], func(m string) string { return strings.Repeat(" ", len(m)) })
+			name := cell(line, 0)
+			if name == "" || strings.HasPrefix(name, "-") || strings.Contains(name, "<") {
+				pending = ""
+				continue
+			}
+			if cell(line, 1) == "" {
+				pending = norm(pending + " " + name)
+				continue
+			}
+			name = norm(pending + " " + name)
+			pending = ""
+			name, _ = StripFootnotes(name)
+			if !hasWords(name, 2) {
+				continue
+			}
+			valid := true
+			for col := 1; col < len(spans); col++ {
+				if !reASCIIMatrixCount.MatchString(cell(line, col)) {
+					valid = false
+				}
+			}
+			if !valid {
+				continue
+			}
+			group, n := isGroupRow(name)
+			for col := 1; col < len(spans); col++ {
+				count := cell(line, col)
+				shares, ok := ParseShares(count)
+				if !ok {
+					panic("validated ASCII matrix count failed ParseShares")
+				}
+				_, notes := StripFootnotes(count)
+				r := base
+				r.TableIndex, r.RowIndex = start, j
+				r.HolderName, r.classHint, r.TableKind = name, labels[col], "management"
+				r.Shares, r.Parser, r.Footnotes = &shares, "text_table", strings.Join(notes, ",")
+				r.IsGroupRow, r.GroupN = group, n
+				rows = append(rows, r)
+			}
+		}
+		if len(rows) >= 2*(len(spans)-1) {
+			out = append(out, rows...)
+			blocks++
+		}
+		start = end
+	}
+	return out, blocks
 }
 
 // Count-count-percent-percent ASCII columns must be paired by class, not proximity.
