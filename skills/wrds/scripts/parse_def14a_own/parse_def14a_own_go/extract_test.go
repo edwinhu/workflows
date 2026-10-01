@@ -7656,3 +7656,309 @@ John Example             $175,000      $30,000
 		t.Fatal("unverified fractional row screen weakened")
 	}
 }
+
+const asciiBecameDirectorCountsFixture = `<TABLE>
+<CAPTION>
+                                                                                                       Common Shares
+                                                                                                        Beneficially
+                                                                                         Became         Owned as of
+       Name and Age                        Principal Occupation                         Director       June 1, 1995(a)
+       ------------                        --------------------                         --------       ---------------
+
+                                                       Nominees
+                                                       --------
+
+                                        Terms expiring at annual meeting in 1998
+
+<S>                   <C>     <C>                                                          <C>             <C>
+Frank O. White, Jr.   (40)    President and Chief Executive Officer since April,           1985            1,142
+* **                          1994; Vice President and General Manager,
+                              1990-1994; Assistant General Manager 1983-1990;
+                              Director of Mutuels since 1981; Assistant Manager
+                              Mutuels 1979-1980; Mutuel Clerk from 1972 to 1978;
+                              Former Director of Mutuels Syracuse Mile, Inc.,
+                              1983-1993; member of Equine Advisory Council
+                              College of Veterinary Medicine Cornell University;
+                              Director of United States Trotting Association;
+                              Director of Syracuse Mile, Inc.; Director of HTA
+                              Insurance Co. Ltd. Bermuda; Director of Community
+                              Memorial Hospital, Hamilton, N.Y.; Trustee of
+                              Oneida Savings Bank; Son of Frank O. White, Sr.
+
+
+James J. Moran        (55)    Vice President and Secretary since April, 1994;              1986              100
+* **                          Assistant Secretary 1985-1994; Director of
+                              Publicity/Public Relations since 1975; Track
+                              Announcer since 1964; Served in Racing and Program
+                              Department 1962; Past President and Chairman of
+                              the Board of the North American Harness Publicists
+                              Assn.; Secretary/Treasurer of Vernon Chapter of
+                              U.S. Harness Writers Assn.
+
+
+David H. Brown        (56)    Assistant to the President since 1994; Assistant             1995               58
+                              Mutuel Manager, 1989-1994; Formerly Executive
+                              Board member of Local 234, S.E.I.U.; Formerly
+                              Vice-President and Executive Board member of
+                              Catholic School Administrators' Assn. of New York.
+
+</TABLE>`
+
+func TestASCIIBecameDirectorCountOnly(t *testing.T) {
+	rows, _, _ := ExtractText(asciiBecameDirectorCountsFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 3 {
+		t.Fatalf("want 3 literal beneficial holdings, got %d: %+v", len(rows), rows)
+	}
+	for _, tc := range []struct {
+		name   string
+		shares float64
+	}{
+		{"Frank O. White, Jr", 1142}, {"James J. Moran", 100}, {"David H. Brown", 58},
+	} {
+		r := find(rows, tc.name, "")
+		if r == nil || r.HolderName != tc.name || r.Shares == nil || *r.Shares != tc.shares || r.Percent != nil || r.PctMarker != "" {
+			t.Errorf("want literal %s shares=%v without age/year: %+v", tc.name, tc.shares, r)
+		}
+	}
+}
+
+func TestASCIIBecameDirectorCountOnlyGuards(t *testing.T) {
+	for _, tc := range []struct{ name, old, replacement string }{
+		{"currency", "1,142", "$1,142"},
+		{"missing shares", "Common Shares", "Annual Salary"},
+		{"missing beneficial", "Beneficially", "Granted"},
+		{"missing director year", "Became", "Retired"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			rows, _, _ := ExtractText(strings.ReplaceAll(asciiBecameDirectorCountsFixture, tc.old, tc.replacement), Row{})
+			if len(ScreenRows(rows)) != 0 {
+				t.Fatalf("nonownership table accepted: %+v", rows)
+			}
+		})
+	}
+}
+
+const asciiAmountCommonPreferredFixture = `               SECURITY INTEREST OF CERTAIN BENEFICIAL OWNERS,
+                           DIRECTORS AND MANAGEMENT
+
+        The following table sets forth certain information, as of August 16,
+1996, regarding the Company's Common Stock and Series B Convertible Preferred
+Stock (the "Series B Preferred Stock") owned of record or beneficially by (i)
+each shareholder who is known by the Company to beneficially own in excess of 5%
+of the outstanding shares of Common Stock or of the Series B Preferred Stock,
+(ii) each director and the executive officer named in the Summary Compensation
+Table below, and (iii) all directors and executive officers as a group. Except
+as otherwise indicated, each shareholder listed below has sole voting and
+investment power with respect to shares beneficially owned by such person.
+
+        In accordance with Rule 13d-3, promulgated under the Securities Exchange
+Act of 1934, as amended, shares that are not outstanding but that are issuable
+within 60 days upon exercise of outstanding options, warrants, rights or
+conversion privileges or which are otherwise required by Rule 13d-3 to be
+included have been deemed to be outstanding for the purpose of computing the
+percentage of outstanding shares owned by the person owning such right, but have
+not been deemed outstanding for the purpose of computing the percentage for any
+other person. As of August 16, 1996, there were 17,040,126 shares of Common
+Stock issued and outstanding and 1,000,000 shares of Series B Preferred Stock
+issued and outstanding.
+
+<TABLE>
+<CAPTION>
+                                                                      SERIES B
+                                         COMMON STOCK             PREFERRED STOCK
+                                         ------------             ---------------
+        NAME AND ADDRESS            AMOUNT     % OF CLASS      AMOUNT        % OF CLASS
+        ----------------            ------     ----------      ------        ----------
+5% HOLDER
+- ---------
+<S>                               <C>             <C>           <C>             <C>
+Strategica Capital Corporation    2,540,193(1)    13.0%         ____            ____
+1221 Brickell Avenue
+Suite 2600
+Miami, Florida 33131
+
+COMMON STOCK DIRECTORS
+
+Wendell R. Anderson, Esq.            30,000(2)      *           ____            ____
+720 Baker Building
+Minneapolis, MN 55403
+</TABLE>`
+
+func TestASCIIAmountCommonPreferred(t *testing.T) {
+	rows, _, _ := ExtractText(asciiAmountCommonPreferredFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 2 {
+		t.Fatalf("want 2 literal common holdings, got %d: %+v", len(rows), rows)
+	}
+	for _, tc := range []struct {
+		name   string
+		shares float64
+		pct    *float64
+		marker string
+	}{
+		{"Strategica Capital Corporation", 2540193, pf(13), ""},
+		{"Wendell R. Anderson", 30000, nil, "*"},
+	} {
+		r := find(rows, tc.name, "Common Stock")
+		if r == nil || r.HolderName != tc.name || r.Shares == nil || *r.Shares != tc.shares || r.PctMarker != tc.marker {
+			t.Errorf("missing common amount %s: %+v", tc.name, r)
+			continue
+		}
+		if (r.Percent == nil) != (tc.pct == nil) || (r.Percent != nil && *r.Percent != *tc.pct) {
+			t.Errorf("wrong common percent: %+v", r)
+		}
+	}
+}
+
+func TestASCIIAmountCommonPreferredGuards(t *testing.T) {
+	for _, tc := range []struct{ name, old, replacement string }{
+		{"currency", "2,540,193", "$2,540,193"},
+		{"missing amount header", "AMOUNT", "SALARY"},
+		{"missing share context", "shares", "dollars"},
+		{"no common class", "COMMON STOCK", "OPTIONS GRANTED"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			rows, _, _ := ExtractText(strings.ReplaceAll(asciiAmountCommonPreferredFixture, tc.old, tc.replacement), Row{})
+			if len(ScreenRows(rows)) != 0 {
+				t.Fatalf("nonownership amount table accepted: %+v", rows)
+			}
+		})
+	}
+}
+
+const asciiVerticalFourClassFixture = `                               Shares of       Shares of       Shares of
+                 Shares of      Series A        Series B        Series C
+                   Common      Preferred       Preferred       Preferred
+                   Stock         Stock           Stock           Stock
+                Beneficially  Beneficially    Beneficially    Beneficially
+                  Owned(1)      Owned(2)        Owned(2)        Owned(2)
+                ------------  ------------    ------------    ------------
+Name/Address   No. of Shares No. of Shares   No. of Shares   No. of Shares
+of Beneficial  ------------- -------------   -------------   -------------
+Owner             Percent       Percent         Percent         Percent
+- - -------------     -------       -------         -------         -------
+
+B. J. Hogg         332,239         0               0               0
+                     *             *               *               *
+
+D. J. Jennings      83,870(3)      0               0               0
+                     *             *               *               *
+
+R. F. Price     57,799,352(5) 6,622,206(5)     786,357(5)    20,000,000(5)
+                   79.05%         100%            100%            100%
+
+R. C. Sherburne      4,433(4)      0               0               0
+                     *             *               *               *
+
+C. D. Yie        2,581,970(6)      0               0               0
+                    3.5%           *               *               *
+`
+
+func TestASCIIVerticalFourClassHoldings(t *testing.T) {
+	rows, _, _ := ExtractText(asciiVerticalFourClassFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 5 {
+		t.Fatalf("want 5 literal common-stock rows, got %d: %+v", len(rows), rows)
+	}
+	for _, tc := range []struct {
+		name   string
+		shares float64
+		pct    *float64
+		marker string
+	}{
+		{"B. J. Hogg", 332239, nil, "*"},
+		{"D. J. Jennings", 83870, nil, "*"},
+		{"R. F. Price", 57799352, pf(79.05), ""},
+		{"R. C. Sherburne", 4433, nil, "*"},
+		{"C. D. Yie", 2581970, pf(3.5), ""},
+	} {
+		r := find(rows, tc.name, "Common Stock")
+		if r == nil || r.HolderName != tc.name || r.Shares == nil || *r.Shares != tc.shares || r.PctMarker != tc.marker {
+			t.Errorf("missing literal common stock %s: %+v", tc.name, r)
+			continue
+		}
+		if (r.Percent == nil) != (tc.pct == nil) || (r.Percent != nil && *r.Percent != *tc.pct) {
+			t.Errorf("wrong common percent: %+v", r)
+		}
+	}
+}
+
+func TestASCIIVerticalFourClassGuards(t *testing.T) {
+	for _, tc := range []struct{ name, old, replacement string }{
+		{"missing beneficial caption", "Beneficially", "Granted"},
+		{"missing share captions", "No. of Shares", "No. of Options"},
+		{"currency caption", "No. of Shares", "No. of Shares ($)"},
+		{"missing common column", "Common", "Options"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			rows, _, _ := ExtractText(strings.ReplaceAll(asciiVerticalFourClassFixture, tc.old, tc.replacement), Row{})
+			if len(ScreenRows(rows)) != 0 {
+				t.Fatalf("nonownership matrix accepted: %+v", rows)
+			}
+		})
+	}
+}
+
+const asciiFundAddressClassCountsFixture = `As of February 28, 2003,  the following  record owners of each class of the Fund
+held the  share  percentages  indicated  below,  which  were  owned  either  (i)
+beneficially  by such person(s) or (ii) of record by such person(s) on behalf of
+customers  who are the  beneficial  owners of such  shares  and as to which such
+record owner(s) may exercise voting rights under certain limited  circumstances.
+Beneficial  owners of 25% or more of a class of the Fund are  presumed  to be in
+control of the class for  purposes  of voting on certain  matters  submitted  to
+shareholders.
+
+
+<TABLE>
+<CAPTION>
+                                                                                Amount of Securities
+                                                     Address                        and % Owned
+                                                     -------                        -----------
+<S>                                                  <C>                        <C>
+Class A Shares
+  Merrill Lynch, Pierce, Fenner & Smith, Inc.        Jacksonville, FL           504,838 (17.7%)
+Class B Shares
+  Merrill Lynch, Pierce, Fenner & Smith, Inc.        Jacksonville, FL           754,317 (17.4%)
+Class C Shares
+  Merrill Lynch, Pierce, Fenner & Smith, Inc.        Jacksonville, FL            97,162 (20.4%)
+  Salomon Smith Barney, Inc.                         New York, NY                27,143 (5.7%)
+</TABLE>`
+
+func TestASCIIFundAddressClassCounts(t *testing.T) {
+	rows, _, _ := ExtractText(asciiFundAddressClassCountsFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 4 {
+		t.Fatalf("want 4 literal record holdings, got %d: %+v", len(rows), rows)
+	}
+	for _, tc := range []struct {
+		name, class string
+		shares, pct float64
+	}{
+		{"Merrill Lynch, Pierce, Fenner & Smith, Inc", "Class A Shares", 504838, 17.7},
+		{"Merrill Lynch, Pierce, Fenner & Smith, Inc", "Class B Shares", 754317, 17.4},
+		{"Merrill Lynch, Pierce, Fenner & Smith, Inc", "Class C Shares", 97162, 20.4},
+		{"Salomon Smith Barney, Inc", "Class C Shares", 27143, 5.7},
+	} {
+		r := find(rows, tc.name, tc.class)
+		if r == nil || r.Shares == nil || *r.Shares != tc.shares || r.Percent == nil || *r.Percent != tc.pct || r.TableKind != "5pct_holders" {
+			t.Errorf("missing literal record holding %+v: %+v", tc, r)
+		}
+	}
+}
+
+func TestASCIIFundAddressClassCountsGuards(t *testing.T) {
+	for _, tc := range []struct{ name, old, replacement string }{
+		{"currency", "504,838", "$504,838"},
+		{"no owned caption", "and % Owned", "and % Granted"},
+		{"no securities caption", "Amount of Securities", "Amount of Compensation"},
+		{"no record-owner lead-in", "record owners", "award recipients"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			rows, _, _ := ExtractText(strings.ReplaceAll(asciiFundAddressClassCountsFixture, tc.old, tc.replacement), Row{})
+			if len(ScreenRows(rows)) != 0 {
+				t.Fatalf("nonownership register accepted: %+v", rows)
+			}
+		})
+	}
+}

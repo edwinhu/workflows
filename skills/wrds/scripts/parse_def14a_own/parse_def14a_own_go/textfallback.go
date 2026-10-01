@@ -69,6 +69,28 @@ var reTextBeneficialHeader = regexp.MustCompile(`(?i)\bamount\s+and\s+nature\s+o
 // read past the first value row to manufacture header evidence from holders.
 func textOwnershipHeaderAt(clean []string, i int) bool {
 	groups := splitHdrGroups(clean[i])
+	if (len(groups) == 4 || len(groups) == 5) && strings.EqualFold(groups[0].text, "Name/Address") {
+		shareHeaders, count := true, 0
+		for _, g := range groups[1:] {
+			t := strings.ToLower(norm(g.text))
+			count += strings.Count(t, "no. of shares")
+			shareHeaders = shareHeaders && strings.TrimSpace(strings.ReplaceAll(t, "no. of shares", "")) == ""
+		}
+		shareHeaders = shareHeaders && count == 4
+		var header []string
+		for j := max(0, i-8); j < len(clean) && j <= i+7; j++ {
+			if j > i {
+				if _, _, ok := parseTextRow(clean[j]); ok {
+					break
+				}
+			}
+			header = append(header, clean[j])
+		}
+		hdr := strings.ToLower(norm(strings.Join(header, " ")))
+		return shareHeaders && strings.Contains(hdr, "common") && strings.Contains(hdr, "preferred") &&
+			strings.Contains(hdr, "beneficially") && strings.Contains(hdr, "owned") && strings.Contains(hdr, "percent") &&
+			!strings.Contains(hdr, "$") && !reCompCue.MatchString(hdr) && !reOptDetailCue.MatchString(hdr)
+	}
 	if (len(groups) != 2 && len(groups) != 3) || !reTextNameHeader.MatchString(strings.TrimSpace(groups[0].text)) {
 		return false
 	}
@@ -537,6 +559,9 @@ var reASCIICommitteeNote = regexp.MustCompile(`\([A-Z](?:,[A-Z])+\)`)
 
 // Caption columns, not numeric-tail alignment, distinguish shares from age,
 // position and election-year columns. Retry only when the legacy filing is empty.
+var reASCIIRecordFundClass = regexp.MustCompile(`(?i)^class\s+[a-z]\s+shares$`)
+var reASCIIRecordFundHolding = regexp.MustCompile(`^([0-9]{1,3}(?:,[0-9]{3})+|[0-9]+)\s+\(([0-9]+(?:\.[0-9]+)?%)\)$`)
+
 func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 	raw := strings.Split(stripEntities(body), "\n")
 	clean := make([]string, len(raw))
@@ -629,28 +654,33 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 		}
 		hdr := strings.Join(headers, " ")
 		lowerHdr := strings.ToLower(hdr)
+		ctxStart := max(0, start-25)
+		ctx := strings.ToLower(norm(strings.Join(clean[ctxStart:start], " ")))
+		recordFund := len(spans) == 3 && nameCol == -1 && strings.EqualFold(headers[1], "Address") &&
+			strings.Contains(strings.ToLower(headers[2]), "amount of securities") && strings.Contains(strings.ToLower(headers[2]), "% owned") &&
+			strings.Contains(ctx, "record owners") && strings.Contains(ctx, "class of the fund") && strings.Contains(ctx, "shares")
+		if recordFund {
+			nameCol, shareCol, pctCol = 0, 2, 2
+		}
 		countOnly := pctCol == -1 && (len(spans) == 4 || len(spans) == 5) && nameCol == 0 && shareCol == len(spans)-1 &&
 			strings.Contains(lowerHdr, "age") && strings.Contains(lowerHdr, "principal occupation") &&
 			shareCol >= 0 && strings.Contains(strings.ToLower(headers[shareCol]), "shares") &&
-			(strings.Contains(lowerHdr, "director since") || strings.Contains(lowerHdr, "trustee since"))
+			(strings.Contains(lowerHdr, "director since") || strings.Contains(lowerHdr, "trustee since") || strings.Contains(lowerHdr, "became director"))
 		if os.Getenv("DEF14A_DEBUG_TEXTBLOCK") != "" {
 			fmt.Fprintf(os.Stderr, "--- caption columns=%q shares=%d percent=%d\n", headers, shareCol, pctCol)
 		}
-		if nameCol < 0 || (nameCol != 0 && classCol != 0) || shareCol < 0 || (pctCol < 0 && !countOnly) || shareCol == pctCol || nameCol == shareCol || nameCol == pctCol ||
+		if nameCol < 0 || (nameCol != 0 && classCol != 0) || shareCol < 0 || (pctCol < 0 && !countOnly) || (shareCol == pctCol && !recordFund) || nameCol == shareCol || nameCol == pctCol ||
 			reCompCue.MatchString(hdr) || reOptDetailCue.MatchString(hdr) || strings.Contains(strings.ToLower(hdr), "dollar") {
 			start = end
 			continue
 		}
-		ctxStart := start - 12
-		if ctxStart < 0 {
-			ctxStart = 0
-		}
-		commonClass := classCol >= 0 && strings.Contains(strings.ToLower(norm(strings.Join(clean[ctxStart:marker], " "))), "common stock")
+		commonClass := recordFund || (classCol >= 0 && strings.Contains(strings.ToLower(norm(strings.Join(clean[max(0, start-12):marker], " "))), "common stock"))
 		class := ""
 		if strings.Contains(strings.ToLower(headers[shareCol]), "common stock") {
 			class = "Common Stock"
 		}
 		var rows []Row
+		fundClass := ""
 		var groupHead []string
 		pendingName := ""
 		money := false
@@ -664,6 +694,17 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 			if strings.Contains(count, "$") || (countOnly && strings.Contains(clean[j], "$")) {
 				money = true
 				break
+			}
+			if recordFund {
+				if count == "" && reASCIIRecordFundClass.MatchString(nm) {
+					fundClass = norm(nm)
+					continue
+				}
+				m := reASCIIRecordFundHolding.FindStringSubmatch(count)
+				if m == nil || fundClass == "" {
+					continue
+				}
+				count, pctText = m[1], m[2]
 			}
 			if countOnly && count == "--" {
 				count = "0"
@@ -728,6 +769,9 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 				}
 			}
 			rowClass := class
+			if recordFund {
+				rowClass = fundClass
+			}
 			if classCol >= 0 {
 				rowClass, _ = StripFootnotes(reDotLeader.ReplaceAllString(cell(clean[j], classCol), " "))
 				if !reClassVal.MatchString(rowClass) {
@@ -737,6 +781,9 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 			grp, gn := isGroupRow(nm)
 			r := base
 			r.HolderName, r.ShareClass, r.TableKind = nm, rowClass, "management"
+			if recordFund {
+				r.TableKind = "5pct_holders"
+			}
 			r.commonColumn = commonClass
 			r.captionCount = countOnly
 			r.TableIndex, r.RowIndex, r.Parser = start, j, "text_table"
@@ -901,6 +948,7 @@ func textSeparateClassCounts(body string, base Row) ([]Row, int) {
 	var out []Row
 	blocks, priorEnd := 0, -1
 	var priorMarks []int
+	priorAmountPairs := false
 	for start := 0; start < len(raw); start++ {
 		if !strings.Contains(strings.ToLower(raw[start]), "<table>") {
 			continue
@@ -916,6 +964,7 @@ func textSeparateClassCounts(body string, base Row) ([]Row, int) {
 		var marks []int
 		var header []string
 		explicit := false
+		amountPairs, stockPairHeader := false, false
 		for j := start + 1; j < end; j++ {
 			m := reASCIIColumnMark.FindAllStringIndex(raw[j], -1)
 			if len(m) == 5 {
@@ -931,6 +980,14 @@ func textSeparateClassCounts(body string, base Row) ([]Row, int) {
 			}
 			header = append(header, line)
 			g := splitHdrGroups(line)
+			if len(g) == 2 && strings.EqualFold(g[0].text, "COMMON STOCK") && strings.EqualFold(g[1].text, "PREFERRED STOCK") {
+				stockPairHeader = true
+			}
+			if len(g) == 5 && strings.EqualFold(g[0].text, "NAME AND ADDRESS") &&
+				strings.EqualFold(g[1].text, "AMOUNT") && strings.EqualFold(g[2].text, "% OF CLASS") &&
+				strings.EqualFold(g[3].text, "AMOUNT") && strings.EqualFold(g[4].text, "% OF CLASS") {
+				amountPairs = true
+			}
 			if len(g) == 5 && strings.Contains(strings.ToLower(g[0].text), "beneficial owner") &&
 				strings.EqualFold(g[1].text, "Common Stock") && strings.EqualFold(g[2].text, "Preferred Stock") &&
 				strings.EqualFold(g[3].text, "Common Stock") && strings.EqualFold(g[4].text, "Stock") {
@@ -938,6 +995,11 @@ func textSeparateClassCounts(body string, base Row) ([]Row, int) {
 			}
 		}
 		hdr := hdrColumnText(header)
+		ctxStart := max(0, start-25)
+		ctx := strings.ToLower(norm(reAnyTag.ReplaceAllString(strings.Join(raw[ctxStart:start], " "), "")))
+		amountPairs = amountPairs && stockPairHeader && strings.Contains(ctx, "shares") &&
+			strings.Contains(ctx, "common stock") && (strings.Contains(ctx, "beneficially") || strings.Contains(ctx, "beneficial ownership")) &&
+			!reCompCue.MatchString(strings.Join(header, " ")) && !reOptDetailCue.MatchString(strings.Join(header, " "))
 		explicit = explicit && reTextBeneficialHeader.MatchString(hdr) && reHdrPctCue.MatchString(hdr) &&
 			!reCompCue.MatchString(hdr) && !reOptDetailCue.MatchString(hdr)
 		continuation := mark >= 0 && priorEnd >= 0 && len(priorMarks) == len(marks)
@@ -950,7 +1012,10 @@ func textSeparateClassCounts(body string, base Row) ([]Row, int) {
 			gap := strings.TrimSpace(reAnyTag.ReplaceAllString(strings.Join(raw[priorEnd+1:start], " "), ""))
 			continuation = continuation && (gap == "" || reScreenDate.MatchString(gap) || reASCIIPageNumber.MatchString(gap)) && strings.TrimSpace(strings.Join(header, " ")) == ""
 		}
-		if mark < 0 || (!explicit && !continuation) || strings.Contains(strings.Join(raw[start:end], " "), "$") {
+		if continuation {
+			amountPairs = priorAmountPairs
+		}
+		if mark < 0 || (!explicit && !amountPairs && !continuation) || strings.Contains(strings.Join(raw[start:end], " "), "$") {
 			priorEnd, priorMarks = -1, nil
 			start = end
 			continue
@@ -967,7 +1032,11 @@ func textSeparateClassCounts(body string, base Row) ([]Row, int) {
 			g := splitHdrGroups(line)
 			if len(g) == 5 && g[1].lo >= marks[1]-8 && g[2].lo >= marks[2]-8 && g[3].lo >= marks[3]-8 && g[4].lo >= marks[4]-8 {
 				shares, ok := ParseShares(g[1].text)
-				pct, parsed, marker, _ := ParsePercent(g[3].text)
+				pctCol := 3
+				if amountPairs {
+					pctCol = 2
+				}
+				pct, parsed, marker, _ := ParsePercent(g[pctCol].text)
 				if !ok || shares <= 0 || (!parsed && marker == "") {
 					nameLines = nil
 					continue
@@ -1004,7 +1073,7 @@ func textSeparateClassCounts(body string, base Row) ([]Row, int) {
 		if len(rows) >= 2 {
 			out = append(out, rows...)
 			blocks++
-			priorEnd, priorMarks = end, marks
+			priorEnd, priorMarks, priorAmountPairs = end, marks, amountPairs
 		} else {
 			priorEnd, priorMarks = -1, nil
 		}
@@ -2395,7 +2464,7 @@ var (
 	// adds beside them.
 	reColLabelKeep = regexp.MustCompile(`(?i)\bclass\s+[a-d0-9]\b|\bcommon\s+stock\b|\bpreferred\b|\bordinary\s+shares\b|\bseries\s+[a-z0-9]+\b|\bvoting\s+power\b|\bcombined\b|\btotal\b|\bdepositary\b|\bunits?\b|\bfund\b|\btrust\b|\bportfolio\b`)
 	// Header text that is only the shape of the column, never its identity.
-	reColLabelDrop = regexp.MustCompile(`(?i)^(?:number|percent|percentage|amount|shares?|no\.?|of\s+shares|of\s+class|%)[\s.():0-9]*$`)
+	reColLabelDrop = regexp.MustCompile(`(?i)^(?:(?:no\.?\s+of\s+shares\s*)+|number|percent|percentage|amount|shares?(?:\s+of)?|no\.?(?:\s+of\s+shares)?|of\s+shares|of\s+class|beneficially|owned|%)[\s.():0-9]*$`)
 	// A WHOLE HEADER ROW, not a column label. An ASCII proxy routinely writes its
 	// headings as one wide group spanning every value column ("Number of Shares
 	// of Common Stock Beneficially Owned Percent"), which reColLabelDrop cannot
