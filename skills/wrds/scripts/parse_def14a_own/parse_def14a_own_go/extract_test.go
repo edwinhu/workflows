@@ -9139,3 +9139,204 @@ func TestRecordHoldingProseRejectsMoneyGrantsAndUnspecifiedClass(t *testing.T) {
 		}
 	}
 }
+
+// Literal biography holdings from 0000950131-95-000026.
+const biographyHoldings55 = `  Four directors are to be elected for terms expiring at the annual meeting in
+1998. The persons named below were recommended by the Nominating Committee and
+nominated by the Board of Directors. Their principal occupations during the
+past five or more years, positions with the Company, directorships in other
+companies, ages, and beneficial ownership of shares and of exercisable options
+to purchase shares of the Company at December 31, 1994 appear in that order
+after their names. As used below "restricted stock" refers to non-transferable
+stock, issued pursuant to the John Deere Restricted Stock Plan or the Nonem-
+ployee Director Stock Ownership Plan, which is subject to risk of forfeiture
+if certain conditions are not met. No nominee owned beneficially more than .1%
+of the shares outstanding on December 31, 1994.
+
+
+
+  Mr. Hans W. Becherer Chairman and Chief Executive Officer of Deere & Company
+since 1990; prior thereto, President. Director of Deere & Company since 1986;
+Chair of Executive Committee. Director of Schering-Plough Corporation and
+AlliedSignal Inc. Age 59. Shares owned, 38,412 (includes 26,679 shares of re-
+stricted stock); under option, 19,097.
+
+  Mr. Agustin Santamarina V. Of Counsel and Retired Senior Partner of the law
+firm of Santamarina y Steta since 1991; prior thereto, Senior Partner. Direc-
+tor of Deere & Company since 1991; Chair of Nominating Committee and member of
+Audit Review and Executive Committees. Director of a wide variety of corpora-
+tions in Mexico and The Mexico Fund Inc. Age 68. Shares owned, 800 (includes
+400 shares of restricted stock).
+
+  Mr. David H. Stowe, Jr. President and Chief Operating Officer of Deere &
+Company since 1990; prior thereto, Executive Vice President. Director of Deere
+& Company since 1982; member of Executive Committee. Age 58. Shares owned,
+27,072 (includes 15,672 shares of restricted stock and 11,400 shares over
+which Mr. Stowe shares the power over voting and disposition); under option,
+11,882.
+
+  Mr. John R. Walter Chairman and Chief Executive Officer of R. R. Donnelley &
+Sons Company (print services). Director of Deere & Company since 1991; Chair
+of Committee on Compensation and member of Executive Committee and Nominating
+Committee. Director of Abbott Laboratories, Dayton Hudson Corporation and R.
+R. Donnelley & Sons Company. Age 47. Shares owned, 700 (includes 400 shares of
+restricted stock).`
+
+func TestProseNameFirstBiographyOwnedSharesAndExercisableOptions(t *testing.T) {
+	rows := runProse(t, biographyHoldings55)
+	if len(rows) != 4 {
+		t.Fatalf("want four literal biography holdings, got %d: %+v", len(rows), rows)
+	}
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{
+		{"Hans W. Becherer", 57509},
+		{"Agustin Santamarina V.", 800},
+		{"David H. Stowe, Jr.", 38954},
+		{"John R. Walter", 700},
+	} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent != nil || r.IsGroupRow || r.TableKind != "management" {
+			t.Errorf("want %s shares=%g without inferred percent, got %+v; rows=%+v", want.name, want.shares, r, rows)
+		}
+	}
+}
+
+func TestProseBiographyHoldingGuards(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(biographyHoldings55, "Shares owned,", "Salary paid,"),
+		strings.ReplaceAll(biographyHoldings55, "Shares owned,", "Shares granted,"),
+		strings.ReplaceAll(biographyHoldings55, "Shares owned,", "Shares owned, $"),
+		strings.ReplaceAll(biographyHoldings55, "beneficial ownership of shares", "cash compensation"),
+		strings.ReplaceAll(biographyHoldings55, "Age ", "Year "),
+	} {
+		if rows := runProse(t, body); len(rows) != 0 {
+			t.Fatalf("nonownership biography emitted: %+v", rows)
+		}
+	}
+	// No caption permits treating an unqualified option count as exercisable.
+	body := strings.ReplaceAll(biographyHoldings55, "and of exercisable options", "and of options")
+	rows := runProse(t, body)
+	if len(rows) != 4 {
+		t.Fatalf("want four owned-share disclosures: %+v", rows)
+	}
+	r := find(rows, "Hans W. Becherer", "")
+	if r == nil || r.Shares == nil || *r.Shares != 38412 {
+		t.Fatalf("unqualified options added: %+v", r)
+	}
+}
+
+// Literal ownership sentence outside the fund dollar-range table.
+const ownershipException55 = `As of August 31, 2003, neither the Board Member nominees, nor the Board Member
+nominees and officers as a group, beneficially owned shares in any Fund except
+for Board Member Impellizzeri, who owns 1,000 shares of New York Select.`
+
+func TestProseOwnershipExceptionPreservesNamedFund(t *testing.T) {
+	rows := runProse(t, ownershipException55)
+	if len(rows) != 1 {
+		t.Fatalf("want one explicit count-only ownership disclosure, got %d: %+v", len(rows), rows)
+	}
+	r := rows[0]
+	if r.HolderName != "Board Member Impellizzeri" || r.Shares == nil || *r.Shares != 1000 || r.Percent != nil || r.ShareClass != "New York Select" || r.TableKind != "management" || r.IsGroupRow {
+		t.Fatalf("wrong independently disclosed holding: %+v", r)
+	}
+}
+func TestProseOwnershipExceptionGuards(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(ownershipException55, "1,000", "$1,000"),
+		strings.ReplaceAll(ownershipException55, "who owns", "who received"),
+		strings.ReplaceAll(ownershipException55, "shares of", "options on"),
+		strings.ReplaceAll(ownershipException55, "beneficially owned shares", "received compensation"),
+		strings.ReplaceAll(ownershipException55, "Board Member Impellizzeri", "each Board Member"),
+		strings.ReplaceAll(ownershipException55, "New York Select", "compensation"),
+		strings.ReplaceAll(ownershipException55, "New York Select", "all funds"),
+	} {
+		if rows := runProse(t, body); len(rows) != 0 {
+			t.Fatalf("nonownership exception emitted: %+v", rows)
+		}
+	}
+}
+
+func TestProseBiographyCaptionDoesNotCrossCompensationSection(t *testing.T) {
+	i := strings.Index(biographyHoldings55, "  Mr. Hans")
+	body := biographyHoldings55[:i] + "COMPENSATION PROPOSALS\n\n" + biographyHoldings55[i:]
+	if rows := runProse(t, body); len(rows) != 0 {
+		t.Fatalf("ownership caption crossed section boundary: %+v", rows)
+	}
+}
+
+const recordCommonShares55 = `To the knowledge of management, no person owned of record or owned
+beneficially more than 5% of the Fund's common shares or preferred
+shares outstanding as of September 19, 2005, except that Cede & Co., a nominee
+for participants in the Depository Trust Company, held of record 7,898,516
+common shares, equal to approximately 99.53% of the Fund's outstanding common
+shares and 2,778 preferred shares, equal to 100% of the Fund's outstanding
+preferred shares.`
+
+func TestProseRecordCommonSharesBeforeEquality(t *testing.T) {
+	rows := runProse(t, recordCommonShares55)
+	if len(rows) != 1 {
+		t.Fatalf("want one common-stock record holding, got %d: %+v", len(rows), rows)
+	}
+	r := rows[0]
+	if r.HolderName != "Cede & Co." || r.Shares == nil || *r.Shares != 7898516 || r.Percent == nil || *r.Percent != 99.53 || r.ShareClass != "Common Stock" {
+		t.Fatalf("wrong common-share holding: %+v", r)
+	}
+}
+func TestProseRecordCommonSharesEqualityGuards(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(recordCommonShares55, "7,898,516", "$7,898,516"),
+		strings.ReplaceAll(recordCommonShares55, "common shares, equal to", "options, equal to"),
+		strings.ReplaceAll(recordCommonShares55, "common shares, equal to", "common shares, with a dollar value of $1,000 equal to"),
+		strings.ReplaceAll(recordCommonShares55, "common shares, equal to", "common shares, fees equal to"),
+		strings.ReplaceAll(recordCommonShares55, "held of record", "was paid"),
+	} {
+		if rows := runProse(t, body); len(rows) != 0 {
+			t.Fatalf("nonownership record sentence emitted: %+v", rows)
+		}
+	}
+}
+
+// Literal voting-entitled ownership counts; percentages are not stated.
+const passiveGroupCount55 = `On that date, 254,978,461
+                                            shares of Hilton common stock were outstanding and
+                                            entitled to vote, of which 29,272,946 shares were held
+                                            by Hilton's directors and executive officers.
+
+On that date, 78,692,352 shares of
+                                            Promus common stock were outstanding and entitled to
+                                            vote, of which 1,634,477 shares were held by Promus'
+                                            directors and executive officers.`
+
+func TestProsePassiveGroupCountKeepsIssuerClass(t *testing.T) {
+	rows := runProse(t, passiveGroupCount55)
+	if len(rows) != 2 {
+		t.Fatalf("want two issuer-scoped group counts, got %d: %+v", len(rows), rows)
+	}
+	for _, want := range []struct {
+		name, class string
+		shares      float64
+	}{
+		{"Hilton's directors and executive officers", "Hilton common stock", 29272946},
+		{"Promus' directors and executive officers", "Promus common stock", 1634477},
+	} {
+		r := find(rows, want.name, want.class)
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent != nil || !r.IsGroupRow || r.TableKind != "combined" {
+			t.Errorf("wrong passive group count for %s: %+v; rows=%+v", want.name, r, rows)
+		}
+	}
+}
+func TestProsePassiveGroupCountRejectsVoteOutcomesAndPayments(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(passiveGroupCount55, "shares were held", "votes were cast"),
+		strings.ReplaceAll(passiveGroupCount55, "shares were held", "options were granted"),
+		strings.ReplaceAll(passiveGroupCount55, "of which ", "of which $"),
+		strings.ReplaceAll(passiveGroupCount55, "common stock", "fees"),
+		strings.ReplaceAll(passiveGroupCount55, "directors and executive officers", "shareholders voting in favor"),
+	} {
+		if rows := runProse(t, body); len(rows) != 0 {
+			t.Fatalf("nonownership passive group count emitted: %+v", rows)
+		}
+	}
+}
