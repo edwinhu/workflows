@@ -662,6 +662,22 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 		if recordFund {
 			nameCol, shareCol, pctCol = 0, 2, 2
 		}
+		captionText := strings.ToLower(norm(strings.Join(clean[start+1:marker], " ")))
+		nomineeSix := len(spans) == 6 && nameCol == -1 &&
+			(strings.EqualFold(headers[0], "Nominee") || strings.EqualFold(headers[0], "Director")) &&
+			strings.Contains(strings.ToLower(headers[1]), "principal occupation") &&
+			strings.Contains(captionText, "shares of common stock") && strings.Contains(captionText, "beneficially owned") &&
+			strings.Contains(captionText, "fund") && strings.Contains(captionText, "since") &&
+			strings.Contains(captionText, "age") && strings.Contains(captionText, "amount %")
+		if nomineeSix {
+			nameCol, shareCol, pctCol = 0, 4, 5
+		}
+		splitAddress := len(spans) == 3 && nameCol == -1 && shareCol == 1 && pctCol == 2 &&
+			strings.EqualFold(headers[0], "Directors and Executive Officers") &&
+			strings.Contains(ctx, "beneficial ownership") && strings.Contains(ctx, "common stock")
+		if splitAddress {
+			nameCol = 0
+		}
 		countOnly := pctCol == -1 && (len(spans) == 4 || len(spans) == 5) && nameCol == 0 && shareCol == len(spans)-1 &&
 			strings.Contains(lowerHdr, "age") && strings.Contains(lowerHdr, "principal occupation") &&
 			shareCol >= 0 && strings.Contains(strings.ToLower(headers[shareCol]), "shares") &&
@@ -676,7 +692,7 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 		}
 		commonClass := recordFund || (classCol >= 0 && strings.Contains(strings.ToLower(norm(strings.Join(clean[max(0, start-12):marker], " "))), "common stock"))
 		class := ""
-		if strings.Contains(strings.ToLower(headers[shareCol]), "common stock") {
+		if nomineeSix || strings.Contains(strings.ToLower(headers[shareCol]), "common stock") {
 			class = "Common Stock"
 		}
 		var rows []Row
@@ -709,6 +725,10 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 			if countOnly && count == "--" {
 				count = "0"
 			}
+			if nomineeSix {
+				count = strings.TrimRight(count, "*")
+				nm = strings.TrimRight(nm, "*")
+			}
 			count = reASCIIBraceNote.ReplaceAllString(count, "($1)")
 			count, notes := StripFootnotes(count)
 			count = strings.TrimSpace(count)
@@ -719,8 +739,12 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 			if !validCount {
 				if nm != "" && !reRuleLine.MatchString(nm) && (len(groupHead) > 0 || strings.HasPrefix(strings.ToLower(nm), "all ")) {
 					groupHead = append(groupHead, nm)
-				} else if count == "" && pctText == "" && nm != "" && hasWords(nm, 2) && !isAddressLine(nm) && !reSkipName.MatchString(nm) {
-					pendingName = nm
+				} else if count == "" && pctText == "" && nm != "" && hasWords(nm, 2) && !isAddressLine(nm) && !reSkipName.MatchString(nm) && (!splitAddress || !reASCIIStreetNumber.MatchString(nm)) {
+					if splitAddress && strings.HasSuffix(strings.ToLower(pendingName), " and") {
+						pendingName = norm(pendingName + " " + nm)
+					} else {
+						pendingName = nm
+					}
 				}
 				continue
 			}
@@ -730,8 +754,10 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 				groupHead, pendingName = nil, ""
 				continue
 			}
-			if nm == "" {
+			if nm == "" || (splitAddress && isAddressLine(nm)) {
 				nm = pendingName
+			} else if splitAddress && strings.HasSuffix(strings.ToLower(pendingName), " and") {
+				nm = norm(pendingName + " " + nm)
 			}
 			pendingName = ""
 			if len(groupHead) > 0 {
@@ -752,7 +778,8 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 			if nm == "" || !hasWords(nm, 1) || reSkipName.MatchString(nm) || isAddressLine(nm) || reRuleLine.MatchString(nm) {
 				continue
 			}
-			if strings.HasPrefix(strings.ToLower(nm), "all ") {
+			_, groupCount := isGroupRow(nm)
+			if strings.HasPrefix(strings.ToLower(nm), "all ") && (!splitAddress || groupCount == 0) {
 				for k := j + 1; k < end && k <= j+3; k++ {
 					if cell(clean[k], shareCol) != "" || (!countOnly && cell(clean[k], pctCol) != "") {
 						break
@@ -794,7 +821,7 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 			r.Footnotes = strings.Join(append(nameNotes, notes...), ",")
 			rows = append(rows, r)
 		}
-		if !money && len(rows) >= 2 {
+		if !money && (len(rows) >= 2 || (nomineeSix && len(rows) == 1)) {
 			out = append(out, rows...)
 			blocks++
 		}

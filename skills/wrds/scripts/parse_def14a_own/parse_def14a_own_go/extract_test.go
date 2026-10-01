@@ -7962,3 +7962,269 @@ func TestASCIIFundAddressClassCountsGuards(t *testing.T) {
 		})
 	}
 }
+
+const asciiThreeColumnAddressFixture = `                               OWNERSHIP OF SHARES
+
+The  following  table  sets  forth  certain  information  known  to  the Company
+regarding the beneficial ownership of common stock as of October 6, 1999, by (i)
+each  Director of the Company, (ii) each executive officer of the Company, (iii)
+all  directors  and executive officers as a group, and (iv) each person known to
+the Company to be the beneficial owner of more than 5% of its outstanding shares
+of common stock.  Percentage of ownership is based on 3,080,400 shares of common
+stock  issued  and  outstanding  as  of  October  6,  1999.
+
+<PAGE>
+<TABLE>
+<CAPTION>
+                                                                        Shares     Percent of
+Directors and Executive Officers                                      Owned (1)     Class (2)
+- -------------------------------------------------------------------  ------------  -----------
+<S>                                                                  <C>           <C>
+J. Scott Sitra
+   3020 North El Paso, Ste. 103
+   Colorado Springs, CO  80907                                         (3) 10,000         0.3%
+Robert C. Schick
+   3020 North El Paso, Ste. 103
+   Colorado Springs, CO  80907                                        (4) 216,897         7.0%
+Alfred W. Delisle
+   4525 S. Renellie Dr.
+   Tampa, FL  33611-2124                                              (5) 120,959         3.9%
+Cameron B. Yost
+   4740 Forge Rd., Bldg. 112
+   Colorado Springs, CO  80907                                             38,880         1.3%
+All current directors and executive officers as a group (4 persons)
+                                                                      (6) 386,736        12.6%
+
+Five Percent Shareholders
+- -------------------------
+
+Raymond D. Schick and
+  Alice F. Schick                                                         126,090         4.1%
+Banyan Corporation
+   4740 Forge Rd., Bldg. 112
+   Colorado Springs, CO  80907                                            800,027        26.0%
+- ------------------------------
+</TABLE>`
+
+func TestASCIIThreeColumnAddressHoldings(t *testing.T) {
+	rows, _, _ := ExtractText(asciiThreeColumnAddressFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 7 {
+		t.Fatalf("want seven literal ownership rows, got %d: %+v", len(rows), rows)
+	}
+	for _, want := range []struct {
+		name        string
+		shares, pct float64
+	}{
+		{"J. Scott Sitra", 10000, 0.3}, {"Robert C. Schick", 216897, 7.0},
+		{"Alfred W. Delisle", 120959, 3.9}, {"Cameron B. Yost", 38880, 1.3},
+		{"All current directors and executive officers as a group (4 persons)", 386736, 12.6},
+		{"Raymond D. Schick and Alice F. Schick", 126090, 4.1}, {"Banyan Corporation", 800027, 26.0},
+	} {
+		matches := 0
+		for _, r := range rows {
+			if r.HolderName == want.name {
+				matches++
+				if r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+					t.Errorf("want %+v, got %+v", want, r)
+				}
+				if strings.HasPrefix(want.name, "All current") && (!r.IsGroupRow || r.GroupN != 4) {
+					t.Errorf("want collective row with four persons: %+v", r)
+				}
+			}
+		}
+		if matches != 1 {
+			t.Errorf("want exactly one %+v, got %d", want, matches)
+		}
+	}
+}
+
+func TestASCIIThreeColumnAddressGuards(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(asciiThreeColumnAddressFixture, "Shares     Percent of", "Salary     Percent of"),
+		strings.ReplaceAll(asciiThreeColumnAddressFixture, "(3) 10,000", "$10,000"),
+	} {
+		rows, _, _ := ExtractText(body, Row{})
+		if got := ScreenRows(rows); len(got) != 0 {
+			t.Errorf("invalid ownership caption or currency must not produce holdings: %+v", got)
+		}
+	}
+}
+
+const asciiSixColumnNomineeFixture = `<TABLE>
+<CAPTION>
+                                                                                        SHARES OF COMMON STOCK
+                                                                 POSITION               BENEFICIALLY OWNED ON
+                                                                 WITH THE                 FEBRUARY 14, 2001*
+                                 PRINCIPAL OCCUPATION              FUND              ---------------------------
+  NOMINEE                        OVER LAST 5 YEARS                 SINCE       AGE      AMOUNT           %
+- ----------------------------------------------------------------------------------------------------------------
+
+<S>                             <C>                                 <C>       <C>      <C>               <C>
+Thomas H. Lenagh                Chairman of the Board of Inrad       2001      78       -0-**           -0-
+13 Allen's Corner Rd.           Corp.; Independent Financial
+Flemington, NJ 08822            Adviser;  Director of Clemente
+                                Strategic Value Fund, Inc., Gintel
+                                Fund, Adams Express and Petroleum
+                                and Resources, ASD Group, ICN
+                                Pharmaceuticals and V-Band Corp.;
+                                Nominee for  Director of  Progressive
+                                Return Fund, Inc.
+
+
+
+</TABLE>
+<TABLE>
+<CAPTION>
+                                                                                        SHARES OF COMMON STOCK
+                                                                 POSITION               BENEFICIALLY OWNED ON
+                                                                 WITH THE                 FEBRUARY 14, 2001*
+                               PRINCIPAL OCCUPATION              FUND              ---------------------------
+  NOMINEE                      OVER LAST 5 YEARS                 SINCE       AGE      AMOUNT           %
+- --------------------------------------------------------------------------------------------------------------
+
+<S>                             <C>                                 <C>       <C>      <C>               <C>
+
+Ralph W. Bradshaw***          Chairman of the Board of Directors    1999      50       800**         .00016%
+One West Pack Square          and President of the Fund;
+Suite 750                     President, Director and shareholder
+Asheville, NC 28801           of Cornerstone Advisors, Inc.;
+                              Financial Consultant; Vice
+                              President, Deep Discount Advisors,
+                              Inc. (1993-1999); Director of The
+                              Austria Fund, Inc., Clemente
+                              Strategic Value Fund, Inc., and
+                              Progressive Return Fund, Inc.
+
+
+
+
+Scott B. Rogers               Chief Executive Officer, Asheville    1999      44       -0-**           -0-
+30 Cumberland Ave.            Buncombe Community Christian
+Asheville, NC 28801           Ministry; President, ABCCM Doctor's
+                              Medical Clinic; Director,
+                              Southeastern Jurisdiction Urban
+                              Networkers; Director, A-B  Vision
+                              Board, Appointee, NC Governor's
+                              Commission on Welfare to Work;
+                              Chairman and  Director, Recycling
+                              Unlimited; Director,
+                              Interdenominational Ministerial
+                              Alliance; Director of Clemente
+                              Strategic Value Fund, Inc. and
+                              Progressive Return Fund, Inc.
+
+</TABLE>
+<TABLE>
+<CAPTION>
+                                                                                           SHARES OF COMMON STOCK
+                                                                       POSITION             BENEFICIALLY OWNED ON
+                                                                       WITH THE              FEBRUARY 14, 2001*
+                                        PRINCIPAL OCCUPATION           FUND              ---------------------------
+           DIRECTOR                       OVER LAST 5 YEARS            SINCE        AGE     AMOUNT                %
+- --------------------------------------------------------------------------------------------------------------------
+
+<S>                             <C>                                 <C>       <C>      <C>               <C>
+
+Edwin Meese III                 Distinguished Fellow, The Heritage      1999         68        -0-**          -0-
+The Heritage Foundation         Foundation, Washington D.C.;
+214 Massachusetts Ave NE        Distinguished Visiting Fellow at the
+Washington D.C. 20002           Hoover Institution, Stanford
+                                University; Distinguished Senior
+                                Fellow at the Institute of United
+                                States Studies, University of
+                                London; Formerly U.S. Attorney
+                                General under President Ronald
+                                Reagan; Chairman of the Domestic
+                                Policy Council and the National Drug
+                                Policy Board and a  member of  the
+                                National Security Council; Nominee
+                                for Director of  Clemente Strategic
+                                Value Fund, Inc. and Progressive
+                                Return Fund, Inc.
+
+
+Glenn W. Wilcox, Sr.            Chairman of the Board and Chief       1999      69        -0-**          -0-
+One West Pack Square            Executive Officer of Wilcox Travel
+Suite 1700                      Agency; Director, Champion
+Asheville, NC 28801             Industries, Inc.; Chairman, Tower
+                                Associates, Inc. (a real estate
+                                venture); Member and Vice Chairman,
+                                the Board of First Union  National
+                                Bank; Board Trustee and Vice
+                                Chairman, Appalachian State
+                                University; Board Trustee and
+                                Director, Mars Hill College;
+                                Director of Clemente Strategic Value
+                                Fund, Inc. and Progressive Return
+                                Fund, Inc.
+
+</TABLE>
+<TABLE>
+<CAPTION>
+                                                                                           SHARES OF COMMON STOCK
+                                                                       POSITION             BENEFICIALLY OWNED ON
+                                                                       WITH THE              FEBRUARY 14, 2001*
+                                        PRINCIPAL OCCUPATION           FUND              ---------------------------
+           DIRECTOR                       OVER LAST 5 YEARS            SINCE        AGE     AMOUNT                %
+- --------------------------------------------------------------------------------------------------------------------
+
+<S>                             <C>                                 <C>       <C>      <C>               <C>
+
+Andrew A. Strauss               Attorney and senior member of          1999      47       4,461**        .00092%
+77 Central Avenue               Strauss & Associates, P.A.,
+Suite F                         attorneys, Asheville, N.C.; previous
+Asheville, NC  28801            President of White Knight
+                                Healthcare, Inc. and LMV  Leasing,
+                                Inc., a wholly owned subsidiary of
+                                Xerox Credit Corporation; Director
+                                of Clemente Strategic Value Fund,
+                                Inc. and Progressive Return Fund,
+                                Inc.
+
+</TABLE>`
+
+func TestASCIISixColumnNomineeShares(t *testing.T) {
+	rows, _, _ := ExtractText(asciiSixColumnNomineeFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 6 {
+		t.Fatalf("want six literal nominee and director holdings, got %d: %+v", len(rows), rows)
+	}
+	for _, want := range []struct {
+		name        string
+		shares, pct float64
+	}{
+		{"Thomas H. Lenagh", 0, 0}, {"Ralph W. Bradshaw", 800, .00016}, {"Scott B. Rogers", 0, 0},
+		{"Edwin Meese III", 0, 0}, {"Glenn W. Wilcox, Sr", 0, 0}, {"Andrew A. Strauss", 4461, .00092},
+	} {
+		matches := 0
+		for _, r := range rows {
+			if r.HolderName == want.name {
+				matches++
+				if r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+					t.Errorf("want %+v, got %+v", want, r)
+				}
+				if r.ShareClass != "Common Stock" {
+					t.Errorf("want explicit Common Stock class: %+v", r)
+				}
+			}
+		}
+		if matches != 1 {
+			t.Errorf("want exactly one %+v got %d", want, matches)
+		}
+	}
+}
+
+func TestASCIISixColumnNomineeGuards(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(asciiSixColumnNomineeFixture, "SHARES OF COMMON STOCK", "DOLLAR RANGE OF EQUITY"),
+		strings.ReplaceAll(asciiSixColumnNomineeFixture, "800**", "$800**"),
+	} {
+		rows, _, _ := ExtractText(body, Row{})
+		for _, r := range ScreenRows(rows) {
+			if r.HolderName == "Ralph W. Bradshaw" {
+				t.Errorf("invalid share caption or currency must not yield this holding: %+v", r)
+			}
+		}
+	}
+}
