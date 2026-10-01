@@ -61,6 +61,41 @@ func textAnchor(clean []string, i int, t string) bool {
 	return reOwnerWord.MatchString(ctx) && reFivePercent.MatchString(ctx)
 }
 
+var reTextNameHeader = regexp.MustCompile(`(?i)^name(?:\s+and\s+address)?(?:\s*\([^)]*\))?$`)
+var reTextBeneficialHeader = regexp.MustCompile(`(?i)\bamount\s+and\s+nature\s+of\s+beneficial\s+ownership\b`)
+
+// A stacked ownership caption can be the only anchor. Require the name stub,
+// aligned columns, an explicit ownership label and a percent column; never
+// read past the first value row to manufacture header evidence from holders.
+func textOwnershipHeaderAt(clean []string, i int) bool {
+	groups := splitHdrGroups(clean[i])
+	if len(groups) != 3 || !reTextNameHeader.MatchString(strings.TrimSpace(groups[0].text)) {
+		return false
+	}
+	header := []string{clean[i]}
+	for j := i + 1; j < len(clean) && j <= i+7; j++ {
+		if _, _, ok := parseTextRow(clean[j]); ok {
+			break
+		}
+		if strings.TrimSpace(clean[j]) != "" {
+			header = append(header, clean[j])
+		}
+	}
+	columns := hdrColumnText(header)
+	return reTextBeneficialHeader.MatchString(columns) && reHdrPctCue.MatchString(columns)
+}
+
+var reTextHeaderFootnote = regexp.MustCompile(`([0-9]{1,3}(?:,[0-9]{3})+)\s+([1-9][0-9]?)\s+((?:[0-9]{1,3}(?:\.[0-9]+)?|\.[0-9]+)\s*%)`)
+
+// In the three-column caption, a small bare token between shares and percent
+// is a footnote, not another holding. Mask it without shifting column spans.
+func textHeaderFootnotes(rest string) string {
+	return reTextHeaderFootnote.ReplaceAllStringFunc(rest, func(s string) string {
+		m := reTextHeaderFootnote.FindStringSubmatchIndex(s)
+		return s[:m[4]] + strings.Repeat(" ", m[5]-m[4]) + s[m[5]:]
+	})
+}
+
 // soleHolderRow reports whether a one-row block is a real 5% table with a
 // single holder in it. All three conditions must hold: the anchor above it is a
 // quantified five-percent lead-in (or an ownership heading), the column header
@@ -311,368 +346,378 @@ func ExtractText(body string, base Row) ([]Row, int, int) {
 	// of a hundred funds collapses onto one grain key.
 	seriesAt := textSeriesLabels(clean, base.series)
 
-	for i, l := range clean {
-		t := strings.TrimSpace(l)
-		if len(t) < 6 || len(t) > 200 || reTOCish.MatchString(t) {
-			continue
-		}
-		if !textAnchor(clean, i, t) {
-			continue
-		}
-		kind := sectionKind(t)
-		// scan forward for tabular lines
-		j := i + 1
-		limit := i + 400
-		if limit > len(clean) {
-			limit = len(clean)
-		}
-		var block []int
-		var header []string
-		// Three counters, not one. A 5% holder's ADDRESS sits on the lines under
-		// its name with a blank line before the next holder, so a shared counter
-		// reaches the blank-line limit on the first holder and ends the table
-		// after one row. blankRun ends it only on a real run of blank lines,
-		// nonRowRun on a run of prose, sinceRow caps the two together.
-		blankRun, nonRowRun, sinceRow := 0, 0, 0
-		// The block's own column header, normalised, filled in once the first row
-		// is seen. A table that runs over a page break REPRINTS it on the new
-		// page, which is the only thing distinguishing a page break from the end
-		// of the table.
-		var ownHdrSet map[string]bool
-		resume := func() bool {
-			if ownHdrSet == nil {
-				return false
-			}
-			if k := reprintedHeaderAt(clean, j, limit, ownHdrSet); k > 0 {
-				j = k
-				blankRun, nonRowRun, sinceRow = 0, 0, 0
-				return true
-			}
-			return false
-		}
-		for ; j < limit; j++ {
-			if consumed[j] {
+	// Preserve legacy anchors and their row context before trying header-only discovery.
+	for discovery := 0; discovery < 2; discovery++ {
+		for i, l := range clean {
+			t := strings.TrimSpace(l)
+			if len(t) < 6 || len(t) > 200 || reTOCish.MatchString(t) {
 				continue
 			}
-			lt := strings.TrimSpace(clean[j])
-			if lt == "" {
-				blankRun++
-				if len(block) > 0 {
+			if (discovery == 0 && !textAnchor(clean, i, t)) || (discovery == 1 && !textOwnershipHeaderAt(clean, i)) {
+				continue
+			}
+			kind := sectionKind(t)
+			stackedHeader := discovery == 1
+			// scan forward for tabular lines
+			j := i + 1
+			limit := i + 400
+			if limit > len(clean) {
+				limit = len(clean)
+			}
+			var block []int
+			var header []string
+			// Three counters, not one. A 5% holder's ADDRESS sits on the lines under
+			// its name with a blank line before the next holder, so a shared counter
+			// reaches the blank-line limit on the first holder and ends the table
+			// after one row. blankRun ends it only on a real run of blank lines,
+			// nonRowRun on a run of prose, sinceRow caps the two together.
+			blankRun, nonRowRun, sinceRow := 0, 0, 0
+			// The block's own column header, normalised, filled in once the first row
+			// is seen. A table that runs over a page break REPRINTS it on the new
+			// page, which is the only thing distinguishing a page break from the end
+			// of the table.
+			var ownHdrSet map[string]bool
+			resume := func() bool {
+				if ownHdrSet == nil {
+					return false
+				}
+				if k := reprintedHeaderAt(clean, j, limit, ownHdrSet); k > 0 {
+					j = k
+					blankRun, nonRowRun, sinceRow = 0, 0, 0
+					return true
+				}
+				return false
+			}
+			for ; j < limit; j++ {
+				if consumed[j] {
+					if stackedHeader && len(block) == 0 {
+						break
+					}
+					continue
+				}
+				lt := strings.TrimSpace(clean[j])
+				if lt == "" {
+					blankRun++
+					if len(block) > 0 {
+						sinceRow++
+						if blankRun >= 3 || sinceRow >= maxLinesSinceRow {
+							if resume() {
+								continue
+							}
+							break
+						}
+					}
+					continue
+				}
+				blankRun = 0
+				if reHdrLineCue.MatchString(lt) && len(block) == 0 {
+					header = append(header, clean[j])
+				}
+				if len(block) == 0 && j-i > 60 {
+					break // the heading's table is not here
+				}
+				if _, _, _, ok := parseTextRowAtWithZero(clean[j], stackedHeader); ok {
+					block = append(block, j)
+					nonRowRun, sinceRow = 0, 0
+					if ownHdrSet == nil {
+						ownHdrSet = headerLineSet(clean, block[0])
+					}
+				} else if len(block) > 0 {
+					// A holder's postal address is not prose: it does not count
+					// toward the run of non-row lines that ends the table. Only
+					// sinceRow caps it, so a c/o line plus a firm, a tower, a
+					// street and a city/zip cannot separate two holders forever.
+					if !isAddressLine(lt) && !stubCellCont(clean, block[0], j) {
+						nonRowRun++
+					}
 					sinceRow++
-					if blankRun >= 3 || sinceRow >= maxLinesSinceRow {
+					if nonRowRun > 6 || sinceRow >= maxLinesSinceRow {
 						if resume() {
 							continue
 						}
 						break
 					}
 				}
+			}
+			block = alignedRows(clean, block, stackedHeader)
+			// A proxy with exactly ONE 5% holder writes a one-row table, and the
+			// footnote rule under it ends the block before a second row can join.
+			// The floor stays at two rows in general -- a lone row that lines up
+			// with nothing is usually a sentence with a number in it -- and is
+			// relaxed only when the anchor was a quantified five-percent lead-in,
+			// the header names a percent column, and the row itself carries one.
+			sole := len(block) == 1 && soleHolderRow(clean, i, t, header, block[0])
+			if len(block) == 0 || (len(block) == 1 && !sole) {
 				continue
 			}
-			blankRun = 0
-			if reHdrLineCue.MatchString(lt) && len(block) == 0 {
-				header = append(header, clean[j])
-			}
-			if len(block) == 0 && j-i > 60 {
-				break // the heading's table is not here
-			}
-			if _, _, ok := parseTextRow(clean[j]); ok {
-				block = append(block, j)
-				nonRowRun, sinceRow = 0, 0
-				if ownHdrSet == nil {
-					ownHdrSet = headerLineSet(clean, block[0])
+			blocksSeen++
+			// The header lines above the block, split into column groups with their
+			// character spans, so a class stated over ONE (shares, percent) pair can
+			// be attached to that pair and to no other. Computed BEFORE the cue tests
+			// because it is also the block's own statement of what its columns are.
+			hdrRows := textHeaderRows(clean, block[0])
+			hdr := strings.Join(header, " ")
+			// A proxy that runs its ownership table over a page break REPRINTS the
+			// column header on the new page and states the heading only once, above
+			// the first page. `header` is collected between the anchor and the block,
+			// and the anchor that reaches a continuation block starts BELOW that
+			// reprinted header, so the block's own column header -- the thing that
+			// says "Amount and Nature of Beneficial Ownership / Percent of Class" --
+			// is absent from `hdr` and the block reads as cueless. Read it off the
+			// lines immediately above the block instead, which is where it is.
+			ownHdr := hdrRowsText(hdrRows)
+			textReason := func(why string) {
+				if textBlockReasons != nil {
+					textBlockReasons[why]++
 				}
-			} else if len(block) > 0 {
-				// A holder's postal address is not prose: it does not count
-				// toward the run of non-row lines that ends the table. Only
-				// sinceRow caps it, so a c/o line plus a firm, a tower, a
-				// street and a city/zip cannot separate two holders forever.
-				if !isAddressLine(lt) && !stubCellCont(clean, block[0], j) {
-					nonRowRun++
-				}
-				sinceRow++
-				if nonRowRun > 6 || sinceRow >= maxLinesSinceRow {
-					if resume() {
-						continue
-					}
-					break
-				}
-			}
-		}
-		block = alignedRows(clean, block)
-		// A proxy with exactly ONE 5% holder writes a one-row table, and the
-		// footnote rule under it ends the block before a second row can join.
-		// The floor stays at two rows in general -- a lone row that lines up
-		// with nothing is usually a sentence with a number in it -- and is
-		// relaxed only when the anchor was a quantified five-percent lead-in,
-		// the header names a percent column, and the row itself carries one.
-		sole := len(block) == 1 && soleHolderRow(clean, i, t, header, block[0])
-		if len(block) == 0 || (len(block) == 1 && !sole) {
-			continue
-		}
-		blocksSeen++
-		// The header lines above the block, split into column groups with their
-		// character spans, so a class stated over ONE (shares, percent) pair can
-		// be attached to that pair and to no other. Computed BEFORE the cue tests
-		// because it is also the block's own statement of what its columns are.
-		hdrRows := textHeaderRows(clean, block[0])
-		hdr := strings.Join(header, " ")
-		// A proxy that runs its ownership table over a page break REPRINTS the
-		// column header on the new page and states the heading only once, above
-		// the first page. `header` is collected between the anchor and the block,
-		// and the anchor that reaches a continuation block starts BELOW that
-		// reprinted header, so the block's own column header -- the thing that
-		// says "Amount and Nature of Beneficial Ownership / Percent of Class" --
-		// is absent from `hdr` and the block reads as cueless. Read it off the
-		// lines immediately above the block instead, which is where it is.
-		ownHdr := hdrRowsText(hdrRows)
-		textReason := func(why string) {
-			if textBlockReasons != nil {
-				textBlockReasons[why]++
-			}
-			// DEF14A_DEBUG_TEXTBLOCK dumps the rejected block verbatim, so a reason
-			// name can be turned into the layout that produced it without
-			// re-deriving the block boundaries by hand.
-			if os.Getenv("DEF14A_DEBUG_TEXTBLOCK") != "" {
-				fmt.Fprintf(os.Stderr, "--- textblock reject=%s hdr=%q own=%q\n", why, hdr, ownHdr)
-				for _, ln := range block {
-					fmt.Fprintf(os.Stderr, "    | %s\n", clean[ln])
-				}
-			}
-		}
-		// Same guard as the DOM path: the block itself, not the heading above
-		// it, must read as an ownership table. Without this the scan runs on
-		// into the Summary Compensation Table.
-		// The header read DOWN its columns as well as across its lines: a
-		// stacked ASCII header spells its column labels vertically and the
-		// row-wise flattening interleaves them into nonsense.
-		colHdr := hdrColumnText(header)
-		body := hdr + " " + ownHdr + " " + colHdr + " " +
-			strings.Join(sliceLines(clean, block), " ")
-		switch {
-		case !reOwnCue.MatchString(body):
-			textReason("no_own_cue")
-			continue
-		case reCompCue.MatchString(body):
-			textReason("comp_cue")
-			continue
-		case reOptDetailCue.MatchString(body):
-			textReason("opt_detail_cue")
-			continue
-		}
-		if textMoneyBlock(clean, block) {
-			textReason("money_block")
-			continue
-		}
-		classes := classLabelsFromHeader(hdr)
-		// A fund-family proxy in ASCII writes the fund and the share class on
-		// LABEL LINES of their own between the holder rows, indented to show
-		// which contains which. Those lines carry no number so they are not
-		// block rows at all and the identity was simply lost.
-		stickyAt := textStickyLabels(clean, block)
-		tailAt := textNameTails(clean, block)
-		var rows []Row
-		lastHolder := ""
-		// The class column's last value, forward-filled over the rows that leave
-		// it blank. Local to the block, which is one fund's table.
-		lastColClass := ""
-		percentContinuations := map[int]bool{}
-		for _, ln := range block {
-			if percentContinuations[ln] {
-				continue
-			}
-			consumed[ln] = true
-			name, rest, restStart, ok := parseTextRowAt(clean[ln])
-			if !ok {
-				continue
-			}
-			// An ASCII fund table puts the share CLASS in a column of its own,
-			// written once and left blank on the rows that continue it. The row
-			// splits at the first wide gap before a number, so the class arrives
-			// glued to the front of the holder's name -- read it off the RAW
-			// half, where the gap between the columns is still there.
-			leadClass := ""
-			if m := reLeadClassCol.FindStringSubmatch(name); m != nil {
-				leadClass = norm(strings.TrimRight(m[1], ": "))
-				lastColClass = leadClass
-				name = strings.TrimSpace(m[2])
-			} else if lastColClass != "" {
-				// the column is written once and left blank under it
-				leadClass = lastColClass
-			}
-			nm, fns := StripFootnotes(name)
-			// An ASCII "Title of class" column sits inside the name half,
-			// because the row splits at the first gap before a number:
-			// "Warren E. Buffett     Class A     478,232(2)   35.6".
-			rowClass := ""
-			if m := reTrailClass.FindStringSubmatch(nm); m != nil {
-				rowClass = norm(m[1])
-				nm = strings.TrimSpace(nm[:len(nm)-len(m[0])])
-			}
-			if nm == "" || reClassOnly.MatchString(nm) {
-				// a continuation line: the second class of the holder above
-				if rowClass == "" && reClassOnly.MatchString(nm) {
-					rowClass = nm
-				}
-				nm = lastHolder
-			}
-			nm = strings.TrimSpace(reDotLeader.ReplaceAllString(nm, " "))
-			nm = strings.TrimSpace(nm)
-			if nm == "" || !hasWords(nm, 1) || reSkipName.MatchString(nm) {
-				continue
-			}
-			// The holder's name continues on the lines BELOW the numbers, and
-			// that continuation is the only thing telling two otherwise
-			// identical rows apart. Never on a group row: the group label is
-			// followed by whatever prose closes the table.
-			if tl := tailAt[ln]; tl != "" {
-				if grp, _ := isGroupRow(nm); !grp {
-					nm = strings.TrimSpace(nm + " " + tl)
-				}
-			}
-			// A group row wraps: "All current executive officers and directors"
-			// / " as a group (17 persons)....  356,679,528  24.7%".
-			if joined, ok := joinWrappedLabel(clean, ln, nm); ok {
-				nm = joined
-			} else if head, ok := headNameAbove(clean, ln, nm); ok {
-				nm = head
-			} else if reWrapCont.MatchString(nm) && ln > 0 {
-				prev := strings.TrimSpace(clean[ln-1])
-				if prev != "" && !reBigNum.MatchString(prev) && len(prev) < 90 {
-					nm = strings.TrimSpace(prev + " " + nm)
-				}
-			}
-			// A name that is nothing but a postal address, with no head to
-			// recover above it, carries no holder: emitting it invents one.
-			// The row still counts toward the block's two-row floor.
-			noHolder := isAddressLine(nm)
-			if nm != "" && !noHolder && !reClassOnly.MatchString(nm) {
-				lastHolder = nm
-			}
-			grp, gn := isGroupRow(nm)
-			// The group label can wrap FORWARD, leaving the person count on a
-			// line BELOW the numbers: "All directors" / "and executive officers"
-			// / "as a group (11 persons".
-			if grp && gn == 0 {
-				if joined, n, ok := joinForwardLabel(clean, ln, nm); ok {
-					nm, gn = joined, n
-				}
-			}
-			cells := textTokens(rest)
-			if len(cells) == 1 && cells[0].pct == nil && cells[0].marker == "" {
-				if stacked := stackedClassHoldings(clean, ln, restStart, rest, hdrRows); len(stacked) > 0 {
-					cells = stacked
-					percentContinuations[ln+1] = true
-					consumed[ln+1] = true
-				}
-			}
-			// One ASCII line is one holding unless it carries two COMPLETE
-			// (shares + percent) pairs, which is what a genuine two-class row
-			// looks like. Otherwise the extra percent tokens are the voting-
-			// power and economic-interest columns, not another class.
-			complete := 0
-			for _, h := range cells {
-				if h.shares != nil && (h.pct != nil || h.marker != "") {
-					complete++
-				}
-			}
-			if complete < 2 && len(cells) > 1 {
-				cells = cells[:1]
-			}
-			n := len(cells)
-			if n == 0 {
-				continue
-			}
-			// The class stated over each value column, read off the header lines
-			// by POSITION. Used only when the header really distinguishes the
-			// columns -- two or more different labels over this row's cells --
-			// which is exactly the multi-class shape and nothing else.
-			colClass := make([]string, n)
-			// One holding out of SEVERAL value columns: a fund complex states one
-			// FUND per share column and, with no percent anywhere, textTokens
-			// keeps only the last column. The row is one holding and the header
-			// says WHICH, positionally -- take the label even though there is
-			// only one cell to label.
-			if n == 1 && len(commaNums(rest)) > 1 && cells[0].lo >= 0 {
-				colClass[0] = textColLabel(hdrRows, restStart+cells[0].lo, restStart+cells[0].hi)
-			}
-			if n > 1 {
-				distinct := map[string]bool{}
-				for k := 0; k < n; k++ {
-					if cells[k].lo < 0 {
-						continue
-					}
-					c := textColLabel(hdrRows, restStart+cells[k].lo, restStart+cells[k].hi)
-					colClass[k] = c
-					if c != "" {
-						distinct[c] = true
-					}
-				}
-				if len(distinct) < 2 {
-					for k := range colClass {
-						colClass[k] = ""
+				// DEF14A_DEBUG_TEXTBLOCK dumps the rejected block verbatim, so a reason
+				// name can be turned into the layout that produced it without
+				// re-deriving the block boundaries by hand.
+				if os.Getenv("DEF14A_DEBUG_TEXTBLOCK") != "" {
+					fmt.Fprintf(os.Stderr, "--- textblock reject=%s hdr=%q own=%q\n", why, hdr, ownHdr)
+					for _, ln := range block {
+						fmt.Fprintf(os.Stderr, "    | %s\n", clean[ln])
 					}
 				}
 			}
-			for k := 0; k < n; k++ {
-				rw := base
-				rw.TableIndex = i
-				rw.RowIndex = ln
-				rw.HolderName = nm
-				rw.IsGroupRow = grp
-				rw.GroupN = gn
-				rw.noHolder = noHolder
-				rw.Parser = "text_table"
-				rw.Footnotes = strings.Join(fns, ",")
-				if cells[k].shares != nil {
-					vv := *cells[k].shares
-					rw.Shares = &vv
-				}
-				if cells[k].pct != nil {
-					vv := *cells[k].pct
-					rw.Percent = &vv
-				}
-				rw.PctMarker = cells[k].marker
-				switch {
-				case colClass[k] != "":
-					rw.ShareClass = colClass[k]
-				case rowClass != "":
-					rw.ShareClass = rowClass
-				case n > 1 && k < len(classes):
-					rw.ShareClass = classes[k]
-				case len(classes) == 1:
-					rw.ShareClass = classes[0]
-				}
-				// The class column composes with the fund the block is under
-				// rather than replacing it: ShareClass alone would make one
-				// holder of Investor Shares of a hundred funds one key.
-				rw.classHint = withSeries(stickyAt[ln], leadClass)
-				if rw.Shares == nil && rw.Percent == nil && rw.PctMarker == "" {
+			// Same guard as the DOM path: the block itself, not the heading above
+			// it, must read as an ownership table. Without this the scan runs on
+			// into the Summary Compensation Table.
+			// The header read DOWN its columns as well as across its lines: a
+			// stacked ASCII header spells its column labels vertically and the
+			// row-wise flattening interleaves them into nonsense.
+			colHdr := hdrColumnText(header)
+			body := hdr + " " + ownHdr + " " + colHdr + " " +
+				strings.Join(sliceLines(clean, block), " ")
+			switch {
+			case !reOwnCue.MatchString(body):
+				textReason("no_own_cue")
+				continue
+			case reCompCue.MatchString(body):
+				textReason("comp_cue")
+				continue
+			case reOptDetailCue.MatchString(body):
+				textReason("opt_detail_cue")
+				continue
+			}
+			if textMoneyBlock(clean, block) {
+				textReason("money_block")
+				continue
+			}
+			classes := classLabelsFromHeader(hdr)
+			// A fund-family proxy in ASCII writes the fund and the share class on
+			// LABEL LINES of their own between the holder rows, indented to show
+			// which contains which. Those lines carry no number so they are not
+			// block rows at all and the identity was simply lost.
+			stickyAt := textStickyLabels(clean, block)
+			tailAt := textNameTails(clean, block)
+			var rows []Row
+			lastHolder := ""
+			// The class column's last value, forward-filled over the rows that leave
+			// it blank. Local to the block, which is one fund's table.
+			lastColClass := ""
+			percentContinuations := map[int]bool{}
+			for _, ln := range block {
+				if percentContinuations[ln] {
 					continue
 				}
-				rows = append(rows, rw)
+				consumed[ln] = true
+				name, rest, restStart, ok := parseTextRowAtWithZero(clean[ln], stackedHeader)
+				if !ok {
+					continue
+				}
+				// An ASCII fund table puts the share CLASS in a column of its own,
+				// written once and left blank on the rows that continue it. The row
+				// splits at the first wide gap before a number, so the class arrives
+				// glued to the front of the holder's name -- read it off the RAW
+				// half, where the gap between the columns is still there.
+				leadClass := ""
+				if m := reLeadClassCol.FindStringSubmatch(name); m != nil {
+					leadClass = norm(strings.TrimRight(m[1], ": "))
+					lastColClass = leadClass
+					name = strings.TrimSpace(m[2])
+				} else if lastColClass != "" {
+					// the column is written once and left blank under it
+					leadClass = lastColClass
+				}
+				nm, fns := StripFootnotes(name)
+				// An ASCII "Title of class" column sits inside the name half,
+				// because the row splits at the first gap before a number:
+				// "Warren E. Buffett     Class A     478,232(2)   35.6".
+				rowClass := ""
+				if m := reTrailClass.FindStringSubmatch(nm); m != nil {
+					rowClass = norm(m[1])
+					nm = strings.TrimSpace(nm[:len(nm)-len(m[0])])
+				}
+				if nm == "" || reClassOnly.MatchString(nm) {
+					// a continuation line: the second class of the holder above
+					if rowClass == "" && reClassOnly.MatchString(nm) {
+						rowClass = nm
+					}
+					nm = lastHolder
+				}
+				nm = strings.TrimSpace(reDotLeader.ReplaceAllString(nm, " "))
+				nm = strings.TrimSpace(nm)
+				if nm == "" || !hasWords(nm, 1) || reSkipName.MatchString(nm) {
+					continue
+				}
+				// The holder's name continues on the lines BELOW the numbers, and
+				// that continuation is the only thing telling two otherwise
+				// identical rows apart. Never on a group row: the group label is
+				// followed by whatever prose closes the table.
+				if tl := tailAt[ln]; tl != "" {
+					if grp, _ := isGroupRow(nm); !grp {
+						nm = strings.TrimSpace(nm + " " + tl)
+					}
+				}
+				// A group row wraps: "All current executive officers and directors"
+				// / " as a group (17 persons)....  356,679,528  24.7%".
+				if joined, ok := joinWrappedLabel(clean, ln, nm); ok {
+					nm = joined
+				} else if head, ok := headNameAbove(clean, ln, nm); ok {
+					nm = head
+				} else if reWrapCont.MatchString(nm) && ln > 0 {
+					prev := strings.TrimSpace(clean[ln-1])
+					if prev != "" && !reBigNum.MatchString(prev) && len(prev) < 90 {
+						nm = strings.TrimSpace(prev + " " + nm)
+					}
+				}
+				// A name that is nothing but a postal address, with no head to
+				// recover above it, carries no holder: emitting it invents one.
+				// The row still counts toward the block's two-row floor.
+				noHolder := isAddressLine(nm)
+				if nm != "" && !noHolder && !reClassOnly.MatchString(nm) {
+					lastHolder = nm
+				}
+				grp, gn := isGroupRow(nm)
+				// The group label can wrap FORWARD, leaving the person count on a
+				// line BELOW the numbers: "All directors" / "and executive officers"
+				// / "as a group (11 persons".
+				if grp && gn == 0 {
+					if joined, n, ok := joinForwardLabel(clean, ln, nm); ok {
+						nm, gn = joined, n
+					}
+				}
+				if stackedHeader {
+					rest = textHeaderFootnotes(rest)
+				}
+				cells := textTokens(rest)
+				if len(cells) == 1 && cells[0].pct == nil && cells[0].marker == "" {
+					if stacked := stackedClassHoldings(clean, ln, restStart, rest, hdrRows); len(stacked) > 0 {
+						cells = stacked
+						percentContinuations[ln+1] = true
+						consumed[ln+1] = true
+					}
+				}
+				// One ASCII line is one holding unless it carries two COMPLETE
+				// (shares + percent) pairs, which is what a genuine two-class row
+				// looks like. Otherwise the extra percent tokens are the voting-
+				// power and economic-interest columns, not another class.
+				complete := 0
+				for _, h := range cells {
+					if h.shares != nil && (h.pct != nil || h.marker != "") {
+						complete++
+					}
+				}
+				if complete < 2 && len(cells) > 1 {
+					cells = cells[:1]
+				}
+				n := len(cells)
+				if n == 0 {
+					continue
+				}
+				// The class stated over each value column, read off the header lines
+				// by POSITION. Used only when the header really distinguishes the
+				// columns -- two or more different labels over this row's cells --
+				// which is exactly the multi-class shape and nothing else.
+				colClass := make([]string, n)
+				// One holding out of SEVERAL value columns: a fund complex states one
+				// FUND per share column and, with no percent anywhere, textTokens
+				// keeps only the last column. The row is one holding and the header
+				// says WHICH, positionally -- take the label even though there is
+				// only one cell to label.
+				if n == 1 && len(commaNums(rest)) > 1 && cells[0].lo >= 0 {
+					colClass[0] = textColLabel(hdrRows, restStart+cells[0].lo, restStart+cells[0].hi)
+				}
+				if n > 1 {
+					distinct := map[string]bool{}
+					for k := 0; k < n; k++ {
+						if cells[k].lo < 0 {
+							continue
+						}
+						c := textColLabel(hdrRows, restStart+cells[k].lo, restStart+cells[k].hi)
+						colClass[k] = c
+						if c != "" {
+							distinct[c] = true
+						}
+					}
+					if len(distinct) < 2 {
+						for k := range colClass {
+							colClass[k] = ""
+						}
+					}
+				}
+				for k := 0; k < n; k++ {
+					rw := base
+					rw.TableIndex = i
+					rw.RowIndex = ln
+					rw.HolderName = nm
+					rw.IsGroupRow = grp
+					rw.GroupN = gn
+					rw.noHolder = noHolder
+					rw.Parser = "text_table"
+					rw.Footnotes = strings.Join(fns, ",")
+					if cells[k].shares != nil {
+						vv := *cells[k].shares
+						rw.Shares = &vv
+					}
+					if cells[k].pct != nil {
+						vv := *cells[k].pct
+						rw.Percent = &vv
+					}
+					rw.PctMarker = cells[k].marker
+					switch {
+					case colClass[k] != "":
+						rw.ShareClass = colClass[k]
+					case rowClass != "":
+						rw.ShareClass = rowClass
+					case n > 1 && k < len(classes):
+						rw.ShareClass = classes[k]
+					case len(classes) == 1:
+						rw.ShareClass = classes[0]
+					}
+					// The class column composes with the fund the block is under
+					// rather than replacing it: ShareClass alone would make one
+					// holder of Investor Shares of a hundred funds one key.
+					rw.classHint = withSeries(stickyAt[ln], leadClass)
+					if rw.Shares == nil && rw.Percent == nil && rw.PctMarker == "" {
+						continue
+					}
+					rows = append(rows, rw)
+				}
 			}
-		}
-		if len(rows) < 2 && !(sole && len(rows) == 1) {
-			textReason("rows_lt_2")
-			continue
-		}
-		textReason("accepted")
-		blocksUsed++
-		blockText := hdr + " " + strings.Join(sliceLines(clean, block), " ")
-		kd := tableKind(kind, rows, blockText+" "+t)
-		fund := ""
-		if len(block) > 0 && seriesAt != nil {
-			fund = seriesAt[block[0]]
-		}
-		for k := range rows {
-			rows[k].TableKind = kd
-			rows[k].classHint = withSeries(fund, rows[k].classHint)
-		}
-		for _, rw := range rows {
-			if rw.noHolder {
+			if len(rows) < 2 && !(sole && len(rows) == 1) {
+				textReason("rows_lt_2")
 				continue
 			}
-			out = append(out, rw)
+			textReason("accepted")
+			blocksUsed++
+			blockText := hdr + " " + strings.Join(sliceLines(clean, block), " ")
+			kd := tableKind(kind, rows, blockText+" "+t)
+			fund := ""
+			if len(block) > 0 && seriesAt != nil {
+				fund = seriesAt[block[0]]
+			}
+			for k := range rows {
+				rows[k].TableKind = kd
+				rows[k].classHint = withSeries(fund, rows[k].classHint)
+			}
+			for _, rw := range rows {
+				if rw.noHolder {
+					continue
+				}
+				out = append(out, rw)
+			}
 		}
 	}
 	return out, blocksSeen, blocksUsed
@@ -693,6 +738,10 @@ func parseTextRow(l string) (name, rest string, ok bool) {
 }
 
 func parseTextRowAt(l string) (name, rest string, restStart int, ok bool) {
+	return parseTextRowAtWithZero(l, false)
+}
+
+func parseTextRowAtWithZero(l string, allowZero bool) (name, rest string, restStart int, ok bool) {
 	if strings.TrimSpace(l) == "" {
 		return "", "", 0, false
 	}
@@ -702,7 +751,7 @@ func parseTextRowAt(l string) (name, rest string, restStart int, ok bool) {
 		return "", "", 0, false
 	}
 	name, rest, restStart = s[m[2]:m[3]], s[m[4]:m[5]], m[4]
-	if !reBigNum.MatchString(rest) && !strings.Contains(rest, "%") && !strings.Contains(rest, "*") {
+	if !reBigNum.MatchString(rest) && !strings.Contains(rest, "%") && !strings.Contains(rest, "*") && !(allowZero && strings.TrimSpace(rest) == "0") {
 		return "", "", 0, false
 	}
 	// the name half must be text, not another number column
@@ -728,14 +777,14 @@ var reTailWord = regexp.MustCompile(`[A-Za-z]{3,}`)
 // alignedRows keeps only the lines whose numeric tail starts at the table's
 // modal column. A proxy paragraph ("There were  2,266,000,000  shares
 // outstanding") parses as a row on its own but never lines up with the table.
-func alignedRows(clean []string, block []int) []int {
+func alignedRows(clean []string, block []int, allowZero bool) []int {
 	if len(block) < 3 {
 		return block
 	}
 	counts := map[int]int{}
 	starts := map[int]int{}
 	for _, ln := range block {
-		_, _, st, ok := parseTextRowAt(clean[ln])
+		_, _, st, ok := parseTextRowAtWithZero(clean[ln], allowZero)
 		if !ok {
 			continue
 		}
@@ -765,7 +814,7 @@ func alignedRows(clean []string, block []int) []int {
 		// completes the label into a group row WITH a person count, which a
 		// stray proxy paragraph carrying a number cannot do.
 		if st/4 > bestBucket {
-			if nm, _, _, ok2 := parseTextRowAt(clean[ln]); ok2 {
+			if nm, _, _, ok2 := parseTextRowAtWithZero(clean[ln], allowZero); ok2 {
 				if g, n := isGroupRow(nm); g {
 					if _, _, joined := joinForwardLabel(clean, ln, nm); n > 0 || joined {
 						out = append(out, ln)

@@ -3789,3 +3789,582 @@ All Directors and Executive
 		t.Fatalf("real group row missed: %+v", g)
 	}
 }
+
+// The ownership cue runs down a column; no accepted section heading is present.
+func TestASCIIStackedOwnershipHeaderDiscoversManagementTable(t *testing.T) {
+	body := `                            STOCK OWNED BY MANAGEMENT
+
+         The following table sets forth  information as of February 9, 2001 with
+respect to the shares of the Company's Common Stock  beneficially  owned by each
+current  director  of the  Company,  by  each  nominee  who is not  currently  a
+director,  by each executive  officer listed in the Summary  Compensation  Table
+below and by all current  directors and  executive  officers of the Company as a
+group. There are no arrangements  known to the Company,  including any pledge by
+any  person  of  securities  of the  Company,  the  operation  of which may at a
+subsequent  date  result in a change in control of the  Company.  All  ownership
+consists of sole voting and dispositive power, except as noted.
+<TABLE>
+<CAPTION>
+Name                                                      Amount and Nature                  Percent of
+                                                            of Beneficial                   Common Stock
+                                                             Ownership(1)                    Outstanding
+<S>                                                       <C>                                <C>
+Howard M. Arnold                                             7,098   (2)                         **
+
+Thomas P. Barbera                                          633,650   (3)                         1.32%
+
+Francis C. Bruno, M.D.                                      66,012   (4)                         **
+
+John H. Cook, III, M.D.                                     14,095   (5)                         **
+
+Raymond H. Cypess, D.V.M., Ph.D.                            21,106   (6)                         **
+
+John W. Dillon                                                 0
+
+Vera C. Dvorak, M.D.                                        86,500   (7)                         **
+
+Robert E. Foss                                             545,383   (8)                         1.13%
+
+Mark D. Groban, M.D.                                       701,796   (9)                         1.46%
+
+Debbie J. Hulen                                            103,800   (10)                        **
+
+John P. Mamana, M.D.                                        27,864   (11)                        **
+
+
+Edward J. Muhl                                             17,000    (12)                        **
+
+Janet L. Norwood                                           15,000    (13)                        **
+
+John A. Paganelli                                          15,000    (14)                        **
+
+Ivan R. Sabel                                              10,000    (15)                        **
+
+James A. Wild                                              24,618    (16)                        **
+
+All current directors, and                              2,435,079    (17)                        5.06%
+executive officers as a group (20 persons)
+</TABLE>`
+	rows := ScreenRows(run(t, body))
+	if len(rows) != 17 {
+		t.Fatalf("want 17 genuine holders, got %d: %+v", len(rows), rows)
+	}
+	for _, want := range []struct {
+		name   string
+		shares float64
+		pct    float64
+	}{
+		{"Thomas P. Barbera", 633650, 1.32},
+		{"Robert E. Foss", 545383, 1.13},
+		{"Mark D. Groban", 701796, 1.46},
+	} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("missing real holding %+v: %+v", want, rows)
+		}
+	}
+	z := find(rows, "John W. Dillon", "Common Stock")
+	if z == nil || z.Shares == nil || *z.Shares != 0 || z.Percent != nil {
+		t.Fatalf("explicit zero holding lost or converted to a percent: %+v", z)
+	}
+	for _, r := range rows {
+		if r.ShareClass != "Common Stock" {
+			t.Errorf("common-stock caption lost: %+v", r)
+		}
+		if r.IsGroupRow && r.GroupN == 20 && r.Shares != nil && *r.Shares == 2435079 && r.Percent != nil && *r.Percent == 5.06 {
+			return
+		}
+	}
+	t.Fatalf("missing 20-person group holding: %+v", rows)
+}
+
+func TestASCIIStackedHeaderDiscoveryDoesNotAdmitNonOwnership(t *testing.T) {
+	for _, body := range []string{
+		`Name                        Amount and Nature         Percent of
+                               of Annual                Compensation
+                               Compensation             Outstanding
+Sample Director A              $20,000                    1.2%
+Sample Director B              $30,000                    1.8%`,
+		`Name                        Amount and Nature         Percent of
+                               of Beneficial            Common Stock
+                               Ownership                Outstanding
+Sample Director A              $20,000                    *
+Sample Director B              $30,000                    *`,
+		`Name                        Amount and Nature         Percent of
+                               of Beneficial            Common Stock
+                               Ownership                Outstanding
+Salary and Bonus               20,000                     1.2%
+All Other Compensation         30,000                     1.8%`,
+		`Name                        Amount and Nature         Number of
+                               of Beneficial            Unexercised
+                               Ownership                Options
+Sample Director A              20,000                     120
+Sample Director B              30,000                     180`,
+	} {
+		if rows := ScreenRows(run(t, body)); len(rows) != 0 {
+			t.Errorf("non-ownership table accepted: %+v", rows)
+		}
+	}
+}
+
+// 0001445546-11-002146: zero-value lines must not alter a legacy table's caption.
+func TestASCIIHeaderFallbackPreservesLegacyFundCaption(t *testing.T) {
+	body := `
+BENEFICIAL OWNERSHIP
+
+      As of December 31, 2010, the Independent Trustees of the Fund and James A.
+Bowen, a Trustee and an "interested person" (as defined in the 1940 Act) of the
+Fund (the "Interested Trustee"), beneficially owned the following numbers of
+Shares of the Fund:
+
+         -------------------------   --------------
+         TRUSTEE
+         -------------------------   --------------
+         INTERESTED TRUSTEE
+         -------------------------   --------------
+         James A. Bowen                    0
+         -------------------------   --------------
+         INDEPENDENT TRUSTEES
+         -------------------------   --------------
+         Richard E. Erickson               0
+         -------------------------   --------------
+         Thomas R. Kadlec                 650
+         -------------------------   --------------
+         Robert F. Keith                   0
+         -------------------------   --------------
+         Niel B. Nielson                  386
+         -------------------------   --------------
+
+`
+	rows := ScreenRows(run(t, body))
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{
+		{"Thomas R. Kadlec", 650}, {"Niel B. Nielson", 386},
+	} {
+		r := find(rows, want.name, "Shares of the Fund")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares {
+			t.Errorf("legacy fund caption or holding lost: %+v; rows=%+v", want, rows)
+		}
+	}
+	if len(rows) != 2 {
+		t.Fatalf("fallback changed existing table: %+v", rows)
+	}
+}
+
+// 0000893220-94-000274: a new caption must not take precedence over management.
+func TestASCIIHeaderFallbackPreservesLegacyManagementRows(t *testing.T) {
+	body := `
+SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS
+
+     The following tables set forth information, as of April 30, 1994, with
+respect to ownership of shares of Common Stock, Series B Preferred Stock, Series
+C Preferred Stock and Series D Preferred Stock of the Corporation (the only
+classes of outstanding voting securities of the Corporation) by each person who
+is known to the Corporation to be the beneficial owner of more than five percent
+of the Corporation's outstanding Common Stock, Series B Preferred Stock, Series
+C Preferred Stock and Series D Preferred Stock. Statements regarding beneficial
+ownership are based upon information furnished by the transfer agent and
+contained in Schedule 13Ds filed with the Securities and Exchange Commission
+(the "Commission"). Unless otherwise indicated below, each shareholder has sole
+voting and dispositive power with respect to all shares beneficially owned.
+
+                                       11
+<PAGE>   14
+
+COMMON STOCK
+
+<TABLE>
+<CAPTION>
+     NAME AND ADDRESS OF           AMOUNT AND NATURE OF      PERCENT
+       BENEFICIAL OWNER            BENEFICIAL OWNERSHIP      OF CLASS
+- - - ------------------------------    ----------------------     --------
+<S>                               <C>                        <C>
+Comcast Corporation and                 12,627,934(1)          27.7%(2)
+Barry Diller
+c/o Davis, Polk & Wardell
+450 Lexington Avenue
+New York, New York 10017
+Advance Publications, Inc.               2,958,333(3)           6.9%(2)
+and its affiliates
+950 Fingerboard Road
+Staten Island, New York 10305
+BellSouth Corporation                    8,627,934(4)          17.7%(2)
+1155 Peachtree Street, N.E.
+Atlanta, Georgia 30367
+Comcast Corporation                      8,627,934(5)          20.2%(2)
+and its affiliates
+1234 Market Street
+Philadelphia, PA 19107
+Cox Enterprises, Inc.                    2,833,333(6)           6.6%(2)
+1400 Lake Hearn Drive
+Atlanta, Georgia 30319
+Liberty Media Corporation               10,255,867(7)          23.3%(2)
+and its affiliates
+8101 E. Prentice Avenue
+Englewood, Colorado 80111
+Time Warner Inc.                         4,062,218(8)          10.0%(2)
+and its affiliates
+Time & Life Building
+New York, New York 10020
+</TABLE>
+
+- - - ------------------------------
+(1) In Schedule 13D filings with the Commission, Comcast and Barry Diller have
+    reported that they have agreed to act as a group for the purpose of voting
+    their securities of the Corporation and that they each have shared voting
+    and dispositive power as to all shares beneficially owned by the group. See
+    "Certain Transactions and Business Relationships" below. Includes 8,627,934
+    shares beneficially owned by Comcast and 4,000,000 shares beneficially owned
+    by Mr. Diller. Comcast's shares include 72,050 shares of Series C Preferred
+    Stock, which are presently convertible into 720,500 shares of Common Stock,
+    and warrants to purchase 1,700,000 shares of Common Stock, which are
+    presently exercisable. Mr. Diller's shares include options to purchase
+    3,000,000 shares of Common Stock, which are presently exercisable, but does
+    not include options to purchase 3,000,000 shares of Common Stock, which are
+    not presently exercisable or exercisable within 60 days after April 30,
+    1994, and does not include 1,627,934 shares of Common Stock that Mr. Diller
+    will be entitled to purchase from Liberty Media pursuant to the terms of the
+    Stockholders Agreement and the Liberty-QVC Agreement.
+
+(2) Under the terms of Rule 13d-3 ("Rule 13d-3") promulgated under the
+    Securities Exchange Act of 1934, as amended (the "Exchange Act"), the shares
+    of Series B Preferred Stock, Series C Preferred Stock and Series D Preferred
+    Stock that are presently convertible or convertible within 60 days after
+    April 30, 1994 into shares of Common Stock, options to purchase Common Stock
+    and warrants to purchase Common Stock that are presently exercisable or
+    exercisable within 60
+
+                                       12
+<PAGE>   15
+
+    days after April 30, 1994, which are owned by each individual are deemed to
+    be outstanding for purposes of computing the percentage of Common Stock
+    owned by that individual. Therefore, each percentage is computed based on
+    the sum of (i) the 40,214,097 shares of Common Stock actually outstanding as
+    of April 30, 1994, (ii) the number of shares of Common Stock into which
+    shares of Series B Preferred Stock, Series C Preferred Stock and Series D
+    Preferred Stock are presently convertible or convertible within 60 days
+    after April 30, 1994, and (iii) warrants to purchase Common Stock, as the
+    case may be, owned by that individual or entity whose percentage of share
+    ownership is being computed, but not taking account of the conversion of
+    shares of Series B Preferred Stock, Series C Preferred Stock or Series D
+    Preferred Stock or the exercise of warrants or options by any other person
+    or entity. Without taking into consideration ownership of shares of Series B
+    Preferred Stock, Series C Preferred Stock and Series D Preferred Stock, and
+    warrants to purchase Common Stock, Advance Publications, Inc., BellSouth
+    Corporation, Comcast and its affiliates, Cox Enterprises, Inc., Liberty
+    Media and its affiliates, and Time Warner, Inc. and its affiliates own .3%,
+    0%, 15.4%, 0%, 16.2% and 9.6%, respectively, of the shares of Common Stock
+    actually outstanding as of April 30, 1994.
+
+(3) Includes an option to purchase 2,833,333 shares of Common Stock which is
+    exercisable within 60 days after April 30, 1994.
+
+(4) Consists solely of an option to purchase 8,627,934 shares of Common Stock
+    which is exercisable within 60 days after April 30, 1994.
+
+(5) In Schedule 13D filings with the Commission, Comcast has reported that it
+    has shared voting and dispositive power with Barry Diller with regard to all
+    shares beneficially owned by the group. See footnote 1 above and "Certain
+    Transactions and Business Relationships" below. Includes 72,050 shares of
+    Series C Preferred Stock presently convertible into 720,500 shares of Common
+    Stock and warrants to purchase 1,700,000 shares of Common Stock.
+
+(6) Consists solely of an option to purchase 2,833,333 shares of Common Stock
+    which is exercisable within 60 days after April 30, 1994.
+
+(7) In a Schedule 13D filing with the Commission on May 19, 1994, Liberty Media
+    reported that it no longer has shared voting and dispositive power with
+    Comcast and Barry Diller with regard to all shares beneficially owned by the
+    three of them. See "Certain Transactions and Business Relationships" below.
+    Includes 372,866 shares of Series B and Series C Preferred Stock presently
+    convertible into 3,728,660 shares of Common Stock. Includes 1,627,934 shares
+    of Common Stock that Mr. Diller will be entitled to purchase from Liberty
+    Media pursuant to the terms of the Stockholders Agreement and the
+    Liberty-QVC Agreement. Does not include any shares of Common Stock
+    beneficially owned by Comcast or Mr. Diller.
+
+(8) Includes 21,250 shares of Series C Preferred Stock presently convertible
+    into 212,500 shares of Common Stock.
+
+                                       13
+<PAGE>   16
+
+SERIES B PREFERRED STOCK
+
+<TABLE>
+<CAPTION>
+      NAME AND ADDRESS          AMOUNT AND NATURE OF       PERCENT
+      BENEFICIAL OWNER          BENEFICIAL OWNERSHIP      OF CLASS
+- - - ----------------------------    ---------------------     ---------
+<S>                             <C>                       <C>
+Liberty Media Corporation               17,922               64.5%
+and its affiliates
+8101 E. Prentice Avenue
+Englewood, Colorado 80111
+Viacom Cablevision Inc.                  9,398               33.9%
+5924 Stoneridge Drive
+Pleasonton, CA 94566
+</TABLE>
+
+SERIES C PREFERRED STOCK
+
+<TABLE>
+<CAPTION>
+      NAME AND ADDRESS          AMOUNT AND NATURE OF       PERCENT
+      BENEFICIAL OWNER          BENEFICIAL OWNERSHIP      OF CLASS
+- - - ----------------------------    ---------------------     ---------
+<S>                             <C>                       <C>
+Comcast Corporation                     72,050(1)            13.6%
+and Barry Diller
+c/o Davis, Polk & Wardell
+450 Lexington Avenue
+New York, New York 10017
+Comcast Corporation                     72,050(2)            13.6%
+and its affiliates
+1234 Market Street
+Philadelphia, PA 19107
+Liberty Media Corporation              372,866               70.3%
+and its affiliates
+8101 E. Prentice Avenue
+Englewood, Colorado 80111
+Viacom Cablevision, Inc.                49,300                9.3%
+5924 Stoneridge Drive
+Pleasonton, CA 94566
+</TABLE>
+
+- - - ------------------------------
+(1) In Schedule 13D filings with the Commission, Comcast and Barry Diller have
+    reported that they have agreed to act as a group for the purpose of voting
+    their securities of the Corporation. See "Certain Transactions and Business
+    Relationships" below. Includes 72,050 shares of Series C Preferred Stock
+    beneficially owned by Comcast.
+
+(2) In Schedule 13D filings with the Commission, Comcast has reported that it
+    has shared voting and dispositive power with Barry Diller with regard to all
+    shares beneficially owned by the group. See "Certain Transactions and
+    Business Relationships" below.
+
+SERIES D PREFERRED STOCK
+
+<TABLE>
+<CAPTION>
+       NAME AND ADDRESS            AMOUNT AND NATURE OF       PERCENT
+       BENEFICIAL OWNER            BENEFICIAL OWNERSHIP      OF CLASS
+- - - -------------------------------    ---------------------     ---------
+<S>                                <C>                       <C>
+Harron Communications Corp.                   810               86.4%
+70 East Lancaster Avenue
+Frazer, PA 19355-2121
+Raystay Co.                                   128               13.6%
+P.O. Box 38
+1312 Holly Pike
+Carlisle, PA 17013
+</TABLE>
+
+                                       14
+<PAGE>   17
+
+SECURITY OWNERSHIP OF MANAGEMENT
+
+     The following tables set forth information as of April 30, 1994, with
+respect to the ownership of the Corporation's Common Stock, Series B Preferred
+Stock, Series C Preferred Stock and Series D Preferred Stock by each director,
+nominee for director and by all directors and officers as a group. Unless
+otherwise indicated, each person has sole voting power and sole investment
+power.
+
+<TABLE>
+<CAPTION>
+    NAME OF DIRECTOR OR           AMOUNT AND NATURE OF        PERCENT
+    NOMINEE FOR DIRECTOR        BENEFICIAL OWNERSHIP(1)      OF CLASS
+- - - ----------------------------    ------------------------     ---------
+<S>                             <C>                          <C>
+William F. Costello                       167,500(2)(3)            *
+Barry Diller                            4,000,000(4)             9.3%(2)
+J. Bruce Llewellyn                              0                  *
+Bruce M. Ramer                                  0                  *
+Brian L. Roberts                              750(5)               *
+Ralph J. Roberts                            5,000(5)               *
+Joseph M. Segel                           120,000(2)(6)            *
+Linda J. Wachner                                0                  *
+All directors and executive
+  officers as a group
+  (16 persons)(7)(8)                    4,698,358(2)            10.8%(2)
+</TABLE>`
+	rows := ScreenRows(run(t, body))
+	for _, name := range []string{"J. Bruce Llewellyn", "Bruce M. Ramer", "Linda J. Wachner"} {
+		r := find(rows, name, "")
+		if r == nil || r.Shares == nil || *r.Shares != 0 || r.TableKind != "management" {
+			t.Errorf("legacy management holding changed: %s %+v", name, r)
+		}
+	}
+}
+
+// 0000950159-03-000333: unparenthesized footnotes are not a second share column.
+func TestASCIIHeaderFallbackKeepsSharesBeforeBareFootnote(t *testing.T) {
+	body := `
+                             PRINCIPAL SHAREHOLDERS
+
+     The  following  table  shows  the  name,  address,  amount  and  nature  of
+beneficial  ownership and percent of class of outstanding  Commerce common stock
+(which  for  purposes  of this  table,  includes  shares  subject  to  currently
+exercisable  stock  options) of each person who we know  beneficially  owns more
+than 5% of  Commerce's  common  stock (as of April  11,  2003,  the most  recent
+practicable date).
+<TABLE>
+<CAPTION>
+          Name and Address                   Amount and Nature of            Percent of Outstanding
+         Of Beneficial Owner                 Beneficial Ownership                 Common Stock
+
+
+<S>                                              <C>                                 <C>
+      Gary L. Nalbandian                         235,992 1                            10.45%
+      Pennsylvania Commerce
+      Bancorp, Inc.; NAI/CIR,
+      Camp Hill, PA
+
+      Commerce Bancorp, Inc.                     174,667 2                             8.19%
+      Cherry Hill, NJ
+
+      James T. Gibson                            108,584 3                             5.09%
+      Chairman/President
+      Integrity Bank, Camp Hill, PA
+</TABLE>`
+	rows := ScreenRows(run(t, body))
+	for _, want := range []struct {
+		name        string
+		shares, pct float64
+	}{
+		{"Gary L. Nalbandian", 235992, 10.45}, {"Commerce Bancorp, Inc", 174667, 8.19}, {"James T. Gibson", 108584, 5.09},
+	} {
+		r := find(rows, want.name, "Common Stock")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("bare footnote overwrote holding: %+v got %+v", want, r)
+		}
+	}
+	if len(rows) != 3 {
+		t.Errorf("want3holders got%+v", rows)
+	}
+}
+
+// 0000839443-96-000007: consumed holdings must end discovery, not seed a biography table.
+func TestASCIIHeaderFallbackDoesNotCarryOwnershipCaptionToDirectorAges(t *testing.T) {
+	body := `         NAME AND ADDRESS          AMOUNT AND NATURE OF          PERCENT
+       OF BENEFICIAL OWNER         BENEFICIAL OWNERSHIP        OF CLASS (1)
+
+H. F. (Gerry) Lenfest                61,359,424 (2)              86.9% (2)
+c/o The Lenfest Group
+200 Cresson Boulevard
+P.O. Box 989
+Oaks, PA 19456-0989
+Chairman of the Board and Director
+_______________________________________________
+
+     (1)  As of the Record Date, 23,794,500 shares of Common Stock
+          were outstanding.
+
+     (2)  Includes 16,886,811 shares of Common Stock issuable upon
+          conversion of Preferred Stock owned by Mr. Lenfest.
+          Includes Warrants to acquire up to 29,915,160 additional
+          shares of Common Stock.  Does not include principal or
+          accrued but unpaid interest on the subordinated $500,000
+          Note which may be converted into shares of Preferred Stock.
+          Also does not include accrued interest, as of March 31,
+          1996, on loans made to the Company or accrued dividends on
+          the shares of Preferred Stock owned by Mr. Lenfest, either
+          of which the Company may elect to pay in shares of Preferred
+          Stock.
+
+Security Ownership of Management
+- --------------------------------
+
+     The following table sets forth, as of the Record Date, certain
+information with respect to the Common Stock beneficially owned by the
+directors and executive officers of the Company and by all directors and
+executive officers as a group.  The address of all directors and executive
+officers is c/o TelVue Corporation, 16000 Horizon Way, Suite 500, Mt. Laurel,
+NJ  08054.
+
+         NAME AND ADDRESS          AMOUNT AND NATURE OF          PERCENT
+       OF BENEFICIAL OWNER         BENEFICIAL OWNERSHIP        OF CLASS (1)
+
+H.F. (Gerry) Lenfest                   61,359,424 (2)            86.9% (2)
+c/o The Lenfest Group
+200 Cresson Boulevard
+P.O. Box 989
+Oaks, PA 19456-0989
+Chairman of the Board and Director
+
+Joseph M. Murphy                           90,000 (3)              .4%
+Executive Vice President Sales
+and Operations
+
+All Directors and Officers
+as a Group                             61,476,224 (2)(3)(4)      87.1%
+
+______________________________________________
+
+     (1)  As of the Record Date, 23,794,500 shares of Preferred Stock were
+          outstanding.
+
+     (2)  Includes 16,886,811 shares of Common Stock issuable upon conversion
+          of Preferred Stock owned by Mr. Lenfest.  Includes Warrants to
+          acquire up to 29,915,160 additional shares of Common Stock.  Does
+          not include principal or accrued but unpaid interest on the
+          subordinated $500,000 Note which may be converted into shares of
+          Preferred Stock.  Also does not include accrued interest, as of
+          March 31, 1996, on loans made to the Company or accrued dividends
+          on the shares of Preferred Stock owned by Mr. Lenfest, either of
+          which the Company may elect to pay in shares of Preferred Stock.
+
+    (3)   Includes 15,000 shares issuable to Joseph M. Murphy upon exercise
+          of currently exercisable stock options held by Mr. Murphy.
+
+    (4)   Includes 3,000 shares issuable to Randy Gilson upon exercise of
+          currently exercisable incentive stock options held by such person.
+          Though designated an officer, he does not have a policy
+          making role with the Company.
+
+                                  PROPOSAL 1
+                             ELECTION OF DIRECTORS
+
+     Six (6) directors will be elected to hold office subject to the
+provisions of the Company's by-laws until the next Annual Meeting of
+Stockholders, and until their respective successors are duly elected and
+qualified.  The vote of a majority of the votes entitled to be cast by
+stockholders present in person or by proxy, is required to elect members of
+the Board of Directors.  The following table sets forth the name, age,
+position with the Company and respective director service dates of each
+person who has been nominated to be a director of the Company:
+
+                                         POSITION(S)              DIRECTOR
+     NAME                   AGE       WITH THE COMPANY             SINCE
+
+H. F. (Gerry) Lenfest        66       Chairman and Director         1989
+
+Frank J. Carcione            55       President, Chief Executive
+                                      Officer, and Director         1990
+
+Carl J. Cangelosi            53       Director                      1990
+
+Robert Lawrence              38       Director                      1990
+
+Donald L. Heller             50       Director                      1993
+
+Thomas J. Fennell            35       Director                      1995
+
+
+Principal Occupation of the Director Nominees
+- ---------------------------------------------
+
+`
+	rows := ScreenRows(run(t, body))
+	for _, r := range rows {
+		if r.Percent == nil && r.PctMarker == "" && r.Shares != nil && (*r.Shares == 66 || *r.Shares == 53 || *r.Shares == 38 || *r.Shares == 50 || *r.Shares == 35) {
+			t.Errorf("director age emitted as shares: %+v", r)
+		}
+	}
+}
