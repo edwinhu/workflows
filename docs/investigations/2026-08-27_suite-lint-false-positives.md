@@ -198,9 +198,9 @@ same mechanism produces `skills/workflow-creator/scripts/wc-probe.test.ts:295`,
 `skills/workflow-creator/scripts/wc-probe.test.ts:789`,
 `skills/workflow-creator/scripts/wc-probe.test.ts:3263` and
 `skills/workflow-creator/scripts/wc-probe.test.ts:3308`; both
-`skills/work/scripts/work-dispatch.test.ts:538` and
-`skills/work/scripts/work-dispatch.test.ts:549`, whose matched literal is a malformed-plan fixture
-about 150 lines away at line 682; `tests/public-extension-contract.test.ts:170`, where the assertion
+`skills/work/scripts/work-dispatch.test.ts:558` and
+`skills/work/scripts/work-dispatch.test.ts:569`, whose matched literal is a malformed-plan fixture
+about 150 lines away at line 702; `tests/public-extension-contract.test.ts:170`, where the assertion
 is `toContain("specHash")` and the matched literal is a prose table cell at line 47 that happens to
 contain the word; and the three cite-check findings
 `skills/cite-check/tests/cite-check.test.ts:1175`, `skills/cite-check/tests/cite-check.test.ts:1179`
@@ -350,7 +350,7 @@ the very sentence documenting the absence of the thing.
 sets to configure its own harness rather than to exercise a branch: `CRAFT_DISPATCH_DRYRUN: '1'` (at
 `skills/work/scripts/plan-lint.test.ts:466`,
 `skills/work/scripts/work-dispatch-loops.test.ts:248`), `CRAFT_GOAL_PRINT: '1'` at
-`skills/work/scripts/work-dispatch.test.ts:100`, `CLAUDE_CODE_SESSION_ID: ''`
+`skills/work/scripts/work-dispatch.test.ts:120`, `CLAUDE_CODE_SESSION_ID: ''`
 at `skills/work/scripts/work-goal-resend.test.ts:78`, `CRAFT_FARM: '/bin/false'` at
 `skills/work/scripts/work-loop.test.ts:95`, `WORK_REDISPATCH_DRYRUN: '1'` and `WORK_NO_SCOPE: '1'` at
 `skills/work/scripts/work-redispatch.test.ts:277` and
