@@ -1,33 +1,9 @@
 #!/usr/bin/env python3
-"""Production batch embedding pattern via `client.batches.create_embeddings()`.
+"""Retired Developer embedding example; all network operations are disabled.
 
-CRITICAL — file-based with per-row keys (Gotcha 13):
-    The inline path (`src={"inlined_requests": EmbedContentBatch(contents=[...])}`)
-    silently scrambles response order at scale (>3 texts) and has NO per-row key,
-    so alignment is unrecoverable. ALWAYS use file-based JSONL with `key` per row
-    and map results back by key.
-
-    Gemini Enterprise Agent Platform batch prediction (`client.batches.create(...)` with `vertexai=True`)
-    rejected `gemini-embedding-*` in the April 2026 probe. This example uses the
-    verified keyed `create_embeddings()` Developer API path; consult current support
-    before assuming that historical Cloud rejection is universal.
-
-USAGE:
-    GOOGLE_API_KEY=... python embeddings_batch.py submit  --input items.json --out job.json
-    GOOGLE_API_KEY=... python embeddings_batch.py status  --job job.json
-    GOOGLE_API_KEY=... python embeddings_batch.py download --job job.json \\
-                          --out embeddings.npy --order items.json
-
-`items.json` is a JSON list of objects shaped:
-    [{"id": "doc_A:0", "text": "Risk Factors"},
-     {"id": "doc_A:1", "text": "Use of Proceeds"}, ...]
-
-`id` is YOUR domain key — it round-trips through the batch and is the only
-reliable way to align results. The output `embeddings.npy` is a float32 array
-of shape (N, output_dimensionality), ordered the same as `items.json`.
-
-Sentinel verification on download confirms alignment by re-embedding 5 random
-items via sync API and asserting cosine ≥ 0.99.
+Production requires a documented Vertex embedding route for the pinned model,
+ADC and GCS. Do not substitute vertexai=True into Developer File API recipes.
+The retained parsing code is historical, not a supported production CLI.
 """
 from __future__ import annotations
 
@@ -38,13 +14,19 @@ import time
 from pathlib import Path
 
 import numpy as np
-from google import genai
 from google.genai import types
 from google.genai.types import EmbeddingsBatchJobSource
 
 EMBED_DIM = 3072
 TASK_TYPE = "SEMANTIC_SIMILARITY"
 MODEL = "gemini-embedding-001"  # also tested: "gemini-embedding-2"
+
+
+def _production_client():
+    raise SystemExit(
+        "STOP: Developer embedding batch is disabled. Production requires a "
+        "verified Vertex route with ADC/GCS for the pinned embedding model."
+    )
 
 
 def _build_jsonl(items: list[dict], path: Path, model: str = MODEL) -> None:
@@ -60,6 +42,7 @@ def _build_jsonl(items: list[dict], path: Path, model: str = MODEL) -> None:
 
 
 def submit(args: argparse.Namespace) -> None:
+    _production_client()
     # For Embedding 2, callers supply task-prefixed text; sentinels reuse it exactly.
     items = json.loads(Path(args.input).read_text())
     if not isinstance(items, list) or not all(isinstance(it, dict) and "id" in it and "text" in it for it in items):
@@ -72,7 +55,7 @@ def submit(args: argparse.Namespace) -> None:
     _build_jsonl(items, jsonl_path, args.model)
     print(f"Wrote keyed JSONL: {jsonl_path} ({jsonl_path.stat().st_size/1e6:.1f} MB)")
 
-    client = genai.Client()  # Standard API, GOOGLE_API_KEY
+    client = _production_client()
     uploaded = client.files.upload(file=str(jsonl_path), config={"mime_type": "application/jsonl"})
     print(f"Uploaded as: {uploaded.name}")
 
@@ -97,7 +80,7 @@ def submit(args: argparse.Namespace) -> None:
 
 def status(args: argparse.Namespace) -> None:
     state = json.loads(Path(args.job).read_text())
-    client = genai.Client()
+    client = _production_client()
     job = client.batches.get(name=state["job_name"])
     print(f"Job: {job.name}")
     print(f"State: {job.state}")
@@ -108,7 +91,7 @@ def status(args: argparse.Namespace) -> None:
 def download(args: argparse.Namespace) -> None:
     state = json.loads(Path(args.job).read_text())
     items = json.loads(Path(args.order).read_text())
-    client = genai.Client()
+    client = _production_client()
     job = client.batches.get(name=state["job_name"])
     if "SUCCEEDED" not in str(job.state):
         raise SystemExit(f"Job not succeeded; state={job.state}")

@@ -276,6 +276,8 @@ def parse_vision_results(jsonl_path: str) -> dict[str, dict]:
             entry = json.loads(line)
 
             request_id = entry.get("metadata", {}).get("request_id")
+            if not request_id:
+                raise ValueError("Missing output request_id; verify Cloud correlation in the pilot")
             response = entry.get("response", {})
             candidates = response.get("candidates", [])
 
@@ -293,7 +295,7 @@ def parse_vision_results(jsonl_path: str) -> dict[str, dict]:
                     parsed = None
 
                 results[request_id] = {
-                    "success": parsed is not None and candidates[0].get("finishReason") == "STOP",
+                    "success": not entry.get("status") and parsed is not None and candidates[0].get("finishReason") == "STOP",
                     "data": parsed,
                     "raw_text": text,
                     "finish_reason": candidates[0].get("finishReason")
@@ -301,7 +303,7 @@ def parse_vision_results(jsonl_path: str) -> dict[str, dict]:
             else:
                 results[request_id] = {
                     "success": False,
-                    "error": entry.get("error") or response.get("error"),
+                    "error": entry.get("status") or entry.get("error") or response.get("error"),
                     "data": None
                 }
 

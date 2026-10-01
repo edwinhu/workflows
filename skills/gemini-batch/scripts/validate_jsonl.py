@@ -10,7 +10,7 @@ import json
 from pathlib import Path
 
 
-def validate_jsonl(path: str, backend: str = "developer") -> tuple[bool, list[str]]:
+def validate_jsonl(path: str, backend: str = "cloud") -> tuple[bool, list[str]]:
     """Check request structure and backend-specific row IDs and media URIs."""
     if backend not in ("developer", "cloud"):
         raise ValueError(f"Unknown backend: {backend}")
@@ -47,14 +47,15 @@ def validate_jsonl(path: str, backend: str = "developer") -> tuple[bool, list[st
                         prefixes = ("gs://",) if backend == "cloud" else ("https://", "files/")
                         if not isinstance(uri, str) or not uri.startswith(prefixes):
                             errors.append(f"Line {number}: Invalid {backend} file URI: {uri}")
-            metadata = data.get("metadata", {})
-            request_id = data.get("key") if backend == "developer" else (
-                metadata.get("request_id") if isinstance(metadata, dict) else None
-            )
-            if not isinstance(request_id, str) or not request_id:
-                field = "key" if backend == "developer" else "metadata.request_id"
-                errors.append(f"Line {number}: Missing nonempty {field}")
-            elif request_id in request_ids:
+            if backend == "developer":
+                request_id = data.get("key")
+                if not isinstance(request_id, str) or not request_id:
+                    errors.append(f"Line {number}: Missing nonempty key")
+                    continue
+            else:
+                # GCS documents request echo, not Developer key passthrough.
+                request_id = json.dumps(data["request"], sort_keys=True, separators=(",", ":"))
+            if request_id in request_ids:
                 errors.append(f"Line {number}: Duplicate request ID '{request_id}'")
             else:
                 request_ids.add(request_id)
@@ -64,7 +65,7 @@ def validate_jsonl(path: str, backend: str = "developer") -> tuple[bool, list[st
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("path")
-    parser.add_argument("--backend", choices=["developer", "cloud"], default="developer")
+    parser.add_argument("--backend", choices=["developer", "cloud"], default="cloud")
     args = parser.parse_args()
     if not Path(args.path).is_file():
         parser.error(f"File not found: {args.path}")

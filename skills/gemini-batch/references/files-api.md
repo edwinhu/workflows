@@ -1,8 +1,10 @@
-# Gemini Files API Reference
+# Gemini Files API — Developer API, not for production
 
-> **Official docs:** https://ai.google.dev/gemini-api/docs/files.md.txt
+> **Developer API, not for production — docs:** https://ai.google.dev/gemini-api/docs/files.md.txt
 > **SDK:** `@google/genai` (TypeScript) / `google-genai` (Python)
 > **Last verified:** 2026-09-30
+
+**NEVER use these Files/Interactions recipes for production.** Production PDFs and media use private GCS; see [Cloud document handling](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/document-understanding) and [Cloud batch](vertex-ai.md).
 
 ## Overview
 
@@ -98,34 +100,23 @@ if (state === "FAILED") {
 - **STATE_PENDING stuck bug:** Some files get stuck in PROCESSING. The polling pattern above handles this with a timeout.
 - **48-hour expiration:** Files are auto-deleted. For persistent storage, use File Search stores.
 
-## Prompting through Interactions
+## Production media via GCS
 
-[Files docs](https://ai.google.dev/gemini-api/docs/files.md.txt) use uploaded URIs with typed input blocks, not legacy fileData. For example:
+**Developer Files is not a production route.** Storage limits and polling patterns elsewhere in this reference describe that API, not Vertex. For production, upload media to GCS and put `fileData` in the Cloud GenerateContentRequest; see [Cloud batch](vertex-ai.md).
 
-```python
-from google import genai
-
-client = genai.Client()
-myfile = client.files.upload(file="path/to/sample.mp3")
-interaction = client.interactions.create(
-    model="gemini-3.8-flash",
-    input=[
-        {"type": "text", "text": "Describe this audio clip"},
-        {"type": "audio", "uri": myfile.uri, "mime_type": myfile.mime_type},
-    ],
-)
-print(interaction.output_text)
+```json
+{"request":{"contents":[{"role":"user","parts":[{"text":"Describe this audio clip"},{"fileData":{"fileUri":"gs://your-bucket/sample.mp3","mimeType":"audio/mpeg"}}]}]}}
 ```
 
-For Batch keep generateContent fileData/contents request shapes. Files storage limits are not PDF parsing or model context limits. Pre-cut text sections for targeted field extraction; use relevant native PDF pages when layout/scans matter. [Document processing](https://ai.google.dev/gemini-api/docs/document-processing.md.txt) documents PDF limits and model-specific media resolution/tokenization; do not assume a historical 258-token/page figure is universal across new models/configurations.
+Use ADC/GCS for the request JSONL and outputs too. Pre-cut text sections for targeted field extraction; retain relevant native PDF pages when layout/scans matter. Retest parsing/context limits on the exact Vertex model, rather than treating Developer Files storage limits as Cloud limits.
 
 ## Send the PDF, not extracted text — measured evidence
 
 <EXTREMELY-IMPORTANT>
 **When the source is a PDF, send the PDF. Do NOT run `pdftotext` and send the string.**
 
-Google’s document-processing guide gives a baseline of **258 tokens per page**, and native text extracted from the PDF is
-**not charged at all** ([current document-processing docs](https://ai.google.dev/gemini-api/docs/document-processing.md.txt)). Extracted text is
+Historical Developer API measurement: the document-processing guide used a baseline of **258 tokens per page**, and native text extracted from the PDF is
+**not charged at all** ([Developer API, not for production: current document-processing docs](https://ai.google.dev/gemini-api/docs/document-processing.md.txt)). Extracted text is
 billed as ordinary input at roughly 4 chars/token, so for text-heavy documents the string is the
 *more* expensive representation. Measured on a 1,313-document legal corpus — 21,393 pages,
 28.2M extracted characters:
@@ -150,4 +141,4 @@ Reach for `pdftotext` only to *triage* locally (is this file a scan? how long is
 the transport into the model.
 </EXTREMELY-IMPORTANT>
 
-Limits: **50 MB or 1,000 pages** per file, for both inline data and Files API uploads. Use generateContent `fileData.fileUri` in Batch (GCS for Cloud, uploaded Files URI for Developer); Interactions uses typed document input blocks. Developer Batch also supports inline data within its request-size limit. Gemini 3 media_resolution changes image tokenization; the historical 258/page calculation is not a guarantee for every model/resolution.
+Historical Developer PDF limits: **50 MB or 1,000 pages** per file. Check current Cloud model/media limits for production, not Files storage limits. Use generateContent `fileData.fileUri` in Batch (GCS for Cloud, uploaded Files URI for Developer); Interactions uses typed document input blocks. Developer Batch also supports inline data within its request-size limit. Gemini 3 media_resolution changes image tokenization; the historical 258/page calculation is not a guarantee for every model/resolution.
