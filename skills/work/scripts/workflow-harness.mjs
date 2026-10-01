@@ -84,7 +84,7 @@ export const task = (over = {}) => ({ id: 'T1', name: 'n', work: 'w', acceptance
  *              Pass null for a dead lens, or a LENS_SCHEMA object ({routes?, findings?, carried?,
  *              dispositions?}) for a lens that reported. Default: a lens that ran and found nothing.
  */
-export function replies({ red = {}, impl = {}, verify = {}, lens, mech = {}, attempt = {} } = {}) {
+export function replies({ red = {}, impl = {}, verify = {}, lens, mech = {}, attempt = {}, rules = {} } = {}) {
   return (label, _prompt, _opts) => {
     const [kind, rest] = [label.split(':')[0], label.split(':').slice(1).join(':')]
     if (kind === 'implement') return impl[rest] !== undefined ? impl[rest] : { id: rest, done: true, changedFiles: ['x'], evidence: 'e' }
@@ -93,6 +93,7 @@ export function replies({ red = {}, impl = {}, verify = {}, lens, mech = {}, att
     if (label === 'lens') return lens !== undefined ? lens : { routes: [], findings: [], carried: [], dispositions: [] }
     if (kind === 'attempt') return attempt[rest] !== undefined ? attempt[rest] : { key: rest, answer: 'default answer' }
     if (kind === 'mechanical' || kind === 'mech') return mech[rest] !== undefined ? mech[rest] : { name: rest, exitCode: 0, output: '' }
+    if (kind === 'rules') return rules[rest] !== undefined ? rules[rest] : { name: rest, exitCode: 0, stdout: '{"verdicts":[],"unavailable":[]}' }
     if (kind === 'red') {
       // Labels are red:before:<id> / red:after:<id>. Default to the HEALTHY pair (fails before,
       // passes after) so a test that does not care about the red gate does not accidentally

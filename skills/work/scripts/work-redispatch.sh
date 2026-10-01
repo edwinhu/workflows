@@ -509,9 +509,11 @@ const reported = prev.tasksThatFlagged
 if (!Array.isArray(reported) || reported.some((x: unknown) => typeof x !== "string"))
   fullRun(`previous result ${prevPath} has no readable tasksThatFlagged`)
 
-// Mechanical checks always re-run; narrowing needs a route for every failed check.
-const mechFailed: string[] = rec("mechanicalThatFailed").map((m: any) =>
-  m && typeof m === "object" ? String(m.name ?? "(unnamed)") : String(m))
+// Mechanical checks and rules always re-run; narrowing needs a route for every failed check.
+const mechFailed: string[] = [
+  ...rec("mechanicalThatFailed").map((m: any) => m && typeof m === "object" ? String(m.name ?? "(unnamed)") : String(m)),
+  ...rec("rulesThatFailed").map((m: any) => m && typeof m === "object" ? String(m.name ?? "(unnamed)") : String(m))
+]
 const routeFor = (name: string) => routes.find((r: any) => {
   const o = ownerOf(r)
   return (o === PLAN_OWNER || byId.has(o)) && String(r.failure ?? "").toLowerCase().includes(name.toLowerCase())
@@ -519,17 +521,17 @@ const routeFor = (name: string) => routes.find((r: any) => {
 const mechNote: string[] = []
 const mechToTask = mechFailed.filter(n => byId.has(ownerOf(routeFor(n))))
 if (mechToTask.length)
-  mechNote.push(`  mechanical failure(s) the lens routed to an owner (M2): ${mechToTask.map(n => `${n} -> ${ownerOf(routeFor(n))}`).join(", ")}`)
+  mechNote.push(`  mechanical/rule failure(s) the lens routed to an owner (M2): ${mechToTask.map(n => `${n} -> ${ownerOf(routeFor(n))}`).join(", ")}`)
 // Unioned in rather than read out of `tasksThatFlagged` alone: workflow.js already puts a route’s valid
 // owner in that selector, and doing it again here costs nothing and keeps the narrowing alive for a
 // verdict transcribed without the union. An owner the lens NAMED is an owner.
 const routedOwners = [...new Set(routes.map(ownerOf).filter((o: string) => byId.has(o)))]
 // A failed check the lens routed to NOTHING is attributable to nothing: narrowing would leave the fix
-// outside the implementer’s reach, and mechanical checks re-run whatever the scope, so the round would
+// outside the implementer’s reach, and checks re-run whatever the scope, so the round would
 // fail on the same check with nobody able to touch it.
 const unroutedMech = mechFailed.filter(n => !routeFor(n))
 if (unroutedMech.length)
-  fullRun(`the previous verdict has ${unroutedMech.length} mechanical check(s) failed with no lens route to a valid owner (${unroutedMech.join(", ")}) — an unattributed failure’s fix must not be scoped out`)
+  fullRun(`the previous verdict has ${unroutedMech.length} mechanical/rule check(s) failed with no lens route to a valid owner (${unroutedMech.join(", ")}) — an unattributed failure’s fix must not be scoped out`)
 
 // Prefer ownerTask to file containment; both selections are closed under dependents below.
 let flagged = [...new Set([...reported, ...routedOwners])]

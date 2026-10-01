@@ -206,6 +206,22 @@ const mechanicalChecks = Array.isArray(args.mechanicalChecks) ? args.mechanicalC
 for (const c of mechanicalChecks) {
   if (!c || !c.name || !c.cmd) throw new Error(`work: mechanicalCheck missing name/cmd: ${JSON.stringify(c)}`)
 }
+const ruleChecksArg = args.ruleChecks
+let ruleChecks = null
+if (ruleChecksArg !== undefined) {
+  if (!ruleChecksArg || typeof ruleChecksArg !== 'object' || Array.isArray(ruleChecksArg)) {
+    throw new Error(`work: ruleChecks must be an object {name, cmd, blockAt?}: ${JSON.stringify(ruleChecksArg)}`)
+  }
+  if (typeof ruleChecksArg.name !== 'string' || !ruleChecksArg.name.trim()) throw new Error('work: ruleChecks missing name')
+  if (typeof ruleChecksArg.cmd !== 'string' || !ruleChecksArg.cmd.trim()) throw new Error('work: ruleChecks missing cmd')
+  const b = ruleChecksArg.blockAt
+  if (b !== undefined && (!Number.isFinite(b) || b <= 0 || b > 1)) throw new Error('work: ruleChecks blockAt must be a number in (0,1]')
+  ruleChecks = {
+    name: ruleChecksArg.name,
+    cmd: ruleChecksArg.cmd,
+    blockAt: b === undefined ? 0.85 : b
+  }
+}
 // Optional scored checks: [{key, items, prompt, schema, components, refs?, agentType?}]. ADVISORY:
 // nothing computed from them is read by overallPass, and there is deliberately no threshold — gating
 // on a weighted composite chases minors rather than defects. The agent returns RAW COUNTS and the
@@ -443,6 +459,7 @@ const fanOut = {
   // Advisory agents still cost the same budget as gating ones.
   ...(scoredJobs.length ? { scored: scoredJobs.length } : {}),
   ...(attempts.length ? { attempts: attempts.length } : {}),
+  ...(ruleChecks ? { ruleChecks: 1 } : {}),
 }
 const fanOutFloor = Object.values(fanOut).reduce((a, b) => a + b, 0)
 if (fanOutFloor > maxAgents) {
@@ -748,6 +765,15 @@ const ATTEMPT_SCHEMA = {
     answer: { type: 'string' },
   },
 }
+const RULE_CHECKS_SCHEMA = {
+  type: 'object',
+  required: ['name', 'exitCode', 'stdout'],
+  properties: {
+    name: { type: 'string', description: 'the check name exactly as given to you' },
+    exitCode: { type: 'number', description: 'the integer exit status of the command as run, verbatim — never your judgement of whether it passed' },
+    stdout: { type: 'string', description: 'the single JSON line the command printed, copied verbatim' },
+  },
+}
 const THIRD_PARTY_SCHEMA = {
   type: 'object',
   required: ['model', 'status', 'findings'],
@@ -828,6 +854,8 @@ const digestLines = d => [
         + `${OUTPUT_TAIL_LINES} lines of output:`,
        ...d.mechanicalFailures.flatMap(m => ['', `### ${m.name} — exitCode ${m.exitCode}`, outputTail(m.output)])]
     : []),
+  ...bullets('RULE CHECKS THAT FAILED (p >= block-at, or the runner died):', d.rulesThatFailed),
+  ...bullets('RULE CHECKLIST (advisory, ranked by p):', d.advisoryRules),
   ...(d.carried.length
     ? ['', 'CARRIED FINDINGS — rule on EVERY one of these in `carried`, by id:',
        ...d.carried.map(f =>
@@ -1207,7 +1235,28 @@ const attemptsLeg = async () => {
   return results.map((r, i) => r || { key: attempts[i].key, answer: null })
 }
 
-const [verifyOut, mechanicalOut, scoredOut, thirdPartyOut, attemptsOut] = await parallel([verifyLeg, mechanicalLeg, scoredLeg, thirdPartyLeg, attemptsLeg])
+const ruleChecksLeg = async () => {
+  if (!ruleChecks) return null
+  const r = await agent(
+    [
+      AUTHORITY,
+      '',
+      `You are a RULE CHECKS PROBE for "${ruleChecks.name}". You are not a reviewer and you fix nothing.`,
+      'Run this command VERBATIM via Bash, from the project directory:',
+      '',
+      ruleChecks.cmd,
+      '',
+      'Rules:',
+      '- Run it EXACTLY as written. Do not substitute a different command, do not add or drop flags.',
+      '- Change nothing.',
+      `- Report name="${ruleChecks.name}", exitCode = the command's actual integer exit status, and stdout = the single JSON line the command printed to stdout, copied verbatim.`,
+    ].join('\n'),
+    { label: `rules:${ruleChecks.name}`, phase: 'Verify', effort: 'low', schema: RULE_CHECKS_SCHEMA, ...optIf('model', probeModel), ...agentTypeOpt(reviewAgentType()) }
+  )
+  return r || { name: ruleChecks.name, exitCode: -1, stdout: 'probe agent died or was skipped' }
+}
+
+const [verifyOut, mechanicalOut, scoredOut, thirdPartyOut, attemptsOut, ruleChecksOut] = await parallel([verifyLeg, mechanicalLeg, scoredLeg, thirdPartyLeg, attemptsLeg, ruleChecksLeg])
 const attemptsResult = attemptsOut || attempts.map(a => ({ key: a.key, answer: null }))
 // Fail closed at the leg level: a dead verify leg means nothing judged the tasks, not that they passed.
 const verified = verifyOut || (readOnly
@@ -1256,10 +1305,49 @@ const taskDimsFlagged = taskDims ? [...new Set(Object.values(taskDims).flat())] 
 // The JS reads the exit code; no agent asserts a mechanical pass. -1 (dead/skipped probe) fails here.
 const mechanicalThatFailed = mechanical.filter(r => r.exitCode !== 0)
 
+const rulesThatFailed = []
+const ruleVerdicts = []
+if (ruleChecks) {
+  let parsed = null
+  let parseFailed = false
+  if (!ruleChecksOut || ruleChecksOut.exitCode === -1) {
+    parseFailed = true
+  } else {
+    try {
+      parsed = JSON.parse(ruleChecksOut.stdout)
+      if (!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.verdicts) || !Array.isArray(parsed.unavailable)) {
+        parseFailed = true
+      } else if (parsed.unavailable.length > 0) {
+        parseFailed = true
+      } else {
+        for (const v of parsed.verdicts) {
+          if (!v || typeof v.rule !== 'string' || !Number.isFinite(v.p) || typeof v.verdict !== 'string') {
+            parseFailed = true
+            break
+          }
+        }
+      }
+    } catch (e) {
+      parseFailed = true
+    }
+  }
+
+  if (parseFailed) {
+    rulesThatFailed.push(`ruleChecks:${ruleChecks.name}`)
+  } else {
+    for (const v of parsed.verdicts) {
+      ruleVerdicts.push({ rule: v.rule, p: v.p, verdict: v.verdict })
+      if (v.p >= ruleChecks.blockAt) {
+        rulesThatFailed.push(v.rule)
+      }
+    }
+  }
+}
+
 // ---------------------------------------------------------------- the lens (one agent, after the checks)
 // The mode is decided HERE, from the same arrays the gate reads — never by the lens, which would then
 // be choosing how hard to be judged.
-const lensMode = (taskDimsFlagged.length || mechanicalThatFailed.length) ? MODE_RED : MODE_GREEN
+const lensMode = (taskDimsFlagged.length || mechanicalThatFailed.length || rulesThatFailed.length) ? MODE_RED : MODE_GREEN
 const dimReason = {
   notDone: 'the implementer reported done=false or never reported',
   missingImpl: 'no implementer record exists for it this round or in priorResults',
@@ -1279,6 +1367,12 @@ const digest = {
   redOutcomes: allRed.map(r =>
     `${r.id}: ${r.verdict} (before exit ${r.beforeExit}, after exit ${r.afterExit}) — ${r.command || 'command not recorded'}`),
   mechanicalFailures: mechanicalThatFailed,
+  rulesThatFailed: rulesThatFailed.map(id => {
+    if (id.startsWith('ruleChecks:')) return `${id} (check died, unparseable, or unavailable is non-empty)`
+    const v = ruleVerdicts.find(x => x.rule === id)
+    return `${v.rule}: p=${v.p} — ${v.verdict}`
+  }),
+  advisoryRules: ruleVerdicts.filter(v => v.p < (ruleChecks ? ruleChecks.blockAt : 1)).sort((a, b) => b.p - a.p).map(v => `${v.rule}: p=${v.p} — ${v.verdict}`),
   carried: carriedFindings,
   attempts: attemptsResult,
 }
@@ -1379,7 +1473,8 @@ const tasksThatFlagged = [...new Set([...taskDimsFlagged, ...routedTaskOwners])]
 const overallPass =
   tasksThatFlagged.length === 0 &&
   survivingBlocking.length === 0 &&
-  mechanicalThatFailed.length === 0
+  mechanicalThatFailed.length === 0 &&
+  rulesThatFailed.length === 0
 
 // ONE lens, so this selector is a boolean wearing an array's clothes — kept as an array key because
 // every consumer of a work result reads it as one, and because it is the channel that makes L3 true
@@ -1424,13 +1519,14 @@ log(`gate: ${overallPass ? 'PASS' : 'FAIL'} — ${judged}${redNote}${mechNote}${
 // agree; work-result.sh's CONTRACT pins the required subset):
 //   overallPass, verdict, scoreTable, judged, implemented, verified, red?, findings, carried,
 //   routes, dispositions, residue?, thirdParty, mechanical, scores, attempts,
-//   tasksThatFlagged, mechanicalThatFailed, lensesThatFlagged, planFindings
+//   tasksThatFlagged, mechanicalThatFailed, lensesThatFlagged, planFindings, rulesThatFailed, ruleVerdicts
 return {
   overallPass,
   verdict: overallPass ? 'PASS' : 'FAIL',
   scoreTable: {
     tasksTotal: taskList.length,
     attempts: attemptsResult.map(a => ({ key: a.key, reported: !!a.answer })),
+    ...(ruleChecks ? { rulesThatFailed: rulesThatFailed.length, ruleVerdicts: ruleVerdicts.length } : {}),
     // n/a (null), NOT 0. Under readOnly nothing was implemented or verified because nothing was
     // dispatched; rendering 0/0 next to real counts would read as "checked and clean".
     tasksJudgedThisRun: readOnly ? null : activeTasks.length,
@@ -1535,4 +1631,6 @@ return {
   tasksThatFlagged,
   mechanicalThatFailed, // a failed check re-runs the CHECK, not a task
   lensesThatFlagged, // ['lens'] iff a blocking lens finding stands
+  rulesThatFailed,
+  ruleVerdicts,
 }

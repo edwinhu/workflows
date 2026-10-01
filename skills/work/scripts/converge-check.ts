@@ -36,6 +36,7 @@ type Result = {
   tasksThatFlagged?: string[]
   red?: { id?: string; verdict?: string }[]
   mechanicalThatFailed?: { name?: string }[]
+  rulesThatFailed?: { name?: string }[]
   /** RED-mode diagnoses. Each names the task that owns the fix, so a repeat here is the same wall. */
   routes?: { failure?: string; ownerTask?: string }[]
   /** Blocking items no task's writablePaths can reach — the plan itself has to be amended. */
@@ -106,6 +107,7 @@ const failureSignature = (r: Result): string[] => {
   for (const id of r.tasksThatFlagged ?? []) sig.add(`task:${id}`)
   for (const rec of r.red ?? []) if (rec?.verdict && rec.verdict !== 'red-green') sig.add(`red:${rec.id}:${rec.verdict}`)
   for (const m of r.mechanicalThatFailed ?? []) sig.add(`mech:${m?.name ?? '(unnamed)'}`)
+  for (const m of r.rulesThatFailed ?? []) sig.add(`rule:${m?.name ?? '(unnamed)'}`)
   for (const p of r.planFindings ?? []) sig.add(`plan:${p?.title ?? p?.failure ?? '(unnamed)'}`)
   return [...sig].sort()
 }

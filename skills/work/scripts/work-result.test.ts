@@ -140,6 +140,18 @@ describe('work-result.sh accepts a well-formed gate return', () => {
     expect(out).toMatch(/tasksTotal\D+2/)
   })
 
+  test('work-result counts rulesThatFailed as a selector', () => {
+    const obj = {
+      ...valid(),
+      overallPass: false,
+      verdict: 'FAIL',
+      rulesThatFailed: [{ name: 'Rule 3', exitCode: 1 }]
+    }
+    const r = runJson(obj)
+    expect(r.code).toBe(1)
+    expect(r.stdout).toContain('FAIL')
+  })
+
   // residue: blocking-severity findings a freezeFindingSet round raised but did not gate on. Present
   // only on a frozen round, so both presence and absence must adjudicate.
   test('a result carrying residue adjudicates and reports the count', () => {

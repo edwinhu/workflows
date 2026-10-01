@@ -167,7 +167,7 @@ standard-library callee, which is definitionally not the input under test.
 
 Raw 24, false positives 23, one true positive.
 
-The one that survives is `skills/work/scripts/work-redispatch.test.ts:1641`:
+The one that survives is `skills/work/scripts/work-redispatch.test.ts:1670`:
 
 ```
 expect(r.out).toContain('CONVERGING')
@@ -333,7 +333,7 @@ Three mechanisms, and the first is an extraction defect rather than a rule-desig
 `skills/work/scripts/converge-check.test.ts:52` contains `verdict: r.blocking === 0 ? 'PASS' : 'FAIL'`
 and is reported as the key `PASS` with the value `'FAIL'`. There is no such key. The same misparse
 produces the `PASS: 'FAIL'` findings at `skills/work/scripts/work-dispatch-loops.test.ts:48`,
-`skills/work/scripts/work-loop.test.ts:39` and `skills/work/scripts/work-result.test.ts:776`, and
+`skills/work/scripts/work-loop.test.ts:39` and `skills/work/scripts/work-result.test.ts:788`, and
 the `ACTIVE: "PROCESSING"` finding at `skills/cite-check/tests/gemini.test.ts:109`
 (`state: getCalls >= 2 ? "ACTIVE" : "PROCESSING"`) together with its three `scratch/` copies. The
 gemini case is doubly wrong: that line exists precisely to vary the state across polls.
@@ -389,7 +389,7 @@ What `suite-lint-report.test.ts` re-executes, and therefore what cannot silently
 firmer than a whole-tree total: the audited-corpus counts above, reproduced exactly; every
 `path:line` cited in this document, confirmed to be a finding the tool really reports **under the
 rule in whose section it is cited**; and the one true positive this investigation found by reading,
-`skills/work/scripts/work-redispatch.test.ts:1641`, confirmed still to fire under
+`skills/work/scripts/work-redispatch.test.ts:1670`, confirmed still to fire under
 `positive-match-failure-vocabulary`. That re-execution is not decorative: it has caught drift three
 separate times, twice from edits landing while a run was still in flight, on documents whose prose
 was otherwise still accurate.

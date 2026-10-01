@@ -2939,6 +2939,7 @@ export interface WorkArgsFence {
   /** `tasks[].id` string literals. An absent `tasks` key and `tasks: []` both yield `[]` — P13
    *  skips both, because a `readOnly` charter legitimately carries no work order. */
   taskIds: string[]
+  ruleChecks: { line: number, name: string | null, cmd: string | null, blockAt: number | null } | null
   /** Instance ids this fence enumerates, deduplicated, each with the arrays that named it. */
   instanceIds: InstanceId[]
 }
@@ -3034,7 +3035,7 @@ export function workArgsFences(text: string): WorkArgsFence[] {
     const masked = maskLiterals(body)
     const literals = findObjectLiterals(body)
     for (const obj of literals) {
-      if (!obj.keys.includes('mechanicalChecks') && !obj.keys.includes('lens')) continue
+      if (!obj.keys.includes('mechanicalChecks') && !obj.keys.includes('lens') && !obj.keys.includes('ruleChecks')) continue
       // The body's first line is the line AFTER the opening delimiter, so `lineOf` over the body
       // plus the delimiter's own line is the file line.
       const fileLine = (index: number) => block.line + lineOf(body, index)
@@ -3090,6 +3091,23 @@ export function workArgsFences(text: string): WorkArgsFence[] {
           }
         }
       }
+
+      const ruleChecksSpan = findKeyValueSpan(body, masked, obj, 'ruleChecks')
+      let ruleChecks = null
+      if (ruleChecksSpan) {
+        const rcObj = literals.find(o => o.start === ruleChecksSpan.start)
+        if (rcObj) {
+          const nameSpan = findKeyValueSpan(body, masked, rcObj, 'name')
+          const cmdSpan = findKeyValueSpan(body, masked, rcObj, 'cmd')
+          const blockAtSpan = findKeyValueSpan(body, masked, rcObj, 'blockAt')
+          ruleChecks = {
+            line: fileLine(ruleChecksSpan.start),
+            name: nameSpan ? (stringLiteralsIn(body, nameSpan.start, nameSpan.end)[0] ?? null) : null,
+            cmd: cmdSpan ? (stringLiteralsIn(body, cmdSpan.start, cmdSpan.end)[0] ?? null) : null,
+            blockAt: blockAtSpan ? parseFloat(body.slice(blockAtSpan.start, blockAtSpan.end)) : null,
+          }
+        }
+      }
       const pdSpan = findKeyValueSpan(body, masked, obj, 'projectDir')
       const pd = pdSpan ? stringLiteralsIn(body, pdSpan.start, pdSpan.end)[0] : undefined
       out.push({
@@ -3100,6 +3118,7 @@ export function workArgsFences(text: string): WorkArgsFence[] {
         projectDir: pd === undefined ? null : pd,
         projectDirLine: pd === undefined ? null : fileLine(pdSpan!.start),
         taskIds,
+        ruleChecks,
         instanceIds: [...seen].map(([id, sources]) => ({ id, sources: [...sources].sort() })),
       })
     }
@@ -3360,6 +3379,39 @@ export function checkDispatchRouting(file: string, text: string, exemptions: rea
  * A fence with no task rows is skipped, not flagged: `tasks: []` is what a `readOnly` charter
  * declares, and flagging it would fire on every audit block in the corpus.
  */
+
+/**
+ * ruleChecks configuration — an args fence carrying ruleChecks must give name and cmd as non-empty strings
+ * and blockAt (when present) a number in (0,1].
+ */
+export function checkRuleChecks(file: string, text: string): Finding[] {
+  const findings: Finding[] = []
+  for (const f of workArgsFences(text)) {
+    if (!f.ruleChecks) continue
+    const { line, name, cmd, blockAt } = f.ruleChecks
+    const missingName = !name || name.trim() === ''
+    const missingCmd = !cmd || cmd.trim() === ''
+    let badBlock = false
+    if (blockAt !== null) {
+      if (Number.isNaN(blockAt) || blockAt <= 0 || blockAt > 1) {
+        badBlock = true
+      }
+    }
+    
+    if (missingName || missingCmd || badBlock) {
+      findings.push({
+        rule: 'ruleChecks shape',
+        severity: 'major',
+        file,
+        line,
+        detail: 'ruleChecks must give name and cmd as non-empty strings and blockAt (when present) a number in (0,1]',
+        remedy: 'ensure ruleChecks carries { name: "...", cmd: "..." } and optionally blockAt: 0.85',
+      })
+    }
+  }
+  return findings
+}
+
 export function checkTaskRowCoverage(file: string, text: string, exemptions: readonly Exemption[]): Finding[] {
   const findings: Finding[] = []
   for (const f of workArgsFences(text)) {
@@ -3757,6 +3809,7 @@ export function runProbe(
       // file's PROSE makes, which the code view blanks.
       findings.push(...checkDispatchRouting(file, text, fileExemptions))
       findings.push(...checkTaskRowCoverage(file, text, fileExemptions))
+      findings.push(...checkRuleChecks(file, text))
       // P6/P7 judge what the call CONTAINS, so they read the code view.
       const code = maskNonFenced(text)
       findings.push(...checkBareWorkflowRefs(file, code, fileExemptions))

@@ -22,10 +22,10 @@ CLARIFY ─► PLAN ─► GOAL ─► workflow.js ──PASS──► HUMAN REV
                                └─fix┘ FAIL        └─ findings → fix → re-run
 
 workflow.js:
-IMPLEMENT ─► [VERIFY ∥ MECHANICAL ∥ SCORED ∥ THIRD-PARTY ∥ ATTEMPTS] ─► one LENS ─► JS gate
+IMPLEMENT ─► [VERIFY ∥ MECHANICAL ∥ RULE CHECKS ∥ SCORED ∥ THIRD-PARTY ∥ ATTEMPTS] ─► one LENS ─► JS gate
                      optional legs finish at a barrier       │
                    RED: diagnose and route; GREEN: open-ended pass
-FAIL selectors: tasksThatFlagged + mechanicalThatFailed + lensesThatFlagged + planFindings
+FAIL selectors: tasksThatFlagged + mechanicalThatFailed + rulesThatFailed + lensesThatFlagged + planFindings
 ```
 
 The review lens runs after the per-task verifiers and all optional check legs finish. RED means a
@@ -127,6 +127,7 @@ EnterPlanMode. Explore, then draft a plan that MUST contain:
   ## Run sizing
   Review lens:       <the dimensions the ONE lens judges — merge every named risk into that one prompt>
   Mechanical checks: <name> — `<exact command>`              (omit the section if none)
+  Rule checks:       <name> — `<exact command>` blockAt <val> (opt-in, omit if none)
   Scored checks:     <key> — <what it scores>, ADVISORY: never gates  (opt-in, no default; omit if none)
   Test-first:        <task id> — `<redCommand>`               (one line per red-gated task; omit if none)
   Red dispositions:  <task id> — <why this task carries no red gate>  (one line per dispositioned task; omit if none)
@@ -136,7 +137,7 @@ EnterPlanMode. Explore, then draft a plan that MUST contain:
 Each active task costs 1 implementer + 1 verifier, plus 2 probes if its current `redCommand` has no
 carried proven `red-green` adjudication. **The review lens is exactly 1 agent**; it rules on both
 `carriedFindings` and external `priorFindings` without additional agents. Each mechanical check,
-scored item and opted-in third-party provider costs one agent. Above ~50, split the plan into
+scored item, rule check (+1), and opted-in third-party provider costs one agent. Above ~50, split the plan into
 sequenced work runs.
 
 **This is enforced, not advised.** `workflow.js` computes the fan-out
@@ -505,7 +506,7 @@ only — not at dispatch, not at round boundaries.
 readable JSON) and non-zero when `--out` came back missing or not a JSON object. `work-result.sh`
 then refuses (exit 2) unless the file is one object carrying `overallPass`, `verdict`, `scoreTable`,
 `findings`, `tasksThatFlagged`, `mechanicalThatFailed` and `lensesThatFlagged` with the right types,
-and prints the verdict and the score table on success. Those three selectors are REQUIRED: a return
+and prints the verdict and the score table on success. Those four selectors are REQUIRED: a return
 dropping one channel would make a FAIL carried solely by that channel read as a clean run. `routes`
 and `planFindings` are **optional and type-checked when present**, so an older verdict on disk still
 reads — but a FAIL with a non-empty `planFindings` is the one a re-dispatch cannot close, so consume
@@ -693,7 +694,7 @@ On the result:
 - **FAIL** → the selector is `tasksThatFlagged`, `mechanicalThatFailed`, `lensesThatFlagged` **and
   `planFindings`**. Consume all four. See below. **PASS** → Phase 5.
 
-### The FAIL fix loop — three selectors plus planFindings
+### The FAIL fix loop — four selectors plus planFindings
 
 The JS gate passes only when `tasksThatFlagged`, `mechanicalThatFailed` and the standing blocking
 finding set are empty. A FAIL therefore has at least one non-empty selector. Consume all three
@@ -708,6 +709,7 @@ includes transitive dependents and tasks with missing implemented/verified/red r
 |---|---|---|
 | `tasksThatFlagged` | incomplete, unverified, unreported or red-failing tasks, plus valid lens-routed owners | Redispatch selects those tasks and their dependents; `priorResults` carries the rest and `taskFixes` supplies the fixes. |
 | `mechanicalThatFailed` | `{name, exitCode, output}` for each failed check; `-1` means unchecked/dead, not passed | Fix the diagnosed cause. Checks always re-run; a lens route to a task narrows implementation to that owner. An unattributed mechanical failure forces FULL. |
+| `rulesThatFailed` | `{rule, severity, file, detail, remedy}` for each failed rule; blocks when >= blockAt | Fix the diagnosed cause. Rules always re-run; a lens route to a task narrows implementation to that owner. |
 | `lensesThatFlagged` | `['lens']` when a blocking finding stands, including an open carried claim or a dead-lens critical | Act on the finding's owner; the lens always re-runs. Fresh findings held as residue do not set this selector. |
 | `planFindings` | routes or standing blocking findings owned by `"plan"` | Amend the dispatch spec: add the required path to a task's `writablePaths`, or reword the requirement, then re-hash. Unchanged spec hash refuses redispatch with exit 3, spending no round or rotating the result. After an amendment, an all-plan failure permits `onlyTasks: []` when all task records are carried. |
 
@@ -840,6 +842,8 @@ verdict from `verdict`. **Organise; do not grade.**
 |---|---|---|
 | verdict + one-line scope | `verdict`, `judged` | verbatim |
 | coverage | `scoreTable`, including `lensesReported` and `lensMode` | Print counts verbatim; `lensesReported: 0` means unreviewed, not clean. Render null task/score dimensions as n/a. |
+| rule verdicts | `ruleVerdicts` | Advisory evidence from the rule checks. |
+| rules that failed | `rulesThatFailed` | Gate for rules failing above blockAt. |
 | carried rulings | `carried[]` | Every id with status and evidence, closed entries included. |
 | standing findings | `findings[]` | Fresh lens findings plus open carried claims, grouped by severity with owner task and location. |
 | residue | `residue[]` when the freeze is enabled | Mark fresh blocking findings as reported but not gating this round; do not relabel them minor. |
@@ -899,7 +903,7 @@ descope with the user rather than guessing a third time.
 | Tasks look like they need to talk to each other | reach for agent teams | **On a run that writes, no teams** — for the mechanical reason given under *IMPLEMENT runs in waves* above, not as a style preference. Tasks needing to talk means the plan under-specifies the boundary; fix the task table, re-hash. **The ban does not apply to `readOnly`**, where nothing writes and a team is the default (CLARIFY axis 7); see *Where the agent team lives* |
 | Fan-out estimate > ~50 agents | widen the workflow anyway | split into sequenced work runs, one gate each |
 | Third-party found a "critical" | let it flip the gate | file as advisory task; gate stays JS-only |
-| Consume only `tasksThatFlagged` | treat an empty list on FAIL as nothing to fix | Consume `mechanicalThatFailed`, `lensesThatFlagged` and `planFindings` too. An audit with `tasks: []` has no task owner channel. |
+| Consume only `tasksThatFlagged` | treat an empty list on FAIL as nothing to fix | Consume `mechanicalThatFailed`, `rulesThatFailed`, `lensesThatFlagged` and `planFindings` too. An audit with `tasks: []` has no task owner channel. |
 | A mechanical check failed | guess the nearest task, drop the check or force FULL | Follow the lens's route to its owner; checks always re-run. An unattributed failure falls back to FULL. |
 | A blocking lens finding stands | scope by file before reading its owner | Prefer `ownerTask`: a task id enters `tasksThatFlagged`, `"plan"` enters `planFindings`. Redispatch supplies `taskFixes` to the selected implementer. |
 | Pass an array of lenses | retain parallel readers and their refuters | Pass one `lens` object; merge the dimensions into its prompt. Arrays and the retired argument throw. Measurement: `references/convergence.md`'s 2026-09-30 postscript. |

@@ -1976,3 +1976,90 @@ test('fan-out counts attempts', async () => {
   expect(result.scoreTable.attempts.length).toBe(2)
   expect(result.scoreTable.attempts[0].reported).toBe(true)
 })
+
+
+// ---------------------------------------------------------------- rule checks
+test('ruleChecks p at block-at fails the gate via rulesThatFailed', async () => {
+  const stdout = JSON.stringify({ verdicts: [{ rule: 'R1', p: 0.85, verdict: 'fail' }], unavailable: [] })
+  const { result } = await run(
+    { ...baseArgs, tasks: one, ruleChecks: { name: 'rules', cmd: 'x', blockAt: 0.85 } },
+    replies({ rules: { rules: { name: 'rules', exitCode: 0, stdout } } })
+  )
+  expect(result.overallPass).toBe(false)
+  expect(result.rulesThatFailed).toEqual(['R1'])
+  expect(result.ruleVerdicts).toEqual([{ rule: 'R1', p: 0.85, verdict: 'fail' }])
+})
+
+test('ruleChecks below block-at is advisory and passes', async () => {
+  const stdout = JSON.stringify({ verdicts: [{ rule: 'R1', p: 0.84, verdict: 'warn' }], unavailable: [] })
+  const { result } = await run(
+    { ...baseArgs, tasks: one, ruleChecks: { name: 'rules', cmd: 'x', blockAt: 0.85 } },
+    replies({ rules: { rules: { name: 'rules', exitCode: 0, stdout } } })
+  )
+  expect(result.overallPass).toBe(true)
+  expect(result.rulesThatFailed).toEqual([])
+  expect(result.ruleVerdicts).toEqual([{ rule: 'R1', p: 0.84, verdict: 'warn' }])
+})
+
+test('advisory rule checklist reaches the GREEN lens prompt ranked by p', async () => {
+  const stdout = JSON.stringify({ verdicts: [
+    { rule: 'R2', p: 0.5, verdict: 'ok' },
+    { rule: 'R1', p: 0.84, verdict: 'warn' }
+  ], unavailable: [] })
+  const { prompts } = await run(
+    { ...baseArgs, tasks: one, ruleChecks: { name: 'rules', cmd: 'x', blockAt: 0.85 } },
+    replies({ rules: { rules: { name: 'rules', exitCode: 0, stdout } } })
+  )
+  const p = prompts.get('lens')
+  expect(p).toContain('RULE CHECKLIST (advisory, ranked by p):')
+  const idx1 = p.indexOf('R1: p=0.84')
+  const idx2 = p.indexOf('R2: p=0.5')
+  expect(idx1).toBeLessThan(idx2)
+  expect(idx1).toBeGreaterThan(-1)
+})
+
+test('a dead rule-check runner fails closed', async () => {
+  const { result } = await run(
+    { ...baseArgs, tasks: one, ruleChecks: { name: 'rules', cmd: 'x' } },
+    replies({ rules: { rules: null } })
+  )
+  expect(result.overallPass).toBe(false)
+  expect(result.rulesThatFailed).toEqual(['ruleChecks:rules'])
+})
+
+test('an unparsable rule-check line fails closed', async () => {
+  const { result } = await run(
+    { ...baseArgs, tasks: one, ruleChecks: { name: 'rules', cmd: 'x' } },
+    replies({ rules: { rules: { name: 'rules', exitCode: 0, stdout: 'not json' } } })
+  )
+  expect(result.overallPass).toBe(false)
+  expect(result.rulesThatFailed).toEqual(['ruleChecks:rules'])
+})
+
+test('rulesThatFailed gates under freezeFindingSet', async () => {
+  const stdout = JSON.stringify({ verdicts: [{ rule: 'R1', p: 0.85, verdict: 'fail' }], unavailable: [] })
+  const { result } = await run(
+    { ...baseArgs, tasks: one, freezeFindingSet: true, ruleChecks: { name: 'rules', cmd: 'x', blockAt: 0.85 } },
+    replies({ rules: { rules: { name: 'rules', exitCode: 0, stdout } } })
+  )
+  expect(result.overallPass).toBe(false)
+  expect(result.rulesThatFailed).toEqual(['R1'])
+})
+
+test('fan-out counts ruleChecks', async () => {
+  const stdout = JSON.stringify({ verdicts: [], unavailable: [] })
+  const r = await runCatching(
+    { ...baseArgs, tasks: one, maxAgents: 3, ruleChecks: { name: 'rules', cmd: 'x' } },
+    replies()
+  )
+  expect(r.threw).toBe(true)
+  expect(String(r.error)).toContain('fan-out 4 exceeds maxAgents 3')
+})
+
+test('invalid blockAt throws', async () => {
+  for (const bad of [-1, 0, 1.1, '0.5', null]) {
+    const r = await runCatching({ ...baseArgs, tasks: one, ruleChecks: { name: 'rules', cmd: 'x', blockAt: bad } }, replies())
+    expect(r.threw).toBe(true)
+    expect(String(r.error)).toMatch(/blockAt must be a number in \(0,1\]/)
+  }
+})

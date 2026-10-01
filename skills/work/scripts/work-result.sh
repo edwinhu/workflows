@@ -41,7 +41,9 @@ OPTIONAL='{
   "red": "array",
   "residue": "array",
   "routes": "array",
-  "planFindings": "array"
+  "planFindings": "array",
+  "rulesThatFailed": "array",
+  "ruleVerdicts": "array"
 }'
 
 die() { printf 'work-result.sh: %s\n' "$*" >&2; exit 2; }

@@ -116,6 +116,21 @@ def routed(v):
             out.append(str(x))
     return "; ".join(out) or "(none)"
 
+def rule_verdicts(v):
+    if not v: return "(none)"
+    out = []
+    for x in (v[:3] if isinstance(v, list) else []):
+        if isinstance(x, dict):
+            name = x.get("name") or "(unnamed)"
+            score = x.get("score")
+            out.append(f"{name}: {score}" if score is not None else name)
+        else:
+            out.append(str(x))
+    res = "; ".join(out)
+    if isinstance(v, list) and len(v) > 3:
+        res += f" (and {len(v) - 3} more)"
+    return res
+
 try:
     r = json.load(open(sys.argv[1]))
 except Exception as e:
@@ -124,6 +139,8 @@ except Exception as e:
 
 print("  tasksThatFlagged:     " + names(r.get("tasksThatFlagged")))
 print("  mechanicalThatFailed: " + names(r.get("mechanicalThatFailed")))
+print("  rulesThatFailed:      " + names(r.get("rulesThatFailed")))
+print("  ruleVerdicts:         " + rule_verdicts(r.get("ruleVerdicts")))
 print("  lensesThatFlagged:    " + names(r.get("lensesThatFlagged")))
 print("  routes:               " + routed(r.get("routes")))
 print("  planFindings:         " + routed(r.get("planFindings")))
