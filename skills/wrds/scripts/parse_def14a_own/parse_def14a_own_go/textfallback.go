@@ -1634,7 +1634,7 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 			case !reOwnCue.MatchString(body):
 				textReason("no_own_cue")
 				continue
-			case reCompCue.MatchString(reSCTReference.ReplaceAllString(body, " ")):
+			case reCompCue.MatchString(reSCTReference.ReplaceAllString(textCompCueText(clean, header, block, body), " ")):
 				textReason("comp_cue")
 				continue
 			case reOptDetailCue.MatchString(body):
@@ -1659,6 +1659,7 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 			lastColClass := ""
 			holderAt := map[int]string{}
 			percentContinuations := map[int]bool{}
+			priced := 0
 			for _, ln := range block {
 				if percentContinuations[ln] {
 					continue
@@ -1666,6 +1667,13 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 				consumed[ln] = true
 				name, rest, restStart, ok := parseTextRowAtWithZero(clean[ln], stackedHeader)
 				captionClass := textStandaloneClassCaption(lines, ln)
+				// A tail made only of dollar amounts is a price, never a holding or
+				// a percent: "exercise price of between  $.8125-$3.00" in a
+				// footnote under the table.
+				if ok && textDollarOnlyTail(rest) {
+					priced++
+					continue
+				}
 				if !ok || ((stackedHeader || captionClass != "") && strings.Contains(rest, "$")) {
 					continue
 				}
@@ -1884,6 +1892,13 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 					}
 					rows = append(rows, rw)
 				}
+			}
+			// With its price lines set aside the block can be a one-holder
+			// table, held to the same test as a block of one line. The holder's
+			// row states shares, never money: a loan row keeps its "$".
+			if !sole && len(rows) == 1 && priced > 0 && len(block)-priced == 1 &&
+				!strings.Contains(clean[rows[0].RowIndex], "$") {
+				sole = soleHolderRow(clean, i, t, header, rows[0].RowIndex)
 			}
 			if len(rows) < 2 && !(sole && len(rows) == 1) {
 				textReason("rows_lt_2")
@@ -2767,6 +2782,19 @@ var (
 // textHeaderRows returns the header lines above a block, top to bottom, split
 // into whitespace-separated column groups with their character spans.
 func textHeaderRows(clean []string, first int) [][]hdrGroup {
+	lines := textHeaderLines(clean, first)
+	var out [][]hdrGroup
+	for i := len(lines) - 1; i >= 0; i-- {
+		if g := splitHdrGroups(clean[lines[i]]); len(g) > 0 {
+			out = append(out, g)
+		}
+	}
+	return out
+}
+
+// textHeaderLines returns the line numbers of the header above a block, bottom
+// to top.
+func textHeaderLines(clean []string, first int) []int {
 	var lines []int
 	blanks := 0
 	for ln := first - 1; ln >= 0 && first-ln <= 12; ln-- {
@@ -2796,13 +2824,57 @@ func textHeaderRows(clean []string, first int) [][]hdrGroup {
 		}
 		lines = append(lines, ln)
 	}
-	var out [][]hdrGroup
-	for i := len(lines) - 1; i >= 0; i-- {
-		if g := splitHdrGroups(clean[lines[i]]); len(g) > 0 {
-			out = append(out, g)
+	return lines
+}
+
+// textProseLine reports a justified sentence: long, and with no column gap of
+// three or more spaces. Justification and a sentence break leave double spaces,
+// so two is not a column gap.
+func textProseLine(l string) bool {
+	// A footnote's marker is set off from its sentence by a wide gap.
+	t := reLeadNoteMarker.ReplaceAllString(strings.TrimSpace(l), "")
+	return len(t) > 40 && !reWideGap.MatchString(t)
+}
+
+var reLeadNoteMarker = regexp.MustCompile(`^(?:\(\w{1,2}\)|\*+)\s+`)
+
+// textCompCueText is the text the compensation screen reads. When the table's
+// own column header reads as ownership, every prose sentence is dropped from
+// it: an ownership table mentions salary or option grants only in a lead-in or
+// footnote sentence ("does not include stock options granted under the ...
+// Plan"). Otherwise the whole body is read, since a remuneration table may name
+// its subject only in the sentence above it.
+func textCompCueText(clean, header []string, block []int, body string) string {
+	var keep []string
+	for _, l := range header {
+		if !textProseLine(l) {
+			keep = append(keep, l)
 		}
 	}
-	return out
+	if len(block) > 0 {
+		hl := textHeaderLines(clean, block[0]) // bottom to top
+		for i := len(hl) - 1; i >= 0; i-- {
+			if !textProseLine(clean[hl[i]]) {
+				keep = append(keep, clean[hl[i]])
+			}
+		}
+	}
+	hdr := strings.Join(keep, " ")
+	if !reOwnCue.MatchString(hdr) {
+		return body
+	}
+	parts := []string{hdr, hdrColumnText(keep)}
+	tabular := false
+	for _, ln := range block {
+		if !textProseLine(clean[ln]) {
+			parts = append(parts, clean[ln])
+			tabular = true
+		}
+	}
+	if !tabular {
+		return body // a block of sentences is no table, whatever stands above it
+	}
+	return strings.Join(parts, " ")
 }
 
 // stubCellCont reports whether line ln is the STUB CELL of the block's table
@@ -3281,3 +3353,17 @@ func textStandaloneClassCaption(lines []string, row int) string {
 	}
 	return ""
 }
+
+// textDollarOnlyTail reports a value tail whose every number carries a "$".
+func textDollarOnlyTail(rest string) bool {
+	t := strings.TrimSpace(rest)
+	if !strings.HasPrefix(t, "$") {
+		return false
+	}
+	return !reAnyDigit.MatchString(reDollarAmount.ReplaceAllString(t, " "))
+}
+
+var (
+	reDollarAmount = regexp.MustCompile(`\$\s*[\d.,]+`)
+	reAnyDigit     = regexp.MustCompile(`\d`)
+)
