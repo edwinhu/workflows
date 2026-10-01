@@ -49,7 +49,7 @@ function fixture(extraArgs: Record<string, unknown> = {}) {
     goal: 'make the thing right',
     maxRounds: 4,
     mechanicalChecks: [],
-    reviewLenses: [{ key: 'k', agentType: 'Explore', refs: [], prompt: 'raise MAJOR when the work is wrong' }],
+    lens: { agentType: 'Explore', refs: [], prompt: 'raise MAJOR when the work is wrong' },
     ...extraArgs,
     tasks: [{
       id: 'T1', name: 'one', work: 'do the thing', writablePaths: ['src/'], refs: [],
@@ -102,6 +102,10 @@ describe('the self-send transport is gone, not merely unused', () => {
     const offenders = tracked.filter(rel =>
       rel !== 'CHANGELOG.md' && rel !== 'tests/dispatch-hold-and-heartbeat.test.ts'
       && /\.(sh|ts|js|mjs|md|json)$/.test(rel)
+      // `ls-files` lists the INDEX, so a file deleted in the working tree and not yet committed is
+      // still tracked and no longer readable. Reading it throws, and the suite then reports an ENOENT
+      // for an unrelated deletion as a dangling self-send reference.
+      && existsSync(join(REPO, rel))
       && readFileSync(join(REPO, rel), 'utf8').includes('goal-self-send'))
     expect(offenders).toEqual([])
   })

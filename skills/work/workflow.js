@@ -1,10 +1,10 @@
 export const meta = {
   name: 'work',
-  description: 'work loop core: sequential plan-bound implementation, blind verification in parallel with advisory third-party review, JS-computed gate',
+  description: 'work loop core: sequential plan-bound implementation, blind verification in parallel with mechanical checks and advisory third-party review, then ONE review lens over their results, JS-computed gate',
   whenToUse: 'Invoked by the work skill after plan approval; never discovers authority — requires planPath + specHash + tasks as args.',
   phases: [
-    { title: 'Implement', detail: 'one agent per task, sequential (shared working tree); not opened at all under readOnly' },
-    { title: 'Verify', detail: 'review lenses + adversarial refute, plus per-task blind verifiers when not readOnly' },
+    { title: 'Implement', detail: 'one agent per task, in dependsOn waves (shared working tree); not opened at all under readOnly' },
+    { title: 'Verify', detail: 'per-task blind verifiers when not readOnly, then ONE review lens over a digest of everything the checks reported — diagnose-and-route on red, one open-ended pass on green' },
     { title: 'Mechanical', detail: 'optional whole-deliverable commands; the agent runs them, the JS reads the exit codes' },
     { title: 'Third-party', detail: 'advisory codex/gemini review — never gates' },
     { title: 'Gate', detail: 'JS arithmetic over raw counts; the task dimensions are n/a under readOnly' },
@@ -24,6 +24,15 @@ export const meta = {
 // ---------------------------------------------------------------- args (fail-closed)
 if (!args || typeof args !== 'object') throw new Error('work: args object required')
 const { projectDir, planPath, specHash, goal, tasks } = args
+const attempts = Array.isArray(args.attempts) ? args.attempts : []
+const attemptKeys = new Set()
+for (const a of attempts) {
+  if (!a.key || typeof a.key !== 'string') throw new Error('work: attempt missing key')
+  if (attemptKeys.has(a.key)) throw new Error(`work: duplicate attempt key ${a.key}`)
+  attemptKeys.add(a.key)
+  if (!a.prompt || typeof a.prompt !== 'string' || !a.prompt.trim()) throw new Error(`work: attempt ${a.key} missing prompt`)
+  if (!Array.isArray(a.refs)) throw new Error(`work: attempt ${a.key} refs must be an array`)
+}
 if (!projectDir) throw new Error('work: projectDir required')
 if (!planPath) throw new Error('work: planPath required — the approved plan snapshot is the sole authority')
 if (!/^[0-9a-f]{64}$/.test(specHash || '')) throw new Error('work: specHash must be the 64-hex sha256 of the plan\'s canonical work:dispatch spec')
@@ -89,55 +98,129 @@ for (const t of taskList) {
     if (!taskIds.has(d)) throw new Error(`work: task ${t.id}: dependsOn names unknown task id ${JSON.stringify(d)}`)
   }
 }
-// Optional priorFindings: [{title, severity, detail, file?, lens?}] — discoveries made OUTSIDE this
-// run (e.g. by an agent team in main chat). A team cannot run inside this file, and not merely
-// because agent() takes no `name`: the workflow dispatcher unions a fixed disallow list
-// (["SendUserMessage", "Agent", "Workflow"]) into whatever agentType a leg names, so `Agent` is
-// stripped from EVERY workflow leg regardless of type — no custom agentType buys it back. What a
-// workflow structurally lacks is therefore peer-to-peer messaging between concurrent legs
-// (SendMessage survives, so a leg can message something that already exists, but nothing here can
-// create a peer to talk to); fan-out and staged handoff are already covered by parallel() and
-// pipeline(). They are NOT trusted: each one is put through the SAME adversarial refuter
-// path a lens finding takes, and only survivors reach the gate. Refutation deliberately happens here,
-// outside the discovering team — a refuter that shares the team's premise confirms wrong findings.
-// A finding with no `lens` is attributed to this ONE reserved key so the selector always names
-// something; an unattributed survivor would populate no selector and break the L3 invariant.
-// Same key for every source — a priorFinding with no lens and a reviewLenses entry with no key are
-// the same situation (nothing said where this came from), and two names for it only confuse.
-// A caller who wants a more specific label sets `lens` explicitly.
-const UNATTRIBUTED = 'unattributed'
-const PRIOR_FINDING_SEVERITIES = ['critical', 'major', 'minor']
+// ── the carried finding set ──────────────────────────────────────────────────
+// ONE pool, two doors. `carriedFindings` is what a previous round of THIS run left open and the
+// redispatcher hands back; `priorFindings` is the same shape arriving from OUTSIDE the run (an agent
+// team in main chat, a human's own read). They are merged here because the lens rules on them
+// identically — open or closed, with evidence — and two pools would mean two code paths and two
+// chances for one of them to stop gating.
+//
+// Nothing inside this file can discover them itself: the workflow dispatcher unions a fixed disallow
+// list (["SendUserMessage", "Agent", "Workflow"]) into whatever agentType a leg names, so a workflow
+// structurally lacks peer-to-peer discovery. They arrive as args or not at all.
+//
+// They are NOT trusted. The lens is shown each one and must rule it `closed` WITH EVIDENCE; silence
+// leaves it OPEN, and a dead lens leaves every one of them open. That is the whole adjudication —
+// there is no refuter leg any more, because the measured refuter corpus (2026-09-27/29) showed
+// refutation changing 0 verdicts across the rounds it was run on.
+const CARRIED_SEVERITIES = ['critical', 'major', 'minor']
 // Validated at arg time, not mid-run: a malformed entry must fail before a single agent is dispatched.
-if (args.priorFindings !== undefined && !Array.isArray(args.priorFindings)) {
-  throw new Error(`work: priorFindings must be an array of {title, severity, detail, file?, lens?}: ${JSON.stringify(args.priorFindings)}`)
-}
-for (const f of Array.isArray(args.priorFindings) ? args.priorFindings : []) {
-  if (!f || !f.title || !f.severity || !f.detail) {
-    throw new Error(`work: priorFinding missing title/severity/detail: ${JSON.stringify(f)}`)
+const validateClaims = (list, argName) => {
+  if (list !== undefined && !Array.isArray(list)) {
+    throw new Error(`work: ${argName} must be an array of {title, severity, detail, file?, ownerTask?}: ${JSON.stringify(list)}`)
   }
-  if (!PRIOR_FINDING_SEVERITIES.includes(f.severity)) {
-    throw new Error(`work: priorFinding severity must be one of ${PRIOR_FINDING_SEVERITIES.join('|')}: ${JSON.stringify(f)}`)
+  for (const f of Array.isArray(list) ? list : []) {
+    if (!f || !f.title || !f.severity || !f.detail) {
+      throw new Error(`work: ${argName} entry missing title/severity/detail: ${JSON.stringify(f)}`)
+    }
+    if (!CARRIED_SEVERITIES.includes(f.severity)) {
+      throw new Error(`work: ${argName} entry severity must be one of ${CARRIED_SEVERITIES.join('|')}: ${JSON.stringify(f)}`)
+    }
+    if (f.id !== undefined && (typeof f.id !== 'string' || !f.id.trim())) {
+      throw new Error(`work: ${argName} entry id must be a non-empty string when supplied: ${JSON.stringify(f)}`)
+    }
+  }
+  return Array.isArray(list) ? list : []
+}
+const carriedIn = validateClaims(args.carriedFindings, 'carriedFindings')
+const priorIn = validateClaims(args.priorFindings, 'priorFindings')
+// An id is the handle the lens rules BY, so two findings sharing one would collapse into a single
+// ruling — a closed verdict silently closing a finding nobody judged. Refused rather than renamed.
+const explicitIds = [...carriedIn, ...priorIn].map(f => f.id).filter(Boolean)
+for (const id of explicitIds) {
+  if (explicitIds.filter(x => x === id).length > 1) {
+    throw new Error(`work: carried finding id ${JSON.stringify(id)} appears more than once — an id is what the lens rules by, so duplicates collapse two findings into one ruling.`)
   }
 }
-// Attribution is settled HERE, once, so nothing downstream has to remember to default it.
-const priorFindings = (Array.isArray(args.priorFindings) ? args.priorFindings : [])
-  .map(f => ({ ...f, lens: f.lens || UNATTRIBUTED }))
+const usedIds = new Set(explicitIds)
+const mintId = stem => {
+  let n = 0
+  let id = `${stem}#${n}`
+  while (usedIds.has(id)) id = `${stem}#${++n}`
+  usedIds.add(id)
+  return id
+}
+// Identity, provenance and ownership are settled HERE, once, so nothing downstream has to remember
+// to default them. `source` records which door the claim came through; it is reported, never gated.
+const carriedFindings = [
+  ...carriedIn.map(f => ({ ...f, id: f.id || mintId('carried'), source: f.source || 'carried' })),
+  ...priorIn.map(f => ({ ...f, id: f.id || mintId('prior'), source: f.source || 'prior' })),
+]
 // freezeFindingSet (default false): from round 2 on, the question is whether the CARRIED blocking
-// set is closed, not whether this round's lenses raised anything. Lens findings still run and are
-// still reported — as `residue`, which gates nothing; only surviving priorFindings gate. Without
+// set is closed, not whether this round's lens raised anything new. Fresh lens findings still run and
+// are still reported — as `residue`, which gates nothing; only OPEN CARRIED findings gate. Without
 // this the exit condition is a draw from a generator whose rate does not fall as fixes land.
+// The one exception is the synthesized dead-lens critical: a review that did not happen is not a
+// fresh finding to defer, it is the absence of the adjudication the freeze depends on (gate-laws L4).
 const freezeFindingSet = args.freezeFindingSet === true
 const thirdParty = Array.isArray(args.thirdParty) ? args.thirdParty.filter(m => ['codex', 'gemini'].includes(m)) : []
-const reviewLenses = Array.isArray(args.reviewLenses) && args.reviewLenses.length
-  ? args.reviewLenses
-  : [
-      { key: 'criteria-vs-artifacts', prompt: 'Judge the deliverable strictly against the success criteria in the plan and goal: for each criterion, is there an artifact in the working tree that satisfies it? Missing or partial satisfaction is a finding. Severity: MAJOR at minimum, CRITICAL where the unsatisfied criterion is one the deliverable cannot stand without.', refs: [] },
-      { key: 'scope-fidelity', prompt: 'Judge scope fidelity: did the changes stay inside the plan\'s task table and writable paths? Out-of-scope edits, unrequested features, and silently skipped plan items are findings. Severity: MAJOR at minimum, CRITICAL where an edit landed outside every declared writable path.', refs: [] },
-    ]
+// ── the single review lens ───────────────────────────────────────────────────
+// ONE lens, dispatched AFTER the per-task verifiers and the mechanical checks, over a digest of what
+// they reported. Measured 2026-09-29/30: 4–10 parallel lenses plus one refuter per finding were 55%
+// of the agents in a round and changed 0 verdicts, while a single Sonnet lens on one open-ended
+// prompt re-found 7/7 reconstructed correctness defects.
+const LENS_KEY = 'lens'
+if (args.reviewLenses !== undefined) {
+  throw new Error(
+    'work: reviewLenses is gone. Pass a single `lens` object instead: ' +
+    "{prompt, refs, agentType?, model? (default 'sonnet'), effort? (default 'high')}. " +
+    'Merge the old lenses\' dimensions into that one prompt as a checklist — the lens runs after the ' +
+    'tests and the mechanical checks, diagnoses every failure into routes[] on red, and makes one ' +
+    'open-ended pass into findings[] on green. There are no refuters.'
+  )
+}
+if (args.lens !== undefined && (!args.lens || typeof args.lens !== 'object' || Array.isArray(args.lens))) {
+  throw new Error(`work: lens must be an object {prompt, refs, agentType?, model?, effort?}: ${JSON.stringify(args.lens)}`)
+}
+const DEFAULT_LENS_PROMPT = [
+  'Judge the deliverable in the working tree against the APPROVED PLAN and the goal, along four dimensions:',
+  '- CORRECTNESS: does what was built actually do what it claims, on the inputs it will see? Wrong results, unhandled cases, and logic that cannot hold are findings.',
+  '- SPEC FIDELITY: does every task\'s acceptance criterion hold on the files themselves, and did the changes stay inside the plan\'s task table and writable paths? Out-of-scope edits, unrequested features and silently skipped plan items are findings.',
+  '- TESTS: is each claim backed by a check that would FAIL if the claim were false? A test that passes against the defect it names, or an acceptance clause nothing exercises, is a finding.',
+  '- METHODOLOGY: is the approach sound for what the plan set out to do, and does the evidence support the conclusion drawn from it?',
+  'Severity: MAJOR at minimum for anything in those four; CRITICAL where the deliverable cannot stand without it.',
+].join('\n')
+const lensArg = args.lens || {}
+const lens = {
+  key: LENS_KEY,
+  prompt: typeof lensArg.prompt === 'string' && lensArg.prompt.trim() ? lensArg.prompt : DEFAULT_LENS_PROMPT,
+  refs: Array.isArray(lensArg.refs) ? lensArg.refs : [],
+  agentType: lensArg.agentType || null,
+  // Defaults, not inherits. The replay that justified one lens ran on sonnet at high effort, so those
+  // are the settings the measurement covers; pass null to inherit the session's instead.
+  model: lensArg.model === undefined ? 'sonnet' : (lensArg.model || null),
+  effort: lensArg.effort === undefined ? 'high' : (lensArg.effort || null),
+}
 // Whole-deliverable mechanical checks: [{name, cmd}]. Optional; absent/empty skips the phase entirely.
 const mechanicalChecks = Array.isArray(args.mechanicalChecks) ? args.mechanicalChecks : []
 for (const c of mechanicalChecks) {
   if (!c || !c.name || !c.cmd) throw new Error(`work: mechanicalCheck missing name/cmd: ${JSON.stringify(c)}`)
+}
+const ruleChecksArg = args.ruleChecks
+let ruleChecks = null
+if (ruleChecksArg !== undefined) {
+  if (!ruleChecksArg || typeof ruleChecksArg !== 'object' || Array.isArray(ruleChecksArg)) {
+    throw new Error(`work: ruleChecks must be an object {name, cmd, blockAt?}: ${JSON.stringify(ruleChecksArg)}`)
+  }
+  if (typeof ruleChecksArg.name !== 'string' || !ruleChecksArg.name.trim()) throw new Error('work: ruleChecks missing name')
+  if (typeof ruleChecksArg.cmd !== 'string' || !ruleChecksArg.cmd.trim()) throw new Error('work: ruleChecks missing cmd')
+  const b = ruleChecksArg.blockAt
+  if (b !== undefined && (!Number.isFinite(b) || b <= 0 || b > 1)) throw new Error('work: ruleChecks blockAt must be a number in (0,1]')
+  ruleChecks = {
+    name: ruleChecksArg.name,
+    cmd: ruleChecksArg.cmd,
+    blockAt: b === undefined ? 0.85 : b
+  }
 }
 // Optional scored checks: [{key, items, prompt, schema, components, refs?, agentType?}]. ADVISORY:
 // nothing computed from them is read by overallPass, and there is deliberately no threshold — gating
@@ -233,7 +316,7 @@ for (const s of scoredChecks) {
 // items, so this list is also the order `scores[]` comes back in.
 const scoredJobs = scoredChecks.flatMap(s => s.items.map(item => ({ check: s, item })))
 // Optional: text appended to the AUTHORITY block every dispatched agent receives (implementers,
-// verifiers, lenses, refuters). Absent => AUTHORITY is byte-identical to the four-line form.
+// verifiers, the lens, the probes). Absent => AUTHORITY is byte-identical to the four-line form.
 const authorityExtra = typeof args.authorityExtra === 'string' && args.authorityExtra.trim() ? args.authorityExtra : null
 // Optional agent-type overrides. Absent => no agentType key is passed to agent() at all, so the
 // dispatcher's default applies exactly as before.
@@ -241,11 +324,11 @@ const implementerAgentType = args.implementerAgentType || null
 const verifierAgentType = args.verifierAgentType || null
 // Every call site spreads `...agentTypeOpt(X)`, which contributes no key at all when X is absent.
 //
-// Read-only agents by default. Under readOnly EVERY dispatched leg — lenses, refuters (including
-// the priorFindings ones), the mechanical probes and the third-party runners — defaults to the
-// Explore agent type, which structurally has no Edit and no Write tool. A prompt that says "modify
-// nothing" is a request; an agent type is a boundary, and a readOnly run is exactly the case where
-// the tree must not be touched. Precedence: an explicit per-lens agentType wins over this default.
+// Read-only agents by default. Under readOnly EVERY dispatched leg — the lens, the mechanical probes
+// and the third-party runners — defaults to the Explore agent type, which structurally has no Edit
+// and no Write tool. A prompt that says "modify nothing" is a request; an agent type is a boundary,
+// and a readOnly run is exactly the case where the tree must not be touched. Precedence: an explicit
+// lens agentType wins over this default.
 // Outside readOnly the default does not apply at all — reviewAgentType(undefined) returns null,
 // agentTypeOpt(null) contributes {}, and agent() receives NO agentType key whatsoever,
 // byte-identical to before this change.
@@ -269,21 +352,6 @@ const refLines = (refs, intro) =>
   Array.isArray(refs) && refs.length ? ['', intro, ...refs.map(p => `- ${p}`)] : []
 const IMPL_REFS_INTRO = 'Domain rules governing this task. Read each of these files IN FULL before doing any work:'
 const JUDGE_REFS_INTRO = 'The rules this judgement is made against. Read each of these files IN FULL before judging:'
-// Refuters get the ref paths NAMED but not a read-in-full instruction. A lens is one agent doing
-// open-ended reading; its refuters are one agent PER FINDING, and handing each of them the same
-// full ref set multiplies the largest read in the run by the finding count — measured at 39
-// refuters against 1,700 lines of refs, which is where a work run's tokens actually go. The
-// finding's own quoted evidence is what a refuter judges; the refs stay reachable for the case
-// where that evidence genuinely is not enough, so nothing is structurally hidden from it.
-const REFUTER_REFS_INTRO = 'Rules files, available if the finding\'s own quoted evidence is not enough to reach a verdict. Do NOT read these by default — the finding above should be self-contained, and opening one costs the run real tokens. If you do open one, say so in your reason.'
-const refuterRefLines = refs =>
-  Array.isArray(refs) && refs.length ? ['', REFUTER_REFS_INTRO, ...refs.map(p => `- ${p}`)] : []
-// Refuter model/effort. Refutation is a bounded judgement against quoted evidence, not open-ended
-// investigation, so it does not need the session's top tier — and there are more refuters than every
-// other agent kind combined. Pass `refuterModel: null` / `refuterEffort: null` to omit the key
-// entirely and inherit the session default, which is what a run wanting a maximally hard gate does.
-const refuterModel = args.refuterModel === undefined ? 'sonnet' : (args.refuterModel || null)
-const refuterEffort = args.refuterEffort === undefined ? 'medium' : (args.refuterEffort || null)
 // Probe model. A mechanical/red/third-party probe RUNS A COMMAND and reports {name, exitCode,
 // output}; the JS reads the exit code and no probe asserts a pass. There is no judgement to
 // downgrade, so the session's top tier is spent on process supervision — and probes outnumber
@@ -292,49 +360,73 @@ const probeModel = args.probeModel === undefined ? 'sonnet' : (args.probeModel |
 // A verifier judges ONE task against ONE stated acceptance criterion, with the criterion and the
 // evidence both handed to it — bounded, like refutation, and one per task. Default sonnet.
 const verifierModel = args.verifierModel === undefined ? 'sonnet' : (args.verifierModel || null)
-// Implementers and lenses default to INHERIT. Lenses are where a downgrade costs the most: they are
-// the open-ended readers that find defects nothing else does, so a cheaper lens is a weaker gate
-// rather than a cheaper one. Implementers write the artifact the whole gate then judges.
+// Implementers default to INHERIT: they write the artifact the whole gate then judges.
 const implementerModel = args.implementerModel || null
+// lensModel is the fallback for a lens that names no model of its own. The lens's own `model` key
+// wins, and its documented default ('sonnet') is what the one-lens replay was measured on, so this
+// dial only bites when the lens object omits `model` explicitly as null.
 const lensModel = args.lensModel || null
-// Per-leg reasoning effort, same shape as refuterEffort: null omits the key and inherits the session
-// default. Implementers write the artifact the whole gate then judges, and xhigh is the documented
-// level for long-horizon agentic coding. Verifiers judge ONE task against ONE criterion with the
-// evidence handed to them — bounded like refutation, so they sit where refuters sit. The scored leg
-// reports COUNT FIELDS and the JS computes the composite; the third-party leg only shells out to an
-// external CLI and parses its output. Neither has a judgement to downgrade.
+// Per-leg reasoning effort: null omits the key and inherits the session default. Implementers write
+// the artifact the whole gate then judges, and xhigh is the documented level for long-horizon
+// agentic coding. Verifiers judge ONE task against ONE criterion with the evidence handed to them —
+// bounded, so they sit lower. The scored leg reports COUNT FIELDS and the JS computes the composite;
+// the third-party leg only shells out to an external CLI and parses its output. Neither has a
+// judgement to downgrade.
 const implementerEffort = args.implementerEffort === undefined ? 'xhigh' : (args.implementerEffort || null)
 const verifierEffort = args.verifierEffort === undefined ? 'medium' : (args.verifierEffort || null)
 const scoredEffort = args.scoredEffort === undefined ? 'low' : (args.scoredEffort || null)
 const thirdPartyEffort = args.thirdPartyEffort === undefined ? 'low' : (args.thirdPartyEffort || null)
 const optIf = (k, v) => (v ? { [k]: v } : {})
 
-// Fail closed on a dead lens. A lens agent that returns null contributes zero findings, which is
-// byte-identical to a lens that reviewed and found nothing — the gate would certify a review
-// dimension that never ran. Every other leg in this file already fails closed (verifier synthesizes
-// pass:false, mechanical probes synthesize exitCode:-1, a dead refuter keeps its finding); the lens
-// synthesizes a critical finding attributed to itself, so it flows into surviving →
-// survivingBlocking → lensesThatFlagged → overallPass by the ordinary arithmetic.
-const DEAD_LENS_TITLE = 'lens agent died or was skipped — this review dimension did not run'
-const deadLensFinding = (key, how) => ({
+// Fail closed on a dead lens. A lens agent that returns null contributes zero findings and zero
+// carried rulings, which is byte-identical to a lens that reviewed and found nothing — the gate would
+// certify the one review dimension there is, having never run it. Every other leg in this file
+// already fails closed (verifier synthesizes pass:false, mechanical probes synthesize exitCode:-1);
+// the lens synthesizes a critical finding, which flows into survivingBlocking → lensesThatFlagged →
+// overallPass by the ordinary arithmetic. `syntheticDeadLens` is what exempts it from the
+// freezeFindingSet residue bucket: a review that did not happen is not a fresh finding to defer.
+const DEAD_LENS_TITLE = 'the review lens died or was skipped — no review ran this round'
+const deadLensFinding = how => ({
   title: DEAD_LENS_TITLE,
   severity: 'critical',
-  detail: `The "${key}" lens was dispatched but ${how}. Nothing judged this deliverable along that dimension, so its silence is not evidence of a clean result. Re-run this lens.`,
-  lens: key,
-  refuted: false,
-  refuteReason: 'synthesized by the gate from a missing agent result — there is no finding to refute, only a review that did not happen',
+  detail: `The review lens was dispatched but ${how}. Nothing judged this deliverable and nothing ruled on the carried findings, so its silence is not evidence of a clean result. Re-run the lens.`,
+  lens: LENS_KEY,
   syntheticDeadLens: true,
 })
 
-const onlyTasks = Array.isArray(args.onlyTasks) && args.onlyTasks.length ? new Set(args.onlyTasks) : null
+const deadAttemptFinding = key => ({
+  title: `[Dead Attempt: ${key}]`,
+  severity: 'critical',
+  detail: `The attempt ${key} was dispatched but died, returned null, or returned an empty answer.`,
+  lens: LENS_KEY,
+  syntheticDeadAttempt: true,
+})
+
+// Three states, not two. Absent (no key) => every task is active, exactly as before. A non-empty
+// array => that slice. An EMPTY array => a ZERO-IMPLEMENTER round: mechanical checks and the lens
+// re-run over a tree no implementer touched, which is what M2 dispatches once the plan itself has
+// been amended. `.length` alone could not express the third state — it read [] as "no key".
+const onlyTasks = Array.isArray(args.onlyTasks) ? new Set(args.onlyTasks) : null
 const prior = args.priorResults || {}
 const priorImplemented = Array.isArray(prior.implemented) ? prior.implemented : []
 const priorVerified = Array.isArray(prior.verified) ? prior.verified : []
-// Carried red-gate adjudications, same union-with-carried shape as implemented/verified. [] for every
-// caller that passes no redCommand.
-const priorRed = Array.isArray(prior.red) ? prior.red : []
+// Red evidence belongs to the exact command, not just the task id. Drop stale records before probe
+// selection AND carry-forward, so a plan amendment cannot certify a command never observed failing.
+const priorRed = (Array.isArray(prior.red) ? prior.red : []).filter(r =>
+  r && taskList.some(t => isRedGated(t) && t.id === r.id && t.redCommand === r.command)
+)
+// A PROVEN red adjudication carried forward is not re-probed. M1: on a FULL re-run at round >= 2 the
+// implementer has already made the command pass, so a second `before` probe observes exit 0 and the
+// verdict is `red-not-red` — the run dead-ends on a task that is, in fact, fixed. A proven pair is
+// evidence that was observed once; re-observing it after the fix can only destroy it.
+const provenRedById = new Map(
+  priorRed.filter(r => r && r.id && r.verdict === 'red-green').map(r => [r.id, r])
+)
 
 const activeTasks = onlyTasks ? taskList.filter(t => onlyTasks.has(t.id)) : taskList
+// Which red-gated tasks still need a probe pair this round. Separate from isRedGated so the fan-out
+// count, the dispatch decision and the carry-forward all read one predicate.
+const needsRedProbe = t => isRedGated(t) && !provenRedById.has(t.id)
 
 // ---------------------------------------------------------------- fan-out cap (fail-closed)
 // SKILL.md has always carried a "~50 agents" ceiling, and it has always been PROSE — advice to the
@@ -343,23 +435,22 @@ const activeTasks = onlyTasks ? taskList.filter(t => onlyTasks.has(t.id)) : task
 // it to 80. Sizing is the user's call at plan-approval time, so exceeding it has to stop the run and
 // go back to them, exactly like a bad specHash does.
 //
-// Only the floor is knowable here. Refuters for LENS findings are not — a lens returns as many
-// findings as it finds — which is why they are separately bounded by REFUTERS_PER_LENS below.
+// The whole fan-out is now knowable up front: one lens, and no refuters. The unbounded term this
+// paragraph used to warn about — one refuter per lens finding — is gone with the refuter leg, so the
+// floor below is the actual count rather than a floor under an open-ended tail.
 const MAX_AGENTS_DEFAULT = 50
 const maxAgents = Number.isFinite(args.maxAgents) ? args.maxAgents : MAX_AGENTS_DEFAULT
-// Cap on refuters dispatched per lens. Findings beyond it are reported as submitted-but-not-refuted
-// rather than dropped: silent truncation would read as "nothing more was found", which is the same
-// class of lie as a dead lens reading as a clean one.
-const REFUTERS_PER_LENS = Number.isFinite(args.refutersPerLens) ? args.refutersPerLens : 8
 // Two probes per red-gated task (before + after the implementer). Under readOnly the Implement phase
-// is never opened, so no probe is dispatched and the term is zero.
-const redGatedActive = readOnly ? [] : activeTasks.filter(isRedGated)
+// is never opened, so no probe is dispatched and the term is zero. A task carrying a PROVEN red
+// adjudication is not re-probed, so it costs nothing here either.
+const redGatedActive = readOnly ? [] : activeTasks.filter(needsRedProbe)
 const fanOut = {
   implementers: readOnly ? 0 : activeTasks.length,
   verifiers: readOnly ? 0 : activeTasks.length,
-  lenses: reviewLenses.length,
+  // ONE lens, always dispatched — including on a zero-implementer round, where it is the only
+  // judgement there is.
+  lens: 1,
   mechanical: mechanicalChecks.length,
-  priorFindingRefuters: priorFindings.length,
   thirdParty: thirdParty.length,
   // Key omitted entirely when nothing is red-gated, so the sizing error a caller without redCommand
   // sees is byte-identical to before.
@@ -367,18 +458,34 @@ const fanOut = {
   // Key omitted entirely without scoredChecks, so an existing caller's sizing error is unchanged.
   // Advisory agents still cost the same budget as gating ones.
   ...(scoredJobs.length ? { scored: scoredJobs.length } : {}),
+  ...(attempts.length ? { attempts: attempts.length } : {}),
+  ...(ruleChecks ? { ruleChecks: 1 } : {}),
 }
 const fanOutFloor = Object.values(fanOut).reduce((a, b) => a + b, 0)
 if (fanOutFloor > maxAgents) {
   throw new Error(
-    `work: fan-out floor ${fanOutFloor} exceeds maxAgents ${maxAgents} — ` +
-    `${JSON.stringify(fanOut)} (lens-finding refuters are ON TOP of this, up to ${REFUTERS_PER_LENS} per lens, ` +
-    `plus one refuter-ordering leg per lens that OVERFLOWS that cap). ` +
+    `work: fan-out ${fanOutFloor} exceeds maxAgents ${maxAgents} — ${JSON.stringify(fanOut)}. ` +
     'This is a sizing decision and it belongs to the user at plan-approval time, not to the dispatcher. ' +
-    'Split into sequenced work runs, cut priorFindings/lenses in the plan and re-hash, or pass an explicit maxAgents.'
+    'Split into sequenced work runs, cut tasks or checks in the plan and re-hash, or pass an explicit maxAgents.'
   )
 }
-if (onlyTasks && activeTasks.length === 0) throw new Error('work: onlyTasks matched none of tasks[]')
+if (onlyTasks && activeTasks.length === 0) {
+  if (args.onlyTasks.length) throw new Error('work: onlyTasks matched none of tasks[]')
+  // A zero-implementer round is legal ONLY when priorResults already carries every task. Without
+  // that, `onlyTasks: []` would judge nothing and the task dimensions would read as clean against an
+  // empty set — the vacuous-pass defect (gate-laws L2a) wearing the costume of a targeted re-run.
+  // Under readOnly the task dimensions are n/a anyway, so there is nothing to carry.
+  const uncarried = readOnly ? [] : taskList
+    .filter(t => !priorImplemented.some(r => r.id === t.id) || !priorVerified.some(r => r.id === t.id))
+    .map(t => t.id)
+  if (uncarried.length) {
+    throw new Error(
+      `work: onlyTasks: [] is a ZERO-IMPLEMENTER round (mechanical checks and the lens re-run over a tree no implementer touches), ` +
+      `but priorResults carries no implemented+verified record for ${JSON.stringify(uncarried)}. ` +
+      'Every task must be carried, or those dimensions would read as clean against an empty set.'
+    )
+  }
+}
 
 // ── IMPLEMENT waves ──────────────────────────────────────────────────────────
 // Tasks within a wave run CONCURRENTLY; waves run in order. An edge to a task outside `activeTasks`
@@ -437,6 +544,48 @@ const carryForward = (priorRecords, live) => [...priorRecords.filter(r => carrie
 // Red-gated tasks in the WHOLE table, not just this run's slice: a carried red-gated task with no
 // carried adjudication is unproven, not clean. [] for every caller that passes no redCommand.
 const redGatedAll = taskList.filter(isRedGated)
+// M1's other half. A task NOT re-probed this round keeps its carried adjudication even on a FULL
+// re-run, where `carried` is [] and the ordinary carryForward would drop it — and a dropped proven
+// pair re-reads as `redMissing`, which flags the task and dead-ends the loop on work already done.
+const notReprobed = new Set(taskList.filter(t => isRedGated(t) && !needsRedProbe(t)).map(t => t.id))
+const carryRed = live => [
+  ...priorRed.filter(r => carried.some(t => t.id === r.id) || notReprobed.has(r.id)),
+  ...live,
+]
+
+// ── taskFixes (M3) ───────────────────────────────────────────────────────────
+// {taskId: [finding|route|string]} — what last round's review said this task must fix, rendered into
+// THAT task's implementer prompt. M3: before this, carried findings reached only the refuters, so the
+// one agent that could act on them was the one agent never shown them, and a round could "re-run T2"
+// while T2's implementer had no idea why.
+// An unknown task id THROWS rather than being ignored: a typo'd key would silently drop the fixes and
+// the round would look identical to one with none, which is the failure this parameter exists to fix.
+if (args.taskFixes !== undefined && (!args.taskFixes || typeof args.taskFixes !== 'object' || Array.isArray(args.taskFixes))) {
+  throw new Error(`work: taskFixes must be an object keyed by task id: ${JSON.stringify(args.taskFixes)}`)
+}
+const taskFixes = args.taskFixes || {}
+for (const [id, items] of Object.entries(taskFixes)) {
+  if (!taskIds.has(id)) {
+    throw new Error(`work: taskFixes names unknown task id ${JSON.stringify(id)} (declared: ${[...taskIds].join(', ') || 'none'}) — a typo here silently drops the fixes it was written to deliver.`)
+  }
+  if (!Array.isArray(items)) throw new Error(`work: taskFixes[${JSON.stringify(id)}] must be an array: ${JSON.stringify(items)}`)
+}
+// A fix item may be a finding, a route, or a plain string — whichever the previous round produced.
+// Rendered, never interpreted: the implementer reads prose, so the only job here is to not lose a field.
+const renderFix = x => {
+  if (typeof x === 'string') return x
+  if (!x || typeof x !== 'object') return JSON.stringify(x)
+  const head = x.title || x.failure || x.id || 'unlabelled item'
+  const where = x.file ? ` [${x.file}${x.line ? `:${x.line}` : ''}]` : ''
+  const sev = x.severity ? ` (${x.severity})` : ''
+  const body = [x.detail, x.cause, x.fix].filter(Boolean).join(' — ')
+  return `${head}${sev}${where}${body ? `: ${body}` : ''}`
+}
+const FIX_FIRST_HEADING = 'FIX FIRST (from last round\'s review):'
+const fixLines = t => {
+  const items = Array.isArray(taskFixes[t.id]) ? taskFixes[t.id] : []
+  return items.length ? ['', FIX_FIRST_HEADING, ...items.map(x => `- ${renderFix(x)}`)] : []
+}
 
 const AUTHORITY = [
   `AUTHORITY: The <!-- work:dispatch --> spec block inside ${planPath} is your ONLY authority; its specHash is ${specHash}.`,
@@ -470,37 +619,74 @@ const VERIFY_SCHEMA = {
     failures: { type: 'array', items: { type: 'string' } },
   },
 }
-// A lens has TWO output channels, and the split is the point. `findings` is defect claims only;
-// `dispositions` is "I checked X and it holds". Measured 2026-09-27 over 3,137 refuted findings: 2.8%
-// were lenses filing "satisfied / no violation found / no finding / recorded as a positive check"
-// into `findings`, because `findings` was the only channel there was. A refuter cannot refute a TRUE
-// statement, so it returned refuted:false, and ~47 non-defects reached `survivingBlocking` and gated
-// runs. The bug is not the refuter's judgement — it is that the schema had nowhere else to put a
-// satisfied check.
+// FOUR output channels, and the split is the point.
+//   routes[]       — RED mode only: one entry per failure the checks already found, diagnosed and
+//                    routed to the task that owns the fix (or to 'plan'). This is M1/M2: a failure
+//                    attributable to no task forces a FULL re-run of everything.
+//   findings[]     — GREEN mode: fresh defect claims from one open-ended pass.
+//   carried[]      — BOTH modes: a ruling of open|closed, with evidence, on every carried finding.
+//   dispositions[] — BOTH modes: "I checked X and it holds". Reported in full, never gated.
+// Measured 2026-09-27 over 3,137 findings: 2.8% were lenses filing "satisfied / no violation found /
+// no finding / recorded as a positive check" into `findings`, because `findings` was the only channel
+// there was, and ~47 of those non-defects gated runs. The bug was never the judgement — it was that
+// the schema had nowhere else to put a satisfied check. `dispositions` is that somewhere, and the
+// text backstops below still route a misfiled one rather than gating on a true statement.
+//
+// The dispatched schema requires carried rulings and the active mode's channel; the other channel
+// must be empty. An omitted review channel is not evidence of a clean review.
+const OWNER_TASK_DESC = 'the id of the task that owns the fix, exactly as spelled in the plan\'s task table, or the literal string "plan" when NO task\'s writable paths can reach the fix (the plan itself must be amended). Never invent an id.'
 const LENS_SCHEMA = {
   type: 'object',
-  required: ['findings'],
   properties: {
-    findings: {
+    routes: {
       type: 'array',
-      description: 'DEFECT CLAIMS ONLY. Every entry asserts something is wrong. A satisfied check belongs in dispositions.',
+      description: 'RED MODE ONLY. One entry per failure listed in the digest — every one of them, exactly once. This is a diagnosis, not a new review.',
       items: {
         type: 'object',
-        required: ['title', 'severity', 'detail'],
+        required: ['failure', 'ownerTask', 'cause', 'fix'],
+        properties: {
+          failure: { type: 'string', description: 'the failure as the digest names it (task id, verifier failure, or mechanical check name) — quote it, do not paraphrase' },
+          ownerTask: { type: 'string', description: OWNER_TASK_DESC },
+          cause: { type: 'string', description: 'why it failed, from the evidence you read — not a guess' },
+          fix: { type: 'string', description: 'what the owner must change' },
+        },
+      },
+    },
+    findings: {
+      type: 'array',
+      description: 'GREEN MODE. DEFECT CLAIMS ONLY. Every entry asserts something is wrong. A satisfied check belongs in dispositions.',
+      items: {
+        type: 'object',
+        required: ['title', 'severity', 'file', 'detail', 'ownerTask'],
         properties: {
           title: { type: 'string' },
           severity: { type: 'string', enum: ['critical', 'major', 'minor'] },
-          file: { type: 'string' },
+          file: { type: 'string', description: 'repo-relative or absolute path, with NO :line suffix — the line goes in `line`' },
+          line: { type: 'number' },
           detail: { type: 'string' },
+          ownerTask: { type: 'string', description: OWNER_TASK_DESC },
           // The structural backstop. A lens that files a satisfied check here anyway can say so, and
-          // the JS routes it to dispositions instead of spending a refuter on it and then gating.
+          // the JS routes it to dispositions instead of gating the run on a true statement.
           defect: { type: 'boolean', description: 'false ONLY if this entry is not a defect claim — a satisfied check reported for completeness. Such an entry is moved to dispositions and never gates. Omit it (or set true) for a real defect.' },
+        },
+      },
+    },
+    carried: {
+      type: 'array',
+      description: 'A ruling on EVERY carried finding the digest lists, by its id. Both modes. A finding you do not rule on stays OPEN.',
+      items: {
+        type: 'object',
+        required: ['id', 'status', 'evidence'],
+        properties: {
+          id: { type: 'string', description: 'the carried finding\'s id, verbatim from the digest' },
+          status: { type: 'string', enum: ['open', 'closed'] },
+          evidence: { type: 'string', description: 'what you read or ran that settles it. "closed" with no evidence is not a ruling.' },
         },
       },
     },
     dispositions: {
       type: 'array',
-      description: 'Checks you performed that HOLD — "I looked at X and it is fine". No severity: a disposition is not a defect. These are reported to the user and never refuted, never gated.',
+      description: 'Checks you performed that HOLD — "I looked at X and it is fine". No severity: a disposition is not a defect. These are reported to the user and never gated.',
       items: {
         type: 'object',
         required: ['title', 'detail'],
@@ -547,70 +733,45 @@ const DISPOSITION_DETAIL_HEAD_RE = new RegExp(
 const dispositionReason = f => {
   if (!f) return null
   if (f.defect === false) return 'the lens set defect:false on this entry — its own report says it is not a defect claim'
-  if (DISPOSITION_TITLE_RE.test(f.title || '')) return 'the title self-labels a satisfied check rather than a defect (no refuter can refute a true statement, so this would have gated the run)'
-  if (DISPOSITION_DETAIL_HEAD_RE.test(f.detail || '')) return 'the detail opens by self-labelling this as not a defect (no refuter can refute a true statement, so this would have gated the run)'
+  if (DISPOSITION_TITLE_RE.test(f.title || '')) return 'the title self-labels a satisfied check rather than a defect (a gate cannot block on a true statement, so this would have failed the run for nothing)'
+  if (DISPOSITION_DETAIL_HEAD_RE.test(f.detail || '')) return 'the detail opens by self-labelling this as not a defect (a gate cannot block on a true statement, so this would have failed the run for nothing)'
   return null
 }
 // A finding routed out of the gate, carried in `dispositions` with the severity it CLAIMED and the
 // reason it was routed. Nothing is dropped and nothing is rewritten.
-const routedDisposition = (f, key, why) => ({
+const routedDisposition = (f, why) => ({
   title: f.title,
   ...(f.file ? { file: f.file } : {}),
   detail: f.detail,
-  lens: key,
+  lens: LENS_KEY,
   routedFromFinding: true,
   claimedSeverity: f.severity,
   routedBecause: why,
 })
-const REFUTE_SCHEMA = {
-  type: 'object',
-  required: ['refuted', 'reason'],
-  properties: {
-    refuted: { type: 'boolean' },
-    reason: { type: 'string' },
-  },
-}
-// ONE refuter for every finding, whatever its source. SKILL.md promises a priorFinding gets "the same
-// adversarial path a lens finding takes" — that promise is true by construction here. The discipline
-// lines and the fail-closed rule (a dead refuter KEEPS the finding) exist once, so tightening them
-// cannot half-apply. Callers vary only the header, an optional provenance paragraph, the refs, and
-// the label prefix.
-// The fail-closed shape, in one place: a refutation that never happened leaves the finding standing.
-const keptFinding = (f, why) => ({ ...f, refuted: false, refuteReason: why })
-const refuteFinding = (f, { key, header, extra = [], refs, agentType, labelPrefix = 'refute' }) => agent(
-  [
-    AUTHORITY,
-    '',
-    header,
-    `  ${f.title}${f.file ? ` [${f.file}]` : ''}`,
-    `  ${f.detail}`,
-    ...refuterRefLines(refs),
-    '',
-    ...extra,
-    'Try hard to show the finding is wrong, already handled, or out of the plan\'s scope. Modify nothing.',
-    'EVIDENCE BEATS ARGUMENT. If a command would settle it — a build, a checker, a test — RUN IT and quote the output in your reason. Reasoning about what that command WOULD report, where you could have run it, is not a refutation: return refuted=false.',
-    'Refuting on SCOPE does not deny the defect. State in your reason whether the finding is factually true, so a true finding raised by the wrong lens is visible rather than discarded.',
-    'Default: if the evidence is ambiguous either way, refuted=true (the finding does not survive) — UNLESS the finding names a file and line and you ran no command, where ambiguity means the work was not done: refuted=false.',
-  ].join('\n'),
-  {
-    label: `${labelPrefix}:${key}`, phase: 'Verify', schema: REFUTE_SCHEMA,
-    ...agentTypeOpt(reviewAgentType(agentType)),
-    ...optIf('model', refuterModel),
-    ...optIf('effort', refuterEffort),
-  }
-).then(v => ({
-  ...f,
-  lens: key,
-  refuted: v ? v.refuted : false,
-  refuteReason: v ? v.reason : 'refuter died — finding kept',
-}))
 const MECHANICAL_SCHEMA = {
   type: 'object',
   required: ['name', 'exitCode', 'output'],
   properties: {
     name: { type: 'string', description: 'the check name exactly as given to you' },
     exitCode: { type: 'number', description: 'the integer exit status of the command as run, verbatim — never your judgement of whether it passed' },
-    output: { type: 'string', description: 'the last ~2000 characters of combined stdout+stderr' },
+    output: { type: 'string', description: 'the last 60 lines of combined stdout+stderr' },
+  },
+}
+const ATTEMPT_SCHEMA = {
+  type: 'object',
+  required: ['key', 'answer'],
+  properties: {
+    key: { type: 'string' },
+    answer: { type: 'string' },
+  },
+}
+const RULE_CHECKS_SCHEMA = {
+  type: 'object',
+  required: ['name', 'exitCode', 'stdout'],
+  properties: {
+    name: { type: 'string', description: 'the check name exactly as given to you' },
+    exitCode: { type: 'number', description: 'the integer exit status of the command as run, verbatim — never your judgement of whether it passed' },
+    stdout: { type: 'string', description: 'the single JSON line the command printed, copied verbatim' },
   },
 }
 const THIRD_PARTY_SCHEMA = {
@@ -635,253 +796,130 @@ const THIRD_PARTY_SCHEMA = {
   },
 }
 
-// ---------------------------------------------------------------- refuter ordering (Jev)
-// WHY THIS IS AN AGENT LEG AND NOT A FUNCTION CALL. The Workflow tool's script sandbox has no network
-// and no Node API. Probed 2026-09-28 with a zero-agent workflow: `fetch`, `process`, `require`,
-// `crypto`, `URL`, `TextEncoder`, `Buffer` are all `undefined`, and `import()` is rejected before the
-// script launches ("import() is not available in workflow scripts"). Only `setTimeout` and the six
-// hooks exist. So this file cannot call an HTTP API at all, and the only way out is `agent()`.
+// ---------------------------------------------------------------- the lens leg (runs AFTER the checks)
+// ONE lens, dispatched after the per-task verifiers, the mechanical checks and the third-party leg
+// have all reported, over a DIGEST of what they said. The order is the whole design: a reviewer that
+// runs BESIDE the checks is guessing at what they will find, while one that runs after them can
+// diagnose the failures they actually produced and say which task owns each.
 //
-// That makes ordering worth a leg only where the ordering CHANGES something. It changes something
-// exactly when a lens overflows REFUTERS_PER_LENS, so the leg is dispatched only then: on every run
-// where no lens overflows, zero extra agents and the order is byte-identical to severity-only.
-// When one does overflow, ONE ranker leg (one batched Decisions request, ~$0.00003) steers
-// REFUTERS_PER_LENS × ~71.5k tokens of refutation. The agent is a command-runner like `mechanical:*`
-// and `red:*` — it shells out to jev-rank.ts and reports stdout; it renders no judgement itself.
-//
-// Jev NEVER settles or drops a finding. Measured 2026-09-27 over 3,137 findings: AUC 0.639 against
-// refuter verdicts — enough to rank, nowhere near enough to adjudicate (at its most confident bin the
-// refuter upheld only 53.7%). Findings past the cap keep today's fail-closed treatment regardless.
-//
-// DEFAULT IS 'severity', because the ranking has nothing to rank with. Measured 2026-09-28 over 894
-// findings in 65 batches: batching does not degrade Jev (batched AUC 0.637 vs 0.619 single-call,
-// Spearman 0.79), but on the 18 REAL overflowing lens batches batched Jev moved −0.001 refuter-upheld
-// findings into the top 8 against a random within-severity draw, CI [−0.064, +0.060]. The ceiling is
-// arithmetic: 9.8 findings for 8 slots leaves ~0.6 upheld findings in play per overflow, so a perfect
-// ranker could rescue ~0.6 and an AUC-0.63 one rescued +0.06. That is not worth an agent leg. 'jev'
-// stays accepted as an opt-in — the path is written, tested, and costs nothing while unselected.
-const REFUTER_RANKERS = ['jev', 'severity']
-const refuterRanker = args.refuterRanker === undefined ? 'severity' : args.refuterRanker
-if (!REFUTER_RANKERS.includes(refuterRanker)) {
-  throw new Error(`work: refuterRanker must be one of ${REFUTER_RANKERS.join('|')}: ${JSON.stringify(args.refuterRanker)}`)
+// Two modes, decided by the JS from the digest and never by the lens:
+//   RED   — a task flagged or a mechanical check failed. The lens diagnoses every failure into
+//           `routes`, each carrying the ownerTask that must fix it. It does NOT hunt for new
+//           defects: the run already has work to do, and a fresh finding on a red round is noise the
+//           fix loop cannot act on until the red is cleared.
+//   GREEN — everything passed. One open-ended pass into `findings`, each with an ownerTask.
+// Both modes rule on every carried finding, by id, with evidence.
+const MODE_RED = 'RED'
+const MODE_GREEN = 'GREEN'
+// Keep the last 60 lines end-to-end; a character cap in the probe would truncate evidence before
+// the digest could apply its line limit.
+const OUTPUT_TAIL_LINES = 60
+const outputTail = s => {
+  const lines = String(s == null ? '' : s).split('\n')
+  return lines.length <= OUTPUT_TAIL_LINES ? lines.join('\n') : lines.slice(-OUTPUT_TAIL_LINES).join('\n')
 }
-const RANKER_SCHEMA = {
-  type: 'object',
-  required: ['ok'],
-  properties: {
-    ok: { type: 'boolean', description: 'the ok field of the script\'s JSON output, verbatim' },
-    reason: { type: 'string', description: 'the reason field when ok is false, verbatim' },
-    scores: {
-      type: 'array',
-      items: {
-        type: 'object',
-        required: ['index', 'p'],
-        properties: {
-          index: { type: 'number', description: 'the 0-based index from the script output, verbatim' },
-          p: { type: ['number', 'null'], description: 'the probability from the script output, verbatim — null if the script emitted null' },
-        },
-      },
+const bullets = (heading, items) => (items.length ? ['', heading, ...items.map(s => `- ${s}`)] : [])
+// The digest is the lens's whole input about the round, and it is assembled from the SAME arrays the
+// gate reads — never from an agent's summary of them. A lens shown a paraphrase diagnoses the
+// paraphrase.
+const digestLines = d => [
+  '',
+  `MODE: ${d.mode}`,
+  ...(d.mode === MODE_RED
+    ? [
+        'Something in this round FAILED. Your job is DIAGNOSIS AND ROUTING, not a fresh review.',
+        '- Return one `routes` entry for EVERY failure listed below, exactly once. Read the evidence before you write the cause; a guess routed confidently costs a whole round.',
+        '- `ownerTask` is the id of the task whose writable paths can reach the fix. Use the literal string "plan" ONLY when no task can — the plan must be amended to cover the path or reword the acceptance. A wrong id sends the fix to an agent that cannot make it; an unroutable failure re-runs every task in the plan.',
+        '- Do NOT go looking for new defects this round. Leave `findings` empty.',
+      ]
+    : [
+        'Every check in this round PASSED. Your job is ONE OPEN-ENDED PASS over the deliverable.',
+        '- Judge what changed against the approved plan and report what you find in `findings`, each with an `ownerTask` (a task id, or "plan" when no task can reach the fix).',
+        '- Leave `routes` empty: there is no failure to route.',
+        '- An empty `findings` list is a valid and useful answer. Do not manufacture a finding to look thorough, and do not file a satisfied check as one.',
+      ]),
+  ...bullets('TASKS THIS ROUND FLAGGED (the gate already fails on these):', d.flaggedTasks),
+  ...bullets('VERIFIER FAILURES (a blind verifier judged the acceptance criterion unmet):', d.verifierFailures),
+  ...bullets('RED-GATE OUTCOMES (the test-first probe pair):', d.redOutcomes),
+  ...(d.attempts && d.attempts.length
+    ? [
+        '',
+        'BLIND ATTEMPTS:',
+        'Grade each attempt against the key its own refs carry and file a failure as an ordinary finding or route with an ownerTask.',
+        ...d.attempts.map(a => `[Attempt ${a.key}]\n${a.answer || '(no answer)'}`),
+      ]
+    : []),
+  ...(d.mechanicalFailures.length
+    ? ['', 'MECHANICAL CHECKS THAT FAILED — name, exit code, and the last '
+        + `${OUTPUT_TAIL_LINES} lines of output:`,
+       ...d.mechanicalFailures.flatMap(m => ['', `### ${m.name} — exitCode ${m.exitCode}`, outputTail(m.output)])]
+    : []),
+  ...bullets('RULE CHECKS THAT FAILED (p >= block-at, or the runner died):', d.rulesThatFailed),
+  ...bullets('RULE CHECKLIST (advisory, ranked by p):', d.advisoryRules),
+  ...(d.carried.length
+    ? ['', 'CARRIED FINDINGS — rule on EVERY one of these in `carried`, by id:',
+       ...d.carried.map(f =>
+         `- id=${f.id} [${f.severity}]${f.ownerTask ? ` owner=${f.ownerTask}` : ''}${f.file ? ` (${f.file})` : ''} ${f.title}\n    ${f.detail}`),
+       '',
+       'A carried finding is CLOSED only when you can say what you read or ran that settles it. "closed" with no evidence is not a ruling, and a finding you do not rule on at all stays OPEN.']
+    : []),
+]
+
+// Returns {routes, findings, dispositions, carriedRulings, reported}. `reported: false` means the
+// agent produced nothing — the caller synthesizes the critical, and every carried finding stays open.
+const runLensLeg = async digest => {
+  const inactiveChannel = digest.mode === MODE_RED ? 'findings' : 'routes'
+  const schema = {
+    ...LENS_SCHEMA,
+    required: ['carried', digest.mode === MODE_RED ? 'routes' : 'findings'],
+    properties: {
+      ...LENS_SCHEMA.properties,
+      [inactiveChannel]: { ...LENS_SCHEMA.properties[inactiveChannel], maxItems: 0 },
     },
-  },
-}
-const JEV_RANK_SCRIPT = `${skillRoot}/scripts/jev-rank.ts`
-/**
- * Probabilities for `findings`, aligned to their indices, or null to mean "use today's order".
- * Returns null — never throws and never reorders anything itself — when the ranker is off, when
- * nothing would be truncated, or when Jev is unavailable, unparseable or dead.
- */
-const rankWithinSeverity = async (findings, key) => {
-  if (refuterRanker !== 'jev') return null
-  // Nothing is truncated, so the order cannot change which findings get a refuter. Do not spend a leg.
-  if (findings.length <= REFUTERS_PER_LENS) return null
-  const payload = JSON.stringify({
-    findings: findings.map(f => ({ title: f.title, severity: f.severity, detail: f.detail, ...(f.file ? { file: f.file } : {}), lens: key })),
-  })
-  const out = await agent(
+  }
+  const review = await agent(
     [
       AUTHORITY,
       '',
-      `You are a COMMAND RUNNER for the refuter-ordering step of lens "${key}". You are not a reviewer, you judge nothing, and you fix nothing.`,
-      'Run this command VERBATIM via Bash, from the project directory, and report its JSON output field-for-field:',
+      'You are the SINGLE READ-ONLY REVIEW LENS for this run. Nothing else reviews this deliverable, so a dimension you skip is a dimension nobody judged.',
+      lens.prompt,
+      ...refLines(lens.refs, JUDGE_REFS_INTRO),
+      ...digestLines(digest),
       '',
-      `cat <<'WORK_JEV_RANK_EOF' | bun ${JEV_RANK_SCRIPT}\n${payload}\nWORK_JEV_RANK_EOF`,
-      '',
-      'Rules:',
-      '- Run it EXACTLY as written. Do not edit the payload, do not re-order it, do not drop entries.',
-      '- Report `ok`, `reason` and `scores` exactly as the script printed them. Never invent a probability, never substitute your own opinion of a finding, never fill in a null.',
-      '- If the command fails to run at all, report ok=false with the error text as `reason`.',
+      'Rules: modify nothing; cite files and lines; run read-only commands and quote their output as your evidence.',
+      'Put a line number in the `line` field, NOT in `file`. A `file` of "src/a.go:135" matches no path in the plan\'s task table, so the fix loop cannot route it and re-runs everything.',
+      'A FINDING IS A DEFECT CLAIM AND NOTHING ELSE. Every entry in `findings` must assert that something is WRONG. "I checked X and it holds", "constraint Y is satisfied", "no violation found", "recorded for completeness" — none of those are findings, and filing one as a finding fails the run on a true statement.',
+      'Put every satisfied check in `dispositions` instead. It is REPORTED to the user in full, so the obligation to show what you examined is discharged there, not by inflating the findings list. If you must file a non-defect under `findings` anyway, set `defect: false` on it.',
     ].join('\n'),
-    { label: `rank:${key}`, phase: 'Verify', schema: RANKER_SCHEMA, ...optIf('model', probeModel), ...optIf('effort', thirdPartyEffort) }
-  )
-  // Every failure path lands here and logs once, because a silent fallback would make a ranked run
-  // and an unranked one indistinguishable in the transcript.
-  if (!out) {
-    log(`refuter ordering: lens "${key}" — ranker leg died; falling back to severity-only order`)
-    return null
-  }
-  if (!out.ok || !Array.isArray(out.scores)) {
-    log(`refuter ordering: lens "${key}" — Jev unavailable (${out.reason || 'no reason given'}); falling back to severity-only order`)
-    return null
-  }
-  const pOf = new Array(findings.length).fill(null)
-  for (const s of out.scores) {
-    if (s && Number.isInteger(s.index) && s.index >= 0 && s.index < findings.length && typeof s.p === 'number' && Number.isFinite(s.p)) {
-      pOf[s.index] = s.p
+    {
+      label: LENS_KEY, phase: 'Verify', schema,
+      ...agentTypeOpt(reviewAgentType(lens.agentType)),
+      ...optIf('model', lens.model || lensModel),
+      ...optIf('effort', lens.effort),
     }
-  }
-  const scored = pOf.filter(p => p !== null).length
-  if (!scored) {
-    log(`refuter ordering: lens "${key}" — Jev returned no usable probabilities; falling back to severity-only order`)
-    return null
-  }
-  log(`refuter ordering: lens "${key}" — ${findings.length} findings over the ${REFUTERS_PER_LENS} refuter cap, ${scored} scored by Jev; ranking within severity by likeliest-real`)
-  return pOf
-}
+  )
+  // A null result is an agent that never reported. An object with empty arrays is a lens that ran and
+  // found nothing — only the first is `reported: false`.
+  if (!review) return { routes: [], findings: [], dispositions: [], carriedRulings: [], reported: false }
 
-// ---------------------------------------------------------------- lens leg
-// Dispatch the lens array, adversarially refute what each lens returns, fail closed on a lens that
-// never reported.
-// Returns {findings, lensesRun, lensesReported} — findings are the refuted-or-kept pool, already
-// carrying `lens`, with a synthesized critical appended for every lens that did not report.
-const DEAD_LENS_HOW = 'its review leg produced no result'
-const runLensLeg = async lenses => {
-  // deadLenses records every dispatched lens whose agent returned nothing, so a crash-drop is
-  // distinguishable from a lens that ran and reported an empty findings list.
-  // Every lens gets an identity whether or not it declared a key, so a dead one can always be named
-  // in the selector and in the findings file. An unnamed dimension cannot be re-run.
-  const lensLabel = (lens, i) => ({
-    key: (lens && lens.key) || `${UNATTRIBUTED}#${i}`,
-    how: DEAD_LENS_HOW,
-  })
-  const deadLenses = new Map()
-  // Positive dispositions, from BOTH channels: the `dispositions` array a lens filled in, plus any
-  // finding the backstop routed out of the gate. Collected here rather than returned through the
-  // pipeline because the pipeline's per-item value is the findings array, and dispositions are not
-  // findings — threading them through would make the two look like one channel again.
+  // The two defect channels and the disposition channel, separated here. A lens's own `dispositions`
+  // are taken as given; a satisfied check it filed under `findings` is ROUTED there instead of
+  // gating. Nothing is deleted on either path — every entry is reported.
   const dispositions = []
-  const lensResults = await pipeline(
-    lenses,
-    (lens, _orig, lensIndex) => agent(
-      [
-        AUTHORITY,
-        '',
-        `You are a READ-ONLY REVIEWER applying one lens: ${lens.key}.`,
-        lens.prompt,
-        ...refLines(lens.refs, JUDGE_REFS_INTRO),
-        '',
-        'Rules: modify nothing; cite files/lines; report findings only for this lens; an empty findings list is a valid answer.',
-        'A FINDING IS A DEFECT CLAIM AND NOTHING ELSE. Every entry in `findings` must assert that something is WRONG. "I checked X and it holds", "constraint Y is satisfied", "no violation found", "recorded for completeness" — none of those are findings, and filing one as a finding gates the run on a true statement, because a refuter cannot refute something that is true.',
-        'Put every satisfied check in `dispositions` instead. It is REPORTED to the user in full, so the obligation to show what you examined is discharged there, not by inflating the findings list. If you must file a non-defect under `findings` anyway, set `defect: false` on it.',
-      ].join('\n'),
-      // Per-lens model and effort. A lens's own value wins over lensModel so one run can mix
-      // providers — cheap lenses on a small model, expensive ones on a large one. Effort resolves
-      // the same way but has no global to fall back to: there is deliberately no lensEffort.
-      { label: `lens:${lens.key}`, phase: 'Verify', schema: LENS_SCHEMA, ...agentTypeOpt(reviewAgentType(lens.agentType)),
-        ...optIf('model', lens.model || lensModel), ...optIf('effort', lens.effort) }
-    ).then(review => {
-      // A null result is an agent that never reported. An object with findings: [] is a lens that
-      // ran and found nothing — only the first is recorded as dead.
-      // The pipeline's own index. `lenses.indexOf(lens)` is an identity lookup returning the
-      // FIRST matching slot, so two slots holding the same object reference collapsed into one Map
-      // entry — the very collapse this was changed to eliminate, moved from key to object identity.
-      if (!review) deadLenses.set(lensIndex, lensLabel(lens, lensIndex))
-      return review
-    }),
-    async (review, lens) => {
-      // The two output channels, joined into one disposition pool. A lens's own `dispositions` are
-      // taken as given; a satisfied check it filed under `findings` is ROUTED here instead of being
-      // refuted and then gated. Nothing is deleted on either path — every entry is reported.
-      for (const d of review?.dispositions || []) {
-        if (d && d.title) dispositions.push({ title: d.title, ...(d.file ? { file: d.file } : {}), detail: d.detail, lens: lens.key })
-      }
-      const claimed = [...(review?.findings || [])]
-      const defectClaims = []
-      for (const f of claimed) {
-        const why = dispositionReason(f)
-        if (why) dispositions.push(routedDisposition(f, lens.key, why))
-        else defectClaims.push(f)
-      }
-
-      // Refuters per lens are the one UNBOUNDED term in the fan-out: the arg-validation cap can
-      // count everything else up front, but not how many findings a lens will return. Bound it here,
-      // severity-first so the cap can never spend its budget on minors and drop a critical.
-      const RANK = { critical: 0, major: 1, minor: 2 }
-      // WITHIN a severity, likeliest-real first, so a cap that truncates spends its slots on the
-      // findings most likely to be defects. Severity still dominates — a ranked minor never displaces
-      // a critical. Jev settles nothing: past the cap a finding keeps today's fail-closed treatment.
-      const pOf = await rankWithinSeverity(defectClaims, lens.key)
-      const ordered = defectClaims
-        .map((f, i) => ({ f, i, p: pOf ? pOf[i] : null }))
-        .sort((a, b) =>
-          ((RANK[a.f.severity] ?? 3) - (RANK[b.f.severity] ?? 3)) ||
-          // Higher p first. A finding Jev could not score sorts after every scored sibling in its
-          // severity but ahead of nothing else — it keeps its incoming order among the unscored.
-          ((b.p ?? -1) - (a.p ?? -1)) ||
-          (a.i - b.i)
-        )
-        .map(x => x.f)
-      const judged = ordered.slice(0, REFUTERS_PER_LENS)
-      const overflow = ordered.slice(REFUTERS_PER_LENS)
-      // `.then(r => r || keptFinding(...))` per slot: `parallel()` converts a REJECTED thunk — and a
-      // budget drop — to null, and the `.filter(Boolean)` below erases exactly those. A refuter that
-      // threw therefore deleted the finding it was meant to test, and the score table was
-      // byte-identical to a lens that reviewed and found nothing. Every sibling leg (implement,
-      // verify, mechanical, third-party) already carries this guard; this one did not, so a dead
-      // refuter kept its finding only when agent() resolved null, never when the slot died.
-      return parallel(judged.map(f => () =>
-        refuteFinding(f, {
-          key: lens.key,
-          header: `Adversarially REFUTE this ${f.severity} review finding (lens ${lens.key}):`,
-          refs: lens.refs,
-          agentType: lens.agentType,
-        })
-      )).then(rs => [
-        // Guarded AFTER parallel, like every sibling leg: a thunk that THROWS never reaches a
-        // `.then` on itself — `parallel()` converts the rejection to null — and the `.filter(Boolean)`
-        // downstream then erased the slot, deleting the finding the refuter was meant to test. The
-        // score table was byte-identical to a lens that reviewed and found nothing.
-        ...rs.map((r, i) => r || ({
-          ...keptFinding(judged[i], 'its refuter leg died, so this finding was never adversarially tested; it stands by the fail-closed rule'),
-          lens: lens.key,
-        })),
-        // Reported, never dropped. An untested finding STANDS (refuted: false) — the same
-        // fail-closed rule a dead refuter gets, because in both cases no refutation happened.
-        // Truncating silently would read as "the lens found nothing more", which is a lie the
-        // gate would then certify.
-        ...overflow.map(f => ({
-          ...keptFinding(f, `NOT REFUTED — lens "${lens.key}" returned ${ordered.length} findings, over the ${REFUTERS_PER_LENS}-per-lens refuter cap. This finding was never adversarially tested; it stands by the fail-closed rule, not by surviving refutation.`),
-          lens: lens.key,
-        })),
-      ])
-    }
-  )
-  // A null pipeline slot means the whole leg for that lens produced nothing — the lens agent may
-  // have reported and the refute stage then died. Either way that dimension has no usable result.
-  // Keyed on INDEX, and with no `key &&` guard. Keyed on `lens.key` two lenses sharing a key — or
-  // two that both omit one, which the param docs call normal — collapsed into one entry, so
-  // lensesReported over-counted and only one synthesized critical was emitted. The `key &&` guard
-  // meant an unkeyed lens could never be recorded dead at all: it counted as reported and the gate
-  // certified a dimension that never ran.
-  lensResults.forEach((slot, i) => {
-    if (slot == null && !deadLenses.has(i)) deadLenses.set(i, lensLabel(lenses[i], i))
-  })
-  const reported = lensResults.filter(Boolean).flat().filter(Boolean)
-  // Synthesized last so real findings keep their existing order. With every lens returning normally
-  // deadLenses is empty, this is a concat of [], and `findings` is byte-identical to before.
-  const findings = [...reported, ...[...deadLenses].map(([, label]) => deadLensFinding(label.key, label.how))]
-  return { findings, dispositions, lensesRun: lenses.length, lensesReported: lenses.length - deadLenses.size }
+  for (const d of review.dispositions || []) {
+    if (d && d.title) dispositions.push({ title: d.title, ...(d.file ? { file: d.file } : {}), detail: d.detail, lens: LENS_KEY })
+  }
+  const findings = []
+  for (const f of review.findings || []) {
+    if (!f || !f.title) continue
+    const why = dispositionReason(f)
+    if (why) dispositions.push(routedDisposition(f, why))
+    else findings.push({ ...f, lens: LENS_KEY })
+  }
+  const routes = (review.routes || []).filter(r => r && r.failure && r.ownerTask)
+  const carriedRulings = (review.carried || []).filter(c => c && typeof c.id === 'string')
+  return { routes, findings, dispositions, carriedRulings, reported: true }
 }
-// The whole-leg-died fallback, from the SAME helper so the dead wording cannot drift from the
-// in-leg synthesis: every lens is dead rather than clean, named by the same identity rule.
-// dispositions is [] here for the same reason findings is all-dead: nothing reported, so there is no
-// satisfied check to report either. An empty list is the honest answer, not a clean one — the dead
-// criticals carry the failure.
-const deadLensLeg = (lenses, how) => ({
-  findings: lenses.map((l, i) => deadLensFinding((l && l.key) || `${UNATTRIBUTED}#${i}`, how)),
-  dispositions: [],
-  lensesRun: lenses.length,
-  lensesReported: 0,
-})
 
 // ---------------------------------------------------------------- red gate (executed, never self-reported)
 // The probe is a separate agent from the implementer and is told nothing about which exit code is
@@ -901,7 +939,7 @@ const redProbe = (t, when) => agent(
     '- Run it EXACTLY as written. Do not substitute a different command, do not add or drop flags, do not re-run a "corrected" version.',
     '- Change nothing. Do not create, edit or delete any file, do not install anything, do not fix whatever the command complains about.',
     '- Either exit code is a valid and useful answer. Report what happened; do not try to make the command succeed or fail.',
-    `- Report name="${t.id}", exitCode = the command's actual integer exit status (capture it, e.g. append "; echo EXIT=$?"), and output = the last ~2000 characters of combined stdout+stderr.`,
+    `- Report name="${t.id}", exitCode = the command's actual integer exit status (capture it, e.g. append "; echo EXIT=$?"), and output = the last ${OUTPUT_TAIL_LINES} lines of combined stdout+stderr.`,
     '- Never report an exit code you did not observe. The gate reads your exitCode as fact.',
   ].join('\n'),
   { label: `red:${when}:${t.id}`, phase: 'Implement', effort: 'low', schema: MECHANICAL_SCHEMA, ...optIf('model', probeModel),
@@ -920,29 +958,6 @@ const redVerdict = (before, after) => {
   return RED_VERDICT_OK
 }
 
-// ---------------------------------------------------------------- prior findings
-// Prior findings are refuted by the SAME adversarial path as a lens finding: same REFUTE_SCHEMA, the
-// same "default to refuted when ambiguous" instruction, and the same fail-closed rule that a dead
-// refuter KEEPS the finding. The judged results then flow into surviving -> survivingBlocking ->
-// lensesThatFlagged -> overallPass by the ordinary arithmetic below, with no special casing.
-// Empty when priorFindings is absent: no agent is dispatched and the leg contributes [].
-const priorFindingsLeg = async () => {
-  if (priorFindings.length === 0) return []
-  const results = await parallel(priorFindings.map(f => () => refuteFinding(f, {
-    key: f.lens,
-    header: `Adversarially REFUTE this ${f.severity} finding, reported by a PRIOR review pass (attributed to: ${f.lens}):`,
-    extra: ['This finding was NOT produced by this run. It came from a separate discovery pass whose premises you did not share and must not assume are correct.'],
-    // A prior finding attributed to a real lens is judged against that lens's rules; otherwise none.
-    refs: (reviewLenses.find(l => l.key === f.lens) || {}).refs,
-    agentType: f.agentType,
-    labelPrefix: 'refute:prior',
-  })))
-  // Fail closed: a null slot is a refutation that never happened, so the finding stands.
-  return results.map((r, i) => r || keptFinding(priorFindings[i], 'refuter died — finding kept'))
-}
-// Fail closed on the whole leg: if it died, nothing was refuted, so every prior finding stands.
-const priorFallback =() => priorFindings.map(f => keptFinding(f, 'the prior-findings refute leg failed — finding kept'))
-
 // ---------------------------------------------------------------- Implement (sequential: shared working tree)
 // Skipped ENTIRELY under readOnly: the phase is not opened and no implementer agent is dispatched.
 const implemented = []
@@ -959,8 +974,10 @@ if (!readOnly) phase('Implement')
 // concurrency it did not forbid.
 for (const wave of IMPLEMENT_WAVES) {
   const outcomes = await parallel(wave.map(t => async () => {
-  // Absent redCommand => no probe agent is dispatched and nothing below this line differs.
-  const redBefore = isRedGated(t) ? await redProbe(t, 'before') : null
+  // Absent redCommand => no probe agent is dispatched and nothing below this line differs. A task
+  // carrying a PROVEN red adjudication is not re-probed either: after the fix landed, a second
+  // `before` probe observes exit 0 and returns `red-not-red` on a task that is in fact done (M1).
+  const redBefore = needsRedProbe(t) ? await redProbe(t, 'before') : null
   const r = await agent(
     [
       AUTHORITY,
@@ -970,6 +987,10 @@ for (const wave of IMPLEMENT_WAVES) {
       `Writable paths (hard boundary — touch nothing outside them): ${(t.writablePaths || []).join(', ') || 'as specified in the plan for this task'}`,
       `Acceptance: ${t.acceptance}`,
       ...refLines(t.refs, IMPL_REFS_INTRO),
+      // M3: what last round's review said this task must fix. Before this the carried findings
+      // reached only the review legs, so the one agent that could act on them was the one agent never
+      // shown them. Absent taskFixes contributes nothing — not a blank line, not a heading.
+      ...fixLines(t),
       '',
       'Rules:',
       '- Leave changes in the working tree. Do NOT commit, push, or switch branches.',
@@ -982,7 +1003,7 @@ for (const wave of IMPLEMENT_WAVES) {
   // The agent's own id is not evidence — this leg was dispatched for a known task, so stamp it.
   const record = r ? { ...r, id: t.id } : { id: t.id, done: false, changedFiles: [], evidence: '', blockers: ['agent died or was skipped'] }
   let red = null
-  if (isRedGated(t)) {
+  if (needsRedProbe(t)) {
     // Adjudicated AFTER dispatch, like the contract it ports: a failed verdict fails the task rather
     // than skipping the implementer, so the second probe always observes the post-implementation tree.
     const redAfter = await redProbe(t, 'after')
@@ -1004,7 +1025,7 @@ for (const wave of IMPLEMENT_WAVES) {
     const o = outcomes[i]
     implemented.push(o ? o.record : { id: t.id, done: false, changedFiles: [], evidence: '', blockers: ['implement leg threw or was dropped'] })
     if (o && o.red) redResults.push(o.red)
-    else if (!o && isRedGated(t)) {
+    else if (!o && needsRedProbe(t)) {
       redResults.push({
         id: t.id, command: t.redCommand, verdict: 'red-unproven',
         beforeExit: -1, afterExit: -1,
@@ -1014,7 +1035,10 @@ for (const wave of IMPLEMENT_WAVES) {
   })
 }
 
-// ---------------------------------------------------------------- Verify ∥ Third-party (barrier: the gate needs both)
+// ------------------------------------- Verify ∥ Mechanical ∥ Scored ∥ Third-party (barrier, then the lens)
+// The per-task verifiers, the mechanical probes, the scored probes and the third-party runners are
+// independent of each other, so they run as one parallel group. The LENS is NOT in that group: it
+// reads their results.
 const verifyLeg = async () => {
   // Under readOnly the per-task verifier fan-out is skipped ENTIRELY — parallel() is not called and
   // no verifier agent is dispatched. `verified` is [] because nothing was judged, which is why the
@@ -1040,8 +1064,9 @@ const verifyLeg = async () => {
     ? { ...v, id: activeTasks[i].id }
     : { id: activeTasks[i].id, pass: false, evidence: '', failures: ['verifier died or was skipped'] }))
 
-  // whole-deliverable lenses, each finding adversarially refuted as soon as its lens completes.
-  return { verified, ...(await runLensLeg(reviewLenses)) }
+  // No lens here. It runs after this leg, over the digest of what this leg and the mechanical checks
+  // reported — which is exactly why it cannot be inside the same parallel group.
+  return verified
 }
 
 // Mechanical checks are whole-deliverable: they ALWAYS run, including under onlyTasks, and are never
@@ -1062,12 +1087,12 @@ const mechanicalLeg = async () => {
         '- Run it EXACTLY as written. Do not substitute a different command, do not add or drop flags, do not re-run a "corrected" version.',
         '- Change nothing. Do not fix anything the command complains about, do not create missing files, do not install anything.',
         '- If the command fails, that is the answer. Report it. A non-zero exit code is a valid and useful result.',
-        `- Report name="${c.name}", exitCode = the command's actual integer exit status (capture it, e.g. append "; echo EXIT=$?"), and output = the last ~2000 characters of combined stdout+stderr.`,
+        `- Report name="${c.name}", exitCode = the command's actual integer exit status (capture it, e.g. append "; echo EXIT=$?"), and output = the last ${OUTPUT_TAIL_LINES} lines of combined stdout+stderr.`,
         '- Never report an exit code you did not observe. The gate reads your exitCode as fact.',
       ].join('\n'),
       { label: `mechanical:${c.name}`, phase: 'Mechanical', effort: 'low', schema: MECHANICAL_SCHEMA, ...optIf('model', probeModel),
         ...agentTypeOpt(reviewAgentType()) }
-    ).then(r => r || { name: c.name, exitCode: -1, output: 'probe agent died or was skipped' })
+    ).then(r => r ? { ...r, name: c.name } : { name: c.name, exitCode: -1, output: 'probe agent died or was skipped' })
   ))
   // Fail closed: parallel() may itself yield null slots; those become exitCode -1 → FAILED.
   return results.map((r, i) => r || { name: mechanicalChecks[i].name, exitCode: -1, output: 'probe agent died or was skipped' })
@@ -1185,38 +1210,72 @@ const thirdPartyLeg = async () => {
   return results.filter(Boolean)
 }
 
-const [verifyOut, mechanicalOut, thirdPartyOut, priorFindingsOut, scoredOut] = await parallel([verifyLeg, mechanicalLeg, thirdPartyLeg, priorFindingsLeg, scoredLeg])
-// Fail closed at the leg level too: if the whole verify leg died, no lens reported, so every lens
-// is dead rather than clean.
-const { verified, findings: lensFindings, dispositions: lensDispositions, lensesRun, lensesReported } = verifyOut || {
-  // readOnly dispatched no verifiers, so there is nothing to fail closed on for tasks; the lens
-  // dimension still fails closed below.
-  verified: readOnly ? [] : activeTasks.map(t => ({ id: t.id, pass: false, evidence: '', failures: ['verify leg failed'] })),
-  // Same identity synthesis as the in-leg site. Using the raw `l.key` here named an unkeyed lens
-  // "undefined" and collapsed two of them into one selector entry, on the one path where EVERY lens
-  // is dead — so the run that most needs its dimensions named was the one that could not name them.
-  ...deadLensLeg(reviewLenses, 'the whole verify leg failed, so it never reported'),
+// ── the barrier ──────────────────────────────────────────────────────────────
+// Four independent legs, one parallel group. The lens is NOT among them: it reads their results.
+const attemptsLeg = async () => {
+  if (attempts.length === 0) return []
+  const results = await parallel(attempts.map(a => () =>
+    agent(
+      [
+        AUTHORITY,
+        '',
+        a.prompt,
+      ].join('\n'),
+      {
+        label: `attempt:${a.key}`,
+        phase: 'Verify',
+        schema: ATTEMPT_SCHEMA,
+        refs: a.refs,
+        ...optIf('model', a.model),
+        ...optIf('effort', a.effort),
+        ...agentTypeOpt(a.agentType || 'Explore'),
+      }
+    ).then(r => (!r || !r.answer ? { key: a.key, answer: null } : r))
+  ))
+  return results.map((r, i) => r || { key: attempts[i].key, answer: null })
 }
+
+const ruleChecksLeg = async () => {
+  if (!ruleChecks) return null
+  const r = await agent(
+    [
+      AUTHORITY,
+      '',
+      `You are a RULE CHECKS PROBE for "${ruleChecks.name}". You are not a reviewer and you fix nothing.`,
+      'Run this command VERBATIM via Bash, from the project directory:',
+      '',
+      ruleChecks.cmd,
+      '',
+      'Rules:',
+      '- Run it EXACTLY as written. Do not substitute a different command, do not add or drop flags.',
+      '- Change nothing.',
+      `- Report name="${ruleChecks.name}", exitCode = the command's actual integer exit status, and stdout = the single JSON line the command printed to stdout, copied verbatim.`,
+    ].join('\n'),
+    { label: `rules:${ruleChecks.name}`, phase: 'Verify', effort: 'low', schema: RULE_CHECKS_SCHEMA, ...optIf('model', probeModel), ...agentTypeOpt(reviewAgentType()) }
+  )
+  return r || { name: ruleChecks.name, exitCode: -1, stdout: 'probe agent died or was skipped' }
+}
+
+const [verifyOut, mechanicalOut, scoredOut, thirdPartyOut, attemptsOut, ruleChecksOut] = await parallel([verifyLeg, mechanicalLeg, scoredLeg, thirdPartyLeg, attemptsLeg, ruleChecksLeg])
+const attemptsResult = attemptsOut || attempts.map(a => ({ key: a.key, answer: null }))
+// Fail closed at the leg level: a dead verify leg means nothing judged the tasks, not that they passed.
+const verified = verifyOut || (readOnly
+  ? []
+  : activeTasks.map(t => ({ id: t.id, pass: false, evidence: '', failures: ['verify leg failed'] })))
 // Fail closed once more: if the whole leg died, every declared check is a failure, not a pass.
 const mechanical = mechanicalOut || mechanicalChecks.map(c => ({ name: c.name, exitCode: -1, output: 'mechanical leg failed' }))
 const thirdPartyResults = thirdPartyOut || []
-// Fail closed on the whole prior-findings leg too: if it died, nothing was refuted, so every prior
-// finding stands. Empty when priorFindings is absent.
-const priorJudged = priorFindingsOut || priorFallback()
 // Fail closed on the scored leg too. It is NOT joined into `findings` and no conjunct below reads it:
 // a scored value that reached the verdict would make an advisory channel a gate by the back door.
 const scoredResult = scoredOut || deadScoredLeg()
 const scores = scoredResult.scores
-// One undifferentiated pool from here down: a surviving prior finding is gated EXACTLY like a
-// surviving lens finding. With priorFindings absent this is a concat of [] and `findings` is
-// byte-identical to the lens list.
-const findings = [...lensFindings, ...priorJudged]
 
-// ---------------------------------------------------------------- Gate (JS arithmetic — no agent asserts the verdict)
-phase('Gate')
+// ---------------------------------------------------------------- what the checks said (the lens's input)
+// Computed BEFORE the lens, because the mode and the digest are derived from it. The gate below reads
+// these same arrays — the lens never gets a paraphrase of a result the gate reads differently.
 const allImplemented = carryForward(priorImplemented, implemented)
 const allVerified = carryForward(priorVerified, verified)
-const allRed = carryForward(priorRed, redResults)
+const allRed = carryRed(redResults)
 
 // The task dimensions have THREE states, not two. Outside readOnly they are computed and are
 // either clean or failing. Under readOnly no implementer and no verifier was dispatched, so they are
@@ -1236,136 +1295,274 @@ const taskDims = readOnly ? null : {
   redGateFailed: allRed.filter(r => r.verdict !== RED_VERDICT_OK).map(r => r.id),
   redMissing: redGatedAll.filter(t => !allRed.some(r => r.id === t.id)).map(t => t.id),
 }
-// Satisfied checks a lens reported, plus any it filed as a finding and the backstop routed out.
-// Deliberately absent from `findings` and from every conjunct in overallPass: a disposition asserts
-// nothing is wrong, so a refuter cannot refute it and a gate must not block on it. [] on every run
-// where no lens reported one, which is every run before this channel existed.
-const dispositionPool = lensDispositions || []
-const surviving = findings.filter(f => !f.refuted)
-const isBlocking = f => f.severity === 'critical' || f.severity === 'major'
-// Under freezeFindingSet the blocking channel is the CARRIED set only: a surviving lens finding is
-// residue — reported, never gating. `residue` is [] (and both keys absent from the return) without
-// the flag, so survivingBlocking is byte-identical for every existing caller.
-const residue = freezeFindingSet ? lensFindings.filter(f => !f.refuted && isBlocking(f)) : []
-const survivingBlocking = (freezeFindingSet ? priorJudged.filter(f => !f.refuted) : surviving).filter(isBlocking)
+// The task selector IS the task conjunct — derived, not computed a second time. Previously
+// taskDimsClean (a conjunction) and tasksThatFlagged (a union) were two hand-maintained expressions
+// over identical inputs; a guard added to one and not the other would let a run fail with an empty
+// selector. Union-empty and every-dimension-empty are the same statement, so saying it once makes L3
+// true by construction for this channel. Under readOnly taskDims is null => [] => the conjunct is
+// satisfied and contributes nothing.
+const taskDimsFlagged = taskDims ? [...new Set(Object.values(taskDims).flat())] : []
 // The JS reads the exit code; no agent asserts a mechanical pass. -1 (dead/skipped probe) fails here.
 const mechanicalThatFailed = mechanical.filter(r => r.exitCode !== 0)
 
+const rulesThatFailed = []
+const ruleVerdicts = []
+if (ruleChecks) {
+  let parsed = null
+  let parseFailed = false
+  if (!ruleChecksOut || ruleChecksOut.exitCode === -1) {
+    parseFailed = true
+  } else {
+    try {
+      parsed = JSON.parse(ruleChecksOut.stdout)
+      if (!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.verdicts) || !Array.isArray(parsed.unavailable)) {
+        parseFailed = true
+      } else if (parsed.unavailable.length > 0) {
+        parseFailed = true
+      } else {
+        for (const v of parsed.verdicts) {
+          if (!v || typeof v.rule !== 'string' || !Number.isFinite(v.p) || typeof v.verdict !== 'string') {
+            parseFailed = true
+            break
+          }
+        }
+      }
+    } catch (e) {
+      parseFailed = true
+    }
+  }
+
+  if (parseFailed) {
+    rulesThatFailed.push(`ruleChecks:${ruleChecks.name}`)
+  } else {
+    for (const v of parsed.verdicts) {
+      ruleVerdicts.push({ rule: v.rule, p: v.p, verdict: v.verdict })
+      if (v.p >= ruleChecks.blockAt) {
+        rulesThatFailed.push(v.rule)
+      }
+    }
+  }
+}
+
+// ---------------------------------------------------------------- the lens (one agent, after the checks)
+// The mode is decided HERE, from the same arrays the gate reads — never by the lens, which would then
+// be choosing how hard to be judged.
+const lensMode = (taskDimsFlagged.length || mechanicalThatFailed.length || rulesThatFailed.length) ? MODE_RED : MODE_GREEN
+const dimReason = {
+  notDone: 'the implementer reported done=false or never reported',
+  missingImpl: 'no implementer record exists for it this round or in priorResults',
+  failedVerify: 'its blind verifier judged the acceptance criterion unmet',
+  missingVerify: 'no verifier record exists for it this round or in priorResults',
+  redGateFailed: 'its test-first red gate did not return the red-then-green pair',
+  redMissing: 'it declares a redCommand but carries no adjudication',
+}
+const digest = {
+  mode: lensMode,
+  flaggedTasks: taskDims
+    ? Object.entries(taskDims).flatMap(([dim, ids]) => ids.map(id => `${id}: ${dimReason[dim] || dim} (${dim})`))
+    : [],
+  verifierFailures: allVerified
+    .filter(v => !v.pass)
+    .map(v => `${v.id}: ${(Array.isArray(v.failures) ? v.failures : []).join('; ') || 'no reason reported'}`),
+  redOutcomes: allRed.map(r =>
+    `${r.id}: ${r.verdict} (before exit ${r.beforeExit}, after exit ${r.afterExit}) — ${r.command || 'command not recorded'}`),
+  mechanicalFailures: mechanicalThatFailed,
+  rulesThatFailed: rulesThatFailed.map(id => {
+    if (id.startsWith('ruleChecks:')) return `${id} (check died, unparseable, or unavailable is non-empty)`
+    const v = ruleVerdicts.find(x => x.rule === id)
+    return `${v.rule}: p=${v.p} — ${v.verdict}`
+  }),
+  advisoryRules: ruleVerdicts.filter(v => v.p < (ruleChecks ? ruleChecks.blockAt : 1)).sort((a, b) => b.p - a.p).map(v => `${v.rule}: p=${v.p} — ${v.verdict}`),
+  carried: carriedFindings,
+  attempts: attemptsResult,
+}
+// parallel() converts a rejected thunk to null, which is how a leg that THREW is told apart from an
+// agent that returned nothing. Both are dead; neither is clean.
+const lensLeg = (await parallel([() => runLensLeg(digest)]))[0]
+const lensResult = lensLeg && lensLeg.reported ? lensLeg : {
+  routes: [],
+  findings: [deadLensFinding(lensLeg ? 'it produced no result' : 'its leg threw or was dropped before it could report')],
+  dispositions: [],
+  carriedRulings: [],
+  reported: false,
+}
+const lensReported = lensResult.reported
+const lensFindings = [
+  ...lensResult.findings,
+  ...attemptsResult.filter(a => !a.answer).map(a => deadAttemptFinding(a.key))
+]
+const routes = lensResult.routes
+// Satisfied checks the lens reported, plus any it filed as a finding and the backstop routed out.
+// Deliberately absent from `findings` and from every conjunct in overallPass: a disposition asserts
+// nothing is wrong, so a gate must not block on it.
+const dispositionPool = lensResult.dispositions
+
+// ---------------------------------------------------------------- Gate (JS arithmetic — no agent asserts the verdict)
+phase('Gate')
+// Carried rulings, applied fail-closed. FIRST ruling per id wins, so a lens that rules twice cannot
+// close a finding by repeating itself. Three ways a carried finding stays OPEN: the lens never ruled
+// on it, the lens ruled it closed with no evidence, and the lens never reported at all.
+const rulingById = new Map()
+for (const c of lensResult.carriedRulings) if (!rulingById.has(c.id)) rulingById.set(c.id, c)
+const carriedRuled = carriedFindings.map(f => {
+  const r = rulingById.get(f.id)
+  if (!r) {
+    return { ...f, status: 'open', evidence: lensReported
+      ? 'the lens returned no ruling for this id — an unruled carried finding stays open'
+      : 'the review lens never reported, so nothing ruled on this finding' }
+  }
+  const evidence = typeof r.evidence === 'string' ? r.evidence : ''
+  if (r.status === 'closed' && !evidence.trim()) {
+    return { ...f, status: 'open', evidence: 'the lens ruled this closed and supplied no evidence — a closed verdict with nothing behind it is not a ruling' }
+  }
+  return { ...f, status: r.status === 'closed' ? 'closed' : 'open', evidence }
+})
+const carriedOpen = carriedRuled.filter(f => f.status === 'open')
+
+const isBlocking = f => f.severity === 'critical' || f.severity === 'major'
+// The synthesized dead-lens critical is NOT a fresh finding: it is the absence of the adjudication
+// the freeze depends on, so it gates in both modes (gate-laws L4). Separating it here is what keeps
+// `freezeFindingSet` from deferring a review that never happened into residue.
+const deadLensBlocking = lensFindings.filter(f => f.syntheticDeadLens || f.syntheticDeadAttempt)
+const freshBlocking = lensFindings.filter(f => !(f.syntheticDeadLens || f.syntheticDeadAttempt) && isBlocking(f))
+// Under freezeFindingSet the blocking channel is the CARRIED set only: a fresh blocking lens finding
+// is residue — reported, never gating. `residue` is [] (and both keys absent from the return) without
+// the flag.
+const residue = freezeFindingSet ? freshBlocking : []
+const survivingBlocking = [
+  ...deadLensBlocking,
+  ...carriedOpen.filter(isBlocking),
+  ...(freezeFindingSet ? [] : freshBlocking),
+]
+// Everything that STANDS after this round: the lens's fresh findings (blocking or minor, residue
+// included — frozen means "does not gate", not "not looked for") plus the carried findings still open.
+// A closed carried finding is reported under `carried`, not here.
+const findings = [...lensFindings, ...carriedOpen]
+
+// ── routing (M1/M2: a failure attributable to nothing re-runs everything) ────
+// A route names a failure the checks already found; a blocking finding names a defect that stands.
+// Both carry an ownerTask, and that is what narrows the next round. An owner that is a real task id
+// joins tasksThatFlagged; the literal "plan" goes to planFindings, which the redispatcher refuses to
+// act on until the plan itself is amended and re-hashed.
+const PLAN_OWNER = 'plan'
+const ownerOf = x => (x && typeof x.ownerTask === 'string' ? x.ownerTask.trim() : '')
+const routable = [
+  ...routes.map(r => ({ kind: 'route', item: r })),
+  // The dead-lens critical is excluded: it owns no task and names no defect in the deliverable — it
+  // reports that the review did not run, which is fixed by re-running the lens, not by a task.
+  ...survivingBlocking.filter(f => !(f.syntheticDeadLens || f.syntheticDeadAttempt)).map(f => ({ kind: 'finding', item: f })),
+]
+const routedTaskOwners = [...new Set(routable.map(x => ownerOf(x.item)).filter(o => taskIds.has(o)))]
+const planFindings = routable.filter(x => ownerOf(x.item) === PLAN_OWNER).map(x => x.item)
+// Named, not swallowed: an owner that is neither a task id nor "plan" narrows nothing, so the next
+// round re-runs everything. The run still FAILS (the failure it describes is in another selector), but
+// a reader has to be able to see why the re-run was not narrowed.
+const unroutable = routable.filter(x => {
+  const o = ownerOf(x.item)
+  return o !== PLAN_OWNER && !taskIds.has(o)
+})
+
 // Third-party results are deliberately absent from this arithmetic: advisory only.
-// With mechanicalChecks absent, mechanicalThatFailed is [] and this reduces to exactly the five
-// pre-existing conditions.
-// The task conjunct is every taskDims dimension when they apply. Under readOnly they do not apply
-// and contribute NOTHING to the verdict — they are not counted as satisfied conditions, they are
-// removed from the arithmetic, and the score table reports them as n/a so no reader mistakes an
-// undispatched dimension for a clean one.
-// The task selector IS the task conjunct — derived, not computed a second time. Previously
-// taskDimsClean (a conjunction) and tasksThatFlagged (a union) were two hand-maintained
-// expressions over identical inputs; a guard added to one and not the other would let a run fail
-// with an empty selector. Union-empty and every-dimension-empty are the same statement, so saying it
-// once makes L3 true by construction for this channel rather than by the argument below — and a new
-// dimension (redGateFailed/redMissing) joins both the verdict and the selector by adding one key.
-// Under readOnly taskDims is null => [] => the conjunct is satisfied and contributes nothing.
-const tasksThatFlagged = taskDims ? [...new Set(Object.values(taskDims).flat())] : []
+// Three conjuncts, and every one of them has a selector below:
+//   taskDims + routed owners -> tasksThatFlagged   (re-run the TASK)
+//   mechanicalThatFailed     -> itself             (re-run the CHECK)
+//   survivingBlocking        -> lensesThatFlagged  (re-run the LENS) + planFindings when owned by the plan
+// Under readOnly the task channel is [] BY DESIGN, so the other two must cover every readOnly failure
+// path — and they do, since those are the only conjuncts a readOnly run can fail on. L3 holds.
+const tasksThatFlagged = [...new Set([...taskDimsFlagged, ...routedTaskOwners])]
 const overallPass =
   tasksThatFlagged.length === 0 &&
   survivingBlocking.length === 0 &&
-  mechanicalThatFailed.length === 0
+  mechanicalThatFailed.length === 0 &&
+  rulesThatFailed.length === 0
 
-// Three re-run selectors, one per dimension the gate can fail on. Every condition in overallPass
-// above must land in at least one of them, or overallPass === false with an empty selector means
-// "re-run everything" instead of "here is what to fix".
-//   notDone / missingImpl / failedVerify / missingVerify -> tasksThatFlagged (re-run the TASK)
-//   mechanicalThatFailed                                 -> re-run the CHECK, not a task
-//   survivingBlocking                                    -> lensesThatFlagged (re-run the LENS)
-// missingImpl/missingVerify are included here because a task whose implementer or verifier never
-// reported is exactly a task that must be re-run; omitting them let a fail escape with an empty
-// selector.
-// Under readOnly the task channel is [] BY DESIGN, which is why the two remaining channels must
-// cover every readOnly failure path. They do: the task conjunct is satisfied by an empty selector,
-// so the only conjuncts that can make overallPass false are survivingBlocking (=> lensesThatFlagged,
-// non-empty by the fallback below) and mechanicalThatFailed (=> itself, non-empty). L3 holds.
-// Distinct lens keys of findings that survived refutation. A surviving finding has no owning task —
-// it is fixed and then re-judged by re-running THAT LENS, not by re-implementing a task.
-// survivingBlocking is a subset of surviving, so any gate failure from a blocking finding is covered.
-// A surviving finding with no lens key is bucketed to UNATTRIBUTED in BOTH modes. It used to drop
-// out of the selector outside readOnly, which made an unkeyed lens's finding produce FAIL with all
-// three selectors empty — the state L3 says cannot occur and the docs told readers was impossible.
-const lensesThatFlagged = [...new Set(surviving.map(f => f.lens || UNATTRIBUTED).filter(Boolean))]
+// ONE lens, so this selector is a boolean wearing an array's clothes — kept as an array key because
+// every consumer of a work result reads it as one, and because it is the channel that makes L3 true
+// for a blocking finding no task owns. Blocking-only: a minor finding does not fail the gate, so it
+// needs no re-run target.
+const lensesThatFlagged = survivingBlocking.length ? [LENS_KEY] : []
 const judged = readOnly
   ? 'read-only run: no tasks implemented or verified — the task dimensions are n/a, not clean'
   : onlyTasks ? `${activeTasks.length} of ${taskList.length} tasks re-judged this run; ${carried.length} carried from priorResults` : `all ${taskList.length} tasks judged this run`
 const mechNote = mechanical.length ? `; mechanical ${mechanical.length - mechanicalThatFailed.length}/${mechanical.length} passed` : ''
 // Silent when nothing is red-gated, so an existing caller's log line is unchanged.
 const redFailed = allRed.filter(r => r.verdict !== RED_VERDICT_OK)
+const redCarried = allRed.filter(r => notReprobed.has(r.id)).length
 const redNote = !redGatedAll.length
   ? ''
   // Under readOnly nothing was probed, so "0/N proven" beside a PASS would read as N failures.
   : readOnly
     ? `; red gate n/a (readOnly — no probe dispatched for ${redGatedAll.length} red-gated task(s))`
-    : `; red gate ${allRed.length - redFailed.length}/${redGatedAll.length} proven${redFailed.length ? ` (${redFailed.map(r => `${r.id}:${r.verdict}`).join(', ')})` : ''}`
-// Silent when every lens reported, so a clean run's log is unchanged.
-const lensNote = lensesReported < lensesRun ? `; ${lensesRun - lensesReported} of ${lensesRun} lenses did NOT report (counted as critical, not clean)` : ''
+    : `; red gate ${allRed.length - redFailed.length}/${redGatedAll.length} proven${redCarried ? ` (${redCarried} carried, not re-probed)` : ''}${redFailed.length ? ` (${redFailed.map(r => `${r.id}:${r.verdict}`).join(', ')})` : ''}`
+// The lens leg, in one clause: which mode it ran in, and whether it reported at all.
+const lensNote = lensReported
+  ? `; lens ${lensMode}${routes.length ? `, ${routes.length} route(s)` : ''}${lensFindings.length ? `, ${lensFindings.length} finding(s)` : ''}`
+  : '; the lens did NOT report (counted as a critical, not as clean)'
+const planNote = planFindings.length ? `; ${planFindings.length} item(s) routed to the PLAN — amend it and re-hash, no task can fix them` : ''
+const unroutableNote = unroutable.length
+  ? `; ${unroutable.length} item(s) name no valid ownerTask (${[...new Set(unroutable.map(x => JSON.stringify(ownerOf(x.item))))].join(', ')}) — the next round cannot be narrowed`
+  : ''
 // Silent without the freeze, so an existing caller's log line is unchanged.
 const freezeNote = freezeFindingSet
-  ? `; finding set FROZEN — ${survivingBlocking.length} carried finding(s) still stand, ${residue.length} fresh blocking finding(s) held as residue`
-  : ''
-// Silent when no lens reported a satisfied check, so an existing caller's log line is unchanged. When
-// one did, the routed count is named: a non-zero routed count is a lens whose prompt is not landing,
-// and it would otherwise be invisible behind a PASS.
+  ? `; finding set FROZEN — ${carriedOpen.length} of ${carriedFindings.length} carried finding(s) still open, ${residue.length} fresh blocking finding(s) held as residue`
+  : carriedFindings.length ? `; ${carriedOpen.length} of ${carriedFindings.length} carried finding(s) still open` : ''
+// Silent when the lens reported no satisfied check. When it did, the routed count is named: a
+// non-zero routed count is a lens whose prompt is not landing, and it would otherwise be invisible
+// behind a PASS.
 const routedCount = dispositionPool.filter(d => d.routedFromFinding).length
 const dispNote = dispositionPool.length
-  ? `; ${dispositionPool.length} positive disposition(s) reported, not gated${routedCount ? ` (${routedCount} routed out of findings — a lens filed a satisfied check as a defect)` : ''}`
+  ? `; ${dispositionPool.length} positive disposition(s) reported, not gated${routedCount ? ` (${routedCount} routed out of findings — the lens filed a satisfied check as a defect)` : ''}`
   : ''
-log(`gate: ${overallPass ? 'PASS' : 'FAIL'} — ${judged}${redNote}${mechNote}${lensNote}${dispNote}${freezeNote}`)
+log(`gate: ${overallPass ? 'PASS' : 'FAIL'} — ${judged}${redNote}${mechNote}${lensNote}${planNote}${unroutableNote}${dispNote}${freezeNote}`)
 
+// RETURN CONTRACT (gate-laws L1 — this list, work/SKILL.md's param table, and the keys below must
+// agree; work-result.sh's CONTRACT pins the required subset):
+//   overallPass, verdict, scoreTable, judged, implemented, verified, red?, findings, carried,
+//   routes, dispositions, residue?, thirdParty, mechanical, scores, attempts,
+//   tasksThatFlagged, mechanicalThatFailed, lensesThatFlagged, planFindings, rulesThatFailed, ruleVerdicts
 return {
   overallPass,
   verdict: overallPass ? 'PASS' : 'FAIL',
   scoreTable: {
     tasksTotal: taskList.length,
+    attempts: attemptsResult.map(a => ({ key: a.key, reported: !!a.answer })),
+    ...(ruleChecks ? { rulesThatFailed: rulesThatFailed.length, ruleVerdicts: ruleVerdicts.length } : {}),
     // n/a (null), NOT 0. Under readOnly nothing was implemented or verified because nothing was
     // dispatched; rendering 0/0 next to real counts would read as "checked and clean".
-    // Same three keys in BOTH modes, so a reader distinguishes exactly two states — null means the
-    // dimension does not apply, a number means it was computed. (An earlier shape emitted four extra
-    // null keys plus an explanatory string under readOnly only, which forced a consumer to tell null
-    // from undefined from 0 across two different key sets. `judged` below carries the prose.)
     tasksJudgedThisRun: readOnly ? null : activeTasks.length,
     implementedDone: readOnly ? null : allImplemented.filter(r => r.done).length,
     verifyPassed: readOnly ? null : allVerified.filter(r => r.pass).length,
-    // lensesRun is what was dispatched; lensesReported is what actually came back. When they differ,
-    // the missing lenses did NOT review cleanly — each contributed a synthesized critical finding.
-    lensesRun,
-    lensesReported,
+    // ONE lens. `lensesRun` is always 1 and `lensesReported` is 1 or 0 — kept as the same two keys
+    // rather than a boolean because every existing consumer reads the pair, and 1/0 says exactly what
+    // n-of-m said: the review that was dispatched did not come back.
+    lensesRun: 1,
+    lensesReported: lensReported ? 1 : 0,
+    lensMode,
     // null on every run without scoredChecks, so an unscored run never reads as scored-and-clean —
     // never 0, which reads as "scored and clean". Neither appears in overallPass.
     scoresRun: scoredResult.scoresRun,
     scoresReported: scoredResult.scoresReported,
-    // Counts the merged judged pool — lens findings PLUS any priorFindings. The name predates the
-    // priorFindings channel and is kept for compatibility with existing consumers of scoreTable;
-    // priorFindingsSubmitted/Surviving below break out the second source. Equal to the lens count
-    // whenever priorFindings is absent, which is every pre-existing caller.
+    // Everything that stands: the lens's fresh findings plus the carried findings still open. The name
+    // predates the one-lens change and is kept for the consumers that read it (converge-check.ts).
     lensFindings: findings.length,
-    refuted: findings.length - surviving.length,
+    routes: routes.length,
     survivingBlocking: survivingBlocking.length,
     // Counted from the severity, not as "everything left over": under freezeFindingSet the residue
     // is blocking-severity and out of survivingBlocking, and a subtraction would file it as minor.
-    survivingMinor: surviving.filter(f => !isBlocking(f)).length,
-    // Satisfied checks — the second lens channel. NOT part of any conjunct above: a disposition is
+    survivingMinor: findings.filter(f => !isBlocking(f)).length,
+    // The carried set's arithmetic, in the two numbers that say whether the loop is converging:
+    // how many were handed to the lens, and how many it could not close. 0/0 when none were supplied.
+    carriedSubmitted: carriedFindings.length,
+    carriedOpen: carriedOpen.length,
+    planFindings: planFindings.length,
+    // Satisfied checks — the lens's other channel. NOT part of any conjunct above: a disposition is
     // the absence of a defect, so gating on one would gate on a true statement, which is the leak this
     // channel exists to close. `dispositionsRoutedFromFindings` is how many arrived as findings and
-    // were routed out; a non-zero value means a lens is still mis-filing and its prompt is not landing.
+    // were routed out; a non-zero value means the lens prompt is not landing.
     dispositions: dispositionPool.length,
-    dispositionsRoutedFromFindings: dispositionPool.filter(d => d.routedFromFinding).length,
+    dispositionsRoutedFromFindings: routedCount,
     // Absent entirely without the flag, so the table is unchanged for every existing caller.
     ...(freezeFindingSet ? { residue: residue.length } : {}),
-    // Absent entirely when no priorFindings were supplied, so the table is unchanged for every
-    // existing caller. When they were, submitted-vs-surviving makes the refutation kill rate visible.
-    ...(priorFindings.length
-      ? {
-          priorFindingsSubmitted: priorFindings.length,
-          priorFindingsSurviving: priorJudged.filter(f => !f.refuted).length,
-        }
-      : {}),
     // Absent entirely when no task declares redCommand, so the table is unchanged for every existing
     // caller. redProven counts only the observed non-zero-then-zero pair; the three failure verdicts
     // are broken out because they mean different things to the fix loop.
@@ -1374,7 +1571,7 @@ return {
     // status derived from data the gate never blocked on.
     ...(redGatedAll.length
       ? readOnly
-        ? { redGated: null, redProven: null, redUnproven: null, redNotRed: null, greenNotGreen: null }
+        ? { redGated: null, redProven: null, redUnproven: null, redNotRed: null, greenNotGreen: null, redCarried: null }
         : {
             redGated: redGatedAll.length,
             redProven: allRed.filter(r => r.verdict === RED_VERDICT_OK).length,
@@ -1382,6 +1579,9 @@ return {
               + redGatedAll.filter(t => !allRed.some(r => r.id === t.id)).length,
             redNotRed: allRed.filter(r => r.verdict === 'red-not-red').length,
             greenNotGreen: allRed.filter(r => r.verdict === 'green-not-green').length,
+            // Proven adjudications carried rather than re-observed (M1). Distinguishable from
+            // redProven-this-round, because "we re-proved it" and "we trusted last round" differ.
+            redCarried,
           }
       : {}),
     // 0/0 when mechanicalChecks is absent — the phase was skipped, nothing was checked and nothing passed.
@@ -1393,20 +1593,29 @@ return {
   implemented: allImplemented,
   verified: allVerified,
   // Absent entirely when no task declares redCommand, so the return shape is unchanged for every
-  // existing caller — same conditional idiom as the scoreTable red block. When present it is fed back
-  // as priorResults.red so a carried task keeps its adjudication instead of re-reading as unproven.
+  // existing caller. When present it is fed back as priorResults.red so a carried task keeps its
+  // adjudication instead of re-reading as unproven — and a PROVEN entry also tells the next round not
+  // to re-probe that task at all (M1).
   ...(redGatedAll.length ? { red: allRed } : {}),
-  findings: surviving,
-  // The second lens channel, REPORTED IN FULL and never gated. Each entry carries its `lens`; one
-  // routed out of `findings` also carries routedFromFinding/claimedSeverity/routedBecause, so a
-  // misrouted real defect is visible to the human reviewer rather than deleted. [] when no lens
-  // reported a satisfied check.
+  findings,
+  // EVERY carried finding with its ruling — closed ones included, which is what makes the next round's
+  // carry a decision rather than a guess. Each entry keeps its id, severity and provenance and gains
+  // {status, evidence}. [] when none were supplied.
+  carried: carriedRuled,
+  // RED-mode diagnoses: one per failure the checks found, each routed to the task that owns the fix.
+  // [] on a GREEN round. This is the channel that narrows the next round instead of re-running it all.
+  routes,
+  // Blocking items whose owner is the PLAN, not a task: no task's writable paths can reach the fix, so
+  // the plan must be amended and re-hashed. A selector channel of its own, because no task owns it.
+  planFindings,
+  // The lens's other channel, REPORTED IN FULL and never gated. One routed out of `findings` also
+  // carries routedFromFinding/claimedSeverity/routedBecause, so a misrouted real defect is visible to
+  // the human reviewer rather than deleted. [] when the lens reported no satisfied check.
   dispositions: dispositionPool,
   // Absent entirely without freezeFindingSet. Blocking-severity lens findings raised THIS round that
   // the freeze excluded from the verdict: real, reported, and the input to a follow-up run's
-  // priorFindings — never silently dropped.
+  // carriedFindings — never silently dropped.
   ...(freezeFindingSet ? { residue } : {}),
-  refuted: findings.filter(f => f.refuted),
   thirdParty: thirdPartyResults, // ADVISORY — file as tasks with model attribution, never in the gate
   // [] when mechanicalChecks is absent: the phase was skipped, so there is nothing to re-run.
   mechanical,
@@ -1414,11 +1623,14 @@ return {
   // JS-computed component scores and composite, or nulls with a reason. `work` emits no cross-item
   // mean or rank — combining items is the caller's business, and an average over a null item is the
   // vacuous number the null exists to prevent. [] when scoredChecks is absent. NOT a selector: these
-  // cannot fail the run, so they add nothing to the three channels below.
+  // cannot fail the run, so they add nothing to the channels below.
   scores,
-  // Three re-run selectors. With no tasks flagged, no mechanicalChecks and no surviving findings all
-  // three are [].
+  attempts: attemptsResult.map(a => ({ key: a.key, reported: !!a.answer })),
+  // The re-run selectors. With no tasks flagged, no mechanicalChecks and no blocking finding standing,
+  // all of them are [].
   tasksThatFlagged,
   mechanicalThatFailed, // a failed check re-runs the CHECK, not a task
-  lensesThatFlagged, // a surviving finding re-runs the LENS, not a task
+  lensesThatFlagged, // ['lens'] iff a blocking lens finding stands
+  rulesThatFailed,
+  ruleVerdicts,
 }

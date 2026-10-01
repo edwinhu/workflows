@@ -63,7 +63,7 @@ function fixture(opts: { redCommand?: string; suites?: Record<string, string> } 
       acceptance: '`bash scripts/check.sh` exits 0',
     }],
     mechanicalChecks: [{ name: 'tests', cmd: 'bash scripts/read-verdict.sh' }],
-    reviewLenses: [{ key: 'k', agentType: 'Explore', refs: [], prompt: 'raise MAJOR when the work is wrong' }],
+    lens: { agentType: 'Explore', refs: [], prompt: 'raise MAJOR when the work is wrong' },
   }
   writeFileSync(plan, '# Plan\n\n## Run sizing\n\nnothing parked\n\n' +
     `<!-- work:dispatch\n${JSON.stringify({ runId: 'probe-run', args }, null, 2)}\n-->\n`)
@@ -112,7 +112,7 @@ describe('tier 3 reports a seeded defect and dispatches anyway', () => {
     expect(dispatch(clean).code).toBe(0)
     const read = (p: string) => JSON.parse(readFileSync(p, 'utf8'))
     const a = read(dirty.argsPath), b = read(clean.argsPath)
-    for (const k of ['tasks', 'mechanicalChecks', 'reviewLenses', 'goal']) {
+    for (const k of ['tasks', 'mechanicalChecks', 'lens', 'goal']) {
       expect(JSON.stringify(a[k])).toBe(JSON.stringify(b[k]))
     }
   })

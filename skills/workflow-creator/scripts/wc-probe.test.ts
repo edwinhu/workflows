@@ -245,12 +245,38 @@ describe('D2 — fenced-block extraction in Markdown', () => {
     expect(p7[0].detail).toContain('t1')
   })
 
+  test('P7 flags a retired reviewLenses key', () => {
+    const body = ['```js', 'Workflow({', '  tasks: [],', '  reviewLenses: [{key: "foo", prompt: "bar"}]', '})', '```'].join('\n')
+    const dir = fixture({ 'SKILL.md': skillMd('fenced', body) })
+    const result = probe.runProbe(dir)
+    const p7 = result.findings.filter((f: any) => f.rule.startsWith('P7') && f.severity === 'critical')
+    expect(p7.length).toBeGreaterThan(0)
+    expect(p7[0].detail).toContain('retired reviewLenses key')
+  })
+
+  test('P7 ignores a retired key in a test fixture', () => {
+    const body = ['Workflow({', '  tasks: [],', '  reviewLenses: [{key: "foo", prompt: "bar"}]', '})'].join('\n')
+    const dir = fixture({ 'test-fixture.test.ts': body })
+    const result = probe.runProbe(dir)
+    const p7 = result.findings.filter((f: any) => f.rule.startsWith('P7') && f.severity === 'critical' && f.detail.includes('retired'))
+    expect(p7.length).toBe(0)
+  })
+
+  test('P7 refuses an attempt with no refs key', () => {
+    const body = ['```js', 'Workflow({', '  tasks: [],', '  attempts: [{key: "a1", prompt: "foo"}]', '})', '```'].join('\n')
+    const dir = fixture({ 'SKILL.md': skillMd('fenced', body) })
+    const result = probe.runProbe(dir)
+    const p7 = result.findings.filter((f: any) => f.rule.startsWith('P7') && f.detail.includes('a1'))
+    expect(p7.length).toBeGreaterThan(0)
+    expect(p7[0].detail).toContain('refs key')
+  })
+
   test('P7 finds the object literals in this skill’s own SKILL.md fences', () => {
     const file = join(SKILL_DIR, 'SKILL.md')
     const text = read(file)
     const view = probe.maskNonFenced(text)
     const literals = probe.findObjectLiterals(view)
-    const rows = literals.filter((o: any) => probe.isTaskRow(o.keys) || probe.isLens(o.keys))
+    const rows = literals.filter((o: any) => probe.isTaskRow(o.keys) || probe.isLensObject(view, probe.maskLiterals(view), o.start))
     expect(rows.length).toBeGreaterThan(0)
   })
 
@@ -3025,16 +3051,14 @@ describe('D32 — a HOME-rooted path in prose is resolved, not discarded', () =>
  * A work-args fence: one `mechanicalChecks` array of `count` entries and one `reviewLenses`
  * array with the given keys. Every lens declares `refs`, so P7 has nothing to say about it.
  */
-const argsFence = (count: number, lensKeys: string[]) =>
+const argsFence = (count: number, lensKeys: string[], extraField = "") =>
   [
     '```js',
     'const args = {',
     '  mechanicalChecks: [',
     ...Array.from({ length: count }, (_, i) => `    { name: "c${i}", cmd: "true" },`),
     '  ],',
-    '  reviewLenses: [',
-    ...lensKeys.map(k => `    { key: "${k}", refs: [], prompt: "judge ${k}" },`),
-    '  ],',
+    '  lens: { refs: [], prompt: "judge ' + [...lensKeys].sort().join(',') + '"' + extraField + ' },',
     '}',
     '```',
   ].join('\n')
@@ -3097,9 +3121,22 @@ describe('D34 — P11: two work-args fences declare the same lens set', () => {
     expect(cli(['--target', dir]).code).toBe(0)
   })
 
+
+  test('P11 flags differing attempts across two fences', () => {
+    const body = [
+      '```js', 'Workflow({ mechanicalChecks: [],', '  lens: { prompt: "A", refs: [] }, attempts: [{ key: "a1", prompt: "p", refs: [] }]', '})', '```',
+      '```js', 'Workflow({ mechanicalChecks: [],', '  lens: { prompt: "A", refs: [] }', '})', '```'
+    ].join('\n')
+    const dir = fixture({ 'SKILL.md': skillMd('fenced', body) })
+    const result = probe.runProbe(dir)
+    const p11 = result.findings.filter((f: any) => f.rule.startsWith('P11'))
+    expect(p11.length).toBe(1)
+    expect(p11[0].detail).toContain('attempts')
+  })
+
   test('P11 is clean on a difference a lens-set-differs declaration NAMES', () => {
     const dir = fixture({
-      'SKILL.md': `${skillMd('declared')}\n<!-- wc-probe: lens-set-differs scope -->\n\n${argsFence(1, ['gate', 'spine', 'scope'])}\n\nprose\n\n${argsFence(1, ['gate', 'spine'])}\n`,
+      'SKILL.md': `${skillMd('declared')}\n<!-- wc-probe: lens-set-differs prompt -->\n\n${argsFence(1, ['gate', 'spine', 'scope'])}\n\nprose\n\n${argsFence(1, ['gate', 'spine'])}\n`,
     })
     expect(rulesOf(dir, 'P11')).toEqual([])
     expect(cli(['--target', dir]).code).toBe(0)
@@ -3107,17 +3144,17 @@ describe('D34 — P11: two work-args fences declare the same lens set', () => {
 
   test('a lens-set-differs declaration names keys space-separated, and covers all of them', () => {
     const dir = fixture({
-      'SKILL.md': `${skillMd('multi')}\n<!-- wc-probe: lens-set-differs scope extra -->\n\n${argsFence(1, ['gate', 'scope'])}\n\nprose\n\n${argsFence(1, ['gate', 'extra'])}\n`,
+      'SKILL.md': `${skillMd('multi')}\n<!-- wc-probe: lens-set-differs prompt extra -->\n\n${argsFence(1, ['gate', 'scope'])}\n\nprose\n\n${argsFence(1, ['gate', 'extra'])}\n`,
     })
     expect(rulesOf(dir, 'P11')).toEqual([])
   })
 
   test('a difference the declaration does NOT name is still a finding', () => {
     const dir = fixture({
-      'SKILL.md': `${skillMd('partial')}\n<!-- wc-probe: lens-set-differs scope -->\n\n${argsFence(1, ['gate', 'spine', 'scope'])}\n\nprose\n\n${argsFence(1, ['gate'])}\n`,
+      'SKILL.md': `${skillMd('partial')}\n<!-- wc-probe: lens-set-differs prompt -->\n\n${argsFence(1, ['gate', 'spine', 'scope'])}\n\nprose\n\n${argsFence(1, ['gate'], ', agentType: "diff"')}\n`,
     })
     expect(rulesOf(dir, 'P11').length).toBe(1)
-    expect(rulesOf(dir, 'P11')[0].detail).toContain('spine')
+    expect(rulesOf(dir, 'P11')[0].detail).toContain('prompt')
   })
 
   // The point of the declaration: P11 polices exactly one file per skill, so a whole-file
@@ -3157,14 +3194,14 @@ describe('D34 — P11: two work-args fences declare the same lens set', () => {
   })
 
   test('the declaration is not an exemption: it does not route through EXEMPT_LINE_RE', () => {
-    const text = '<!-- wc-probe: lens-set-differs scope -->\n'
+    const text = '<!-- wc-probe: lens-set-differs prompt -->\n'
     expect(probe.parseExemptions('SKILL.md', text)).toEqual([])
-    expect(probe.parseLensSetDiffers('SKILL.md', text).map((d: any) => d.keys)).toEqual([['scope']])
+    expect(probe.parseLensSetDiffers('SKILL.md', text).map((d: any) => d.fields)).toEqual([['prompt']])
   })
 
   test('a declaration inside a fenced block is an example, not a declaration', () => {
     const dir = fixture({
-      'SKILL.md': `${skillMd('fenced')}\n\`\`\`text\n<!-- wc-probe: lens-set-differs scope -->\n\`\`\`\n\n${argsFence(1, ['gate', 'scope'])}\n\nprose\n\n${argsFence(1, ['gate'])}\n`,
+      'SKILL.md': `${skillMd('fenced')}\n\`\`\`text\n<!-- wc-probe: lens-set-differs prompt -->\n\`\`\`\n\n${argsFence(1, ['gate', 'scope'])}\n\nprose\n\n${argsFence(1, ['gate'])}\n`,
     })
     expect(rulesOf(dir, 'P11').length).toBe(1)
   })
@@ -3181,9 +3218,7 @@ const argsFenceWithProjectDir = (projectDir: string) =>
     '  mechanicalChecks: [',
     '    { name: "c0", cmd: "true" },',
     '  ],',
-    '  reviewLenses: [',
-    '    { key: "gate", refs: [], prompt: "judge gate" },',
-    '  ],',
+    '  lens: { refs: [], prompt: "judge gate" },',
     '}',
     '```',
   ].join('\n')
@@ -3340,12 +3375,10 @@ const argsFenceWithTasks = (opts: {
   taskIds: string[]
   lectures?: string[]
   scoredIds?: string[]
-  lensIds?: string[]
   hasTasksKey?: boolean
 }) => {
   const lectures = opts.lectures ?? []
   const scoredIds = opts.scoredIds ?? []
-  const lensIds = opts.lensIds ?? []
   const specs = lectures.map(n => `--lecture ${n}:decks/${n}.typ:inv/${n}.md`).join(' ')
   return [
     '```js',
@@ -3375,17 +3408,14 @@ const argsFenceWithTasks = (opts: {
           '  }],',
         ]
       : []),
-    '  reviewLenses: [',
-    ...lensIds.map(n => `    { key: "coverage-fidelity-${n}", refs: [], prompt: "judge ${n}" },`),
-    '    { key: "scope-fidelity", refs: [], prompt: "judge scope" },',
-    '  ],',
+    '  lens: { refs: [], prompt: "judge scope" },',
     '}',
     '```',
   ].join('\n')
 }
 
 describe('D36 — P13: every enumerated instance has a task row', () => {
-  test('an id enumerated by all three arrays and covered by no task row is a MAJOR', () => {
+  test('an id enumerated by both arrays and covered by no task row is a MAJOR', () => {
     const dir = fixture({
       'SKILL.md': `${skillMd('gap')}\n${argsFenceWithTasks({
         taskIds: ['content-18', 'polish-18'],
@@ -3399,7 +3429,7 @@ describe('D36 — P13: every enumerated instance has a task row', () => {
     expect(found[0].severity).toBe('major')
     expect(found[0].detail).toContain('19')
     expect(found[0].detail).toContain('scoredChecks[].items')
-    expect(found[0].detail).toContain('reviewLenses[].key')
+    
     expect(found[0].detail).toContain('mechanicalChecks cmd')
     expect(cli(['--target', dir]).code).toBe(1)
   })
@@ -3504,13 +3534,13 @@ describe('D36 — P13: every enumerated instance has a task row', () => {
 
   test('workArgsFences reports the task ids and enumerated instances P13 reads', () => {
     const fences = probe.workArgsFences(
-      argsFenceWithTasks({ taskIds: ['content-18'], lectures: ['18', '19'], scoredIds: ['19'], lensIds: ['19'] }),
+      argsFenceWithTasks({ taskIds: ['content-18'], lectures: ['18', '19'], scoredIds: ['19'] }),
     )
     expect(fences.length).toBe(1)
     expect(fences[0].taskIds).toEqual(['content-18'])
     expect(fences[0].instanceIds.map((i: any) => i.id).sort()).toEqual(['18', '19'])
     const nineteen = fences[0].instanceIds.find((i: any) => i.id === '19')
-    expect(nineteen.sources.sort()).toEqual(['mechanicalChecks cmd', 'reviewLenses[].key', 'scoredChecks[].items'])
+    expect(nineteen.sources.sort()).toEqual(['mechanicalChecks cmd', 'scoredChecks[].items'])
   })
 
   // CONTROLS: the corpus this rule was written against must stay silent where it is correct.
@@ -3550,5 +3580,60 @@ describe('P13 one loader entry point', () => {
     const text = '<!-- wc-probe: ignore-loader-entry-point -->\n!`bun scripts/load-constraints.ts ds`\n'
     const ex = probe.parseExemptions ? probe.parseExemptions('SKILL.md', text) : []
     expect(probe.checkLoaderEntryPoint('SKILL.md', text, ex).length).toBe(0)
+  })
+})
+
+
+describe('ruleChecks configuration', () => {
+  test('ruleChecks with blockAt out of range is flagged', () => {
+    const text = [
+      '```js',
+      '{',
+      '  "tasks": [],',
+      '  "ruleChecks": {',
+      '    "name": "jev-rules",',
+      '    "cmd": "bun run.ts",',
+      '    "blockAt": 1.1',
+      '  }',
+      '}',
+      '```'
+    ].join('\n')
+    const findings = WcProbe.checkRuleChecks('f1.md', text)
+    expect(findings).toHaveLength(1)
+    expect(findings[0].rule).toBe('ruleChecks shape')
+    expect(findings[0].detail).toMatch(/number in \(0,1\]/)
+  })
+
+  test('ruleChecks missing name or cmd is flagged', () => {
+    const text = [
+      '```js',
+      '{',
+      '  "tasks": [],',
+      '  "ruleChecks": {',
+      '    "name": "",',
+      '    "cmd": "bun run.ts"',
+      '  }',
+      '}',
+      '```'
+    ].join('\n')
+    const findings = WcProbe.checkRuleChecks('f2.md', text)
+    expect(findings).toHaveLength(1)
+  })
+
+  test('a well-formed ruleChecks passes', () => {
+    const text = [
+      '```js',
+      '{',
+      '  "tasks": [],',
+      '  "ruleChecks": {',
+      '    "name": "jev-rules",',
+      '    "cmd": "bun run.ts",',
+      '    "blockAt": 0.85',
+      '  }',
+      '}',
+      '```'
+    ].join('\n')
+    const findings = WcProbe.checkRuleChecks('f3.md', text)
+    expect(findings).toHaveLength(0)
   })
 })

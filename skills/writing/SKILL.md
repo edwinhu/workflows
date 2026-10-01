@@ -11,7 +11,7 @@ allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanM
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
 The lifecycle is [`work`](${CLAUDE_SKILL_DIR}/../work/SKILL.md). Read it and follow it.
-This file is a **delta**: it supplies the domain — the CLARIFY axes, the plan grammar, the lenses,
+This file is a **delta**: it supplies the domain — the CLARIFY axes, the plan grammar, the lens,
 the mechanical checks, the refs, the authority text. It ships no `workflow.js` and restates none of
 `work`'s mechanics.
 
@@ -134,7 +134,7 @@ Field rules, all enforced by the parser:
 
 Three further domain requirements on the plan:
 
-- **`refs` per task row and per lens** — required, may be empty. `work`'s spine does not validate it;
+- **`refs` on every task row and on the lens** — required, may be empty. `work`'s spine does not validate it;
   `wc-probe` P7 refuses an absent key in THIS file, so a live run assembled from an approved plan is
   unchecked. Write `refs: []` to state "no domain rules" rather than omitting the key.
 - **One task row per section**, drawn from `## Section Outputs` — its outline and its draft are that
@@ -338,45 +338,22 @@ Omitting it silently runs the user's codex request on claude.
       cmd: "bash ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/check.sh --project <proj> --bib \"<proj>/<bib>.bib\" --plan \"<proj>/.planning/<slug>.md\" --plan-hash <work plan hash> --style <domain>" },
   ],
 
-  // Judged BEFORE any drafter is dispatched; a surviving critical returns FAIL having written
-  // nothing. The grammar lens parses the same headings writing_section_index.py does, so a malformed
-  // plan is caught before every section is drafted against it.
-  // Passing reviewLenses REPLACES `work`'s defaults, so the two defaults are spelled out here
-  // rather than elided — an array of two would silently drop them.
-  reviewLenses: [
-    { key: "criteria-vs-artifacts",
-      agentType: "Explore",
-      refs: [],
-      prompt: "Judge the deliverable strictly against the success criteria in the plan and goal: for each criterion, is there an artifact in the working tree that satisfies it? Missing or partial satisfaction is a finding. Severity: MAJOR at minimum, CRITICAL where the unsatisfied criterion is one the deliverable cannot stand without." },
-
-    { key: "scope-fidelity",
-      agentType: "Explore",
-      refs: [],
-      prompt: "Judge scope fidelity: did the changes stay inside the plan's task table and writable paths? Out-of-scope edits, unrequested features, and silently skipped plan items are findings. Severity: MAJOR at minimum, CRITICAL where an edit landed outside every declared writable path." },
-
-    { key: "writing-judgement",
-      agentType: "Explore",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-checks.md"],
-      prompt: "Judge ONLY the four checks no runner can settle, against the definitions in the refs. Read them in full first. COVER (every outline point expanded), FIDELITY (no claim beyond the sources its outline pinned), TRANSITION (each section's first and last sentences connect to its neighbours, in Document Structure order), COUNTER (every counterargument the plan names is answered in the prose). Report each as MODEL-EVALUATED with the evidence you actually read — the outline points inspected, the pinned source and what it supports, the quoted sentence pairs at each boundary, the counterargument's plan wording and where it is answered — and NEVER as PASS, which presents a judgement as a computation. Findings: a judgement you cannot support with evidence you actually read is itself a finding, never a pass. Severity: MAJOR at minimum for COVER, TRANSITION and COUNTER; CRITICAL for FIDELITY wherever the overreach reaches the thesis, the claim set or the sourcing — never minor, which would leave the gate passing over an unsupported claim." },
-
-    { key: "source-fidelity",
-      agentType: "Explore",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/writing/rules/cite-fidelity-no-handtyped.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/writing/rules/cite-fidelity-source-inventory.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/writing/rules/cite-fidelity-section-gate.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/writing/rules/writing-citation-tense.md"],
-      prompt: "Judge only the sourcing, against the rules in the refs. Read them in full first. Findings: a bibliography entry that corresponds to no artifact under the project's references/ — a citation recalled from training data is a claim about a document nobody opened; a quotation or pin cite that the referenced artifact does not contain; a source cited in a section its outline never pinned; a citation whose tense misstates the authority's current standing. Severity: MAJOR at minimum, CRITICAL where an unsourced or misattributed citation carries a claim the thesis rests on." },
-
-    // This lens does NOT pin Explore. Explore is a built-in agent with a predefined prompt no
-    // preloaded skill reaches, so a register-dependent judgement dispatched there is graded from
-    // memory. writing-reviewer preloads all three register skills and is read-only by tools allowlist
-    // AND by tests/agent-contract.test.mjs — the same structural property Explore is
-    // pinned for, in an agent that actually knows the rules.
-    { key: "prose-register",
-      agentType: "writing-reviewer",
-      refs: [],
-      prompt: "Grade the drafted prose against the preloaded writing-general base register plus, when the plan's Domain: is legal or econ, the preloaded writing-legal or writing-econ skill for that domain: the Ship table (diction), the prohibited-construction tic table, the VINDICATED phrases — which are standard scholarship and are NEVER findings — and the formatting rules (no bold-lead, no bold bare numbers, no emojis, no ALL-CAPS emphasis). A rule the register marks dropped is not a finding, and an advisory hit is a finding only where that specific sentence is worse for it. Report every finding with the quoted evidence and the span id prose-audit.py emitted for it, and list every span id you considered. NEVER report a register judgement as a computation — it is MODEL-EVALUATED, with the text you actually read. Severity: MAJOR at minimum, CRITICAL where the register defect misstates the authority or the claim it carries." },
-  ],
+  // One lens after verification and mechanical checks; its checklist covers all five dimensions.
+  //
+  // It does NOT pin Explore. Explore is a built-in agent with a predefined prompt no preloaded skill
+  // reaches, so a register-dependent judgement dispatched there is graded from memory.
+  // writing-reviewer preloads all three register skills and is read-only by tools allowlist AND by
+  // tests/agent-contract.test.mjs — the same structural property Explore is pinned for, in an agent
+  // that actually knows the rules.
+  lens: {
+    agentType: "writing-reviewer",
+    refs: ["${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-checks.md",
+           "${CLAUDE_PLUGIN_ROOT}/skills/writing/rules/cite-fidelity-no-handtyped.md",
+           "${CLAUDE_PLUGIN_ROOT}/skills/writing/rules/cite-fidelity-source-inventory.md",
+           "${CLAUDE_PLUGIN_ROOT}/skills/writing/rules/cite-fidelity-section-gate.md",
+           "${CLAUDE_PLUGIN_ROOT}/skills/writing/rules/writing-citation-tense.md"],
+    prompt: "Judge the drafted prose in the working tree against the approved plan and the goal. Read every file in refs in full before judging the items that name one. CHECKLIST, every item in scope on every run: (1) CRITERIA vs ARTIFACTS — for each success criterion in the plan and goal, is there an artifact in the tree that satisfies it? Missing or partial satisfaction is a finding, CRITICAL where the deliverable cannot stand without it. (2) SCOPE fidelity — did the changes stay inside the plan's task table and writable paths? Out-of-scope edits, unrequested features and silently skipped plan items are findings, CRITICAL where an edit landed outside every declared writable path. (3) WRITING JUDGEMENT, the four checks no runner can settle, defined in writing-checks.md: COVER (every outline point expanded), FIDELITY (no claim beyond the sources its outline pinned), TRANSITION (each section's first and last sentences connect to its neighbours, in Document Structure order), COUNTER (every counterargument the plan names is answered in the prose). Report each as MODEL-EVALUATED with the evidence you actually read — the outline points inspected, the pinned source and what it supports, the quoted sentence pairs at each boundary, the counterargument's plan wording and where it is answered — and NEVER as PASS, which presents a judgement as a computation; a judgement you cannot support with evidence you read is itself a finding. MAJOR at minimum for COVER, TRANSITION and COUNTER; CRITICAL for FIDELITY wherever the overreach reaches the thesis, the claim set or the sourcing. (4) SOURCE FIDELITY, against the four cite rules in refs: a bibliography entry that corresponds to no artifact under the project's references/ — a citation recalled from training data is a claim about a document nobody opened; a quotation or pin cite that the referenced artifact does not contain; a source cited in a section its outline never pinned; a citation whose tense misstates the authority's current standing. CRITICAL where an unsourced or misattributed citation carries a claim the thesis rests on. (5) PROSE REGISTER — grade the drafted prose against the preloaded writing-general base register plus, when the plan's Domain: is legal or econ, the preloaded writing-legal or writing-econ skill for that domain: the Ship table (diction), the prohibited-construction tic table, the VINDICATED phrases — which are standard scholarship and are NEVER findings — and the formatting rules (no bold-lead, no bold bare numbers, no emojis, no ALL-CAPS emphasis). A rule the register marks dropped is not a finding, and an advisory hit is a finding only where that specific sentence is worse for it. Report every register finding with the quoted evidence and the span id prose-audit.py emitted for it, and list every span id you considered; NEVER report a register judgement as a computation. CRITICAL where the register defect misstates the authority or the claim it carries. Severity across the whole checklist is MAJOR at minimum. MODE — RED (a task was flagged or a mechanical check failed): diagnose EVERY failure in the digest and route it, naming cause and fix, to the task id whose writablePaths own the file, or to 'plan' when no task can own the fix. MODE — GREEN (everything passed): make one open-ended pass over the whole checklist and report each finding with an ownerTask. In both modes, rule every carried finding open or closed against evidence you actually read; silence leaves it open.",
+  },
 
   authorityExtra: [
     "THE WRITING CONSTRAINT CORPUS IS NOT IN YOUR REFS. Its rules are `${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/` — read the ones governing what you are about to write. Their executable twins run in the gate whether or not you read them, so the gate is the verdict and this is how you avoid earning one.",
@@ -411,12 +388,14 @@ the deliverable here is prose a human reads, so the implementer must be an agent
 that prompt — and *which* agent is not a free choice, because `writing`, `writing-legal` and
 `writing-econ` preload `writing-general`, `writing-general`+`writing-legal` and
 `writing-general`+`writing-econ` respectively. A `legal` run drafted by `writing` is drafted without
-the register the same plan hands the prose-register lens, so the gate grades against rules the
+the register the same plan hands the review lens, so the gate grades against rules the
 drafter never saw. `Domain:` already selects the drafting refs, the `--style` of the prose gate and
 the lens's register; the doer is the fourth thing it selects, not a fourth decision.
 
-`verifierAgentType` and every lens `agentType` pin `Explore` because it has no Edit and no Write: a
-judge that structurally cannot modify the tree beats a prompt asking it not to.
+`verifierAgentType` pins `Explore` because it has no Edit and no Write: a judge that structurally
+cannot modify the tree beats a prompt asking it not to. The lens buys the same property a different
+way — `writing-reviewer` is read-only by tools allowlist — because Explore's prompt is predefined and
+no preloaded register skill reaches it.
 
 ## Phase 5 — HUMAN REVIEW
 

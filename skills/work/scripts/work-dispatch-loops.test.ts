@@ -78,7 +78,7 @@ function fixture(extraArgs: Record<string, unknown> = {}) {
     // Empty on purpose: work-result.sh RE-RUNS every declared mechanical check, so a fixture that
     // declared one would be asserting that command rather than the loop handoff under test.
     mechanicalChecks: [],
-    reviewLenses: [{ key: 'k', agentType: 'Explore', refs: [], prompt: 'raise MAJOR when the work is wrong' }],
+    lens: { agentType: 'Explore', refs: [], prompt: 'raise MAJOR when the work is wrong' },
     tasks: [{
       id: 'T1', name: 'one', work: 'do the thing', writablePaths: ['src/'], refs: [],
       redCommand: 'bash scripts/check.sh', acceptance: '`bash scripts/check.sh` exits 0',

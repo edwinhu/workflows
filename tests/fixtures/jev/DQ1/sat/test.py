@@ -1,0 +1,1 @@
+df.null_count()
