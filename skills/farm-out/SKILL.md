@@ -12,9 +12,9 @@ Delegation runs in a **separate process** on a CLIProxyAPI wrapper, not in this
 session. This session keeps its own auth, Remote Control, and connectors; the
 work runs on proxy models.
 
-**Default runner is `claude-code`** (Claude models via the proxy). Use
-`codex-code` or `gemini-code` only when the task calls for a different model
-family, or when cross-checking one family against another.
+**There is no default runner: each `--tasks` row is routed by its `kind`** (see
+Provider routing below). Name a provider only when the task calls for a specific
+model family, or when cross-checking one family against another.
 
 ## Supersedes the built-in tools
 
@@ -126,26 +126,27 @@ sidesteps.
 S=~/.claude/skills/workflows/skills/farm-out/scripts
 
 # Build the task file with jq, never by hand-quoting a heredoc.
-jq -n '[{prompt:"…", expect:"/repo/out.md", label:"count", agent:"ds"}]' > /tmp/t.json
+jq -n '[{prompt:"…", expect:"/repo/out.md", label:"count", kind:"script", agent:"ds"}]' > /tmp/t.json
 bash $S/farm.sh --tasks /tmp/t.json --cwd /repo
 
-# Rows run in PARALLEL. Per row: prompt (required), expect (string or array),
-# label, agent, model. Omit "agent" when the row must orchestrate.
+# Rows run in PARALLEL. Per row: prompt (required), kind (or provider/model),
+# expect (string or array), label, agent. Omit "agent" when the row must orchestrate.
 
 # workflow script — --out is REQUIRED (the structured return is the result, not the
 # summary), and paths resolve against OUR cwd, not --cwd, so pass them absolute.
-bash $S/farm.sh --workflow /abs/wf.js --args /abs/args.json --out /abs/result.json --cwd /repo
+bash $S/farm.sh --workflow /abs/wf.js --args /abs/args.json --out /abs/result.json --cwd /repo --provider claude
 
 # Long runs: never foreground (a Bash-tool call caps out and kills the run mid-flight).
 # Detach, then wait on the artifact:
-setsid nohup bash $S/farm.sh --workflow /abs/wf.js --out /abs/result.json --cwd /repo \
+setsid nohup bash $S/farm.sh --workflow /abs/wf.js --out /abs/result.json --cwd /repo --provider claude \
   > /abs/run.log 2>&1 < /dev/null &
 
 # team: named teammates that message each other, one result back
 $S/farm-team.sh --prompt-file t.txt --cwd /repo --expect /repo/a.txt --expect /repo/b.txt
 ```
 
-`--provider claude|codex|gemini` (required, gemini recommended) on both runners.
+`--provider claude|codex|gemini` is optional on `--tasks` (omit it and every row is
+routed), required on `--workflow`, and defaults to `claude` on `farm-team.sh`.
 
 Budget defaults: `FARM_TASK_BUDGET=4000000`, `FARM_SESSION_BUDGET=20000000`,
 `FARM_TASK_ESTIMATE=750000` per task (capped at its budget). `FARM_MAX_TURNS=250`
@@ -153,6 +154,26 @@ on farm and grind. The pre-launch check refuses spend plus estimate at the sessi
 
 Read `reference.md` before changing a runner, debugging a 429, or hand-writing
 a proxy call — it holds the verified model-routing and failure-mode details.
+
+## Provider routing
+
+Every `--tasks` row carries a `kind` — `script`, `judgement`, `review` or `bulk`. `farm.sh` hands
+each row to `scripts/lib/route.ts`, which picks the provider and a pinned model from the committed
+`scripts/lib/routing.json`: the kind's pick, else its first available fallback. A row may name
+`provider`/`model` itself instead. A row with neither a `kind` nor a `provider`/`model` is
+**refused** — exit 2, no row runs, and it never falls through to a default.
+
+`--provider` is the legacy whole-run override: that wrapper for every row, route.ts never consulted.
+
+Jev scores every candidate in **shadow**: one Decisions call per routed row, logged, never changing
+the pick and never blocking a row. Each row prints `farm: ROW <label> <rowId>` on stderr and appends
+one line to `~/.local/state/workflows/farm-outcomes.jsonl` (`FARM_OUTCOMES` overrides). Once you have
+verified a result, label it: `farm.sh --verdict <rowId> correct|wrong "<why>"`. Those verdicts are
+the holdout Jev must clear before it may decide.
+
+`bun scripts/lib/route.ts --refresh`, run from a checkout of this repo and never the plugin cache,
+updates availability (proxy catalog) and prices (OpenRouter) and never touches `kinds` or `jev`.
+Review its `routing.json` diff before committing. Design: `docs/DESIGN-routing.md`.
 
 ## Red flags
 
