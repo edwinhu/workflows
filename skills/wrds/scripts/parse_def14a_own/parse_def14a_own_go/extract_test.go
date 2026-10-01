@@ -8655,3 +8655,137 @@ func TestASCIICommonStockESOPTrusteeGuards(t *testing.T) {
 		}
 	}
 }
+
+const holdingsClassCaption53 = `<P STYLE="margin-top:18pt; margin-bottom:0pt; font-size:16pt; font-family:Times New Roman"><B>Principal Stockholders </B></P>
+<P STYLE="font-size:2pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<P STYLE="line-height:3.5pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1.00pt solid #000000">&nbsp;</P>  <P STYLE="margin-top:8pt; margin-bottom:0pt; text-indent:6%; font-size:9pt; font-family:Times New Roman" ALIGN="justify">As of the Record
+Date, to the knowledge of the Fund, no person beneficially owned more than 5% of the voting securities of any class of securities of the Fund, except as set forth below: </P>  <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:9pt" ALIGN="center">
+
+
+<TR>
+<TD WIDTH="69%"></TD>
+<TD VALIGN="bottom" WIDTH="3%"></TD>
+<TD style="width:25pt"></TD>
+<TD></TD>
+<TD></TD>
+<TD style="width:25pt"></TD>
+<TD VALIGN="bottom" WIDTH="3%"></TD>
+<TD style="width:35pt"></TD>
+<TD></TD>
+<TD></TD>
+<TD style="width:35pt"></TD>
+<TD VALIGN="bottom" WIDTH="3%"></TD>
+<TD style="width:32pt"></TD>
+<TD></TD>
+<TD></TD>
+<TD style="width:32pt"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="bottom" STYLE="BORDER-BOTTOM:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:0pt; text-indent:0.50em; font-size:8pt; font-family:Times New Roman"><B>Stockholder Name</B></P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; text-indent:0.50em; font-size:8pt; font-family:Times New Roman"><B>and Address*</B></P></TD>
+<TD VALIGN="bottom" STYLE="BORDER-BOTTOM:1.00pt solid #000000">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" COLSPAN="4" ALIGN="center" STYLE="BORDER-BOTTOM:1.00pt solid #000000"><B>Class&nbsp;of&nbsp;Shares</B></TD>
+<TD VALIGN="bottom" STYLE="BORDER-BOTTOM:1.00pt solid #000000">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" COLSPAN="4" ALIGN="center" STYLE="BORDER-BOTTOM:1.00pt solid #000000"><B>Share<BR>Holdings</B></TD>
+<TD VALIGN="bottom" STYLE="BORDER-BOTTOM:1.00pt solid #000000">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" COLSPAN="4" ALIGN="center" STYLE="BORDER-BOTTOM:1.00pt solid #000000"><B>Percentage<BR>Owned</B></TD></TR>
+
+
+<TR BGCOLOR="#e5e5e5" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top"> <P STYLE="margin-top:0pt; margin-bottom:0pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman"><I></I>TCI Fund Management Limited</P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">Christopher Hohn</P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">7 Clifford Street</P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">London, W1S 2FT, United Kingdom</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" >&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="font-size:9pt">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT STYLE="font-size:9pt">Common Stock</FONT></TD>
+<TD NOWRAP VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" >&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="font-size:9pt">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT STYLE="font-size:9pt">86,224,273</FONT></TD>
+<TD NOWRAP VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" >&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="font-size:9pt">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT STYLE="font-size:9pt">9.01</FONT></TD>
+<TD NOWRAP VALIGN="top"><FONT STYLE="font-size:9pt">%</FONT></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top"> <P STYLE="margin-top:0pt; margin-bottom:0pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">David Filo</P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">David Filo 1998 Revocable Trust U/A DTD 06/12/1998</P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">701 First Avenue</P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">Sunnyvale, California 94089</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" >&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="font-size:9pt">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT STYLE="font-size:9pt">Common Stock</FONT></TD>
+<TD NOWRAP VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" >&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="font-size:9pt">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT STYLE="font-size:9pt">70,666,390</FONT></TD>
+<TD NOWRAP VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" >&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="font-size:9pt">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT STYLE="font-size:9pt">7.4</FONT></TD>
+<TD NOWRAP VALIGN="top"><FONT STYLE="font-size:9pt">%</FONT></TD></TR>
+<TR BGCOLOR="#e5e5e5" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top"> <P STYLE="margin-top:0pt; margin-bottom:0pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">The Vanguard Group</P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">Vanguard Fiduciary Trust Company</P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">Vanguard Investments Australia, Ltd.</P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">100 Vanguard Boulevard</P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">Malvern, Pennsylvania 19355</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" >&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="font-size:9pt">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT STYLE="font-size:9pt">Common&nbsp;Stock</FONT></TD>
+<TD NOWRAP VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" >&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="font-size:9pt">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT STYLE="font-size:9pt">55,924,468</FONT></TD>
+<TD NOWRAP VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" >&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="font-size:9pt">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT STYLE="font-size:9pt">5.86</FONT></TD>
+<TD NOWRAP VALIGN="top"><FONT STYLE="font-size:9pt">%</FONT></TD></TR>
+</TABLE>`
+
+func TestShareHoldingsCaptionWithExplicitClassColumn(t *testing.T) {
+	rows := ScreenRows(run(t, holdingsClassCaption53))
+	if len(rows) != 3 {
+		t.Fatalf("want 3 real holder/class rows, got %d: %+v", len(rows), rows)
+	}
+	wants := []struct {
+		name        string
+		shares, pct float64
+	}{
+		{"TCI Fund Management Limited Christopher Hohn", 86224273, 9.01},
+		{"David Filo David Filo 1998 Revocable Trust U/A DTD 06/12/1998", 70666390, 7.4},
+		{"The Vanguard Group Vanguard Fiduciary Trust Company Vanguard Investments Australia, Ltd", 55924468, 5.86},
+	}
+	for _, w := range wants {
+		r := find(rows, w.name, "Common Stock")
+		if r == nil || r.Shares == nil || *r.Shares != w.shares || r.Percent == nil || *r.Percent != w.pct {
+			t.Errorf("want %q Common Stock %.0f / %g, got %+v", w.name, w.shares, w.pct, rows)
+		}
+	}
+}
+
+func TestShareHoldingsClassCaptionRejectsMoneyAndGrants(t *testing.T) {
+	for _, tc := range []struct{ name, body string }{
+		{"currency values", strings.NewReplacer("86,224,273", "$86,224,273", "70,666,390", "$70,666,390", "55,924,468", "$55,924,468").Replace(holdingsClassCaption53)},
+		{"option grants", strings.ReplaceAll(holdingsClassCaption53, "Share<BR>Holdings", "Number of Options Granted")},
+		{"unidentified auxiliary column", strings.ReplaceAll(holdingsClassCaption53, "Class&nbsp;of&nbsp;Shares", "Category")},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if rows := ScreenRows(run(t, tc.body)); len(rows) != 0 {
+				t.Fatalf("non-ownership layout emitted %d rows: %+v", len(rows), rows)
+			}
+		})
+	}
+}
