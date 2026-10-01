@@ -1,6 +1,6 @@
 {
   "_about": "Pass thresholds for the parse_def14a_own grind. Locked in lock.sha256; the grind may not edit this file. Each value is argued from a measured baseline in GRIND_PLAN.md — the 2026-09-28 setup baseline for the first round, and the 2026-09-29 dev/holdout pair for the precision round.",
-  "_gating": "EXACTLY the keys under `minimums` (floors, value >= threshold) plus the keys under `maximums` (ceilings, value <= threshold) gate check.sh — TEN of them since the 2026-09-29 REGRESSION round, which added `regress_zero_row_recovered` and `regress_group_row_recovered` to `minimums` at 0.95 and left every other threshold byte-for-byte unchanged. Before that, EIGHT since 2026-09-29, when the duplicate-row round added `sample_yield_worst_year_margin` to `minimums` and a duplicate-rate pair to `maximums`. That pair was redefined later the same day (see the last `_history` entry): it is now `sample_dup_excess_identical_row_rate` / `_max_year`, at the same 0.01 / 0.02, and the `sample_dup_excess_same_table_rate` / `_max_year` it replaced are DIAGNOSTIC. Before the duplicate round: FIVE gates, all floors. Everything under `diagnostics` is computed and printed with its denominator every round and NEVER affects the exit code. That includes the two FactSet aggregate metrics (the FactSet gold is defined by a proxy window over all FactSet stakes and mixes 13F / Form 4 positions — only 21 of 2,647 linked firm-years carry a PXY marker — so a 1 pp band would reward chasing gold noise) and the two ISS share-agreement metrics plus the ISS precision proxy (see `_iss_diagnostics`). The loop must not optimise any of them.",
+  "_gating": "EXACTLY the keys under `minimums` (floors, value >= threshold) plus the keys under `maximums` (ceilings, value <= threshold) gate check.sh — ELEVEN of them since 2026-10-01, when the LOST-set round added `regress_lost_recovered` to `minimums` at 0.95 (set (c), see the last `_history` entry) and left every other threshold byte-for-byte unchanged. TEN from the 2026-09-29 REGRESSION round, which added `regress_zero_row_recovered` and `regress_group_row_recovered` to `minimums` at 0.95 and left every other threshold byte-for-byte unchanged. Before that, EIGHT since 2026-09-29, when the duplicate-row round added `sample_yield_worst_year_margin` to `minimums` and a duplicate-rate pair to `maximums`. That pair was redefined later the same day (see the last `_history` entry): it is now `sample_dup_excess_identical_row_rate` / `_max_year`, at the same 0.01 / 0.02, and the `sample_dup_excess_same_table_rate` / `_max_year` it replaced are DIAGNOSTIC. Before the duplicate round: FIVE gates, all floors. Everything under `diagnostics` is computed and printed with its denominator every round and NEVER affects the exit code. That includes the two FactSet aggregate metrics (the FactSet gold is defined by a proxy window over all FactSet stakes and mixes 13F / Form 4 positions — only 21 of 2,647 linked firm-years carry a PXY marker — so a 1 pp band would reward chasing gold noise) and the two ISS share-agreement metrics plus the ISS precision proxy (see `_iss_diagnostics`). The loop must not optimise any of them.",
   "_history": [
     {
       "date": "2026-09-28",
@@ -168,6 +168,26 @@
       "determinism": "Two consecutive builder runs produced identical gold_regress.tsv and gold_regress.json hashes. Parser filelists unchanged: regress_filelist.tsv e4ac8ec66217ba10db98be6c343dac9da2830136a9ef0eb37aae32a328ce4b0b; round_filelist.tsv da8e15b431a9828ba58c046e514a9e249fa10149df923c27b392256ec9b8a133.",
       "thresholds": "All minimums, maximums, per-year yield floors, diagnostic definitions and gold/sample populations unchanged. Both regression minimums remain 0.95. No parser edit, grid round, grind start, holdout score or push.",
       "journal_note": "operator-x10-x13-installed"
+    },
+    {
+      "date": "2026-10-01",
+      "round": "SET-(c) LOST set added (operator, outside the grind loop); one new gated floor, every other threshold unchanged",
+      "change": "gold_regress.tsv carries set (c): filings with old `panel` (parser 092b6fb9) n_rows > 0 and `panel_a449b66c` n_rows == 0. Columns cand_lost, in_set_lost, lost_excl_x1_x4, lost_excl_x10_x13, excl_x14..excl_x20, lost_old_n_rows, lost_old_n_percent_parsed. New gated floor regress_lost_recovered = |{in_set_lost: >= 1 parsed row now}| / |in_set_lost|. Set (a)/(b) membership, their exclusion columns and every other threshold unchanged (first 31 columns of the 1893 (a)/(b) rows byte-identical to the previous gold_regress.tsv).",
+      "rules": {
+        "X1-X4,X10-X13": "re-applied unchanged to the OLD (092b6fb9) rows of each set-(c) filing",
+        "X14_year_as_shares": "every numeric old shares value is a calendar year 1900-2030 or < 1000; >= 1 is a year; years are >= half the old rows",
+        "X15_percent_only_prose": "<= 2 old rows; every old row has empty shares and a non-empty percent",
+        "X16_small_int_shares": "no old percent; <= 4 old rows; every old shares value is an integer 1-99",
+        "X17_no_value_rows": "every old row has empty shares AND empty percent",
+        "X18_prose_lead_name": "every old holder_name (after a leading footnote number) begins As of, On, At, For [the] fiscal, According to, Person during, If a, Includes, This total/figure, Also includes, Consists of, Options to purchase, Based on/upon, The total, Go to, Click on, Table of contents, or Section <digit>",
+        "X19_function_word_tail": "every old holder_name is empty or ends in a function word (and of the on with to for in by at as or from that which is was were than upon)",
+        "X20_compensation_title_rows": "no old percent; >= 2 old rows; >= one third of old holder_names begin an officer title (chairman, president, chief, executive, officer, vice president, senior vice, secretary, treasurer, former, board, exec) or end in a year 1950-2029 not preceded by 'since'",
+        "field_semantics": "old rows and source paths only; never new-parser output, never audit labels"
+      },
+      "evidence": "/home/eh/projects/r2000/scratch/lost_audit.tsv (per-filing document-level audit of all 328), /home/eh/projects/r2000/scratch/lost_set_setup.md",
+      "denominators": "207912 old and new manifests, 207912 matched; old rows 3156227 -> 2402 rows of 328 lost filings. Audit causes: 175 real regression, 142 old rows wrong, 11 other. Exclusion union 142 (cause-1 false exclusions 0); in_set_lost 186.",
+      "ceiling": "recoverable in the gated 186 = 175 cause-1 + 10 cause-2/3 marked recoverable = 185; ceiling 185/186 = 0.9946 >= 0.95, so the floor is 0.95. Without exclusions it would be 295/328 = 0.8994.",
+      "baseline": "0.0 by construction at a449b66c (the parser that lost them)"
     }
   ],
   "_baseline_2026_09_28_dev": {
@@ -187,7 +207,8 @@
     "iss_director_recall": 0.82,
     "sample_yield_worst_year_margin": 0.0,
     "regress_zero_row_recovered": 0.95,
-    "regress_group_row_recovered": 0.95
+    "regress_group_row_recovered": 0.95,
+    "regress_lost_recovered": 0.95
   },
   "maximums": {
     "sample_dup_excess_identical_row_rate": 0.01,
@@ -247,7 +268,8 @@
     "regress_excluded_group_row_recovered",
     "regress_x7_group_grant_zero_group_row_recovered",
     "regress_x8_group_share_class_name_group_row_recovered",
-    "regress_x9_group_position_name_prose_group_row_recovered"
+    "regress_x9_group_position_name_prose_group_row_recovered",
+    "regress_lost_excluded_emitting_rows_rate"
   ],
   "_iss_diagnostics": "Added 2026-09-29 with the ISS directors gold set (gold_iss.tsv.gz, 2002-2024). THREE of the four ISS metrics remain DIAGNOSTIC under `diagnostics` — iss_share_agreement_1pct, iss_share_agreement_5pct, iss_individual_precision_proxy — and nothing about them can change check.sh's exit code. The fourth, iss_director_recall, was ADOPTED as a gate later the same day (GRIND_PLAN.md section 8 item 1, ADOPTED 2026-09-29) and sits under `minimums` at the PERMANENT floor 0.82 since the ISS round closed on 2026-09-29 (step 2 of the two-step; it was 0.90 as a round target while the round ran). See the two 2026-09-29 `ISS director-recall round` entries in `_history`."
 }

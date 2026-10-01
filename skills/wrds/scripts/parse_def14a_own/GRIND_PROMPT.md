@@ -15,13 +15,14 @@ The loop ends when this exits 0, and nothing else ends it:
 bash /home/eh/projects/workflows/skills/wrds/scripts/parse_def14a_own/check.sh
 ```
 
-**Exactly TEN metrics gate** — the keys under `minimums` (floors) plus the keys
+**Exactly ELEVEN metrics gate** — the keys under `minimums` (floors) plus the keys
 under `maximums` (ceilings) in `thresholds.json`:
 
 | gated metric | kind | threshold |
 |---|---|---:|
-| `regress_zero_row_recovered` | floor | **≥ 0.95** — THIS round's target |
-| `regress_group_row_recovered` | floor | **≥ 0.95** — THIS round's target |
+| `regress_lost_recovered` | floor | **≥ 0.95** — THIS round's target |
+| `regress_zero_row_recovered` | floor | ≥ 0.95 — passing at a449b66c, guard |
+| `regress_group_row_recovered` | floor | ≥ 0.95 — passing at a449b66c, guard |
 | `sample_dup_excess_identical_row_rate` | ceiling | ≤ 0.01 |
 | `sample_dup_excess_identical_row_rate_max_year` | ceiling | ≤ 0.02 |
 | `sample_yield_worst_year_margin` | floor | ≥ 0.0 — the per-year no-regression guard |
@@ -31,7 +32,25 @@ under `maximums` (ceilings) in `thresholds.json`:
 | `group_row_detection_rate` | floor | 0.80 |
 | `iss_director_recall` | floor | 0.82 |
 
-## THIS ROUND IS A REGRESSION ROUND (2026-09-29)
+## THIS ROUND IS THE LOST-SET ROUND (2026-10-01)
+
+**`regress_lost_recovered` is the only gate short** (0 / 186 at a449b66c; the
+other ten pass). Set (c) = filings with ≥ 1 row in `panel` (parser 092b6fb9) and
+0 rows in `panel_a449b66c`: 328 filings, columns `cand_lost` / `in_set_lost` in
+`gold/gold_regress.tsv`. 142 are excluded by old-row-only clauses (X1-X4,
+X10-X13 re-applied; X14-X20 new, in `build_regress_set.py` `LOST_RULES`) because
+the old rows were not ownership rows; the gated 186 are 175 real ownership tables
+plus 11 others, ceiling 185/186. Excluded set (c) is reported as
+`regress_lost_excluded_emitting_rows_rate` — a rise there is junk coming back,
+not recovery.
+
+Start from the per-filing document audit (cause, family, source line span,
+evidence): `/home/eh/projects/r2000/scratch/lost_audit.tsv` (filter `cause == 1`);
+setup report `/home/eh/projects/r2000/scratch/lost_set_setup.md`. The guards
+below still hold — in particular the identical-row duplicate ceilings and the
+two older `regress_*` floors, which a449b66c only just clears (0.9511, 0.9870).
+
+## THE REGRESSION ROUND (2026-09-29) — PASSING AT a449b66c, GUARD ONLY
 
 **The two `regress_*` floors are the only gates short, and recovering the filings
 the last round lost is the only thing to work on.** Everything below this section
