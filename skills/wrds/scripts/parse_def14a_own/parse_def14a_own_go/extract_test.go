@@ -6494,3 +6494,1737 @@ func TestASCIICaptionClassContextAndCurrencyGuards(t *testing.T) {
 		}
 	})
 }
+
+const asciiFundRegistrationFixture = `<Table>
+<Caption>
+FUND NAME                                               REGISTRATION               SHARES/CLASS     PERCENT
+- ---------                                   ------------------------------------  ---------------   --------
+<S>                                         <C>                                   <C>               <C>
+CMF
+
+  California Series.......................  Pershing LLC                                 20,251/C      10.0%
+                                            P.O. Box 2052
+                                            Jersey City, NJ
+
+                                            Mr. Jergen Sorensen &                        10,478/C       5.2%
+                                            Mrs. Karen Sorensen JT TEN
+                                            17711 Kennison Ln
+                                            Lodi, CA 95240-0806
+
+                                            Paine Webber                                 13,221/C       6.5%
+                                            For the Benefit of
+                                            Terrance J. Chan
+                                            Karen Chan JTWROS
+                                            1518 Ruby Ct
+                                            Diamond Bar, CA 91765
+
+                                            Mrs. Margaret Abdun - Nur Succ               24,124/C      11.9%
+                                            Ttee
+                                            Of the Amean & Wydea Haddad
+                                            Living Trust UA DTD 01-18-78
+                                            Tarzana, CA 91356
+
+                                            SEI Private Trust Company C/F                21,046/Z       5.2%
+                                            C/O TIAA-CREF
+                                            Attn: Mutual Funds Administration
+                                            One Freedom Valley Dr
+                                            Oaks, PA 19456
+
+                                            Principia Inv. Partners Plus                 33,337/Z       9.6%
+                                            C/O North Shore Capital Mgt.
+                                            11621 Kew Gardens Ave, Ste 210
+                                            Palm Bch Gdns, FL 33410
+
+  California Income Series................  Mrs. Hazel L. Mortensen TTEE                 52,960/C       6.1%
+                                            L J & H Mortensen Trust B
+                                            UA DTD 05/05/81
+                                            PO Box 443
+                                            Salinas, CA 93902-0443
+
+                                            SEI Trust Company                           175,893/Z      31.7%
+                                            C/O Prudential Bache
+                                            Attn: Mutual Fund Admistrato
+                                            One Freedom Valley Dr
+                                            Oaks, PA 19456
+</Table>
+
+
+                                      A-1
+<Page>
+
+
+<Table>
+<Caption>
+FUND NAME                                               REGISTRATION               SHARES/CLASS     PERCENT
+- ---------                                   ------------------------------------  ---------------   --------
+<S>                                         <C>                                   <C>               <C>
+                                            Mr. Gurjot Singh                             30,270/Z       5.5%
+                                            Mrs. Jasjit Singh CO-TTEES
+                                            Of the Singh Family Living Revocable
+                                            Trust
+                                            UA DTD 05/20/95
+                                            19040 Loree Ave
+                                            Cupertino, CA 95014-3526
+
+                                            Ms. Nairn Kirkpatrick TTEE                   51,486/Z       9.3%
+                                            Nairn Kirkpatrick Trust
+                                            UA DTD 08/26/82
+                                            7677 Greenridge Way
+                                            Fair Oaks, CA 95628-4808
+
+  California Money Market Series..........                   --                         --             --
+
+GIF.......................................  Prudential Retirement Services              712,249/Z       6.1%
+                                            As Nominee For Plan 326812
+                                            Farm Fresh Retirement Plan
+                                            PO Box 5310
+                                            Scranton, PA 18505
+
+HYF.......................................  Prudential Retirement Services            4,443,962/Z      38.1%
+                                            Nominee For Trustee PI W68700
+                                            Prudential Securities Inc.
+                                            PO Box 5310
+                                            Scranton, PA 18505
+
+MBF
+
+  High Income Series......................  Mr. Joseph A. Fiore                         300,499/Z      19.3%
+                                            1 Green Meadow Ln
+                                            Cincinnati, OH 45242
+
+                                            New Beginning                               174,197/Z      11.2%
+                                            Family Limited Partnership #1
+                                            101 Convention Center Dr, Suite 700
+                                            Las Vegas, NV 89101
+
+  Insured Series..........................  Herman Zeidman TTEE                          60,502/C       8.2%
+                                            Herman M. Zeidman
+                                            TR UA DTD 08/09/85
+                                            FBO Herman Zeidman
+                                            3100 Estates Dr
+                                            Pompano Beach, FL 33069-3809
+
+                                            Mr. Larry A. Harris TTEE                     91,099/Z      11.6%
+                                            Harris Trust
+                                            UA DTD 03-04-97
+                                            FBO Larry A. Harris
+                                            3637 W. Camino Del Norte
+                                            Tuscan, AZ 85742
+
+                                            Mr. Thomas D. Meyer TTEE                     85,574/Z      10.5%
+                                            Thomas D. Meyer Rev Lvg Trust
+                                            UA DTD 9-20-80
+                                            PO Box 350
+                                            Three Rivers, MI 49093
+</Table>
+
+
+                                      A-2
+<Page>
+
+
+<Table>
+<Caption>
+FUND NAME                                               REGISTRATION               SHARES/CLASS     PERCENT
+- ---------                                   ------------------------------------  ---------------   --------
+<S>                                         <C>                                   <C>               <C>
+MSF
+
+  Florida Series..........................  Betty Louise Sikes TTEE                      35,747/C       6.4%
+                                            Betty Louise Sikes
+                                            Rev Trust UA DTD 06/23/83
+                                            FBO Betty Louise Sikes
+                                            4011 NE 25th Ave.
+                                            Ft Lauderdale, FL 33308-5726
+
+                                            RELF Limited Partnership, LLLP               74,286/C      13.4%
+                                            Attn: Randall E.L. Falck, Pres
+                                            Of RELF Enterprises G.P.
+                                            8049 Whisper Lake Ln W
+                                            Ponte Vedra Bch, FL 32082-3115
+
+                                            Mrs. Carole L. Parsons &                     15,890/Z       8.6%
+                                            Mr. William T. Parsons JT TEN
+                                            6111 Bay Lake Dr N
+                                            St. Petersburg, FL 32082-3115
+
+                                            Shorewood LLC                                43,755/Z      23.8%
+                                            Attn: Doug Reich
+                                            11621 Kew Gardens Ave, Ste 210
+                                            Palm Beach Garde, FL 33410
+
+                                            Gerald W. Bobo &                             12,501/Z       6.8%
+                                            Susan O. Bobo TEN ENT
+                                            8089 SE Country Estates Way
+                                            Jupiter, FL 33458-1045
+
+                                            Lilla A. Grim TTEE                           27,111/Z      14.7%
+                                            Lilla A. Grim Revocable Living
+                                            Trust UA DTD 04-11-01
+                                            730 Osprey Ave, Apt 414
+                                            Sarasota, FL 34236
+
+  New Jersey Series.......................  Mrs. Gail W. Bennett                         35,862/C       6.6%
+                                            2 S Rohallion Dr
+                                            Rumson, NJ 07760-1221
+
+                                            Mr. Richard L. Bennet                        35,862/C       6.6%
+                                            2 S Rohallion Dr
+                                            Rumson, NJ 07760-1221
+
+                                            Maria Claudia Fricchione                     17,627/Z       5.8%
+                                            7 Pershing Blvd
+                                            Lavallette, NJ 08735-2832
+
+                                            Tammy Perconti                              101,003/Z      33.1%
+                                            105 Waters Edge Ct
+                                            Brick, NJ 08724
+</Table>
+
+
+                                      A-3
+<Page>
+
+
+<Table>
+<Caption>
+FUND NAME                                               REGISTRATION               SHARES/CLASS     PERCENT
+- ---------                                   ------------------------------------  ---------------   --------
+<S>                                         <C>                                   <C>               <C>
+                                            Shorewood LLC                                41,371/Z      13.6%
+                                            Attn: Doug Reich
+                                            11621 Kew Gardens Ave, Ste 210
+                                            Palm Beach Garden, FL 33410
+
+  New Jersey Money Market Series..........                   --                         --             --
+
+  New York Series.........................  Raymond James & Assoc Inc.                   18,904/C       6.7%
+                                            FBO Weinstock Mario
+                                            BIN# 47549721
+                                            880 Carillon PKWY
+                                            St. Petersburg, FL 33716
+
+                                            Henry Hocker &                               20,807/C       7.4%
+                                            Gloria Hocker JT TEN
+                                            15 West Suffolk Ave
+                                            Central Islip, NY 11722-2142
+
+                                            Mrs. Mary B. Walsh                           14,079/C       5.0%
+                                            103 Ashland Ave
+                                            Pleasantville, NY 10570
+
+                                            Mrs. Jill C. Davila                          11,947/Z       5.2%
+                                            Mr. Sean E. Hattrick Co-TTEES
+                                            Jill C. Davila Trust
+                                            UA DTD 12-15-00
+                                            PO Box 391
+                                            South Hampton, NY 11969
+
+                                            Denise Oakley                                35,557/Z      15.5%
+                                            33 William Puckey Dr
+                                            Cortland Mnr, NY 10567-6215
+
+                                            Mr. Jonathan Stern                           13,964/Z       6.1%
+                                            127 E. 30th St. Apt. 14D
+                                            New York, NY 10016
+
+                                            Dr. Janet Jeppson Amimov                     14,090/Z       6.1%
+                                            10 W 66th St. Apt. 33A
+                                            New York, NY 10023-6213
+
+  New York Money Market Series............                   --                         --             --
+
+  Pennsylvania Series.....................  Dr. Mark J. Sey &                             5,939/C       5.3%
+                                            Mrs. Merle L Sey JT TEN
+                                            2143 Mount Vernon St
+                                            Philadelphia, PA 19130-3133
+
+                                            Mr. Edward Dress &                           10,693/C       9.5%
+                                            Mrs. Marion M. Dress JT TEN
+                                            151 Forest Rd
+                                            Mountain Top, PA 18707-1316
+
+                                            Mr. Rudolph J. Peischler                      6,333/C       5.6%
+                                            3243 Old Post Rd
+                                            Slatington, PA 18080-3209
+
+                                            Mr. Trueman Helms TTEE                       13,338/C      11.9%
+                                            Nichols Family 1998 Trust
+                                            UA DTD 12-12-98
+                                            1035 Boulder Hill Rd
+                                            Green Lane, PA 18504
+</Table>
+
+
+                                      A-4
+<Page>
+
+
+<Table>
+<Caption>
+FUND NAME                                               REGISTRATION               SHARES/CLASS     PERCENT
+- ---------                                   ------------------------------------  ---------------   --------
+<S>                                         <C>                                   <C>               <C>
+NMF.......................................  Worldwide Fowarders Inc.                     35,255/C       9.2%
+                                            9706 SW 155th CT
+                                            Miami, FL 33196-3830
+
+                                            Pro. Pay LLC                                 19,355/Z       6.2%
+                                            10300 W. 103rd St, Ste 303
+                                            Overland Park, KS 66214
+
+                                            Mrs. Audrey L. Wittmann TTEE                 16,801/Z       5.4%
+                                            Julius & Audrey Wittmann Trust
+                                            UA DTD 06/28/83
+                                            3351 257th CT SE
+                                            Sammamish, WA 98075
+
+                                            Principia C                                  29,885/Z       9.6%
+                                            C/O Northshore Capital Mgmt
+                                            11621 Kew Gardens Ave, Ste 210
+                                            Palm Bch Gdns, FL 33410
+
+STBF
+
+  Prudential Short-Term Corporate Bond      Prudential Retirement Services              224,555/Z       5.0%
+    Fund..................................  As nominee for TTEE Cust 300215
+                                            Sierra Health Automatic
+                                            PO Box 9999
+                                            Scranton, PA 18507
+
+  Dryden Ultra Short Bond Fund............  Jeff Filmore                                400,059/A       7.8%
+                                            87 Lothrop St.
+                                            Beverly, MA 01951
+
+                                            Mr. George Perkins Jr.                      409,899/A       8.0%
+                                            PO Box 388
+                                            Park City, UT 84060
+
+                                            Prudential Securities C/F                   291,459/A       5.7%
+                                            Dr. Herbert Kasnetz
+                                            IRA Rollover DTD 4-4-02
+                                            3883 Turtle Creek BLVD
+                                            APT# 1411
+                                            Dallas, TX 75219
+
+                                            Mrs. Mary Jo Schlomann                      433,211/A       8.4%
+                                            EST Mrs. Frances Morris
+                                            805 Taylor Rd
+                                            Downingtown, PA 19335
+
+                                            Mr. Alvin E. McQuinn                        300,111/A       5.8%
+                                            C/O Quinstar Investment Ptnrs
+                                            5201 Eden Ave, STE 350
+                                            Minneapolis, MN 55436
+
+                                            Prudential Securities C/F                     8,950/B       9.3%
+                                            Mr. Thomas F. Dougherty
+                                            IRA DTD 11-16-99
+                                            331 Williams St
+                                            Pittsfield, MA 01201
+
+                                            Mr. Jacques Bouvard                           5,969/B       6.2%
+                                            Ms. Marguerite A. Bouvard Jt Ten
+                                            6 Brookfield Cir
+                                            Wellesley, MA 02481
+</Table>
+
+
+                                      A-5
+<Page>
+
+
+<Table>
+<Caption>
+FUND NAME                                               REGISTRATION               SHARES/CLASS     PERCENT
+- ---------                                   ------------------------------------  ---------------   --------
+<S>                                         <C>                                   <C>               <C>
+                                            Jean R. Dickey                                9,711/B      10.1%
+                                            PO Box 279
+                                            W. Friendship, MD 21794
+
+                                            Prudential Securities C/F                     6,313/B       6.5%
+                                            Mrs. Marion M. Wolfert
+                                            IRA DTD 05-16-02
+                                            618 Wayland Rd
+                                            Plymouth Mtng, PA 19462
+
+                                            New Psalmist Baptist Church                  34,372/B      35.6%
+                                            Line of Credit Account
+                                            4501 1/2 Frederick Rd
+                                            Baltimore, MD 21229
+
+                                            Richard R. Surles                             9,377/B       9.7%
+                                            Patricia A. Surles Com. Prop.
+                                            3656 Angeles Rd
+                                            Santa Maria, CA 93455
+
+                                            Mr. Kevin S. Pitts                            4,664/C      49.9%
+                                            Mrs. Linda M. Pitts Co-TTEES
+                                            FBO Dana Cleary Pitts Trust
+                                            Declaration UA DTD 9-24-96
+                                            1627 Highland Dr
+                                            Newport Beach, CA 92660
+
+                                            Mr. Kevin S. Pitts                            4,664/C      49.9%
+                                            Mrs. Linda M. Pitts Co-TTEES
+                                            Allison Christin Pitts Trust
+                                            Declaration UA DTD 9-24-96
+                                            1627 Highland Dr
+                                            Newport Beach, CA 92660
+
+                                            Ms. Janet L. Filipowski TTEE                200,144/Z       6.2%
+                                            Janet L. Filipowski Trust
+                                            UA DTD 6-7-96
+                                            1513 Burning Tree Ct
+                                            Lisle, IL 60532
+
+TRBF......................................  Stanton Trust Co Cust For                 1,031,018/Z      19.6%
+                                            State of Hawaii Deferred
+                                            Compensation Plan
+                                            3405 Annapolis Lane N# 100
+                                            Plymouth, MN 55447
+
+                                            Summership & Co C/F                         417,628/Z       7.9%
+                                            Moderate W14D
+                                            Attn: Hector Camacho
+                                            100 Franklin St
+                                            Boston, MA 02110
+
+                                            Prudential Retirement Services            1,312,969/Z      25.0%
+                                            Nominee For Trustee PI W68700
+                                            Prudential Securities Inc.
+                                            PO Box 5310
+                                            Scranton, PA 18505
+</Table>
+
+
+                                      A-6
+<Page>
+
+
+<Table>
+<Caption>
+FUND NAME                                               REGISTRATION               SHARES/CLASS     PERCENT
+- ---------                                   ------------------------------------  ---------------   --------
+<S>                                         <C>                                   <C>               <C>
+                                            Prudential Retirement Services              392,426/Z       7.5%
+                                            As Nominee for TTEE Cust S3000047
+                                            Pinnacle Health System
+                                            PO Box 9999
+                                            Scranton, PA 18507
+</Table>
+
+
+                                      A-7
+<Page>`
+
+func TestASCIIFundRegistrationOwnership(t *testing.T) {
+	rows, _, _ := ExtractText(asciiFundRegistrationFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 62 {
+		t.Errorf("want all 62 literal registration holdings, got %d: %+v", len(rows), rows)
+	}
+	for _, want := range []struct {
+		name, class string
+		shares, pct float64
+	}{
+		{"Pershing LLC", "CMF | California Series | Class C", 20251, 10.0},
+		{"SEI Trust Company", "CMF | California Income Series | Class Z", 175893, 31.7},
+		{"Prudential Retirement Services As Nominee For Plan 326812 Farm Fresh Retirement Plan", "GIF | Class Z", 712249, 6.1},
+		{"Prudential Retirement Services Nominee For Trustee PI W68700 Prudential Securities Inc.", "HYF | Class Z", 4443962, 38.1},
+		{"Prudential Retirement Services As nominee for TTEE Cust 300215 Sierra Health Automatic", "STBF | Prudential Short-Term Corporate Bond Fund | Class Z", 224555, 5.0},
+		{"Kevin S. Pitts Mrs. Linda M. Pitts Co-TTEES FBO Dana Cleary Pitts Trust Declaration UA DTD 9-24-96", "STBF | Dryden Ultra Short Bond Fund | Class C", 4664, 49.9},
+		{"Kevin S. Pitts Mrs. Linda M. Pitts Co-TTEES Allison Christin Pitts Trust Declaration UA DTD 9-24-96", "STBF | Dryden Ultra Short Bond Fund | Class C", 4664, 49.9},
+		{"Stanton Trust Co Cust For State of Hawaii Deferred Compensation Plan", "TRBF | Class Z", 1031018, 19.6},
+		{"Prudential Retirement Services As Nominee for TTEE Cust S3000047 Pinnacle Health System", "TRBF | Class Z", 392426, 7.5},
+	} {
+		r := find(rows, want.name, want.class)
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct || r.TableKind != "5pct_holders" {
+			t.Errorf("missing literal registered holding %s / %s shares=%v percent=%v: %+v", want.name, want.class, want.shares, want.pct, r)
+			for _, actual := range rows {
+				if actual.Shares != nil && *actual.Shares == want.shares {
+					t.Logf("ACTUAL_REGISTRATION %+v", actual)
+				}
+			}
+		}
+	}
+	seen := map[string]bool{}
+	for _, r := range rows {
+		sig := r.HolderName + "|" + r.ShareClass
+		if seen[sig] {
+			t.Errorf("duplicate registration identity %s", sig)
+		}
+		seen[sig] = true
+	}
+}
+
+func TestASCIIFundRegistrationGuards(t *testing.T) {
+	first := asciiFundRegistrationFixture[:strings.Index(asciiFundRegistrationFixture, "</Table>")+len("</Table>")]
+	for _, tc := range []struct{ name, old, replacement string }{
+		{"currency is not shares", "20,251/C", "$20,251/C"},
+		{"malformed grouping", "20,251/C", "20,25/C"},
+		{"class required", "20,251/C", "20,251"},
+		{"percent required", "10.0%", "unknown"},
+		{"registration caption required", "REGISTRATION", "COMPENSATION"},
+		{"share caption required", "SHARES/CLASS", "DOLLARS/CLASS"},
+		{"currency cannot be holder", "Pershing LLC", "$10,001-$50,000"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			rows, _, _ := ExtractText(strings.Replace(first, tc.old, tc.replacement, 1), Row{})
+			if len(ScreenRows(rows)) != 0 {
+				t.Fatalf("invalid registered holdings accepted: %+v", rows)
+			}
+		})
+	}
+	t.Run("exact copies stay suppressed", func(t *testing.T) {
+		row := "  California Series.......................  Pershing LLC                                 20,251/C      10.0%"
+		body := strings.Replace(first, row, row+"\n"+row, 1)
+		rows, _, _ := ExtractText(body, Row{})
+		rows = ScreenRows(rows)
+		if len(rows) != 8 {
+			t.Fatalf("want 8 unique holdings, got %d: %+v", len(rows), rows)
+		}
+	})
+	t.Run("nonzero legacy preserved", func(t *testing.T) {
+		body := `<TABLE><CAPTION>SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS
+Name of Beneficial Owner       Shares Owned       Percent of Class
+<S>                            <C>                <C>
+Alex Example                   100,000            12.0%
+Blair Example                  200,000            24.0%
+</TABLE>
+` + first
+		rows, _, _ := ExtractText(body, Row{})
+		rows = ScreenRows(rows)
+		if len(rows) != 2 || find(rows, "Alex Example", "") == nil || find(rows, "Pershing LLC", "") != nil {
+			t.Fatalf("registration retry changed legacy-emitting filing: %+v", rows)
+		}
+	})
+	t.Run("fund identity cannot cross unrelated prose", func(t *testing.T) {
+		continuation := asciiFundRegistrationFixture[strings.LastIndex(asciiFundRegistrationFixture, "<Table>"):]
+		rows, _ := textFundRegistrationCounts(first+"\nUnrelated disclosure begins here.\n"+continuation, Row{})
+		rows = ScreenRows(rows)
+		if len(rows) != 8 {
+			t.Fatalf("fund identity leaked into unrelated table: %d %+v", len(rows), rows)
+		}
+	})
+}
+
+func TestASCIIFundRegistrationWrappedStubPersists(t *testing.T) {
+	body := `<Table>
+<Caption>
+FUND NAME                                               REGISTRATION               SHARES/CLASS     PERCENT
+- ---------                                   ------------------------------------  ---------------   --------
+<S>                                         <C>                                   <C>               <C>
+STBF
+  Prudential Short-Term Corporate Bond      Prudential Retirement Services              224,555/Z       5.0%
+    Fund..................................  As nominee for TTEE Cust 300215
+                                            Sierra Health Automatic
+                                            PO Box 9999
+                                            Scranton, PA 18507
+
+                                            Registered Account Two                       449,110/Z      10.0%
+</Table>`
+	rows, _, _ := ExtractText(body, Row{})
+	rows = ScreenRows(rows)
+	r := find(rows, "Registered Account Two", "STBF | Prudential Short-Term Corporate Bond Fund | Class Z")
+	if len(rows) != 2 || r == nil || r.Shares == nil || *r.Shares != 449110 || r.Percent == nil || *r.Percent != 10 {
+		t.Fatalf("wrapped fund stub must persist for next account: %+v", rows)
+	}
+}
+
+const asciiBioFundCountsFixture = `<TABLE>
+<CAPTION>
+                                                                                          SHARES
+                                                    BUSINESS EXPERIENCE                  OF FUND
+      NAME, ADDRESS AND AGE(1)                  DURING THE PAST FIVE YEARS               OWNED(2)
+      ------------------------                  --------------------------               --------
+<S>                                    <C>                                            <C>
+Martin E. Zweig* ....................  Chairman of the Board and President of the          93,823(3)
+  900 Third Avenue                     Fund since 1986; President of Zweig
+  New York, New York 10022               Consulting LLC (the "Sub-Adviser") and
+  57                                     Phoenix-Zweig Trust; Chairman of the Board
+                                         and President of The Zweig Total Return
+                                         Fund, Inc. since 1988; Managing Director of
+                                         Zweig-DiMenna Associates LLC; President of
+                                         Zweig-DiMenna International Managers Inc.,
+                                         Zweig-DiMenna Associates, Inc. and Gotham
+                                         Advisors, Inc.; Shareholder, Watermark
+                                         Securities, Inc.; formerly President and
+                                         Director of Zweig Total Return
+                                         Advisors, Inc. and of Zweig Advi-
+                                         sors, Inc.; formerly Chairman of
+                                         Zweig/Glaser Advisers and Euclid Advisors
+                                         LLC; Member of the Undergraduate Executive
+                                         Board of The Wharton School, University of
+                                         Pennsylvania; Trustee of the Manhattan
+                                         Institute.
+Charles H. Brunie ...................  Director of the Fund since 1998; Director of           30,000
+  21 Elm Rock Road                     The Zweig Total Return Fund, Inc. since 1988;
+  Bronxville, NY 10708                   Chairman Emeritus of Oppenheimer Capital;
+  69                                     and Chairman Emeritus, Board of Trustees of
+                                         the Manhattan Institute.
+Elliot S. Jaffe .....................  Director of the Fund since 1988; Director of        12,400(4)
+  30 Dunnigan Drive                    The Zweig Total Return Fund, Inc. since 1988;
+  Suffern, NY 10901                      Chairman and Chief Executive Officer of The
+  73                                     Dress Barn, Inc.; Director of National
+                                         Retail Federation; Director of Shearson
+                                         Appreciation Fund; Director of Shearson
+                                         Managed Governments, Inc.; Director of
+                                         Shearson Income Trust; Director of Shearson
+                                         Lehman Small Capitalization Fund; Director
+                                         of Stamford Hospital Foundation; Member of
+                                         the Board of Overseers of The School of
+                                         Arts and Sciences, University of
+                                         Pennsylvania; Trustee Teachers College,
+                                         Columbia University.
+</TABLE>
+
+                                       2
+<PAGE>
+
+<TABLE>
+<CAPTION>
+                                                                                          SHARES
+                                                    BUSINESS EXPERIENCE                  OF FUND
+      NAME, ADDRESS AND AGE(1)                  DURING THE PAST FIVE YEARS               OWNED(2)
+      ------------------------                  --------------------------               --------
+<S>                                    <C>                                            <C>
+Alden C. Olson ......................  Director of the Fund since 1996; Director of         2,000(5)
+  2711 Ramparte Path                   The Zweig Total Return Fund, Inc. since 1996;
+  Holt, Michigan 48842                   Chartered Financial Analyst; formerly
+  71                                     Director of First National Bank of
+                                         Michigan; formerly Professor of Financial
+                                         Management, Investments at Michigan State
+                                         University.
+James B. Rogers, Jr. ................  Director of the Fund since 1986; Director of            4,449
+  352 Riverside Drive                  The Zweig Total Return Fund, Inc. since 1988;
+  New York, NY 10025                     Private Investor; Chairman of Beeland
+  57                                     Interests; Regular Commentator on CNBC;
+                                         Author of "Investment Biker: On the Road
+                                         with Jim Rogers"; Director of Emerging
+                                         Markets Brewery Fund; Director of Levco
+                                         Series Trust; Sometimes Visiting Professor
+                                         at Columbia University; Columnist for WORTH
+                                         Magazine.
+Anthony M. Santomero ................  Director of the Fund since 1986; Director of            3,000
+  Steinberg-Dietrich Hall              The Zweig Total Return Fund, Inc. since 1988;
+  Wharton School                         Richard K. Mellon Professor of Finance, The
+  University of Pennsylvania             Wharton School, University of Pennsylvania;
+  Philadelphia, PA 19104                 Director of Wharton Financial Institution
+  53                                     Center; Trustee of Blackrock Funds;
+                                         formerly Director of Municipal Fund for New
+                                         York Investors; formerly Director of
+                                         Municipal Fund for California Investors;
+                                         formerly Trustee of Compass Capital Funds.
+</TABLE>`
+
+const asciiBioOwnedCountsFixture = `<TABLE>
+<CAPTION>
+                                                                                                    Number of
+                                                                                                      Shares
+  Name, Age, Position with                                 Principal Occupations and               Beneficially
+the Fund and Business Address                   Other Affiliations During the Past Five Years          Owned
+- -----------------------------                   -----------------------------------------------    -------------
+<S>                                             <C>                                                <C>
+James S. Holbrook, Jr.(*),                      Chairman of the Board and CEO of Sterne,               8,000(**)
+59, Chairman of the Board,                      Agee & Leach, Inc., the managing underwriter
+Trustee and President since 1999,               for the fund's initial public offering,
+800 Shades Creek Parkway,                       since 1990 and Co-Chairman of the Board and
+Suite 700                                       CEO of its holding company, Sterne, Agee &
+Birmingham, Alabama 35209                       Leach Group, Inc. ("SAL Group"), since SAL
+                                                Group's formation in 1996. Mr. Holbrook
+                                                serves as the Chairman of the Board for each
+                                                of SAL Group's other subsidiaries, which
+                                                include the investment advisor to the fund,
+                                                Sterne Agee Asset Management, Inc., and the
+                                                custodian of the fund, The Trust Company of
+                                                Sterne, Agee & Leach, Inc.
+
+Robert M. Couch,                                Executive Vice President of New South                      -0-
+47, Trustee since 1999,                         Bancshares, Inc. since 1994; President of New
+1900 Crestwood Boulevard,                       South Federal Savings Bank since June 1997;
+Birmingham, AL 35210                            Director of New South Federal Savings Bank
+                                                since January 1995; Vice Chairman of New South
+                                                Federal Savings Bank from March 1995 until June
+                                                1997; President of Collateral Mortgage Ltd.
+                                                since August 1995; and Executive Vice President
+                                                of Collateral Mortgage, Ltd. from October 1993
+                                                to August 1995.
+</TABLE>
+
+                                       2
+
+<PAGE>
+
+<TABLE>
+<S>                                              <C>                                                     <C>
+James A. Taylor                                  Chairman of the Board and Chief Executive               -0-
+62, Trustee since 1999,                          Officer of The Banc Corporation, a Delaware
+17 North 20th Street,                            bank holding company based in Birmingham,
+Birmingham, Alabama 35203                        Alabama since its incorporation in April
+                                                 1998; President of The Banc Corporation
+                                                 since its incorporation in April 1998 until
+                                                 November 1998 and from February 1999 until
+                                                 September 2000; Chairman of the Board,
+                                                 President and Chief Executive Officer of
+                                                 Warrior Capital Corporation, an Alabama
+                                                 banking corporation from October 1997 until
+                                                 its merger into The Banc Corporation in
+                                                 September 1998; Founder, Chairman of the
+                                                 Board and Chief Executive Officer of Alabama
+                                                 National BanCorporation ("ANB"), a
+                                                 publicly-traded bank holding company based
+                                                 in Birmingham, Alabama from its
+                                                 incorporation in 1986 until his retirement
+                                                 in April 1996; Chairman of the Board and
+                                                 Chief Executive Officer of various banks and
+                                                 bank holding companies that ultimately
+                                                 comprised ANB from 1981 until 1996. Mr.
+                                                 Taylor also currently serves on the Board of
+                                                 Directors of Southern Energy Homes, Inc.
+
+F. Eugene Woodham(*),                            Chief Operating Officer of SAL Group since              -0-
+52, Secretary and Treasurer since 1999,          2002, Chief Financial Officer of SAL Group
+800 Shades Creek Parkway,                        from 1996 to 2002 and Sterne, Agee & Leach,
+Suite 700                                        Inc., the managing underwriter for the
+Birmingham, Alabama 35209                        fund's initial public offering, from 1995 to
+                                                 2002. Mr. Woodham serves on the Board of
+                                                 Directors for each of SAL Group's other
+                                                 subsidiaries, which include the investment
+                                                 advisor to the fund, Sterne Agee Asset
+                                                 Management, Inc., and the custodian of the
+                                                 fund, The Trust Company of Sterne, Agee &
+                                                 Leach, Inc. For the nine years prior to
+                                                 1995, Mr. Woodham served in various
+                                                 capacities with Secor Bank, Federal Savings
+                                                 Bank, most recently as President and
+                                                 Chairman of the Board of Directors (after
+                                                 its acquisition by Regions Bank in 1993).
+</TABLE>`
+
+func TestASCIIBiographyCountOnlyColumns(t *testing.T) {
+	for _, tc := range []struct {
+		name, body string
+		count      int
+		holdings   map[string]float64
+	}{
+		{"business experience, fund counts", asciiBioFundCountsFixture, 6, map[string]float64{
+			"Martin E. Zweig": 93823, "Charles H. Brunie": 30000, "Elliot S. Jaffe": 12400,
+			"Alden C. Olson": 2000, "James B. Rogers, Jr": 4449, "Anthony M. Santomero": 3000,
+		}},
+		{"number beneficially owned, page continuation", asciiBioOwnedCountsFixture, 4, map[string]float64{
+			"James S. Holbrook, Jr": 8000, "Robert M. Couch": 0, "James A. Taylor": 0, "F. Eugene Woodham": 0,
+		}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			rows, _, _ := ExtractText(tc.body, Row{})
+			rows = ScreenRows(rows)
+			if len(rows) != tc.count {
+				t.Errorf("want %d literal holdings, got %d: %+v", tc.count, len(rows), rows)
+			}
+			for name, shares := range tc.holdings {
+				r := find(rows, name, "")
+				if r == nil || r.Shares == nil || *r.Shares != shares || r.Percent != nil || r.PctMarker != "" || r.ShareClass != "" || r.TableKind != "management" {
+					t.Errorf("missing literal count-only holder %s shares=%v: %+v", name, shares, r)
+				}
+			}
+		})
+	}
+}
+
+const asciiBioCountBeforeNameFixture = `<TABLE>
+<CAPTION>
+                                                                                       Number of
+                                                                                        Shares
+Name, Age, Position with                      Principal Occupations and              Beneficially
+the Fund and Business Address      Other Affiliations During the Past Five Years         Owned
+- -----------------------------      ----------------------------------------------    -------------
+<S>                                <C>                                               <C>
+James S. Holbrook, Jr.(*),         Chairman of the Board and CEO of Sterne, Agee &     7,700(**)
+57, Chairman of the Board,         Leach, Inc., the managing underwriter for the
+Trustee and President,             fund's initial public offering, since 1990 and
+800 Shades Creek Parkway,          Co-Chairman of the Board and CEO of its holding
+Suite 700                          company, Sterne, Agee & Leach Group, Inc. ("SAL
+Birmingham, Alabama 35209          Group"), since SAL Group's formation in 1996. Mr.
+                                   Holbrook serves as the Chairman of the Board for
+                                   each of SAL Group's other subsidiaries, which
+                                   include the investment advisor to the fund, Sterne
+                                   Agee Asset Management, Inc., and the custodian of
+                                   the fund, The Trust Company of Sterne, Agee &
+                                   Leach, Inc. Mr. Holbrook also serves as a director
+                                   for Bobby Allison Wireless Corporation.
+                                                                                          -0-
+Robert M. Couch,                   Executive Vice President of New South Bancshares,
+44, Trustee,                       Inc. since 1994; President of New South Federal
+1900 Crestwood Boulevard,          Savings Bank since June 1997; Director of New
+Birmingham, AL 35210               South Federal Savings Bank since January 1995;
+                                   Vice Chairman of New South Federal Savings Bank
+                                   from March 1995 until June 1997; President of
+                                   Collateral Mortgage Ltd. since August 1995; and
+                                   Executive Vice President of Collateral Mortgage,
+                                   Ltd. from October 1993 to August 1995.
+</TABLE>
+
+
+                                       2
+<PAGE>   5
+
+<TABLE>
+<S>                                <C>                                                    <C>
+James A. Taylor                    Chairman of the Board and Chief Executive              -0-
+59, Trustee,                       Officer of The Banc Corporation, a Delaware
+17 North 20th Street,              bank holding company based in Birmingham,
+Birmingham, Alabama 35203          Alabama since its incorporation in April 1998;
+                                   President of The Banc Corporation since its
+                                   incorporation in April 1998 until November 1998;
+                                   Chairman of the Board, President and Chief
+                                   Executive Officer of Warrior Capital Corporation,
+                                   an Alabama banking corporation from October 1997
+                                   until its merger into The Banc Corporation in
+                                   September 1998; Founder, Chairman of the Board and
+                                   Chief Executive Officer of Alabama National
+                                   BanCorporation ("ANB"), a publicly-traded bank
+                                   holding company based in Birmingham, Alabama from
+                                   its incorporation in 1986 until his retirement in
+                                   April 1996; Chairman of the Board and Chief Executive
+                                   Officer of various banks and bank holding companies
+                                   that ultimately comprised ANB from 1981 until 1996.
+                                   Mr. Taylor also currently serves on the Board of
+                                   Directors of the American Sports Medicine Institute
+                                   and Southern Energy Homes, Inc.
+
+F. Eugene Woodham(*),              Chief Financial Officer of Sterne, Agee &              -0-
+49, Secretary and Treasurer,       Leach, Inc., the managing underwriter for the
+800 Shades Creek Parkway,          fund's initial public offering, since 1995 and
+Suite 125                          its holding company SAL Group, since SAL
+Birmingham, Alabama 35209          Group's formation in 1996. Mr. Woodham serves
+                                   on the Board of Directors for each of SAL Group's
+                                   other subsidiaries, which include the investment
+                                   advisor to the fund, Sterne Agee Asset Management,
+                                   Inc., and the custodian of the fund, The Trust
+                                   Company of Sterne, Agee & Leach, Inc. For the nine
+                                   years prior to 1995, Mr. Woodham served in various
+                                   capacities with Secor Bank, Federal Savings Bank,
+                                   most recently as President and Chairman of the
+                                   Board of Directors (after its acquisition by Regions
+                                   Bank in 1993).
+</TABLE>`
+
+func TestASCIIBiographyCountPrecedesName(t *testing.T) {
+	rows, _, _ := ExtractText(asciiBioCountBeforeNameFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 4 {
+		t.Errorf("want4 literal biography counts, got%d: %+v", len(rows), rows)
+	}
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{
+		{"James S. Holbrook, Jr", 7700}, {"Robert M. Couch", 0}, {"James A. Taylor", 0}, {"F. Eugene Woodham", 0},
+	} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent != nil || r.PctMarker != "" {
+			t.Errorf("missing forward count %s shares=%v: %+v", want.name, want.shares, r)
+		}
+	}
+}
+func TestASCIIBiographyCountOnlyGuards(t *testing.T) {
+	for _, tc := range []struct{ name, old, replacement string }{
+		{"dollar ranges", "OF FUND", "DOLLAR RANGE"},
+		{"currency", "93,823", "$93,823"},
+		{"missing share caption", "SHARES", "AGE"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			body := strings.ReplaceAll(asciiBioFundCountsFixture, tc.old, tc.replacement)
+			rows, _, _ := ExtractText(body, Row{})
+			if tc.name == "currency" {
+				for _, r := range ScreenRows(rows) {
+					if r.HolderName == "Martin E. Zweig" {
+						t.Fatalf("currency accepted: %+v", r)
+					}
+				}
+			} else if len(ScreenRows(rows)) != 0 {
+				t.Fatalf("nonownership biography accepted: %+v", rows)
+			}
+		})
+	}
+}
+
+const asciiDelayedPercent1997Fixture = `Name and Address of              Amount and Nature
+Beneficial Owner and             of Beneficial                 Percent of
+Identity of Group (1)(2)         Ownership                     Class
+- - ------------------------         -----------------             ----------
+
+Richard D. Fain                         31,200(3)                   *
+
+Kenneth J. Huth                         58,550(4)                   *
+
+Andrew A. Lozyniak                      36,000(5)                   *
+
+John U. Moorhead, II                    72,600(6)                 1.2%
+
+Mark Pinto                              44,000(7)                   *
+
+Frank J. Polese                        452,834(8)                 7.4%
+
+Gilbert D. Raker                       786,775(9)                12.7%
+
+Steven B. Sands                        190,750(10)                3.1%
+
+
+All executive officers               1,690,529(11)               26.6%
+and Directors as a group
+(10 persons)
+
+
+
+- - --------------------
+`
+
+const asciiDelayedPercent1998Fixture = `Name and Address of                 Amount and Nature
+Beneficial Owner and                of Beneficial                Percent of
+Identity of Group (1)(2)            Ownership                    Class
+
+Richard D. Fain (3)                         33,700                  *
+
+Kenneth J. Huth (4)                         58,550                  *
+
+Andrew A. Lozyniak (5)                      49,075                  *
+
+John U. Moorhead, II (6)                    75,100                  1.2%
+
+Mark A. Pinto (7)                           51,500                  *
+
+Frank J. Polese (8)                        454,734                  7.4%
+
+Gilbert D. Raker (9)                       798,775                 12.9%
+
+Steven B. Sands (10)                       253,250                  4.2%
+
+All executive officers                   1,774,684                 27.8%
+and Directors as a group
+(8 persons) (11)
+
+Kennedy Capital                            323,900(a)              5.3%
+10829 Olive Boulevard
+St. Louis, Missouri 63141
+
+- --------------------
+`
+
+func TestASCIIDelayedStackedPercentHeader(t *testing.T) {
+	for _, tc := range []struct {
+		name, body  string
+		count       int
+		shares, pct float64
+	}{
+		{"1997", asciiDelayedPercent1997Fixture, 9, 1690529, 26.6},
+		{"1998", asciiDelayedPercent1998Fixture, 10, 1774684, 27.8},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			rows, _, _ := ExtractText(tc.body, Row{})
+			rows = ScreenRows(rows)
+			if len(rows) != tc.count {
+				t.Errorf("want %d literal holdings, got %d: %+v", tc.count, len(rows), rows)
+			}
+			r := find(rows, "Richard D. Fain", "")
+			if r == nil || r.Shares == nil || (tc.name == "1997" && *r.Shares != 31200) || (tc.name == "1998" && *r.Shares != 33700) || r.PctMarker != "*" {
+				t.Errorf("missing first literal holding: %+v", r)
+			}
+			found := false
+			for _, r := range rows {
+				if r.IsGroupRow && r.Shares != nil && *r.Shares == tc.shares && r.Percent != nil && *r.Percent == tc.pct && ((tc.name == "1997" && r.GroupN == 10) || (tc.name == "1998" && r.GroupN == 8)) {
+					found = true
+				}
+			}
+			if !found {
+				t.Errorf("missing literal wrapped group shares=%v pct=%v: %+v", tc.shares, tc.pct, rows)
+			}
+		})
+	}
+}
+
+func TestASCIIDelayedStackedPercentGuards(t *testing.T) {
+	for _, tc := range []struct{ name, old, replacement string }{
+		{"missing percent", "Percent of", "Salary"},
+		{"missing ownership", "Ownership", "Compensation"},
+		{"currency values", "31,200", "$31,200"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			body := strings.ReplaceAll(asciiDelayedPercent1997Fixture, tc.old, tc.replacement)
+			rows, _, _ := ExtractText(body, Row{})
+			if tc.name == "currency values" {
+				for _, r := range ScreenRows(rows) {
+					if r.HolderName == "Richard D. Fain" {
+						t.Fatalf("currency emitted: %+v", r)
+					}
+				}
+			} else if len(ScreenRows(rows)) != 0 {
+				t.Fatalf("invalid caption emitted: %+v", rows)
+			}
+		})
+	}
+}
+
+const asciiCaptionOccupationCountsFixture = `<TABLE>
+<CAPTION>
+                                                                                                     COMMON
+                                                                                                  SHARES OF THE
+                                                                                                   ASSOCIATION
+                                                                                                  BENEFICIALLY
+                                         AGE AT                                                     OWNED AT
+                                      DECEMBER 31,                                      TRUSTEE    JANUARY 2,
+                NAME                      1997             PRINCIPAL OCCUPATION          SINCE       1998(A)
+                ----                  ------------         --------------------         -------   -------------
+<S>                                   <C>            <C>                                <C>       <C>
+Russell A. Boss (F,P)                      59        President and Chief Executive       1989          1,000(b)
+                                                     Officer, A.T. Cross Company
+                                                     (writing instruments
+                                                     manufacturer), Lincoln, Rhode
+                                                     Island
+John D. Carney                             53        Executive Vice President of the       --         10,734(c)
+                                                     Association
+Paul J. Choquette, Jr. (C,F)               59        Chairman and Chief Executive        1992          2,137(f)
+                                                     Officer of Gilbane Building
+                                                     Company (building construction),
+                                                     Providence, Rhode Island
+Peter S. Damon (A,C)                       62        President and Chief Executive       1991          1,190(d)
+                                                     Officer, Bank of Newport,
+                                                     Newport, Rhode Island
+Peter B. Freeman (F,P)                     65        Corporate Director and Trustee,     1979          2,500
+                                                     Providence, Rhode Island
+Clifford J. Hebert, Jr.                    50        Treasurer and Secretary               --         11,879(c)
+Larry A. Liebenow (A,C)                    54        President and Chief Executive       1994          1,000
+                                                     Officer of Quaker Fabric
+                                                     Corporation (upholstery
+                                                     manufacturer), Fall River,
+                                                     Massachusetts
+Jacek Makowski (F,P)                       67        Chairman, Poseidon Resources        1995            200
+                                                     Corporation (origination and
+                                                     development of major capital
+                                                     projects), Stamford, Connecticut
+Wesley W. Marple, Jr. (A,C)                65        Professor of Business               1976          1,885(e)
+                                                     Administration, Northeastern
+                                                     University, Boston, Massachusetts
+Donald G. Pardus                           57        Chairman of the Board of Trustees   1982         49,725(c)
+                                                     and Chief Executive Officer of
+                                                     the Association
+Robert G. Powderly                         50        Executive Vice President of the       --         14,789(c)
+                                                     Association
+Margaret M. Stapleton (A,P)                61        Vice President, John Hancock        1977          1,577
+                                                     Mutual Life Insurance Company,
+                                                     Boston, Massachusetts
+John R. Stevens                            57        President and Chief Operating       1990         28,068(c)
+                                                     Officer of the Association
+W. Nicholas Thorndike (A,F)                64        Corporate Director and Trustee,     1991          2,146
+                                                     Brookline, Massachusetts
+Trustees and executive officers as a group.....................................................      128,832(g)
+</TABLE>`
+
+const asciiCaptionDirectorClassCountsFixture = `<TABLE>
+<CAPTION>
+
+                                                                                     AMOUNT AND NATURE
+                                                                                       OF BENEFICIAL
+                                                                                       OWNERSHIP(2)
+      NAME, AGE, PRINCIPAL OCCUPATION AND OTHER          SERVED AS A               OF SHARES OF THE FUND
+     DIRECTORSHIPS(1) DURING THE PAST FIVE YEARS        DIRECTOR SINCE   CLASS     AS OF MARCH 31, 1997
+- ------------------------------------------------------  --------------   -----   -------------------------
+<S>                                                     <C>              <C>     <C>
+Thomas J. Gibbons, age 49.............................       1993         III                 --
+  President, Cornerstone Associates (Management
+  Consulting Firm)
+
+Harvey B. Kaplan(3), age 59...........................       1990         III              1,000
+  Controller (Chief Financial Officer), Easter
+  Unlimited, Inc. (toy manufacturer and importer);
+  Trustee, BJB Investment Funds
+
+Bernard Spilko*, age 55...............................       1993         III              2,300
+  President of the Fund; Senior Vice President, Bank
+  Julius Baer & Co., Ltd. (New York Branch); Director
+  and Managing Director, Julius Baer Securities Inc.;
+  Director, Baer American Banking Corp.; Treasurer and
+  Chief Financial Officer of BJB Investment Funds
+
+
+Martin Vogel*(4), age 33..............................       1997          I                  --
+  Director of the Legal and Tax Department, Julius
+  Baer Investment Funds Services, Ltd. (Zurich)
+  (1996-present); Attorney, Schaufelberger & van
+  Hoboken (1994-1996); Attorney, Rohner & Partner
+  (1993-1994); Attorney, Rinderknecht Schaufelberger
+  Glaus & Stadelhofer (prior to 1993). Secretary of
+  the Board of Directors of the Luxembourg domiciled
+  investment companies and of Julius Baer Investment
+  Funds Services, Ltd. (1996-present)
+</TABLE>
+
+     The following Directors of the Fund will continue to serve in such capacity
+until their terms of office expire and their successors are elected and
+qualified:
+
+
+<TABLE>
+<CAPTION>
+                                                                                    AMOUNT AND NATURE
+                                                                                OF BENEFICIAL OWNERSHIP(2)
+      NAME, AGE, PRINCIPAL OCCUPATION AND OTHER         SERVED AS A               OF SHARES OF THE FUND
+     DIRECTORSHIPS(1) DURING THE PAST FIVE YEARS       DIRECTOR SINCE   CLASS      AS OF MARCH 31, 1997
+- -----------------------------------------------------  --------------   -----   --------------------------
+<S>                                                    <C>              <C>     <C>
+Antoine Bernheim, age 43.............................       1990          I                   --
+  President, Dome Capital Management Inc.; Chairman,
+  Dome Securities Corp. (1995-present); President,
+  The U.S. Offshore Funds Directory Inc.; Director,
+  Dome Capital Ltd.; Director, W. P. Stewart & Co.
+  Growth Fund, Inc.; Director, College Savings Bank
+
+David E. Bodner*(5), age 63..........................       1995         II                  200
+  Chairman of the Fund; Chairman, Julius Baer
+  Securities Inc.; President and Director, Baer
+  American Banking Corp.; Executive Vice President,
+  North America, Bank Julius Baer & Co., Ltd.;
+  President, BJB Investment Funds
+
+Lawrence A. Fox, age 74..............................       1990         II               677.81
+  Consulting Economist
+</TABLE>`
+
+func TestASCIICaptionCountOnlyOccupations(t *testing.T) {
+	for _, tc := range []struct {
+		name, body string
+		count      int
+		holdings   map[string]float64
+	}{
+		{"separate age and trustee year", asciiCaptionOccupationCountsFixture, 15, map[string]float64{"Russell A. Boss": 1000, "John D. Carney": 10734, "W. Nicholas Thorndike": 2146, "Trustees and executive officers as a group": 128832}},
+		{"inline age and director class", asciiCaptionDirectorClassCountsFixture, 7, map[string]float64{"Thomas J. Gibbons": 0, "Harvey B. Kaplan": 1000, "Bernard Spilko": 2300, "Martin Vogel": 0, "Antoine Bernheim": 0, "David E. Bodner": 200, "Lawrence A. Fox": 677.81}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			rows, _, _ := ExtractText(tc.body, Row{})
+			rows = ScreenRows(rows)
+			if len(rows) != tc.count {
+				t.Errorf("want%d literal counts, got%d: %+v", tc.count, len(rows), rows)
+			}
+			for name, shares := range tc.holdings {
+				r := find(rows, name, "")
+				if r == nil || r.HolderName != name || r.Shares == nil || *r.Shares != shares || r.Percent != nil || r.PctMarker != "" || r.ShareClass != "" {
+					t.Errorf("missing literal holder %s shares=%v: %+v", name, shares, r)
+				}
+			}
+			if tc.name == "separate age and trustee year" {
+				r := find(rows, "Trustees and executive officers as a group", "")
+				if r == nil || !r.IsGroupRow {
+					t.Error("literal group not flagged")
+				}
+			}
+		})
+	}
+}
+
+func TestASCIICaptionCountOnlyGuards(t *testing.T) {
+	for _, tc := range []struct{ name, old, replacement string }{
+		{"currency", "10,734", "$10,734"},
+		{"missing share caption", "SHARES", "AGE"},
+		{"missing beneficial caption", "BENEFICIALLY", "COMPENSATION"},
+		{"option grants", "COMMON", "OPTIONS GRANTED"},
+		{"missing biography structure", "PRINCIPAL OCCUPATION", "POSITION"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			body := strings.ReplaceAll(asciiCaptionOccupationCountsFixture, tc.old, tc.replacement)
+			rows, _, _ := ExtractText(body, Row{})
+			if len(ScreenRows(rows)) != 0 {
+				t.Fatalf("nonownership caption emitted: %+v", rows)
+			}
+		})
+	}
+	body := asciiCaptionOccupationCountsFixture + `
+SUMMARY COMPENSATION TABLE
+<TABLE><CAPTION>
+Name                     Salary        Bonus
+<S>                      <C>           <C>
+Jane Example             $125,000      $25,000
+John Example             $175,000      $30,000
+</TABLE>`
+	rows, _, _ := ExtractText(body, Row{})
+	if len(ScreenRows(rows)) != 15 {
+		t.Fatalf("adjacent compensation changes bounded count table: %+v", rows)
+	}
+	plain := Row{HolderName: "Lawrence A. Fox", Shares: pf(677.81), TableKind: "management"}
+	if len(ScreenRows([]Row{plain})) != 0 {
+		t.Fatal("unverified fractional row screen weakened")
+	}
+}
+
+const asciiBecameDirectorCountsFixture = `<TABLE>
+<CAPTION>
+                                                                                                       Common Shares
+                                                                                                        Beneficially
+                                                                                         Became         Owned as of
+       Name and Age                        Principal Occupation                         Director       June 1, 1995(a)
+       ------------                        --------------------                         --------       ---------------
+
+                                                       Nominees
+                                                       --------
+
+                                        Terms expiring at annual meeting in 1998
+
+<S>                   <C>     <C>                                                          <C>             <C>
+Frank O. White, Jr.   (40)    President and Chief Executive Officer since April,           1985            1,142
+* **                          1994; Vice President and General Manager,
+                              1990-1994; Assistant General Manager 1983-1990;
+                              Director of Mutuels since 1981; Assistant Manager
+                              Mutuels 1979-1980; Mutuel Clerk from 1972 to 1978;
+                              Former Director of Mutuels Syracuse Mile, Inc.,
+                              1983-1993; member of Equine Advisory Council
+                              College of Veterinary Medicine Cornell University;
+                              Director of United States Trotting Association;
+                              Director of Syracuse Mile, Inc.; Director of HTA
+                              Insurance Co. Ltd. Bermuda; Director of Community
+                              Memorial Hospital, Hamilton, N.Y.; Trustee of
+                              Oneida Savings Bank; Son of Frank O. White, Sr.
+
+
+James J. Moran        (55)    Vice President and Secretary since April, 1994;              1986              100
+* **                          Assistant Secretary 1985-1994; Director of
+                              Publicity/Public Relations since 1975; Track
+                              Announcer since 1964; Served in Racing and Program
+                              Department 1962; Past President and Chairman of
+                              the Board of the North American Harness Publicists
+                              Assn.; Secretary/Treasurer of Vernon Chapter of
+                              U.S. Harness Writers Assn.
+
+
+David H. Brown        (56)    Assistant to the President since 1994; Assistant             1995               58
+                              Mutuel Manager, 1989-1994; Formerly Executive
+                              Board member of Local 234, S.E.I.U.; Formerly
+                              Vice-President and Executive Board member of
+                              Catholic School Administrators' Assn. of New York.
+
+</TABLE>`
+
+func TestASCIIBecameDirectorCountOnly(t *testing.T) {
+	rows, _, _ := ExtractText(asciiBecameDirectorCountsFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 3 {
+		t.Fatalf("want 3 literal beneficial holdings, got %d: %+v", len(rows), rows)
+	}
+	for _, tc := range []struct {
+		name   string
+		shares float64
+	}{
+		{"Frank O. White, Jr", 1142}, {"James J. Moran", 100}, {"David H. Brown", 58},
+	} {
+		r := find(rows, tc.name, "")
+		if r == nil || r.HolderName != tc.name || r.Shares == nil || *r.Shares != tc.shares || r.Percent != nil || r.PctMarker != "" {
+			t.Errorf("want literal %s shares=%v without age/year: %+v", tc.name, tc.shares, r)
+		}
+	}
+}
+
+func TestASCIIBecameDirectorCountOnlyGuards(t *testing.T) {
+	for _, tc := range []struct{ name, old, replacement string }{
+		{"currency", "1,142", "$1,142"},
+		{"missing shares", "Common Shares", "Annual Salary"},
+		{"missing beneficial", "Beneficially", "Granted"},
+		{"missing director year", "Became", "Retired"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			rows, _, _ := ExtractText(strings.ReplaceAll(asciiBecameDirectorCountsFixture, tc.old, tc.replacement), Row{})
+			if len(ScreenRows(rows)) != 0 {
+				t.Fatalf("nonownership table accepted: %+v", rows)
+			}
+		})
+	}
+}
+
+const asciiAmountCommonPreferredFixture = `               SECURITY INTEREST OF CERTAIN BENEFICIAL OWNERS,
+                           DIRECTORS AND MANAGEMENT
+
+        The following table sets forth certain information, as of August 16,
+1996, regarding the Company's Common Stock and Series B Convertible Preferred
+Stock (the "Series B Preferred Stock") owned of record or beneficially by (i)
+each shareholder who is known by the Company to beneficially own in excess of 5%
+of the outstanding shares of Common Stock or of the Series B Preferred Stock,
+(ii) each director and the executive officer named in the Summary Compensation
+Table below, and (iii) all directors and executive officers as a group. Except
+as otherwise indicated, each shareholder listed below has sole voting and
+investment power with respect to shares beneficially owned by such person.
+
+        In accordance with Rule 13d-3, promulgated under the Securities Exchange
+Act of 1934, as amended, shares that are not outstanding but that are issuable
+within 60 days upon exercise of outstanding options, warrants, rights or
+conversion privileges or which are otherwise required by Rule 13d-3 to be
+included have been deemed to be outstanding for the purpose of computing the
+percentage of outstanding shares owned by the person owning such right, but have
+not been deemed outstanding for the purpose of computing the percentage for any
+other person. As of August 16, 1996, there were 17,040,126 shares of Common
+Stock issued and outstanding and 1,000,000 shares of Series B Preferred Stock
+issued and outstanding.
+
+<TABLE>
+<CAPTION>
+                                                                      SERIES B
+                                         COMMON STOCK             PREFERRED STOCK
+                                         ------------             ---------------
+        NAME AND ADDRESS            AMOUNT     % OF CLASS      AMOUNT        % OF CLASS
+        ----------------            ------     ----------      ------        ----------
+5% HOLDER
+- ---------
+<S>                               <C>             <C>           <C>             <C>
+Strategica Capital Corporation    2,540,193(1)    13.0%         ____            ____
+1221 Brickell Avenue
+Suite 2600
+Miami, Florida 33131
+
+COMMON STOCK DIRECTORS
+
+Wendell R. Anderson, Esq.            30,000(2)      *           ____            ____
+720 Baker Building
+Minneapolis, MN 55403
+</TABLE>`
+
+func TestASCIIAmountCommonPreferred(t *testing.T) {
+	rows, _, _ := ExtractText(asciiAmountCommonPreferredFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 2 {
+		t.Fatalf("want 2 literal common holdings, got %d: %+v", len(rows), rows)
+	}
+	for _, tc := range []struct {
+		name   string
+		shares float64
+		pct    *float64
+		marker string
+	}{
+		{"Strategica Capital Corporation", 2540193, pf(13), ""},
+		{"Wendell R. Anderson", 30000, nil, "*"},
+	} {
+		r := find(rows, tc.name, "Common Stock")
+		if r == nil || r.HolderName != tc.name || r.Shares == nil || *r.Shares != tc.shares || r.PctMarker != tc.marker {
+			t.Errorf("missing common amount %s: %+v", tc.name, r)
+			continue
+		}
+		if (r.Percent == nil) != (tc.pct == nil) || (r.Percent != nil && *r.Percent != *tc.pct) {
+			t.Errorf("wrong common percent: %+v", r)
+		}
+	}
+}
+
+func TestASCIIAmountCommonPreferredGuards(t *testing.T) {
+	for _, tc := range []struct{ name, old, replacement string }{
+		{"currency", "2,540,193", "$2,540,193"},
+		{"missing amount header", "AMOUNT", "SALARY"},
+		{"missing share context", "shares", "dollars"},
+		{"no common class", "COMMON STOCK", "OPTIONS GRANTED"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			rows, _, _ := ExtractText(strings.ReplaceAll(asciiAmountCommonPreferredFixture, tc.old, tc.replacement), Row{})
+			if len(ScreenRows(rows)) != 0 {
+				t.Fatalf("nonownership amount table accepted: %+v", rows)
+			}
+		})
+	}
+}
+
+const asciiVerticalFourClassFixture = `                               Shares of       Shares of       Shares of
+                 Shares of      Series A        Series B        Series C
+                   Common      Preferred       Preferred       Preferred
+                   Stock         Stock           Stock           Stock
+                Beneficially  Beneficially    Beneficially    Beneficially
+                  Owned(1)      Owned(2)        Owned(2)        Owned(2)
+                ------------  ------------    ------------    ------------
+Name/Address   No. of Shares No. of Shares   No. of Shares   No. of Shares
+of Beneficial  ------------- -------------   -------------   -------------
+Owner             Percent       Percent         Percent         Percent
+- - -------------     -------       -------         -------         -------
+
+B. J. Hogg         332,239         0               0               0
+                     *             *               *               *
+
+D. J. Jennings      83,870(3)      0               0               0
+                     *             *               *               *
+
+R. F. Price     57,799,352(5) 6,622,206(5)     786,357(5)    20,000,000(5)
+                   79.05%         100%            100%            100%
+
+R. C. Sherburne      4,433(4)      0               0               0
+                     *             *               *               *
+
+C. D. Yie        2,581,970(6)      0               0               0
+                    3.5%           *               *               *
+`
+
+func TestASCIIVerticalFourClassHoldings(t *testing.T) {
+	rows, _, _ := ExtractText(asciiVerticalFourClassFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 5 {
+		t.Fatalf("want 5 literal common-stock rows, got %d: %+v", len(rows), rows)
+	}
+	for _, tc := range []struct {
+		name   string
+		shares float64
+		pct    *float64
+		marker string
+	}{
+		{"B. J. Hogg", 332239, nil, "*"},
+		{"D. J. Jennings", 83870, nil, "*"},
+		{"R. F. Price", 57799352, pf(79.05), ""},
+		{"R. C. Sherburne", 4433, nil, "*"},
+		{"C. D. Yie", 2581970, pf(3.5), ""},
+	} {
+		r := find(rows, tc.name, "Common Stock")
+		if r == nil || r.HolderName != tc.name || r.Shares == nil || *r.Shares != tc.shares || r.PctMarker != tc.marker {
+			t.Errorf("missing literal common stock %s: %+v", tc.name, r)
+			continue
+		}
+		if (r.Percent == nil) != (tc.pct == nil) || (r.Percent != nil && *r.Percent != *tc.pct) {
+			t.Errorf("wrong common percent: %+v", r)
+		}
+	}
+}
+
+func TestASCIIVerticalFourClassGuards(t *testing.T) {
+	for _, tc := range []struct{ name, old, replacement string }{
+		{"missing beneficial caption", "Beneficially", "Granted"},
+		{"missing share captions", "No. of Shares", "No. of Options"},
+		{"currency caption", "No. of Shares", "No. of Shares ($)"},
+		{"missing common column", "Common", "Options"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			rows, _, _ := ExtractText(strings.ReplaceAll(asciiVerticalFourClassFixture, tc.old, tc.replacement), Row{})
+			if len(ScreenRows(rows)) != 0 {
+				t.Fatalf("nonownership matrix accepted: %+v", rows)
+			}
+		})
+	}
+}
+
+const asciiFundAddressClassCountsFixture = `As of February 28, 2003,  the following  record owners of each class of the Fund
+held the  share  percentages  indicated  below,  which  were  owned  either  (i)
+beneficially  by such person(s) or (ii) of record by such person(s) on behalf of
+customers  who are the  beneficial  owners of such  shares  and as to which such
+record owner(s) may exercise voting rights under certain limited  circumstances.
+Beneficial  owners of 25% or more of a class of the Fund are  presumed  to be in
+control of the class for  purposes  of voting on certain  matters  submitted  to
+shareholders.
+
+
+<TABLE>
+<CAPTION>
+                                                                                Amount of Securities
+                                                     Address                        and % Owned
+                                                     -------                        -----------
+<S>                                                  <C>                        <C>
+Class A Shares
+  Merrill Lynch, Pierce, Fenner & Smith, Inc.        Jacksonville, FL           504,838 (17.7%)
+Class B Shares
+  Merrill Lynch, Pierce, Fenner & Smith, Inc.        Jacksonville, FL           754,317 (17.4%)
+Class C Shares
+  Merrill Lynch, Pierce, Fenner & Smith, Inc.        Jacksonville, FL            97,162 (20.4%)
+  Salomon Smith Barney, Inc.                         New York, NY                27,143 (5.7%)
+</TABLE>`
+
+func TestASCIIFundAddressClassCounts(t *testing.T) {
+	rows, _, _ := ExtractText(asciiFundAddressClassCountsFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 4 {
+		t.Fatalf("want 4 literal record holdings, got %d: %+v", len(rows), rows)
+	}
+	for _, tc := range []struct {
+		name, class string
+		shares, pct float64
+	}{
+		{"Merrill Lynch, Pierce, Fenner & Smith, Inc", "Class A Shares", 504838, 17.7},
+		{"Merrill Lynch, Pierce, Fenner & Smith, Inc", "Class B Shares", 754317, 17.4},
+		{"Merrill Lynch, Pierce, Fenner & Smith, Inc", "Class C Shares", 97162, 20.4},
+		{"Salomon Smith Barney, Inc", "Class C Shares", 27143, 5.7},
+	} {
+		r := find(rows, tc.name, tc.class)
+		if r == nil || r.Shares == nil || *r.Shares != tc.shares || r.Percent == nil || *r.Percent != tc.pct || r.TableKind != "5pct_holders" {
+			t.Errorf("missing literal record holding %+v: %+v", tc, r)
+		}
+	}
+}
+
+func TestASCIIFundAddressClassCountsGuards(t *testing.T) {
+	for _, tc := range []struct{ name, old, replacement string }{
+		{"currency", "504,838", "$504,838"},
+		{"no owned caption", "and % Owned", "and % Granted"},
+		{"no securities caption", "Amount of Securities", "Amount of Compensation"},
+		{"no record-owner lead-in", "record owners", "award recipients"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			rows, _, _ := ExtractText(strings.ReplaceAll(asciiFundAddressClassCountsFixture, tc.old, tc.replacement), Row{})
+			if len(ScreenRows(rows)) != 0 {
+				t.Fatalf("nonownership register accepted: %+v", rows)
+			}
+		})
+	}
+}
+
+const asciiThreeColumnAddressFixture = `                               OWNERSHIP OF SHARES
+
+The  following  table  sets  forth  certain  information  known  to  the Company
+regarding the beneficial ownership of common stock as of October 6, 1999, by (i)
+each  Director of the Company, (ii) each executive officer of the Company, (iii)
+all  directors  and executive officers as a group, and (iv) each person known to
+the Company to be the beneficial owner of more than 5% of its outstanding shares
+of common stock.  Percentage of ownership is based on 3,080,400 shares of common
+stock  issued  and  outstanding  as  of  October  6,  1999.
+
+<PAGE>
+<TABLE>
+<CAPTION>
+                                                                        Shares     Percent of
+Directors and Executive Officers                                      Owned (1)     Class (2)
+- -------------------------------------------------------------------  ------------  -----------
+<S>                                                                  <C>           <C>
+J. Scott Sitra
+   3020 North El Paso, Ste. 103
+   Colorado Springs, CO  80907                                         (3) 10,000         0.3%
+Robert C. Schick
+   3020 North El Paso, Ste. 103
+   Colorado Springs, CO  80907                                        (4) 216,897         7.0%
+Alfred W. Delisle
+   4525 S. Renellie Dr.
+   Tampa, FL  33611-2124                                              (5) 120,959         3.9%
+Cameron B. Yost
+   4740 Forge Rd., Bldg. 112
+   Colorado Springs, CO  80907                                             38,880         1.3%
+All current directors and executive officers as a group (4 persons)
+                                                                      (6) 386,736        12.6%
+
+Five Percent Shareholders
+- -------------------------
+
+Raymond D. Schick and
+  Alice F. Schick                                                         126,090         4.1%
+Banyan Corporation
+   4740 Forge Rd., Bldg. 112
+   Colorado Springs, CO  80907                                            800,027        26.0%
+- ------------------------------
+</TABLE>`
+
+func TestASCIIThreeColumnAddressHoldings(t *testing.T) {
+	rows, _, _ := ExtractText(asciiThreeColumnAddressFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 7 {
+		t.Fatalf("want seven literal ownership rows, got %d: %+v", len(rows), rows)
+	}
+	for _, want := range []struct {
+		name        string
+		shares, pct float64
+	}{
+		{"J. Scott Sitra", 10000, 0.3}, {"Robert C. Schick", 216897, 7.0},
+		{"Alfred W. Delisle", 120959, 3.9}, {"Cameron B. Yost", 38880, 1.3},
+		{"All current directors and executive officers as a group (4 persons)", 386736, 12.6},
+		{"Raymond D. Schick and Alice F. Schick", 126090, 4.1}, {"Banyan Corporation", 800027, 26.0},
+	} {
+		matches := 0
+		for _, r := range rows {
+			if r.HolderName == want.name {
+				matches++
+				if r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+					t.Errorf("want %+v, got %+v", want, r)
+				}
+				if strings.HasPrefix(want.name, "All current") && (!r.IsGroupRow || r.GroupN != 4) {
+					t.Errorf("want collective row with four persons: %+v", r)
+				}
+			}
+		}
+		if matches != 1 {
+			t.Errorf("want exactly one %+v, got %d", want, matches)
+		}
+	}
+}
+
+func TestASCIIThreeColumnAddressGuards(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(asciiThreeColumnAddressFixture, "Shares     Percent of", "Salary     Percent of"),
+		strings.ReplaceAll(asciiThreeColumnAddressFixture, "(3) 10,000", "$10,000"),
+	} {
+		rows, _, _ := ExtractText(body, Row{})
+		if got := ScreenRows(rows); len(got) != 0 {
+			t.Errorf("invalid ownership caption or currency must not produce holdings: %+v", got)
+		}
+	}
+}
+
+const asciiSixColumnNomineeFixture = `<TABLE>
+<CAPTION>
+                                                                                        SHARES OF COMMON STOCK
+                                                                 POSITION               BENEFICIALLY OWNED ON
+                                                                 WITH THE                 FEBRUARY 14, 2001*
+                                 PRINCIPAL OCCUPATION              FUND              ---------------------------
+  NOMINEE                        OVER LAST 5 YEARS                 SINCE       AGE      AMOUNT           %
+- ----------------------------------------------------------------------------------------------------------------
+
+<S>                             <C>                                 <C>       <C>      <C>               <C>
+Thomas H. Lenagh                Chairman of the Board of Inrad       2001      78       -0-**           -0-
+13 Allen's Corner Rd.           Corp.; Independent Financial
+Flemington, NJ 08822            Adviser;  Director of Clemente
+                                Strategic Value Fund, Inc., Gintel
+                                Fund, Adams Express and Petroleum
+                                and Resources, ASD Group, ICN
+                                Pharmaceuticals and V-Band Corp.;
+                                Nominee for  Director of  Progressive
+                                Return Fund, Inc.
+
+
+
+</TABLE>
+<TABLE>
+<CAPTION>
+                                                                                        SHARES OF COMMON STOCK
+                                                                 POSITION               BENEFICIALLY OWNED ON
+                                                                 WITH THE                 FEBRUARY 14, 2001*
+                               PRINCIPAL OCCUPATION              FUND              ---------------------------
+  NOMINEE                      OVER LAST 5 YEARS                 SINCE       AGE      AMOUNT           %
+- --------------------------------------------------------------------------------------------------------------
+
+<S>                             <C>                                 <C>       <C>      <C>               <C>
+
+Ralph W. Bradshaw***          Chairman of the Board of Directors    1999      50       800**         .00016%
+One West Pack Square          and President of the Fund;
+Suite 750                     President, Director and shareholder
+Asheville, NC 28801           of Cornerstone Advisors, Inc.;
+                              Financial Consultant; Vice
+                              President, Deep Discount Advisors,
+                              Inc. (1993-1999); Director of The
+                              Austria Fund, Inc., Clemente
+                              Strategic Value Fund, Inc., and
+                              Progressive Return Fund, Inc.
+
+
+
+
+Scott B. Rogers               Chief Executive Officer, Asheville    1999      44       -0-**           -0-
+30 Cumberland Ave.            Buncombe Community Christian
+Asheville, NC 28801           Ministry; President, ABCCM Doctor's
+                              Medical Clinic; Director,
+                              Southeastern Jurisdiction Urban
+                              Networkers; Director, A-B  Vision
+                              Board, Appointee, NC Governor's
+                              Commission on Welfare to Work;
+                              Chairman and  Director, Recycling
+                              Unlimited; Director,
+                              Interdenominational Ministerial
+                              Alliance; Director of Clemente
+                              Strategic Value Fund, Inc. and
+                              Progressive Return Fund, Inc.
+
+</TABLE>
+<TABLE>
+<CAPTION>
+                                                                                           SHARES OF COMMON STOCK
+                                                                       POSITION             BENEFICIALLY OWNED ON
+                                                                       WITH THE              FEBRUARY 14, 2001*
+                                        PRINCIPAL OCCUPATION           FUND              ---------------------------
+           DIRECTOR                       OVER LAST 5 YEARS            SINCE        AGE     AMOUNT                %
+- --------------------------------------------------------------------------------------------------------------------
+
+<S>                             <C>                                 <C>       <C>      <C>               <C>
+
+Edwin Meese III                 Distinguished Fellow, The Heritage      1999         68        -0-**          -0-
+The Heritage Foundation         Foundation, Washington D.C.;
+214 Massachusetts Ave NE        Distinguished Visiting Fellow at the
+Washington D.C. 20002           Hoover Institution, Stanford
+                                University; Distinguished Senior
+                                Fellow at the Institute of United
+                                States Studies, University of
+                                London; Formerly U.S. Attorney
+                                General under President Ronald
+                                Reagan; Chairman of the Domestic
+                                Policy Council and the National Drug
+                                Policy Board and a  member of  the
+                                National Security Council; Nominee
+                                for Director of  Clemente Strategic
+                                Value Fund, Inc. and Progressive
+                                Return Fund, Inc.
+
+
+Glenn W. Wilcox, Sr.            Chairman of the Board and Chief       1999      69        -0-**          -0-
+One West Pack Square            Executive Officer of Wilcox Travel
+Suite 1700                      Agency; Director, Champion
+Asheville, NC 28801             Industries, Inc.; Chairman, Tower
+                                Associates, Inc. (a real estate
+                                venture); Member and Vice Chairman,
+                                the Board of First Union  National
+                                Bank; Board Trustee and Vice
+                                Chairman, Appalachian State
+                                University; Board Trustee and
+                                Director, Mars Hill College;
+                                Director of Clemente Strategic Value
+                                Fund, Inc. and Progressive Return
+                                Fund, Inc.
+
+</TABLE>
+<TABLE>
+<CAPTION>
+                                                                                           SHARES OF COMMON STOCK
+                                                                       POSITION             BENEFICIALLY OWNED ON
+                                                                       WITH THE              FEBRUARY 14, 2001*
+                                        PRINCIPAL OCCUPATION           FUND              ---------------------------
+           DIRECTOR                       OVER LAST 5 YEARS            SINCE        AGE     AMOUNT                %
+- --------------------------------------------------------------------------------------------------------------------
+
+<S>                             <C>                                 <C>       <C>      <C>               <C>
+
+Andrew A. Strauss               Attorney and senior member of          1999      47       4,461**        .00092%
+77 Central Avenue               Strauss & Associates, P.A.,
+Suite F                         attorneys, Asheville, N.C.; previous
+Asheville, NC  28801            President of White Knight
+                                Healthcare, Inc. and LMV  Leasing,
+                                Inc., a wholly owned subsidiary of
+                                Xerox Credit Corporation; Director
+                                of Clemente Strategic Value Fund,
+                                Inc. and Progressive Return Fund,
+                                Inc.
+
+</TABLE>`
+
+func TestASCIISixColumnNomineeShares(t *testing.T) {
+	rows, _, _ := ExtractText(asciiSixColumnNomineeFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 6 {
+		t.Fatalf("want six literal nominee and director holdings, got %d: %+v", len(rows), rows)
+	}
+	for _, want := range []struct {
+		name        string
+		shares, pct float64
+	}{
+		{"Thomas H. Lenagh", 0, 0}, {"Ralph W. Bradshaw", 800, .00016}, {"Scott B. Rogers", 0, 0},
+		{"Edwin Meese III", 0, 0}, {"Glenn W. Wilcox, Sr", 0, 0}, {"Andrew A. Strauss", 4461, .00092},
+	} {
+		matches := 0
+		for _, r := range rows {
+			if r.HolderName == want.name {
+				matches++
+				if r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+					t.Errorf("want %+v, got %+v", want, r)
+				}
+				if r.ShareClass != "Common Stock" {
+					t.Errorf("want explicit Common Stock class: %+v", r)
+				}
+			}
+		}
+		if matches != 1 {
+			t.Errorf("want exactly one %+v got %d", want, matches)
+		}
+	}
+}
+
+func TestASCIISixColumnNomineeGuards(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(asciiSixColumnNomineeFixture, "SHARES OF COMMON STOCK", "DOLLAR RANGE OF EQUITY"),
+		strings.ReplaceAll(asciiSixColumnNomineeFixture, "800**", "$800**"),
+	} {
+		rows, _, _ := ExtractText(body, Row{})
+		for _, r := range ScreenRows(rows) {
+			if r.HolderName == "Ralph W. Bradshaw" {
+				t.Errorf("invalid share caption or currency must not yield this holding: %+v", r)
+			}
+		}
+	}
+}
