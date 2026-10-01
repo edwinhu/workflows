@@ -19,6 +19,8 @@
 set -uo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 GATE="$HERE/gate.sh"
+# Existing scheduler cases must not depend on the machine's local mirror.
+export DEF14A_LOCAL=0
 PASS=0
 FAIL=0
 
@@ -239,6 +241,90 @@ mk_qstat
 DEF14A_WORK="$W" DEF14A_QSTAT="$TMP/qstat_stub.sh" bash "$GATE" >/dev/null 2>&1
 check "same files, grid now idle -> open" 0 $?
 check_file "marker re-created from the recorder's state" present "$W/out/round-ready"
+
+# --- 7. LOCAL: scheduler access is forbidden, even with a stray grid job -----
+echo "case 7: local rounds never query qstat or ssh"
+mkdir -p "$TMP/gold" "$TMP/filings" "$TMP/bin"
+export GOLD_DIR="$TMP/gold" DEF14A_FILINGS="$TMP/filings" DEF14A_FILELIST=round_filelist.tsv
+for i in 1 2 3 4 5; do
+    printf 'filing%s.txt\tfixture\n' "$i" >> "$GOLD_DIR/$DEF14A_FILELIST"
+    touch "$DEF14A_FILINGS/filing$i.txt"
+done
+cat > "$TMP/qstat_forbidden.sh" <<EOF
+#!/bin/bash
+touch "$TMP/qstat_called"
+exit 99
+EOF
+cat > "$TMP/bin/ssh" <<EOF
+#!/bin/bash
+touch "$TMP/ssh_called"
+exit 99
+EOF
+chmod +x "$TMP/qstat_forbidden.sh" "$TMP/bin/ssh"
+export PATH="$TMP/bin:$PATH"
+for mode in 1 auto unset; do
+    echo "  local selection: $mode"
+    if [[ "$mode" == unset ]]; then unset DEF14A_LOCAL; else export DEF14A_LOCAL="$mode"; fi
+    fresh_work "7-$mode"
+    mk_state "$DEAD_PID" local
+    DEF14A_WORK="$W" DEF14A_QSTAT="$TMP/qstat_forbidden.sh" bash "$GATE" > "$TMP/local_out" 2>&1
+    check "dead local round -> open ($mode)" 0 $?
+    check_file "local marker re-created ($mode)" present "$W/out/round-ready"
+    check_file "local orphan reason recorded ($mode)" present "$W/out/round-orphaned"
+    check_file "qstat was never called ($mode)" absent "$TMP/qstat_called"
+    if grep -q 'fetch-only' "$TMP/local_out"; then
+        check "local recovery must not advise grid fetch ($mode)" 0 1
+    else
+        check "local recovery does not advise grid fetch ($mode)" 0 0
+    fi
+    DEF14A_WORK="$W" bash "$GATE" >/dev/null 2>&1
+    check "completed local round -> open without ssh ($mode)" 0 $?
+    check_file "ssh was never called ($mode)" absent "$TMP/ssh_called"
+done
+
+export DEF14A_LOCAL=1
+fresh_work 7-live
+bash "$TMP/run_baseline.sh" >/dev/null 2>&1 </dev/null & LIVE_PID=$!
+mk_state "$LIVE_PID" local
+touch "$W/out/round-ready"
+DEF14A_WORK="$W" DEF14A_QSTAT="$TMP/qstat_forbidden.sh" bash "$GATE" >/dev/null 2>&1
+check "live local round overrides stale ready marker -> shut" 1 $?
+rm "$W/out/round-ready"
+DEF14A_WORK="$W" DEF14A_QSTAT="$TMP/qstat_forbidden.sh" bash "$GATE" >/dev/null 2>&1
+check "live local round without marker -> shut" 1 $?
+check_file "no marker invented for live local round" absent "$W/out/round-ready"
+kill "$LIVE_PID"; wait "$LIVE_PID" 2>/dev/null; LIVE_PID=""
+check_file "live local round never called qstat" absent "$TMP/qstat_called"
+
+fresh_work 7-empty
+DEF14A_WORK="$W" DEF14A_QSTAT="$TMP/qstat_forbidden.sh" bash "$GATE" >/dev/null 2>&1
+check "no local state or ready marker -> shut" 1 $?
+check_file "no local marker invented without recorded round" absent "$W/out/round-ready"
+check_file "empty local state never queried qstat" absent "$TMP/qstat_called"
+
+# Forced local selects local even when the runner would reject missing inputs.
+rm "$DEF14A_FILINGS/filing5.txt"
+fresh_work 7-forced-missing
+mk_state "$DEAD_PID" local
+DEF14A_WORK="$W" DEF14A_QSTAT="$TMP/qstat_forbidden.sh" bash "$GATE" >/dev/null 2>&1
+check "forced local with incomplete mirror still ignores grid" 0 $?
+check_file "forced local never queried qstat" absent "$TMP/qstat_called"
+
+# Both fallback predicates retain the un-recorded grid job guard.
+for mode in auto 0; do
+    echo "case 8: incomplete/forced grid ($mode), stray job queued"
+    export DEF14A_LOCAL="$mode"
+    fresh_work "8-$mode"
+    mk_qstat_named def14a_py 40345207
+    DEF14A_WORK="$W" DEF14A_QSTAT="$TMP/qstat_stub.sh" bash "$GATE" >/dev/null 2>&1
+    check "grid selection still blocks un-recorded job ($mode)" 1 $?
+    check_file "grid selection does not invent marker ($mode)" absent "$W/out/round-ready"
+done
+# Explicit grid wins even over a complete mirror.
+touch "$DEF14A_FILINGS/filing5.txt"
+fresh_work 8-complete
+DEF14A_WORK="$W" DEF14A_QSTAT="$TMP/qstat_stub.sh" bash "$GATE" >/dev/null 2>&1
+check "explicit grid with complete mirror still blocks stray job" 1 $?
 
 echo
 echo "gate_test: $PASS passed, $FAIL failed"

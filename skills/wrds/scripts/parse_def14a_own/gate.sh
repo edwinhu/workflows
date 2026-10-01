@@ -49,6 +49,10 @@
 
 set -uo pipefail
 
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=gate_lib.sh
+source "$HERE/gate_lib.sh"
+
 WORK="${DEF14A_WORK:-/data/def14a_own/work}"
 HOST="${WRDS_HOST:-wrds}"
 QSTAT="${DEF14A_QSTAT:-ssh $HOST 'qstat -u \$USER'}"
@@ -66,8 +70,13 @@ say() {
     [[ "${DEF14A_GATE_QUIET:-0}" == "1" ]] || printf 'gate: %s\n' "$*"
 }
 
+GOLD="${GOLD_DIR:-/data/def14a_own/gold}"
+FILELIST="${DEF14A_FILELIST:-round_filelist.tsv}"
+FILINGS="${DEF14A_FILINGS:-/data/def14a_own/filings}"
+gate_select_mode "$GOLD/$FILELIST" "$FILINGS" || exit $?
+
 # --- 1. the normal case ------------------------------------------------------
-if [[ -f "$READY" ]]; then
+if (( ! LOCAL )) && [[ -f "$READY" ]]; then
     say 0 "open — $READY exists (round complete)"
     exit 0
 fi
@@ -94,6 +103,28 @@ pid_alive() {
 if pid_alive "$PID"; then
     say 1 "shut — run_baseline.sh pid $PID is alive (phase=$PHASE)"
     exit 1
+fi
+
+# A local round never fetches grid output. Only its recorded process and marker
+# can block or release it; even a stale ready marker must not hide a live round.
+if (( LOCAL )); then
+    if [[ -f "$READY" ]]; then
+        say 0 "open — $READY exists (local round complete)"
+        exit 0
+    fi
+    if [[ ! -f "$STATE_JSON" || -z "$PID" ]]; then
+        say 1 "shut — local round has no $READY and no recorded pid to recover"
+        exit 1
+    fi
+    REASON="ORPHANED local round: run_baseline.sh pid $PID is gone and $READY was never written (last phase=${PHASE:-unknown})."
+    ADVICE="Local output under $OUT may be partial or from the PREVIOUS round; rerun run_baseline.sh before trusting any metric. No grid output is fetched."
+    mkdir -p "$OUT"
+    {
+        printf '%s\n' "$(date -Is)" "$REASON" "$ADVICE"
+    } > "$OUT/round-orphaned"
+    touch "$READY"
+    say 0 "open — $REASON re-created $READY. $ADVICE"
+    exit 0
 fi
 
 # --- 3. ask the scheduler -----------------------------------------------------
