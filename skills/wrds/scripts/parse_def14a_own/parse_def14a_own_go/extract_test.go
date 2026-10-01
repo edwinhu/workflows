@@ -11984,3 +11984,56 @@ func TestASCIILeadInRunEndsOnColumnHeader(t *testing.T) {
 		}
 	}
 }
+
+// 0001001277-01-500289 file lines 746-774: the lead-in sentence row ("...
+// as of September 17, 2001, (ii) all directors") is followed by prose, and its
+// run of non-row lines ends on the rule under the column header, which was
+// read while the lead-in row still stood.
+const asciiLeadInRunEndsOnRuleLines = `
+                             PRINCIPAL STOCKHOLDERS
+
+The  following  table sets forth  certain  information  as to (i) the persons or
+entities  known to the  Company to be  beneficial  owners of more than 5% of the
+Company's  common stock as of  September  17,  2001,  (ii) all  directors of the
+Company,  (iii) all executive officers of the Company and (iv) all directors and
+executive officers of the Company as a group. The address of all owners is 629 J
+Street, Sacramento,  California 95814, with the exception of Mr. McCormick whose
+address   is   33   Jewel    Court,    Portsmouth,    New    Hampshire    03801.
+
+                                                    Common Stock
+Name of Beneficial Owner             Number of Shares           Percent
+------------------------             ----------------           -------
+James W. Cameron, Jr.                 39,441,784 (1)              56.24%
+
+Jeffrey S. McCormick                  15,677,135 (2)              23.60%
+
+Edward L. Lammerding                      50,000 (3)                *
+
+Thomas W. O'Neil, Jr.                    106,050 (4)                *
+
+All directors and executive           49,274,969 (5)              80.10%
+officers as a group (4 persons)
+
+* Less than 1.0%.
+
+(1)  Includes 50,000 shares issuable upon exercise of options, none of which are
+     subject to  repurchase,  and  includes  6,000,000  shares  optioned  to Mr.`
+
+func TestASCIILeadInRunEndsOnHeaderRule(t *testing.T) {
+	raw, _, _ := ExtractText(asciiLeadInRunEndsOnRuleLines, Row{})
+	rows := ScreenRows(raw)
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{{"James W. Cameron, Jr", 39441784}, {"Jeffrey S. McCormick", 15677135}, {"Edward L. Lammerding", 50000}, {"Thomas W. O'Neil, Jr", 106050}} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares {
+			t.Errorf("holder lost: %s %g; rows=%+v", want.name, want.shares, rows)
+		}
+	}
+	for _, r := range rows {
+		if r.Shares != nil && (*r.Shares == 2001 || *r.Shares == 17) {
+			t.Errorf("lead-in sentence read as a holder: %+v", r)
+		}
+	}
+}
