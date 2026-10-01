@@ -1,6 +1,6 @@
-# GCS Bucket Setup for Gemini Batch API
+# GCS operations for Gemini Enterprise Agent Platform batch
 
-Complete guide to setting up Google Cloud Storage for batch processing.
+These GCS operations apply to Cloud batch, not Developer Batch or Interactions Flex.
 
 One-time setup — gcloud install, authentication, API enablement and bucket creation — is in [`gcs-setup-runbook.md`](gcs-setup-runbook.md).
 
@@ -56,7 +56,7 @@ If using service account authentication:
 gsutil iam ch serviceAccount:YOUR-SA@PROJECT.iam.gserviceaccount.com:roles/storage.objectAdmin \
   gs://your-batch-bucket
 
-# For Vertex AI, also grant aiplatform.user
+# For Gemini Enterprise Agent Platform, also grant aiplatform.user
 gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
   --member="serviceAccount:YOUR-SA@PROJECT.iam.gserviceaccount.com" \
   --role="roles/aiplatform.user"
@@ -209,7 +209,7 @@ gsutil -m cp -r gs://old-bucket/* gs://new-batch-bucket/
 ### API Not Enabled
 
 ```bash
-# Check if Vertex AI API is enabled
+# Check if Gemini Enterprise Agent Platform API is enabled
 gcloud services list --enabled | grep aiplatform
 
 # If not enabled:
@@ -224,7 +224,7 @@ gcloud services enable aiplatform.googleapis.com
 4. **Use `-m` flag** with gsutil for parallel uploads (faster)
 5. **Verify bucket region** before uploading large datasets
 6. **Use service accounts** for production, ADC for development
-7. **Keep bucket in same project** as Vertex AI API for simplicity
+7. **Keep bucket in same project** as Gemini Enterprise Agent Platform API for simplicity
 
 ## Lifecycle Management
 
@@ -257,17 +257,9 @@ gsutil lifecycle get gs://your-batch-bucket
 
 ## Cost Optimization
 
-Storage costs for batch processing:
+Cloud storage, operations and network rates depend on location, storage class and eligible allowances. Check [current Cloud Storage pricing](https://cloud.google.com/storage/pricing); do not assume all operations or transfers are free, or copy a rate from a different region/class.
 
-- **Storage:** $0.020/GB/month (us-central1)
-- **Operations:** Free (Class A: 5K free per month)
-- **Egress:** Free within us-central1
-
-Tips:
-- Delete input files after successful processing
-- Use lifecycle policies for automatic cleanup
-- Keep buckets in us-central1 to avoid cross-region transfer costs
-- Use `gsutil -m` for faster uploads (parallelism)
+Use lifecycle policies to retire completed inputs/outputs according to the project's retention rules, and keep a bucket/endpoint compatible with current Cloud batch requirements. us-central1 is the runbook default, not a universal Batch restriction. Use `gsutil -m` for parallel uploads.
 
 ## Resources
 
@@ -275,3 +267,26 @@ Tips:
 - [GCS Locations](https://cloud.google.com/storage/docs/locations)
 - [IAM Permissions](https://cloud.google.com/storage/docs/access-control/iam-permissions)
 - [Lifecycle Management](https://cloud.google.com/storage/docs/lifecycle)
+
+## Explicit service-account credentials
+
+Prefer workload identity/ADC where available; if the deployment already uses a service-account file, the SDK also accepts credentials explicitly. Keep the file secret and use the existing project’s credential path.
+
+```python
+from google import genai
+from google.oauth2 import service_account
+
+# Load service account credentials
+credentials = service_account.Credentials.from_service_account_file(
+    'service-account.json',
+    scopes=['https://www.googleapis.com/auth/cloud-platform']
+)
+
+# Use with genai library
+client = genai.Client(
+    vertexai=True,
+    project="your-project-id",
+    location="global",
+    credentials=credentials
+)
+```

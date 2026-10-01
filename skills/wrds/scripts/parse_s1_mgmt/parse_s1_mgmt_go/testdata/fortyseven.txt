@@ -1,0 +1,362 @@
+<SEC-DOCUMENT>0001193125-18-207640.txt : 20180628
+<SEC-HEADER>0001193125-18-207640.hdr.sgml : 20180628
+<ACCEPTANCE-DATETIME>20180628162136
+ACCESSION NUMBER:		0001193125-18-207640
+CONFORMED SUBMISSION TYPE:	424B4
+PUBLIC DOCUMENT COUNT:		23
+FILED AS OF DATE:		20180628
+DATE AS OF CHANGE:		20180628
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Forty Seven, Inc.
+		CENTRAL INDEX KEY:			0001667633
+		STANDARD INDUSTRIAL CLASSIFICATION:	PHARMACEUTICAL PREPARATIONS [2834]
+		IRS NUMBER:				474065674
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		424B4
+		SEC ACT:		1933 Act
+		SEC FILE NUMBER:	333-225390
+		FILM NUMBER:		18925603
+
+	BUSINESS ADDRESS:	
+		STREET 1:		1490 O'BRIEN DRIVE, SUITE A
+		CITY:			MENLO PARK
+		STATE:			CA
+		ZIP:			94025
+		BUSINESS PHONE:		(650) 352-4150
+
+	MAIL ADDRESS:	
+		STREET 1:		1490 O'BRIEN DRIVE, SUITE A
+		CITY:			MENLO PARK
+		STATE:			CA
+		ZIP:			94025
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>424B4
+<SEQUENCE>1
+<FILENAME>d523840d424b4.htm
+<DESCRIPTION>424B4
+<TEXT>
+<Center><DIV STYLE="width:8.5in" align="left">
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><FONT COLOR="#32406b"><B><A NAME="toc523840_12"></A>MANAGEMENT </B></FONT></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b"><B>Executive Officers and Directors </B></FONT></P>
+<P STYLE="margin-top:6pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><FONT COLOR="#32406b">The following table sets forth information concerning our directors and executive officers, including
+their ages as of June&nbsp;1, 2018. </FONT></P> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" ALIGN="center">
+
+
+<TR>
+<TD WIDTH="35%"></TD>
+<TD VALIGN="bottom" WIDTH="2%"></TD>
+<TD></TD>
+<TD></TD>
+<TD></TD>
+<TD VALIGN="bottom" WIDTH="2%"></TD>
+<TD WIDTH="59%"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="bottom" NOWRAP> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; border-bottom:1.00pt solid #32406b; width:20.00pt; display:inline; font-size:8pt; font-family:Times New Roman; "><FONT COLOR="#32406b"><B>Name</B></FONT></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" COLSPAN="2" NOWRAP> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; border-bottom:1.00pt solid #32406b; width:13.35pt; display:inline; font-size:8pt; font-family:Times New Roman; "><FONT COLOR="#32406b"><B>Age</B></FONT></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; border-bottom:1.00pt solid #32406b; width:27.50pt; display:inline; font-size:8pt; font-family:Times New Roman; "><FONT COLOR="#32406b"><B>Position</B></FONT></P></TD></TR>
+
+
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b"><B>Executive Officers</B></FONT></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b">Mark A. McCamish, M.D.</FONT></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT COLOR="#32406b">66</FONT></TD>
+<TD NOWRAP VALIGN="top"><FONT COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b">President, Chief Executive Officer and Director</FONT></P></TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE="margin-top:0pt; margin-bottom:1pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b">Ann D. Rhoads</FONT></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT COLOR="#32406b">53</FONT></TD>
+<TD NOWRAP VALIGN="top"><FONT COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"> <P STYLE="margin-top:0pt; margin-bottom:1pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b">Chief Financial Officer</FONT></P></TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b">Chris H. Takimoto, M.D.</FONT></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT COLOR="#32406b">59</FONT></TD>
+<TD NOWRAP VALIGN="top"><FONT COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b">Chief Medical Officer</FONT></P></TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b">Craig S. Gibbs, Ph.D.</FONT></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT COLOR="#32406b">55</FONT></TD>
+<TD NOWRAP VALIGN="top"><FONT COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b">Chief Business Officer</FONT></P></TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="8"></TD>
+<TD HEIGHT="8" COLSPAN="4"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b"><B><FONT STYLE="white-space:nowrap">Non-Employee</FONT>
+Directors</B></FONT></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b">Kristine M.
+Ball<SUP STYLE="font-size:85%; vertical-align:top">(1)</SUP></FONT></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT COLOR="#32406b">46</FONT></TD>
+<TD NOWRAP VALIGN="top"><FONT COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b">Director</FONT></P></TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b">Jeffrey W. Bird,
+M.D.<SUP STYLE="font-size:85%; vertical-align:top">(2)(3)</SUP>*</FONT></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT COLOR="#32406b">57</FONT></TD>
+<TD NOWRAP VALIGN="top"><FONT COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b">Director</FONT></P></TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b">Ian T.
+Clark<SUP STYLE="font-size:85%; vertical-align:top">(1)(3)</SUP></FONT></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT COLOR="#32406b">57</FONT></TD>
+<TD NOWRAP VALIGN="top"><FONT COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b">Director</FONT></P></TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b">Dennis J. Henner,
+Ph.D.<SUP STYLE="font-size:85%; vertical-align:top">(1)</SUP></FONT></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT COLOR="#32406b">67</FONT></TD>
+<TD NOWRAP VALIGN="top"><FONT COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b">Director</FONT></P></TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b">Ravindra Majeti,
+M.D.<SUP STYLE="font-size:85%; vertical-align:top">(2)</SUP></FONT></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT COLOR="#32406b">45</FONT></TD>
+<TD NOWRAP VALIGN="top"><FONT COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b">Director</FONT></P></TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b">Christopher J.
+Schaepe<SUP STYLE="font-size:85%; vertical-align:top">(2)(3)</SUP></FONT></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT COLOR="#32406b">54</FONT></TD>
+<TD NOWRAP VALIGN="top"><FONT COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b">Director</FONT></P></TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="5"></TD>
+<TD HEIGHT="5" COLSPAN="4"></TD>
+<TD HEIGHT="5" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b">Irving L. Weissman,
+M.D.<SUP STYLE="font-size:85%; vertical-align:top">(3)</SUP></FONT></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT COLOR="#32406b">78</FONT></TD>
+<TD NOWRAP VALIGN="top"><FONT COLOR="#32406b">&nbsp;</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; margin-left:1.00em; text-indent:-1.00em; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b">Director</FONT></P></TD></TR>
+</TABLE> <P STYLE="line-height:8.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1px solid #32406b;width:10%">&nbsp;</P>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="4%" VALIGN="top" ALIGN="left"><FONT COLOR="#32406b">(1)</FONT></TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="justify" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt"><FONT COLOR="#32406b">Member of the Audit Committee. </FONT></P></TD></TR></TABLE>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="4%" VALIGN="top" ALIGN="left"><FONT COLOR="#32406b">(2)</FONT></TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="justify" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt"><FONT COLOR="#32406b">Member of the Compensation Committee. </FONT></P></TD></TR></TABLE>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="4%" VALIGN="top" ALIGN="left"><FONT COLOR="#32406b">(3)</FONT></TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="justify" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt"><FONT COLOR="#32406b">Member of the Nominating and Corporate Governance Committee.
+</FONT></P></TD></TR></TABLE>
+<TABLE STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="100%">
+<TR style = "page-break-inside:avoid">
+<TD WIDTH="4%" VALIGN="top" ALIGN="left"><FONT COLOR="#32406b">&nbsp;*</FONT></TD>
+<TD ALIGN="left" VALIGN="top"> <P ALIGN="justify" STYLE=" margin-top:0pt ; margin-bottom:0pt; font-family:Times New Roman; font-size:10pt"><FONT COLOR="#32406b">Lead Director </FONT></P></TD></TR></TABLE>
+<P STYLE="margin-top:18pt; margin-bottom:0pt; margin-left:4%; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b"><B><I>Executive Officers </I></B></FONT></P>
+<P STYLE="margin-top:6pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><FONT COLOR="#32406b"><I>Mark A. McCamish, M.D. </I>has served as our President and Chief Executive Officer and as a member of
+our board of directors since May 2017. From July 2009 to April 2017, Dr.&nbsp;McCamish served as Global Head of Biopharmaceutical Development at Sandoz Inc., a pharmaceutical company. He has over 25 years of experience in corporate management,
+clinical and pharmaceutical research and academics. Dr.&nbsp;McCamish received both a B.S. in Physical Education and an M.S. in Ergonomics from the University of California at Santa Barbara, a Ph.D. in Nutritional Sciences from the Pennsylvania
+State University and an M.D. from the University of California at Los Angeles. We believe Dr.&nbsp;McCamish&#146;s experience in the industry, his role as our President and Chief Executive Officer and his knowledge of our company enable him to make
+valuable contributions to our board of directors. </FONT></P> <P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><FONT COLOR="#32406b"><I>Ann D. Rhoads</I>, has served as our
+Chief Financial Officer since March 2018. From January 2017 to March 2017, Ms.&nbsp;Rhoads was a consultant to Zogenix, Inc., a pharmaceutical company. From March 2010 until January 2017, Ms.&nbsp;Rhoads served as the Chief Financial Officer,
+Executive Vice President, Secretary and Treasurer of Zogenix, where she was responsible for Zogenix&#146;s financial strategy and all other duties of a Chief Financial Officer. From 2000 to 2009, she served as Chief Financial Officer of Premier
+Inc., a healthcare improvement company. From August 1998 to 2000, Ms.&nbsp;Rhoads served as Vice President, Strategic Initiatives at Premier, Inc. From 1993 to 1998, Ms.&nbsp;Rhoads served as Vice President of Sprout Group, a venture capital
+affiliate of Donaldson, Lufkin&nbsp;&amp; Jenrette (now part of Credit Suisse First Boston). Ms.&nbsp;Rhoads has served as a member of the board of directors of IRIDEX Corporation, a medical technology company, since 2017, where she is currently
+</FONT></P>
+ <p STYLE="margin-top:0pt;margin-bottom:0pt ; font-size:8pt">&nbsp;</P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><FONT COLOR="#32406b">112
+</FONT></P>
+
+</DIV></Center>
+
+
+<p Style='page-break-before:always'>
+<HR  SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+<h5 align="left"><a href="#toc">Table of Contents</a></h5>
+
+<h5 align="left"><a href="#INDEX">Index to Financial Statements</a></h5>
+
+
+<Center><DIV STYLE="width:8.5in" align="left">
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><FONT COLOR="#32406b">
+a member of the audit committee, Evoke Pharma, Inc., a pharmaceutical company, since 2013, where she is currently chair of the audit committee, and Globus Medical, Inc., a musculoskeletal implant
+company, since 2011, where she is also chair of the audit committee. Ms.&nbsp;Rhoads also previously served on the board of directors of Novellus Systems, Inc., a semiconductor company, from 2003 until 2012. Ms.&nbsp;Rhoads received a B.S. in
+Business Administration in Finance from the University of Arkansas and an M.B.A. from Harvard Business School. </FONT></P> <P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><FONT
+ COLOR="#32406b"><I>Chris H. Takimoto, M.D. </I>has served as our Chief Medical Officer since February 2016. From September 2010 to January 2016, Dr.&nbsp;Takimoto served as Vice President of Experimental Medicine Early Development in the Oncology
+Therapeutic area for Janssen Global Services, LLC, a pharmaceutical company. From 2008 to 2010, Dr.&nbsp;Takimoto served as Senior Director of Translational Medicine of Ortho Biotech Oncology Research and Development, a biotechnology company. He has
+over twenty years of experience in the industry and academia. Dr.&nbsp;Takimoto received a B.S. in Chemistry from Stanford University, a Ph.D. in Pharmacology from Yale University and an M.D. from Yale University School of Medicine. </FONT></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><FONT COLOR="#32406b"><I>Craig S. Gibbs, Ph.D.</I> has served as our Chief Business Officer since September 2015.
+Dr.&nbsp;Gibbs was an independent consultant from April 2013 to September 2015. From June 1992 to April 2013, Dr.&nbsp;Gibbs served in various positions at Gilead, including as Vice President of Commercial Strategy/Planning and Operations from 2007
+to 2013 and as Senior Director, Corporate Development from 2004 to 2007, Senior Director, Biology Research from 1998 to 2004 and in other research and development positions from 1992 to 1998. Prior to his time at Gilead, Dr.&nbsp;Gibbs served from
+1989 to 1992 as Visiting Post-doctoral Scientist at Genentech. Dr.&nbsp;Gibbs received a B.S. in Biochemistry from Massey University, an M.B.A. from Golden Gate University and a Ph.D. in Molecular Biology from the University of Glasgow. </FONT></P>
+<P STYLE="margin-top:18pt; margin-bottom:0pt; margin-left:4%; font-size:10pt; font-family:Times New Roman"><FONT COLOR="#32406b"><B><I><FONT STYLE="white-space:nowrap">Non-Employee</FONT> Directors </I></B></FONT></P>
+<P STYLE="margin-top:6pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><FONT COLOR="#32406b"><I>Kristine M. Ball</I> has served as a member of our board of directors since February 2018. Since
+September 2017, she has served as Senior Vice President, Corporate Strategy and Chief Financial Officer of Menlo Therapeutics, Inc., a biopharmaceutical company. From November 2012 to October 2016, Ms.&nbsp;Ball served as Chief Financial Officer and
+Senior Vice President of Relypsa, Inc., a publicly listed pharmaceutical company acquired by Galenica. From June 2011 to October 2012, Ms.&nbsp;Ball was an independent consultant advising start up life science companies on various strategic and
+operational business matters. From 2005 to 2011, Ms.&nbsp;Ball served as Senior Vice President of Finance and Administration and Chief Financial Officer of KAI Pharmaceuticals, Inc. (acquired by Amgen), a drug discovery company. From 2000 to 2005,
+Ms.&nbsp;Ball served as Vice President of Finance at Exelixis, Inc., a biotechnology company. Prior to Exelixis, Ms.&nbsp;Ball was a senior manager in Ernst&nbsp;&amp; Young&#146;s life sciences audit practice. Ms.&nbsp;Ball received a B.S. from
+Babson College. We believe Ms.&nbsp;Ball&#146;s experience in the pharmaceutical industry, her financial expertise and her executive experience at the public company level enable her to make valuable contributions to our board of directors.
+</FONT></P> <P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><FONT COLOR="#32406b"><I>Jeffrey W. Bird, M.D.</I> has served as a member of our board of directors since June
+2015. Since July 2003, Dr.&nbsp;Bird has been a managing director of Sutter Hill Ventures, a venture capital firm. Dr.&nbsp;Bird has served as a member of the board of directors of Restoration Robotics, Inc., a medical device company, since 2005,
+and Portola Pharmaceuticals, Inc., a pharmaceutical company, since 2003. Previously, Dr.&nbsp;Bird served on the board of directors of Threshold Pharmaceuticals, Inc. from 2008 to 2017 and of Horizon Pharma, Inc. from 2011 to 2014. Dr.&nbsp;Bird
+received a B.S. in Biological Sciences from Stanford University, a Ph.D. in Cancer Biology from Stanford University and an M.D. from Stanford Medical School. We believe Dr.&nbsp;Bird&#146;s experience as an investor in and as a board member of
+biotechnology and life sciences companies enable him to make valuable contributions to our board of directors. </FONT></P> <P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><FONT
+ COLOR="#32406b"><I>Ian T. Clark </I>has served as a member of our board of directors since April 2018. Mr. Clark has been an Operating Partner at Clarus Ventures, LLC, a venture capital firm, since September 2017. From 2003 to January 2017, Mr.
+Clark served in various positions at Genentech Inc., a biopharmaceutical company, including as the </FONT></P>
+ <p STYLE="margin-top:0pt;margin-bottom:0pt ; font-size:8pt">&nbsp;</P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><FONT COLOR="#32406b">113
+</FONT></P>
+
+</DIV></Center>
+
+
+<p Style='page-break-before:always'>
+<HR  SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+<h5 align="left"><a href="#toc">Table of Contents</a></h5>
+
+<h5 align="left"><a href="#INDEX">Index to Financial Statements</a></h5>
+
+
+<Center><DIV STYLE="width:8.5in" align="left">
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><FONT COLOR="#32406b">
+Chief Executive Officer of Genentech and head of North American Commercial Operations for Roche from 2010 to 2017, Head of Global Product Strategy and Chief Marketing Officer from 2009 to 2010,
+Executive Vice President, Commercial Operations from 2006 to 2009, and as Senior Vice President and General Manager, BioOncology from 2003 to 2006. Prior to 2003 he served in various positions of increasing seniority at Novartis, including as
+President of Novartis Canada. Mr. Clark has been Special Adviser to the Board at Immunocore Limited, a biotechnology company, since May 2017. He has served as a member of the board of directors of Agios Pharmaceuticals, Inc., since 2017, Corvus
+Pharmaceuticals, Inc., since 2017 and Shire plc, since 2017. From January 2017 until its acquisition by Gilead Sciences, Inc. in October 2017, Mr. Clark served as a member of the board of directors of Kite Pharma, Inc. From 2011 to 2017 Mr. Clark
+served as a member of the board of directors of TerraVia Holdings, Inc., a biotechnology company. Mr. Clark received a B.S. in Biological Sciences and an honorary Ph.D. in Biological Sciences from Southampton University. We believe Mr. Clark&#146;s
+extensive experience in the industry enable him to make valuable contributions to our board of directors. </FONT></P> <P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><FONT
+ COLOR="#32406b"><I>Dennis J. Henner, Ph.D.</I> has served as a member of our board of directors since November 2015. He is the Chief Scientific Advisor of Clarus Ventures, LLC, a venture capital firm, where he served as Managing Director from the
+firm&#146;s inception in March 2005 to January 2018. Prior to Clarus, Dr.&nbsp;Henner was a General Partner at MPM Capital, a healthcare venture capital firm. From 1981 to 2001, Dr.&nbsp;Henner was an executive at Genentech, where he held various
+positions including Senior Vice President of Research, and was a member of Genentech&#146;s executive committee. Dr.&nbsp;Henner previously served as a member of the board of directors of Aerie Pharmaceuticals, Inc., a pharmaceutical company, from
+2012 to 2015, and Humanigen, Inc., a pharmaceutical company, from 2012 to 2013. Dr.&nbsp;Henner received a Ph.D. in Microbiology from the University of Virginia and did postgraduate training at the Scripps Clinic and Research Foundation. We believe
+Dr.&nbsp;Henner&#146;s experience in the pharmaceutical industry and his role in guiding numerous companies in his role as a venture capital investor enable him to make valuable contributions to our board of directors. </FONT></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><FONT COLOR="#32406b"><I>Ravindra Majeti, M.D. </I><FONT STYLE="white-space:nowrap">co-founded</FONT> our company and has
+served as a member of our board of directors since May 2015. Dr.&nbsp;Majeti served in various positions at Stanford University, including as an Associate Professor in the Department of Medicine, Division of Hematology, since November 2015, and as
+an Assistant Professor in the Department of Medicine, Division of Hematology, from 2009 to November 2015. He received an A.B. in Biochemical Sciences from Harvard University, a Ph.D. and an M.D. from the University of California, San Francisco and
+completed a residency in internal medicine at Brigham and Women&#146;s Hospital. Dr.&nbsp;Majeti completed a Fellowship in Hematology at Stanford University. We believe Dr.&nbsp;Majeti&#146;s experience as a co-founder of our company and experience
+in developing 5F9 and the underlying scientific discoveries, his role on our board of directors and his knowledge of our company enable him to make valuable contributions to our board of directors. </FONT></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><FONT COLOR="#32406b"><I>Christopher J. Schaepe</I> has served on our board of directors since June 2015. He is a founder of
+Lightspeed Venture Partners, a venture capital firm, and has served as a Partner since its inception in September 2000. Mr.&nbsp;Schaepe has over 26 years of venture capital experience and has served as a member of the board of directors of Tintri,
+Inc., a data storage company, since 2009 and Aerohive Networks, Inc., a wireless networking company, since 2006, and previously served as a member of the board of directors of Riverbed Technology, Inc. (acquired by Thoma Bravo, LLC in 2015), a
+technology company, from 2002 to 2015. He also serves as a member of the board of directors of a number of privately held companies, including Personalis, Inc., a bioinformatics company. He received B.S. and M.S. degrees in Electrical Engineering
+and Computer Science from the Massachusetts Institute of Technology and an M.B.A. from the Stanford Graduate School of Business. We believe Mr.&nbsp;Schaepe&#146;s broad perspective and experience in the industry, his experience guiding numerous
+companies in his role as a venture capital investor and board member and his substantial professional experience enable him to make valuable contributions to our board of directors. </FONT></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><FONT COLOR="#32406b"><I>Irving L. Weissman, M.D.</I> <FONT STYLE="white-space:nowrap">co-founded</FONT> our company and has
+served as a member of our board of directors since May 2015. Since 2003, Dr.&nbsp;Weissman has served as the Director of the Stanford Institute for Stem Cell Biology and Regenerative Medicine and Director of the Stanford Ludwig Center for Cancer
+Stem Cell Research. Dr.&nbsp;Weissman was a member of the founding Scientific Advisory Boards of Amgen, a biotechnology company, </FONT></P>
+ <p STYLE="margin-top:0pt;margin-bottom:0pt ; font-size:8pt">&nbsp;</P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><FONT COLOR="#32406b">114
+</FONT></P>
+
+</DIV></Center>
+
+
+<p Style='page-break-before:always'>
+<HR  SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+<h5 align="left"><a href="#toc">Table of Contents</a></h5>
+
+<h5 align="left"><a href="#INDEX">Index to Financial Statements</a></h5>
+
+
+<Center><DIV STYLE="width:8.5in" align="left">
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><FONT COLOR="#32406b">
+and T&nbsp;Cell Sciences, Inc., a biotechnology company. He also previously served as a member of the board of directors of StemCells, Inc., acquired by Microbot Medical Ltd. in 2016, a
+pharmaceutical company, from 1997 to 2016. He <FONT STYLE="white-space:nowrap">co-founded,</FONT> served as a Director, and chaired the Scientific Advisory Board at SyStemix, Inc., a biotechnology company, StemCells, Inc., a biotechnology company,
+and Cellerant Therapeutics, Inc., a biotechnology company. Dr.&nbsp;Weissman is a member of the National Academy of Sciences, the National Academy of Medicine, and the American Association of Arts and Sciences. He received a B.S. from Montana State
+University and an M.D. from Stanford University School of Medicine. He has several honorary Ph.D.s. We believe Dr.&nbsp;Weissman&#146;s experience in the study of cancer stem cells, including the discovery that all cancer stem cells express CD47,
+his role on our board and his knowledge of our company enable him to make valuable contributions to our board of directors.<I> </I> </FONT></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; text-indent:4%; font-size:10pt; font-family:Times New Roman" ALIGN="justify"><FONT COLOR="#32406b">There are no family relationships among any of our directors or executive officers. </FONT></P>

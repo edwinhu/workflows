@@ -1,80 +1,70 @@
-# Gemini Structured Output Reference
+# Structured output: keep API shapes separate
 
-> **Official docs:** https://ai.google.dev/gemini-api/docs/structured-output.md.txt
-> **SDK:** `@google/genai` (TypeScript) / `google-genai` (Python)
-> **Last verified:** April 2026
-> **Requires:** Gemini 3 series models
+Sources: [Interactions structured output](https://ai.google.dev/gemini-api/docs/structured-output.md.txt), [legacy structured output](https://ai.google.dev/gemini-api/docs/generate-content/structured-output.md.txt), [Batch](https://ai.google.dev/gemini-api/docs/batch-api.md.txt), [May migration](https://ai.google.dev/gemini-api/docs/interactions-breaking-changes-may-2026.md.txt).
 
-## Overview
+## Interactions
 
-Structured output guarantees syntactically valid JSON matching a provided schema. The SDK offers two schema mechanisms with different batch compatibility.
+Use `response_format` with type/mime_type/schema, not Interactions `response_mime_type` or the old outputs array. This is the documented shape, with a small application schema:
 
-## Two Schema Mechanisms
+```python
+from google import genai
 
-The SDK has two schema fields — they are NOT interchangeable:
-
-| Field | Format | Sequential | Batch | Notes |
-|-------|--------|-----------|-------|-------|
-| `responseSchema` | OpenAPI Schema (`type: Type.OBJECT`, uppercase) | Works | **Works** | Use this for batch mode |
-| `responseJsonSchema` | JSON Schema (`type: "object"`, lowercase) | Works | **Not supported** | Sequential only |
-
-**For batch mode, use `responseSchema` with OpenAPI types.** `responseJsonSchema` only works in sequential mode. This is the most common batch structured output bug — using the wrong schema field causes the batch API to silently return free-text instead of JSON.
-
-### Proven Batch Pattern (from production)
-
-```typescript
-import { Type } from "@google/genai";
-
-// Batch inline request — use responseSchema (OpenAPI), NOT responseJsonSchema
-{
-  contents: [{
-    parts: [{ text: prompt }],
-    role: "user",
-  }],
-  config: {
-    responseMimeType: "application/json",
-    responseSchema: {
-      type: Type.OBJECT,
-      properties: {
-        status: { type: Type.STRING, enum: ["SUPPORTED", "PARTIAL", "UNSUPPORTED"] },
-        explanation: { type: Type.STRING },
-      },
-      required: ["status", "explanation"],
+client = genai.Client()
+interaction = client.interactions.create(
+    model="gemini-3.8-flash",
+    input="Classify this text: the claim is supported by the quoted filing.",
+    response_format={
+        "type": "text",
+        "mime_type": "application/json",
+        "schema": {
+            "type": "object",
+            "properties": {
+                "status": {"type": "string", "enum": ["SUPPORTED", "UNSUPPORTED"]},
+                "explanation": {"type": "string"},
+            },
+            "required": ["status", "explanation"],
+        },
     },
-  },
-}
+)
 ```
 
-This pattern works reliably in production (cite-check, activist_defense).
+For Flex add `service_tier="flex"`; for search add `tools=[{"type": "google_search"}]`. Gemini 3 structured output with built-in tools is documented as Preview. Inspect steps and citations even when the final text is schema-valid JSON. Base structured output is not restricted to Gemini 3; current legacy docs also list Gemini 2.5 support.
 
-## Basic Usage
+## Batch (generateContent only)
 
-```typescript
-const response = await client.models.generateContent({
-  model: "gemini-3.1-flash-lite-preview",
-  contents: "Classify this text...",
-  config: {
-    responseMimeType: "application/json",
-    responseJsonSchema: {
-      type: "object",
-      properties: {
-        status: {
-          type: "string",
-          enum: ["SUPPORTED", "PARTIAL", "UNSUPPORTED"],
-          description: "Classification result",
+Copy the current Batch SDK example: each inline request has `contents` and a `config` with `response_mime_type` and `response_schema`. The enclosing create config is a **job** config, not the request's generation config.
+
+```python
+from google import genai
+from pydantic import BaseModel
+
+class Extraction(BaseModel):
+    document_type: str
+    dates: list[str]
+
+client = genai.Client()
+job = client.batches.create(
+    model="gemini-3.5-flash-lite",
+    src=[{
+        "contents": [{"role": "user", "parts": [{"text": "Extract dates: contract dated 2026-09-30."}]}],
+        "config": {
+            "response_mime_type": "application/json",
+            "response_schema": Extraction,
         },
-        explanation: {
-          type: "string",
-          description: "Brief reasoning",
-        },
-      },
-      required: ["status", "explanation"],
-    },
-  },
-});
-
-const parsed = JSON.parse(response.text ?? "{}");
+    }],
+    config={"display_name": "schema-smoke-test"},
+)
 ```
+
+File-input requests are raw generateContent requests (`generationConfig`, not SDK inline `config`). Use serializable `responseSchema` for that wire shape; do not put Python classes into JSONL. Run an end-to-end sample to verify enforcement. Current docs do not establish a universal `responseJsonSchema` ban across all Batch transports; use the documented pattern rather than a categorical unsupported claim.
+
+Historical Batch+tools requests returned per-row error code 3, `Tool use with a response mime type: 'application/json' is unsupported`. Treat that as an observed backend/model limitation, not an Interactions prohibition. If reproduced, omit the incompatible Batch schema/tool combination or use Flex for grounded lookups; do not silently accept every row of a succeeded job.
+
+## Schema and acceptance
+
+Gemini supports a subset of JSON Schema: object/properties/required, arrays/items, scalar types, enums and supported constraints. Check the current doc for nullable/union support rather than turning an old OpenAPI nullable workaround into a universal rule. Use descriptions and small schemas; very large/deep schemas may be rejected.
+
+Parse JSON, validate required fields/types/enums, then check business logic and source evidence. Do not parse an empty response as `{}` and call it success. Batch raw responses use candidates/content/parts; Interactions uses output_text and typed steps. Join parts and discard thoughts where applicable; inspect per-row errors and finish reasons first.
 
 ## Schema Types
 
@@ -107,62 +97,9 @@ status: { type: "string", enum: ["POSITIVE", "NEUTRAL", "NEGATIVE"] }
 }
 ```
 
-## Tool Compatibility
+### Legacy response extraction helper
 
-Structured output works with: File Search, Google Search, URL Context, Code Execution, Function Calling.
-
-## Batch vs Sequential Differences
-
-### Schema Enforcement
-
-| Mode | `responseJsonSchema` | `responseSchema` | `responseMimeType` + prompt |
-|------|---------------------|------------------|----------------------------|
-| Sequential (`generateContent`) | Works | Works | Also works |
-| Batch (`batches.create`) | **Not supported** | **Works** | Fallback option |
-
-**Sequential mode:** Use either `responseJsonSchema` or `responseSchema` — the API enforces both.
-
-**Batch mode:** Use `responseSchema` with OpenAPI `Type` enum values. `responseJsonSchema` is not supported in batch and will silently fall back to free-text.
-
-### Batch + Tools Incompatibility
-
-**CRITICAL: `responseMimeType: "application/json"` cannot be combined with `tools` (fileSearch, google_search, etc.) in batch mode.**
-
-The batch API returns per-request error code 3:
-> "Tool use with a response mime type: 'application/json' is unsupported"
-
-The batch job itself succeeds (JOB_STATE_SUCCEEDED) but every individual `inlinedResponse` has `error` set instead of `response`.
-
-**Workaround:** When using tools in batch mode, omit `responseMimeType` and `responseSchema`. Use prompt-based JSON instructions instead, with a heuristic fallback parser for free-text responses.
-
-This limitation does NOT apply to sequential `generateContent` -- tools + structured output work fine there.
-
-### Response Extraction
-
-**CRITICAL: Batch API returns raw JSON objects, not hydrated class instances.**
-
-### Sequential Mode (generateContent)
-
-```typescript
-// response is a GenerateContentResponse CLASS with .text getter
-const response = await client.models.generateContent({ ... });
-const text = response.text; // works -- .text is a getter on the class
-```
-
-### Batch Mode (batches.create -> batches.get)
-
-```typescript
-// inlinedResponse.response is RAW JSON -- no .text getter!
-const text = inlinedResponse.response?.text; // undefined!
-
-// Must extract from candidates array:
-const parts = inlinedResponse.response?.candidates?.[0]?.content?.parts;
-const text = parts?.filter(p => typeof p.text === "string").map(p => p.text).join("");
-```
-
-### Universal Extraction Helper
-
-Use this for code that handles both sequential and batch responses:
+Check row errors/finishReason before this helper. It accepts hydrated generateContent responses and raw candidate JSON; it is not an Interactions parser.
 
 ```typescript
 function extractResponseText(response: any): string {
@@ -172,22 +109,13 @@ function extractResponseText(response: any): string {
   // Raw JSON (batch mode) -- join all text parts
   const parts = response.candidates?.[0]?.content?.parts;
   if (Array.isArray(parts)) {
-    return parts.filter((p: any) => typeof p.text === "string")
+    return parts.filter((p: any) => typeof p.text === "string" && !p.thought)
       .map((p: any) => p.text).join("");
   }
   return "";
 }
 ```
 
-## Streaming
+### Streaming
 
-Streamed chunks produce valid partial JSON strings that concatenate to form the complete object.
-
-## Limitations
-
-- Guarantees syntactic correctness only -- values may be semantically wrong
-- Available only for Gemini 3 series models
-- Schema must use supported type subset (no $ref, no oneOf, etc.)
-- `responseJsonSchema` is not supported in batch mode — use `responseSchema` with OpenAPI `Type` enum instead
-- Batch responses are raw JSON objects, not hydrated class instances (no `.text` getter)
-- Combining `tools` (fileSearch, google_search, etc.) + `responseMimeType: "application/json"` in batch mode returns error code 3 for every response -- omit responseMimeType and use prompt-based JSON instead
+Concatenate streamed partial JSON strings before parsing/validating the complete object; individual fragments need not be valid JSON.

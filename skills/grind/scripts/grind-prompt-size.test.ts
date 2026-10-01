@@ -59,7 +59,7 @@ function append(journal: string, rec: Record<string, unknown>) {
 }
 
 function run(args: string[]) {
-  return spawnSync('bash', [GRIND, 'run', ...args], { encoding: 'utf8', timeout: 120_000, env: grindEnv() })
+  return spawnSync('bash', [GRIND, 'run', '--runner', 'claude-code', ...args], { encoding: 'utf8', timeout: 120_000, env: grindEnv() })
 }
 
 /**

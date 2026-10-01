@@ -200,6 +200,36 @@ func isPageFurniture(s string) bool {
 		(strings.HasPrefix(l, "table of contents ") && len(s) < 40)
 }
 
+// The second jump link a page break can carry, directly beneath the "Table of
+// Contents" one. Its words also name a real top-level section, which reSectionEnd
+// lists, so on its own it is indistinguishable from the back-of-book heading.
+var reFinStmtsLink = regexp.MustCompile(`(?i)^index\s+to\s+(?:consolidated\s+)?financial\s+statements\.?$`)
+
+// blockIsFurniture reports whether blocks[i] is a page break's residue. It is
+// isPageFurniture plus the "Index to Financial Statements" jump link, which needs
+// its neighbour to be told from the heading of the same name: every page break
+// that emits it emits the Table of Contents link immediately above.
+//
+// Forty Seven's 2018 424B4 is the case. Read as a heading, the link closes
+// MANAGEMENT at the first page break, three paragraphs past the table, and nine
+// of eleven people — including all three VC directors — lose their bio.
+func blockIsFurniture(blocks []docBlock, i int) bool {
+	b := blocks[i]
+	if b.Kind != blockText {
+		return false
+	}
+	if isPageFurniture(b.Text) {
+		return true
+	}
+	if !reFinStmtsLink.MatchString(strings.TrimSpace(b.Text)) {
+		return false
+	}
+	if i == 0 || blocks[i-1].Kind != blockText {
+		return false
+	}
+	return isPageFurniture(blocks[i-1].Text)
+}
+
 // ---------------------------------------------------------------------------
 // the management table predicate
 // ---------------------------------------------------------------------------
@@ -318,7 +348,8 @@ func mgmtSection(blocks []docBlock) (lo, hi, tableIdx, hdrRow int, status string
 		}
 		tableIdx, hdrRow = -1, -1
 		for j := i + 1; j < hi; j++ {
-			if blocks[j].Kind == blockText && !blocks[j].InTable && closesSection(blocks[j].Text) {
+			if blocks[j].Kind == blockText && !blocks[j].InTable &&
+				!blockIsFurniture(blocks, j) && closesSection(blocks[j].Text) {
 				hi = j
 				break
 			}

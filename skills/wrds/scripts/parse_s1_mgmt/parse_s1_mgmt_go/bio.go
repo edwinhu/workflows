@@ -14,6 +14,8 @@ package main
 import (
 	"regexp"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 )
 
 var reNonAlnum = regexp.MustCompile(`[^a-z0-9]+`)
@@ -21,6 +23,40 @@ var reNonAlnum = regexp.MustCompile(`[^a-z0-9]+`)
 // nameKey folds a name or a block of prose to the form the matcher compares on.
 func nameKey(s string) string {
 	return reNonAlnum.ReplaceAllString(strings.ToLower(charFix.Replace(s)), "")
+}
+
+// The letters a filing hangs off a name. They are dropped from BOTH sides of the
+// comparison because the table and the bio disagree about which ones to print:
+// Kinnate's table says "Carl Gordon, Ph.D." while his bio opens "Carl Gordon,
+// CFA, Ph.D ." and Ironwood's table says "Bryan E. Roberts, Ph.D." while his bio
+// opens with no credential at all.
+//
+// "M.S." and "B.S." are deliberately absent: the pattern would eat the "Ms."
+// that opens half the post-2015 bios.
+var reCredential = regexp.MustCompile(`(?i)\b(?:Ph\.?\s*D|M\.?B\.?A|M\.?D|D\.?V\.?M|` +
+	`Pharm\.?\s*D|D\.?Phil|Sc\.?D|D\.?Sc|M\.?Sc|M\.?P\.?H|LL\.?[BM]|J\.?D|` +
+	`C\.?F\.?A|C\.?P\.?A|C\.?F\.?P|R\.?Ph|Esq|Jr|Sr|I{2,3}|IV)\b\.?`)
+
+// coreKey is nameKey over the tokens that identify the person and nothing else:
+// the credentials above and every single-character token are dropped, so a
+// middle initial the table omits and the bio prints ("Robert Goodman" against
+// "Robert P. Goodman") no longer breaks the prefix test. The token count is
+// returned with it because a one-token core is a surname, and a surname is what
+// every CONTINUATION block of a bio starts with.
+func coreKey(s string) (string, int) {
+	s = reCredential.ReplaceAllString(charFix.Replace(s), " ")
+	var b strings.Builder
+	n := 0
+	for _, f := range strings.FieldsFunc(s, func(r rune) bool {
+		return !unicode.IsLetter(r) && !unicode.IsDigit(r)
+	}) {
+		if utf8.RuneCountInString(f) < 2 {
+			continue
+		}
+		b.WriteString(strings.ToLower(f))
+		n++
+	}
+	return b.String(), n
 }
 
 // reBioLeadIn matches the post-2015 convention's opening: one to four
@@ -35,6 +71,29 @@ func nameKey(s string) string {
 var reBioLeadIn = regexp.MustCompile(
 	`^((?:[A-Z][A-Za-z.'\x{2019}-]*\s*){1,4})\.\s+(?:Mr|Ms|Mrs|Dr|Prof|His|Her)\b`)
 
+// reParenAliasLeadIn matches a name whose tokens are interrupted by a
+// parenthesised alias, which is how two filings spell the CEO in the bio but not
+// in the table: Upland writes "John T. McDonald" in the table and "John T.
+// (Jack) McDonald has served as ..." in the bio, Prelude writes "Kris Vaddi,
+// Ph.D." against "Krishna (“Kris”) Vaddi, Ph.D. has served ...". The alias
+// pulls the block's key away from the table's spelling in BOTH directions, so
+// the two want opposite repairs — drop the alias for Upland, substitute it for
+// the given name before it for Prelude — and matchPerson tries both readings.
+var reParenAliasLeadIn = regexp.MustCompile(
+	`^((?:[A-Z][A-Za-z.'\x{2019}-]*\s+){1,3})\(\s*['"\x{2018}\x{2019}\x{201C}\x{201D}]?([A-Z][A-Za-z'\x{2019}-]+)['"\x{2018}\x{2019}\x{201C}\x{201D}]?\s*\)\s*((?:[A-Z][A-Za-z.'\x{2019}-]*,?\s*){1,4})`)
+
+// reBareHonorificLeadIn matches the pre-2000 convention's other opening: no name
+// at all, just the honorific and the surname. Object Design 1996 writes every
+// bio in its section that way — "Mr. Bay has been a director of the Company
+// since 1988." — so none of the name-bearing routes can see any of them
+// (0000950135-96-002496).
+//
+// It is the last route tried, and it can only claim a person who has no bio yet,
+// which is what keeps a CONTINUATION block opening "Mr. Bay served as interim
+// President" on Bay rather than reassigning it.
+var reBareHonorificLeadIn = regexp.MustCompile(
+	`^(?:Mr|Ms|Mrs|Dr|Prof)\.\s+((?:[A-Z][A-Za-z.'\x{2019}-]*\s+){0,2}[A-Z][A-Za-z'\x{2019}-]+)`)
+
 // attachBios assigns each prose block to a person and writes the joined text
 // back into persons. blocks must already be in document order and confined to
 // the MANAGEMENT section.
@@ -43,15 +102,18 @@ func attachBios(persons []Person, blocks []string) {
 		return
 	}
 	keys := make([]string, len(persons))
+	cores := make([]string, len(persons))
 	surnames := make([]string, len(persons))
 	for i, p := range persons {
 		keys[i] = nameKey(p.Name)
+		if c, n := coreKey(p.Name); n >= 2 {
+			cores[i] = c
+		}
 		if f := strings.Fields(p.Name); len(f) > 0 {
 			surnames[i] = nameKey(f[len(f)-1])
 		}
 	}
 	parts := make([][]string, len(persons))
-	current := -1
 
 	// A name split across two blocks is rejoined before matching: the first
 	// block is a strict prefix of some person's key and carries nothing else.
@@ -68,27 +130,54 @@ func attachBios(persons []Person, blocks []string) {
 		joined = append(joined, b)
 	}
 
-	for _, b := range joined {
-		if who := matchPerson(b, keys, surnames, parts); who >= 0 {
+	owner := make([]int, len(joined))
+	for i := range owner {
+		owner[i] = -1
+	}
+	assignBlocks(joined, owner, keys, cores, surnames, parts, false)
+	// The bare-honorific route runs only as a SECOND pass, over the blocks the
+	// name-bearing routes left unclaimed and only for people they left without a
+	// bio. Run in one pass it is too early: Instacart prints a footnote cell
+	// reading "Mr. Gupta has been appointed to serve as a member of our board of
+	// directors" inside the table itself, which would claim Gupta before his real
+	// bio further down the section ever gets the chance
+	// (0001193125-23-237900).
+	if !allHaveBio(parts) {
+		assignBlocks(joined, owner, keys, cores, surnames, parts, true)
+	}
+
+	for i := range persons {
+		persons[i].Bio = norm(strings.Join(parts[i], " "))
+	}
+}
+
+// assignBlocks walks the section's prose in document order and files each block
+// under a person. owner records which person claimed each block, so a later pass
+// can tell an unclaimed block from one already spent.
+func assignBlocks(joined []string, owner []int, keys, cores, surnames []string, parts [][]string, honorific bool) {
+	current := -1
+	for i, b := range joined {
+		if owner[i] >= 0 {
+			continue
+		}
+		if who := matchPerson(b, keys, cores, surnames, parts, honorific); who >= 0 {
 			current = who
 			parts[who] = append(parts[who], b)
+			owner[i] = who
 			continue
 		}
 		// A heading is not prose. Once every person has a bio the next heading
 		// is where the bios stop and the section's sub-parts begin.
 		if headingShaped(b) {
 			if allHaveBio(parts) {
-				break
+				return
 			}
 			continue
 		}
 		if current >= 0 {
 			parts[current] = append(parts[current], b)
+			owner[i] = current
 		}
-	}
-
-	for i := range persons {
-		persons[i].Bio = norm(strings.Join(parts[i], " "))
 	}
 }
 
@@ -107,7 +196,10 @@ func isPartialName(key string, keys []string) bool {
 }
 
 // matchPerson reports which person a block opens the bio of, or -1.
-func matchPerson(block string, keys, surnames []string, parts [][]string) int {
+//
+// The three routes are tried in order of how much of the name they insist on, so
+// a relaxation can only claim a block the stricter route left unclaimed.
+func matchPerson(block string, keys, cores, surnames []string, parts [][]string, honorific bool) int {
 	key := nameKey(block)
 	best := -1
 	for i, k := range keys {
@@ -121,11 +213,71 @@ func matchPerson(block string, keys, surnames []string, parts [][]string) int {
 	if best >= 0 {
 		return best
 	}
-	m := reBioLeadIn.FindStringSubmatch(block)
+	if ck, _ := coreKey(block); ck != "" {
+		for i, c := range cores {
+			if c == "" || len(parts[i]) > 0 || !strings.HasPrefix(ck, c) {
+				continue
+			}
+			if best < 0 || len(c) > len(cores[best]) {
+				best = i
+			}
+		}
+		if best >= 0 {
+			return best
+		}
+	}
+	if m := reBioLeadIn.FindStringSubmatch(block); m != nil {
+		if best = bySurname(nameKey(m[1]), surnames, parts); best >= 0 {
+			return best
+		}
+	}
+	if best = byParenAlias(block, cores, parts); best >= 0 {
+		return best
+	}
+	if !honorific {
+		return -1
+	}
+	if m := reBareHonorificLeadIn.FindStringSubmatch(block); m != nil {
+		return bySurname(nameKey(m[1]), surnames, parts)
+	}
+	return -1
+}
+
+// byParenAlias reports which person without a bio yet a lead-in carrying a
+// parenthesised alias belongs to. Both readings of the alias are keyed on the
+// CORE, so the surname and the given names the table and the bio agree on are
+// what carry the claim.
+func byParenAlias(block string, cores []string, parts [][]string) int {
+	m := reParenAliasLeadIn.FindStringSubmatch(block)
 	if m == nil {
 		return -1
 	}
-	lead := nameKey(m[1])
+	pre := strings.Fields(m[1])
+	cands := []string{strings.Join(pre, " ") + " " + m[3]}
+	cands = append(cands,
+		strings.Join(append(append([]string{}, pre[:len(pre)-1]...), m[2]), " ")+" "+m[3])
+	best := -1
+	for _, c := range cands {
+		ck, _ := coreKey(c)
+		if ck == "" {
+			continue
+		}
+		for i, core := range cores {
+			if core == "" || len(parts[i]) > 0 || !strings.HasPrefix(ck, core) {
+				continue
+			}
+			if best < 0 || len(core) > len(cores[best]) {
+				best = i
+			}
+		}
+	}
+	return best
+}
+
+// bySurname reports which person without a bio yet the lead-in's trailing
+// surname belongs to, preferring the longest surname it ends with.
+func bySurname(lead string, surnames []string, parts [][]string) int {
+	best := -1
 	for i, sn := range surnames {
 		if sn == "" || len(parts[i]) > 0 || !strings.HasSuffix(lead, sn) {
 			continue

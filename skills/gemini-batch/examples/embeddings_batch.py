@@ -7,9 +7,10 @@ CRITICAL — file-based with per-row keys (Gotcha 13):
     so alignment is unrecoverable. ALWAYS use file-based JSONL with `key` per row
     and map results back by key.
 
-    Vertex AI Batch Prediction (`client.batches.create(...)` with `vertexai=True`)
-    does NOT accept `gemini-embedding-*` models. The `create_embeddings()` method
-    on the Standard API is the only working path.
+    Gemini Enterprise Agent Platform batch prediction (`client.batches.create(...)` with `vertexai=True`)
+    rejected `gemini-embedding-*` in the April 2026 probe. This example uses the
+    verified keyed `create_embeddings()` Developer API path; consult current support
+    before assuming that historical Cloud rejection is universal.
 
 USAGE:
     GOOGLE_API_KEY=... python embeddings_batch.py submit  --input items.json --out job.json
@@ -46,20 +47,20 @@ TASK_TYPE = "SEMANTIC_SIMILARITY"
 MODEL = "gemini-embedding-001"  # also tested: "gemini-embedding-2"
 
 
-def _build_jsonl(items: list[dict], path: Path) -> None:
+def _build_jsonl(items: list[dict], path: Path, model: str = MODEL) -> None:
     with open(path, "w") as f:
         for it in items:
-            f.write(json.dumps({
-                "key": it["id"],
-                "request": {
-                    "content": {"parts": [{"text": it["text"]}]},
-                    "task_type": TASK_TYPE,
-                    "output_dimensionality": EMBED_DIM,
-                },
-            }) + "\n")
+            request = {
+                "content": {"parts": [{"text": it["text"]}]},
+                "output_dimensionality": EMBED_DIM,
+            }
+            if model == "gemini-embedding-001":
+                request["task_type"] = TASK_TYPE
+            f.write(json.dumps({"key": it["id"], "request": request}) + "\n")
 
 
 def submit(args: argparse.Namespace) -> None:
+    # For Embedding 2, callers supply task-prefixed text; sentinels reuse it exactly.
     items = json.loads(Path(args.input).read_text())
     if not isinstance(items, list) or not all(isinstance(it, dict) and "id" in it and "text" in it for it in items):
         raise SystemExit('--input must be a JSON list of {"id": str, "text": str} objects')
@@ -68,7 +69,7 @@ def submit(args: argparse.Namespace) -> None:
     print(f"Submitting embedding batch: {len(items):,} items, model={args.model}, dim={EMBED_DIM}")
 
     jsonl_path = Path(args.out).with_suffix(".jsonl")
-    _build_jsonl(items, jsonl_path)
+    _build_jsonl(items, jsonl_path, args.model)
     print(f"Wrote keyed JSONL: {jsonl_path} ({jsonl_path.stat().st_size/1e6:.1f} MB)")
 
     client = genai.Client()  # Standard API, GOOGLE_API_KEY
@@ -155,7 +156,10 @@ def download(args: argparse.Namespace) -> None:
     if args.skip_sentinels:
         return
     print("\nSentinel alignment check (fresh sync embeds, expect cosine ≥ 0.99):")
-    config = types.EmbedContentConfig(task_type=TASK_TYPE, output_dimensionality=EMBED_DIM)
+    config_args = {"output_dimensionality": EMBED_DIM}
+    if state["model"] == "gemini-embedding-001":
+        config_args["task_type"] = TASK_TYPE
+    config = types.EmbedContentConfig(**config_args)
     random.seed(7)
     for i in random.sample(range(len(items)), min(5, len(items))):
         it = items[i]
@@ -175,7 +179,7 @@ def main() -> None:
     sp = sub.add_parser("submit")
     sp.add_argument("--input", required=True, help='JSON list of {"id","text"} objects')
     sp.add_argument("--out", required=True, help="Path to save job state JSON (also used as JSONL stem)")
-    sp.add_argument("--model", default=MODEL, help="gemini-embedding-001 or gemini-embedding-2")
+    sp.add_argument("--model", default=MODEL, choices=["gemini-embedding-001", "gemini-embedding-2"], help="gemini-embedding-001 or gemini-embedding-2")
     sp.add_argument("--display-name", default=None)
     sp.set_defaults(func=submit)
     sp = sub.add_parser("status")

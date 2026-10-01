@@ -145,7 +145,17 @@ setsid nohup bash $S/farm.sh --workflow /abs/wf.js --out /abs/result.json --cwd 
 $S/farm-team.sh --prompt-file t.txt --cwd /repo --expect /repo/a.txt --expect /repo/b.txt
 ```
 
-`--provider claude|codex|gemini` (default `claude`) on both runners.
+`--provider claude|codex|gemini` (required, gemini recommended) on both runners.
+
+Budget defaults: `FARM_TASK_BUDGET=4000000`, `FARM_SESSION_BUDGET=20000000`,
+`FARM_TASK_ESTIMATE=750000` per task (capped at its budget). `FARM_MAX_TURNS=250`
+on farm and grind. The pre-launch check refuses spend plus estimate at the session cap.
 
 Read `reference.md` before changing a runner, debugging a 429, or hand-writing
 a proxy call — it holds the verified model-routing and failure-mode details.
+
+## Red flags
+
+| Situation | Wrong move | Right move |
+|---|---|---|
+| Per-document LLM coding/extraction over many files | Use `--tasks` fan-out to have agents read each document | Use `gemini-batch` for large-scale extraction |

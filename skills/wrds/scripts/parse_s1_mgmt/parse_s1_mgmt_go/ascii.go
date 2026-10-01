@@ -37,9 +37,138 @@ var (
 	reRuleLine = regexp.MustCompile(`^[-=_\s]+$`)
 	// The fixed-width header: all three column names on one line.
 	reTxtHeader = regexp.MustCompile(`(?i)\bNAME\b.*\bAGE\b.*\b(?:POSITION|TITLE|OFFICE)S?\b`)
+	// The same header with the name column headed by the block's own label
+	// rather than the word NAME: Horizon Medical 1998 writes
+	// "EXECUTIVE OFFICERS AND DIRECTORS:  AGE  POSITION". The word is optional,
+	// the geometry is not, so this form is accepted only with a rule line under
+	// it — which is what separates a header from a sentence mentioning an age.
+	reTxtHeaderLoose = regexp.MustCompile(`(?i)^\s*\S.*\bAGE\b.*\b(?:POSITION|TITLE|OFFICE)S?\b`)
+	// The same three columns with AGE written LAST: Coinmach Laundry 1996 heads
+	// its table "NAME  TITLE  AGE". The column ORDER is not part of the geometry
+	// the parser depends on, but the position field then sits BETWEEN the name
+	// and the age, so this form is accepted only when the marker line under the
+	// caption is there to say where that field starts.
+	reTxtHeaderAgeLast = regexp.MustCompile(`(?i)\bNAME\b.*\b(?:POSITION|TITLE|OFFICE)S?\b.*\bAGE\b`)
+	reTxtHeaderPos     = regexp.MustCompile(`(?i)\b(?:POSITION|TITLE|OFFICE)S?\b`)
+	// Two columns and no third: Affiliated Managers Group 1997 heads its board
+	// table "NAME  AGE" and says what the rows are in the DIRECTORS heading above
+	// it. With no position cell there is nothing in a row to classify, so this
+	// form is read only as a LATER table, whose heading supplies the section --
+	// never as the section's first table, where a missing position cell would
+	// leave every person unsectioned and the CEO unfindable.
+	reTxtHeaderNameAge = regexp.MustCompile(`(?i)\bNAME\b[^\n]*\bAGE\b`)
+	// The caption's column-definition line: <S> over the first column, one <C>
+	// over each of the rest. Unlike the header's own labels, which these filings
+	// centre over their fields, these markers sit AT the column offsets.
+	reTxtMarkerS = regexp.MustCompile(`(?i)^\s*<S>`)
+	reTxtMarkerC = regexp.MustCompile(`(?i)<C>`)
 	// A bare two-digit number standing alone in the line: the age.
 	reTxtAge = regexp.MustCompile(`(^|\s)([0-9]{2})(\s|$)`)
+	// The ASCII table's own delimiters, matched on the RAW line: inside them
+	// there are no headings, only the caption's column labels.
+	reTxtTableOpen  = regexp.MustCompile(`(?i)<TABLE>`)
+	reTxtTableClose = regexp.MustCompile(`(?i)</TABLE>`)
+	// A line carrying nothing but a caption's own markers. asciiLine blanks a
+	// marker to spaces, so such a line looks blank while the table is still open.
+	reTxtCaptionOnly = regexp.MustCompile(`(?i)^\s*(?:<(?:CAPTION|S|C)>\s*)+$`)
+	// A compensation heading, which these prospectuses write at the same margin
+	// and in the same capitals as a top-level section without it being one.
+	// Affiliated Managers Group 1997 runs MANAGEMENT / EXECUTIVE OFFICERS /
+	// EXECUTIVE COMPENSATION / DIRECTORS, and its own table of contents gives
+	// Management pages 55-63 with Certain Transactions next, so the board table
+	// under DIRECTORS is inside the section and the compensation heading is not
+	// the successor it looks like.
+	reTxtCompHeading = regexp.MustCompile(`(?i)^(?:executive|director)s?\s+compensation\b|^compensation\s+of\s+(?:executive|director)`)
 )
+
+// isAsciiHeader reports whether line j is the fixed-width table's header row.
+func isAsciiHeader(lines []string, j int) bool {
+	t := strings.TrimSpace(asciiLine(lines[j]))
+	if reTxtHeader.MatchString(t) {
+		return true
+	}
+	if reTxtHeaderAgeLast.MatchString(t) {
+		_, posAnchor := asciiColumns(lines, j)
+		return posAnchor >= 0
+	}
+	if !reTxtHeaderLoose.MatchString(t) {
+		return false
+	}
+	for k := j + 1; k < len(lines) && k <= j+3; k++ {
+		u := strings.TrimSpace(asciiLine(lines[k]))
+		if u == "" {
+			continue
+		}
+		return reRuleLine.MatchString(u)
+	}
+	return false
+}
+
+// isAsciiLaterHeader reports whether line j heads a FURTHER person table in the
+// section. It accepts everything isAsciiHeader does plus the two-column
+// NAME / AGE caption, which needs a rule line under it for the same reason the
+// loose form does: that is what separates a caption from a sentence carrying
+// both words.
+func isAsciiLaterHeader(lines []string, j int) bool {
+	if isAsciiHeader(lines, j) {
+		return true
+	}
+	t := strings.TrimSpace(asciiLine(lines[j]))
+	if !reTxtHeaderNameAge.MatchString(t) || reTxtHeaderPos.MatchString(t) {
+		return false
+	}
+	for k := j + 1; k < len(lines) && k <= j+3; k++ {
+		u := strings.TrimSpace(asciiLine(lines[k]))
+		if u == "" {
+			continue
+		}
+		return reRuleLine.MatchString(u)
+	}
+	return false
+}
+
+// hasLaterAsciiTable reports whether a person table's header lies in [from, to).
+func hasLaterAsciiTable(lines []string, from, to int) bool {
+	for i := from; i < to && i < len(lines); i++ {
+		if isAsciiLaterHeader(lines, i) {
+			return true
+		}
+	}
+	return false
+}
+
+// asciiLaterRows returns the people of every FURTHER table between the first
+// table's end and the section's, with the heading above each one prefixed as a
+// section label. It is the fixed-width counterpart of appendLaterTables: a
+// section that lists its officers and its board in two tables otherwise yields
+// the officers only, and with them no directors and none of its VC directors.
+func asciiLaterRows(lines []string, from, hi int) []mgmtRow {
+	var out []mgmtRow
+	label := ""
+	for i := from; i < hi && i < len(lines); i++ {
+		if !isAsciiLaterHeader(lines, i) {
+			// The heading that names the block sits above its <TABLE>, on its
+			// own line and at the left margin. The last such line before the
+			// header is the one that labels it.
+			if t := strings.TrimSpace(asciiLine(lines[i])); sectionForLabel(t) != "" && len(t) <= 70 {
+				label = t
+			}
+			continue
+		}
+		rows, end := asciiRows(lines, i, hi)
+		if len(rows) > 0 {
+			if label != "" {
+				out = append(out, mgmtRow{Label: label})
+			}
+			out = append(out, rows...)
+		}
+		label = ""
+		if end > i {
+			i = end - 1
+		}
+	}
+	return out
+}
 
 // asciiLine strips the SGML table markers from one line without changing its
 // column geometry, which the parser depends on. A marker is replaced by spaces of
@@ -63,16 +192,54 @@ func asciiSection(lines []string) (lo, hi, hdr int, status string) {
 		status = StatusNoMgmtTable
 		end := len(lines)
 		found := -1
+		depth := 0
+		soft := -1
 		for j := i + 1; j < end; j++ {
+			if reTxtTableOpen.MatchString(lines[j]) {
+				depth++
+			}
 			t := strings.TrimSpace(asciiLine(lines[j]))
-			if found < 0 && reTxtHeader.MatchString(t) {
+			if found < 0 && isAsciiHeader(lines, j) {
 				found = j
 				continue
 			}
-			if closesSection(t) {
+			// Inside a <TABLE> the short all-capitals lines are the caption's
+			// column labels, not headings: AnswerThink 1998 wraps its fourth
+			// column's header as "TERM AS" / "DIRECTOR" above the NAME / AGE /
+			// POSITION line, and reading "TERM AS" as a successor section closes
+			// MANAGEMENT one line before the table starts. A NAMED successor
+			// still closes it, so an unclosed <TABLE> cannot run away.
+			if closesSection(t) && (depth == 0 || reSectionEnd.MatchString(t)) {
+				// A compensation heading looks like a successor and usually is
+				// one, so the section still ends here -- unless a FURTHER person
+				// table lies past it, which is what says the filing wrote a
+				// sub-heading in top-level capitals. Past that heading only a
+				// NAMED successor closes the span being searched: the
+				// compensation tables carry all-capitals captions of their own
+				// ("1996 SUMMARY COMPENSATION TABLE"), and letting those close it
+				// would end the search before the board table is reached.
+				if reTxtCompHeading.MatchString(t) {
+					if soft < 0 {
+						soft = j
+					}
+					continue
+				}
+				if soft >= 0 && !reSectionEnd.MatchString(t) {
+					continue
+				}
 				end = j
 				break
 			}
+			if depth > 0 && reTxtTableClose.MatchString(lines[j]) {
+				depth--
+			}
+		}
+		// The compensation heading stands as the section's end unless a further
+		// person table was found past it. The compensation tables themselves
+		// cannot supply one: their captions carry no AGE column, which is what
+		// every header form here requires.
+		if soft >= 0 && !hasLaterAsciiTable(lines, soft, end) {
+			end = soft
 		}
 		if found >= 0 {
 			return i, end, found, StatusOK
@@ -81,17 +248,57 @@ func asciiSection(lines []string) (lo, hi, hdr int, status string) {
 	return 0, 0, -1, status
 }
 
+// asciiColumns returns the AGE column's anchor and, when AGE is the LAST column,
+// the offset where the position field starts. In the usual NAME / AGE / POSITION
+// order the position field is everything past the age, so posAnchor is -1 and
+// nothing downstream changes. In the age-last order it is the caption's <S>/<C>
+// marker line that carries the offsets — the header's own labels are centred over
+// their fields, so "TITLE" sits in the middle of the position cell, not at its
+// left edge. Without that marker line the age-last form is not readable and
+// posAnchor stays -1, which is what makes isAsciiHeader reject it.
+func asciiColumns(lines []string, hdr int) (ageAnchor, posAnchor int) {
+	hdrLine := strings.ToUpper(asciiLine(lines[hdr]))
+	ageAnchor, posAnchor = strings.Index(hdrLine, "AGE"), -1
+	pos := reTxtHeaderPos.FindStringIndex(hdrLine)
+	if ageAnchor < 0 || pos == nil || pos[0] > ageAnchor {
+		return ageAnchor, posAnchor
+	}
+	for k := hdr + 1; k < len(lines) && k <= hdr+3; k++ {
+		if !reTxtMarkerS.MatchString(lines[k]) {
+			continue
+		}
+		m := reTxtMarkerC.FindAllStringIndex(lines[k], -1)
+		if len(m) < 2 {
+			continue
+		}
+		return m[len(m)-1][0], m[0][0]
+	}
+	return ageAnchor, -1
+}
+
 // asciiRows parses the fixed-width table body. The age's column in the header row
 // anchors the split, and the age itself is what identifies a person row.
 func asciiRows(lines []string, hdr, hi int) (rows []mgmtRow, bodyEnd int) {
-	hdrLine := asciiLine(lines[hdr])
-	anchor := strings.Index(strings.ToUpper(hdrLine), "AGE")
+	anchor, posAnchor := asciiColumns(lines, hdr)
+	// Where the name cell ends: the position field's left edge when AGE is last,
+	// the age column otherwise.
+	nameColEnd := anchor
+	if posAnchor >= 0 {
+		nameColEnd = posAnchor
+	}
 
 	blanks := 0
 	for i := hdr + 1; i < hi; i++ {
 		line := asciiLine(lines[i])
 		t := strings.TrimSpace(line)
 		if t == "" {
+			// A caption marker is not a blank line. UbiquiTel 2000 puts both of
+			// its blocks in ONE <TABLE> and opens a SECOND <CAPTION> over the
+			// "OTHER KEY EMPLOYEES" rows; counting that line as the second blank
+			// ends the table two rows early.
+			if reTxtCaptionOnly.MatchString(strings.TrimSuffix(lines[i], "\r")) {
+				continue
+			}
 			// Two blank lines after at least one row is the end of the table in
 			// filings that omit </TABLE>.
 			blanks++
@@ -104,21 +311,47 @@ func asciiRows(lines []string, hdr, hi int) (rows []mgmtRow, bodyEnd int) {
 		if reRuleLine.MatchString(t) {
 			continue
 		}
+		// The second caption re-declares NAME / AGE / POSITION over its own block.
+		// The line carries no age, so the label pass below would file the column
+		// names as a section and put the rows under them in no section at all.
+		if isAsciiHeader(lines, i) {
+			continue
+		}
 		if strings.HasPrefix(t, "(") && len(rows) > 0 {
 			// Committee footnotes sit under the table.
 			return rows, i
 		}
 		if lo, hiIdx, ok := pickAge(line, anchor); ok {
-			name := strings.TrimSpace(line[:lo])
+			// Where the name cell ends and where the position cell lies. With
+			// AGE last the position sits between them, not past the age.
+			nameEnd, posLo, posHi := lo, hiIdx, len(line)
+			if posAnchor >= 0 && posAnchor < lo {
+				nameEnd, posLo, posHi = posAnchor, posAnchor, lo
+			}
+			name := strings.TrimSpace(line[:nameEnd])
 			if name == "" {
 				continue
+			}
+			// A name cell that ran out of column and wrapped: Integ 1996 writes
+			// "Mark B. Knudson," on its own line and " Ph.D.(1)(3)....  47
+			// Chairman of the Board of Directors" under it. The dangling line has
+			// no age, so the pass above filed it as a section label. Two things
+			// separate the wrap from a real label: the label ends a phrase while
+			// the dangling half of a cell breaks on a comma, and the
+			// continuation is INDENTED past the margin where both a name cell and
+			// a section label start.
+			if last := len(rows) - 1; last >= 0 && rows[last].Label != "" &&
+				strings.HasSuffix(rows[last].Label, ",") &&
+				len(line[:nameEnd])-len(strings.TrimLeft(line[:nameEnd], " ")) > 0 {
+				name = strings.TrimSpace(rows[last].Label + " " + name)
+				rows = rows[:last]
 			}
 			age, _ := plausibleAge(line[lo:hiIdx])
 			rows = append(rows, mgmtRow{
 				NameRaw:  name,
 				Name:     normName(name),
 				Age:      age,
-				Position: strings.TrimSpace(line[hiIdx:]),
+				Position: strings.TrimSpace(line[posLo:posHi]),
 			})
 			continue
 		}
@@ -128,6 +361,33 @@ func asciiRows(lines []string, hdr, hi int) (rows []mgmtRow, bodyEnd int) {
 		if len(rows) == 0 {
 			continue
 		}
+		// A line indented past the age column continues the row above it:
+		// Horizon Medical 1998 wraps its CEO's cell as "Director, Chairman of
+		// the Board and Chief" / "Executive Officer", and a position cell
+		// truncated there names no chief executive. A section label sits at the
+		// left margin, which is what separates the two.
+		// When AGE is the last column the position field's own left edge is
+		// known, and the wrapped half sits exactly on it.
+		if last := len(rows) - 1; continuesCell(line, anchor, posAnchor) && rows[last].Label == "" {
+			rows[last].Position = strings.TrimSpace(rows[last].Position + " " + t)
+			continue
+		}
+		// The other half of the wrap handled above: Simplex 2001 keeps the age on
+		// the FIRST half and dangles the remainder under it, "Harvey C. Jones,
+		// 48 Director" over "  Jr.(1)(2).................". That line sits far
+		// left of the position field, so the rule above cannot claim it, and it
+		// ends on a dot leader, so the label rule below rejects it and the table
+		// is read as having ended. Two signals identify it: the row above breaks
+		// mid-cell on a comma, and the dangling half is indented and stays
+		// wholly inside the name column.
+		if last := len(rows) - 1; rows[last].Label == "" && nameColEnd > 0 &&
+			strings.HasSuffix(rows[last].NameRaw, ",") &&
+			len(line)-len(strings.TrimLeft(line, " ")) > 0 &&
+			len(strings.TrimRight(line, " ")) <= nameColEnd {
+			rows[last].NameRaw = strings.TrimSpace(rows[last].NameRaw + " " + t)
+			rows[last].Name = normName(rows[last].NameRaw)
+			continue
+		}
 		if len(t) <= 70 && !strings.HasSuffix(t, ".") {
 			rows = append(rows, mgmtRow{Label: t})
 			continue
@@ -135,6 +395,20 @@ func asciiRows(lines []string, hdr, hi int) (rows []mgmtRow, bodyEnd int) {
 		return rows, i
 	}
 	return rows, hi
+}
+
+// continuesCell reports whether an age-less line is the wrapped remainder of the
+// row above it rather than a section label. A label sits at the left margin; the
+// wrapped half sits inside the position field. Where that field begins is only
+// known in the age-last layout, so the age column stands in for it otherwise:
+// Horizon Medical 1998 wraps its CEO's cell as "Director, Chairman of the Board
+// and Chief" / "Executive Officer", indented well past the age.
+func continuesCell(line string, anchor, posAnchor int) bool {
+	indent := len(line) - len(strings.TrimLeft(line, " "))
+	if posAnchor >= 0 {
+		return indent >= posAnchor
+	}
+	return anchor > 0 && indent > anchor
 }
 
 // pickAge finds the age field in a fixed-width row: the bare two-digit number
@@ -205,7 +479,7 @@ func asciiParagraphs(lines []string, lo, hi int) []string {
 }
 
 // extractASCII is the fixed-width counterpart of extractHTML.
-func extractASCII(body string) Extraction {
+func extractASCII(body, issuer string) Extraction {
 	lines := strings.Split(body, "\n")
 	_, hi, hdr, status := asciiSection(lines)
 	if status != StatusOK {
@@ -216,6 +490,27 @@ func extractASCII(body string) Extraction {
 	if len(persons) == 0 {
 		return Extraction{Filing: FilingSummary{Status: StatusNoMgmtTable}}
 	}
+	// A name already in the set is skipped rather than appended: AMG's chairman
+	// sits in both its officers table and its board table, and counting him
+	// twice would put 13 people in a section the filing says holds 12.
+	seen := make(map[string]bool, len(persons))
+	for _, p := range persons {
+		seen[nameKey(p.Name)] = true
+	}
+	for _, p := range buildPersons(asciiLaterRows(lines, bodyEnd, hi)) {
+		k := nameKey(p.Name)
+		if k == "" || seen[k] {
+			continue
+		}
+		seen[k] = true
+		persons = append(persons, p)
+	}
+	for i := range persons {
+		persons[i].Seq = i + 1
+	}
+	// The paragraph span still opens at the FIRST table's end: the bios of the
+	// people in a later table follow that table, so a span opened past it would
+	// reach them and lose the first table's.
 	attachBios(persons, asciiParagraphs(lines, bodyEnd, hi))
-	return finish(persons)
+	return finish(persons, issuer)
 }

@@ -328,7 +328,7 @@ hold. Run it, then skip to the Monitor; the rest of these two phases is what it 
 and what to check when it reports something odd:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-dispatch.sh                    # armed plan; or pass one
+bash ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-dispatch.sh --provider gemini  # armed plan; or pass one
 bash ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-dispatch.sh --provider codex   # "run work through codex"
 ```
 
@@ -336,11 +336,11 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-dispatch.sh --provider codex
 named in `$ARGUMENTS`, however it is spelled — `--provider codex`, `--dispatch codex`, "run this on
 gpt" — is `--provider codex` on the dispatch line, whether `work` was invoked directly or through `/dev`,
 `/ds`, `/writing`, `/notes`, `/slides` or `/exams`. Those skills print their own dispatch recipe, so
-each carries the flag too; dropping it silently runs the user's codex request on claude.
+each carries the flag too; dropping it fails because an explicit provider is required.
 `--provider` is the ONE spelling: `work-dispatch.sh --dispatch` and `work-redispatch.sh --dispatch
 codex` each exit 2 naming it, rather than dying on "unknown flag" or accepting a synonym.
 
-**`--provider claude|codex|gemini` (default `claude`) runs the WHOLE spine on that provider** — it
+**`--provider claude|codex|gemini` (required, `gemini` recommended) runs the WHOLE spine on that provider** — it
 reaches `farm.sh --provider`, whose wrapper remaps the tier names, so every `model: 'sonnet'` in
 `workflow.js` follows with no arg change. Same flag on `work-redispatch.sh`, which is where it earns
 its keep: when a round repeats its predecessor's failure exactly, a different provider is the lever

@@ -91,7 +91,7 @@ function fixture() {
 
 function dispatch(f: { dir: string; plan: string }, env: Record<string, string>) {
   try {
-    const out = execFileSync('bash', [SCRIPT, '--loops', '0', f.plan], {
+    const out = execFileSync('bash', [SCRIPT, '--provider', 'claude', '--loops', '0', f.plan], {
       encoding: 'utf8',
       timeout: 120_000,
       cwd: f.dir,
@@ -184,7 +184,7 @@ describe('the continuation rounds are scoped too, not just the first dispatch', 
     let code = 0
     let out = ''
     try {
-      out = execFileSync('bash', [REDISPATCH, f.plan, join(f.runDir, 'args.json'), '--dispatch', '--full'], {
+      out = execFileSync('bash', [REDISPATCH, f.plan, join(f.runDir, 'args.json'), '--provider', 'claude', '--dispatch', '--full'], {
         encoding: 'utf8', timeout: 120_000, cwd: f.dir,
         env: { ...process.env, CLAUDE_CODE_SESSION_ID: '', WORK_FARM: stubFarm(f.dir) },
       })

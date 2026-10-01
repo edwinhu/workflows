@@ -1,6 +1,6 @@
 # Embedding Batches with Gemini
 
-Dedicated reference for batch embedding work. Read this before submitting any embedding job >3 items.
+Dedicated reference for batch embedding work. Read before submitting more than three items. Current [embedding docs](https://ai.google.dev/gemini-api/docs/embeddings.md.txt) call `gemini-embedding-2` the latest multimodal model and keep `gemini-embedding-001` available for text. The -001 preference below is a project-specific benchmark, not Google's latest-model recommendation.
 
 ## TL;DR
 
@@ -16,15 +16,15 @@ Dedicated reference for batch embedding work. Read this before submitting any em
 |---|---|---|
 | **`gemini-embedding-001`** | **Default for text-only tasks** (short titles, sentences, classification, retrieval over text) | `client.batches.create_embeddings()` (Standard API only) |
 | `gemini-embedding-2` | Multimodal inputs (text+image), or you have benchmarks showing -2 wins your specific task | `client.batches.create_embeddings()` (Standard API only) |
-| `text-embedding-005` | You need Vertex AI Batch console visibility; legacy text encoder | `client.batches.create()` with `vertexai=True` |
+| `text-embedding-005` | You need Gemini Enterprise Agent Platform Batch console visibility; legacy text encoder | `client.batches.create()` with `vertexai=True` |
 
 **Default to -001 unless you have a reason to switch.** Empirical (PPM TOC project, 2026-04-26): on a 21,796-title classification head-to-head over the same 17 canonical anchors with sentinel-verified alignment, `-001` produced **mean cosine 0.872** to the top anchor vs `-2`'s **0.751**. The two models agreed on best-section assignment only 52.5% of the time, and `-2` over-classified to common attractors (e.g., entries titled literally "Risk Factors" landing in *Plan of Distribution*). `-2` is multimodal-retrained — its text-side geometry is noisier on short titles than the text-specialized `-001`.
 
 **Tradeoffs:**
 - `-001` is text-only; embedding 3072-dim by default; SEMANTIC_SIMILARITY task type produces unit-norm vectors
-- `-2` is multimodal; same dimensionality and task types; better suited if you'll later embed images alongside text
-- `-005` (`text-embedding-005`) is a legacy text encoder accessible via Vertex Batch — use only if you need a Vertex job visible in Cloud Console
-- Vertex AI Batch Prediction does **NOT** accept `gemini-embedding-*` models (verified 2026-04, returns 400 `Do not support publisher model ...`). For Gemini-family embeddings, use the Standard API path below.
+- `-2` is multimodal; up to 3072 dimensions; does **not** accept `task_type`; supply task-prefixed text for text-only tasks, and use identical text in sentinel checks
+- `-005` (`text-embedding-005`) is a legacy text encoder accessible via Cloud batch — use only if you need a Cloud job visible in Cloud Console
+- A 2026-04 Cloud batch prediction probe rejected `gemini-embedding-*` (400 `Do not support publisher model ...`); this is a historical observation, not a universal current availability guarantee. For Gemini-family embeddings, use the Standard API path below.
 
 **Don't switch models mid-project.** If your existing analysis or canonical anchors are embedded with model X, downstream embeddings must use X. Cosine geometries are not portable across models — switching means re-embedding everything (entries + anchors) and re-validating any thresholds.
 
@@ -40,6 +40,8 @@ Dedicated reference for batch embedding work. Read this before submitting any em
 **Lesson learned the hard way (2026-04):** burned two production batches (-2 and -001, ~22K texts each) before discovering this. The fix below was already in repo at `src/toc_embeddings.py`.
 
 ## Production Pattern — File-Based, Keyed
+
+The recipes below are pinned to **gemini-embedding-001**. For -2, omit task_type and use identical task-prefixed text for both batch and sentinels, as implemented in `examples/embeddings_batch.py`.
 
 ### 1. Build keyed JSONL
 
@@ -132,11 +134,11 @@ If any sentinel fails, do not proceed downstream — re-check key uniqueness, pa
 - File-based: `job.dest.file_name` → `client.files.download(file=...)` → JSONL with `{"key": ..., "response": {"embedding": {"values": [...]}}}` per line.
 - Inline (avoid): `job.dest.inlined_embed_content_responses` → positional list, no keys, order **unreliable** at scale.
 
-**Task types:** `SEMANTIC_SIMILARITY`, `RETRIEVAL_DOCUMENT`, `RETRIEVAL_QUERY`, `CLASSIFICATION`, `CLUSTERING`. Match the task type used for your canonical anchors — mismatch breaks cosine geometry.
+**Task types for -001 only:** `SEMANTIC_SIMILARITY`, `RETRIEVAL_DOCUMENT`, `RETRIEVAL_QUERY`, `CLASSIFICATION`, `CLUSTERING`. Match the task type used for your canonical anchors — mismatch breaks cosine geometry. With -2, omit `task_type` and include the same task instructions in each text input instead. For example, current docs recommend `task: search result | query: {content}` for retrieval queries and `title: none | text: {content}` for untitled documents; select the documented format for your actual task.
 
-## Sync API Quirk — TESTING ONLY
+## Sync aggregation — TESTING ONLY
 
-`client.models.embed_content(contents=[t1, t2, t3])` with `gemini-embedding-2` returns ONLY ONE embedding — the list gets concatenated. (Differs from `-001`, which batched.) Use sync for single-text smoke tests only:
+`client.models.embed_content(contents=[t1, t2, t3])` with `gemini-embedding-2` returns one aggregated embedding by design, as the [current docs](https://ai.google.dev/gemini-api/docs/embeddings.md.txt) explain. This is not an SDK bug. (Differs from `-001`, which returns one embedding per input.) Use sync for single-text smoke tests only:
 
 ```python
 v = client.models.embed_content(
@@ -151,3 +153,7 @@ For production batches (≥4 texts), always use the file-based keyed path above.
 ## Working example
 
 `examples/embeddings_batch.py` — `submit / status / download` CLI implementing this exact pattern with built-in sentinel verification.
+
+## Current limits and prices
+
+Embedding 2: 8,192 input tokens, dimensions 128–3072 (recommended 768/1536/3072); check the [model card](https://ai.google.dev/gemini-api/docs/models/gemini-embedding-2.md.txt). Text is $0.20/M Standard and $0.10/M Batch; other modalities have distinct prices in [pricing](https://ai.google.dev/gemini-api/docs/pricing.md.txt), checked 2026-09-30. Do not infer every embedding model's context limit or price from the example's 3072-dimensional setting. Existing -001 outputs/anchors remain pinned; switching models requires re-embedding and recalibrating thresholds.

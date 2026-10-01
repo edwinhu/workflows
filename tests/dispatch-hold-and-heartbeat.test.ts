@@ -76,7 +76,7 @@ function dispatch(
   scratch.push(tmp)
   const farm = script(f.dir, 'stub-farm.sh', 'exit 0')
   try {
-    const out = execFileSync('bash', [DISPATCH, '--loops', '0', ...extraArgs, f.plan], {
+    const out = execFileSync('bash', [DISPATCH, '--provider', 'claude', '--loops', '0', ...extraArgs, f.plan], {
       encoding: 'utf8', timeout: 180_000, cwd: f.dir,
       env: {
         ...HERMETIC_ENV, CLAUDE_CODE_SESSION_ID: sid, TMPDIR: tmp,

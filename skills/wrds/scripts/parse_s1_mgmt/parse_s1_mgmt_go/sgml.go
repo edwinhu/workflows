@@ -188,3 +188,32 @@ func looksASCII(head string) bool {
 	tags := strings.Count(head, "<")
 	return nl > 200 && nl > tags
 }
+
+// reConformedName is the FILER block's issuer name, which the dissemination
+// header states as plain indented text rather than a tag:
+//
+//	COMPANY DATA:
+//		COMPANY CONFORMED NAME:			BEYOND MEAT, INC.
+//
+// It must not match the FORMER CONFORMED NAME line printed a few lines below it
+// in every header of a company that has ever renamed, which states a name the
+// prospectus no longer uses.
+var reConformedName = regexp.MustCompile(`(?im)^[ \t]*COMPANY[ \t]+CONFORMED[ \t]+NAME:[ \t]*(\S.*?)[ \t]*$`)
+
+// IssuerName returns the issuer's name as the SGML header states it, or "".
+// Only the header is searched: the prospectus body names dozens of companies and
+// the founder referent test is only sound when the issuer's name is the one the
+// filer declared.
+func IssuerName(raw string) string {
+	head := raw
+	if i := reDocOpen.FindStringIndex(raw); i != nil {
+		head = raw[:i[0]]
+	} else if len(head) > 1<<16 {
+		head = head[:1<<16]
+	}
+	m := reConformedName.FindStringSubmatch(head)
+	if m == nil {
+		return ""
+	}
+	return strings.Join(strings.Fields(m[1]), " ")
+}

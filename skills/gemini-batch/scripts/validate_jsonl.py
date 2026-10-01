@@ -1,129 +1,78 @@
 #!/usr/bin/env -S uv run python3
-"""Validate JSONL files for Gemini Batch API submission.
+"""Validate Developer or Cloud generateContent Batch JSONL without API calls.
 
-Usage:
-    python validate_jsonl.py <path_to_jsonl_file>
-
-Exit codes:
-    0 - Valid JSONL
-    1 - Validation errors found
+Usage: python validate_jsonl.py requests.jsonl --backend developer|cloud
+Exit codes: 0 valid, 1 invalid.
 """
 
+import argparse
 import json
-import sys
 from pathlib import Path
 
 
-def validate_jsonl(path: str) -> tuple[bool, list[str]]:
-    """Validate JSONL file format for Gemini Batch API.
-
-    Checks:
-    - Valid JSON on each line
-    - Required 'request' field present
-    - Required 'contents' field in request
-    - Role field set to 'user'
-    - File URIs use gs:// protocol
-    - Request IDs are unique
-    - No empty lines
-
-    Args:
-        path: Path to JSONL file
-
-    Returns:
-        Tuple of (is_valid, list of error messages)
-    """
+def validate_jsonl(path: str, backend: str = "developer") -> tuple[bool, list[str]]:
+    """Check request structure and backend-specific row IDs and media URIs."""
+    if backend not in ("developer", "cloud"):
+        raise ValueError(f"Unknown backend: {backend}")
     errors = []
-    warnings = []
     request_ids = set()
-
-    with open(path, 'r') as f:
-        for i, line in enumerate(f, 1):
-            line = line.strip()
-
-            # Check for empty lines
-            if not line:
-                warnings.append(f"Line {i}: Empty line (will be skipped)")
+    with open(path) as source:
+        for number, line in enumerate(source, 1):
+            if not line.strip():
+                errors.append(f"Line {number}: Empty line")
                 continue
-
-            # Parse JSON
             try:
                 data = json.loads(line)
-            except json.JSONDecodeError as e:
-                errors.append(f"Line {i}: Invalid JSON - {e}")
+            except json.JSONDecodeError as exc:
+                errors.append(f"Line {number}: Invalid JSON - {exc}")
                 continue
-
-            # Check required 'request' field
-            if "request" not in data:
-                errors.append(f"Line {i}: Missing 'request' key")
+            if not isinstance(data, dict) or not isinstance(data.get("request"), dict):
+                errors.append(f"Line {number}: Missing 'request' object")
                 continue
-
-            request = data["request"]
-
-            # Check required 'contents' field
-            if "contents" not in request:
-                errors.append(f"Line {i}: Missing 'contents' in request")
+            contents = data["request"].get("contents")
+            if not isinstance(contents, list) or not contents:
+                errors.append(f"Line {number}: Missing or empty contents array")
                 continue
-
-            contents = request.get("contents", [])
-
-            # Check role field
-            if not contents:
-                errors.append(f"Line {i}: Empty contents array")
-            elif contents[0].get("role") != "user":
-                errors.append(f"Line {i}: First content must have role='user'")
-
-            # Check file URI format
-            parts = contents[0].get("parts", []) if contents else []
-            for part in parts:
-                if "fileData" in part:
-                    uri = part["fileData"].get("fileUri", "")
-                    if not uri.startswith("gs://"):
-                        errors.append(f"Line {i}: fileUri must start with 'gs://' (got: {uri[:50]}...)")
-
-            # Check request ID uniqueness
-            request_id = data.get("metadata", {}).get("request_id")
-            if request_id:
-                if request_id in request_ids:
-                    errors.append(f"Line {i}: Duplicate request_id '{request_id}'")
-                request_ids.add(request_id)
+            for content in contents:
+                if not isinstance(content, dict) or not isinstance(content.get("parts"), list):
+                    errors.append(f"Line {number}: Content requires parts array")
+                    continue
+                for part in content["parts"]:
+                    if not isinstance(part, dict):
+                        errors.append(f"Line {number}: Part must be an object")
+                        continue
+                    file_data = part.get("fileData", part.get("file_data"))
+                    if file_data is not None:
+                        uri = file_data.get("fileUri", file_data.get("file_uri", "")) if isinstance(file_data, dict) else ""
+                        prefixes = ("gs://",) if backend == "cloud" else ("https://", "files/")
+                        if not isinstance(uri, str) or not uri.startswith(prefixes):
+                            errors.append(f"Line {number}: Invalid {backend} file URI: {uri}")
+            metadata = data.get("metadata", {})
+            request_id = data.get("key") if backend == "developer" else (
+                metadata.get("request_id") if isinstance(metadata, dict) else None
+            )
+            if not isinstance(request_id, str) or not request_id:
+                field = "key" if backend == "developer" else "metadata.request_id"
+                errors.append(f"Line {number}: Missing nonempty {field}")
+            elif request_id in request_ids:
+                errors.append(f"Line {number}: Duplicate request ID '{request_id}'")
             else:
-                warnings.append(f"Line {i}: Missing request_id in metadata")
-
-    # Print warnings
-    for warning in warnings:
-        print(f"WARNING: {warning}")
-
-    return len(errors) == 0, errors
+                request_ids.add(request_id)
+    return not errors, errors
 
 
 def main():
-    """Main entry point."""
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <path_to_jsonl_file>")
-        sys.exit(1)
-
-    path = sys.argv[1]
-
-    if not Path(path).exists():
-        print(f"Error: File not found: {path}")
-        sys.exit(1)
-
-    print(f"Validating: {path}")
-    print("-" * 50)
-
-    is_valid, errors = validate_jsonl(path)
-
-    if is_valid:
-        # Count lines
-        with open(path, 'r') as f:
-            line_count = sum(1 for line in f if line.strip())
-        print(f"\nValid JSONL with {line_count} requests")
-        sys.exit(0)
-    else:
-        print(f"\nValidation failed with {len(errors)} error(s):")
-        for error in errors:
-            print(f"  ERROR: {error}")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("path")
+    parser.add_argument("--backend", choices=["developer", "cloud"], default="developer")
+    args = parser.parse_args()
+    if not Path(args.path).is_file():
+        parser.error(f"File not found: {args.path}")
+    valid, errors = validate_jsonl(args.path, args.backend)
+    for error in errors:
+        print(f"ERROR: {error}")
+    print("Valid JSONL" if valid else f"Validation failed: {len(errors)} error(s)")
+    raise SystemExit(0 if valid else 1)
 
 
 if __name__ == "__main__":

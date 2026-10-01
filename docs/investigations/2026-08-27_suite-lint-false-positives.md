@@ -15,7 +15,7 @@ argue with a specific row.
 | positive-match-failure-vocabulary | 15 | 26 | 23 | 3 |
 | single-distinct-literal | 43 | 208 | 191 | 17 |
 | existence-only-artifact | 1 | 1 | 1 | 0 |
-| injected-key-never-varied | 18 | 44 | 44 | 0 |
+| injected-key-never-varied | 22 | 44 | 44 | 0 |
 
 **The audited-corpus column is the one this repository's suite pins, and the only one re-executed on
 every run.** The *audited corpus* is the 23 files this investigation actually read and cites by
@@ -361,7 +361,7 @@ dry-run switch has one meaningful value, and a scope opt-out has none at all; th
 the harness then feeds the script. The audited count moved 17 → 18 on 2026-09-28 when that suite
 stopped using the dry-run flag as its way of observing the committed round and began dispatching for
 real against a stub farm, which needs `WORK_NO_SCOPE` alongside `WORK_FARM` — one more key held
-constant for the same reason as the rest, read and false like them.
+constant for the same reason as the rest, read and false like them. The estimate fixtures add four more harness constants at `tests/farm-runner.test.ts:109`, `tests/farm-runner.test.ts:110` and `tests/farm-runner.test.ts:111`: session identity, task cap, session cap and override opt-out. Recomputed audited count: 22; all four configure the stubbed runner rather than the behavior under test.
 
 One of these is worth calling out because it is the rule's own target shape, correctly handled by
 the test. `skills/work/scripts/compose-goal.test.ts:142` sets `CRAFT_GOAL_MAX_HOURS: '2'` once, and
