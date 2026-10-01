@@ -117,23 +117,41 @@ test('a 4xx reply marks the rule unavailable and exits 1', async () => {
 });
 
 test('project-dir mode reads changed and untracked files', async () => {
+  let capturedBody = '';
   const server = Bun.serve({
     port: 0,
     async fetch(req) {
-      await req.text();
+      const body = await req.json();
+      if ((body.state || '').length > capturedBody.length) capturedBody = body.state || '';
       return new Response(JSON.stringify({
         answers: { q0: { probabilities: { VIOLATED: 0.1 }, choice: 'MET' } }
       }));
     }
   });
 
-  const projectDir = join(import.meta.dir, '../../..');
-  const res = await runRuleCheck(['--project-dir', projectDir], server.port);
-  server.stop(true);
-  
-  expect(res.exitCode).toBe(0);
-  const out = JSON.parse(res.stdout.toString());
-  expect(out.verdicts.length).toBeGreaterThan(0);
+  const projectDir = fs.mkdtempSync(join(require('os').tmpdir(), 'rule-check-test-projdir-'));
+  try {
+    const git = (...a: string[]) => spawnSync('git', a, { cwd: projectDir });
+    git('init', '-q');
+    git('config', 'user.email', 'test@example.com');
+    git('config', 'user.name', 'test');
+    fs.writeFileSync(join(projectDir, 'tracked_mod.py'), 'x = 1\n');
+    git('add', '.');
+    git('commit', '-q', '-m', 'init');
+    fs.appendFileSync(join(projectDir, 'tracked_mod.py'), 'y = 2\n');
+    fs.writeFileSync(join(projectDir, 'untracked_new.py'), 'z = 3\n');
+
+    const res = await runRuleCheck(['--project-dir', projectDir], server.port);
+
+    expect(res.exitCode).toBe(0);
+    const out = JSON.parse(res.stdout.toString());
+    expect(out.verdicts.length).toBeGreaterThan(0);
+    expect(capturedBody).toContain('tracked_mod.py');
+    expect(capturedBody).toContain('untracked_new.py');
+  } finally {
+    server.stop(true);
+    fs.rmSync(projectDir, { recursive: true, force: true });
+  }
 });
 
 
