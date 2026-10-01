@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -11370,6 +11371,326 @@ func TestASCIIBecameTrusteeCountColumn(t *testing.T) {
 	} {
 		if g, ok := got[name]; !ok || g != shares {
 			t.Errorf("%s: got %v (present=%v), want %v; rows=%v", name, g, ok, shares, got)
+		}
+	}
+}
+
+// "OWNERSHIP OF KB HOME SECURITIES" (0001308179-20-000012, file lines
+// 2338-2611, style attributes removed): the section title
+// names the issuer between "ownership of" and the security noun. A footnote line
+// below the 5% table ("... Stock Ownership Trust (b)") does read as a heading,
+// so only the voting-power breakdown under it was taken; the holders were lost.
+const issuerNamedOwnershipHeadingHTML = `<html><body>
+<p><a>Back to Contents
+</a>
+</p>
+<p><a><font>OWNERSHIP</font><font> </font>OF KB HOME SECURITIES</a>
+</p>
+<p>The table below shows the amount and nature of our non-employee directors&rsquo; and NEOs&rsquo; respective beneficial ownership of our common stock as of February 18, 2020. Except as otherwise indicated below, the beneficial ownership is direct and each owner has sole voting and investment power with respect to the reported securities holdings.</p>
+<div><table><tr><td><p>Non-Employee Directors</p>
+</td>
+<td><p>Total Ownership<sup>(a)</sup></p>
+</td>
+<td><p>Stock Options<sup>(b)</sup></p>
+</td>
+<td><p>Restricted </p>
+<p>Stock<sup>(b)</sup></p>
+</td>
+</tr>
+<tr><td><p>Dorene C. Dominguez</p>
+</td>
+<td><p>13,823</p>
+</td>
+<td><p>&mdash;</p>
+</td>
+<td><p>&mdash;</p>
+</td>
+</tr>
+<tr><td><p>Timothy W. Finchem</p>
+</td>
+<td><p>173,893</p>
+</td>
+<td><p>&mdash;</p>
+</td>
+<td><p>&mdash;</p>
+</td>
+</tr>
+<tr><td><p>Dr. Stuart A. Gabriel</p>
+</td>
+<td><p>28,023</p>
+</td>
+<td><p>&mdash;</p>
+</td>
+<td><p>&mdash;</p>
+</td>
+</tr>
+<tr><td><p>Dr. Thomas W. Gilligan</p>
+</td>
+<td><p>76,261</p>
+</td>
+<td><p>26,889</p>
+</td>
+<td><p>&mdash;</p>
+</td>
+</tr>
+<tr><td><p>Kenneth M. Jastrow, II</p>
+</td>
+<td><p>158,354</p>
+</td>
+<td><p>46,611</p>
+</td>
+<td><p>&mdash;</p>
+</td>
+</tr>
+<tr><td><p>Robert L. Johnson</p>
+</td>
+<td><p>169,086</p>
+</td>
+<td><p>93,343</p>
+</td>
+<td><p>&mdash;</p>
+</td>
+</tr>
+<tr><td><p>Melissa Lora</p>
+</td>
+<td><p>227,825</p>
+</td>
+<td><p>57,831</p>
+</td>
+<td><p>&mdash;</p>
+</td>
+</tr>
+<tr><td><p>James C. Weaver</p>
+</td>
+<td><p>15,690</p>
+</td>
+<td><p>&mdash;</p>
+</td>
+<td><p>&mdash;</p>
+</td>
+</tr>
+<tr><td><p>Michael M. Wood</p>
+</td>
+<td><p>48,223</p>
+</td>
+<td><p>&mdash;</p>
+</td>
+<td><p>&mdash;</p>
+</td>
+</tr>
+<tr><td><p>Named Executive Officers</p>
+</td>
+<td><p>&nbsp;</p>
+</td>
+<td><p>&nbsp;</p>
+</td>
+<td><p>&nbsp;</p>
+</td>
+</tr>
+<tr><td><p>Jeffrey T. Mezger</p>
+</td>
+<td><p>2,851,527</p>
+</td>
+<td><p>1,978,252</p>
+</td>
+<td><p>&mdash;</p>
+</td>
+</tr>
+<tr><td><p>Jeff J. Kaminski</p>
+</td>
+<td><p>460,415</p>
+</td>
+<td><p>355,882</p>
+</td>
+<td><p>&mdash;</p>
+</td>
+</tr>
+<tr><td><p>Matthew W. Mandino</p>
+</td>
+<td><p>92,885</p>
+</td>
+<td><p>74,980</p>
+</td>
+<td><p>2,925</p>
+</td>
+</tr>
+<tr><td><p>Albert Z. Praw</p>
+</td>
+<td><p>129,738</p>
+</td>
+<td><p>18,903</p>
+</td>
+<td><p>&mdash;</p>
+</td>
+</tr>
+<tr><td><p>Brian J. Woram</p>
+</td>
+<td><p>372,646</p>
+</td>
+<td><p>248,642</p>
+</td>
+<td><p>&mdash;</p>
+</td>
+</tr>
+<tr><td><p>All directors and executive officers as a group (14 people)</p>
+</td>
+<td><p>4,833,389</p>
+</td>
+<td><p>2,901,333</p>
+</td>
+<td><p>2,925</p>
+</td>
+</tr>
+<TR><TD COLSPAN="4"><DIV><DIV>(a)</div>
+<P>No non-employee director or NEO owns more than 1% of our outstanding common stock, except for Mr. Mezger, who owns 2.9%. All non-employee directors and executive officers as a group own 4.8% of our outstanding common stock. The total ownership amount reported for each non-employee director includes all equity-based compensation awarded to them for their service on the Board, encompassing shares of common stock, stock units and stock options. Dr.&nbsp;Gabriel, Ms. Lora, Mr.&nbsp;Wood and Mr.&nbsp;Kaminski each hold their respective vested shares of our common stock in family trusts over which they have shared voting and investment control with their respective spouses, excluding Ms. Lora&rsquo;s direct ownership of&nbsp;2,043&nbsp;shares.</p>
+</div>
+<DIV><DIV>(b)</div>
+<P>The reported stock option amounts are the shares of our common stock that can be acquired within 60 days of February 18, 2020. Non-employee director stock options were last granted in April 2014, as they ceased being a component of director compensation after that date. Some non-employee director stock options held by Mr. Johnson (37,993) and Ms.&nbsp;Lora (11,220) have 15-year terms. The remainder have ten-year terms. For non-employee directors who leave the Board due to retirement or disability (in each case as determined by the Compensation Committee), or death, their stock options will be exercisable for the options&rsquo; respective remaining terms. Otherwise, non-employee director stock options must be exercised by the earlier of their respective terms or the first anniversary of a director&rsquo;s leaving the Board (for 15-year stock options), or the third anniversary of leaving the Board (for ten-year stock options). Based on the non-employee directors&rsquo; respective elections, each non-employee director stock option represents a right to receive shares of our common stock equal in value to the positive difference between the option&rsquo;s stated exercise price and the fair market value of our common stock on an exercise date, and are therefore settled in a manner similar to stock appreciation rights.  None held by current directors have been so settled. The total ownership amount reported for each NEO includes their reported stock option and restricted common stock amounts.  </p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<p>&nbsp;</p>
+<TABLE CELLSPACING="0" CELLPADDING="0">
+<TR>
+    <TD>&nbsp;</TD>
+    <TD NOWRAP>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR>
+    <TD><IMG SRC="footer.jpg" ALT=""></TD>
+    <TD NOWRAP>&nbsp;|&nbsp;&nbsp;2020 PROXY STATEMENT</td>
+    <TD><B>19</B></td></tr>
+</TABLE>
+<hr noshade="noshade" size="2">
+<p><a>Back to Contents
+</a>
+</p>
+<p>The following table shows the beneficial ownership of each stockholder known to us to beneficially own more than five percent of our common stock. Except for the GSOT, the below information (including footnotes) is based solely on the stockholders&rsquo; respective Schedule 13G or Schedule 13G/A filings with the SEC and reflect their respective determinations of their and/or their respective affiliates&rsquo; and subsidiaries&rsquo; ownership as of December 31, 2019. Some percentage ownership figures below have been rounded.</p>
+<div><TABLE><tr><TD><p>Stockholder<sup>(a)</sup></p>
+</td>
+<TD><p>Total Ownership</p>
+</td>
+<TD><p>Percent of Class</p>
+</td>
+</tr>
+<tr><TD><p>BlackRock, Inc.</p>
+<P>55 East 52<sup>nd</sup> Street, New York, NY 10055</p>
+</td>
+<TD><p>10,823,295</p>
+</td>
+<TD><p>12.2%</p>
+</td>
+</tr>
+<tr><TD><p>The Vanguard Group, Inc.</p>
+<P>100 Vanguard Blvd., Malvern, PA 19355</p>
+</td>
+<TD><p>8,287,215</p>
+</td>
+<TD><p>9.4%</p>
+</td>
+</tr>
+<tr><TD><p>KB Home Grantor Stock Ownership Trust<sup>(b)</sup></p>
+<P>Wells Fargo Retirement and Trust Executive Benefits, One West Fourth Street, </p>
+<P>Winston-Salem, NC 27101</p>
+</td>
+<TD><p>7,630,582</p>
+</td>
+<TD><p>7.8%</p>
+</td>
+</tr>
+</table>
+</div>
+<div><table><TR><TD COLSPAN="3"><DIV><DIV>(a)</div>
+<P>The stockholders&rsquo; respective voting and dispositive power with respect to their reported ownership is presented below, excluding the GSOT.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<DIV><TABLE><TR><TD ROWSPAN="6"><P>&nbsp;</p>
+</td>
+<TD><P>&nbsp;</p>
+</td>
+<TD><P>Blackrock, Inc.<sup>(i)</sup></p>
+</td>
+<TD><P>The Vanguard Group, Inc.<sup>(ii)</sup></p>
+</td>
+</tr>
+<TR><TD><P>Sole voting power</p>
+</td>
+<TD><P>10,592,465</p>
+</td>
+<TD><P>101,836</p>
+</td>
+</tr>
+<TR><TD><P>Shared voting power</p>
+</td>
+<TD><P>&mdash;</p>
+</td>
+<TD><P>14,034</p>
+</td>
+</tr>
+<TR><TD><P>Sole dispositive power</p>
+</td>
+<TD><P>10,823,295</p>
+</td>
+<TD><P>8,182,089</p>
+</td>
+</tr>
+<TR><TD><P>Shared dispositive power</p>
+</td>
+<TD><P>&mdash;</p>
+</td>
+<TD><P>105,126</p>
+</td>
+</tr>
+<TR><TD COLSPAN="3"><DIV><DIV>(i)</div>
+<P>Blackrock, Inc. is a parent holding company. A BlackRock, Inc. subsidiary, BlackRock Fund Advisors, beneficially owned five percent or more of Blackrock, Inc.&rsquo;s reported total beneficial ownership.</p>
+</div>
+<DIV><DIV>(ii)</div>
+<P>The Vanguard Group, Inc. is an investment adviser to various investment companies. Its subsidiaries, Vanguard Fiduciary Trust Company and Vanguard Investments Australia, Ltd., beneficially owned 91,092 and 24,778 shares, respectively.</p>
+</div>
+</td>
+</tr>
+</table>
+</body></html>`
+
+func TestIssuerNamedOwnershipHeading(t *testing.T) {
+	rows := ScreenRows(run(t, issuerNamedOwnershipHeadingHTML))
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{{"Dorene C. Dominguez", 13823}, {"Melissa Lora", 227825}, {"Jeffrey T. Mezger", 2851527}, {"BlackRock, Inc", 10823295}, {"The Vanguard Group, Inc", 8287215}} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares {
+			t.Errorf("holder lost under an issuer-named heading: %s %g; rows=%+v", want.name, want.shares, rows)
+		}
+	}
+	for _, r := range rows {
+		if strings.Contains(strings.ToLower(r.HolderName), "power") {
+			t.Errorf("voting-power line read as a holder: %+v", r)
+		}
+	}
+}
+
+// "OWNERSHIP OF FUND SHARES" (0001133228-25-006309) heads one record-holder
+// table per fund, more of them than one heading's window reads. The title names
+// the fund, not an issuer: it must not stand in for the scan of every ownership
+// table that reads them all.
+func TestFundSharesTitleDoesNotCapTheTableScan(t *testing.T) {
+	var b strings.Builder
+	b.WriteString("<html><body><p>OWNERSHIP OF FUND SHARES</p>\n")
+	for i := 1; i <= 16; i++ {
+		fmt.Fprintf(&b, "<p>Fund %d</p><table><tr><td>Name and Address of Beneficial Owner</td><td>Shares Owned</td><td>Percent of Class</td></tr>"+
+			"<tr><td>Holder Number %d Trust Company</td><td>%d,000</td><td>%d.5%%</td></tr>"+
+			"<tr><td>Other Holder %d Bank</td><td>%d,500</td><td>%d.25%%</td></tr></table>\n", i, i, i*7, 5+i, i, i*3, 5+i)
+	}
+	b.WriteString("</body></html>")
+	rows := ScreenRows(run(t, b.String()))
+	for i := 1; i <= 16; i++ {
+		if find(rows, fmt.Sprintf("Holder Number %d Trust Company", i), "") == nil {
+			t.Errorf("fund table %d lost; rows=%d", i, len(rows))
 		}
 	}
 }
