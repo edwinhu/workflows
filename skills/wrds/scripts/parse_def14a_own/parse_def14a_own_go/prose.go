@@ -30,7 +30,7 @@ var (
 	//
 	// The percent must come AFTER the count: "(50% owned) $15,923,305" — a
 	// partnership's impairment schedule — is not a holding and must not match.
-	reProseHolding = regexp.MustCompile(`(?i)(?:\bown(?:ed|s|ing)\b|\bheld\s+of\s+record\b)\s+((?:of\s+record\s+)?(?:and\s+)?(?:beneficially\s+)?(?:of\s+record\s+)?)(?:approximately\s+|about\s+|in\s+the\s+aggregate\s+|(?:a|an)\s+(?:combined\s+|aggregate\s+)?(?:total|aggregate)\s+of\s+)?([0-9][0-9,]{2,}(?:\.[0-9]+)?)\s*((?:Class|Series)\s+[A-Za-z0-9]{1,3}\b\s*)?((?:shares?|units?)\b)?([^.;]{0,140}?)([0-9]{1,3}(?:\.[0-9]+)?)\s*(?:%|\bpercent\b)`)
+	reProseHolding = regexp.MustCompile(`(?i)(?:\bown(?:ed|s|ing)\b|\bheld\s+of\s+record\b)\s+((?:of\s+record\s+)?(?:and\s+)?(?:beneficially\s+)?(?:of\s+record\s+)?)(?:approximately\s+|about\s+|in\s+the\s+aggregate\s+|(?:a|an)\s+(?:combined\s+|aggregate\s+)?(?:total|aggregate)\s+of\s+)?([0-9][0-9,]{2,}(?:\.[0-9]+)?)\s*((?:(?:Class|Series)\s+[A-Za-z0-9]{1,3}\b|common|preferred)\s*)?((?:shares?|units?)\b)?([^.;]{0,140}?)([0-9]{1,3}(?:\.[0-9]+)?)\s*(?:%|\bpercent\b)`)
 
 	// A segment of the comma-separated run before the verb that can only be a
 	// postal address: everything from the first one on is dropped from the name.
@@ -131,10 +131,20 @@ func ExtractProse(body string, base Row) []Row {
 				// The record-holder arm requires a named stock class and a percent explicitly
 				// equated to that share count, never an incidental number later in a sentence.
 				m := reRecordClass.FindStringSubmatch(gap)
-				if !strings.EqualFold(unit, "shares") || m == nil {
+				if !strings.EqualFold(unit, "shares") {
 					continue
 				}
-				class = m[1]
+				if m != nil {
+					class = m[1]
+				} else if (strings.EqualFold(strings.TrimSpace(class), "common") || strings.EqualFold(strings.TrimSpace(class), "preferred")) && reRecordBareEquality.MatchString(gap) {
+					if strings.EqualFold(strings.TrimSpace(class), "common") {
+						class = "Common Stock"
+					} else {
+						class = "Preferred Stock"
+					}
+				} else {
+					continue
+				}
 				if at := strings.LastIndex(strings.ToLower(before), "except that "); at >= 0 {
 					before = before[at+len("except that "):]
 				}
@@ -165,10 +175,21 @@ func ExtractProse(body string, base Row) []Row {
 		}
 	}
 	if len(out) == 0 {
-		return extractPassiveHoldings(body, base)
+		out = extractPassiveHoldings(body, base)
+	}
+	if len(out) == 0 {
+		out = extractBiographyHoldings(body, base)
+	}
+	if len(out) == 0 {
+		out = extractOwnershipExceptions(body, base)
+	}
+	if len(out) == 0 {
+		out = extractPassiveGroupCounts(body, base)
 	}
 	return out
 }
+
+var reRecordBareEquality = regexp.MustCompile(`(?i)^\s*,?\s*equal\s+to\s+(?:approximately\s+)?$`)
 
 var reRecordClass = regexp.MustCompile(`(?i)^\s*of\s+((?:common|preferred)\s+stock|class\s+[A-D]\s+common\s+stock)\s+equal\s+to\s+(?:approximately\s+)?$`)
 var reRecordNominee = regexp.MustCompile(`(?i),\s+a\s+nominee\b.*$`)
@@ -322,4 +343,120 @@ func proseGroupRow(name string) (bool, int) {
 func isProseNameStart(s string) bool {
 	r := []rune(s)[0]
 	return r >= 'A' && r <= 'Z'
+}
+
+var reBiographyCaption = regexp.MustCompile(`(?i)beneficial\s+ownership\s+of\s+shares`)
+var reBiographyExercisable = regexp.MustCompile(`(?i)exercisable\s+options`)
+var reBiographyName = regexp.MustCompile(`^(?:Mr\.|Mrs\.|Ms\.|Dr\.)\s+([A-Z][A-Za-z.'\-]*(?:,?\s+[A-Z][A-Za-z.'\-]*){1,6}?)\s+(?:Chairman|Chairwoman|President|Chief|Vice|Executive|Of Counsel|Retired|Partner|Director|Professor)\b`)
+var reBiographyOwned = regexp.MustCompile(`\bAge\s+[0-9]{2}\.\s+Shares\s+owned,\s+([0-9][0-9,]*)\b`)
+var reBiographyOption = regexp.MustCompile(`;\s*under\s+option,\s+([0-9][0-9,]*)\s*[.;]`)
+
+// The caption establishes ownership; an age and an explicit owned-share label
+// isolate the count from career dates and included restricted-stock amounts.
+func extractBiographyHoldings(body string, base Row) []Row {
+	var out []Row
+	remaining := 0
+	exercisable := false
+	for _, para := range reProseParaSep.Split(body, -1) {
+		flat := strings.Join(strings.Fields(para), " ")
+		remaining -= len(para)
+		if reBiographyCaption.MatchString(flat) {
+			remaining = 12000
+			exercisable = reBiographyExercisable.MatchString(flat)
+			continue
+		}
+		if strings.ToUpper(flat) == flat && (strings.Contains(flat, "COMPENSATION") || strings.Contains(flat, "GRANTS") || strings.Contains(flat, "AWARDS")) {
+			remaining = 0
+		}
+		if remaining <= 0 || len(flat) > 3000 {
+			continue
+		}
+		name := reBiographyName.FindStringSubmatch(flat)
+		owned := reBiographyOwned.FindStringSubmatch(flat)
+		if name == nil || owned == nil {
+			continue
+		}
+		shares, err := strconv.ParseFloat(strings.ReplaceAll(owned[1], ",", ""), 64)
+		if err != nil {
+			continue
+		}
+		if exercisable {
+			if option := reBiographyOption.FindStringSubmatch(flat); option != nil {
+				extra, err := strconv.ParseFloat(strings.ReplaceAll(option[1], ",", ""), 64)
+				if err != nil {
+					continue
+				}
+				shares += extra
+			}
+		}
+		r := base
+		r.HolderName = name[1]
+		r.Shares = &shares
+		r.Percent = nil
+		r.PctMarker = ""
+		r.TableKind, r.TableIndex, r.RowIndex = "management", 0, len(out)
+		r.Parser = "text_prose"
+		r.captionPerson = true
+		out = append(out, r)
+	}
+	return out
+}
+
+var reOwnershipException = regexp.MustCompile(`beneficially owned shares[^.;$]{0,80}?\bexcept for ((?:Board Member|Director|Trustee) [A-Z][A-Za-z'\-]+(?: [A-Z][A-Za-z'\-]+){0,4}), who owns ([0-9][0-9,]*(?:\.[0-9]+)?) shares of ([A-Z][A-Za-z'\-]+(?: [A-Z][A-Za-z'\-]+){0,8})\.`)
+
+// An exception to a negative ownership statement can disclose a count without
+// a percentage. The named fund is part of the holding, not part of the holder.
+func extractOwnershipExceptions(body string, base Row) []Row {
+	var out []Row
+	for _, para := range reProseParaSep.Split(body, -1) {
+		flat := strings.Join(strings.Fields(para), " ")
+		if len(flat) > 20000 {
+			continue
+		}
+		for _, m := range reOwnershipException.FindAllStringSubmatch(flat, -1) {
+			shares, err := strconv.ParseFloat(strings.ReplaceAll(m[2], ",", ""), 64)
+			if err != nil || shares <= 0 {
+				continue
+			}
+			r := base
+			r.HolderName, r.ShareClass = m[1], m[3]
+			r.Shares, r.Percent, r.PctMarker = &shares, nil, ""
+			r.TableKind, r.TableIndex, r.RowIndex = "management", 0, len(out)
+			r.Parser = "text_prose"
+			out = append(out, r)
+		}
+	}
+	return out
+}
+
+var rePassiveGroupCount = regexp.MustCompile(`([0-9][0-9,]*) shares of ((?:[A-Z][A-Za-z&.'\-]*\s+){1,8}common stock) were outstanding and entitled to vote, of which ([0-9][0-9,]*) shares were held by ([A-Z][^.;$]{0,90}?directors and executive officers)\.`)
+
+// Preserve the issuer's class identity in a multi-party proxy. The outstanding
+// count bounds the disclosed holding; it is never used to invent a percentage.
+func extractPassiveGroupCounts(body string, base Row) []Row {
+	var out []Row
+	for _, para := range reProseParaSep.Split(body, -1) {
+		flat := strings.Join(strings.Fields(para), " ")
+		if len(flat) > 20000 {
+			continue
+		}
+		for _, m := range rePassiveGroupCount.FindAllStringSubmatch(flat, -1) {
+			outstanding, err := strconv.ParseFloat(strings.ReplaceAll(m[1], ",", ""), 64)
+			if err != nil {
+				continue
+			}
+			shares, err := strconv.ParseFloat(strings.ReplaceAll(m[3], ",", ""), 64)
+			if err != nil || shares <= 0 || shares > outstanding {
+				continue
+			}
+			r := base
+			r.HolderName, r.ShareClass = m[4], m[2]
+			r.Shares, r.Percent, r.PctMarker = &shares, nil, ""
+			r.IsGroupRow, r.GroupN = true, 0
+			r.TableKind, r.TableIndex, r.RowIndex = "combined", 0, len(out)
+			r.Parser = "text_prose"
+			out = append(out, r)
+		}
+	}
+	return out
 }
