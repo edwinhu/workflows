@@ -163,20 +163,18 @@ test('a dead verifier flags its task — silence is not a pass', async () => {
   expect(result.tasksThatFlagged).toEqual(['T1'])
 })
 
-test('a dead lens synthesizes a critical finding, is counted as not-reported, and fails', async () => {
-  const lenses = [{ key: 'alpha', prompt: 'p' }, { key: 'beta', prompt: 'p' }]
-  const { result } = await run({ ...baseArgs, tasks: one, reviewLenses: lenses },
-    replies({ lens: { alpha: null } }))
-  expect(result.scoreTable.lensesRun).toBe(2)
-  expect(result.scoreTable.lensesReported).toBe(1)
-  expect(result.lensesThatFlagged).toContain('alpha')
-  expect(result.findings.some(f => f.lens === 'alpha' && f.severity === 'critical')).toBe(true)
+test('a dead lens fails closed: synthesized critical, lensesReported 0, and FAIL', async () => {
+  const { result } = await run({ ...baseArgs, tasks: one }, replies({ lens: null }))
+  expect(result.scoreTable.lensesRun).toBe(1)
+  expect(result.scoreTable.lensesReported).toBe(0)
+  expect(result.lensesThatFlagged).toEqual(['lens'])
+  expect(result.findings.some(f => f.severity === 'critical' && f.syntheticDeadLens)).toBe(true)
   expect(result.overallPass).toBe(false)
 })
 
 test('a lens that ran and found nothing is NOT treated like a dead one', async () => {
-  const { result } = await run({ ...baseArgs, tasks: one, reviewLenses: [{ key: 'alpha', prompt: 'p' }] },
-    replies({ lens: { alpha: { findings: [] } } }))
+  const { result } = await run({ ...baseArgs, tasks: one },
+    replies({ lens: { routes: [], findings: [], carried: [] } }))
   expect(result.scoreTable.lensesReported).toBe(1)
   expect(result.lensesThatFlagged).toEqual([])
   expect(result.overallPass).toBe(true)
@@ -219,26 +217,33 @@ test('overallPass===false implies at least one non-empty selector, across every 
     { args: { tasks: one }, reply: replies({ impl: { T1: null } }) },
     { args: { tasks: one }, reply: replies({ verify: { T1: null } }) },
     { args: { tasks: one, mechanicalChecks: [{ name: 'm', cmd: 'c' }] }, reply: replies({ mech: { m: { name: 'm', exitCode: 1, output: '' } } }) },
-    { args: { tasks: one, reviewLenses: [{ key: 'alpha', prompt: 'p' }] }, reply: replies({ lens: { alpha: null } }) },
+    { args: { tasks: one }, reply: replies({ lens: null }) },
     { args: { tasks: [task({ redCommand: 'pytest x' })] }, reply: replies({ red: { before: 0 } }) },
+    // A blocking GREEN finding whose owner is the PLAN: no task owns it, so planFindings is the
+    // channel that names it — and lensesThatFlagged must still be non-empty.
+    {
+      args: { tasks: one },
+      reply: replies({ lens: { findings: [{ title: 'the plan forbids the only path that can fix this', severity: 'critical', detail: 'd', ownerTask: 'plan' }] } }),
+    },
   ]
   for (const c of cases) {
     const { result } = await run({ ...baseArgs, ...c.args }, c.reply)
     expect(result.overallPass).toBe(false)
-    // Spread unguarded: the return carries all three selector keys on EVERY run.
-    const selectors = [...result.tasksThatFlagged, ...result.mechanicalThatFailed, ...result.lensesThatFlagged]
+    // Spread unguarded: the return carries all four selector keys on EVERY run.
+    const selectors = [...result.tasksThatFlagged, ...result.mechanicalThatFailed, ...result.lensesThatFlagged, ...result.planFindings]
     expect(selectors.length).toBeGreaterThan(0)
   }
 })
 
-test('a fully clean run PASSES with all three selectors empty', async () => {
+test('a fully clean run PASSES with every selector empty', async () => {
   const { result } = await run(
-    { ...baseArgs, tasks: one, mechanicalChecks: [{ name: 'm', cmd: 'c' }], reviewLenses: [{ key: 'alpha', prompt: 'p' }] },
+    { ...baseArgs, tasks: one, mechanicalChecks: [{ name: 'm', cmd: 'c' }] },
     replies())
   expect(result.overallPass).toBe(true)
   expect(result.tasksThatFlagged).toEqual([])
   expect(result.mechanicalThatFailed).toEqual([])
   expect(result.lensesThatFlagged).toEqual([])
+  expect(result.planFindings).toEqual([])
 })
 
 // ---------------------------------------------------------------- readOnly
@@ -292,7 +297,7 @@ test('a carried red-gated task needs priorResults.red — dropping it re-reads a
     ...baseArgs, tasks: two, onlyTasks: ['T1'],
     priorResults: {
       implemented: [{ id: 'T2', done: true }], verified: [{ id: 'T2', pass: true }],
-      red: [{ id: 'T2', verdict: 'red-green' }],
+      red: [{ id: 'T2', command: 'pytest b', verdict: 'red-green' }],
     },
   }, replies({ red: { before: 1, after: 0 } }))
   // This is the documented hazard: the two runs must differ, and only the second may pass.
@@ -326,7 +331,7 @@ test('a red-gated task costs 2 more against the ceiling than a plain one', async
 // ---------------------------------------------------------------- authority plumbing
 
 test('every dispatched agent is told the plan path and the spec hash', async () => {
-  const { prompts } = await run({ ...baseArgs, tasks: one, reviewLenses: [{ key: 'alpha', prompt: 'p' }] }, replies())
+  const { prompts } = await run({ ...baseArgs, tasks: one }, replies())
   expect(prompts.size).toBeGreaterThan(0)
   for (const [, p] of prompts) {
     expect(p).toContain(baseArgs.planPath)
@@ -342,74 +347,204 @@ test('authorityExtra reaches every dispatched agent, and is absent when not supp
   for (const [, p] of without.prompts) expect(p).not.toContain(marker)
 })
 
-// ---------------------------------------------------------------- priorFindings (found outside this run)
+// ---------------------------------------------------------------- the carried finding set
+// Two doors into ONE pool. `carriedFindings` is what the previous round left open and the
+// redispatcher hands back; `priorFindings` is the same shape arriving from outside the run. The lens
+// rules on both identically, by id, with evidence — and silence leaves a finding OPEN.
 
-test('priorFindings reach findings, the selector and the score table', async () => {
-  // priorFindings are about work that ALREADY EXISTS, discovered outside this run, and they were
-  // charged against the fan-out cap at arg time. They may be refuted or kept, but they may not vanish.
-  const priorTitle = 'a defect found outside this run'
+const carriedMajor = (over: any = {}) => ({ id: 'C1', title: 'a defect from last round', severity: 'major', detail: 'd', ...over })
+const rules = (id: string, status: string, evidence = 'ran it; it passes') => ({
+  routes: [], findings: [], dispositions: [], carried: [{ id, status, evidence }],
+})
+
+test('a carried finding the lens rules OPEN fails the gate and names the lens selector', async () => {
   const { result } = await run(
-    {
-      ...baseArgs, tasks: one,
-      priorFindings: [{ title: priorTitle, severity: 'major', detail: 'd', lens: 'prior-x' }],
-    },
-    replies({ refute: { refuted: false, reason: 'stands' } }))
-  expect(result.findings.some((f: any) => f.title === priorTitle)).toBe(true)
-  // It re-runs no task — it is attributed to its own lens key, which is exactly the channel a
-  // surviving finding uses everywhere else in this file.
-  expect(result.lensesThatFlagged).toContain('prior-x')
-  expect(result.scoreTable.priorFindingsSubmitted).toBe(1)
-  expect(result.scoreTable.priorFindingsSurviving).toBe(1)
+    { ...baseArgs, tasks: one, carriedFindings: [carriedMajor()] },
+    replies({ lens: rules('C1', 'open', 'the command still fails') }))
+  expect(result.overallPass).toBe(false)
+  expect(result.findings.some((f: any) => f.id === 'C1')).toBe(true)
+  expect(result.lensesThatFlagged).toEqual(['lens'])
+  expect(result.scoreTable.carriedSubmitted).toBe(1)
+  expect(result.scoreTable.carriedOpen).toBe(1)
+})
+
+test('a carried finding the lens rules CLOSED with evidence leaves the gate clean', async () => {
+  const { result } = await run(
+    { ...baseArgs, tasks: one, carriedFindings: [carriedMajor()] },
+    replies({ lens: rules('C1', 'closed', 'bun test exits 0 — pasted output') }))
+  expect(result.overallPass).toBe(true)
+  expect(result.scoreTable.carriedOpen).toBe(0)
+  // Closed is REPORTED, not deleted: the next round's carry is a decision, not a guess.
+  expect(result.carried.map((f: any) => [f.id, f.status])).toEqual([['C1', 'closed']])
+  expect(result.findings).toEqual([])
+})
+
+test('a carried finding the lens never rules on stays OPEN — silence is not a closure', async () => {
+  const { result } = await run(
+    { ...baseArgs, tasks: one, carriedFindings: [carriedMajor()] },
+    replies({ lens: { routes: [], findings: [], carried: [] } }))
+  expect(result.overallPass).toBe(false)
+  expect(result.carried[0].status).toBe('open')
+  expect(result.carried[0].evidence).toMatch(/no ruling/i)
+})
+
+test('CLOSED with no evidence is not a ruling — the finding stays open', async () => {
+  for (const evidence of ['', '   ', undefined as any]) {
+    const { result } = await run(
+      { ...baseArgs, tasks: one, carriedFindings: [carriedMajor()] },
+      replies({ lens: { routes: [], findings: [], carried: [{ id: 'C1', status: 'closed', evidence }] } }))
+    expect(result.overallPass).toBe(false)
+    expect(result.carried[0].status).toBe('open')
+    expect(result.carried[0].evidence).toMatch(/no evidence/i)
+  }
+})
+
+test('a dead lens leaves every carried finding open — nothing ruled on them', async () => {
+  const { result } = await run(
+    { ...baseArgs, tasks: one, carriedFindings: [carriedMajor()] },
+    replies({ lens: null }))
+  expect(result.overallPass).toBe(false)
+  expect(result.carried[0].status).toBe('open')
+  expect(result.carried[0].evidence).toMatch(/never reported/i)
+})
+
+test('the FIRST ruling per id wins — a lens cannot close a finding by repeating itself', async () => {
+  const { result } = await run(
+    { ...baseArgs, tasks: one, carriedFindings: [carriedMajor()] },
+    replies({ lens: { routes: [], findings: [], carried: [
+      { id: 'C1', status: 'open', evidence: 'still broken' },
+      { id: 'C1', status: 'closed', evidence: 'on reflection, fine' },
+    ] } }))
+  expect(result.carried[0].status).toBe('open')
   expect(result.overallPass).toBe(false)
 })
 
-// ---------------------------------------------------------------- freezeFindingSet (the fix loop's exit condition)
-// Without the flag the exit condition is "this round's lenses raise nothing" — a draw from a
-// generator whose rate does not fall as fixes land, so termination is a coin flip. With it, the
-// question is the finite one: is the carried blocking set closed? Lens findings still RUN and are
-// still reported, as residue; they do not gate.
-
-const lensCritical = { key: 'alpha', prompt: 'p' }
-const kept = { refuted: false, reason: 'stands' }
-const oneCritical = { alpha: { findings: [{ title: 'fresh', severity: 'critical', detail: 'd' }] } }
-
-test('under freezeFindingSet a surviving lens critical is residue and does NOT fail the gate', async () => {
+test('priorFindings merge into the SAME carried pool and are ruled the same way', async () => {
   const { result } = await run(
-    { ...baseArgs, tasks: one, reviewLenses: [lensCritical], freezeFindingSet: true },
-    replies({ lens: oneCritical, refute: kept }))
+    {
+      ...baseArgs, tasks: one,
+      carriedFindings: [carriedMajor()],
+      priorFindings: [{ title: 'found outside this run', severity: 'major', detail: 'd' }],
+    },
+    replies({ lens: rules('C1', 'closed', 'fixed and re-run') }))
+  expect(result.scoreTable.carriedSubmitted).toBe(2)
+  // The prior finding got no ruling, so it is the one still open.
+  expect(result.scoreTable.carriedOpen).toBe(1)
+  expect(result.carried.map((f: any) => f.source)).toEqual(['carried', 'prior'])
+  expect(result.overallPass).toBe(false)
+})
+
+test('a prior finding with no id is minted one, so the lens has something to rule by', async () => {
+  const { result } = await run(
+    { ...baseArgs, tasks: one, priorFindings: [{ title: 't', severity: 'major', detail: 'd' }] },
+    replies())
+  expect(result.carried[0].id).toBe('prior#0')
+  // And closing that minted id works exactly like closing a supplied one.
+  const closed = await run(
+    { ...baseArgs, tasks: one, priorFindings: [{ title: 't', severity: 'major', detail: 'd' }] },
+    replies({ lens: rules('prior#0', 'closed') }))
+  expect(closed.result.overallPass).toBe(true)
+})
+
+test('a MINOR carried finding left open does not fail the gate', async () => {
+  const { result } = await run(
+    { ...baseArgs, tasks: one, carriedFindings: [carriedMajor({ severity: 'minor' })] },
+    replies({ lens: rules('C1', 'open', 'still there') }))
+  expect(result.overallPass).toBe(true)
+  expect(result.scoreTable.carriedOpen).toBe(1)
+  expect(result.lensesThatFlagged).toEqual([])
+})
+
+test('a malformed carried claim throws at arg time and dispatches nothing', async () => {
+  const bad = [
+    { carriedFindings: 'nope' },
+    { carriedFindings: [{ title: 't', severity: 'major' }] },              // no detail
+    { carriedFindings: [{ title: 't', severity: 'blocker', detail: 'd' }] }, // bad severity
+    { carriedFindings: [{ id: 7, title: 't', severity: 'major', detail: 'd' }] },
+    { priorFindings: [{ severity: 'major', detail: 'd' }] },               // no title
+  ]
+  for (const extra of bad) {
+    const r = await runCatching({ ...baseArgs, tasks: one, ...(extra as any) }, replies())
+    expect(r.threw).toBe(true)
+    expect(r.dispatched).toEqual([])
+  }
+})
+
+test('two carried findings sharing an id throw — one ruling cannot settle two findings', async () => {
+  const r = await runCatching(
+    { ...baseArgs, tasks: one, carriedFindings: [carriedMajor(), carriedMajor({ title: 'another' })] },
+    replies())
+  expect(r.threw).toBe(true)
+  expect(String(r.error)).toContain('more than once')
+  expect(r.dispatched).toEqual([])
+})
+
+test('no carried findings at all reports 0/0 and changes nothing', async () => {
+  const { result } = await run({ ...baseArgs, tasks: one }, replies())
+  expect(result.scoreTable.carriedSubmitted).toBe(0)
+  expect(result.scoreTable.carriedOpen).toBe(0)
+  expect(result.carried).toEqual([])
+  expect(result.overallPass).toBe(true)
+})
+
+// ---------------------------------------------------------------- freezeFindingSet (the fix loop's exit condition)
+// Without the flag the exit condition is "this round's lens raises nothing" — a draw from a generator
+// whose rate does not fall as fixes land, so termination is a coin flip. With it, the question is the
+// finite one: is the carried blocking set closed? Fresh lens findings still RUN and are still
+// reported, as residue; they do not gate.
+
+const freshCritical = {
+  routes: [], findings: [{ title: 'fresh', severity: 'critical', detail: 'd', ownerTask: 'T1' }], carried: [],
+}
+
+test('under freezeFindingSet a fresh blocking lens finding is residue and does NOT fail the gate', async () => {
+  const { result } = await run(
+    { ...baseArgs, tasks: one, freezeFindingSet: true },
+    replies({ lens: freshCritical }))
   expect(result.residue.map((f: any) => f.title)).toEqual(['fresh'])
   expect(result.scoreTable.residue).toBe(1)
   // Still reported — frozen means "does not gate", not "not looked for".
   expect(result.findings.some((f: any) => f.title === 'fresh')).toBe(true)
   expect(result.scoreTable.survivingBlocking).toBe(0)
   expect(result.overallPass).toBe(true)
+  // And it routes nothing: a residue finding must not drag its ownerTask into the re-run, or into
+  // planFindings — a finding the freeze excluded from the verdict cannot select the next round.
+  expect(result.tasksThatFlagged).toEqual([])
+  expect(result.planFindings).toEqual([])
 })
 
-test('under freezeFindingSet a surviving priorFinding still fails the gate and names its lens', async () => {
+test('the freeze narrows which FINDINGS gate — it never stops a route from routing', async () => {
+  // A route diagnoses a failure the checks already found, so the freeze has nothing to say about it:
+  // the mechanical check is failing whether or not this round's fresh findings gate.
   const { result } = await run(
-    {
-      ...baseArgs, tasks: one, reviewLenses: [lensCritical], freezeFindingSet: true,
-      priorFindings: [{ title: 'carried', severity: 'major', detail: 'd', lens: 'prior-x' }],
-    },
-    replies({ lens: oneCritical, refute: kept }))
+    { ...baseArgs, tasks: one, freezeFindingSet: true, mechanicalChecks: [{ name: 'suite', cmd: 'bun test' }] },
+    replies({
+      mech: { suite: { name: 'suite', exitCode: 7, output: 'boom' } },
+      lens: { routes: [{ failure: 'suite exited 7', ownerTask: 'T1', cause: 'c', fix: 'f' }], findings: [], carried: [] },
+    }))
+  expect(result.overallPass).toBe(false)
+  expect(result.tasksThatFlagged).toEqual(['T1'])
+  expect(result.routes).toHaveLength(1)
+})
+
+test('under freezeFindingSet an OPEN carried finding still fails the gate', async () => {
+  const { result } = await run(
+    { ...baseArgs, tasks: one, freezeFindingSet: true, carriedFindings: [carriedMajor()] },
+    replies({ lens: { ...freshCritical, carried: [{ id: 'C1', status: 'open', evidence: 'still broken' }] } }))
   expect(result.overallPass).toBe(false)
   expect(result.scoreTable.survivingBlocking).toBe(1)
   // L3: a FAIL always names something to re-run.
-  expect(result.lensesThatFlagged.length).toBeGreaterThan(0)
-  expect(result.lensesThatFlagged).toContain('prior-x')
-  // The fresh lens critical is beside it, as residue, not as a second gate failure.
+  expect(result.lensesThatFlagged).toEqual(['lens'])
+  // The fresh critical is beside it, as residue, not as a second gate failure.
   expect(result.residue.map((f: any) => f.title)).toEqual(['fresh'])
 })
 
-test('a REFUTED priorFinding under freeze leaves the gate clean — the carried set is closed', async () => {
+test('a CLOSED carried finding under freeze leaves the gate clean — the carried set is closed', async () => {
   const { result } = await run(
-    {
-      ...baseArgs, tasks: one, reviewLenses: [lensCritical], freezeFindingSet: true,
-      priorFindings: [{ title: 'carried', severity: 'major', detail: 'd', lens: 'prior-x' }],
-    },
-    replies({ lens: oneCritical, refute: { refuted: true, reason: 'fixed' } }))
+    { ...baseArgs, tasks: one, freezeFindingSet: true, carriedFindings: [carriedMajor()] },
+    replies({ lens: { ...freshCritical, carried: [{ id: 'C1', status: 'closed', evidence: 'fixed; test passes' }] } }))
   expect(result.overallPass).toBe(true)
-  expect(result.scoreTable.priorFindingsSurviving).toBe(0)
+  expect(result.scoreTable.carriedOpen).toBe(0)
 })
 
 test('freezeFindingSet gates nothing else: task and mechanical failures still fail', async () => {
@@ -422,10 +557,8 @@ test('freezeFindingSet gates nothing else: task and mechanical failures still fa
   expect(result.mechanicalThatFailed.map((m: any) => m.name)).toEqual(['lint'])
 })
 
-test('absent freezeFindingSet changes nothing: no residue key, and a lens critical still fails', async () => {
-  const { result } = await run(
-    { ...baseArgs, tasks: one, reviewLenses: [lensCritical] },
-    replies({ lens: oneCritical, refute: kept }))
+test('absent freezeFindingSet changes nothing: no residue key, and a fresh blocking finding still fails', async () => {
+  const { result } = await run({ ...baseArgs, tasks: one }, replies({ lens: freshCritical }))
   expect('residue' in result).toBe(false)
   expect('residue' in result.scoreTable).toBe(false)
   expect(result.scoreTable.survivingBlocking).toBe(1)
@@ -435,24 +568,24 @@ test('absent freezeFindingSet changes nothing: no residue key, and a lens critic
 test('a non-true freezeFindingSet is not a freeze — only the boolean true arms it', async () => {
   for (const v of ['true', 1, {}]) {
     const { result } = await run(
-      { ...baseArgs, tasks: one, reviewLenses: [lensCritical], freezeFindingSet: v as any },
-      replies({ lens: oneCritical, refute: kept }))
+      { ...baseArgs, tasks: one, freezeFindingSet: v as any },
+      replies({ lens: freshCritical }))
     expect(result.overallPass).toBe(false)
     expect('residue' in result).toBe(false)
   }
 })
 
-test('the fail-closed rules still hold under the freeze: a dead refuter keeps its carried finding', async () => {
-  // A refuter that never reported tested nothing, so the carried finding STANDS — the freeze narrows
-  // which findings gate, never how a finding that gates is judged.
+test('the freeze does NOT defer a dead lens — a review that never ran is not a fresh finding', async () => {
+  // gate-laws L4. Under the freeze only carried findings gate, so a dead lens with an EMPTY carried
+  // set would otherwise pass: nothing ruled on nothing, and the synthesized critical would sit in
+  // residue. The absence of the adjudication the freeze depends on has to fail closed.
   const { result } = await run(
-    {
-      ...baseArgs, readOnly: true, tasks: [], freezeFindingSet: true,
-      priorFindings: [{ title: 'carried', severity: 'critical', detail: 'd', lens: 'prior-x' }],
-    },
-    replies({ refute: null }))
+    { ...baseArgs, readOnly: true, tasks: [], freezeFindingSet: true },
+    replies({ lens: null }))
   expect(result.overallPass).toBe(false)
-  expect(result.lensesThatFlagged).toContain('prior-x')
+  expect(result.lensesThatFlagged).toEqual(['lens'])
+  expect(result.residue).toEqual([])
+  expect(result.scoreTable.survivingBlocking).toBe(1)
   // readOnly still reports the task dimensions as n/a, not as clean zeroes.
   expect(result.scoreTable.implementedDone).toBe(null)
   expect(result.tasksThatFlagged).toEqual([])
@@ -724,7 +857,7 @@ test('overallPass is unchanged by any score value — the whole gate arithmetic 
   const perfect = { itemsChecked: 40, missing: 0, collapsed: 0, redundant: 0, mismatches: 0 }
   const awful = { itemsChecked: 40, missing: 99, collapsed: 99, redundant: 99, mismatches: 99 }
   const go = (counts: any) => run(
-    { ...baseArgs, tasks: one, mechanicalChecks: [{ name: 'm', cmd: 'c' }], reviewLenses: [{ key: 'alpha', prompt: 'p' }],
+    { ...baseArgs, tasks: one, mechanicalChecks: [{ name: 'm', cmd: 'c' }],
       scoredChecks: [scoredCheck()] },
     scoredReplies({ scored: { L1: counts, L2: counts } }))
   const good = await go(perfect)
@@ -885,7 +1018,7 @@ test('AUTHORITY states the surrounding prose is explanatory and not authoritativ
 })
 
 test('nothing dispatched still mentions planHash — the field is gone, not aliased', async () => {
-  const { prompts } = await run({ ...baseArgs, tasks: one, reviewLenses: [{ key: 'alpha', prompt: 'p' }] }, replies())
+  const { prompts } = await run({ ...baseArgs, tasks: one }, replies())
   expect(prompts.size).toBeGreaterThan(0)
   for (const [, p] of prompts) expect(p).not.toContain('planHash')
 })
@@ -945,112 +1078,97 @@ test('the red and mechanical probes stay pinned at low — no dial reaches them'
   expect(opts.get('mechanical:tests').effort).toBe('low')
 })
 
-test('a lens carries no effort key — there is deliberately no lensEffort dial', async () => {
-  const opts = await dispatchOpts({ ...baseArgs, tasks: one, reviewLenses: [{ key: 'alpha', prompt: 'p', refs: [] }] })
-  expect('effort' in opts.get('lens:alpha')).toBe(false)
+// ---------------------------------------------------------------- the lens's model and effort
+// The lens has DEFAULTS, not inherits: the replay that justified replacing the lens array with one
+// lens ran on sonnet at high effort, so those are the settings the measurement covers. Pass null to
+// omit the key and inherit the session's instead.
+
+test('the lens defaults to sonnet at high effort — the settings the one-lens replay measured', async () => {
+  const opts = await dispatchOpts({ ...baseArgs, tasks: one })
+  expect(opts.get('lens').model).toBe('sonnet')
+  expect(opts.get('lens').effort).toBe('high')
 })
 
-// ---------------------------------------------------------------- per-lens model and effort
-// A lens may override lensModel so one run can mix providers — cheap lenses on a small model,
-// expensive ones on a large one. Effort resolves the same way but has no global to fall back to.
-const lens = (over: any = {}) => ({ key: 'alpha', prompt: 'p', refs: [], ...over })
-
-test("a lens's own model wins over lensModel", async () => {
-  const opts = await dispatchOpts({
-    ...baseArgs, tasks: one, lensModel: 'sonnet', reviewLenses: [lens({ model: 'haiku' })],
-  })
-  expect(opts.get('lens:alpha').model).toBe('haiku')
+test("the lens's own model and effort win over the defaults", async () => {
+  const opts = await dispatchOpts({ ...baseArgs, tasks: one, lens: { prompt: 'p', refs: [], model: 'haiku', effort: 'xhigh' } })
+  expect(opts.get('lens').model).toBe('haiku')
+  expect(opts.get('lens').effort).toBe('xhigh')
 })
 
-test('a lens with no model of its own falls back to lensModel', async () => {
-  const opts = await dispatchOpts({
-    ...baseArgs, tasks: one, lensModel: 'sonnet', reviewLenses: [lens()],
-  })
-  expect(opts.get('lens:alpha').model).toBe('sonnet')
+test('model: null / effort: null omit the key entirely — the lens inherits the session default', async () => {
+  const opts = await dispatchOpts({ ...baseArgs, tasks: one, lens: { prompt: 'p', model: null, effort: null } })
+  // `in`, not `=== undefined`: an explicit `model: undefined` is still a key the dispatcher reads.
+  expect('model' in opts.get('lens')).toBe(false)
+  expect('effort' in opts.get('lens')).toBe(false)
 })
 
-test('with neither a lens model nor lensModel, the model key is omitted and the leg inherits', async () => {
-  const opts = await dispatchOpts({ ...baseArgs, tasks: one, reviewLenses: [lens()] })
-  expect('model' in opts.get('lens:alpha')).toBe(false)
+test('lensModel is the fallback only when the lens itself names model: null', async () => {
+  const opts = await dispatchOpts({ ...baseArgs, tasks: one, lensModel: 'opus', lens: { prompt: 'p', model: null } })
+  expect(opts.get('lens').model).toBe('opus')
+  // With no `model` key at all, the lens's own default wins over lensModel — a documented default is
+  // not something a global silently overrides.
+  const dflt = await dispatchOpts({ ...baseArgs, tasks: one, lensModel: 'opus', lens: { prompt: 'p' } })
+  expect(dflt.get('lens').model).toBe('sonnet')
 })
 
-test("a lens's own effort reaches the leg", async () => {
-  const opts = await dispatchOpts({ ...baseArgs, tasks: one, reviewLenses: [lens({ effort: 'xhigh' })] })
-  expect(opts.get('lens:alpha').effort).toBe('xhigh')
-})
-
-test('a lens with no effort of its own omits the key — there is no global lensEffort to fall back to', async () => {
-  const opts = await dispatchOpts({
-    ...baseArgs, tasks: one, lensModel: 'sonnet', reviewLenses: [lens()],
-  })
-  expect('effort' in opts.get('lens:alpha')).toBe(false)
-})
-
-test('per-lens model and effort resolve independently — one lens may carry either alone', async () => {
-  const opts = await dispatchOpts({
-    ...baseArgs, tasks: one, lensModel: 'sonnet',
-    reviewLenses: [lens({ key: 'cheap', model: 'haiku' }), lens({ key: 'deep', effort: 'xhigh' })],
-  })
-  expect(opts.get('lens:cheap').model).toBe('haiku')
-  expect('effort' in opts.get('lens:cheap')).toBe(false)
-  expect(opts.get('lens:deep').model).toBe('sonnet')
-  expect(opts.get('lens:deep').effort).toBe('xhigh')
+test("the lens's agentType reaches the leg, and readOnly forces Explore when it names none", async () => {
+  const explicit = await dispatchOpts({ ...baseArgs, tasks: one, lens: { prompt: 'p', agentType: 'ds-reviewer' } })
+  expect(explicit.get('lens').agentType).toBe('ds-reviewer')
+  const ro = await dispatchOpts({ ...baseArgs, readOnly: true, tasks: [], lens: { prompt: 'p' } })
+  expect(ro.get('lens').agentType).toBe('Explore')
+  // Outside readOnly, no agentType key at all — byte-identical to inheriting the dispatcher default.
+  const plain = await dispatchOpts({ ...baseArgs, tasks: one, lens: { prompt: 'p' } })
+  expect('agentType' in plain.get('lens')).toBe(false)
 })
 
 // ---------------------------------------------------------------- positive dispositions (the leak)
-// A refuter cannot refute a TRUE statement. So a lens that files "I checked X and it holds" as a
-// FINDING gets refuted:false back, and the non-defect reaches survivingBlocking and fails the run.
-// Measured 2026-09-27 over 3,137 refuted findings: 2.8% were positive dispositions and ~47 survived
-// into gates. The fix is a second output channel, not a smarter refuter — and the backstops ROUTE a
+// A gate cannot block on a TRUE statement. So a lens that files "I checked X and it holds" as a
+// FINDING fails the run for nothing. Measured 2026-09-27 over 3,137 findings: 2.8% were positive
+// dispositions and ~47 reached gates. The fix is a second output channel — and the backstops ROUTE a
 // misfiled entry into that channel, they never delete it.
 
 // readOnly so the task dimensions are n/a and the verdict turns on the findings alone.
-const lensOnly = (over: any = {}) => ({
-  ...baseArgs, readOnly: true, tasks: [], reviewLenses: [{ key: 'alpha', prompt: 'p' }], ...over,
-})
-// Refuters return refuted:false, which is what they DO return for a true statement. A disposition
-// that reached a refuter under this reply would gate the run, so PASS is the whole assertion.
-const upheld = (lensResult: any) => replies({ lens: { alpha: lensResult }, refute: { refuted: false, reason: 'the claim is true' } })
+const lensOnly = (over: any = {}) => ({ ...baseArgs, readOnly: true, tasks: [], ...over })
+const reports = (lensResult: any) => replies({ lens: { routes: [], findings: [], carried: [], ...lensResult } })
 
-test('a lens `dispositions` entry is reported, never refuted, and never gates', async () => {
-  const { result, dispatched } = await run(
+test('a lens `dispositions` entry is reported and never gates', async () => {
+  const { result } = await run(
     lensOnly(),
-    upheld({ findings: [], dispositions: [{ title: 'constraint A2 holds', detail: 'evidence' }] }))
+    reports({ dispositions: [{ title: 'constraint A2 holds', detail: 'evidence' }] }))
   expect(result.overallPass).toBe(true)
   expect(result.dispositions).toHaveLength(1)
-  expect(result.dispositions[0]).toMatchObject({ title: 'constraint A2 holds', lens: 'alpha' })
+  expect(result.dispositions[0]).toMatchObject({ title: 'constraint A2 holds', lens: 'lens' })
   expect(result.scoreTable.dispositions).toBe(1)
-  // No refuter was spent on it, and it is not in the findings pool at all.
-  expect(dispatched.filter(l => l.startsWith('refute:'))).toEqual([])
+  // It is not in the findings pool at all.
   expect(result.scoreTable.lensFindings).toBe(0)
   expect(result.findings).toEqual([])
 })
 
 test('defect:false on a finding routes it to dispositions instead of gating — the structural backstop', async () => {
-  const { result, dispatched } = await run(
+  const { result } = await run(
     lensOnly(),
-    upheld({ findings: [{ title: 'looks like a defect claim', severity: 'critical', detail: 'd', defect: false }] }))
+    reports({ findings: [{ title: 'looks like a defect claim', severity: 'critical', detail: 'd', ownerTask: 'plan', defect: false }] }))
   expect(result.overallPass).toBe(true)
   expect(result.scoreTable.survivingBlocking).toBe(0)
-  expect(dispatched.filter(l => l.startsWith('refute:'))).toEqual([])
   // Routed, not deleted: the claimed severity and the reason are both preserved for the human.
   expect(result.dispositions).toHaveLength(1)
   expect(result.dispositions[0].routedFromFinding).toBe(true)
   expect(result.dispositions[0].claimedSeverity).toBe('critical')
   expect(result.dispositions[0].routedBecause).toMatch(/defect:false/)
   expect(result.scoreTable.dispositionsRoutedFromFindings).toBe(1)
+  // A routed entry reaches NO selector: it never becomes a planFindings item either.
+  expect(result.planFindings).toEqual([])
 })
 
 test('defect:true, and an omitted defect key, both leave a finding in the gate', async () => {
   for (const f of [
-    { title: 'a real defect', severity: 'major', detail: 'd', defect: true },
-    { title: 'a real defect', severity: 'major', detail: 'd' },
+    { title: 'a real defect', severity: 'major', detail: 'd', ownerTask: 'plan', defect: true },
+    { title: 'a real defect', severity: 'major', detail: 'd', ownerTask: 'plan' },
   ]) {
-    const { result, dispatched } = await run(lensOnly(), upheld({ findings: [f] }))
+    const { result } = await run(lensOnly(), reports({ findings: [f] }))
     expect(result.overallPass).toBe(false)
     expect(result.scoreTable.survivingBlocking).toBe(1)
     expect(result.dispositions).toEqual([])
-    expect(dispatched).toContain('refute:alpha')
   }
 })
 
@@ -1087,13 +1205,13 @@ const DIRECTION_A = [
 
 test('the text backstop routes all five direction-A examples out of the gate, with no defect flag set', async () => {
   for (const ex of DIRECTION_A) {
-    const { result, dispatched } = await run(
+    const { result } = await run(
       lensOnly(),
-      upheld({ findings: [{ title: ex.title, severity: ex.severity, detail: ex.detail }] }))
+      reports({ findings: [{ title: ex.title, severity: ex.severity, detail: ex.detail, ownerTask: 'plan' }] }))
     expect(result.dispositions, `${ex.id} should route`).toHaveLength(1)
     expect(result.dispositions[0].routedFromFinding).toBe(true)
     expect(result.findings, `${ex.id} must not reach the gate`).toEqual([])
-    expect(dispatched.filter(l => l.startsWith('refute:')), `${ex.id} must not spend a refuter`).toEqual([])
+    expect(result.planFindings, `${ex.id} must reach no selector`).toEqual([])
   }
 })
 
@@ -1118,7 +1236,7 @@ test('real defect titles are NOT routed — including ones containing no/not/mis
   for (const title of REAL_DEFECT_TITLES) {
     const { result } = await run(
       lensOnly(),
-      upheld({ findings: [{ title, severity: 'major', detail: 'src/x.py:10 — the measured output was wrong.' }] }))
+      reports({ findings: [{ title, severity: 'major', detail: 'src/x.py:10 — the measured output was wrong.', ownerTask: 'plan' }] }))
     expect(result.dispositions, `must not route: ${title}`).toEqual([])
     expect(result.findings, `must still gate: ${title}`).toHaveLength(1)
     expect(result.overallPass).toBe(false)
@@ -1130,7 +1248,7 @@ test('a detail that merely mentions "not a defect" mid-body still gates — the 
     'Note that the adjacent helper is not a defect; only this line is.'
   const { result } = await run(
     lensOnly(),
-    upheld({ findings: [{ title: 'wrong denominator in the coverage rate', severity: 'major', detail }] }))
+    reports({ findings: [{ title: 'wrong denominator in the coverage rate', severity: 'major', detail, ownerTask: 'plan' }] }))
   expect(result.dispositions).toEqual([])
   expect(result.overallPass).toBe(false)
 })
@@ -1145,8 +1263,8 @@ test('dispositions are absent-as-empty, and the gate log stays silent, when no l
 test('the gate log names the routed count, so a mis-filing lens is visible behind a PASS', async () => {
   const { logs } = await run(
     lensOnly(),
-    upheld({
-      findings: [{ title: 'E1/E4 determinism in the reviewed scripts — satisfied', severity: 'major', detail: 'd' }],
+    reports({
+      findings: [{ title: 'E1/E4 determinism in the reviewed scripts — satisfied', severity: 'major', detail: 'd', ownerTask: 'plan' }],
       dispositions: [{ title: 'A2 holds', detail: 'e' }],
     }))
   const gate = logs.find(l => l.startsWith('gate:')) || ''
@@ -1155,160 +1273,793 @@ test('the gate log names the routed count, so a mis-filing lens is visible behin
 })
 
 test('a dead lens still reports dispositions as [] — an empty list is honest, not clean', async () => {
-  const { result } = await run(lensOnly(), replies({ lens: { alpha: null } }))
+  const { result } = await run(lensOnly(), replies({ lens: null }))
   expect(result.dispositions).toEqual([])
   // The dimension failed on the synthesized critical, not on a missing disposition list.
   expect(result.overallPass).toBe(false)
   expect(result.scoreTable.lensesReported).toBe(0)
 })
 
-// ---------------------------------------------------------------- refuter ordering by Jev (B)
-// The cap truncates; the order decides which findings a refuter actually tests. Severity still
-// dominates — a ranked minor never displaces a critical — and Jev settles nothing: a finding past the
-// cap keeps its fail-closed treatment whatever its probability.
+// ================================================================ THE ONE-LENS CONTRACT
+// One lens, dispatched AFTER the per-task verifiers and the mechanical checks, over a digest of what
+// they reported. Measured 2026-09-29/30: 4–10 parallel lenses plus one refuter per finding were 55%
+// of the agents in a round and changed 0 verdicts, while a single Sonnet lens on one open-ended
+// prompt re-found 7/7 reconstructed correctness defects. Each test below pins one numbered item of
+// that contract; deleting one deletes the only thing that says the item is required.
 
-// Nine same-severity findings, so REFUTERS_PER_LENS=8 truncates exactly one.
-const NINE = Array.from({ length: 9 }, (_v, i) => ({ title: `f${i}`, severity: 'major', detail: `d${i}` }))
-// Jev is the OPT-IN ranker, so every Jev-behaviour case below asks for it explicitly. The default is
-// asserted on its own, below, by omitting the key entirely.
-const nineLens = (over: any = {}) =>
-  lensOnly({ reviewLenses: [{ key: 'alpha', prompt: 'p' }], refuterRanker: 'jev', ...over })
-// Reverse the incoming order: f8 likeliest (p=0.9), f0 least (p=0.1).
-const reverseRank = { ok: true, scores: NINE.map((_f, i) => ({ index: i, p: (i + 1) / 10 })) }
-// `prompts` is a Map keyed by LABEL, and every refuter of one lens shares `refute:<key>` — so it
-// holds only the last. Record each refuter prompt as it is dispatched instead.
-const runRecording = async (args: any, reply: any) => {
-  const refuterPrompts: string[] = []
-  const r = await run(args, (label: string, prompt: string, o: any) => {
-    if (label.startsWith('refute:')) refuterPrompts.push(prompt)
-    return reply(label, prompt, o)
-  })
-  return { ...r, refuterPrompts }
-}
-// Which of the nine findings actually got a refuter, sorted for a stable comparison.
-const refutedTitles = (refuterPrompts: string[]) =>
-  NINE.map(f => f.title).filter(t => refuterPrompts.some(p => p.includes(`  ${t}\n`))).sort()
+// ---------------------------------------------------------------- (1) the reviewLenses migration error
 
-test('Jev reorders within a severity, so the capped slot falls on the LEAST likely finding', async () => {
-  const { result, refuterPrompts, logs } = await runRecording(
-    nineLens(), replies({ lens: { alpha: { findings: NINE } }, rank: reverseRank }))
-  // f0 is Jev's least likely, so f0 is the one that loses its refuter.
-  expect(refutedTitles(refuterPrompts)).toEqual(['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8'])
-  // Nothing is settled or dropped: all nine are still reported, and the uncapped one stands.
-  expect(result.scoreTable.lensFindings).toBe(9)
-  const overflow = result.findings.find((f: any) => f.title === 'f0')
-  expect(overflow.refuteReason).toMatch(/over the 8-per-lens refuter cap/)
-  expect(logs.join('\n')).toMatch(/9 findings over the 8 refuter cap, 9 scored by Jev/)
+test('reviewLenses migration error: passing the old array throws and names `lens` as its replacement', async () => {
+  for (const v of [[{ key: 'alpha', prompt: 'p' }], [], null]) {
+    const r = await runCatching({ ...baseArgs, tasks: one, reviewLenses: v as any }, replies())
+    expect(r.threw).toBe(true)
+    expect(String(r.error)).toMatch(/reviewLenses is gone/)
+    expect(String(r.error)).toMatch(/`lens`/)
+    // Arg-time, before a single agent is spent: a migration error that costs a round is not a
+    // migration error, it is a bill.
+    expect(r.dispatched).toEqual([])
+  }
+  // The key genuinely absent (an explicit undefined from a spread) is NOT a migration error.
+  expect((await runCatching({ ...baseArgs, tasks: one, reviewLenses: undefined }, replies())).threw).toBe(false)
 })
 
-test('severity outranks probability — a high-p minor never displaces a low-p critical', async () => {
-  const mixed = [
-    ...Array.from({ length: 8 }, (_v, i) => ({ title: `c${i}`, severity: 'critical', detail: 'd' })),
-    { title: 'm0', severity: 'minor', detail: 'd' },
-  ]
-  const { refuterPrompts } = await runRecording(nineLens(), replies({
-    lens: { alpha: { findings: mixed } },
-    // The minor is Jev's most likely by a mile; every critical is near zero.
-    rank: { ok: true, scores: mixed.map((f, i) => ({ index: i, p: f.severity === 'minor' ? 0.99 : 0.01 })) },
-  }))
-  expect(refuterPrompts).toHaveLength(8)
-  expect(refuterPrompts.some(p => p.includes('  m0\n'))).toBe(false)
+test('a non-object lens throws at arg time', async () => {
+  for (const v of [[], 'p', 7]) {
+    const r = await runCatching({ ...baseArgs, tasks: one, lens: v as any }, replies())
+    expect(r.threw).toBe(true)
+    expect(String(r.error)).toMatch(/lens must be an object/)
+  }
 })
 
-test('no ranker leg is dispatched when nothing would be truncated', async () => {
+test('exactly ONE lens is dispatched, under the bare label `lens`', async () => {
+  const { dispatched } = await run({ ...baseArgs, tasks: one }, replies())
+  expect(dispatched.filter(l => l === 'lens')).toHaveLength(1)
+  expect(dispatched.filter(l => l.startsWith('lens:'))).toEqual([])
+  // No refuter and no ranker leg exists any more.
+  expect(dispatched.filter(l => /^refute|^rank/.test(l))).toEqual([])
+})
+
+test('an absent lens prompt falls back to the built-in four-dimension default', async () => {
+  const { prompts } = await run({ ...baseArgs, tasks: one }, replies())
+  const p = prompts.get('lens') || ''
+  for (const dim of ['CORRECTNESS', 'SPEC FIDELITY', 'TESTS', 'METHODOLOGY']) expect(p).toContain(dim)
+  // A caller's own prompt REPLACES it rather than being appended to it.
+  const custom = await run({ ...baseArgs, tasks: one, lens: { prompt: 'ZZ-MY-OWN-PROMPT-ZZ' } }, replies())
+  expect(custom.prompts.get('lens')).toContain('ZZ-MY-OWN-PROMPT-ZZ')
+  expect(custom.prompts.get('lens')).not.toContain('METHODOLOGY')
+})
+
+test('the lens refs are named with a read-in-full instruction, and absent refs add nothing', async () => {
+  const withRefs = await run({ ...baseArgs, tasks: one, lens: { prompt: 'p', refs: ['/abs/rules.md'] } }, replies())
+  expect(withRefs.prompts.get('lens')).toContain('/abs/rules.md')
+  expect(withRefs.prompts.get('lens')).toMatch(/IN FULL/)
+  const without = await run({ ...baseArgs, tasks: one, lens: { prompt: 'p' } }, replies())
+  expect(without.prompts.get('lens')).not.toMatch(/IN FULL before judging/)
+})
+
+// ---------------------------------------------------------------- (2) the lens runs AFTER the checks
+
+test('lens runs after mechanical: completion barrier over parallel verify, mechanical, scored and thirdParty legs', async () => {
+  const checks = ['verify:T1', 'mechanical:lint', 'scored:slides:L1', 'scored:slides:L2', 'third-party:codex']
+  const events: string[] = []
+  const completed = new Set<string>()
+  const reply = scoredReplies()
   const { dispatched } = await run(
-    nineLens(), replies({ lens: { alpha: { findings: NINE.slice(0, 8) } }, rank: reverseRank }))
-  expect(dispatched.filter(l => l.startsWith('rank:'))).toEqual([])
-  expect(dispatched.filter(l => l.startsWith('refute:'))).toHaveLength(8)
+    { ...baseArgs, tasks: one, mechanicalChecks: [{ name: 'lint', cmd: 'x' }],
+      scoredChecks: [scoredCheck()], thirdParty: ['codex'] },
+    async (label: string, prompt: string, opts: any) => {
+      events.push(`start:${label}`)
+      if (checks.includes(label)) {
+        await new Promise(resolve => setTimeout(resolve, 5))
+        completed.add(label)
+        events.push(`end:${label}`)
+      }
+      if (label === 'lens') expect([...completed].sort()).toEqual([...checks].sort())
+      return reply(label, prompt, opts)
+    })
+  const firstEnd = events.findIndex(e => e.startsWith('end:'))
+  for (const label of checks) {
+    // Starting the lens last is not enough: the independent checks must start together AND finish first.
+    expect(events.indexOf(`start:${label}`)).toBeLessThan(firstEnd)
+    expect(events.indexOf(`end:${label}`)).toBeLessThan(events.indexOf('start:lens'))
+    expect(dispatched.indexOf(label)).toBeGreaterThan(dispatched.indexOf('implement:T1'))
+  }
+  expect(dispatched.indexOf('lens')).toBe(dispatched.length - 1)
 })
 
-test('refuterRanker: "severity" dispatches no ranker and keeps today\'s order', async () => {
-  const { dispatched, refuterPrompts } = await runRecording(
-    nineLens({ refuterRanker: 'severity' }),
-    replies({ lens: { alpha: { findings: NINE } }, rank: reverseRank }))
-  expect(dispatched.filter(l => l.startsWith('rank:'))).toEqual([])
-  // Incoming order: f8 is the one that loses its refuter.
-  expect(refutedTitles(refuterPrompts)).toEqual(['f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7'])
+test('the digest carries the flagged tasks, the verifier failures and the red outcomes', async () => {
+  const { prompts } = await run(
+    { ...baseArgs, tasks: [task({ id: 'T1', redCommand: 'pytest x' }), task({ id: 'T2', writablePaths: ['b'] })] },
+    replies({
+      verify: { T1: { id: 'T1', pass: false, evidence: 'e', failures: ['the acceptance command exits 1'] } },
+      red: { before: 1, after: 0 },
+    }))
+  const p = prompts.get('lens') || ''
+  expect(p).toContain('T1: its blind verifier judged the acceptance criterion unmet')
+  expect(p).toContain('the acceptance command exits 1')
+  expect(p).toContain('T1: red-green')
+  expect(p).toContain('pytest x')
 })
 
-test('the DEFAULT ranker is "severity" — an overflowing lens dispatches no ranker leg', async () => {
-  // No `refuterRanker` key at all: the default alone decides. Jev is opt-in, so an overflow that
-  // WOULD have been reordered (reverseRank is offered and ignored) keeps the incoming order.
-  const { dispatched, refuterPrompts } = await runRecording(
-    lensOnly({ reviewLenses: [{ key: 'alpha', prompt: 'p' }] }),
-    replies({ lens: { alpha: { findings: NINE } }, rank: reverseRank }))
-  expect(dispatched.filter(l => l.startsWith('rank:'))).toEqual([])
-  expect(refutedTitles(refuterPrompts)).toEqual(['f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7'])
+test('the digest carries a mechanical failure with its name, exit code and the last 60 lines', async () => {
+  // 200 lines in: only the tail may reach the digest, and the tail is where a runner puts the summary.
+  const output = Array.from({ length: 200 }, (_v, i) => `line-${i}`).join('\n')
+  const { prompts } = await run(
+    { ...baseArgs, tasks: one, mechanicalChecks: [{ name: 'suite', cmd: 'bun test' }] },
+    replies({ mech: { suite: { name: 'suite', exitCode: 7, output } } }))
+  const p = prompts.get('lens') || ''
+  expect(p).toContain('### suite — exitCode 7')
+  expect(p).toContain('line-199')
+  expect(p).toContain('line-140')     // the 60th line from the end
+  expect(p).not.toContain('line-139') // one line further back is truncated
 })
 
-test('an unknown refuterRanker throws before any agent is dispatched', async () => {
-  const r = await runCatching(nineLens({ refuterRanker: 'coinflip' }), replies())
+test('the digest carries every carried finding, by id, with the rule that silence leaves it open', async () => {
+  const { prompts } = await run(
+    { ...baseArgs, tasks: one, carriedFindings: [{ id: 'C7', title: 'the denominator is wrong', severity: 'major', detail: 'src/x.py:44', ownerTask: 'T1' }] },
+    replies())
+  const p = prompts.get('lens') || ''
+  expect(p).toContain('id=C7')
+  expect(p).toContain('the denominator is wrong')
+  expect(p).toContain('owner=T1')
+  expect(p).toMatch(/stays OPEN/)
+})
+
+test('a run with nothing to report carries no empty digest headings', async () => {
+  const { prompts } = await run({ ...baseArgs, tasks: one }, replies())
+  const p = prompts.get('lens') || ''
+  for (const heading of ['TASKS THIS ROUND FLAGGED', 'VERIFIER FAILURES', 'RED-GATE OUTCOMES', 'CARRIED FINDINGS', 'MECHANICAL CHECKS THAT FAILED']) {
+    expect(p, `should be silent about ${heading}`).not.toContain(heading)
+  }
+})
+
+// ---------------------------------------------------------------- (3) the two modes
+
+test('GREEN mode when everything passed: the lens is told to make one open-ended pass', async () => {
+  const { prompts, result } = await run({ ...baseArgs, tasks: one, mechanicalChecks: [{ name: 'm', cmd: 'c' }] }, replies())
+  const p = prompts.get('lens') || ''
+  expect(p).toContain('MODE: GREEN')
+  expect(p).toMatch(/ONE OPEN-ENDED PASS/)
+  expect(result.scoreTable.lensMode).toBe('GREEN')
+})
+
+test('RED mode when a task flagged or a check failed: the lens is told to diagnose and route', async () => {
+  for (const c of [
+    { args: { tasks: one }, reply: replies({ verify: { T1: { id: 'T1', pass: false, evidence: '', failures: ['no'] } } }) },
+    { args: { tasks: one, mechanicalChecks: [{ name: 'm', cmd: 'c' }] }, reply: replies({ mech: { m: { name: 'm', exitCode: 1, output: '' } } }) },
+  ]) {
+    const { prompts, result } = await run({ ...baseArgs, ...c.args }, c.reply)
+    const p = prompts.get('lens') || ''
+    expect(p).toContain('MODE: RED')
+    expect(p).toMatch(/DIAGNOSIS AND ROUTING/)
+    expect(result.scoreTable.lensMode).toBe('RED')
+  }
+})
+
+test('the MODE is computed by the JS from the same arrays the gate reads — the lens never chooses it', async () => {
+  // The lens is handed a mode it cannot argue with. A lens that picked its own would be choosing how
+  // hard to be judged, which is gate-laws L5 with the roles reversed.
+  const { result } = await run(
+    { ...baseArgs, tasks: one, mechanicalChecks: [{ name: 'm', cmd: 'c' }] },
+    replies({
+      mech: { m: { name: 'm', exitCode: 1, output: 'boom' } },
+      // The lens claims everything is fine and returns a GREEN-shaped result. The mode stays RED.
+      lens: { routes: [], findings: [], carried: [], dispositions: [{ title: 'all good', detail: 'e' }] },
+    }))
+  expect(result.scoreTable.lensMode).toBe('RED')
+  expect(result.overallPass).toBe(false)
+})
+
+// ---------------------------------------------------------------- (5) routing
+
+const routed = (ownerTask: string, failure = 'mechanical check "suite" exited 7') => ({
+  routes: [{ failure, ownerTask, cause: 'the assertion was never updated', fix: 'update it' }],
+  findings: [], carried: [], dispositions: [],
+})
+
+test('RED routes a mechanical failure to its owner task, which joins tasksThatFlagged', async () => {
+  // M2: before this, a mechanical failure was attributable to no task, so the next round re-ran every
+  // task in the plan. The lens's route is what narrows it.
+  const two = [task({ id: 'T1', writablePaths: ['a'] }), task({ id: 'T2', writablePaths: ['b'] })]
+  const { result } = await run(
+    { ...baseArgs, tasks: two, mechanicalChecks: [{ name: 'suite', cmd: 'bun test' }] },
+    replies({ mech: { suite: { name: 'suite', exitCode: 7, output: 'boom' } }, lens: routed('T2') }))
+  expect(result.overallPass).toBe(false)
+  expect(result.mechanicalThatFailed.map((m: any) => m.name)).toEqual(['suite'])
+  // The narrowing: T2 and only T2.
+  expect(result.tasksThatFlagged).toEqual(['T2'])
+  expect(result.routes).toHaveLength(1)
+  expect(result.routes[0].ownerTask).toBe('T2')
+})
+
+test('ownerTask "plan" lands in planFindings, not in tasksThatFlagged', async () => {
+  const { result } = await run(
+    { ...baseArgs, tasks: one, mechanicalChecks: [{ name: 'suite', cmd: 'bun test' }] },
+    replies({ mech: { suite: { name: 'suite', exitCode: 7, output: 'boom' } }, lens: routed('plan') }))
+  expect(result.overallPass).toBe(false)
+  expect(result.planFindings).toHaveLength(1)
+  expect(result.planFindings[0].ownerTask).toBe('plan')
+  // No task can fix it, so no task is re-run for it.
+  expect(result.tasksThatFlagged).toEqual([])
+  expect(result.scoreTable.planFindings).toBe(1)
+})
+
+test('an ownerTask that is neither a task id nor "plan" narrows nothing, and the log says so', async () => {
+  const { result, logs } = await run(
+    { ...baseArgs, tasks: one, mechanicalChecks: [{ name: 'suite', cmd: 'bun test' }] },
+    replies({ mech: { suite: { name: 'suite', exitCode: 7, output: 'boom' } }, lens: routed('T-NOPE') }))
+  expect(result.overallPass).toBe(false)
+  expect(result.tasksThatFlagged).toEqual([])
+  expect(result.planFindings).toEqual([])
+  // The run still FAILS on the mechanical check, so nothing escapes — but a reader has to be able to
+  // see why the re-run was not narrowed.
+  expect(result.mechanicalThatFailed).toHaveLength(1)
+  expect(logs.join('\n')).toMatch(/name no valid ownerTask/)
+})
+
+test('a route missing its failure or ownerTask is dropped rather than routed to nothing', async () => {
+  const { result } = await run(
+    { ...baseArgs, tasks: one, mechanicalChecks: [{ name: 'suite', cmd: 'bun test' }] },
+    replies({
+      mech: { suite: { name: 'suite', exitCode: 7, output: 'boom' } },
+      lens: { routes: [{ cause: 'c', fix: 'f' }, { failure: 'x', cause: 'c', fix: 'f' }], findings: [], carried: [] },
+    }))
+  expect(result.routes).toEqual([])
+  // Still FAILS: the mechanical failure is its own selector, so nothing is laundered by a bad route.
+  expect(result.overallPass).toBe(false)
+  expect(result.mechanicalThatFailed).toHaveLength(1)
+})
+
+test('GREEN blocking finding fails the gate, and its ownerTask joins tasksThatFlagged', async () => {
+  const two = [task({ id: 'T1', writablePaths: ['a'] }), task({ id: 'T2', writablePaths: ['b'] })]
+  const { result } = await run({ ...baseArgs, tasks: two },
+    replies({ lens: { routes: [], carried: [], findings: [
+      { title: 'the retry loop never terminates', severity: 'critical', detail: 'd', file: 'src/a.ts', line: 41, ownerTask: 'T2' },
+    ] } }))
+  expect(result.overallPass).toBe(false)
+  expect(result.lensesThatFlagged).toEqual(['lens'])
+  expect(result.tasksThatFlagged).toEqual(['T2'])
+  expect(result.scoreTable.survivingBlocking).toBe(1)
+  // `line` stays its own field: a `file` of "src/a.ts:41" matches no path in the task table.
+  expect(result.findings[0].line).toBe(41)
+  expect(result.findings[0].file).toBe('src/a.ts')
+})
+
+test('a GREEN MINOR finding does not fail the gate and names no selector', async () => {
+  const { result } = await run({ ...baseArgs, tasks: one },
+    replies({ lens: { routes: [], carried: [], findings: [
+      { title: 'a stale comment', severity: 'minor', detail: 'd', ownerTask: 'T1' },
+    ] } }))
+  expect(result.overallPass).toBe(true)
+  expect(result.lensesThatFlagged).toEqual([])
+  expect(result.tasksThatFlagged).toEqual([])
+  expect(result.scoreTable.survivingMinor).toBe(1)
+  // Reported, though: a minor finding is not a deleted one.
+  expect(result.findings).toHaveLength(1)
+})
+
+test('an OPEN carried finding routes to its ownerTask, so the next round is narrowed to it', async () => {
+  const two = [task({ id: 'T1', writablePaths: ['a'] }), task({ id: 'T2', writablePaths: ['b'] })]
+  const { result } = await run(
+    {
+      ...baseArgs, tasks: two, freezeFindingSet: true,
+      carriedFindings: [{ id: 'C1', title: 'the denominator is wrong', severity: 'major', detail: 'd', ownerTask: 'T2' }],
+    },
+    replies({ lens: { routes: [], findings: [], carried: [{ id: 'C1', status: 'open', evidence: 'still wrong' }] } }))
+  expect(result.overallPass).toBe(false)
+  expect(result.tasksThatFlagged).toEqual(['T2'])
+  expect(result.lensesThatFlagged).toEqual(['lens'])
+})
+
+test('an OPEN carried finding owned by the PLAN lands in planFindings, not on a task', async () => {
+  const { result } = await run(
+    {
+      ...baseArgs, tasks: one, freezeFindingSet: true,
+      carriedFindings: [{ id: 'C1', title: 'the fix needs a path no task may write', severity: 'critical', detail: 'd', ownerTask: 'plan' }],
+    },
+    replies({ lens: { routes: [], findings: [], carried: [{ id: 'C1', status: 'open', evidence: 'unchanged' }] } }))
+  expect(result.overallPass).toBe(false)
+  expect(result.planFindings.map((f: any) => f.id)).toEqual(['C1'])
+  expect(result.tasksThatFlagged).toEqual([])
+  expect(result.lensesThatFlagged).toEqual(['lens'])
+})
+
+test('lensesThatFlagged is ["lens"] iff a blocking finding stands, and [] otherwise', async () => {
+  const blocking = await run({ ...baseArgs, tasks: one },
+    replies({ lens: { routes: [], carried: [], findings: [{ title: 't', severity: 'major', detail: 'd', ownerTask: 'T1' }] } }))
+  expect(blocking.result.lensesThatFlagged).toEqual(['lens'])
+  const clean = await run({ ...baseArgs, tasks: one }, replies())
+  expect(clean.result.lensesThatFlagged).toEqual([])
+})
+
+// ---------------------------------------------------------------- (7) taskFixes (M3)
+
+test('taskFixes appear in the implementer prompt for THAT task, under the FIX FIRST heading', async () => {
+  // M3: before this the carried findings reached only the review legs, so the one agent that could act
+  // on them was the one agent never shown them.
+  const two = [task({ id: 'T1', writablePaths: ['a'] }), task({ id: 'T2', writablePaths: ['b'] })]
+  const { prompts } = await run(
+    {
+      ...baseArgs, tasks: two,
+      taskFixes: {
+        T2: [
+          { title: 'the denominator is wrong', severity: 'major', file: 'src/x.py', line: 44, detail: 'it divides by the wrong count' },
+          { failure: 'mechanical suite exited 7', cause: 'the assertion was never updated', fix: 'update the expected value' },
+          'and re-run the suite afterwards',
+        ],
+      },
+    },
+    replies())
+  const p2 = prompts.get('implement:T2') || ''
+  expect(p2).toContain("FIX FIRST (from last round's review):")
+  expect(p2).toContain('the denominator is wrong (major) [src/x.py:44]: it divides by the wrong count')
+  expect(p2).toContain('mechanical suite exited 7: the assertion was never updated — update the expected value')
+  expect(p2).toContain('and re-run the suite afterwards')
+  // Only that task's implementer. A fix leaked into a sibling's prompt is an edit outside its paths.
+  expect(prompts.get('implement:T1')).not.toContain('FIX FIRST')
+})
+
+test('absent taskFixes adds nothing to the implementer prompt — not a heading, not a blank line', async () => {
+  const withNone = await run({ ...baseArgs, tasks: one }, replies())
+  const withEmpty = await run({ ...baseArgs, tasks: one, taskFixes: { T1: [] } }, replies())
+  expect(withNone.prompts.get('implement:T1')).not.toContain('FIX FIRST')
+  expect(withEmpty.prompts.get('implement:T1')).toBe(withNone.prompts.get('implement:T1'))
+})
+
+test('taskFixes naming an unknown task id throws — a typo silently drops the fixes it carries', async () => {
+  const r = await runCatching({ ...baseArgs, tasks: one, taskFixes: { NOPE: ['fix this'] } }, replies())
   expect(r.threw).toBe(true)
-  expect(String(r.error)).toMatch(/refuterRanker/)
+  expect(String(r.error)).toContain('unknown task id')
+  expect(r.dispatched).toEqual([])
+  for (const bad of [[], 'x', { T1: 'not an array' }]) {
+    expect((await runCatching({ ...baseArgs, tasks: one, taskFixes: bad as any }, replies())).threw).toBe(true)
+  }
+})
+
+// ---------------------------------------------------------------- (8) the zero-implementer round
+
+const carriedAll = (ids: string[]) => ({
+  implemented: ids.map(id => ({ id, done: true, changedFiles: ['x'], evidence: 'e' })),
+  verified: ids.map(id => ({ id, pass: true, evidence: 'e', failures: [] })),
+})
+
+test('onlyTasks [] is a zero-implementer round: no implementer, no verifier, but the checks and the lens run', async () => {
+  // M2's second half: a failure the lens routed to the PLAN is fixed by amending the plan, not by a
+  // task — so the next round has to be able to re-run the checks over a tree nobody touched.
+  const two = [task({ id: 'T1', writablePaths: ['a'] }), task({ id: 'T2', writablePaths: ['b'] })]
+  const { dispatched, result } = await run(
+    {
+      ...baseArgs, tasks: two, onlyTasks: [],
+      mechanicalChecks: [{ name: 'suite', cmd: 'bun test' }],
+      priorResults: carriedAll(['T1', 'T2']),
+    },
+    replies())
+  expect(dispatched.filter(l => l.startsWith('implement:'))).toEqual([])
+  expect(dispatched.filter(l => l.startsWith('verify:'))).toEqual([])
+  expect(dispatched).toContain('mechanical:suite')
+  expect(dispatched).toContain('lens')
+  // The carried records are what make the task dimensions clean — not an empty set (gate-laws L2a).
+  expect(result.scoreTable.tasksJudgedThisRun).toBe(0)
+  expect(result.scoreTable.implementedDone).toBe(2)
+  expect(result.scoreTable.verifyPassed).toBe(2)
+  expect(result.overallPass).toBe(true)
+})
+
+test('onlyTasks [] with a task NOT carried throws — an empty set must never read as clean', async () => {
+  const two = [task({ id: 'T1', writablePaths: ['a'] }), task({ id: 'T2', writablePaths: ['b'] })]
+  for (const priorResults of [undefined, carriedAll(['T1']), { implemented: [{ id: 'T1', done: true }, { id: 'T2', done: true }] }]) {
+    const r = await runCatching({ ...baseArgs, tasks: two, onlyTasks: [], priorResults: priorResults as any }, replies())
+    expect(r.threw).toBe(true)
+    expect(String(r.error)).toMatch(/ZERO-IMPLEMENTER/)
+    expect(r.dispatched).toEqual([])
+  }
+})
+
+test('a zero-implementer round still fails on a mechanical failure, and still routes it', async () => {
+  const { result } = await run(
+    {
+      ...baseArgs, tasks: one, onlyTasks: [],
+      mechanicalChecks: [{ name: 'suite', cmd: 'bun test' }],
+      priorResults: carriedAll(['T1']),
+    },
+    replies({ mech: { suite: { name: 'suite', exitCode: 7, output: 'boom' } }, lens: routed('T1') }))
+  expect(result.overallPass).toBe(false)
+  expect(result.tasksThatFlagged).toEqual(['T1'])
+})
+
+test('a NON-empty onlyTasks matching nothing still throws — [] is the only legal empty slice', async () => {
+  const r = await runCatching({ ...baseArgs, tasks: one, onlyTasks: ['NOPE'] }, replies())
+  expect(r.threw).toBe(true)
+  expect(String(r.error)).toContain('matched none')
+})
+
+// ---------------------------------------------------------------- (9) a carried proven red is not re-probed
+
+const redTask = (id: string, paths: string[]) => task({ id, writablePaths: paths, redCommand: `pytest ${id}` })
+
+test('carried proven red is not re-probed on a FULL re-run, and does not re-read as unproven', async () => {
+  // M1's dead end: after the fix landed, a second `before` probe observes exit 0 and the verdict is
+  // `red-not-red` — on a task that is in fact done. The run then refuses the already-fixed task and
+  // dead-ends, which is exactly what the measured loop did.
+  const tasks = [redTask('T1', ['a']), redTask('T2', ['b'])]
+  const priorResults = {
+    ...carriedAll(['T1', 'T2']),
+    red: [{ id: 'T2', command: 'pytest T2', verdict: 'red-green', beforeExit: 1, afterExit: 0, beforeOutput: 'o', afterOutput: 'o' }],
+  }
+  // No onlyTasks: a FULL re-run, where the ordinary carry-forward would drop T2's adjudication.
+  const { dispatched, result } = await run({ ...baseArgs, tasks, priorResults },
+    replies({ red: { before: 1, after: 0 } }))
+  expect(dispatched.filter(l => l.includes(':T2'))).toEqual(['implement:T2', 'verify:T2'])
+  expect(dispatched).toContain('red:before:T1')
+  // The carried verdict survives, so redMissing does not flag T2.
+  expect(result.red.find((r: any) => r.id === 'T2').verdict).toBe('red-green')
+  expect(result.scoreTable.redCarried).toBe(1)
+  expect(result.scoreTable.redProven).toBe(2)
+  expect(result.tasksThatFlagged).toEqual([])
+  expect(result.overallPass).toBe(true)
+})
+
+test('an UNPROVEN carried red IS re-probed — only a proven pair is evidence', async () => {
+  for (const verdict of ['red-not-red', 'green-not-green', 'red-unproven']) {
+    const { dispatched } = await run(
+      { ...baseArgs, tasks: [redTask('T1', ['a'])], priorResults: { ...carriedAll(['T1']), red: [{ id: 'T1', verdict }] } },
+      replies({ red: { before: 1, after: 0 } }))
+    expect(dispatched, `${verdict} must be re-probed`).toContain('red:before:T1')
+  }
+})
+
+test('a carried proven red costs nothing against maxAgents — the probes are not dispatched', async () => {
+  const tasks = [redTask('T1', ['a'])]
+  const fits = async (priorResults: any, n: number) =>
+    !(await runCatching({ ...baseArgs, tasks, priorResults, maxAgents: n }, replies({ red: { before: 1, after: 0 } }))).threw
+  const proven = { ...carriedAll(['T1']), red: [{ id: 'T1', command: 'pytest T1', verdict: 'red-green' }] }
+  let probedMin = 0, provenMin = 0
+  for (let n = 1; n <= 40 && !probedMin; n++) if (await fits(carriedAll(['T1']), n)) probedMin = n
+  for (let n = 1; n <= 40 && !provenMin; n++) if (await fits(proven, n)) provenMin = n
+  expect(probedMin).toBeGreaterThan(0)
+  expect(probedMin - provenMin).toBe(2)
+})
+
+// ---------------------------------------------------------------- (11) red proof belongs to the current command
+
+const oldRedProof = {
+  id: 'T1', command: 'pytest T1', verdict: 'red-green',
+  beforeExit: 1, afterExit: 0, beforeOutput: 'old failure', afterOutput: 'old pass',
+}
+
+test('carried red for a changed redCommand is re-probed', async () => {
+  for (const before of [1, 0]) {
+    const command = 'pytest T1-amended'
+    const { dispatched, prompts, result } = await run({
+      ...baseArgs, tasks: [{ ...redTask('T1', ['a']), redCommand: command }],
+      priorResults: { ...carriedAll(['T1']), red: [oldRedProof] },
+    }, replies({ red: { before, after: 0 } }))
+    expect(dispatched.filter(l => l.startsWith('red:'))).toEqual(['red:before:T1', 'red:after:T1'])
+    expect(dispatched.indexOf('red:before:T1')).toBeLessThan(dispatched.indexOf('implement:T1'))
+    expect(dispatched.indexOf('implement:T1')).toBeLessThan(dispatched.indexOf('red:after:T1'))
+    for (const label of ['red:before:T1', 'red:after:T1']) expect(prompts.get(label)).toContain(`\n${command}\n`)
+    expect(result.red).toHaveLength(1)
+    expect(result.red[0]).toMatchObject({ command, beforeExit: before, afterExit: 0,
+      verdict: before === 0 ? 'red-not-red' : 'red-green' })
+    expect(result.scoreTable.redCarried).toBe(0)
+    expect(result.scoreTable.redProven).toBe(before === 0 ? 0 : 1)
+    expect(result.overallPass).toBe(before !== 0)
+    expect(result.tasksThatFlagged).toEqual(before === 0 ? ['T1'] : [])
+  }
+})
+
+test('carried red with no command or a non-identical command is re-probed', async () => {
+  for (const command of [undefined, 'pytest T1 ']) {
+    const { dispatched, result } = await run({
+      ...baseArgs, tasks: [redTask('T1', ['a'])],
+      priorResults: { ...carriedAll(['T1']), red: [{ ...oldRedProof, command }] },
+    }, replies({ red: { before: 0, after: 0 } }))
+    expect(dispatched).toContain('red:before:T1')
+    expect(dispatched).toContain('red:after:T1')
+    expect(result.red).toMatchObject([{ command: 'pytest T1', verdict: 'red-not-red' }])
+    expect(result.scoreTable.redCarried).toBe(0)
+    expect(result.overallPass).toBe(false)
+  }
+})
+
+test('stale red proof for an inactive task is dropped and flags it as unproven', async () => {
+  const tasks = [redTask('T1', ['a']), task({ id: 'T2', writablePaths: ['b'] })]
+  for (const onlyTasks of [['T2'], []]) {
+    const { dispatched, result } = await run({
+      ...baseArgs, tasks, onlyTasks,
+      priorResults: { ...carriedAll(['T1', 'T2']), red: [{ ...oldRedProof, command: 'pytest old' }] },
+    }, replies())
+    expect(dispatched.filter(l => l.startsWith('red:'))).toEqual([])
+    expect(result.red).toEqual([])
+    expect(result.scoreTable.redProven).toBe(0)
+    expect(result.scoreTable.redUnproven).toBe(1)
+    expect(result.scoreTable.redCarried).toBe(0)
+    expect(result.tasksThatFlagged).toEqual(['T1'])
+    expect(result.overallPass).toBe(false)
+  }
+})
+
+test('stale red proof cannot reduce fan-out for a changed redCommand', async () => {
+  const r = await runCatching({
+    ...baseArgs, tasks: [task({ redCommand: 'pytest new' })], maxAgents: 3,
+    priorResults: { ...carriedAll(['T1']), red: [oldRedProof] },
+  }, replies())
+  expect(r.threw).toBe(true)
+  expect(String(r.error)).toContain('"redProbes":2')
   expect(r.dispatched).toEqual([])
 })
 
-test('a dead ranker leg falls back to today\'s order and logs one line', async () => {
-  const { refuterPrompts, logs } = await runRecording(
-    nineLens(), replies({ lens: { alpha: { findings: NINE } }, rank: null }))
-  expect(refutedTitles(refuterPrompts)).toEqual(['f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7'])
-  expect(logs.filter(l => l.includes('ranker leg died'))).toHaveLength(1)
+test('red proof is not carried for a task whose redCommand was removed', async () => {
+  const { result } = await run({
+    ...baseArgs, tasks: [task({ id: 'T1', writablePaths: ['a'] }), redTask('T2', ['b'])], onlyTasks: ['T2'],
+    priorResults: { ...carriedAll(['T1']), red: [{ ...oldRedProof, verdict: 'red-not-red' }] },
+  }, replies())
+  expect(result.red.map((r: any) => r.id)).toEqual(['T2'])
+  expect(result.tasksThatFlagged).toEqual([])
+  expect(result.overallPass).toBe(true)
 })
 
-test('ok:false from the script falls back, naming the reason', async () => {
-  const { refuterPrompts, logs } = await runRecording(nineLens(), replies({
-    lens: { alpha: { findings: NINE } },
-    rank: { ok: false, reason: 'decisions endpoint unreachable' },
-  }))
-  expect(refutedTitles(refuterPrompts)).toEqual(['f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7'])
-  expect(logs.join('\n')).toMatch(/Jev unavailable \(decisions endpoint unreachable\)/)
+// ---------------------------------------------------------------- (10) the refuter machinery is gone
+
+test('the fan-out breakdown counts the lens as 1 and names no refuter term', async () => {
+  const r = await runCatching({ ...baseArgs, tasks: one, maxAgents: 1 }, replies())
+  expect(r.threw).toBe(true)
+  expect(r.error.message).toContain('"lens":1')
+  expect(r.error.message).not.toMatch(/refut/i)
+  // implementers + verifiers + lens = 3 for a one-task run, so 3 fits and 2 does not.
+  expect((await runCatching({ ...baseArgs, tasks: one, maxAgents: 3 }, replies())).threw).toBe(false)
+  expect((await runCatching({ ...baseArgs, tasks: one, maxAgents: 2 }, replies())).threw).toBe(true)
 })
 
-test('an all-null score set falls back rather than silently ranking on nothing', async () => {
-  const { refuterPrompts, logs } = await runRecording(nineLens(), replies({
-    lens: { alpha: { findings: NINE } },
-    rank: { ok: true, scores: NINE.map((_f, i) => ({ index: i, p: null })) },
-  }))
-  expect(refutedTitles(refuterPrompts)).toEqual(['f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7'])
-  expect(logs.join('\n')).toMatch(/no usable probabilities/)
+test('no refuter keys survive in the return or the score table', async () => {
+  const { result } = await run(
+    { ...baseArgs, tasks: one, carriedFindings: [{ id: 'C1', title: 't', severity: 'major', detail: 'd' }] },
+    replies({ lens: { routes: [], findings: [], carried: [{ id: 'C1', status: 'closed', evidence: 'ran it' }] } }))
+  expect('refuted' in result).toBe(false)
+  for (const k of ['refuted', 'priorFindingsSubmitted', 'priorFindingsSurviving']) {
+    expect(k in result.scoreTable, `scoreTable must not carry ${k}`).toBe(false)
+  }
+  // ...and the keys that replaced them are there.
+  for (const k of ['carriedSubmitted', 'carriedOpen', 'routes', 'planFindings', 'lensMode']) {
+    expect(k in result.scoreTable, `scoreTable must carry ${k}`).toBe(true)
+  }
+  for (const k of ['routes', 'planFindings', 'carried']) {
+    expect(k in result, `the return must carry ${k}`).toBe(true)
+  }
 })
 
-test('a partial score set ranks the scored findings and leaves the unscored behind them', async () => {
-  const { refuterPrompts } = await runRecording(nineLens(), replies({
-    lens: { alpha: { findings: NINE } },
-    // Only f7 and f8 scored; the other seven are unscored and keep their incoming order after them.
-    rank: { ok: true, scores: [{ index: 7, p: 0.9 }, { index: 8, p: 0.8 }] },
-  }))
-  // f7, f8 first, then f0..f5 — f6 is the ninth slot and loses its refuter.
-  expect(refutedTitles(refuterPrompts)).toEqual(['f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f7', 'f8'])
+test('refuterRanker, refutersPerLens, refuterModel and refuterEffort are inert — no leg reads them', async () => {
+  // They are not refused (an old caller's stale key must not cost a round); they simply do nothing.
+  const { dispatched, result } = await run(
+    { ...baseArgs, tasks: one, refuterRanker: 'coinflip', refutersPerLens: 99, refuterModel: 'opus', refuterEffort: 'xhigh' } as any,
+    replies())
+  expect(dispatched.filter(l => /refut|rank/i.test(l))).toEqual([])
+  expect(result.overallPass).toBe(true)
 })
 
-test('out-of-range and non-numeric indices from the script are ignored, not trusted', async () => {
-  const { refuterPrompts } = await runRecording(nineLens(), replies({
-    lens: { alpha: { findings: NINE } },
-    rank: { ok: true, scores: [{ index: 99, p: 0.99 }, { index: -1, p: 0.99 }, { index: 8, p: 0.9 }] },
-  }))
-  // Only index 8 was usable, so f8 goes first and the last incoming slot (f7) is capped out.
-  expect(refutedTitles(refuterPrompts)).toEqual(['f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f8'])
+test('lens schema requires carried rulings and the mode-specific channel, including a GREEN finding file', async () => {
+  for (const red of [false, true]) {
+    const opts = await dispatchOpts(
+      { ...baseArgs, tasks: one, mechanicalChecks: [{ name: 'suite', cmd: 'bun test' }] },
+      replies({ mech: { suite: { name: 'suite', exitCode: red ? 1 : 0, output: '' } } }))
+    const schema = opts.get('lens').schema
+    expect(schema.required).toEqual(['carried', red ? 'routes' : 'findings'])
+    expect(schema.properties[red ? 'findings' : 'routes'].maxItems).toBe(0)
+    expect(schema.properties.findings.items.required).toEqual(['title', 'severity', 'file', 'detail', 'ownerTask'])
+    expect(schema.properties.routes.items.required).toEqual(['failure', 'ownerTask', 'cause', 'fix'])
+    expect(schema.properties.carried.items.required).toEqual(['id', 'status', 'evidence'])
+    expect(schema.properties.dispositions).toBeDefined()
+  }
 })
 
-test('the ranker leg is a command runner: it names the script, carries the payload, and asserts nothing', async () => {
+test('mechanical digest stamps the declared check name rather than the probe claim', async () => {
+  const { result, prompts } = await run(
+    { ...baseArgs, tasks: one, mechanicalChecks: [{ name: 'suite', cmd: 'bun test' }] },
+    replies({ mech: { suite: { name: 'invented-name', exitCode: 7, output: 'failed assertion' } }, lens: routed('T1', 'suite') }))
+  expect(result.mechanicalThatFailed.map((m: any) => m.name)).toEqual(['suite'])
+  expect(prompts.get('lens')).toContain('### suite — exitCode 7')
+  expect(prompts.get('lens')).not.toContain('invented-name')
+})
+
+test('mechanical probe preserves the last 60 lines rather than truncating evidence to 2000 characters', async () => {
+  const opts = await dispatchOpts({ ...baseArgs, tasks: one, mechanicalChecks: [{ name: 'suite', cmd: 'bun test' }] })
+  expect(opts.get('mechanical:suite').schema.properties.output.description).toContain('last 60 lines')
+  const { prompts } = await run({ ...baseArgs, tasks: one, mechanicalChecks: [{ name: 'suite', cmd: 'bun test' }] }, replies())
+  expect(prompts.get('mechanical:suite')).toContain('last 60 lines')
+  expect(prompts.get('mechanical:suite')).not.toContain('2000 characters')
+})
+
+test('zero-implementer round keeps carried task failures and missing red adjudications in the gate', async () => {
+  const priorResults = carriedAll(['T1'])
+  priorResults.verified[0].pass = false
+  const failed = await run({ ...baseArgs, tasks: one, onlyTasks: [], priorResults }, replies())
+  expect(failed.result.overallPass).toBe(false)
+  expect(failed.result.tasksThatFlagged).toEqual(['T1'])
+  expect(failed.result.scoreTable.lensMode).toBe('RED')
+  const missingRed = await run({ ...baseArgs, tasks: [redTask('T1', ['a'])], onlyTasks: [],
+    priorResults: carriedAll(['T1']) }, replies())
+  expect(missingRed.result.overallPass).toBe(false)
+  expect(missingRed.result.tasksThatFlagged).toEqual(['T1'])
+  expect(missingRed.dispatched.filter((l: string) => l.startsWith('red:'))).toEqual([])
+})
+
+test('throwing lens fails closed even with the carried finding set frozen', async () => {
+  for (const freezeFindingSet of [false, true]) {
+    const reply = replies()
+    const { result } = await run({ ...baseArgs, tasks: one, freezeFindingSet },
+      (label: string, prompt: string, opts: any) => {
+        if (label === 'lens') throw new Error('review failed')
+        return reply(label, prompt, opts)
+      })
+    expect(result.overallPass).toBe(false)
+    expect(result.lensesThatFlagged).toEqual(['lens'])
+    expect(result.findings).toMatchObject([{ severity: 'critical', syntheticDeadLens: true }])
+    expect(result.scoreTable.lensesReported).toBe(0)
+  }
+})
+
+test('attempts run in the barrier before the lens', async () => {
+  const args = { ...baseArgs, tasks: [task()], attempts: [{ key: 'k1', prompt: 'p', refs: [] }] }
+  const { dispatched } = await run(args, replies())
+  const kIndex = dispatched.indexOf('attempt:k1')
+  const lIndex = dispatched.indexOf('lens')
+  expect(kIndex).toBeGreaterThan(-1)
+  expect(lIndex).toBeGreaterThan(kIndex)
+})
+
+test('an attempt prompt carries no lens refs and no task refs', async () => {
+  const args = {
+    ...baseArgs,
+    tasks: [{ ...task(), refs: ['t.txt'] }],
+    lens: { prompt: 'lp', refs: ['l.txt'] },
+    attempts: [{ key: 'k1', prompt: 'ap', refs: ['a.txt'] }]
+  }
+  const { prompts, optsMap } = await run(args, replies())
+  const ap = prompts.get('attempt:k1')
+  const ao = optsMap.get('attempt:k1')
+  expect(ap).toContain('ap')
+  expect(ao.refs).toContain('a.txt')
+  expect(ao.refs).not.toContain('t.txt')
+  expect(ao.refs).not.toContain('l.txt')
+  expect(ap).not.toContain('t.txt')
+  expect(ap).not.toContain('l.txt')
+})
+
+test('attempt answers appear in the lens prompt', async () => {
+  const args = { ...baseArgs, tasks: [task()], attempts: [{ key: 'k1', prompt: 'p', refs: [] }] }
+  const rep = replies({ attempt: { k1: { key: 'k1', answer: 'my secret answer' } } })
+  const { prompts } = await run(args, rep)
+  const lp = prompts.get('lens')
+  expect(lp).toContain('[Attempt k1]')
+  expect(lp).toContain('my secret answer')
+})
+
+test('a dead attempt fails the gate with lensesThatFlagged lens', async () => {
+  const args = { ...baseArgs, tasks: [task()], attempts: [{ key: 'k1', prompt: 'p', refs: [] }] }
+  const rep = replies({ attempt: { k1: null } })
+  const { result } = await run(args, rep)
+  expect(result.overallPass).toBe(false)
+  expect(result.lensesThatFlagged).toEqual(['lens'])
+  expect(result.findings.some(f => f.syntheticDeadAttempt)).toBe(true)
+})
+
+test('a thrown attempt fails closed', async () => {
+  const args = { ...baseArgs, tasks: [task()], attempts: [{ key: 'k1', prompt: 'p', refs: [] }] }
+  const { result } = await run(args, (label, prompt, opts) => {
+    if (label === 'attempt:k1') throw new Error('bang')
+    return replies()(label, prompt, opts)
+  })
+  expect(result.overallPass).toBe(false)
+  expect(result.lensesThatFlagged).toEqual(['lens'])
+  expect(result.findings.some(f => f.syntheticDeadAttempt)).toBe(true)
+})
+
+test('a dead attempt gates under freezeFindingSet', async () => {
+  const args = { ...baseArgs, tasks: [task()], freezeFindingSet: true, attempts: [{ key: 'k1', prompt: 'p', refs: [] }] }
+  const rep = replies({ attempt: { k1: null } })
+  const { result } = await run(args, rep)
+  expect(result.overallPass).toBe(false)
+  expect(result.lensesThatFlagged).toEqual(['lens'])
+  expect(result.residue).toEqual([])
+})
+
+test('duplicate attempt keys throw', async () => {
+  const args = { ...baseArgs, tasks: [task()], attempts: [{ key: 'k1', prompt: 'p', refs: [] }, { key: 'k1', prompt: 'p2', refs: [] }] }
+  const { threw, error } = await runCatching(args, replies())
+  expect(threw).toBe(true)
+  expect(error.message).toMatch(/duplicate attempt key k1/)
+})
+
+test('fan-out counts attempts', async () => {
+  const args = { ...baseArgs, tasks: [task()], attempts: [{ key: 'k1', prompt: 'p', refs: [] }, { key: 'k2', prompt: 'p', refs: [] }] }
+  const { result } = await run(args, replies())
+  expect(result.scoreTable.attempts.length).toBe(2)
+  expect(result.scoreTable.attempts[0].reported).toBe(true)
+})
+
+
+// ---------------------------------------------------------------- rule checks
+test('ruleChecks p at block-at fails the gate via rulesThatFailed', async () => {
+  const stdout = JSON.stringify({ verdicts: [{ rule: 'R1', p: 0.85, verdict: 'fail' }], unavailable: [] })
+  const { result } = await run(
+    { ...baseArgs, tasks: one, ruleChecks: { name: 'rules', cmd: 'x', blockAt: 0.85 } },
+    replies({ rules: { rules: { name: 'rules', exitCode: 0, stdout } } })
+  )
+  expect(result.overallPass).toBe(false)
+  expect(result.rulesThatFailed).toEqual(['R1'])
+  expect(result.ruleVerdicts).toEqual([{ rule: 'R1', p: 0.85, verdict: 'fail' }])
+})
+
+test('ruleChecks below block-at is advisory and passes', async () => {
+  const stdout = JSON.stringify({ verdicts: [{ rule: 'R1', p: 0.84, verdict: 'warn' }], unavailable: [] })
+  const { result } = await run(
+    { ...baseArgs, tasks: one, ruleChecks: { name: 'rules', cmd: 'x', blockAt: 0.85 } },
+    replies({ rules: { rules: { name: 'rules', exitCode: 0, stdout } } })
+  )
+  expect(result.overallPass).toBe(true)
+  expect(result.rulesThatFailed).toEqual([])
+  expect(result.ruleVerdicts).toEqual([{ rule: 'R1', p: 0.84, verdict: 'warn' }])
+})
+
+test('advisory rule checklist reaches the GREEN lens prompt ranked by p', async () => {
+  const stdout = JSON.stringify({ verdicts: [
+    { rule: 'R2', p: 0.5, verdict: 'ok' },
+    { rule: 'R1', p: 0.84, verdict: 'warn' }
+  ], unavailable: [] })
   const { prompts } = await run(
-    nineLens(), replies({ lens: { alpha: { findings: NINE } }, rank: reverseRank }))
-  const p = prompts.get('rank:alpha') || ''
-  expect(p).toContain('scripts/jev-rank.ts')
-  expect(p).toContain('COMMAND RUNNER')
-  expect(p).toContain('you judge nothing')
-  // Every finding reaches the script — a ranker that saw a subset would rank a subset.
-  for (const f of NINE) expect(p).toContain(f.title)
+    { ...baseArgs, tasks: one, ruleChecks: { name: 'rules', cmd: 'x', blockAt: 0.85 } },
+    replies({ rules: { rules: { name: 'rules', exitCode: 0, stdout } } })
+  )
+  const p = prompts.get('lens')
+  expect(p).toContain('RULE CHECKLIST (advisory, ranked by p):')
+  const idx1 = p.indexOf('R1: p=0.84')
+  const idx2 = p.indexOf('R2: p=0.5')
+  expect(idx1).toBeLessThan(idx2)
+  expect(idx1).toBeGreaterThan(-1)
 })
 
-test('dispositions are routed BEFORE ranking, so a satisfied check never consumes a ranked slot', async () => {
-  const { prompts, dispatched } = await run(nineLens(), replies({
-    lens: { alpha: { findings: [...NINE, { title: 'A2 — satisfied', severity: 'critical', detail: 'd' }] } },
-    rank: reverseRank,
-  }))
-  // Ten claims in, one routed out, nine defect claims ranked — so the payload holds nine, not ten.
-  expect(prompts.get('rank:alpha')).not.toContain('A2 — satisfied')
-  expect(dispatched.filter(l => l.startsWith('refute:'))).toHaveLength(8)
+test('a dead rule-check runner fails closed', async () => {
+  const { result } = await run(
+    { ...baseArgs, tasks: one, ruleChecks: { name: 'rules', cmd: 'x' } },
+    replies({ rules: { rules: null } })
+  )
+  expect(result.overallPass).toBe(false)
+  expect(result.rulesThatFailed).toEqual(['ruleChecks:rules'])
+})
+
+test('an unparsable rule-check line fails closed', async () => {
+  const { result } = await run(
+    { ...baseArgs, tasks: one, ruleChecks: { name: 'rules', cmd: 'x' } },
+    replies({ rules: { rules: { name: 'rules', exitCode: 0, stdout: 'not json' } } })
+  )
+  expect(result.overallPass).toBe(false)
+  expect(result.rulesThatFailed).toEqual(['ruleChecks:rules'])
+})
+
+test('rulesThatFailed gates under freezeFindingSet', async () => {
+  const stdout = JSON.stringify({ verdicts: [{ rule: 'R1', p: 0.85, verdict: 'fail' }], unavailable: [] })
+  const { result } = await run(
+    { ...baseArgs, tasks: one, freezeFindingSet: true, ruleChecks: { name: 'rules', cmd: 'x', blockAt: 0.85 } },
+    replies({ rules: { rules: { name: 'rules', exitCode: 0, stdout } } })
+  )
+  expect(result.overallPass).toBe(false)
+  expect(result.rulesThatFailed).toEqual(['R1'])
+})
+
+test('fan-out counts ruleChecks', async () => {
+  const stdout = JSON.stringify({ verdicts: [], unavailable: [] })
+  const r = await runCatching(
+    { ...baseArgs, tasks: one, maxAgents: 3, ruleChecks: { name: 'rules', cmd: 'x' } },
+    replies()
+  )
+  expect(r.threw).toBe(true)
+  expect(String(r.error)).toContain('fan-out 4 exceeds maxAgents 3')
+})
+
+test('invalid blockAt throws', async () => {
+  for (const bad of [-1, 0, 1.1, '0.5', null]) {
+    const r = await runCatching({ ...baseArgs, tasks: one, ruleChecks: { name: 'rules', cmd: 'x', blockAt: bad } }, replies())
+    expect(r.threw).toBe(true)
+    expect(String(r.error)).toMatch(/blockAt must be a number in \(0,1\]/)
+  }
 })

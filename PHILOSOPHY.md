@@ -53,8 +53,8 @@ The RL framing is most useful for: identifying reward hacking, designing action 
 Break work into phases with single responsibilities. Each phase answers ONE question. Phases are sequential: you can't design before exploring, can't implement before designing.
 
 The shape no longer varies by domain, and that is the v6 lesson. Every workflow runs one loop —
-CLARIFY → PLAN → GOAL → dispatch (IMPLEMENT, then VERIFY ∥ MECHANICAL ∥ third-party) → HUMAN REVIEW
-— and a domain contributes only its *checks*: `mechanicalChecks` commands, `reviewLenses`, and a
+CLARIFY → PLAN → GOAL → dispatch (IMPLEMENT, then VERIFY ∥ MECHANICAL ∥ third-party, then LENS) → HUMAN REVIEW
+— and a domain contributes only its *checks*: `mechanicalChecks` commands, one review `lens`, and a
 `redCommand` per task. Five domains once spelled that loop out as 63 skills that drifted against each
 other; the phases are now beats inside one program, so there is nothing to keep in sync.
 
@@ -210,7 +210,7 @@ Shared constraints (the section above) address only one layer. Any enforcement c
 
 > **v6.0.0:** the compiler is gone — there is no `spec → plan → run.js` compile step and no
 > `workflows/templates/`. What replaced it is the same idea one level up: `skills/work/workflow.js`
-> IS the program. The plan supplies data (tasks, commands, lenses); the schedule, the fix loop and
+> IS the program. The plan supplies data (tasks, commands, one lens); the schedule, the fix loop and
 > the gate are code that reads it. The findings below survived the change intact, because they were
 > about determinism and honesty, not about code generation.
 
@@ -245,7 +245,7 @@ The v5 spine got this half right. The mechanisms were shared, but each domain al
 skills to *invoke* them, so the invocation drifted even where the mechanism did not.
 
 The work spine is where this landed: one loop, one authority (the plan's `work:dispatch` spec and
-its hash), and per-domain contribution limited to mechanical checks and review lenses. A domain does
+its hash), and per-domain contribution limited to mechanical checks and one review lens. A domain does
 not get its own lifecycle — see `skills/work/SKILL.md`.
 
 ## 5. Enforcement and Its Limits

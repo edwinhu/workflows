@@ -88,7 +88,7 @@ every rule this file states that a string can settle — the TOC bang on every s
 aborts a load, a path the prose cannot resolve from the skill's own base directory, and a constraint key
 no loader reads. `bin/plugin-audit` runs it, so a finding fails the audit rather than waiting for a reader.
 
-Adding a `reviewLenses` entry or a checker script? Run `bun ${CLAUDE_PLUGIN_ROOT}/skills/plugin-creator/scripts/pc-probe.ts --target <plugin-dir>` afterwards — it computes whether the new lens or engine is a second one in its domain, and whether the old one still works.
+Adding or editing a skill's `lens`, or adding a checker script? Run `bun ${CLAUDE_PLUGIN_ROOT}/skills/plugin-creator/scripts/pc-probe.ts --target <plugin-dir>` afterwards — it judges the single lens prompt and computes whether a new engine is a second one in its domain, and whether the old one still works.
 
 #### `${CLAUDE_SKILL_DIR}` — Script Path References
 

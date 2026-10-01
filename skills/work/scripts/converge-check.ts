@@ -27,14 +27,20 @@
  */
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
-import { coveredBy, lint, parseArgs, parseMarkdown, type Plan } from './plan-lint.ts'
+import { coveredBy, lint, parseArgs, parseMarkdown, stripLineSuffix, type Plan } from './plan-lint.ts'
 
+/** An open scoreTable keeps rounds from different spine versions comparable. */
 type Result = {
   scoreTable?: Record<string, unknown>
   findings?: { title?: string; severity?: string; file?: string }[]
   tasksThatFlagged?: string[]
   red?: { id?: string; verdict?: string }[]
   mechanicalThatFailed?: { name?: string }[]
+  rulesThatFailed?: { name?: string }[]
+  /** RED-mode diagnoses. Each names the task that owns the fix, so a repeat here is the same wall. */
+  routes?: { failure?: string; ownerTask?: string }[]
+  /** Blocking items no task's writablePaths can reach — the plan itself has to be amended. */
+  planFindings?: { title?: string; failure?: string; ownerTask?: string }[]
 }
 
 const die = (msg: string): never => {
@@ -91,14 +97,18 @@ const slopeOf = (ys: number[]) => {
   return den ? Math.round((num / den) * 100) / 100 : 0
 }
 
-/** WHERE a round failed, as a comparable set — the three re-run selectors, not the lens findings.
+/** WHERE a round failed, as a comparable set — the re-run SELECTORS, not the lens findings.
  *  Lens findings are drawn from a constant-rate generator and never repeat (see convergence.md);
- *  these channels name tasks and commands, so a repeat here is a repeat of the same wall. */
+ *  these channels name tasks, commands and the plan, so a repeat here is a repeat of the same wall.
+ *  `planFindings` is in it because it is a selector: a run that routes the same item to the plan twice
+ *  is a run whose plan was never amended, and that is the most specific non-convergence there is. */
 const failureSignature = (r: Result): string[] => {
   const sig = new Set<string>()
   for (const id of r.tasksThatFlagged ?? []) sig.add(`task:${id}`)
   for (const rec of r.red ?? []) if (rec?.verdict && rec.verdict !== 'red-green') sig.add(`red:${rec.id}:${rec.verdict}`)
   for (const m of r.mechanicalThatFailed ?? []) sig.add(`mech:${m?.name ?? '(unnamed)'}`)
+  for (const m of r.rulesThatFailed ?? []) sig.add(`rule:${m?.name ?? '(unnamed)'}`)
+  for (const p of r.planFindings ?? []) sig.add(`plan:${p?.title ?? p?.failure ?? '(unnamed)'}`)
   return [...sig].sort()
 }
 
@@ -113,7 +123,12 @@ function main() {
   const files = resultFiles(dir!)
   const results: Result[] = []
   for (const f of files) {
-    try { results.push(JSON.parse(readFileSync(f, 'utf8'))) } catch {
+    try {
+      const result = JSON.parse(readFileSync(f, 'utf8'))
+      if (result === null || typeof result !== 'object' || Array.isArray(result))
+        throw new Error('result must be a JSON object')
+      results.push(result)
+    } catch {
       console.error(`converge-check: ${f} is unreadable — excluded from the sequence`)
     }
   }
@@ -154,8 +169,9 @@ function main() {
   for (const ts of results) {
     for (const f of ts.findings ?? []) {
       if (!f.file) { split.unattributed++; continue }
-      // `file` routinely carries a :line suffix; the path is what a writablePath can cover.
-      const path = String(f.file).replace(/:\d+(?::\d+)?$/, '')
+      // `file` routinely carries a :line suffix; the path is what a writablePath can cover. Same
+      // stripper work-redispatch.sh scopes with, so the split here and the scope there agree.
+      const path = stripLineSuffix(String(f.file))
       if (coveredBy(path, writable)) split.deliverable++
       else split.gate++
     }

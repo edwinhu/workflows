@@ -165,9 +165,9 @@ describe('the report measures what the gating decision needs', () => {
     const { lintCorpus } = await mod()
     const fresh = auditedRun(lintCorpus)
     const tp = fresh.findings.find((f: any) =>
-      String(f.where) === 'skills/work/scripts/work-redispatch.test.ts:1045')
+      String(f.where) === 'skills/work/scripts/work-redispatch.test.ts:1670')
     expect(tp?.rule).toBe('positive-match-failure-vocabulary')
-    expect(md()).toContain('skills/work/scripts/work-redispatch.test.ts:1045')
+    expect(md()).toContain('skills/work/scripts/work-redispatch.test.ts:1670')
   })
 
   test('every rule carries a stated false-positive count, an integer no larger than its raw count', () => {

@@ -254,8 +254,11 @@ def count_new_adv_registrations(year: int) -> int:
     Count new Form ADV registrations via EDGAR full-text search.
     ADV-NR = notice filing; ADV = initial registration
     """
+    # dateRange=custom intermittently returns {"message": "Internal server error"};
+    # startdt/enddt work alone. hits.total caps at 10,000 with relation "gte", so a
+    # capped value is a floor, not a count (full API notes: sec-fetch skill).
     base = 'https://efts.sec.gov/LATEST/search-index'
-    url = (f'{base}?q=%22ADV%22&dateRange=custom'
+    url = (f'{base}?q=%22ADV%22'
            f'&startdt={year}-01-01&enddt={year}-12-31'
            f'&forms=ADV')
     headers = {'User-Agent': 'Edwin Hu ehu@law.virginia.edu'}

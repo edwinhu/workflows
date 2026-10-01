@@ -1,0 +1,2 @@
+print(df.shape)
+# missing

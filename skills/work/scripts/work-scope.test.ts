@@ -78,7 +78,7 @@ function fixture() {
     projectDir: dir,
     goal: 'make the thing correct',
     mechanicalChecks: [],
-    reviewLenses: [{ key: 'k', agentType: 'Explore', refs: [], prompt: 'raise MAJOR when the work is wrong' }],
+    lens: { agentType: 'Explore', refs: [], prompt: 'raise MAJOR when the work is wrong' },
     tasks: [{
       id: 'T1', name: 'one', work: 'do the thing', writablePaths: ['src/'], refs: [],
       redCommand: 'bash scripts/check.sh', acceptance: '`bash scripts/check.sh` exits 0',

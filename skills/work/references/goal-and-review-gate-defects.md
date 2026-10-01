@@ -19,8 +19,10 @@ reasoned its way out of each — first "the escape applies only in runaway conte
 stopping *deliberately* disqualifies it while losing control would qualify. A stop condition that
 releases on runaway but not on a clean finish inverts the behaviour it exists to encourage.
 
-This is the skill's own doctrine turned on itself: a decidable fact (turns ≥ N) delegated to a lens
-reopens forever instead of settling once.
+A decidable fact (turns ≥ N) belongs to a counter, not a model judgement that reopens it on each
+attempt. The one review lens runs after the checks: RED diagnoses failures and names an owner task
+or `"plan"`, which the JS exposes as `planFindings`; GREEN reviews the deliverable. It never replaces
+a command's exit code with a judgement about whether the command passed.
 
 **FIXED** (`compose-goal.sh`, counter in `work-redispatch.sh`). Was: either drop the clause — an escape nothing enforces is not a limit — or make it countable:
 have the dispatcher write a round counter into the run dir, increment it in `work-redispatch.sh`,
@@ -29,11 +31,16 @@ as evidence rather than a judgement about transcript length.
 
 ## 2. `workflow.js has returned PASS` is unsatisfiable after success
 
-`work` fails any task whose `redCommand` exits 0 at baseline (`red-not-red` — "your test proves
-nothing"). Once a plan's tasks are implemented, every red gate is green **by construction**, so a
-re-run flags all of them: the episode above ended at `redNotRed: 5`. A goal naming PASS is therefore
-reachable only *before* the work is finished, and becomes structurally unreachable the moment it
-succeeds. `onlyTasks` cannot be empty and there is no verify-only mode, so no action closes it.
+In the measured episode, `work` re-probed every task's `redCommand` at baseline. The implemented
+work made those tests pass, so another round flagged them `red-not-red`; the episode ended at
+`redNotRed: 5`. At the time `onlyTasks` could not be empty and there was no verify-only mode, leaving
+no re-run that could satisfy a goal demanding another PASS.
+
+The current spine carries proven `red-green` adjudications for the exact current `redCommand`
+instead of re-probing them, including on FULL rounds. Changing the command drops that proof and
+requires a new probe pair. It permits `onlyTasks: []` when every task has carried records. The
+historical re-run dead end is repaired; the round's verdict still does not certify the whole plan's
+goal. See the current skill's hold rules.
 
 **FIXED** (`compose-goal.sh` names the review gate's verdict). Was: phrase the goal against an observable that survives success. Since `work-result.sh`'s exit
 code is now the verdict (0 pass / 1 fail / 2 refused), `"work-result.sh exited 0 for <plan>"` is

@@ -14,7 +14,7 @@ allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanM
 !`c=${CLAUDE_PLUGIN_ROOT}/scripts/load-constraints; [ -x "$c" ] && exec "$c" ds; echo "(constraint index unavailable: NO DS rule is listed here — the four named below are not the whole set)"`
 
 The lifecycle is [`work`](${CLAUDE_PLUGIN_ROOT}/skills/work/SKILL.md). Read it and follow it.
-This file is a **delta**: it supplies the domain — the CLARIFY axes, the plan grammar, the lenses,
+This file is a **delta**: it supplies the domain — the CLARIFY axes, the plan grammar, the lens,
 the mechanical checks, the refs, the authority text. It ships no `workflow.js` and restates none of
 `work`'s mechanics.
 
@@ -113,7 +113,7 @@ Five domain requirements on the plan:
   reached, and the data-quality and scale risks the read-only profile actually surfaced. A risk found
   at CLARIFY that reaches no plan section is a risk nothing acts on.
 - **Reproducibility decisions**, appropriate to the work: source vintages, seeds, environments and
-  config. `R1` (fresh re-run reproducibility) is judged by the `data-quality-judgement` lens, so a
+  config. `R1` (fresh re-run reproducibility) is judged by the review lens's data-quality item, so a
   plan recording none of these leaves `R1` with nothing to judge against.
 - **A `## Data Outputs` table**, in exactly this grammar, because `scripts/ds-dq.py` parses it and an
   output absent from it is one nothing will check:
@@ -142,7 +142,7 @@ Five domain requirements on the plan:
 
 - **A `## Review Surfaces` section** naming the concrete tables, figures, notebook exports,
   diagnostics, or decisions the user will inspect during human review.
-- **`refs` per task row and per lens** — required, may be empty. `work`'s spine does not validate it;
+- **`refs` on every task row and on the lens** — required, may be empty. `work`'s spine does not validate it;
   `wc-probe` P7 refuses an absent key in THIS file, so a live run assembled from an approved plan is
   unchecked. Write `refs: []` to state "no domain rules" rather than omitting the key.
 
@@ -216,48 +216,28 @@ Omitting it silently runs the user's codex request on claude.
     { name: "ds",
       cmd: "bash ${CLAUDE_PLUGIN_ROOT}/skills/ds/scripts/check.sh --plan <planPath> --project-dir <projectDir> [--test-cmd \"<the project's test command>\"] [--lint-cmd \"<the project's lint command>\"]" },
   ],
+  // Jev scores the ten DS rules; a rule with p >= 0.85 lands in rulesThatFailed and blocks, lower ones reach the lens as a ranked checklist.
+  ruleChecks: { name: "jev-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --project-dir <projectDir> --plan <planPath>" },
 
-  // Judged BEFORE any implementer is dispatched; a surviving critical|major returns FAIL having
-  // built nothing. Cheap: a spec defect costs a few read-only agents instead of a whole round.
-  // Passing reviewLenses REPLACES `work`'s defaults, so the two defaults are spelled out here
-  // rather than elided — an array of two would silently drop them.
-  reviewLenses: [
-    { key: "criteria-vs-artifacts",
-      agentType: "Explore",
-      refs: [],
-      prompt: "Judge the deliverable strictly against the success criteria in the plan and goal: for each criterion, is there an artifact in the working tree that satisfies it? Missing or partial satisfaction is a finding. Severity: MAJOR at minimum, CRITICAL where the unsatisfied criterion is one the deliverable cannot stand without." },
-
-    { key: "scope-fidelity",
-      agentType: "Explore",
-      refs: [],
-      prompt: "Judge scope fidelity: did the changes stay inside the plan's task table and writable paths? Out-of-scope edits, unrequested features, and silently skipped plan items are findings. Severity: MAJOR at minimum, CRITICAL where an edit landed outside every declared writable path." },
-
-    { key: "data-quality-judgement",
-      agentType: "Explore",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-checks.md"],
-      prompt: "Judge ONLY the seven checks no runner can settle, against the definitions in the refs. Read them in full first. Five are MODEL-EVALUATED: M1 (approved-plan criterion compliance), UNI (universe agreement), DEN (every rate states its denominator), DEL (coverage improved because the base shrank), R1 (fresh re-run reproducibility). Report each of those five as MODEL-EVALUATED with the evidence you actually read — never as PASS, which presents a judgement as a computation. Two more are yours as well: DQ4 (row-count traceability) and DQ6 (output-first shape before/after). The runner emits a line for them only because ENUM requires one; it computes neither and emits `always N/A`, and an N/A never sets its non-zero exit — so if you do not judge them, nothing does. `always N/A` is not a third kind of pass. Report DQ4 and DQ6 as dispositioned against task-local evidence — the input → transform → output count chain for DQ4, the before/after shape for DQ6 — never as checked. Findings: a check whose judgement you cannot support with evidence you actually read, since unsupported is a finding and never a pass; M1 — a plan criterion the outputs do not meet; UNI — sources admitting different entities; DEN — a reported rate with no stated denominator; DEL — a coverage improvement not attributable to the base shrinking; R1 — reproducibility not established by the vintages, seeds, environment and config the plan records; DQ4 — a row-count chain that cannot be traced input → transform → output; DQ6 — no before/after shape for the transform. Severity: a failed or unsupported judgement on any of the seven is `major` at minimum, and `critical` where the defect invalidates the output's stated grain, universe or inference — never `minor`, which would leave the gate passing over a real universe defect." },
-
-    { key: "methodology",
-      agentType: "Explore",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/ds/references/verification-patterns.md"],
-      prompt: "Judge only the method and the evidence behind it, against the patterns in the refs. Read them in full first. Findings: a statistic computed at a grain other than the one the plan declared, a universe predicate applied where scope was not meant to be decided, a claim whose evidence is read from code rather than observed from a run, and an output the plan promised that nothing checks. Severity: each of these four is `major` at minimum, and `critical` where the defect invalidates the output's stated grain, universe or inference — never `minor`, which would leave the gate passing over a real methodology defect." },
-
-    // This lens does NOT pin Explore. Explore is a built-in agent with a PREDEFINED prompt that no
-    // preloaded skill reaches, and it skips the CLAUDE.md hierarchy — so a constraint-indexed
-    // judgement dispatched there is graded from memory of constraint ids it was never given. That
-    // is the cost the four lenses above pay for Explore's structural read-only guarantee.
-    // ds-reviewer's body is a file this repo controls, and it is read-only by tools allowlist AND
-    // by tests/agent-contract.test.mjs — the same structural property, in an agent whose prompt can
-    // be told what it is grading. The four aggregates are not vendored into any skill: they reach
-    // this lens as refs, from their one canonical home.
-    { key: "ds-constraints",
-      agentType: "ds-reviewer",
-      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/ds/rules/ds-common-constraints.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/ds/rules/ds-common-conventions.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/ds/rules/ds-analysis-constraints.md",
-             "${CLAUDE_PLUGIN_ROOT}/skills/ds/rules/ds-engineering-constraints.md"],
-      prompt: "Grade the implemented code and outputs against the indexed constraints in your refs — C1-C6, V1-V9, A1-A6, E1-E7, read in full first — and against the two no regex reaches: every reported rate states its denominator, and the row-count chain traces input → transform → output. Grade only the constraints the task actually touches; an engineering constraint applied to a pure analysis task is a wrong finding that costs a round. Report every finding with the file, the line and the quoted code, naming the constraint id, and list every id you considered including those you judged satisfied. NEVER report a constraint judgement as a computation — it is MODEL-EVALUATED, with the evidence you actually read. Severity: `major` at minimum, `critical` where the defect invalidates the output's stated grain, universe or inference, never `minor`." },
-  ],
+  // One lens after verification and mechanical checks; its checklist covers all five dimensions.
+  //
+  // It does NOT pin Explore. Explore is a built-in agent with a PREDEFINED prompt that no preloaded
+  // skill reaches, and it skips the CLAUDE.md hierarchy — so a constraint-indexed judgement
+  // dispatched there is graded from memory of constraint ids it was never given. ds-reviewer's body
+  // is a file this repo controls, and it is read-only by tools allowlist AND by
+  // tests/agent-contract.test.mjs — the same structural property Explore is pinned for, in an agent
+  // whose prompt can be told what it is grading. The four aggregates are not vendored into any
+  // skill: they reach the lens as refs, from their one canonical home.
+  lens: {
+    agentType: "ds-reviewer",
+    refs: ["${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-checks.md",
+           "${CLAUDE_PLUGIN_ROOT}/skills/ds/references/verification-patterns.md",
+           "${CLAUDE_PLUGIN_ROOT}/skills/ds/rules/ds-common-constraints.md",
+           "${CLAUDE_PLUGIN_ROOT}/skills/ds/rules/ds-common-conventions.md",
+           "${CLAUDE_PLUGIN_ROOT}/skills/ds/rules/ds-analysis-constraints.md",
+           "${CLAUDE_PLUGIN_ROOT}/skills/ds/rules/ds-engineering-constraints.md"],
+    prompt: "Judge the datasets, tables and figures in the working tree against the approved plan and the goal. Read every file in refs in full before judging the items that name one. CHECKLIST, every item in scope on every run: (1) CRITERIA vs ARTIFACTS — for each success criterion in the plan and goal, is there an artifact in the tree that satisfies it? Missing or partial satisfaction is a finding, CRITICAL where the deliverable cannot stand without it. (2) SCOPE fidelity — did the changes stay inside the plan's task table and writable paths? Out-of-scope edits, unrequested features and silently skipped plan items are findings, CRITICAL where an edit landed outside every declared writable path. (3) DATA-QUALITY JUDGEMENT, the seven checks no runner can settle, defined in ds-checks.md. A rule in rulesThatFailed is diagnosed and routed like a mechanical failure, and the advisory RULE CHECKLIST is read before judging DEN, DQ4, DQ1, DQ6, M1, UNI and R1. Five are MODEL-EVALUATED: M1 (approved-plan criterion compliance), UNI (universe agreement), DEN (every rate states its denominator), DEL (coverage improved because the base shrank), R1 (fresh re-run reproducibility). Report each as MODEL-EVALUATED with the evidence you actually read — never as PASS, which presents a judgement as a computation. DQ4 (row-count traceability) and DQ6 (output-first shape before/after) are yours too: the runner emits a line for them only because ENUM requires one, computes neither, and emits `always N/A`, which never sets its non-zero exit — so if you do not judge them, nothing does. `always N/A` is not a third kind of pass; disposition both against task-local evidence, the input → transform → output count chain for DQ4 and the before/after shape for DQ6. Findings: a judgement you cannot support with evidence you actually read, since unsupported is a finding and never a pass; M1 — a plan criterion the outputs do not meet; UNI — sources admitting different entities; DEN — a reported rate with no stated denominator; DEL — a coverage improvement not attributable to the base shrinking; R1 — reproducibility not established by the vintages, seeds, environment and config the plan records. (4) METHODOLOGY, against verification-patterns.md: a statistic computed at a grain other than the one the plan declared, a universe predicate applied where scope was not meant to be decided, a claim whose evidence is read from code rather than observed from a run, and an output the plan promised that nothing checks. (5) DS-CONSTRAINTS — grade the implemented code and outputs against the indexed constraints in the four aggregates, C1-C6, V1-V9, A1-A6, E1-E7. Grade only the constraints the task actually touches; an engineering constraint applied to a pure analysis task is a wrong finding that costs a round. Report every constraint finding with the file, the line and the quoted code, naming the constraint id, and list every id you considered including those you judged satisfied. NEVER report a constraint judgement as a computation — it is MODEL-EVALUATED. Severity across the whole checklist: `major` at minimum, `critical` where the defect invalidates the output's stated grain, universe or inference, never `minor`, which would leave the gate passing over a real universe defect. MODE — RED (a task was flagged or a mechanical check failed): diagnose EVERY failure in the digest and route it, naming cause and fix, to the task id whose writablePaths own the file, or to 'plan' when no task can own the fix. MODE — GREEN (everything passed): make one open-ended pass over the whole checklist and report each finding with an ownerTask. In both modes, rule every carried finding open or closed against evidence you actually read; silence leaves it open.",
+  },
 
   authorityExtra: [
     "THE DS CONSTRAINT CORPUS IS ONE COMMAND AWAY. Run `${CLAUDE_PLUGIN_ROOT}/scripts/load-constraints ds` for the index — every rule scoped to this workflow, with an openable path — then read the ones your task touches. Do not work from a paraphrase of them in a brief: a paraphrase is a lossy copy of a corpus that moves.",
@@ -282,11 +262,10 @@ human reads — not a codebase. An agent is justified only by a custom prompt, h
 skills; `ds` earns it on the first alone — the constraint aggregates reach it as task `refs`, not as
 a preloaded skill.
 
-`verifierAgentType` and the four generic lenses pin `Explore` because it has no Edit and no Write: a
-judge that structurally cannot modify the tree beats a prompt asking it not to. The `ds-constraints`
-lens buys the same property a different way — `ds-reviewer` is read-only by tools
-allowlist — because Explore's prompt is predefined and no preloaded skill or CLAUDE.md reaches it;
-that lens carries the four aggregates in its own `refs`.
+`verifierAgentType` pins `Explore` because it has no Edit and no Write: a judge that structurally
+cannot modify the tree beats a prompt asking it not to. The lens buys the same property a different
+way — `ds-reviewer` is read-only by tools allowlist — because Explore's prompt is predefined and no
+preloaded skill or CLAUDE.md reaches it; the lens carries the four aggregates in its own `refs`.
 
 Add `${CLAUDE_PLUGIN_ROOT}/skills/ds/references/competing-hypothesis.md` to a task's `refs` when
 that task is a diagnosis rather than a build. `authorityExtra` names it; `refs` is what makes an

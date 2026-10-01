@@ -22,10 +22,12 @@ set -euo pipefail
 # key -> required JSON type. Must stay identical to the gate return at the tail of
 # ../workflow.js; a key that drifts out of that return silently reads as "missing" here.
 #
-# The gate return also carries `judged` (string), `implemented`, `verified`, `refuted`, `thirdParty`,
-# `mechanical`, `scores` (arrays), and — conditionally — `red` and `residue`. Only the keys below are
-# required: the rest are either advisory or emitted by one mode. OPTIONAL names the conditional ones
-# whose type is still checked WHEN PRESENT, so a mode-specific key cannot arrive malformed.
+# The gate return also carries `judged` (string), `implemented`, `verified`, `carried`, `dispositions`,
+# `thirdParty`, `mechanical`, `scores` (arrays), and — conditionally — `red` and `residue`. Only the keys
+# below are required: the rest are either advisory or emitted by one mode. OPTIONAL names the ones whose
+# type is still checked WHEN PRESENT, so a mode-specific key cannot arrive malformed.
+#
+# Keep the required subset compatible with older returns; routes and planFindings are optional arrays.
 CONTRACT='{
   "overallPass": "boolean",
   "verdict": "string",
@@ -37,7 +39,11 @@ CONTRACT='{
 }'
 OPTIONAL='{
   "red": "array",
-  "residue": "array"
+  "residue": "array",
+  "routes": "array",
+  "planFindings": "array",
+  "rulesThatFailed": "array",
+  "ruleVerdicts": "array"
 }'
 
 die() { printf 'work-result.sh: %s\n' "$*" >&2; exit 2; }

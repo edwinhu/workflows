@@ -359,7 +359,7 @@ export const KNOWN_EXEMPTION_RULES: readonly string[] = [
  * `lens-set-parity` IS NOT AND MUST NOT BE ON THAT LIST. P11 polices exactly one file per skill —
  * the SKILL.md emitting the fences — so a whole-file `ignore-lens-set-parity` is not a scoped
  * suppression, it is the rule's off switch, and a rule that can be switched off is worse than no
- * rule because it reads as enforcement. An intended difference is declared per-KEY instead, by
+ * rule because it reads as enforcement. An intended difference is declared per-FIELD instead, by
  * `parseLensSetDiffers`, which does not route through `EXEMPT_LINE_RE`.
  */
 
@@ -452,23 +452,24 @@ export function parseExemptions(file: string, text: string): Exemption[] {
 }
 
 /**
- * A P11 declaration: the lens keys two work-args fences are ALLOWED to differ by.
+ * A P11 declaration: the lens FIELDS two work-args fences are ALLOWED to differ by.
  *
- *     <!-- wc-probe: lens-set-differs scope-fidelity -->
- *     <!-- wc-probe: lens-set-differs scope-fidelity budget -->
+ *     <!-- wc-probe: lens-set-differs prompt -->
+ *     <!-- wc-probe: lens-set-differs prompt refs -->
  *
- * `malformed` is set when a line opens the declaration and names no parseable key. It is reported
+ * `malformed` is set when a line opens the declaration and names no parseable field. It is reported
  * rather than dropped: a declaration that never parses is invisible in both channels, which is how
  * an author gets a rule they believe they configured and a gate that says nothing.
  */
 export interface LensSetDiffers {
   file: string
   line: number
-  keys: string[]
+  /** The declared tokens — lens field names (`LENS_PARITY_FIELDS`). */
+  fields: string[]
   malformed: boolean
 }
 
-/** The strict grammar: one or more space-separated key names. */
+/** The strict grammar: one or more space-separated field names. */
 const LENS_DIFFERS_RE =
   /^(?:\/\/|#|\*)?\s*<!--\s*wc-probe:\s*lens-set-differs\s+([A-Za-z0-9][A-Za-z0-9_.-]*(?:\s+[A-Za-z0-9][A-Za-z0-9_.-]*)*)\s*-->$/
 /** The loose opener, so a line that MEANT to declare and got the syntax wrong is not silence. */
@@ -477,7 +478,7 @@ const LENS_DIFFERS_OPEN_RE = /^(?:\/\/|#|\*)?\s*<!--\s*wc-probe:\s*lens-set-diff
 /**
  * Every `lens-set-differs` declaration in `text`, in file order.
  *
- * This is a DECLARATION, not an exemption: it names the keys a difference may cover and nothing
+ * This is a DECLARATION, not an exemption: it names the fields a difference may cover and nothing
  * else, so it cannot switch P11 off. It deliberately does not route through `EXEMPT_LINE_RE`, which
  * still accepts only `ignore-<name>`.
  */
@@ -489,10 +490,10 @@ export function parseLensSetDiffers(file: string, text: string): LensSetDiffers[
     if (!LENS_DIFFERS_OPEN_RE.test(raw)) continue
     const m = LENS_DIFFERS_RE.exec(raw)
     if (!m) {
-      out.push({ file, line, keys: [], malformed: true })
+      out.push({ file, line, fields: [], malformed: true })
       continue
     }
-    out.push({ file, line, keys: m[1].split(/\s+/), malformed: false })
+    out.push({ file, line, fields: m[1].split(/\s+/), malformed: false })
   }
   return out
 }
@@ -2706,14 +2707,34 @@ export function isTaskRow(keys: string[]): boolean {
   return has('id') && (has('work') || has('writablePaths') || has('acceptance'))
 }
 
-/** True when an object literal's keys look like a review lens. */
-export function isLens(keys: string[]): boolean {
-  const has = (k: string) => keys.includes(k)
-  return has('key') && has('prompt')
+/**
+ * True when the object literal starting at `start` is the value of a `lens:` key.
+ *
+ * `work` takes ONE lens — `lens: {prompt, refs, agentType?, model?, effort?}` — so a lens no longer
+ * carries a `key` of its own and cannot be recognised by its key set. POSITION identifies it: the
+ * object a `lens:` key declares IS the lens, and nothing else in an args object is.
+ *
+ * Reads `masked` for the scan (string contents blanked, quotes kept) and `src` for the name, so a
+ * `lens:` written inside a prompt cannot be mistaken for a declaration.
+ */
+export function isLensObject(src: string, masked: string, start: number): boolean {
+  let i = start - 1
+  while (i >= 0 && /\s/.test(masked[i])) i--
+  if (masked[i] !== ':') return false
+  i--
+  while (i >= 0 && /\s/.test(masked[i])) i--
+  if (i < 0) return false
+  if (masked[i] === '"' || masked[i] === "'") {
+    const open = masked.lastIndexOf(masked[i], i - 1)
+    return open !== -1 && src.slice(open + 1, i) === 'lens'
+  }
+  const end = i + 1
+  while (i >= 0 && /[\w$]/.test(masked[i])) i--
+  return src.slice(i + 1, end) === 'lens'
 }
 
 /**
- * P7 refs declaration — every task row and every lens must declare a `refs` key
+ * P7 refs declaration — every task row and the lens must declare a `refs` key
  * (refs: [] is CLEAN; an absent key is a finding, because an omission cannot be
  * told apart from a forgotten one), and every declared ref must resolve.
  */
@@ -2731,12 +2752,46 @@ export function checkRefsDeclaration(
   const findings: Finding[] = []
   const context = ctx ?? skillContextFor(file, target)
   const masked = maskLiterals(text)
+
+  const attemptsBounds = [...masked.matchAll(/(?<![\w$.'"-])attempts\s*:\s*\[/g)].map(match => {
+    const arrayStart = match.index! + match[0].length - 1
+    let depth = 0
+    let arrayEnd = arrayStart
+    for (let i = arrayStart; i < masked.length; i++) {
+       if (masked[i] === '[') depth++
+       else if (masked[i] === ']') {
+         depth--
+         if (depth === 0) {
+           arrayEnd = i
+           break
+         }
+       }
+    }
+    return { start: arrayStart, end: arrayEnd }
+  })
+
   for (const obj of findObjectLiterals(text)) {
-    const kind = isTaskRow(obj.keys) ? 'task row' : isLens(obj.keys) ? 'lens' : null
+    if (!/\.test\.[cm]?[jt]s$/.test(file) && (obj.keys.includes('reviewLenses') || obj.keys.includes('refutersPerLens'))) {
+      const badKey = obj.keys.includes('reviewLenses') ? 'reviewLenses' : 'refutersPerLens'
+      findings.push({
+        rule: 'P7 refs declaration',
+        severity: 'critical',
+        file,
+        line: lineOf(text, obj.start),
+        detail: `work-args fence carries a retired ${badKey} key`,
+        remedy: 'replace it with `lens` (and `attempts` for blind entries) — workflow.js now throws on the old keys',
+      })
+    }
+
+    const isAttempt = attemptsBounds.some(b => obj.start > b.start && obj.end <= b.end + 1)
+    const kind = isTaskRow(obj.keys) ? 'task row' : isLensObject(text, masked, obj.start) ? 'lens' : isAttempt ? 'attempt' : null
     if (!kind) continue
     if (isExemptAt(exemptions, 'refs', lineOf(text, obj.start))) continue
-    const idSpan = findKeyValueSpan(text, masked, obj, kind === 'task row' ? 'id' : 'key')
-    const label = idSpan ? (stringLiteralsIn(text, idSpan.start, idSpan.end)[0] ?? '?') : '?'
+    // The lens has no id of its own, so it is labelled by the agent it dispatches, or by "lens".
+    const labelKey = kind === 'task row' ? 'id' : kind === 'attempt' ? 'key' : 'agentType'
+    const fallback = kind === 'task row' ? '?' : kind === 'attempt' ? 'attempt' : 'lens'
+    const idSpan = findKeyValueSpan(text, masked, obj, labelKey)
+    const label = idSpan ? (stringLiteralsIn(text, idSpan.start, idSpan.end)[0] ?? fallback) : fallback
     if (!obj.keys.includes('refs')) {
       findings.push({
         rule: 'P7 refs declaration',
@@ -2872,9 +2927,10 @@ export interface WorkArgsFence {
   mechanicalCount: number | null
   /** 1-based file line of the `mechanicalChecks` value. */
   mechanicalLine: number | null
-  /** Sorted `reviewLenses[].key` values. An ABSENT key yields `[]`, not null: the work skill reads an absent
-   *  or empty array as its own two defaults, so omitting it declares a lens set rather than none. */
-  lensKeys: string[]
+  /** The single `lens` object's judged fields. An ABSENT `lens` key yields all-null, not null for the
+   *  whole record: the work skill reads an absent lens as its own DEFAULT lens, so omitting it
+   *  declares a lens rather than none, and P11 compares it against a sibling fence's like for like. */
+  lens: LensFields
   /** The `projectDir` STRING LITERAL, or null when the key is absent or written as a shorthand /
    *  identifier — a value this file does not spell out is a value the probe cannot judge. */
   projectDir: string | null
@@ -2883,9 +2939,25 @@ export interface WorkArgsFence {
   /** `tasks[].id` string literals. An absent `tasks` key and `tasks: []` both yield `[]` — P13
    *  skips both, because a `readOnly` charter legitimately carries no work order. */
   taskIds: string[]
+  ruleChecks: { line: number, name: string | null, cmd: string | null, blockAt: number | null } | null
   /** Instance ids this fence enumerates, deduplicated, each with the arrays that named it. */
   instanceIds: InstanceId[]
 }
+
+/** The `lens` fields P11 compares across two fences of one file. */
+export interface LensFields {
+  /** The `prompt` string literal, or null when the key (or the whole lens) is absent. */
+  prompt: string | null
+  /** The `refs` array's string literals, in source order. An absent key yields `[]`. */
+  refs: string[]
+  /** The `agentType` string literal, or null when absent. */
+  agentType: string | null
+  /** The `attempts` array's string literals, or null when absent. Used for parity comparison. */
+  attempts: string | null
+}
+
+/** A fence that declares no `lens` — which is the work skill's own default lens, not "no lens". */
+export const NO_LENS: LensFields = { prompt: null, refs: [], agentType: null, attempts: null }
 
 /** One instance the fence fans out over, and every array of the fence that enumerated it. */
 export interface InstanceId {
@@ -2898,15 +2970,17 @@ export interface InstanceId {
 /**
  * How an instance id is read out of a fence, and why each is a run of DIGITS.
  *
- * A fan-out id has no declared syntax anywhere in work — it is whatever the caller wrote into a
- * lens key, an item line and a `--lecture` spec. Digits are the one shape all three carry in the
- * corpus and the one shape that can be matched back against a task id without guessing: a lens key
- * suffix that is not numeric (`scope-fidelity`, `source-first`) is a lens NAME, not an instance, and
- * treating it as one manufactures a missing task row for every lens a workflow declares.
+ * A fan-out id has no declared syntax anywhere in work — it is whatever the caller wrote into an
+ * item line and a `--lecture` spec. Digits are the one shape both carry in the corpus and the one
+ * shape that can be matched back against a task id without guessing.
+ *
+ * A LENS IS NOT A SOURCE. It was, while `reviewLenses` let a workflow declare one lens per instance
+ * and encode the instance in the key's numeric suffix. There is now exactly one lens per fence and
+ * it has no key, so the only ids it could yield would be digits scraped out of a prompt — which is
+ * not an enumeration.
  */
 const INSTANCE_ID_SOURCES = {
   mech: 'mechanicalChecks cmd',
-  lens: 'reviewLenses[].key',
   scored: 'scoredChecks[].items',
 } as const
 
@@ -2950,8 +3024,8 @@ export function arrayElementCount(masked: string, span: { start: number; end: nu
 /**
  * Every work args object emitted in a fenced block, one per object.
  *
- * A CODE fence only (`isCodeFence`), and the object must declare `mechanicalChecks` or
- * `reviewLenses` — the two keys that make an args object the thing the work skill is dispatched with.
+ * A CODE fence only (`isCodeFence`), and the object must declare `mechanicalChecks` or `lens` — the
+ * two keys that make an args object the thing the work skill is dispatched with.
  */
 export function workArgsFences(text: string): WorkArgsFence[] {
   const out: WorkArgsFence[] = []
@@ -2961,19 +3035,28 @@ export function workArgsFences(text: string): WorkArgsFence[] {
     const masked = maskLiterals(body)
     const literals = findObjectLiterals(body)
     for (const obj of literals) {
-      if (!obj.keys.includes('mechanicalChecks') && !obj.keys.includes('reviewLenses')) continue
+      if (!obj.keys.includes('mechanicalChecks') && !obj.keys.includes('lens') && !obj.keys.includes('ruleChecks')) continue
       // The body's first line is the line AFTER the opening delimiter, so `lineOf` over the body
       // plus the delimiter's own line is the file line.
       const fileLine = (index: number) => block.line + lineOf(body, index)
       const mech = findKeyValueSpan(body, masked, obj, 'mechanicalChecks')
-      const lensSpan = findKeyValueSpan(body, masked, obj, 'reviewLenses')
-      const lensKeys: string[] = []
-      if (lensSpan) {
-        for (const o of directElements(literals, lensSpan, 'key')) {
-          const s = findKeyValueSpan(body, masked, o, 'key')
-          const v = s ? stringLiteralsIn(body, s.start, s.end)[0] : undefined
-          if (v !== undefined) lensKeys.push(v)
-        }
+      const lensSpan = findKeyValueSpan(body, masked, obj, 'lens')
+      // `findKeyValueSpan` returns the span STARTING at the value, so the lens object is the literal
+      // that opens there. A `lens` whose value is not an object literal (an identifier, a spread)
+      // yields the absent record rather than a guess.
+      const lensObj = lensSpan ? literals.find(o => o.start === lensSpan.start) : undefined
+      const field = (key: string): string | null => {
+        if (!lensObj) return null
+        const s = findKeyValueSpan(body, masked, lensObj, key)
+        return s ? (stringLiteralsIn(body, s.start, s.end)[0] ?? null) : null
+      }
+      const refsSpan = lensObj ? findKeyValueSpan(body, masked, lensObj, 'refs') : null
+      const attemptsSpan = findKeyValueSpan(body, masked, obj, 'attempts')
+      const lens: LensFields = {
+        prompt: field('prompt'),
+        refs: refsSpan ? stringLiteralsIn(body, refsSpan.start, refsSpan.end) : [],
+        agentType: field('agentType'),
+        attempts: attemptsSpan ? stringLiteralsIn(body, attemptsSpan.start, attemptsSpan.end).join('\u0000') : null
       }
 
       const tasksSpan = findKeyValueSpan(body, masked, obj, 'tasks')
@@ -2997,10 +3080,6 @@ export function workArgsFences(text: string): WorkArgsFence[] {
           for (const m of cmd.matchAll(/--lecture\s+(\d+):/g)) enumerate(m[1], INSTANCE_ID_SOURCES.mech)
         }
       }
-      for (const k of lensKeys) {
-        const m = /-(\d+)$/.exec(k)
-        if (m) enumerate(m[1], INSTANCE_ID_SOURCES.lens)
-      }
       const scoredSpan = findKeyValueSpan(body, masked, obj, 'scoredChecks')
       if (scoredSpan) {
         for (const o of directElements(literals, scoredSpan, 'items')) {
@@ -3012,16 +3091,34 @@ export function workArgsFences(text: string): WorkArgsFence[] {
           }
         }
       }
+
+      const ruleChecksSpan = findKeyValueSpan(body, masked, obj, 'ruleChecks')
+      let ruleChecks = null
+      if (ruleChecksSpan) {
+        const rcObj = literals.find(o => o.start === ruleChecksSpan.start)
+        if (rcObj) {
+          const nameSpan = findKeyValueSpan(body, masked, rcObj, 'name')
+          const cmdSpan = findKeyValueSpan(body, masked, rcObj, 'cmd')
+          const blockAtSpan = findKeyValueSpan(body, masked, rcObj, 'blockAt')
+          ruleChecks = {
+            line: fileLine(ruleChecksSpan.start),
+            name: nameSpan ? (stringLiteralsIn(body, nameSpan.start, nameSpan.end)[0] ?? null) : null,
+            cmd: cmdSpan ? (stringLiteralsIn(body, cmdSpan.start, cmdSpan.end)[0] ?? null) : null,
+            blockAt: blockAtSpan ? parseFloat(body.slice(blockAtSpan.start, blockAtSpan.end)) : null,
+          }
+        }
+      }
       const pdSpan = findKeyValueSpan(body, masked, obj, 'projectDir')
       const pd = pdSpan ? stringLiteralsIn(body, pdSpan.start, pdSpan.end)[0] : undefined
       out.push({
         fenceLine: block.line,
         mechanicalCount: mech ? arrayElementCount(masked, mech) : null,
         mechanicalLine: mech ? fileLine(mech.start) : null,
-        lensKeys: lensKeys.sort(),
+        lens,
         projectDir: pd === undefined ? null : pd,
         projectDirLine: pd === undefined ? null : fileLine(pdSpan!.start),
         taskIds,
+        ruleChecks,
         instanceIds: [...seen].map(([id, sources]) => ({ id, sources: [...sources].sort() })),
       })
     }
@@ -3094,12 +3191,23 @@ export function checkSingleEntryPoint(file: string, text: string, exemptions: re
   return findings
 }
 
+/** The lens fields P11 measures. `model` and `effort` are cost, not judgement, and are not compared. */
+export const LENS_PARITY_FIELDS = ['prompt', 'refs', 'agentType', 'attempts'] as const
+
+/** One field of a lens, flattened to a comparable string. */
+function lensFieldValue(lens: LensFields, field: (typeof LENS_PARITY_FIELDS)[number]): string {
+  if (field === 'refs') return lens.refs.join('\u0000')
+  return lens[field] ?? ''
+}
+
 /**
- * P11 lens-set parity — two work-args fences in one file declare the same lens set.
+ * P11 lens parity — two work-args fences in one file declare the SAME lens.
  *
- * A second fence is a near-copy of the first, and a lens present in one and absent from the other is
- * a dimension nobody judges on that branch. An intended difference is declared KEY BY KEY with
- * `<!-- wc-probe: lens-set-differs <key>... -->`; a difference no declaration names is a finding.
+ * A second fence is a near-copy of the first, and a lens whose prompt, refs or agentType differs
+ * between them judges the two branches by different standards. An intended difference is declared
+ * FIELD BY FIELD with `<!-- wc-probe: lens-set-differs <field>... -->`; a difference no declaration
+ * names is a finding. The declaration grammar is unchanged — its tokens named lens KEYS while a
+ * workflow declared a lens SET, and name the lens's own FIELDS now that it declares one lens.
  *
  * NO EXEMPTION PARAMETER, on purpose. P11 polices one file per skill, so any whole-file suppression
  * — `ignore-lens-set-parity`, `ignore-all` — is the rule's off switch rather than a scoped
@@ -3115,29 +3223,26 @@ export function checkLensSetParity(file: string, text: string): Finding[] {
       severity: 'major',
       file,
       line: d.line,
-      detail: 'this lens-set-differs declaration names no parseable lens key, so it declares nothing while reading as a declaration',
-      remedy: 'write <!-- wc-probe: lens-set-differs <key> [<key>...] --> with the keys the two fences may differ by',
+      detail: 'this lens-set-differs declaration names no parseable lens field, so it declares nothing while reading as a declaration',
+      remedy: `write <!-- wc-probe: lens-set-differs <field> [<field>...] --> with the lens fields the two fences may differ by (${LENS_PARITY_FIELDS.join(', ')})`,
     })
   }
   const fences = workArgsFences(text)
   if (fences.length < 2) return findings
-  const declared = new Set(declarations.flatMap(d => d.keys))
+  const declared = new Set(declarations.flatMap(d => d.fields))
   const first = fences[0]
   for (const f of fences.slice(1)) {
-    const diff = [
-      ...first.lensKeys.filter(k => !f.lensKeys.includes(k)),
-      ...f.lensKeys.filter(k => !first.lensKeys.includes(k)),
-    ]
-    const undeclared = [...new Set(diff.filter(k => !declared.has(k)))].sort()
+    const diff = LENS_PARITY_FIELDS.filter(k => lensFieldValue(first.lens, k) !== lensFieldValue(f.lens, k))
+    const undeclared = diff.filter(k => !declared.has(k))
     if (undeclared.length === 0) continue
     findings.push({
       rule: 'P11 lens-set parity',
       severity: 'major',
       file,
       line: f.fenceLine,
-      detail: `this work-args fence declares lenses [${f.lensKeys.join(', ')}] where the fence at line ${first.fenceLine} declares [${first.lensKeys.join(', ')}]; no declaration names ${undeclared.map(k => `"${k}"`).join(', ')}`,
+      detail: `this work-args fence's lens differs from the one in the fence at line ${first.fenceLine} in ${diff.join(', ')}; no declaration names ${undeclared.map(k => `"${k}"`).join(', ')}`,
       remedy:
-        `make the two lens sets identical, or declare the intended difference with <!-- wc-probe: lens-set-differs ${undeclared.join(' ')} --> — an absent reviewLenses array is not "no lenses", it is the work skill's own defaults, so a silent difference judges the two branches by different standards`,
+        `make the two lenses identical, or declare the intended difference with <!-- wc-probe: lens-set-differs ${undeclared.join(' ')} --> — an absent lens object is not "no lens", it is the work skill's own default lens, so a silent difference judges the two branches by different standards`,
     })
   }
   return findings
@@ -3264,10 +3369,9 @@ export function checkDispatchRouting(file: string, text: string, exemptions: rea
 /**
  * P13 task-row coverage — every instance a fence JUDGES has a task row that BUILDS it.
  *
- * A fan-out workflow names its instances three times over: as `--lecture NN:` specs in the one
- * mechanical command, as `scoredChecks[].items` lines, and as the numeric suffix of a per-instance
- * lens key. An instance named there and by no `tasks[].id` is gated but never built — the gate
- * reports on an artifact no implementer was dispatched to produce.
+ * A fan-out workflow names its instances twice over: as `--lecture NN:` specs in the one mechanical
+ * command, and as `scoredChecks[].items` lines. An instance named there and by no `tasks[].id` is
+ * gated but never built — the gate reports on an artifact no implementer was dispatched to produce.
  *
  * A task id COVERS an instance when it contains that id as a whole run of digits, so `content-18`,
  * `r18-align` and `c18-notes` all cover `18` while `deck-190` does not cover `19`.
@@ -3275,6 +3379,39 @@ export function checkDispatchRouting(file: string, text: string, exemptions: rea
  * A fence with no task rows is skipped, not flagged: `tasks: []` is what a `readOnly` charter
  * declares, and flagging it would fire on every audit block in the corpus.
  */
+
+/**
+ * ruleChecks configuration — an args fence carrying ruleChecks must give name and cmd as non-empty strings
+ * and blockAt (when present) a number in (0,1].
+ */
+export function checkRuleChecks(file: string, text: string): Finding[] {
+  const findings: Finding[] = []
+  for (const f of workArgsFences(text)) {
+    if (!f.ruleChecks) continue
+    const { line, name, cmd, blockAt } = f.ruleChecks
+    const missingName = !name || name.trim() === ''
+    const missingCmd = !cmd || cmd.trim() === ''
+    let badBlock = false
+    if (blockAt !== null) {
+      if (Number.isNaN(blockAt) || blockAt <= 0 || blockAt > 1) {
+        badBlock = true
+      }
+    }
+    
+    if (missingName || missingCmd || badBlock) {
+      findings.push({
+        rule: 'ruleChecks shape',
+        severity: 'major',
+        file,
+        line,
+        detail: 'ruleChecks must give name and cmd as non-empty strings and blockAt (when present) a number in (0,1]',
+        remedy: 'ensure ruleChecks carries { name: "...", cmd: "..." } and optionally blockAt: 0.85',
+      })
+    }
+  }
+  return findings
+}
+
 export function checkTaskRowCoverage(file: string, text: string, exemptions: readonly Exemption[]): Finding[] {
   const findings: Finding[] = []
   for (const f of workArgsFences(text)) {
@@ -3672,6 +3809,7 @@ export function runProbe(
       // file's PROSE makes, which the code view blanks.
       findings.push(...checkDispatchRouting(file, text, fileExemptions))
       findings.push(...checkTaskRowCoverage(file, text, fileExemptions))
+      findings.push(...checkRuleChecks(file, text))
       // P6/P7 judge what the call CONTAINS, so they read the code view.
       const code = maskNonFenced(text)
       findings.push(...checkBareWorkflowRefs(file, code, fileExemptions))

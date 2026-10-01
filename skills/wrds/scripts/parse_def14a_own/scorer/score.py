@@ -659,12 +659,14 @@ def main():
     # carries the flags that say which set each filing is in and which exclusion
     # clause fired. Re-deriving it here from a panel would let a round that
     # re-parsed the archive move its own denominator.
-    # Clause names are explicit: X1-X4 affect both sets, X7-X9 only group targets. X3/X4 (2026-09-30) are the fund dollar-range and
+    # Clause names are explicit: X1-X4 affect both sets, X7-X9 only (b), X10-X13 only (a). X3/X4 (2026-09-30) are the fund dollar-range and
     # per-fund compensation families; they get their OWN diagnostic denominator
     # below, because the whole point of the correction is that re-accepting them
     # stays visible after they leave the gated set.
     EXCL_COLS = ["excl_x1_dollar_in_name", "excl_x2_one_value_all_rows",
-                 "excl_x3_dollar_range_table", "excl_x4_m3_repeated_per_fund"]
+                 "excl_x3_dollar_range_table", "excl_x4_m3_repeated_per_fund",
+                 "excl_x10_repeated_fund_compensation", "excl_x11_audit_billing_entities",
+                 "excl_x12_partnership_accounting", "excl_x13_purchase_narrative_year"]
     GROUP_EXCL_COLS = ["excl_x7_group_grant_zero", "excl_x8_group_share_class_name",
                        "excl_x9_group_position_name_prose"]
     EXCL_COLS += GROUP_EXCL_COLS
@@ -1331,10 +1333,11 @@ def main():
         print("      share-only group-row population, any group row back: %d / %d = %.4f" % (
             len(bd_hit), len(reg_bd), rrate(bd_hit, reg_bd)))
         print("      EXCLUDED zero-row filings (X1 dollar-in-name / X2 one-value-all-rows /")
-        print("      X3 fund dollar-range table / X4 per-fund compensation table)")
+        print("      X3 fund dollar-range / X4 per-fund compensation / X10 repeated compensation /")
+        print("      X11 audit billing / X12 partnership accounting / X13 purchase-narrative year)")
         print("      that emit >=1 row again: %d / %d = %.4f  — a RISE here is the round" % (
             len(ex_hit), len(reg_excl_zero), rrate(ex_hit, reg_excl_zero)))
-        print("      re-accepting dollar-range and compensation tables, not recovering ownership")
+        print("      re-accepting non-ownership rows, not recovering ownership [DIAGNOSTIC]")
         # PER CLAUSE, so the 2026-09-30 set correction is auditable: the 285 filings
         # X3/X4 removed from set (a) are still counted here every round. Clauses can
         # overlap, so these denominators sum to more than the total above.
