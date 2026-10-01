@@ -18,11 +18,11 @@
 tests/ownership_dq_test.py
 tests/test_de_ai_footnote_masking.py
 tests/test_law_review_footnote_symbols.py
-skills/bmll/scripts/test_bmll_impact.py
-skills/bmll/scripts/test_bmll_scripts.py
 skills/ds/scripts/ds_dq_test.py
 skills/pincite/tests/test_page_offset.py
 skills/writing/scripts/writing_flip_test.py
 skills/writing/scripts/writing_prose_gate_test.py
 skills/writing/scripts/writing_gate_probe_test.py
 skills/writing/scripts/writing_receipt_test.py
+
+# not-gated: skills/wrds/scripts/parse_def14a_own/scorer/score_test.py -- nested tests

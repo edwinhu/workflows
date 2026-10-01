@@ -3582,3 +3582,58 @@ describe('P13 one loader entry point', () => {
     expect(probe.checkLoaderEntryPoint('SKILL.md', text, ex).length).toBe(0)
   })
 })
+
+
+describe('ruleChecks configuration', () => {
+  test('ruleChecks with blockAt out of range is flagged', () => {
+    const text = [
+      '```js',
+      '{',
+      '  "tasks": [],',
+      '  "ruleChecks": {',
+      '    "name": "jev-rules",',
+      '    "cmd": "bun run.ts",',
+      '    "blockAt": 1.1',
+      '  }',
+      '}',
+      '```'
+    ].join('\n')
+    const findings = WcProbe.checkRuleChecks('f1.md', text)
+    expect(findings).toHaveLength(1)
+    expect(findings[0].rule).toBe('ruleChecks shape')
+    expect(findings[0].detail).toMatch(/number in \(0,1\]/)
+  })
+
+  test('ruleChecks missing name or cmd is flagged', () => {
+    const text = [
+      '```js',
+      '{',
+      '  "tasks": [],',
+      '  "ruleChecks": {',
+      '    "name": "",',
+      '    "cmd": "bun run.ts"',
+      '  }',
+      '}',
+      '```'
+    ].join('\n')
+    const findings = WcProbe.checkRuleChecks('f2.md', text)
+    expect(findings).toHaveLength(1)
+  })
+
+  test('a well-formed ruleChecks passes', () => {
+    const text = [
+      '```js',
+      '{',
+      '  "tasks": [],',
+      '  "ruleChecks": {',
+      '    "name": "jev-rules",',
+      '    "cmd": "bun run.ts",',
+      '    "blockAt": 0.85',
+      '  }',
+      '}',
+      '```'
+    ].join('\n')
+    const findings = WcProbe.checkRuleChecks('f3.md', text)
+    expect(findings).toHaveLength(0)
+  })
+})

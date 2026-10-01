@@ -749,9 +749,10 @@ carried = len(a.get("carriedFindings") or []) + len(a.get("priorFindings") or []
 scored = sum(len(s.get("items") or []) for s in (a.get("scoredChecks") or []))
 tp = len(a.get("thirdParty") or [])
 att = len(a.get("attempts") or [])
-floor = 2*impl + 2*red + lens + mech + scored + tp + att
+rule = 1 if a.get("ruleChecks") else 0
+floor = 2*impl + 2*red + lens + mech + scored + tp + att + rule
 print(f"  readOnly={ro} tasks={len(t)} active={impl} red={red} lens={lens} "
-      f"mech={mech} scored={scored} carried={carried} thirdParty={tp} attempts={att}")
+      f"mech={mech} scored={scored} carried={carried} thirdParty={tp} attempts={att} rule={rule}")
 print(f"  fan-out floor {floor} vs maxAgents {a.get('maxAgents', 50)}")
 PY
 red_summary "$out"

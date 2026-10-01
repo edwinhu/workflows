@@ -484,7 +484,7 @@ function selResult(
   dir: string,
   flagged: string[],
   opts: {
-    settled?: string[]; noRedFor?: string[]; findings?: unknown[]; mechFailed?: unknown[]
+    settled?: string[]; noRedFor?: string[]; findings?: unknown[]; mechFailed?: unknown[]; rulesThatFailed?: unknown[]
     /** RED-mode diagnoses: {failure, ownerTask, cause, fix}. ownerTask is a task id or 'plan'. */
     routes?: unknown[]
     /** Blocking items whose owner is the PLAN — no task's writablePaths can reach them. */
@@ -503,6 +503,7 @@ function selResult(
     })),
     tasksThatFlagged: flagged,
     mechanicalThatFailed: opts.mechFailed ?? [],
+    rulesThatFailed: opts.rulesThatFailed ?? [],
     lensesThatFlagged: opts.findings?.length ? ['lens'] : [],
     findings: opts.findings ?? [],
     routes: opts.routes ?? [],
@@ -901,6 +902,21 @@ describe('M1/M2/M3 — the loop no longer dead-ends', () => {
   })
 
   // ---- M2: a mechanical failure the lens routed --------------------------------------------------
+  test('a lens-routed rule failure narrows to its owner', () => {
+    const f = selFixture()
+    selResult(f.dir, [], {
+      rulesThatFailed: [{ name: 'Rule 3', exitCode: 1, output: 'broken' }],
+      routes: [{ failure: 'Rule 3', ownerTask: 'T5',
+                 cause: 'broken', fix: 'fix' }],
+    })
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(0)
+    expect(only(f.args)).toEqual(['T5'])
+    expect(carriedIds(f.args, 'verified')).toEqual(['T1', 'T2', 'T3', 'T4'])
+    expect(r.out).toMatch(/mechanical\/rule failure\(s\) the lens routed to an owner/)
+    expect(r.out).toContain('Rule 3 -> T5')
+  })
+
   test('a lens-routed mechanical failure narrows to its owner', () => {
     const f = selFixture()
     selResult(f.dir, [], {
@@ -912,7 +928,7 @@ describe('M1/M2/M3 — the loop no longer dead-ends', () => {
     expect(r.code).toBe(0)
     expect(only(f.args)).toEqual(['T5'])
     expect(carriedIds(f.args, 'verified')).toEqual(['T1', 'T2', 'T3', 'T4'])
-    expect(r.out).toMatch(/mechanical failure\(s\) the lens routed to an owner/)
+    expect(r.out).toMatch(/mechanical\/rule failure\(s\) the lens routed to an owner/)
     expect(r.out).toContain('tests -> T5')
   })
 
@@ -948,6 +964,19 @@ describe('M1/M2/M3 — the loop no longer dead-ends', () => {
   })
 
   // ---- M2, second half: the plan-routed failure ---------------------------------------------------
+  test('a plan-routed rule failure with an unchanged hash exits 3', () => {
+    const f = selFixture()
+    syncHash(f)
+    const routed = { failure: 'Rule 4', ownerTask: 'plan', cause: 'x', fix: 'x' }
+    selResult(f.dir, [], {
+      rulesThatFailed: [{ name: 'Rule 4', exitCode: 1 }],
+      routes: [routed], planFindings: [routed],
+    })
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(3)
+    expect(r.stderr || r.out).toMatch(/item\(s\) in .* are routed to the PLAN, and the spec hash is unchanged/)
+  })
+
   test('a plan-routed failure after a hash change dispatches onlyTasks []', () => {
     const f = selFixture()                         // args.specHash is 0*64, so the hash CHANGES
     const routed = { failure: 'mechanical check tests exited 1', ownerTask: 'plan',

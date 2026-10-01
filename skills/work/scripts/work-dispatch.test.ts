@@ -756,6 +756,21 @@ describe('the fan-out sizing print counts one lens and no refuters', () => {
     expect(r.out).toMatch(/fan-out floor 9 vs maxAgents 50/)
   })
 
+  test('the fan-out print counts ruleChecks', () => {
+    const f = fixture({
+      redCommand: 'bash scripts/check.sh',
+      extraArgs: {
+        ruleChecks: [{ name: 'Rule 1' }]
+      },
+    })
+    script(f.dir, 'check.sh', 'echo "1 failed"\nexit 1')
+    const r = dispatch(f)
+    if (r.code !== 0) console.log(r.out)
+    expect(r.code).toBe(0)
+    expect(r.out).toMatch(/rule=1\b/)
+    expect(r.out).toMatch(/fan-out floor 7 vs maxAgents 50/)
+  })
+
   // M1. A task carrying a PROVEN red pair is not re-probed by workflow.js, so it must not be counted
   // here either — a sizing that charges for probes nobody runs is a sizing the gate does not read.
   test('a carried proven red costs no probe in the floor', () => {
