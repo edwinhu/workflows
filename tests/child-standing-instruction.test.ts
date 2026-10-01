@@ -83,7 +83,7 @@ describe('the early-stop standing instruction reaches every unattended child pro
     const tasks = join(d, 'tasks.json')
     writeFileSync(tasks, JSON.stringify([{ label: 'r', prompt: 'ROW-PROMPT-SENTINEL' }]))
 
-    const r = spawnSync('bash', [FARM, '--tasks', tasks, '--cwd', agentCwd], {
+    const r = spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', agentCwd], {
       encoding: 'utf8',
       cwd: d,
       timeout: 120_000,

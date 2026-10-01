@@ -42,7 +42,7 @@ function script(dir: string, name: string, bodyText: string): string {
 }
 
 function run(args: string[], env?: Record<string, string>) {
-  return spawnSync('bash', [GRIND, 'run', ...args], {
+  return spawnSync('bash', [GRIND, 'run', '--runner', 'claude-code', ...args], {
     encoding: 'utf8', timeout: 60_000, env: env ?? grindEnv(),
   })
 }

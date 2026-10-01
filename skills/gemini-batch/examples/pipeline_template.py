@@ -25,6 +25,7 @@ from gemini_models import resolve_model
 CONFIG = {
     "bucket": "your-bucket-name",
     "model": resolve_model("bulk"),
+    "project": os.environ.get("GOOGLE_CLOUD_PROJECT"),
     "input_dir": "./data/input",
     "output_dir": "./data/output",
 }
@@ -56,7 +57,8 @@ def main():
     # Initialize processor
     processor = GeminiBatchProcessor(
         bucket_name=CONFIG["bucket"],
-        model=CONFIG["model"]
+        model=CONFIG["model"],
+        project=CONFIG["project"]
     )
 
     # Run pipeline

@@ -114,7 +114,7 @@ function loop(d: string, iters: number, extraRunner = '', extraArgs: string[] = 
 }
 
 function run(args: string[]) {
-  return spawnSync('bash', [GRIND, 'run', ...args], { encoding: 'utf8', timeout: 60_000, env: grindEnv() })
+  return spawnSync('bash', [GRIND, 'run', '--runner', 'claude-code', ...args], { encoding: 'utf8', timeout: 60_000, env: grindEnv() })
 }
 
 /** The GRIND_SUBJECTS block: its header line plus the indented subject lines that follow it. */

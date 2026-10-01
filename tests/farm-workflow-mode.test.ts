@@ -24,7 +24,7 @@ function workflowRun() {
     `#!/usr/bin/env bash\nprintf '{}\\n' > "${out}"\nprintf '{"type":"result","result":"ok"}\\n'\n`)
   chmodSync(join(bin, 'claude-code'), 0o755)
   const wf = join(tmp, 'wf.js'); writeFileSync(wf, 'export const meta = { name: "x", description: "x" }\n')
-  const res = spawnSync('bash', [FARM, '--workflow', wf, '--out', out, '--cwd', tmp], {
+  const res = spawnSync('bash', [FARM, '--provider', 'claude', '--workflow', wf, '--out', out, '--cwd', tmp], {
     // CLAUDE_CODE_SESSION_ID is pinned empty, not inherited: the event dir is keyed by it, and
     // `bun test` itself runs inside a session, so an ambient value moves the dir under the runner.
     encoding: 'utf8',

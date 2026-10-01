@@ -52,7 +52,7 @@ NOBODY IS WATCHING THIS RUN. There is no one to answer a question, accept an off
 # Exit 2 is "you called me wrong" -- distinct from 1, "the delegation failed".
 refuse() { printf '%s\n' "$*" >&2; exit 2; }
 
-PROVIDER=claude CWD=$PWD TASKS= WORKFLOW= ARGSFILE= OUT= CRON=1 ; EXPECT=()
+PROVIDER="" CWD=$PWD TASKS= WORKFLOW= ARGSFILE= OUT= CRON=1 BUDGET="" ; EXPECT=()
 while [ $# -gt 0 ]; do
   case "$1" in
     --no-cron)  CRON=0; shift ;;
@@ -60,6 +60,7 @@ while [ $# -gt 0 ]; do
     --provider) PROVIDER="${2:?--provider needs a value}"; shift 2 ;;
     --cwd)      CWD="${2:?--cwd needs a value}";           shift 2 ;;
     --tasks)    TASKS="${2:?--tasks needs a value}";       shift 2 ;;
+    --budget)   BUDGET="${2:?--budget needs a value}";     shift 2 ;;
     --expect)   EXPECT+=("${2:?--expect needs a value}");  shift 2 ;;
     --workflow) WORKFLOW="${2:?--workflow needs a value}"; shift 2 ;;
     --args)     ARGSFILE="${2:?--args needs a value}";     shift 2 ;;
@@ -70,6 +71,7 @@ done
 
 # All validation runs before the wrapper is touched: a refusal must not depend
 # on the proxy being reachable.
+[ -n "$PROVIDER" ] || refuse "--provider is required (gemini is recommended)"
 WRAPPER="${WRAPPERS[$PROVIDER]:-}"
 [ -n "$WRAPPER" ] || refuse "unknown provider $PROVIDER; use claude|codex|gemini"
 command -v "$WRAPPER" >/dev/null || refuse "$WRAPPER not on PATH"
@@ -147,7 +149,52 @@ enc() {
 EVENT_DIR="${TMPDIR:-/tmp}/farm-events${CLAUDE_CODE_SESSION_ID:+/$CLAUDE_CODE_SESSION_ID}"
 mkdir -p "$EVENT_DIR" 2>/dev/null || true
 EVENTS="$EVENT_DIR/$$.ndjson"
-emit() { printf 'farm: %s\n' "$*" >>"$EVENTS" 2>/dev/null || true; }
+
+# Session budget check and estimation
+FARM_SESSION_BUDGET=${FARM_SESSION_BUDGET:-20000000}
+FARM_TASK_BUDGET=${FARM_TASK_BUDGET:-4000000}
+FARM_TASK_ESTIMATE=${FARM_TASK_ESTIMATE:-750000}
+
+session_tokens=0
+if [ -d "$EVENT_DIR" ]; then
+  if ! session_tokens=$(grep -h '"tokensW":' "$EVENT_DIR"/*.ndjson 2>/dev/null | jq -s 'map(.tokensW) | add // 0'); then
+    session_tokens=0
+  fi
+  if ! session_tokens=$(printf "%.0f" "$session_tokens" 2>/dev/null); then
+    session_tokens=0
+  fi
+fi
+
+estimate=0
+num_tasks=0
+if [ -n "$TASKS" ]; then
+  num_tasks=$(jq 'length' "$TASKS" 2>/dev/null || echo 0)
+  for i in $(seq 0 $((num_tasks - 1))); do
+    task_budget=$(jq -r ".[$i].budget // \"${BUDGET:-$FARM_TASK_BUDGET}\"" "$TASKS")
+    task_estimate=$FARM_TASK_ESTIMATE
+    [ "$task_estimate" -le "$task_budget" ] || task_estimate=$task_budget
+    estimate=$((estimate + task_estimate))
+  done
+elif [ -n "$WORKFLOW" ]; then
+  num_tasks=1
+  estimate=$FARM_TASK_ESTIMATE
+  task_budget=${BUDGET:-$FARM_TASK_BUDGET}
+  [ "$estimate" -le "$task_budget" ] || estimate=$task_budget
+fi
+
+echo "Estimate for $num_tasks task(s): $estimate tokensW" >&2
+echo "Session spend so far: $session_tokens tokensW" >&2
+echo "Cap remaining: $((FARM_SESSION_BUDGET - session_tokens)) tokensW" >&2
+
+if [ "${FARM_BUDGET_OVERRIDE:-0}" != "1" ]; then
+  total_proj=$((session_tokens + estimate))
+  if [ "$total_proj" -ge "$FARM_SESSION_BUDGET" ]; then
+    refuse "Session budget exceeded up front: $total_proj (spend + estimate) >= ${FARM_SESSION_BUDGET}. Set FARM_BUDGET_OVERRIDE=1 to bypass."
+  fi
+fi
+
+emit() { printf 'farm: %s
+' "$*" >>"$EVENTS" 2>/dev/null || true; }
 
 # Nothing else ever deletes these, and farm-alive.sh greps every file in the directory on each
 # poll -- so without eviction the cost of one liveness check grows with every dispatch ever run
@@ -183,7 +230,7 @@ claim() {
 # temp file so tool_use events can be counted -- 0 tool calls on a work task is
 # a fabrication smell, the same signal the old SDK runner read off its stream.
 run_one() {
-  local label="$1" prompt="$2" agent="$3" model="$4"; shift 4
+  local label="$1" prompt="$2" agent="$3" model="$4" budget="$5" max_turns="$6"; shift 6
   local expects=("$@") log err rc text calls models missing stderr_tail
   log=$(mktemp -t farm-out.XXXXXX.jsonl)
   err=$(mktemp -t farm-out.XXXXXX.err)
@@ -220,10 +267,36 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
   # Per-row model override. Absent leaves the wrapper's own default -- which is what every
   # existing caller gets, since no row carried one until now.
   [ -n "$model" ] && cmd+=(--model "$model")
+  
+  # Cross-provider guard
+  if [ "$PROVIDER" = "gemini" ] || [ "$PROVIDER" = "codex" ]; then
+    cmd+=( -p "Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint, no LLM-calling scripts); do the work yourself." )
+  fi
+  touch "$log.stamp"
+  
   # Keep stderr: a provider that dies (proxy down, model rejected, auth stale) writes
   # there and nowhere else, and discarding it leaves only a bare exit code to debug.
-  ( cd "$CWD" && "${cmd[@]}" ) > "$log" 2>"$err"
+  ( cd "$CWD" && "${cmd[@]}" ) > "$log" 2>"$err" &
+  local child_pid=$!
+  
+  local wd_out
+  ROOT=$(dirname "$(dirname "$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")")")")")
+  wd_out=$(python3 "$ROOT/skills/farm-out/scripts/watchdog.py" "$child_pid" "$log" "${budget:-4000000}" "${max_turns:-250}")
+  wait "$child_pid" 2>/dev/null || true
   rc=$?
+  
+  local wd_tokens=$(printf '%s' "$wd_out" | jq -r '.tokensW // 0')
+  local wd_turns=$(printf '%s' "$wd_out" | jq -r '.turns // 0')
+  local wd_exceeded=$(printf '%s' "$wd_out" | jq -r '.budgetExceeded // false')
+  
+  local cross_provider=false
+  if [ "$PROVIDER" = "gemini" ] || [ "$PROVIDER" = "codex" ]; then
+    if find "$CWD" -newer "$log.stamp" -type f -exec grep -lE 'v1/messages|ANTHROPIC_AUTH_TOKEN' {} + 2>/dev/null | grep -q .; then
+      cross_provider=true
+      rc=1
+    fi
+  fi
+  
   stderr_tail=$(rg -Nv "^mise " "$err" 2>/dev/null | tail -5)
 
   text=$(jq -rs '[.[] | select(.type=="result") | .result] | last // ""' "$log" 2>/dev/null)
@@ -237,18 +310,23 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
 
   # The same verdict the caller gets: exit 0 AND every promised artifact present. A run that
   # exits 0 having dropped its deliverable is a failure, and DONE-on-rc-alone would call it ok.
-  if [ "$rc" -eq 0 ] && [ "${#missing[@]}" -eq 0 ]; then
-    emit "DONE $(enc "$label") ok toolCalls=${calls:-0}"
+  if [ "$wd_exceeded" = "true" ]; then
+    emit "DONE $(enc "$label") fail budget W=$wd_tokens/${budget:-4000000} toolCalls=${calls:-0}"
+    emit "{\"type\":\"result\",\"tokensW\":$wd_tokens,\"budgetExceeded\":true}"
+  elif [ "$rc" -eq 0 ] && [ "${#missing[@]}" -eq 0 ]; then
+    emit "DONE $(enc "$label") ok toolCalls=${calls:-0} W=$wd_tokens"
   else
-    emit "DONE $(enc "$label") fail rc=$rc missing=${#missing[@]} toolCalls=${calls:-0}"
+    emit "DONE $(enc "$label") fail rc=$rc missing=${#missing[@]} toolCalls=${calls:-0} W=$wd_tokens"
   fi
 
   jq -n --arg label "$label" --arg result "$text" --argjson toolCalls "${calls:-0}" \
         --argjson models "${models:-[]}" --argjson exit "$rc" \
         --arg stderr "$stderr_tail" \
+        --argjson tokensW "$wd_tokens" --argjson budgetExceeded "$wd_exceeded" \
+        --argjson crossProvider "$cross_provider" \
         --argjson missing "$(printf '%s\n' "${missing[@]:-}" | jq -Rsc 'split("\n") | map(select(length>0))')" \
-    '{label:$label, ok: ($missing|length)==0 and $exit==0, exit:$exit,
-      toolCalls:$toolCalls, models:$models, missing:$missing, result:$result}
+    '{label:$label, ok: (($missing|length)==0 and $exit==0 and ($budgetExceeded | not) and ($crossProvider | not)), exit:$exit,
+      toolCalls:$toolCalls, models:$models, missing:$missing, result:$result, tokensW:$tokensW, budgetExceeded:$budgetExceeded, crossProvider:$crossProvider}
      + (if $exit != 0 and ($stderr|length) > 0 then {stderr:$stderr} else {} end)'
 }
 
@@ -263,6 +341,7 @@ if [ -n "$TASKS" ]; then
     l=$(jq -r ".[$i].label // \"task-$i\"" "$TASKS")
     a=$(jq -r ".[$i].agent // \"\"" "$TASKS"); [ "$a" = "null" ] && a=""
     m=$(jq -r ".[$i].model // \"\"" "$TASKS"); [ "$m" = "null" ] && m=""
+    b=$(jq -r ".[$i].budget // \"$BUDGET\"" "$TASKS"); [ "$b" = "null" ] && b="$BUDGET"
     # enc() cannot save a newline: it would split the record, and a forged DONE line inside a
     # label is indistinguishable from a real verdict to every reader of this stream.
     #
@@ -283,7 +362,7 @@ if [ -n "$TASKS" ]; then
         refuse "task $i model contains a control character; not allowed in the event stream" ;;
     esac
     mapfile -t e < <(jq -r ".[$i].expect // [] | if type==\"array\" then .[] else . end" "$TASKS")
-    run_one "$l" "$p" "$a" "$m" "${e[@]:-}" > "$dir/$i.json" &
+    run_one "$l" "$p" "$a" "$m" "$b" "${FARM_MAX_TURNS:-250}" "${e[@]:-}" > "$dir/$i.json" &
   done
   wait
   out=$(jq -s '.' "$dir"/*.json); rm -rf "$dir"
@@ -352,7 +431,7 @@ $(cat "$ARGSFILE")"
 CRITICAL — Workflow returns IMMEDIATELY with a task id and then keeps running in the background. If you end your turn at that point the session exits and the entire run is destroyed. You MUST NOT end your turn until the workflow has actually returned. It may take 20-60 minutes.
 After calling Workflow, stay alive by polling: run \`sleep 120\` via Bash, then check whether it finished (ToolSearch for \"select:TaskList,TaskGet,TaskOutput\" and use those, or read the workflow transcript directory named in the Workflow result). Repeat for as long as it takes. Never emit a final text message while the workflow is still running.
 
-When it returns, write the SCRIPT'S OWN RETURN VALUE to $OUT as a single JSON document using the Write tool — verbatim, no commentary, no summarising. The Workflow tool wraps it: the tool result is an envelope {summary, agentCount, logs, totalTokens, result, …} and the script's return value is the object under its \`result\` key. Write THAT object, unwrapped, as the whole document. Do not write the envelope, and do not add a \`result\` key of your own. If Workflow throws, write {\"error\": \"<exact error text>\"} to that same path. Do not retry with invented arguments." "" "" "${EXPECT[@]:-}" "$OUT")
+When it returns, write the SCRIPT'S OWN RETURN VALUE to $OUT as a single JSON document using the Write tool — verbatim, no commentary, no summarising. The Workflow tool wraps it: the tool result is an envelope {summary, agentCount, logs, totalTokens, result, …} and the script's return value is the object under its \`result\` key. Write THAT object, unwrapped, as the whole document. Do not write the envelope, and do not add a \`result\` key of your own. If Workflow throws, write {\"error\": \"<exact error text>\"} to that same path. Do not retry with invented arguments." "" "" "$BUDGET" "${FARM_MAX_TURNS:-250}" "${EXPECT[@]:-}" "$OUT")
   # Non-empty is not structured: a child that wrote its summary would pass the artifact
   # check and hand prose to the caller as the workflow's return value.
   if printf '%s' "$out" | jq -e '.ok' >/dev/null 2>&1; then

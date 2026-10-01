@@ -48,7 +48,7 @@ function sandbox(prefix: string) {
 }
 
 function run(args: string[], env: Record<string, string>) {
-  return spawnSync('bash', [GRIND, 'run', ...args], { encoding: 'utf8', timeout: 60_000, env })
+  return spawnSync('bash', [GRIND, 'run', '--runner', 'claude-code', ...args], { encoding: 'utf8', timeout: 60_000, env })
 }
 
 /** The only event file in the directory, and the pid its NAME carries — which is what both readers
@@ -153,9 +153,9 @@ describe('grind.sh — the loop files itself in the launching session\'s event s
 
     const { lines } = eventFile(eventDir)
     expect(lines.filter(l => l.startsWith('grind: ITER '))).toEqual([
-      'grind: ITER i=1 exit=0 ',
-      'grind: ITER i=2 exit=0 ',
-      'grind: ITER i=3 exit=0 ',
+      'grind: ITER i=1 exit=0 W=0 ',
+      'grind: ITER i=2 exit=0 W=0 ',
+      'grind: ITER i=3 exit=0 W=0 ',
     ])
   })
 
@@ -250,7 +250,7 @@ describe('grind.sh — farm-monitor reads the stream without being taught a seco
     // A gate that never opens and a long sleep: the loop is parked, having written START, and
     // spawns no runner to orphan.
     const cmd = [
-      'bash', GRIND, 'run',
+      'bash', GRIND, 'run', '--runner', 'claude-code',
       '--journal', journal,
       '--check', script(d, 'check.sh', 'exit 1'),
       '--gate', script(d, 'gate.sh', 'exit 1'),

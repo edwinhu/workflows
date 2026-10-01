@@ -16,7 +16,7 @@
 #   work-dispatch.sh --no-mech-probe  skip only the mechanical baseline probe; keep plan-lint
 #   work-dispatch.sh --no-suite-lint  skip only the suite-lint report; keep every gate
 #   work-dispatch.sh --run-dir DIR    put args/result/log under DIR/<run-id> instead of $PWD/.work/
-#   work-dispatch.sh --provider claude|codex|gemini  the whole spine's provider (default claude)
+#   work-dispatch.sh --provider claude|codex|gemini  the whole spine's provider (required)
 #   work-dispatch.sh --no-cron        do NOT print the CronCreate call; the farm-runs plugin monitor
 #                                      becomes the only wake (and it dies with the session)
 #   work-dispatch.sh --cron           accepted no-op alias — the cron is the default
@@ -556,7 +556,7 @@ loops=""
 # is no way to put implementers on one provider and lenses on another, and mixing them would mean two
 # gates. Deliberately NOT recorded in args.json — it is a property of this dispatch, not of the plan,
 # and the point of the lever is to differ between rounds.
-provider=claude
+provider=""
 while :; do
   case "${1:-}" in
     --provider) provider="${2:-}"; shift 2 || { echo "--provider needs claude|codex|gemini" >&2; exit 2; }
@@ -891,6 +891,11 @@ else
 fi
 
 # One argument vector, so the two dispatch paths cannot drift apart.
+if [ -z "$provider" ]; then
+  echo "work-dispatch.sh requires an explicit --provider (gemini is recommended)" >&2
+  exit 2
+fi
+
 farm_cmd=(bash "$FARM" --provider "$provider"
   --workflow "$SKILL/workflow.js"
   --args "$R/args.json" --out "$R/result.json" --cwd "$PWD")

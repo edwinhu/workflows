@@ -462,7 +462,7 @@ afterAll(() => dirs.forEach(d => rmSync(d, { recursive: true, force: true })))
 
 function dispatch(f: { dir: string; plan: string }) {
   try {
-    const stdout = execFileSync('bash', [DISPATCH, f.plan], {
+    const stdout = execFileSync('bash', [DISPATCH, '--provider', 'claude', f.plan], {
       encoding: 'utf8', cwd: f.dir, env: { ...process.env, WORK_DISPATCH_DRYRUN: '1' },
     })
     return { code: 0, out: stdout }
@@ -921,4 +921,14 @@ test('a declared-but-empty goalCheck is critical — omit the field instead of a
 test('parseArgs reads goalCheck off the args object, and leaves it undefined when absent', () => {
   expect(parseArgs({ tasks: [], goalCheck: 'bun test' }).goalCheck).toBe('bun test')
   expect(parseArgs({ tasks: [] }).goalCheck).toBeUndefined()
+})
+
+test('per-document LLM coding triggers a major finding', () => {
+  const p = base({ tasks: [task({ work: 'code each document in the folder' })] })
+  expect(lint(p).find(f => f.rule === 'per-document-batch-extraction')?.severity).toBe('major')
+})
+
+test('per-document batch extraction rule is case-insensitive', () => {
+  const p = base({ tasks: [task({ work: 'Hand-code each filing' })] })
+  expect(rules(p)).toContain('per-document-batch-extraction')
 })

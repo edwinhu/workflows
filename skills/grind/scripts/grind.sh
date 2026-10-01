@@ -234,7 +234,9 @@ JQ_SCAN='
      # touched hundreds of subjects does not grow its own prompt without end.
      | map(select(.work > 0)) | sort_by(.touch) | .[-($subjmax | tonumber):]) as $subjects
   | ([$r[] | .kind | strings | select(IN($loop[]))] | last) as $lastloop
+  | ([$r[] | select(.kind == "iter_end") | .tokensW | numbers] | add // 0) as $tokensW
   | "next_i=\($maxi + 1)",
+    "tokens_w=\($tokensW)",
     "stall=\($stall)",
     "stops=\($stops)",
     "pid=\($pid // "")",
@@ -265,14 +267,14 @@ EXHAUST_AFTER=3
 # bottom of scan_journal can SEE: initialised to the literal 1, as it was, the guard could never fire
 # and an unreadable journal read as a virgin one -- counter back to 1, every floor gone, and a fresh
 # agent handed an iteration the journal already records.
-SCAN_NEXT_I=- SCAN_STALL=0 SCAN_STOPS=0 SCAN_PID= SCAN_LAST= SCAN_LOOP_LAST=
+SCAN_NEXT_I=- SCAN_TOKENS_W=0 SCAN_STALL=0 SCAN_STOPS=0 SCAN_PID= SCAN_LAST= SCAN_LOOP_LAST=
 FLOOR_KEYS=() FLOOR_WHY=()
 NOTE_KEYS=() NOTE_TEXT=()
 SUBJ_KEYS=() SUBJ_ATTEMPTS=() SUBJ_PROGRESS=() SUBJ_LAST=()
 
 scan_journal() {
   local j=$1 out rc line k v sj sa sp sl
-  SCAN_NEXT_I=- SCAN_STALL=0 SCAN_STOPS=0 SCAN_PID= SCAN_LAST= SCAN_LOOP_LAST=
+  SCAN_NEXT_I=- SCAN_TOKENS_W=0 SCAN_STALL=0 SCAN_STOPS=0 SCAN_PID= SCAN_LAST= SCAN_LOOP_LAST=
   FLOOR_KEYS=() FLOOR_WHY=()
   NOTE_KEYS=() NOTE_TEXT=()
   SUBJ_KEYS=() SUBJ_ATTEMPTS=() SUBJ_PROGRESS=() SUBJ_LAST=()
@@ -298,6 +300,7 @@ scan_journal() {
     k=${line%%=*}; v=${line#*=}
     case "$k" in
       next_i) SCAN_NEXT_I=$v ;;
+      tokens_w) SCAN_TOKENS_W=$v ;;
       stall)  SCAN_STALL=$v ;;
       stops)  SCAN_STOPS=$v ;;
       pid)    SCAN_PID=$v ;;
@@ -542,8 +545,8 @@ notify_default() {
 }
 
 run_loop() {
-  local journal= check= gate= promptfile= model= runner=claude-code
-  local max_iters=0 sleep_s=60 stall_after=0 wait_alert=6
+  local journal= check= gate= promptfile= model= runner=""
+  local max_iters=0 sleep_s=60 stall_after=0 wait_alert=6 budget_total=0
   while [ $# -gt 0 ]; do
     case "$1" in
       --notify)      NOTIFY=${2:?--notify needs a value};           shift 2 ;;
@@ -561,6 +564,7 @@ run_loop() {
       --sleep)       want_int --sleep "${2:-}";       sleep_s=$2;     shift 2 ;;
       --stall-after) want_int --stall-after "${2:-}"; stall_after=$2; shift 2 ;;
       --exhaust-after) want_int --exhaust-after "${2:-}"; EXHAUST_AFTER=$2; shift 2 ;;
+      --budget-total)  want_int --budget-total "${2:-}"; budget_total=$2; shift 2 ;;
       *) refuse "run: unknown argument: $1" ;;
     esac
   done
@@ -569,6 +573,7 @@ run_loop() {
   [ -n "$check" ]      || refuse "run: --check is required; it is the only authority on whether the goal is met"
   [ -n "$promptfile" ] || refuse "run: --prompt-file is required"
   [ -r "$promptfile" ] || refuse "run: --prompt-file $promptfile: not readable"
+  [ -n "$runner" ] || refuse "run: --runner is required (gemini-code is recommended)"
   command -v "$runner" >/dev/null 2>&1 || refuse "run: --runner $runner not executable or not on PATH"
 
   # Prove the journal is writable BEFORE the loop: after this point a write error is swallowed, so a
@@ -626,6 +631,11 @@ run_loop() {
       warn "pass budget of $max_iters exhausted with the check still red"
       return 4
     fi
+    if [ "$budget_total" -gt 0 ] && [ "${SCAN_TOKENS_W:-0}" -ge "$budget_total" ]; then
+      journal_append "$journal" "{\"kind\":\"budget\",\"ts\":\"$(now)\",\"tokensW\":$SCAN_TOKENS_W,\"cap\":$budget_total}"
+      warn "loop token budget of $budget_total exhausted"
+      return 4
+    fi
 
     # 2. The supervisor. While the gate is red there is no decision to make, so no model call is
     #    spent -- this is the difference between a loop that costs a fortune and one that does not.
@@ -668,18 +678,41 @@ run_loop() {
     i=$SCAN_NEXT_I
     journal_append "$journal" "{\"kind\":\"iter\",\"i\":$i,\"ts\":\"$(now)\"}"
     prompt=$(build_prompt "$body" "$journal" "$i")
-    cmd=("$runner" -p "$prompt")
+    cmd=("$runner" -p "$prompt" --output-format stream-json --verbose)
     [ -n "$model" ] && cmd+=(--model "$model")
+    if [ "$runner" = "gemini-code" ] || [ "$runner" = "codex-code" ]; then
+      cmd+=( -p "Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint, no LLM-calling scripts); do the work yourself." )
+    fi
     warn "iteration $i: ${#FLOOR_KEYS[@]} floors, $SCAN_STALL since progress"
+    
+    local log err child_pid wd_out
+    log=$(mktemp -t grind-out.XXXXXX.jsonl)
+    err=$(mktemp -t grind-out.XXXXXX.err)
+    touch "$log.stamp"
+    
     # The markers that tell `stop` it is being run by an iteration rather than by the operator, and
     # that an iteration is itself a delegated worker — functionally a farm-out child, so the
     # main-thread guards exempt it the same way and it must not farm out its own bookkeeping again.
     # Both are scoped to this one command, so they reach the runner and everything the runner spawns
     # and nothing else; the operator's own shell never has them, which is why their stop still works.
-    GRIND_ITERATION=$i FARM_OUT_CHILD=1 "${cmd[@]}"
+    GRIND_ITERATION=$i FARM_OUT_CHILD=1 "${cmd[@]}" > "$log" 2>"$err" &
+    child_pid=$!
+    
+    ROOT=$(dirname "$(dirname "$(dirname "$(dirname "$SELF")")")")
+    wd_out=$(python3 "$ROOT/skills/farm-out/scripts/watchdog.py" "$child_pid" "$log" "${FARM_TASK_BUDGET:-4000000}" "${FARM_MAX_TURNS:-250}")
+    wait "$child_pid" 2>/dev/null || true
     rc=$?
-    journal_append "$journal" "{\"kind\":\"iter_end\",\"i\":$i,\"exit\":$rc,\"ts\":\"$(now)\"}"
-    emit_event "ITER i=$i exit=$rc "
+    
+    local wd_tokens=$(printf '%s' "$wd_out" | jq -r '.tokensW // 0')
+    if [ "$runner" = "gemini-code" ] || [ "$runner" = "codex-code" ]; then
+      if find "$PWD" -newer "$log.stamp" -type f -exec grep -lE 'v1/messages|ANTHROPIC_AUTH_TOKEN' {} + 2>/dev/null | grep -q .; then
+        rc=1
+      fi
+    fi
+    rm -f "$log" "$err" "$log.stamp"
+    
+    journal_append "$journal" "{\"kind\":\"iter_end\",\"i\":$i,\"exit\":$rc,\"ts\":\"$(now)\",\"tokensW\":$wd_tokens}"
+    emit_event "ITER i=$i exit=$rc W=$wd_tokens "
   done
 }
 

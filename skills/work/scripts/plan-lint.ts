@@ -491,6 +491,16 @@ const lint = (p: Plan): Finding[] => {
   for (const t of p.tasks) {
     const where = `task ${t.id}`
 
+    if (/code each (filing|document)|hand-code|label each (filing|document)|agents? read each (filing|document)/i.test(t.work)) {
+      add(
+        'per-document-batch-extraction',
+        'major',
+        where,
+        'Per-document LLM coding or extraction must be launched via gemini-batch on pre-cut excerpts, not agents reading each document.',
+        t.work
+      )
+    }
+
     // R1 — an acceptance clause no command checks. The single largest class in the corpus.
     for (const c of clausesOf(t.acceptance)) {
       if (!hasCommand(c) && !coveredByMechanical(c, p.mechanicalChecks))

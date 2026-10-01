@@ -89,7 +89,7 @@ function runDir(results: Record<string, object>) {
  */
 function loop(f: { plan: string; R: string }, loops: number, extra: string[] = []) {
   try {
-    const out = execFileSync('bash', [SCRIPT, '--run-dir', f.R, '--plan', f.plan, '--loops', String(loops), ...extra], {
+    const out = execFileSync('bash', [SCRIPT, '--provider', 'claude', '--run-dir', f.R, '--plan', f.plan, '--loops', String(loops), ...extra], {
       encoding: 'utf8',
       timeout: 60_000,
       env: { ...process.env, WORK_LOOP_POLL: '1', WORK_FARM: '/bin/false', CLAUDE_CODE_SESSION_ID: '' },
@@ -167,7 +167,7 @@ describe('the liveness leg — the thing the hand-written watcher lacked', () =>
     let out = ''
     const startedAt = performance.now()
     try {
-      out = execFileSync('bash', [SCRIPT, '--run-dir', f.R, '--plan', f.plan, '--loops', '3'], {
+      out = execFileSync('bash', [SCRIPT, '--provider', 'claude', '--run-dir', f.R, '--plan', f.plan, '--loops', '3'], {
         encoding: 'utf8',
         timeout: 60_000,
         env: { ...process.env, TMPDIR: f.dir, WORK_LOOP_POLL: '1', CLAUDE_CODE_SESSION_ID: '' },
@@ -194,7 +194,7 @@ describe('the liveness leg — the thing the hand-written watcher lacked', () =>
     let code = 0
     let out = ''
     try {
-      execFileSync('bash', [SCRIPT, '--run-dir', f.R, '--plan', f.plan, '--loops', '3'], {
+      execFileSync('bash', [SCRIPT, '--provider', 'claude', '--run-dir', f.R, '--plan', f.plan, '--loops', '3'], {
         encoding: 'utf8', timeout: 30_000,
         env: { ...process.env, WORK_LOOP_POLL: '0', CLAUDE_CODE_SESSION_ID: '' },
       })
@@ -302,7 +302,7 @@ describe('a continuation round actually runs', () => {
     let code = -1
     let out = ''
     try {
-      out = execFileSync('bash', [SCRIPT, '--run-dir', f.R, '--plan', f.plan, '--loops', '3'], {
+      out = execFileSync('bash', [SCRIPT, '--provider', 'claude', '--run-dir', f.R, '--plan', f.plan, '--loops', '3'], {
         encoding: 'utf8', timeout: 180_000, cwd: f.dir,
         env: { ...process.env, TMPDIR: f.dir, WORK_FARM: farm, WORK_LOOP_POLL: '1',
                WORK_NO_SCOPE: '1', CLAUDE_CODE_SESSION_ID: '' },
@@ -346,7 +346,7 @@ describe('a continuation round actually runs', () => {
     let code = 0
     let out = ''
     try {
-      execFileSync('bash', [SCRIPT, '--run-dir', f.R, '--plan', f.plan, '--loops', '3'], {
+      execFileSync('bash', [SCRIPT, '--provider', 'claude', '--run-dir', f.R, '--plan', f.plan, '--loops', '3'], {
         encoding: 'utf8', timeout: 180_000, cwd: f.dir,
         env: { ...process.env, TMPDIR: f.dir, WORK_FARM: dyingFarm(f.dir), WORK_LOOP_POLL: '1',
                WORK_NO_SCOPE: '1', CLAUDE_CODE_SESSION_ID: '' },
@@ -388,7 +388,7 @@ describe('a continuation round actually runs', () => {
 
   function runWithSettle(f: ReturnType<typeof continuationFixture>, settle: string) {
     try {
-      execFileSync('bash', [SCRIPT, '--run-dir', f.R, '--plan', f.plan, '--loops', '3'], {
+      execFileSync('bash', [SCRIPT, '--provider', 'claude', '--run-dir', f.R, '--plan', f.plan, '--loops', '3'], {
         encoding: 'utf8', timeout: 180_000, cwd: f.dir,
         env: { ...process.env, TMPDIR: f.dir, WORK_FARM: slowStartFarm(f.dir), WORK_LOOP_POLL: '1',
                WORK_LOOP_SETTLE: settle, WORK_NO_SCOPE: '1', CLAUDE_CODE_SESSION_ID: '' },
@@ -459,7 +459,7 @@ describe('argument handling', () => {
     let code = 0
     let out = ''
     try {
-      execFileSync('bash', [SCRIPT, '--run-dir', f.R, '--plan', f.plan, '--loops', 'lots'], {
+      execFileSync('bash', [SCRIPT, '--provider', 'claude', '--run-dir', f.R, '--plan', f.plan, '--loops', 'lots'], {
         encoding: 'utf8', timeout: 30_000, env: { ...process.env, CLAUDE_CODE_SESSION_ID: '' },
       })
     } catch (e: any) {
@@ -474,7 +474,7 @@ describe('argument handling', () => {
     const f = runDir({ 'result.json': verdict(false, ['T1']) })
     let code = 0
     try {
-      execFileSync('bash', [SCRIPT, '--run-dir', f.R, '--plan', join(f.R, 'absent.md'), '--loops', '2'], {
+      execFileSync('bash', [SCRIPT, '--provider', 'claude', '--run-dir', f.R, '--plan', join(f.R, 'absent.md'), '--loops', '2'], {
         encoding: 'utf8', timeout: 30_000, env: { ...process.env, CLAUDE_CODE_SESSION_ID: '' },
       })
     } catch (e: any) { code = e.status ?? -1 }
