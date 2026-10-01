@@ -472,10 +472,11 @@ func textSeparateClassCounts(body string, base Row) ([]Row, int) {
 }
 
 var reNomineeAgeYear = regexp.MustCompile(`^(.+?)\s+([0-9]{1,3})\s+\(([12][0-9]{3})\)$`)
+var reNomineeInlineAge = regexp.MustCompile(`^\*?(.+?)\s+\(([0-9]{2,3})\),\s*\S`)
 
-// Three SGML columns separate name/age/election year, business experience,
-// and common shares owned. A headerless continuation must repeat those exact
-// spans and be introduced as directors elected in prior years.
+// Three SGML columns isolate shares from biography/position text. Name cells
+// carry either age/election year or inline age. Headerless election-year
+// continuations must repeat the spans and introduce directors elected in prior years.
 func textNomineeShareCounts(body string, base Row) ([]Row, int) {
 	raw := strings.Split(stripEntities(body), "\n")
 	clean := make([]string, len(raw))
@@ -543,12 +544,18 @@ func textNomineeShareCounts(body string, base Row) ([]Row, int) {
 			strings.Contains(headers[0], "year") && strings.Contains(headers[0], "director") &&
 			strings.Contains(headers[1], "business experience") && strings.Contains(headers[2], "shares of common stock") &&
 			strings.Contains(headers[2], "beneficially owned")
+		fullHeader := strings.ToLower(norm(strings.Join(clean[start+1:marker], " ")))
+		inlineAge := strings.Contains(headers[0], "name, age, business experience") &&
+			strings.Contains(headers[0], "directorships") && strings.Contains(headers[1], "position with fund") &&
+			strings.Contains(fullHeader, "shares owned at")
+		explicit = explicit || inlineAge
 		continuation := false
 		if priorEnd >= 0 && len(priorSpans) == 3 && spans[0] == priorSpans[0] && spans[1] == priorSpans[1] && spans[2] == priorSpans[2] && strings.TrimSpace(hdr) == "" {
 			between := strings.ToLower(strings.Join(clean[priorEnd+1:start], " "))
 			continuation = strings.Contains(between, "directors") && strings.Contains(between, "elected") && strings.Contains(between, "prior years")
 		}
-		if (!explicit && !continuation) || reCompCue.MatchString(hdr) || reOptDetailCue.MatchString(hdr) {
+		if (!explicit && !continuation) || reCompCue.MatchString(hdr) || reOptDetailCue.MatchString(hdr) ||
+			(inlineAge && (strings.Contains(fullHeader, "dollar") || strings.Contains(strings.Join(raw[start:end], " "), "$"))) {
 			priorEnd, priorSpans = -1, nil
 			start = end
 			continue
@@ -556,6 +563,9 @@ func textNomineeShareCounts(body string, base Row) ([]Row, int) {
 		var rows []Row
 		for j := marker + 1; j < end; j++ {
 			name := reNomineeAgeYear.FindStringSubmatch(cell(clean[j], 0))
+			if inlineAge {
+				name = reNomineeInlineAge.FindStringSubmatch(cell(clean[j], 0))
+			}
 			count := cell(clean[j], 2)
 			if name == nil || cell(clean[j], 1) == "" || strings.ContainsAny(count, "$%") {
 				continue
@@ -568,7 +578,10 @@ func textNomineeShareCounts(body string, base Row) ([]Row, int) {
 			_, notes := StripFootnotes(count)
 			r := base
 			r.TableIndex, r.RowIndex = start, j
-			r.HolderName, r.ShareClass, r.TableKind = nm, "Common Stock", "management"
+			r.HolderName, r.ShareClass, r.TableKind = norm(nm), "Common Stock", "management"
+			if inlineAge {
+				r.ShareClass = ""
+			}
 			r.Shares, r.Parser, r.Footnotes = &shares, "text_table", strings.Join(notes, ",")
 			rows = append(rows, r)
 		}
