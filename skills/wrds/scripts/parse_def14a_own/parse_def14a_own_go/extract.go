@@ -39,6 +39,9 @@ type Row struct {
 	// Share Holdings / Percentage Owned columns, never an address or amount.
 	numberedHolder bool
 
+	// styledTabs records a headed, non-table ownership grid reconstructed from CSS tabs.
+	styledTabs bool
+
 	// commonColumn records an explicit common-stock header over this value
 	// pair, even when the identifying class label occupies another header row.
 	commonColumn bool
@@ -48,6 +51,9 @@ type Row struct {
 
 	// captionCount identifies a sole, explicit count column in an SGML biography table.
 	captionCount bool
+
+	// captionPerson records a director biography with an explicit name-and-age stub.
+	captionPerson bool
 
 	// classHint is a class / series / fund label recovered from a column
 	// header rather than from a class-shaped value. It is copied onto
@@ -316,6 +322,21 @@ func compactColumns(g *Grid, compareAll bool) *compacted {
 			if strings.Contains(c, "%") && i >= hdrEnd {
 				sawPct = true
 			}
+		}
+		// A spanning percent header can also cover a separate glyph cell. The
+		// repeated header is not data: a column containing only '%' below it
+		// qualifies the adjacent value rather than creating another holding.
+		if !junk && sawPct && len(groups) > 0 && reHdrPct.MatchString(sig[j]) {
+			prev := groups[len(groups)-1]
+			glyphOnly := sig[j] == sig[prev[len(prev)-1]]
+			for i := hdrEnd; i < len(keepRows); i++ {
+				v := strings.TrimSpace(at(i, j))
+				if v != "" && v != "%" {
+					glyphOnly = false
+					break
+				}
+			}
+			junk = glyphOnly
 		}
 		if junk {
 			if sawPct && len(pctFlag) > 0 {
@@ -1194,10 +1215,20 @@ func (c *compacted) looksLikeOwnership(tableText string) bool {
 }
 
 func (c *compacted) shareHoldingsOwnedHeaders() bool {
-	return len(c.roles) == 3 &&
-		c.roles[0].role == "name" && reHdrNameCol.MatchString(c.roles[0].header) &&
-		c.roles[1].role == "shares" && strings.EqualFold(flat(strings.Join(c.roles[1].hdrCells, " ")), "Share Holdings") &&
-		c.roles[2].role == "pct" && strings.EqualFold(flat(strings.Join(c.roles[2].hdrCells, " ")), "Percentage Owned")
+	if len(c.roles) < 3 || len(c.roles) > 4 || c.roles[0].role != "name" || !reHdrNameCol.MatchString(c.roles[0].header) {
+		return false
+	}
+	value := 1
+	if len(c.roles) == 4 {
+		// A row-level class column identifies the holding without changing the
+		// explicit count/percent captions that distinguish this from an award.
+		if c.roles[1].role != "class" || !reHdrClassCol.MatchString(c.roles[1].header) {
+			return false
+		}
+		value++
+	}
+	return c.roles[value].role == "shares" && strings.EqualFold(flat(strings.Join(c.roles[value].hdrCells, " ")), "Share Holdings") &&
+		c.roles[value+1].role == "pct" && strings.EqualFold(flat(strings.Join(c.roles[value+1].hdrCells, " ")), "Percentage Owned")
 }
 
 // ownershipReject names the clause that rejected the table, or "" if it is
@@ -1462,6 +1493,7 @@ func (c *compacted) hasHeaderCues() bool {
 // a header-less continuation table its predecessor's columns; it may be nil. The
 // compacted form is returned so the caller can pass it along.
 func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compacted) ([]Row, *compacted) {
+	base.styledTabs = g.styledTabs
 	rows, c := extractGridColumns(g, tableText, base, tableIdx, prev, false)
 	if len(rows) != 0 || !base.colspanRecovery {
 		return rows, c
@@ -1698,6 +1730,9 @@ func extractGridColumns(g *Grid, tableText string, base Row, tableIdx int, prev 
 				}
 				if nsub > 1 {
 					shCell, pcCell = shLines[sub], pcLines[sub]
+				}
+				if c.shareHoldingsOwnedHeaders() && strings.Contains(shCell, "$") {
+					continue // an explicit currency value is not a share count
 				}
 				rw := base
 				rw.TableIndex = tableIdx

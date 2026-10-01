@@ -8228,3 +8228,1115 @@ func TestASCIISixColumnNomineeGuards(t *testing.T) {
 		}
 	}
 }
+
+const asciiNameAgeBiographyFixture = `<TABLE>
+<CAPTION>
+INFORMATION CONCERNING NOMINEES AND DIRECTORS
+
+                                                 Amount and
+                                                 Nature of
+                                                 Beneficial
+                Positions &                      Ownership of       Percent of
+                Offices With                     Common Stock as    Common Stock
+                Company or/and       Director    of January 31,     Beneficially
+Name and Age    Employment           Since       1999               Owned (a)
+- --------------------------------------------------------------------------------
+<S>              <C>                 <C>         <C>                      <C>
+
+CLASS I
+Fred A. Bell,   District manager,    1981        20,536                   0.56%
+ Jr., 57        Mississippi
+                Materials Corp.
+                (Concrete and
+                building materials
+                manufacturer/
+                distributor
+
+Charles T.      Supervisor of        1980        15,208  (1)               0.42%
+ England, 62    Finance Company
+                subsidiaries of
+                Merchants and
+                Farmers Bank
+                beginning in
+                1995; Registered
+                Representative of
+                Security Financial
+                Network in 1994;
+                Farmer; formerly
+                Chancery Clerk,
+                Attala County
+
+</TABLE>
+<PAGE>
+
+<TABLE>
+<CAPTION>
+INFORMATION CONCERNING NOMINEES AND DIRECTORS (CONTINUED)
+
+                                                   Amount and
+                                                   Nature of
+                                                   Beneficial
+                                                   Ownership
+                  Positions &                      of Common        Percent of
+                  Offices With                     Stock as of      Common Stock
+                  Company or/and        Director   January 31,      Beneficially
+Name and Age      Employment            Since      1999             Owned (a)
+- --------------------------------------------------------------------------------
+
+<S>               <C>                   <C>         <C>                    <C>
+CLASS I (continued)
+Joseph M.         President and CEO,    1994       103,022 (2)            2.83%
+ Ivey, 40         Building One                     (3) (11)
+                  Services Corporation
+                  (facilities services
+                  company), since
+                  February, 1999.
+                  Chairman and CEO,
+                  Ivey Mechanical
+                  Company (plumbing
+                  and electrical
+                  contractors), until
+                  February, 1999
+
+Susan McCaffery,  Retired; Member of    1987       117,098 (4) (5)        3.22%
+ 59               Audit Committee;
+                  Former Professor,
+                  Wood College
+
+Edward G.         Member of Audit       1989         8,306  (6)           0.23%
+ Woodard, 44      Committee; President,
+                  K. M. Distributing
+                  Company, Inc.
+                  (wholesaler of chain
+                  saws, lawn and
+                  gardening equipment)
+
+CLASS II
+Barbara K.        Retired; Member of    1995         2,000                0.05%
+ Hammond, 54      Audit Committee;
+                  Former Specialist,
+                  Circuit Capacity
+                  Management, BellSouth
+
+R. Dale McBride,  President, Merchants  1979        17,764  (8)           0.49%
+ 59               and Farmers Bank,
+                  Durant
+
+Hugh S. Potts,    Chairman of the       1979       392,754 (4) (9)       10.79%
+ Jr., 54          Board and CEO of
+                  the Company since
+                  1994; Vice Chairman,
+                  1983-1993; Vice
+                  President, 1979-1983
+
+W. C. Shoemaker,  Consultant, IMC       1979        40,266                1.11%
+ 66               Webb Graphics
+                  (Printing);
+                  President, W.C.
+                  Shoemaker, Inc.
+                  (investments & real
+                  estate)
+
+Scott M. Wiggers, President of the      1983         5,800 (7)            0.16%
+ 54               Company since 1988
+                  and Treasurer since
+                  1979; Corporate
+                  President, Merchants
+                  & Farmers Bank
+
+CLASS III
+Jon A. Crocker,   Chairman & CEO,       1996        63,675 (10)           1.75%
+ 56               Merchants & Farmers
+                  Bank, Bruce Branch
+
+
+Toxey Hall, III,  Member of Audit       1984         2,112                0.06%
+ 59               Committee; President,
+                  Thomas-Walker-Lacey
+                  (retail discount store)
+
+</TABLE>
+<PAGE>
+
+<TABLE>
+<CAPTION>
+INFORMATION CONCERNING NOMINEES AND DIRECTORS (continued)
+
+                                                   Amount and
+                                                   Nature of
+                                                   Beneficial
+                                                   Ownership
+                  Positions &                      of Common        Percent of
+                  Offices With                     Stock as of      Common Stock
+                  Company or/and        Director   January 31,      Beneficially
+Name and Age      Employment            Since      1999             Owned (a)
+- --------------------------------------------------------------------------------
+<S>                <C>                  <C>         <C>                   <C>
+
+CLASS III (continued)
+J. Marlin Ivey,   Member of Audit       1979       112,512 (2) (11)       3.09%
+ 62               Committee; President,
+                  Ivey National
+                  Corporation (holding
+                  company for various
+                  businesses)
+
+Otho E. Pettit,   Attorney at Law,      1993        12,379 (12)           0.34%
+ Jr., 48          Thornton, Guyton,
+                  Dorrill & Pettit
+
+Charles W.        Chairman of Audit     1979       152,000 (13)           4.18%
+ Ritter, Jr.,     Committee; President,
+ 65               The Attala Company
+                  (feed manufacturing
+                  company)
+
+</TABLE>`
+
+func TestASCIINameAgeBiographyPercent(t *testing.T) {
+	rows, _, _ := ExtractText(asciiNameAgeBiographyFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 15 {
+		t.Fatalf("want 15 literal director holdings, got %d: %+v", len(rows), rows)
+	}
+	for _, want := range []struct {
+		name        string
+		shares, pct float64
+	}{
+		{"Fred A. Bell, Jr", 20536, .56}, {"Charles T. England", 15208, .42},
+		{"Joseph M. Ivey", 103022, 2.83}, {"Susan McCaffery", 117098, 3.22},
+		{"Edward G. Woodard", 8306, .23}, {"Barbara K. Hammond", 2000, .05},
+		{"R. Dale McBride", 17764, .49}, {"Hugh S. Potts, Jr", 392754, 10.79},
+		{"W. C. Shoemaker", 40266, 1.11}, {"Scott M. Wiggers", 5800, .16},
+		{"Jon A. Crocker", 63675, 1.75}, {"Toxey Hall, III", 2112, .06},
+		{"J. Marlin Ivey", 112512, 3.09}, {"Otho E. Pettit, Jr", 12379, .34},
+		{"Charles W. Ritter, Jr", 152000, 4.18},
+	} {
+		matches := 0
+		for _, r := range rows {
+			if r.HolderName == want.name {
+				matches++
+				if r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct || r.ShareClass != "Common Stock" {
+					t.Errorf("want %+v Common Stock; got %+v", want, r)
+				}
+			}
+		}
+		if matches != 1 {
+			t.Errorf("want exactly one %q, got %d", want.name, matches)
+		}
+	}
+}
+
+func TestASCIINameAgeBiographyGuards(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(asciiNameAgeBiographyFixture, "20,536", "$20,536"),
+		strings.ReplaceAll(asciiNameAgeBiographyFixture, "Beneficial", "Compensation"),
+		strings.ReplaceAll(asciiNameAgeBiographyFixture, "Percent of", "Salary of"),
+	} {
+		rows, _, _ := ExtractText(body, Row{})
+		for _, r := range ScreenRows(rows) {
+			if strings.Contains(r.HolderName, "Bell") {
+				t.Errorf("invalid caption or currency recovered holding: %+v", r)
+			}
+		}
+	}
+}
+
+const asciiGroupedClassesFixture = `                          SECURITY OWNERSHIP OF CERTAIN
+                        BENEFICIAL OWNERS AND MANAGEMENT
+
+
+      The following  table sets forth  information as to the ownership of shares
+of the  Company's  Common  Stock and Class B Common Stock as of Record Date with
+respect to (i) holders known to the Company to  beneficially  own more than five
+percent (5%) of the outstanding  Common Stock or the Class B Common Stock,  (ii)
+each  director,  (iii) the  Company's  Chief  Executive  Officer  and each other
+executive  officer  whose  annual cash  compensation  for fiscal  2005  exceeded
+$100,000  and (iv) all  directors  and  executive  officers  of the Company as a
+group.
+
+                               AMOUNT AND NATURE
+                                 OF BENEFICIAL
+                                 OWNERSHIP(b)(c)               PERCENT OF
+                            ------------------------  ----------------------------
+                                         CLASS B               CLASS B
+NAME AND ADDRESS OF           COMMON     COMMON       COMMON   COMMON
+BENEFICIAL STOCKHOLDER(a)     STOCK      STOCK(d)     STOCK    STOCK   COMBINED(e)
+- -------------------------     -------    --------     ------   ------  -----------
+Roberta Lipson............  126,679(f)   440,000(g)    2.2%     56.8%    26.3%
+Elyse Beth Silverberg.....  146,639(h)   260,500       2.5      33.6     16.2
+Lawrence Pemble...........  109,815(i)    74,500       1.8       9.6      5.3
+Robert C. Goodwin, Jr.....  199,328(j)        --       3.3       --       1.8
+Julius Y. Oestreicher.....  129,480(k)        --       2.4       --       1.3
+A. Kenneth Nilsson........  138,532(l)        --       2.4       --       1.3
+Carol R. Kaufman..........   75,360(m)        --       1.3       --        *
+Douglas B. Grob...........    6,107(n)        --        *        --        *
+Holli Harris..............    6,000(o)        --        *        --        *
+Neon Liberty Capital
+  Management LLC
+   230 Park Avenue,
+   Suite 865
+   New York, NY  10169....  341,690(p)        --       6.0      --        3.3
+Federated Kaufmann
+  Fund, a portfolio of
+  Federated Equity Funds
+   140 East 45th Street,
+   43rd Floor
+   New York, NY 10017.....  670,200(q)        --      11.7      --        6.5
+Barclays Global
+  Investors, N.A.
+   45 Fremont Street,
+   17th Floor
+   San Francisco, CA
+   94105..................  313,585(r)        --       5.5      --        3.0
+All executive officers
+  and directors as a
+  group (9 persons).......  937,940(s)   775,000      13.5     100.0     49.5`
+
+func TestASCIIGroupedSharesThenPercents(t *testing.T) {
+	rows, _, _ := ExtractText(asciiGroupedClassesFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 39 {
+		t.Fatalf("want 13 holders with two class holdings and combined voting percent, got %d: %+v", len(rows), rows)
+	}
+	for _, want := range []struct {
+		name        string
+		shares, pct float64
+	}{
+		{"Roberta Lipson", 126679, 2.2}, {"Elyse Beth Silverberg", 146639, 2.5},
+		{"Lawrence Pemble", 109815, 1.8}, {"Robert C. Goodwin, Jr", 199328, 3.3},
+		{"Julius Y. Oestreicher", 129480, 2.4}, {"A. Kenneth Nilsson", 138532, 2.4},
+		{"Carol R. Kaufman", 75360, 1.3}, {"Douglas B. Grob", 6107, -1}, {"Holli Harris", 6000, -1},
+		{"Neon Liberty Capital Management LLC", 341690, 6},
+		{"Federated Kaufmann Fund, a portfolio of Federated Equity Funds", 670200, 11.7},
+		{"Barclays Global Investors, N.A", 313585, 5.5},
+		{"All executive officers and directors as a group (9 persons)", 937940, 13.5},
+	} {
+		matches := 0
+		for _, r := range rows {
+			if r.HolderName == want.name && r.ShareClass == "Common Stock" {
+				matches++
+				if r.Shares == nil || *r.Shares != want.shares {
+					t.Errorf("want %+v, got %+v", want, r)
+				}
+				if want.pct >= 0 {
+					if r.Percent == nil || *r.Percent != want.pct {
+						t.Errorf("want %+v, got %+v", want, r)
+					}
+				} else if r.Percent != nil || r.PctMarker != "*" {
+					t.Errorf("want star marker, got %+v", r)
+				}
+			}
+		}
+		if matches != 1 {
+			t.Errorf("want exactly one %+v, got %d", want, matches)
+		}
+	}
+	for _, want := range []struct {
+		name                string
+		shares, pct, voting float64
+	}{
+		{"Roberta Lipson", 440000, 56.8, 26.3}, {"Elyse Beth Silverberg", 260500, 33.6, 16.2}, {"Lawrence Pemble", 74500, 9.6, 5.3},
+		{"All executive officers and directors as a group (9 persons)", 775000, 100, 49.5},
+	} {
+		for _, cls := range []string{"Class B Common Stock", "Combined Voting Power"} {
+			matches := 0
+			for _, r := range rows {
+				if r.HolderName == want.name && r.ShareClass == cls {
+					matches++
+					pct := want.pct
+					if cls == "Combined Voting Power" {
+						pct = want.voting
+						if r.Shares != nil {
+							t.Errorf("combined voting has no share-count column: %+v", r)
+						}
+					} else if r.Shares == nil || *r.Shares != want.shares {
+						t.Errorf("wrong class count: %+v", r)
+					}
+					if r.Percent == nil || *r.Percent != pct {
+						t.Errorf("wrong class percent: %+v", r)
+					}
+				}
+			}
+			if matches != 1 {
+				t.Errorf("want exactly one %s/%s, got %d", want.name, cls, matches)
+			}
+		}
+	}
+}
+
+func TestASCIIGroupedSharesThenPercentsGuards(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(asciiGroupedClassesFixture, "126,679(f)", "$126,679(f)"),
+		strings.ReplaceAll(asciiGroupedClassesFixture, "OF BENEFICIAL", "OF COMPENSATION"),
+		strings.ReplaceAll(asciiGroupedClassesFixture, "COMBINED(e)", "SALARY(e)"),
+	} {
+		rows, _, _ := ExtractText(body, Row{})
+		for _, r := range ScreenRows(rows) {
+			if r.HolderName == "Roberta Lipson" {
+				t.Errorf("invalid layout emitted holding: %+v", r)
+			}
+		}
+	}
+}
+
+const asciiCaptionedESOPFixture = `   SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS AND MANAGEMENT
+
+     The following table sets forth, as of March 16, 1998, the only
+persons (including any group of persons) who, to the knowledge of
+the Company, may be deemed to be the beneficial owners of more than
+5% of the Company's Common or Convertible Preferred Stock as of
+that date.  A beneficial owner of a security includes any person
+who, directly or indirectly, through any contract, arrangement,
+understanding, relationship or otherwise, has the power to vote or
+direct the voting or who has investment power over the security,
+which includes the power to dispose of or direct the disposition of
+the security.
+<TABLE>
+<CAPTION>
+
+
+                            Common Stock
+                                         Share
+Name and address of beneficial owner     Amount  Percent of class
+<S>                                     <C>             <C>
+United National Bank,                   10,504,701(1)      24.5%
+as Trustee under the 1984 ESOP
+1501 Market Street
+Wheeling, WV 26003
+
+<CAPTION>
+                          Convertible Preferred Stock
+                                         Share
+Name and address of beneficial owner     Amount  Percent of class
+
+<S>                                     <C>                 <C>
+United National Bank,                    1,699,171(2)       97.4%
+as Trustee under the 1989 ESOP
+1501 Market Street
+Wheeling, WV  26003
+<FN>
+
+(1)  All shares have been allocated to the accounts of participants
+in the 1984 ESOP consisting of approximately 6,540 employees and
+former employees of the Company.  Participants generally have full
+voting but limited dispositive power over securities allocated to
+their accounts.
+
+(2)  Includes 1,424,287 shares allocated to the accounts of
+participants in the 1989 ESOP consisting of approximately 7,267
+employees and former employees of the Company.  Participants
+generally have full voting but limited dispositive power over
+securities allocated to their accounts.
+</TABLE>`
+
+func TestASCIICommonStockESOPTrustee(t *testing.T) {
+	rows, _, _ := ExtractText(asciiCaptionedESOPFixture, Row{})
+	rows = ScreenRows(rows)
+	if len(rows) != 1 {
+		t.Fatalf("want one common-stock trustee holding; preferred remains excluded, got %d: %+v", len(rows), rows)
+	}
+	r := rows[0]
+	if r.HolderName != "United National Bank as Trustee under the 1984 ESOP" || r.ShareClass != "Common Stock" || r.Shares == nil || *r.Shares != 10504701 || r.Percent == nil || *r.Percent != 24.5 {
+		t.Errorf("wrong literal holding: %+v", r)
+	}
+}
+
+func TestASCIICommonStockESOPTrusteeGuards(t *testing.T) {
+	for _, body := range []string{
+		strings.Replace(asciiCaptionedESOPFixture, "                            Common Stock", "                            Preferred Stock", 1),
+		strings.ReplaceAll(asciiCaptionedESOPFixture, "10,504,701(1)", "$10,504,701(1)"),
+	} {
+		rows, _, _ := ExtractText(body, Row{})
+		for _, r := range ScreenRows(rows) {
+			if strings.Contains(r.HolderName, "1984 ESOP") {
+				t.Errorf("non-common or dollar count emitted: %+v", r)
+			}
+		}
+	}
+}
+
+const holdingsClassCaption53 = `<P STYLE="margin-top:18pt; margin-bottom:0pt; font-size:16pt; font-family:Times New Roman"><B>Principal Stockholders </B></P>
+<P STYLE="font-size:2pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<P STYLE="line-height:3.5pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1.00pt solid #000000">&nbsp;</P>  <P STYLE="margin-top:8pt; margin-bottom:0pt; text-indent:6%; font-size:9pt; font-family:Times New Roman" ALIGN="justify">As of the Record
+Date, to the knowledge of the Fund, no person beneficially owned more than 5% of the voting securities of any class of securities of the Fund, except as set forth below: </P>  <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:9pt" ALIGN="center">
+
+
+<TR>
+<TD WIDTH="69%"></TD>
+<TD VALIGN="bottom" WIDTH="3%"></TD>
+<TD style="width:25pt"></TD>
+<TD></TD>
+<TD></TD>
+<TD style="width:25pt"></TD>
+<TD VALIGN="bottom" WIDTH="3%"></TD>
+<TD style="width:35pt"></TD>
+<TD></TD>
+<TD></TD>
+<TD style="width:35pt"></TD>
+<TD VALIGN="bottom" WIDTH="3%"></TD>
+<TD style="width:32pt"></TD>
+<TD></TD>
+<TD></TD>
+<TD style="width:32pt"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="bottom" STYLE="BORDER-BOTTOM:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:0pt; text-indent:0.50em; font-size:8pt; font-family:Times New Roman"><B>Stockholder Name</B></P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; text-indent:0.50em; font-size:8pt; font-family:Times New Roman"><B>and Address*</B></P></TD>
+<TD VALIGN="bottom" STYLE="BORDER-BOTTOM:1.00pt solid #000000">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" COLSPAN="4" ALIGN="center" STYLE="BORDER-BOTTOM:1.00pt solid #000000"><B>Class&nbsp;of&nbsp;Shares</B></TD>
+<TD VALIGN="bottom" STYLE="BORDER-BOTTOM:1.00pt solid #000000">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" COLSPAN="4" ALIGN="center" STYLE="BORDER-BOTTOM:1.00pt solid #000000"><B>Share<BR>Holdings</B></TD>
+<TD VALIGN="bottom" STYLE="BORDER-BOTTOM:1.00pt solid #000000">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" COLSPAN="4" ALIGN="center" STYLE="BORDER-BOTTOM:1.00pt solid #000000"><B>Percentage<BR>Owned</B></TD></TR>
+
+
+<TR BGCOLOR="#e5e5e5" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top"> <P STYLE="margin-top:0pt; margin-bottom:0pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman"><I></I>TCI Fund Management Limited</P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">Christopher Hohn</P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">7 Clifford Street</P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">London, W1S 2FT, United Kingdom</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" >&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="font-size:9pt">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT STYLE="font-size:9pt">Common Stock</FONT></TD>
+<TD NOWRAP VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" >&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="font-size:9pt">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT STYLE="font-size:9pt">86,224,273</FONT></TD>
+<TD NOWRAP VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" >&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="font-size:9pt">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT STYLE="font-size:9pt">9.01</FONT></TD>
+<TD NOWRAP VALIGN="top"><FONT STYLE="font-size:9pt">%</FONT></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top"> <P STYLE="margin-top:0pt; margin-bottom:0pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">David Filo</P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">David Filo 1998 Revocable Trust U/A DTD 06/12/1998</P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">701 First Avenue</P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">Sunnyvale, California 94089</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" >&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="font-size:9pt">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT STYLE="font-size:9pt">Common Stock</FONT></TD>
+<TD NOWRAP VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" >&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="font-size:9pt">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT STYLE="font-size:9pt">70,666,390</FONT></TD>
+<TD NOWRAP VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" >&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="font-size:9pt">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT STYLE="font-size:9pt">7.4</FONT></TD>
+<TD NOWRAP VALIGN="top"><FONT STYLE="font-size:9pt">%</FONT></TD></TR>
+<TR BGCOLOR="#e5e5e5" STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top"> <P STYLE="margin-top:0pt; margin-bottom:0pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">The Vanguard Group</P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">Vanguard Fiduciary Trust Company</P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">Vanguard Investments Australia, Ltd.</P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">100 Vanguard Boulevard</P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; margin-left:1.33em; text-indent:-1.00em; font-size:9pt; font-family:Times New Roman">Malvern, Pennsylvania 19355</P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" >&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="font-size:9pt">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT STYLE="font-size:9pt">Common&nbsp;Stock</FONT></TD>
+<TD NOWRAP VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" >&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="font-size:9pt">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT STYLE="font-size:9pt">55,924,468</FONT></TD>
+<TD NOWRAP VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" >&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="font-size:9pt">&nbsp;</FONT></TD>
+<TD VALIGN="top" ALIGN="right"><FONT STYLE="font-size:9pt">5.86</FONT></TD>
+<TD NOWRAP VALIGN="top"><FONT STYLE="font-size:9pt">%</FONT></TD></TR>
+</TABLE>`
+
+func TestShareHoldingsCaptionWithExplicitClassColumn(t *testing.T) {
+	rows := ScreenRows(run(t, holdingsClassCaption53))
+	if len(rows) != 3 {
+		t.Fatalf("want 3 real holder/class rows, got %d: %+v", len(rows), rows)
+	}
+	wants := []struct {
+		name        string
+		shares, pct float64
+	}{
+		{"TCI Fund Management Limited Christopher Hohn", 86224273, 9.01},
+		{"David Filo David Filo 1998 Revocable Trust U/A DTD 06/12/1998", 70666390, 7.4},
+		{"The Vanguard Group Vanguard Fiduciary Trust Company Vanguard Investments Australia, Ltd", 55924468, 5.86},
+	}
+	for _, w := range wants {
+		r := find(rows, w.name, "Common Stock")
+		if r == nil || r.Shares == nil || *r.Shares != w.shares || r.Percent == nil || *r.Percent != w.pct {
+			t.Errorf("want %q Common Stock %.0f / %g, got %+v", w.name, w.shares, w.pct, rows)
+		}
+	}
+}
+
+func TestShareHoldingsClassCaptionRejectsMoneyAndGrants(t *testing.T) {
+	for _, tc := range []struct{ name, body string }{
+		{"currency values", strings.NewReplacer("86,224,273", "$86,224,273", "70,666,390", "$70,666,390", "55,924,468", "$55,924,468").Replace(holdingsClassCaption53)},
+		{"option grants", strings.ReplaceAll(holdingsClassCaption53, "Share<BR>Holdings", "Number of Options Granted")},
+		{"unidentified auxiliary column", strings.ReplaceAll(holdingsClassCaption53, "Class&nbsp;of&nbsp;Shares", "Category")},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if rows := ScreenRows(run(t, tc.body)); len(rows) != 0 {
+				t.Fatalf("non-ownership layout emitted %d rows: %+v", len(rows), rows)
+			}
+		})
+	}
+}
+
+const passiveShares53 = `
+    While all shareholders are cordially invited to attend the annual meeting,
+WE ARE NOT ASKING YOU FOR A PROXY. We have been advised that all 84,108,789
+Consumers shares held by CMS Energy Corporation (99.5% of the Consumers shares
+entitled to vote) will be voted in favor of the proposed directors and in favor
+of the appointment of the auditor, thus assuring the adoption of these
+proposals.
+`
+
+func TestProseCountBeforePassiveHolder(t *testing.T) {
+	rows := runProse(t, passiveShares53)
+	if len(rows) != 1 {
+		t.Fatalf("want 1 disclosed holding, got %d: %+v", len(rows), rows)
+	}
+	r := rows[0]
+	if r.HolderName != "CMS Energy Corporation" || r.Shares == nil || *r.Shares != 84108789 || r.Percent == nil || *r.Percent != 99.5 || r.ShareClass != "" {
+		t.Fatalf("wrong passive holding: %+v", r)
+	}
+}
+func TestPassiveProseDoesNotInventOwnershipFromFeesOrVotes(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(passiveShares53, "shares held by", "dollars paid to"),
+		strings.ReplaceAll(passiveShares53, "84,108,789", "$84,108,789"),
+		strings.ReplaceAll(passiveShares53, "Consumers shares held by", "options granted to"),
+		strings.ReplaceAll(passiveShares53, "99.5% of the Consumers shares\nentitled to vote", "99.5% of the votes cast"),
+	} {
+		if rows := runProse(t, body); len(rows) != 0 {
+			t.Fatalf("non-holding prose emitted: %+v", rows)
+		}
+	}
+}
+
+// Literal styled-tab ownership section from 0000061138-06-000006.
+const styledTabs54 = `    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">SECURITY
+      OWNERSHIP OF CERTAIN BENEFICIAL OWNERS</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">AND
+      OF
+      MANAGEMENT</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: -84.6pt" align="left"><br></div>
+    <div align="left"><font id="TAB1" style="MARGIN-LEFT: 54pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">The
+      following table sets forth information as of </font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><u>December
+      31, 2005</u></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">,
+      (unless
+      otherwise noted) with respect to ownership of common stock by any person known
+      by MacDermid to be a beneficial owner of more than 5% of its common stock,
+      by
+      MacDermid&#8217;s C.E.O. and the four other most highly compensated executive officers
+      and by all Directors and officers of MacDermid as a group. Unless otherwise
+      noted, each person has sole voting and disposition power with respect to such
+      person&#8217;s shares. The total shares of common stock beneficially owned by the
+      officers includes the right to acquire ownership through exercisable stock
+      options. </font></div>
+    <div align="left">&#160;</div>
+    <div align="left">&#160;</div>
+    <div align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Beneficial
+      Owner</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Number
+      of
+      Shares</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;
+      </font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Percent</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -36pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><u>Beneficially
+      Owned</u></font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><u>of&#160;
+      Class</u></font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 18pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">FIVE
+      PERCENT BENEFICIAL OWNERS</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">MacDermid
+      Employees Profit Sharing,</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">2,571,357<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">8.4%
+      (1)</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Pension
+      and Stock Ownership Plans</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">MacDermid
+      Equipment, Inc. 401(K) Plan</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">245
+      Freight Street</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Waterbury,
+      CT 06702</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Bank
+      of
+      America Corporation<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">2,036,143<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">6.7
+      % (2)
+</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">100
+      North
+      Tryon Street</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Charlotte,
+      NC 28255</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Royce
+      &amp; Associates, LLC.<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">2,200,921</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;
+</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">7.2%
+      (6)</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">1414
+      Avenue of the Americas</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">New
+      York,
+      NY 10019</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><font id="TAB2" style="LETTER-SPACING: 9pt">&#160;
+</font>Vanguard/Primecap
+      Fund,
+      Inc.<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">1,701,150<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;&#160;&#160;&#160;&#160;&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">
+      5.6 %
+      (3) </font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">100
+      Vanguard Blvd.</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Malverne,
+      PA 19355</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Daniel
+      H.
+      Leever<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">2,324,810</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;&#160;&#160;&#160;&#160;7.6
+      % (4)</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">c/o
+      MacDermid, Incorporated</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">1401
+      Blake Street</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Denver,
+      Colorado 80202</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">T.
+      Rowe
+      Price Associates<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">2,385,482&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      </font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">7.8%
+      (7)</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">100
+      East
+      Pratt Street</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB1" style="MARGIN-LEFT: 36pt"></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Baltimore,
+      MD 21202</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -9pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -36pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><em>&#160;&#160;&#160;&#160;&#160;&#160;
+      NAMED EXECUTIVE OFFICERS </em></font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -36pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: -36pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;&#160;&#160;&#160;
+      Daniel H. Leever</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 36pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt"><font id="TAB2" style="LETTER-SPACING: 9pt">&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">2,324,810
+      (4)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      </font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">7.6
+      %</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Stephen
+      Largan</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 36pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;&#160;&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt"><font id="TAB2" style="LETTER-SPACING: 9pt">&#160;
+      &#160;</font></font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">
+      291,972
+      (5)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      </font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">1.0%
+      </font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Gregory
+      M. Bolingbroke</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 36pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;
+</font>210,270
+      (5)</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      * </font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">John
+      L.
+      Cordani</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 36pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">195,034
+      (5)&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      *</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Paul
+      Morrison</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 36pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">11,509
+      (5)</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      *</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman"><em>DIRECTORS</em></font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Robert
+      L.
+      Ecklin</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 36pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;
+</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">45,826
+      (4)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      *</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Daniel
+      H.
+      Leever</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 36pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;
+</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">2,324,810
+      (4)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      </font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">7.6%</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Donald
+      G.
+      Ogilvie</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 36pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;
+</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">55,626
+      (4)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      </font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">*</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Joseph
+      M.
+      Silvestri<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;
+</font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">209,411
+      (4)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      </font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">*</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">James
+      C.
+      Smith<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;</font></font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">65,742
+      (4)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      </font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">*</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 27pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">T.
+      Quinn
+      Spitzer, Jr.</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 36pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;
+</font></font></font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">47,382
+      (4)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      </font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">*</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><br></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">All
+      Directors, Director</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Nominees
+      and Officers&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">3,820,942
+      (5)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+      </font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">12.5
+      %</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><u><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">as
+      a
+      group (13 persons)</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 58.5pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;<font id="TAB2" style="LETTER-SPACING: 9pt">&#160;&#160;&#160;</font>&#160;</font></font></u></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font id="TAB2" style="COLOR: black; LETTER-SPACING: 27pt"></font>&#160;</div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; LINE-HEIGHT: 1.25; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">&#160;</font><font id="TAB2" style="COLOR: black; LETTER-SPACING: 58.5pt">&#160;</font><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">*Less
+      than 1% of shares outstanding</font></div>`
+
+func TestStyledTabDivOwnershipWithWrappedNames(t *testing.T) {
+	rows := ScreenRows(run(t, styledTabs54))
+	if len(rows) != 17 {
+		t.Fatalf("want 17 distinct holder/kind rows, got %d: %+v", len(rows), rows)
+	}
+	wants := []struct {
+		name, kind  string
+		shares, pct float64
+	}{
+		{"MacDermid Employees Profit Sharing, Pension and Stock Ownership Plans MacDermid Equipment, Inc. 401 Plan", "5pct_holders", 2571357, 8.4},
+		{"Bank of America Corporation", "5pct_holders", 2036143, 6.7},
+		{"Royce & Associates, LLC", "5pct_holders", 2200921, 7.2},
+		{"Vanguard/Primecap Fund, Inc", "5pct_holders", 1701150, 5.6},
+		{"Daniel H. Leever", "5pct_holders", 2324810, 7.6},
+		{"T. Rowe Price Associates", "5pct_holders", 2385482, 7.8},
+		{"Daniel H. Leever", "management", 2324810, 7.6},
+		{"Stephen Largan", "management", 291972, 1.0},
+	}
+	for _, w := range wants {
+		var got *Row
+		for i := range rows {
+			if rows[i].HolderName == w.name && rows[i].TableKind == w.kind {
+				got = &rows[i]
+			}
+		}
+		if got == nil || got.ShareClass != "common stock" || got.Shares == nil || *got.Shares != w.shares || got.Percent == nil || *got.Percent != w.pct {
+			t.Errorf("want %+v common stock, got %+v; rows=%+v", w, got, rows)
+		}
+	}
+	for _, w := range []struct {
+		name   string
+		shares float64
+	}{
+		{"Gregory M. Bolingbroke", 210270}, {"John L. Cordani", 195034}, {"Paul Morrison", 11509}, {"Robert L. Ecklin", 45826}, {"Donald G. Ogilvie", 55626}, {"Joseph M. Silvestri", 209411}, {"James C. Smith", 65742}, {"T. Quinn Spitzer, Jr", 47382},
+	} {
+		r := find(rows, w.name, "common stock")
+		if r == nil || r.Shares == nil || *r.Shares != w.shares || r.Percent != nil || r.PctMarker != "*" {
+			t.Errorf("want %+v with less-than marker, got %+v", w, r)
+		}
+	}
+	r := find(rows, "All Directors, Director Nominees and Officers as a group (13 persons)", "common stock")
+	if r == nil || !r.IsGroupRow || r.GroupN != 13 || r.Shares == nil || *r.Shares != 3820942 || r.Percent == nil || *r.Percent != 12.5 {
+		t.Errorf("wrong group: %+v; rows=%+v", r, rows)
+	}
+}
+
+func TestStyledTabDivRejectsNonOwnership(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(styledTabs54, "Number\n      of\n      Shares", "Dollar Value"),
+		strings.ReplaceAll(styledTabs54, "Number\n      of\n      Shares", "Number of Options Granted"),
+		strings.ReplaceAll(styledTabs54, "Beneficial\n      Owner", "Recipient"),
+	} {
+		if rows := ScreenRows(run(t, body)); len(rows) != 0 {
+			t.Fatalf("non-ownership divs emitted %d rows: %+v", len(rows), rows)
+		}
+	}
+}
+
+func TestStyledTabDivCurrencyAndTablePriority(t *testing.T) {
+	money := strings.NewReplacer("2,571,357", "$2,571,357", "2,036,143", "$2,036,143", "2,200,921", "$2,200,921", "1,701,150", "$1,701,150", "2,324,810", "$2,324,810", "2,385,482", "$2,385,482", "291,972", "$291,972", "210,270", "$210,270", "195,034", "$195,034", "11,509", "$11,509", "45,826", "$45,826", "55,626", "$55,626", "209,411", "$209,411", "65,742", "$65,742", "47,382", "$47,382", "3,820,942", "$3,820,942").Replace(styledTabs54)
+	if rows := ScreenRows(run(t, money)); len(rows) != 0 {
+		t.Fatalf("currency divs emitted %d rows: %+v", len(rows), rows)
+	}
+	table := `<p>SECURITY OWNERSHIP OF MANAGEMENT</p><table><tr><td>Name</td><td>Shares Beneficially Owned</td><td>Percent of Class</td></tr><tr><td>Daniel H. Leever</td><td>2,324,810</td><td>7.6%</td></tr><tr><td>Stephen Largan</td><td>291,972</td><td>1.0%</td></tr></table>`
+	rows := ScreenRows(run(t, table+styledTabs54))
+	if len(rows) != 2 {
+		t.Fatalf("established table path changed: %+v", rows)
+	}
+}
+
+func TestStyledTabDivKeepsDifferentValuesAndCrossKindRows(t *testing.T) {
+	body := strings.Replace(styledTabs54, "2,324,810\n      (4)", "2,324,811\n      (4)", 1)
+	rows := ScreenRows(run(t, body))
+	count := 0
+	for _, r := range rows {
+		if r.HolderName == "Daniel H. Leever" {
+			count++
+			if r.Shares == nil || (*r.Shares != 2324810 && *r.Shares != 2324811) {
+				t.Fatalf("lost distinct holding: %+v", r)
+			}
+		}
+	}
+	if count != 3 || len(rows) != 18 {
+		t.Fatalf("want three distinct name/kind/value disclosures and 18 rows, got %d / %d: %+v", count, len(rows), rows)
+	}
+}
+
+func TestStyledTabCaptionCannotCrossAnUnrelatedTable(t *testing.T) {
+	body := strings.Replace(styledTabs54, "FIVE\n      PERCENT BENEFICIAL OWNERS</font></div>", "FIVE\n      PERCENT BENEFICIAL OWNERS</font></div><table><tr><td>Summary Compensation Table</td></tr></table>", 1)
+	if rows := ScreenRows(run(t, body)); len(rows) != 0 {
+		t.Fatalf("stale caption crossed an unrelated table: %d rows", len(rows))
+	}
+}
+
+const recordHolder54 = `
+      At December 18, 2002, Directors and officers of the Fund as a group owned
+beneficially less than 1% of the outstanding shares of the Fund. No person owned
+of record, or to the knowledge of management owned beneficially, more than 5% of
+the Fund's outstanding shares at that date, except that Cede & Co., a nominee
+for participants in Depository Trust Company, held of record 6,757,411 shares of
+Common Stock equal to approximately 93% of the outstanding shares of Common
+Stock of the Fund and 1,100 shares of Preferred Stock equal to 100% of the
+outstanding shares of Preferred Stock of the Fund.
+`
+
+func TestProseRecordHoldingAfterExceptionClause(t *testing.T) {
+	rows := runProse(t, recordHolder54)
+	if len(rows) != 1 {
+		t.Fatalf("want one explicit record holding, got %d: %+v", len(rows), rows)
+	}
+	r := rows[0]
+	if r.HolderName != "Cede & Co." || r.Shares == nil || *r.Shares != 6757411 || r.Percent == nil || *r.Percent != 93 || r.ShareClass != "Common Stock" {
+		t.Fatalf("wrong record holding: %+v", r)
+	}
+}
+
+func TestRecordHoldingProseRejectsMoneyGrantsAndUnspecifiedClass(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(recordHolder54, "6,757,411", "$6,757,411"),
+		strings.ReplaceAll(recordHolder54, "held of record", "was paid"),
+		strings.ReplaceAll(recordHolder54, "6,757,411 shares of", "6,757,411 options on"),
+		strings.ReplaceAll(recordHolder54, "Common Stock equal to", "Common Stock with a dollar value of $1,000 equal to"),
+		strings.ReplaceAll(recordHolder54, "Common Stock", "cash"),
+	} {
+		if rows := runProse(t, body); len(rows) != 0 {
+			t.Fatalf("not a disclosed holding: %+v", rows)
+		}
+	}
+}
+
+// Literal biography holdings from 0000950131-95-000026.
+const biographyHoldings55 = `  Four directors are to be elected for terms expiring at the annual meeting in
+1998. The persons named below were recommended by the Nominating Committee and
+nominated by the Board of Directors. Their principal occupations during the
+past five or more years, positions with the Company, directorships in other
+companies, ages, and beneficial ownership of shares and of exercisable options
+to purchase shares of the Company at December 31, 1994 appear in that order
+after their names. As used below "restricted stock" refers to non-transferable
+stock, issued pursuant to the John Deere Restricted Stock Plan or the Nonem-
+ployee Director Stock Ownership Plan, which is subject to risk of forfeiture
+if certain conditions are not met. No nominee owned beneficially more than .1%
+of the shares outstanding on December 31, 1994.
+
+
+
+  Mr. Hans W. Becherer Chairman and Chief Executive Officer of Deere & Company
+since 1990; prior thereto, President. Director of Deere & Company since 1986;
+Chair of Executive Committee. Director of Schering-Plough Corporation and
+AlliedSignal Inc. Age 59. Shares owned, 38,412 (includes 26,679 shares of re-
+stricted stock); under option, 19,097.
+
+  Mr. Agustin Santamarina V. Of Counsel and Retired Senior Partner of the law
+firm of Santamarina y Steta since 1991; prior thereto, Senior Partner. Direc-
+tor of Deere & Company since 1991; Chair of Nominating Committee and member of
+Audit Review and Executive Committees. Director of a wide variety of corpora-
+tions in Mexico and The Mexico Fund Inc. Age 68. Shares owned, 800 (includes
+400 shares of restricted stock).
+
+  Mr. David H. Stowe, Jr. President and Chief Operating Officer of Deere &
+Company since 1990; prior thereto, Executive Vice President. Director of Deere
+& Company since 1982; member of Executive Committee. Age 58. Shares owned,
+27,072 (includes 15,672 shares of restricted stock and 11,400 shares over
+which Mr. Stowe shares the power over voting and disposition); under option,
+11,882.
+
+  Mr. John R. Walter Chairman and Chief Executive Officer of R. R. Donnelley &
+Sons Company (print services). Director of Deere & Company since 1991; Chair
+of Committee on Compensation and member of Executive Committee and Nominating
+Committee. Director of Abbott Laboratories, Dayton Hudson Corporation and R.
+R. Donnelley & Sons Company. Age 47. Shares owned, 700 (includes 400 shares of
+restricted stock).`
+
+func TestProseNameFirstBiographyOwnedSharesAndExercisableOptions(t *testing.T) {
+	rows := runProse(t, biographyHoldings55)
+	if len(rows) != 4 {
+		t.Fatalf("want four literal biography holdings, got %d: %+v", len(rows), rows)
+	}
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{
+		{"Hans W. Becherer", 57509},
+		{"Agustin Santamarina V.", 800},
+		{"David H. Stowe, Jr.", 38954},
+		{"John R. Walter", 700},
+	} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent != nil || r.IsGroupRow || r.TableKind != "management" {
+			t.Errorf("want %s shares=%g without inferred percent, got %+v; rows=%+v", want.name, want.shares, r, rows)
+		}
+	}
+}
+
+func TestProseBiographyHoldingGuards(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(biographyHoldings55, "Shares owned,", "Salary paid,"),
+		strings.ReplaceAll(biographyHoldings55, "Shares owned,", "Shares granted,"),
+		strings.ReplaceAll(biographyHoldings55, "Shares owned,", "Shares owned, $"),
+		strings.ReplaceAll(biographyHoldings55, "beneficial ownership of shares", "cash compensation"),
+		strings.ReplaceAll(biographyHoldings55, "Age ", "Year "),
+	} {
+		if rows := runProse(t, body); len(rows) != 0 {
+			t.Fatalf("nonownership biography emitted: %+v", rows)
+		}
+	}
+	// No caption permits treating an unqualified option count as exercisable.
+	body := strings.ReplaceAll(biographyHoldings55, "and of exercisable options", "and of options")
+	rows := runProse(t, body)
+	if len(rows) != 4 {
+		t.Fatalf("want four owned-share disclosures: %+v", rows)
+	}
+	r := find(rows, "Hans W. Becherer", "")
+	if r == nil || r.Shares == nil || *r.Shares != 38412 {
+		t.Fatalf("unqualified options added: %+v", r)
+	}
+}
+
+// Literal ownership sentence outside the fund dollar-range table.
+const ownershipException55 = `As of August 31, 2003, neither the Board Member nominees, nor the Board Member
+nominees and officers as a group, beneficially owned shares in any Fund except
+for Board Member Impellizzeri, who owns 1,000 shares of New York Select.`
+
+func TestProseOwnershipExceptionPreservesNamedFund(t *testing.T) {
+	rows := runProse(t, ownershipException55)
+	if len(rows) != 1 {
+		t.Fatalf("want one explicit count-only ownership disclosure, got %d: %+v", len(rows), rows)
+	}
+	r := rows[0]
+	if r.HolderName != "Board Member Impellizzeri" || r.Shares == nil || *r.Shares != 1000 || r.Percent != nil || r.ShareClass != "New York Select" || r.TableKind != "management" || r.IsGroupRow {
+		t.Fatalf("wrong independently disclosed holding: %+v", r)
+	}
+}
+func TestProseOwnershipExceptionGuards(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(ownershipException55, "1,000", "$1,000"),
+		strings.ReplaceAll(ownershipException55, "who owns", "who received"),
+		strings.ReplaceAll(ownershipException55, "shares of", "options on"),
+		strings.ReplaceAll(ownershipException55, "beneficially owned shares", "received compensation"),
+		strings.ReplaceAll(ownershipException55, "Board Member Impellizzeri", "each Board Member"),
+		strings.ReplaceAll(ownershipException55, "New York Select", "compensation"),
+		strings.ReplaceAll(ownershipException55, "New York Select", "all funds"),
+	} {
+		if rows := runProse(t, body); len(rows) != 0 {
+			t.Fatalf("nonownership exception emitted: %+v", rows)
+		}
+	}
+}
+
+func TestProseBiographyCaptionDoesNotCrossCompensationSection(t *testing.T) {
+	i := strings.Index(biographyHoldings55, "  Mr. Hans")
+	body := biographyHoldings55[:i] + "COMPENSATION PROPOSALS\n\n" + biographyHoldings55[i:]
+	if rows := runProse(t, body); len(rows) != 0 {
+		t.Fatalf("ownership caption crossed section boundary: %+v", rows)
+	}
+}
+
+const recordCommonShares55 = `To the knowledge of management, no person owned of record or owned
+beneficially more than 5% of the Fund's common shares or preferred
+shares outstanding as of September 19, 2005, except that Cede & Co., a nominee
+for participants in the Depository Trust Company, held of record 7,898,516
+common shares, equal to approximately 99.53% of the Fund's outstanding common
+shares and 2,778 preferred shares, equal to 100% of the Fund's outstanding
+preferred shares.`
+
+func TestProseRecordCommonSharesBeforeEquality(t *testing.T) {
+	rows := runProse(t, recordCommonShares55)
+	if len(rows) != 1 {
+		t.Fatalf("want one common-stock record holding, got %d: %+v", len(rows), rows)
+	}
+	r := rows[0]
+	if r.HolderName != "Cede & Co." || r.Shares == nil || *r.Shares != 7898516 || r.Percent == nil || *r.Percent != 99.53 || r.ShareClass != "Common Stock" {
+		t.Fatalf("wrong common-share holding: %+v", r)
+	}
+}
+func TestProseRecordCommonSharesEqualityGuards(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(recordCommonShares55, "7,898,516", "$7,898,516"),
+		strings.ReplaceAll(recordCommonShares55, "common shares, equal to", "options, equal to"),
+		strings.ReplaceAll(recordCommonShares55, "common shares, equal to", "common shares, with a dollar value of $1,000 equal to"),
+		strings.ReplaceAll(recordCommonShares55, "common shares, equal to", "common shares, fees equal to"),
+		strings.ReplaceAll(recordCommonShares55, "held of record", "was paid"),
+	} {
+		if rows := runProse(t, body); len(rows) != 0 {
+			t.Fatalf("nonownership record sentence emitted: %+v", rows)
+		}
+	}
+}
+
+// Literal voting-entitled ownership counts; percentages are not stated.
+const passiveGroupCount55 = `On that date, 254,978,461
+                                            shares of Hilton common stock were outstanding and
+                                            entitled to vote, of which 29,272,946 shares were held
+                                            by Hilton's directors and executive officers.
+
+On that date, 78,692,352 shares of
+                                            Promus common stock were outstanding and entitled to
+                                            vote, of which 1,634,477 shares were held by Promus'
+                                            directors and executive officers.`
+
+func TestProsePassiveGroupCountKeepsIssuerClass(t *testing.T) {
+	rows := runProse(t, passiveGroupCount55)
+	if len(rows) != 2 {
+		t.Fatalf("want two issuer-scoped group counts, got %d: %+v", len(rows), rows)
+	}
+	for _, want := range []struct {
+		name, class string
+		shares      float64
+	}{
+		{"Hilton's directors and executive officers", "Hilton common stock", 29272946},
+		{"Promus' directors and executive officers", "Promus common stock", 1634477},
+	} {
+		r := find(rows, want.name, want.class)
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent != nil || !r.IsGroupRow || r.TableKind != "combined" {
+			t.Errorf("wrong passive group count for %s: %+v; rows=%+v", want.name, r, rows)
+		}
+	}
+}
+func TestProsePassiveGroupCountRejectsVoteOutcomesAndPayments(t *testing.T) {
+	for _, body := range []string{
+		strings.ReplaceAll(passiveGroupCount55, "shares were held", "votes were cast"),
+		strings.ReplaceAll(passiveGroupCount55, "shares were held", "options were granted"),
+		strings.ReplaceAll(passiveGroupCount55, "of which ", "of which $"),
+		strings.ReplaceAll(passiveGroupCount55, "common stock", "fees"),
+		strings.ReplaceAll(passiveGroupCount55, "directors and executive officers", "shareholders voting in favor"),
+	} {
+		if rows := runProse(t, body); len(rows) != 0 {
+			t.Fatalf("nonownership passive group count emitted: %+v", rows)
+		}
+	}
+}

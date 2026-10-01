@@ -300,3 +300,27 @@ func TestAPercentMarkerVetoesTheMoneyBlock(t *testing.T) {
 		t.Errorf("a dollar-range block stopped being money")
 	}
 }
+
+func TestProcessIndependentProseOwnershipLayouts(t *testing.T) {
+	for _, tc := range []struct {
+		name, body string
+		want, pct  int
+	}{
+		{"biography", biographyHoldings55, 4, 0},
+		{"exception", ownershipException55, 1, 0},
+		{"record", recordCommonShares55, 1, 1},
+		{"passive_group", passiveGroupCount55, 2, 0},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			dir := t.TempDir()
+			if err := os.WriteFile(filepath.Join(dir, "proxy.txt"), []byte(tc.body), 0o644); err != nil {
+				t.Fatal(err)
+			}
+			j := job{RelPath: "proxy.txt", CIK: "1", Accession: "a"}
+			rows, man := process(dir, j)
+			if man.Status != "ok" || man.Parser != "text_prose" || man.NRows != tc.want || len(rows) != tc.want || man.NPctParsed != tc.pct {
+				t.Fatalf("wrong process result rows=%+v manifest=%+v", rows, man)
+			}
+		})
+	}
+}

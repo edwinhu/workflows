@@ -196,6 +196,7 @@ func extractHTML(body string, base Row) ([]Row, int, int) {
 	}
 	items := DocumentItems(doc)
 	if base.colspanRecovery {
+		items = append(items, styledTabOwnershipItems(doc, len(items))...)
 		items = append(items, positionedOwnershipItems(doc, len(items))...)
 		items = append(items, fragmentedOwnershipItems(documentItems(doc, true), len(items))...)
 	}
