@@ -980,9 +980,38 @@ client = genai.Client(vertexai=True, project=P, location=loc)
 And pair this with Gotcha 17 in the other direction: 2.5 has thinking off by default and **rejects** `thinkingConfig`, which 3.x requires. So switching tiers to dodge this 404 also means making `thinkingConfig` conditional:
 
 ```python
-cfg = {"response_mime_type": "application/json", "temperature": 0}
+cfg = {"response_mime_type": "application/json"}
 if model_id.startswith("gemini-3"):
     cfg["thinking_config"] = {"thinking_level": thinking_level_for(model_id)}
 ```
 
 Verified 2026-08-30, us-central1, `google-genai` 2.20.0: four consecutive submit failures — client GC, bare model id, listed-but-unservable 3.5-flash-lite, then a thinking-config mismatch — before a job reached `JOB_STATE_PENDING`.
+
+---
+
+## Gotcha 21: Gemini 3.x: never set temperature/top_p/top_k
+
+For all Gemini 3 models, Google strongly recommends keeping the `temperature` parameter at its default value of `1.0`. Setting it below 1.0 (such as `0.0` for structured extraction) may lead to unexpected behavior, such as looping or degraded performance.
+
+If you are migrating from Gemini 2.x or 1.5, **remove any explicit low temperature**. The same applies to `top_p` and `top_k`.
+
+```python
+# ❌ WRONG for Gemini 3.x
+cfg = {"response_mime_type": "application/json", "temperature": 0.0}
+
+# ✓ CORRECT for Gemini 3.x
+cfg = {"response_mime_type": "application/json"}
+```
+
+---
+
+## Gotcha 22: Batch search grounding requires markdown/text output, not JSON
+
+When using the `googleSearch` tool in a batch request, demanding JSON-only output (`response_mime_type: "application/json"`) causes the model to **silently skip searching**.
+
+In a measured test (Gemini 3.8 Flash, Standard-API batch, 2026-09-30):
+- A prompt demanding JSON-only output produced 0 of 138 grounded rows.
+- The same prompt asking for labelled MARKDOWN output grounded 92 of 138.
+- This held regardless of temperature, metadata presence, or thinking level.
+
+Enabling the tool does not force a search. If you need search grounding in batch, ask for labelled plain-text or markdown and parse it yourself. Always check `groundingMetadata` per row.
