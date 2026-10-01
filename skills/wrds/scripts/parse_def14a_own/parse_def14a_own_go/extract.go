@@ -43,6 +43,12 @@ type Row struct {
 	// pair, even when the identifying class label occupies another header row.
 	commonColumn bool
 
+	// fundRegistration marks explicit fund/registration/shares-class/percent cells.
+	fundRegistration bool
+
+	// captionCount identifies a sole, explicit count column in an SGML biography table.
+	captionCount bool
+
 	// classHint is a class / series / fund label recovered from a column
 	// header rather than from a class-shaped value. It is copied onto
 	// ShareClass by ScreenRows AFTER every drop rule has run, so recovering it
