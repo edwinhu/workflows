@@ -4368,3 +4368,186 @@ Principal Occupation of the Director Nominees
 		}
 	}
 }
+
+// The biography columns are not holdings; vested 60-day options are an add-on.
+// Ownership section transcribed from 0001021408-02-005795, including both pages.
+func TestASCIIBiographicalOwnershipAddsVestedOptions(t *testing.T) {
+	body := `SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS AND MANAGEMENT
+     executive officers, and (iii) the directors and executive officers of the
+     Company as a group:
+
+<TABLE>
+<CAPTION>
+                                                                                                     Common Stock
+                                                                                                 Beneficially Owned on
+                                                                                                   March 26, 2002/1/
+                                                                                  --------------------------------------------------
+                                                                  Director                                              Percentage
+  Names and Offices          Principal Occupation                Since/Term          Number         Vested Option       of Shares
+  Held with Company           for Past Five Years      Age       to Expire        of Shares/1/        Shares/2/       Outstanding/3/
+- ------------------------     -----------------------   ---       ----------       ------------      -------------     --------------
+<S>                          <C>                       <C>       <C>              <C>               <C>               <C>
+Morris A. Tharp/4/           President and Owner,       62        2000/               414,480          100,000            5.51%
+Chairman of the Board        E.M. Tharp, Inc. (Truck              2004
+                             Sales and Repair)                   (1977)/5/
+
+Albert L. Berra              Orthodontist/Rancher       61        2000/               267,884          100,000            3.94%
+Director                                                          2003
+                                                                 (1977)/5/
+
+Gregory A. Childress/4/      Rancher                    45        2000/             1,595,548/6/       100,000           18.17%
+Director                                                          2004
+                                                                 (1994)/5/
+
+Robert L. Fields/4/          Investor                   74        2000/               620,357          100,000            7.72%
+Director                     (formerly Owner,                     2004
+                             Bob Fields Jewelers)                (1982)/5/
+
+James C. Holly/4/            President and Chief        61        2000/               448,776          100,000            5.88%
+President, Chief             Executive Officer,                   2004
+Executive Officer            Bank of the Sierra                  (1977)/5/
+and Director
+
+Vincent L. Jurkovich         President, Porterville     74        2000/               136,950          100,000            2.54%
+Director                     Concrete Pipe, Inc.                  2003
+                                                                 (1977)/5/
+</TABLE>
+
+
+____________________________
+
+     /1/ Except as otherwise noted, may include shares held by such person's
+     spouse (except where legally separated) and minor children, and by any
+     other relative of such person who has the same home; shares held in "street
+     name" for the benefit of such person; shares held by a family or retirement
+     trust as to which such person is a trustee and primary beneficiary with
+     sole voting and investment power (or shared power with a spouse); or shares
+     held in an Individual Retirement Account or pension plan as to which such
+     person (and/or his spouse) is the sole beneficiary and has pass-through
+     voting rights and investment power.
+
+     /2/ Consists of shares which the applicable individual or group has the
+     right to acquire upon the exercise of stock options which are vested or
+     will vest within 60 days of March 26, 2002 pursuant to the Company's Stock
+     Option Plan. (See "Compensation of Directors" and "Stock Options.")
+
+     /3/ The percentages are based on the total number of shares of the
+     Company's Common Stock outstanding, plus the number of option shares which
+     the applicable individual or group has the right to acquire upon the
+     exercise of stock options which are vested or will vest within 60 days of
+     March 26, 2002 pursuant to the Company's Stock Option Plan. (See
+     "Compensation of Directors" and "Stock Options.")
+
+     /4/ Mr. Tharp's address is 15243 Road 192, Porterville, California 93257;
+     Mr. Childress' address is 12012 Road 200, Porterville, California 93257;
+     Mr. Fields' address is 200 North Main Street, Porterville, California
+     93257; Mr. Holly's address is 86 North Main Street, Porterville, California
+     93257; and Mr. Smith's address is 421 East Martin Avenue, Porterville,
+     California 93257.
+
+     /5/ Year first elected or appointed a director of the Bank.
+
+     /6/ Includes 5,280 shares owned by Childress, Bates, Childress, Inc.
+     ("CBC"), a corporation of which Mr. Childress is President and a 331/3%
+     shareholder; 41,000 shares owned by the CBC Defined Benefit Pension Plan,
+     of which Mr. Childress is a trustee and a beneficiary; and 684,992 shares
+     owned by CPG Ranch, a partnership of which Mr. Chrildress is a partner; as
+     to all of which shares Mr. Childress has shared voting and investment
+     power.
+
+     (Table and footnotes continued on following page.)
+
+                                        3
+
+<PAGE>
+
+<TABLE>
+<CAPTION>
+                                                                                                 Common Stock
+                                                                                              Beneficially Owned on
+                                                                                                March 26, 2002/1/
+                                                                               ---------------------------------------------
+                                                                 Director                                        Percentage
+ Names and Offices           Principal Operation               Since/Term         Number       Vested Option     of Shares
+Held with Company             for Past Five Years      Age      to expire      of Shares/1/       Shares/2/     Outstanding/3/
+- -----------------            --------------------      ---      ----------     ------------     ------------    -----------
+<S>                          <C>                       <C>      <C>            <C>              <C>             <C>
+Howard H. Smith/4/           Retired/Investor          90       2000/           400,000           100,000          5.36%
+Director                     (formerly Owner and                2004
+                             Chief Executive                   (1977)/5/
+                             Officer, Smith's
+                             Complete Market)
+
+Robert H. Tienken            Retired (formerly         82       2000/           187,628           100,000          3.08%
+Corporate Secretary          Realtor/Farmer)                    2003
+and Director                                                   (1977)/5/
+
+Gordon T. Woods              Owner, Gordon T. Woods    65       2000/            1,386/7/         100,000          1.09%
+Director                     Construction                       2003
+                                                               (1977)/5/
+
+Kenneth E. Goodwin           Executive Vice            59        n/a            152,004            60,000          2.28%
+Executive Vice President     President and Chief
+and Chief Operating Officer  Operating Officer,
+                             Bank of the Sierra
+
+Kenneth R. Taylor            Senior Vice President     42        n/a                  0                 0          0.00%
+Senior Vice President and    and Chief Financial
+Chief Financial Officer      Officer,
+                             Bank of the Sierra/8/
+
+Charlie C. Glenn             Senior Vice President     63        n/a              1,922            15,000          0.18%
+Senior Vice President and    and Chief Credit
+Chief Credit Officer         Officer,
+                             Bank of the Sierra/8/
+
+Directors and Executive                                                       4,226,935           975,000         50.97%
+Officers as a Group (12
+persons)
+</TABLE>
+
+
+
+`
+	for _, tc := range []struct{ name, body string }{
+		{"grant_not_holding", strings.ReplaceAll(body, "Vested Option", "Option Grants")},
+		{"no_vested_60_day_disclosure", strings.ReplaceAll(body, "60 days", "five years")},
+		{"no_ownership_caption", strings.ReplaceAll(body, "Beneficially Owned on", "Options Granted on")},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if rows := ScreenRows(run(t, tc.body)); len(rows) != 0 {
+				t.Fatalf("non-ownership variant emitted rows: %+v", rows)
+			}
+		})
+	}
+	rows := ScreenRows(run(t, body))
+	if len(rows) != 13 {
+		t.Fatalf("want 12 holders and one group, got %d: %+v", len(rows), rows)
+	}
+	for _, want := range []struct {
+		name        string
+		shares, pct float64
+	}{
+		{"Morris A. Tharp", 514480, 5.51},
+		{"Albert L. Berra", 367884, 3.94},
+		{"Gregory A. Childress", 1695548, 18.17},
+		{"Robert L. Fields", 720357, 7.72},
+		{"James C. Holly", 548776, 5.88},
+		{"Vincent L. Jurkovich", 236950, 2.54},
+		{"Howard H. Smith", 500000, 5.36},
+		{"Robert H. Tienken", 287628, 3.08},
+		{"Gordon T. Woods", 101386, 1.09},
+		{"Kenneth E. Goodwin", 212004, 2.28},
+		{"Kenneth R. Taylor", 0, 0},
+		{"Charlie C. Glenn", 16922, 0.18},
+		{"Directors and Executive Officers as a Group (12 persons)", 5201935, 50.97},
+	} {
+		r := find(rows, want.name, "Common Stock")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("%q: want common-stock shares=%g pct=%g, got %+v; rows=%+v", want.name, want.shares, want.pct, r, rows)
+		}
+		if r != nil && strings.HasPrefix(want.name, "Directors and") && (!r.IsGroupRow || r.GroupN != 12) {
+			t.Errorf("group metadata: %+v", r)
+		}
+	}
+}
