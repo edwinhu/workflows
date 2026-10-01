@@ -1,39 +1,40 @@
-# API boundaries and measured gotchas
+# Production API boundaries and measured gotchas
 
-## APIs and SDK
+**Production uses Gemini Enterprise Agent Platform, `vertexai=True`, ADC and GCS. NEVER use AI Studio / Gemini Developer API for production runs.** Synchronous smoke tests also use the Cloud backend/model; historical Developer formats are not production fallbacks.
 
-[Interactions](https://ai.google.dev/gemini-api/docs/interactions-overview.md.txt) is GA and recommended; generateContent is legacy but supported. Batch is generateContent-only. Flex is synchronous and uses general API limits, not an Interactions Batch endpoint.
+## APIs and request shapes
 
-Use [`google-genai`](https://ai.google.dev/gemini-api/docs/libraries.md.txt), `from google import genai`, and a shared `genai.Client`. The older `google.generativeai` SDK is deprecated and does not implement these examples' current Client/Batch methods. Do not call `genai.batches` at module scope.
-
-## Request shapes
+Use `google-genai`, `from google import genai` and one shared Client. Cloud [Interactions](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/interactions) is Preview, and generateContent remains fully supported. Batch uses GenerateContentRequest, not an Interactions background task.
 
 | Path | Input / config | Output |
 |---|---|---|
-| Developer Batch JSONL | `key` + `request` (generateContent), `src=uploaded.name`, `config={"display_name": ...}` | `job.dest.file_name`; correlate downloaded JSONL by key |
-| Developer inline Batch | `src=[{contents, config}, ...]` under 20MB | `job.dest.inlined_responses`; check every error/response |
-| Cloud batch | GCS/BigQuery; `vertexai=True`, project, location, publisher model; GCS `dest` inside config | Cloud output prefix / tables; Cloud metadata correlation |
-| Interactions | `input`, `generation_config`, `service_tier`, `tools=[{"type": ...}]`, `response_format` | `output_text`, `steps`, `usage` |
+| Cloud generation batch | GCS JSONL `request`; publisher model path; `config.dest` GCS prefix | `job.dest.gcs_uri`; JSONL `request`/`response`/`status`; verify correlation |
+| Cloud embedding batch | GCS JSONL `key` + `request.content`/`request.embed_content_config` | Keyed vectors; [embedding schema](embeddings.md) |
+| Cloud Standard / Flex / Priority | generate_content; Flex/Priority use Vertex request-type header | candidates/groundingMetadata, not Developer Interactions steps |
+| Developer API, not for production | Files / inline batches and Interactions service_tier | Different keys, dest.file_name or steps; never copy into production |
 
-Use current [Batch examples](https://ai.google.dev/gemini-api/docs/batch-api.md.txt) and [migration guide](https://ai.google.dev/gemini-api/docs/migrate-to-interactions.md.txt). Plain dictionaries are convenient, not a prohibition on documented SDK config types. `dest` is not a top-level create kwarg in the current google-genai Cloud pattern; it is not an Interactions field. Do not infer that every historic wrapper/parameter form works across versions.
-
-[May 2026 Interactions changes](https://ai.google.dev/gemini-api/docs/interactions-breaking-changes-may-2026.md.txt): `steps` replaces `outputs`; `response_format` replaces separate Interactions output-format fields. Do not read legacy candidates/groundingMetadata from an Interactions response.
+Sources: [GCS batch](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/batch-inference/new-job-from-cloud-storage), [Cloud tiers](flex-inference.md). `dest` belongs inside config. Both dictionaries and documented SDK config types work; do not reinstate the old ban on CreateBatchJobConfig.
 
 ## Grounding: measured, not inferred from format
 
-3.8 Flash founder lookups, 2026-09-30:
+**Measured on the Developer API**, 3.8 Flash founder lookups, 2026-09-30 to 2026-10-01:
 
 | Route / prompt | Observed grounded rows |
 |---|---|
-| Batch / JSON | 0/138 |
+| Developer Batch / past-tense JSON question | 0/138 |
+| Developer Batch / “search NOW for current pages… what they say TODAY” + system search instruction | 10/10 |
 | Batch / markdown | 2/10 |
 | Batch / short current-CEO question | 3/3 |
 | Synchronous Standard / markdown | 92/138 |
 | Flex / markdown smoke test | 8/8 successful calls grounded and returned tier=flex (10-row test, two user-reported HTTP 400 refusals) |
 
-The user reports two HTTP 400 copyright/recitation refusals in the 10-row Flex test; the captured report independently records one unassigned 400 after 503 retries. Its 138-row pilot did not finish. Full citations and quality scores were not recovered. Do not call 8/10 a completed pilot or attribute 92/138 to markdown Batch. Route per-entity web lookups to Flex and inspect search/citations; see [flex-inference.md](flex-inference.md).
+The user reports two HTTP 400 copyright/recitation refusals in the 10-row Flex test; the captured report independently records one unassigned 400 after 503 retries. Its 138-row pilot did not finish. Full citations and quality scores were not recovered. Do not call 8/10 a completed pilot or attribute 92/138 to markdown Batch. These Developer observations do not establish Vertex batch grounding support. Require a same-model grounded Vertex pilot; never route production to Developer Flex.
 
-[Search docs](https://ai.google.dev/gemini-api/docs/google-search.md.txt) say the model determines whether search improves the answer. A configured tool does not force search. JSON does not universally disable it. [Legacy search](https://ai.google.dev/gemini-api/docs/generate-content/google-search.md.txt) returns groundingMetadata; Interactions returns google_search_call/result steps and url_citation annotations.
+[Cloud Search docs](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/grounding/grounding-with-google-search) say the model determines whether search improves the answer. A configured tool does not force search. JSON does not universally disable it. [Developer API, not for production: Legacy search](https://ai.google.dev/gemini-api/docs/generate-content/google-search.md.txt) returns groundingMetadata; Interactions returns google_search_call/result steps and url_citation annotations.
+
+Prompt framing, not markdown alone, changed the observed search behavior: past-tense 0/138 versus fresh framing 10/10. Scaling the stale question would manufacture ungrounded answers, not recover history. Ask for current sources that establish the historical fact, add a system search instruction, and inspect queries/citations. This measurement is Developer-side; it does not prove Vertex batch + Search support.
+
+2026-10-01 founder-ceo-ipo: 1,307/2,111 Developer rows failed with code 9, while the same five failed requests succeeded unchanged in a tiny batch; a 100-row retry stayed 100 pending for over 40 minutes. Developer Flex shed load at peak (503 high demand, about 9 rows/hour). Small successes are not production-capacity evidence.
 
 ## Thinking and sampling
 
@@ -43,25 +44,40 @@ A MAX_TOKENS response can spend its whole output budget on thinking. Check conte
 
 ## Cloud batch (historical identifiers retained)
 
-The current product is **Gemini Enterprise Agent Platform**, formerly Vertex AI. `vertexai=True`, `aiplatform.googleapis.com`, `roles/aiplatform.user` and publisher resource paths are still identifiers, not names to rewrite. [Cloud batch](https://cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/batch-prediction-gemini) supports global for base Gemini models and regional endpoints; global does not satisfy data residency requirements. us-central1 is this runbook's bucket default, not the Developer API's only region.
+The current product is **Gemini Enterprise Agent Platform**, with historical SDK/service identifiers. `vertexai=True`, `aiplatform.googleapis.com`, `roles/aiplatform.user` and publisher resource paths are still identifiers, not names to rewrite. [Cloud batch](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/batch-inference) supports global for base Gemini models and regional endpoints; global does not satisfy data residency requirements. us-central1 is this runbook's bucket default, not the Developer API's only region.
 
 Observed 2026-08-30 with google-genai 2.20.0: a bare Cloud batch model ID 404'd; the publisher-qualified path and global endpoint worked for the tested 3.5 Flash-Lite job. models.list availability was not sufficient to establish batch serviceability in the requested region. Keep the correct backend/resource path, consult current model availability, and probe the same model/endpoint before production. Never silently downgrade the model to clear a 404.
 
-Cloud metadata flattening was a production workaround for BigQuery-backed results: store scalar domain IDs/model/prompt hashes, serialize complex metadata if necessary. This is not a Developer key requirement or proof that every backend forbids nested JSON.
+Cloud metadata flattening was a production workaround for BigQuery-backed results (current BigQuery docs exclude array/struct/range/datetime/geography columns): store scalar domain IDs/model/prompt hashes, serialize complex metadata if necessary. This is not a Developer key requirement or proof that every backend forbids nested JSON.
+
+### Current Vertex Gemini batch limits (2026-10-01)
+
+| Limit | Vertex value |
+|---|---|
+| Concurrent jobs / usage quota | No predefined quota limits; shared capacity can queue jobs |
+| Requests per job | 200,000 |
+| GCS input file size | 1GB |
+| Queue / running deadlines | Up to 72h queue; cancel incomplete work after 24h running |
+
+Sources: [batch](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/batch-inference), [quotas](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/quotas). No fixed 10-job/100MB batch cap applies here. Developer Tier 1 3.8 Flash's 3M queued-token cap is not a Vertex quota.
+
+The [3.8 Flash model card](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/gemini/3-8-flash) lists batch and Search separately. Their combination is not established by those lists: test the exact grounded batch before production, stop on failure, and never fall back to Developer Flex.
 
 ## Client lifetime and result parsing
 
 Observed inline/per-call clients failed with `Cannot send a request, as the client has been closed`. Keep one client for the process, and close it only after all work completes.
 
+Cloud per-row failures are reported in top-level `status`; inspect it even when the overall job succeeds. GCS output is a job-specific prefix, not a single filename.
+
 Batch JS results may be raw JSON without a hydrated `.text` getter; read candidate parts, concatenate text blocks, and inspect errors/finishReason. Do not treat the first thought part as the answer. Structured JSON validates shape, not the truth of an extraction.
 
 ## Files and File Search observations
 
-PDF parsing allows up to 50MB / 1,000 pages; Files storage is 2GB/file and 20GB/project with 48h expiry. Uploading media does not remove PDF/model/context limits. When layout/scanned pages matter, send the relevant PDF; for text-only field extraction, pre-cut the relevant section and never truncate off target evidence. See [files-api.md](files-api.md).
+Historical Developer PDF parsing guidance allowed up to 50MB / 1,000 pages; check the Cloud model card for production document limits; Developer Files storage is 2GB/file and 20GB/project with 48h expiry. Uploading media does not remove PDF/model/context limits. When layout/scanned pages matter, send the relevant PDF; for text-only field extraction, pre-cut the relevant section and never truncate off target evidence. See [files-api.md](files-api.md).
 
-April 2026 File Search observations: uploadToFileSearchStore returned 503 for some files over 10KB; files.upload then importFile worked. A pager stopped after one page; explicit hasNextPage/nextPage worked. imported displayName could be a random ID; use customMetadata for domain IDs. These are recorded SDK/service observations, not permanent Google limits. Reconcile expected document counts, poll Files until ACTIVE, and inspect import errors. See [file-search.md](file-search.md).
+April 2026 Developer API File Search observations: uploadToFileSearchStore returned 503 for some files over 10KB; files.upload then importFile worked. A pager stopped after one page; explicit hasNextPage/nextPage worked. imported displayName could be a random ID; use customMetadata for domain IDs. These are recorded SDK/service observations, not permanent Google limits. Reconcile expected document counts, poll Files until ACTIVE, and inspect import errors. See [file-search.md](file-search.md).
 
-Embedding inline output order scrambled on a 21K-text production job while a three-row test passed. Use keyed file input and fresh-embedding sentinels; see [embeddings.md](embeddings.md).
+Developer API embedding inline output order scrambled on a 21K-text production job while a three-row test passed. Use keyed file input and fresh-embedding sentinels; see [embeddings.md](embeddings.md).
 
 ## PDF splitting utility
 

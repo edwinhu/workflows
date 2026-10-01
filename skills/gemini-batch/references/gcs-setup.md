@@ -1,6 +1,6 @@
 # GCS operations for Gemini Enterprise Agent Platform batch
 
-These GCS operations apply to Cloud batch, not Developer Batch or Interactions Flex.
+These private GCS operations apply to Cloud batch and Cloud synchronous tiers (including Flex PayGo), not Developer Files.
 
 One-time setup — gcloud install, authentication, API enablement and bucket creation — is in [`gcs-setup-runbook.md`](gcs-setup-runbook.md).
 
@@ -25,8 +25,7 @@ gsutil -m cp *.pdf gs://your-batch-bucket/documents/
 # Set content type explicitly
 gsutil -h "Content-Type:application/pdf" cp file.pdf gs://bucket/
 
-# Upload with public-read ACL (not recommended for sensitive data)
-gsutil cp -a public-read file.pdf gs://bucket/
+# Keep production objects private; grant required IAM access, not public-read.
 
 # Resume interrupted uploads automatically (default behavior)
 gsutil cp large_file.pdf gs://bucket/
@@ -223,7 +222,7 @@ gcloud services enable aiplatform.googleapis.com
 3. **Set lifecycle policies** to auto-delete old batch files
 4. **Use `-m` flag** with gsutil for parallel uploads (faster)
 5. **Verify bucket region** before uploading large datasets
-6. **Use service accounts** for production, ADC for development
+6. **Use workload identity/service-account ADC** for unattended production; user ADC for local development
 7. **Keep bucket in same project** as Gemini Enterprise Agent Platform API for simplicity
 
 ## Lifecycle Management

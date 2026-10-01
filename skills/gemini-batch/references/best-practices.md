@@ -1,48 +1,43 @@
-# Developer Batch API patterns
+# Vertex batch production patterns
 
-Source: [Batch API](https://ai.google.dev/gemini-api/docs/batch-api.md.txt), [rate limits](https://ai.google.dev/gemini-api/docs/rate-limits.md.txt). This is the Gemini Developer API, **not** Cloud batch prediction. Batch still uses generateContent; Interactions Batch is not yet available.
+Production uses Gemini Enterprise Agent Platform, ADC and GCS, never AI Studio / the Gemini Developer API. Read [Cloud batch](vertex-ai.md) for setup, model availability, quotas and pricing.
 
-## Keyed file input
+## GCS input and output
 
-Each JSONL row contains a unique `key` and a complete generateContent `request`. Inline `src` requests are also supported when the total request stays under 20MB. Input JSONL files can be up to 2GB; Files project storage is 20GB. Shard by token quotas and retry isolation rather than assuming a universal 10,000-row limit.
+Each JSONL line wraps a GenerateContentRequest in `request`. Upload the file to GCS using the existing project storage tooling; do not use the File API.
 
 ```json
-{"key":"doc-1","request":{"contents":[{"role":"user","parts":[{"text":"Extract the dates from this excerpt..."}]}],"generationConfig":{"responseMimeType":"application/json"}}}
+{"request":{"contents":[{"role":"user","parts":[{"text":"Extract dates from this excerpt..."}]}],"generationConfig":{"responseMimeType":"application/json"}}}
 ```
 
 ```python
 from google import genai
 
-client = genai.Client()
-uploaded = client.files.upload(
-    file="requests.jsonl", config={"mime_type": "application/jsonl"}
-)
+client = genai.Client(vertexai=True, project="your-project-id", location="global")
 job = client.batches.create(
-    model="gemini-3.5-flash-lite",
-    src=uploaded.name,
-    config={"display_name": "extraction-v1"},
+    model="publishers/google/models/gemini-3.5-flash-lite",
+    src="gs://your-bucket/requests.jsonl",
+    config={"display_name": "extraction-v1", "dest": "gs://your-bucket/outputs/"},
 )
-# Later, using the SAME client:
+# Poll with the SAME client; read output objects from GCS, not client.files.
 job = client.batches.get(name=job.name)
-if job.state == "JOB_STATE_SUCCEEDED":
-    output = client.files.download(file=job.dest.file_name)
 ```
 
-For structured schemas use the documented pattern in [structured-output.md](structured-output.md). Uploaded source media may be referenced within each JSONL request; a GCS URI is not mandatory for Developer Batch. Do not supply a Cloud `config.dest` here.
+Source: [GCS batch format and output](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/batch-inference/new-job-from-cloud-storage). Successful rows have `response`; failed rows have `status`. Do not assume Developer `key` passthrough. Recover domain IDs by matching canonical echoed requests to the original inputs, verify uniqueness and recovery in the pilot, and never join by output order. BigQuery documents scalar-column passthrough separately; see [Cloud formats](vertex-ai.md).
 
 ## Correlation and retries
 
-- Build keys from the domain identifier plus content/prompt/model/schema version; join outputs by `key`, never line order. A repeated key is a local validation error, not guaranteed server-side idempotency.
-- Reconcile missing/duplicate output keys and per-row errors even if the job succeeds. Preserve original keys when retrying failed rows.
+- Build local IDs from domain identifier plus content/prompt/model/schema version; IDs are not guaranteed server-side idempotency.
+- Reconcile missing/duplicate outputs and per-row errors even if the job succeeds. Retry only failed rows, retaining their original local identity.
 - Use the existing project job/result store; audit existing state before adding another manifest. Derive pending rows from outputs and errors rather than recording competing status files.
-- Validate JSONL locally with `scripts/validate_jsonl.py --backend developer`; run a same-model synchronous request, then 5–10 rows through Batch before scaling.
-- Keep one Client alive for upload, create, get and download. Use the harness's background notification mechanism for long monitoring, not a model session spending tokens on repeated status narration.
+- Validate locally with `scripts/validate_jsonl.py --backend cloud`; run a same-model synchronous Vertex request, then 5–10 Vertex batch rows before scaling.
+- Keep one client alive across create/get. Use the harness's background notification mechanism for long monitoring, not repeated model status narration.
 
 ## Quotas
 
-Developer Batch: 100 concurrent batch requests, 2GB input file, 20GB file storage, plus per-model/tier enqueued-token limits across active jobs. As checked 2026-09-30, Tier 1 enqueued limits include 10M tokens for 3.5 Flash-Lite, 3M for 3.8 Flash and 5M for 3.1 Pro Preview. Recheck your actual project tier before sizing a job. Flex/Standard/Priority use non-Batch limits; Flex does not inherit these expanded quotas.
+Vertex Gemini batch: no predefined concurrent-job quota, shared capacity; 200,000 requests/job and 1GB GCS input. Queue expiry is up to 72h; incomplete jobs are cancelled after 24h running. Sources: [batch](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/batch-inference), [quotas](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/quotas).
 
-Cloud batch has separate limits (200,000 requests, 1GB GCS input), regional/global endpoints and a shared capacity pool: see [vertex-ai.md](vertex-ai.md).
+Developer limits (historical comparison, not a production route): 100 concurrent batch requests, 2GB input file, 20GB Files storage; Tier 1 3.8 Flash queued tokens 3M ([Developer API, not for production: Developer limits](https://ai.google.dev/gemini-api/docs/rate-limits.md.txt)). These are not Vertex quotas.
 
 ## Deterministic keys and optional existing-store adapter
 
