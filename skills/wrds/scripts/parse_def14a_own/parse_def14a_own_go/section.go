@@ -175,6 +175,21 @@ func isHeadingChunk(t string) bool {
 // ExtractHTML runs the DOM path: find ownership headings, take the tables that
 // follow each, and emit rows.
 func ExtractHTML(body string, base Row) ([]Row, int, int) {
+	rows, seen, used := extractHTML(body, base)
+	if len(rows) != 0 {
+		return rows, seen, used
+	}
+	// An earlier recovered table changes later tables' section classification
+	// and continuation context. Keep the complete legacy filing path intact.
+	text, _, _ := ExtractText(body, base)
+	if len(ScreenRows(text)) != 0 || len(ScreenRows(ExtractProse(body, base))) != 0 {
+		return rows, seen, used
+	}
+	base.colspanRecovery = true
+	return extractHTML(body, base)
+}
+
+func extractHTML(body string, base Row) ([]Row, int, int) {
 	doc, err := html.Parse(strings.NewReader(body))
 	if err != nil {
 		return nil, 0, 0

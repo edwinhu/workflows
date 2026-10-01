@@ -50,7 +50,8 @@ type Row struct {
 	// seriesLocal marks a row whose fund identity came from a label row INSIDE
 	// its own table, which is more specific than the document heading and must
 	// not be overwritten by it.
-	seriesLocal bool
+	seriesLocal     bool
+	colspanRecovery bool
 }
 
 var (
@@ -99,8 +100,9 @@ var (
 	// owned" column, so the ownership cue matches the table and the dollars are
 	// read as a share count. The second half of the alternation is what keeps a
 	// genuine "shares beneficially owned" column out of this.
-	reHdrMoney = regexp.MustCompile(`(?i)compensation|fees\s+earned|\bsalary\b|\bbonus\b|dollar\s+(?:range|value|amount)`)
-	reHdrOwned = regexp.MustCompile(`(?i)shares?\s+(?:owned|held|beneficially)|beneficially\s+owned|percent`)
+	reHdrMoney        = regexp.MustCompile(`(?i)compensation|fees\s+earned|\bsalary\b|\bbonus\b|dollar\s+(?:range|value|amount)`)
+	reHdrOwned        = regexp.MustCompile(`(?i)shares?\s+(?:owned|held|beneficially)|beneficially\s+owned|percent`)
+	reHdr60DayOptions = regexp.MustCompile(`(?i)shares\s+issuable\s+under\s+options\s+exercisable\s+within\s+60\s+days`)
 	// A share column's header that says the shares are OWNED rather than merely
 	// counted. Read only where the table has no percent column (see
 	// looksLikeOwnership).
@@ -194,6 +196,10 @@ type compacted struct {
 // the fragment cells EDGAR HTML splits numbers across — while remembering that a
 // dropped "%"-only column marks its left neighbour as a percent column.
 func compact(g *Grid) *compacted {
+	return compactColumns(g, false)
+}
+
+func compactColumns(g *Grid, compareAll bool) *compacted {
 	// 1. Drop footnote rows: a rowspan/colspan-expanded full-width paragraph
 	//    repeats one long string across every column and would otherwise
 	//    dominate every column's role vote.
@@ -288,11 +294,23 @@ func compact(g *Grid) *compacted {
 			// Compatible = no row where the two hold DIFFERENT non-empty
 			// values. Equal values are the colspan replication itself, and a
 			// spanning footnote row must not block the merge.
+			members := []int{p}
+			if compareAll {
+				members = prev
+			}
 			compatible := true
 			for i := range keepRows {
-				a, b := at(i, p), at(i, j)
-				if a != "" && b != "" && a != b {
-					compatible = false
+				b := at(i, j)
+				// An empty spacer at the group's end cannot stand in for
+				// earlier members that hold different shares or percents.
+				for _, member := range members {
+					a := at(i, member)
+					if a != "" && b != "" && a != b {
+						compatible = false
+						break
+					}
+				}
+				if !compatible {
 					break
 				}
 			}
@@ -957,6 +975,46 @@ func sameForEveryPair(ps []pair, rd func(pair, int) string, i int) bool {
 
 type pair struct{ shares, pct int }
 
+// ownedPlus60DayOptions identifies two explicitly additive holding columns,
+// not separate classes or an option-grant table. A 5% owner header can itself
+// look data-shaped, so include the boundary row in the header search.
+func (c *compacted) ownedPlus60DayOptions(ps []pair) (int, int) {
+	if len(ps) != 1 {
+		return -1, -1
+	}
+	shares, percents := 0, 0
+	for _, role := range c.roles {
+		if role.role == "shares" {
+			shares++
+		}
+		if role.role == "pct" {
+			percents++
+		}
+	}
+	if shares != 2 || percents != 1 {
+		return -1, -1
+	}
+	owned, options := -1, -1
+	for i := 0; i <= c.nHeader && i < len(c.rows); i++ {
+		for j, cell := range c.rows[i] {
+			if c.roles[j].role != "shares" {
+				continue
+			}
+			h := flat(cell)
+			if strings.EqualFold(h, "Number of Shares") {
+				owned = j
+			}
+			if reHdr60DayOptions.MatchString(h) {
+				options = j
+			}
+		}
+	}
+	if owned < 0 || options < 0 || ps[0].shares != options {
+		return -1, -1
+	}
+	return owned, options
+}
+
 func (c *compacted) pairs() []pair {
 	// A table with no percent column at all (J&J's director table: common
 	// shares, deferred units, options, total) is one holding per row, not one
@@ -1366,7 +1424,18 @@ func (c *compacted) hasHeaderCues() bool {
 // a header-less continuation table its predecessor's columns; it may be nil. The
 // compacted form is returned so the caller can pass it along.
 func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compacted) ([]Row, *compacted) {
-	c := compactWith(g, base)
+	rows, c := extractGridColumns(g, tableText, base, tableIdx, prev, false)
+	if len(rows) != 0 || !base.colspanRecovery {
+		return rows, c
+	}
+	// Recovery is additive: an already-emitting table retains its established
+	// values, names and class identities rather than being reinterpreted.
+	return extractGridColumns(g, tableText, base, tableIdx, prev, true)
+}
+
+func extractGridColumns(g *Grid, tableText string, base Row, tableIdx int, prev *compacted, compareAll bool) ([]Row, *compacted) {
+	c := compactColumns(g, compareAll)
+	c.series = SeriesSet(base.series)
 	c.analyze()
 	c.inheritHeaders(prev)
 	if !c.looksLikeOwnership(tableText) {
@@ -1396,6 +1465,10 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 	}
 	if len(ps) == 0 {
 		return nil, c
+	}
+	ownedCol, optionCol := -1, -1
+	if compareAll {
+		ownedCol, optionCol = c.ownedPlus60DayOptions(ps)
 	}
 	plabels := c.pairLabels(ps)
 	// A class-shaped header that SPANS every pair ("Shares of Common Stock
@@ -1604,6 +1677,25 @@ func ExtractGrid(g *Grid, tableText string, base Row, tableIdx int, prev *compac
 					}
 					if _, f := StripFootnotes(shCell); len(f) > 0 {
 						allFns = append(allFns, f...)
+					}
+				}
+				if ownedCol >= 0 && optionCol < len(r) && ownedCol < len(r) && nsub == 1 {
+					total, valid, seenValue := 0.0, true, false
+					for _, j := range []int{ownedCol, optionCol} {
+						cell := flat(r[j])
+						v, ok := ParseShares(cell)
+						seenValue = seenValue || ok || (cell != "" && strings.Trim(cell, "-–— ") == "")
+						if !ok && strings.Trim(cell, "-–— ") != "" {
+							valid = false
+						}
+						total += v
+						if _, f := StripFootnotes(cell); len(f) > 0 {
+							allFns = append(allFns, f...)
+						}
+					}
+					rw.Shares = nil
+					if valid && seenValue {
+						rw.Shares = &total
 					}
 				}
 				if pcCell != "" {

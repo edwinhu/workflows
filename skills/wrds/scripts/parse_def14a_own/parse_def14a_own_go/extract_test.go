@@ -4551,3 +4551,126 @@ persons)
 		}
 	}
 }
+
+// Transcribed from 0001193125-07-066315: a shared colspan caption and an
+// empty spacer must not hide conflicting values in earlier group members.
+const htmlColspanSharesPct = `<html><body><p>STOCK OWNERSHIP OF DIRECTORS, EXECUTIVE OFFICERS AND PRINCIPAL HOLDERS</p>
+<p>The following table sets forth the beneficial ownership of our common stock.</p>
+<table>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td colspan="3">Shares Beneficially<br>Owned (1)</td><td></td></tr>
+<tr><td>Officers, Directors and 5% Shareholders</td><td></td><td>Number</td><td></td><td>Percent</td><td></td></tr>
+<tr><td>FMR Corp. (2) 82 Devonshire Street Boston, MA 02109</td><td></td><td>8,049,546</td><td></td><td>13.9</td><td>%</td></tr>
+<tr><td>Royce &amp; Associates, Inc. 1414 Avenue of the Americas New York, NY 10019</td><td></td><td>3,182,300</td><td></td><td>5.5</td><td>%</td></tr>
+<tr><td>T. Rowe Price Associates, Inc. (3) . 100 E. Pratt Street Baltimore, MD 21202</td><td></td><td>2,887,600</td><td></td><td>5.0</td><td>%</td></tr>
+<tr><td>William M. Goodyear (4)</td><td></td><td>919,666</td><td></td><td>1.6</td><td>%</td></tr>
+<tr><td>Julie M. Howard (5)</td><td></td><td>155,511</td><td></td><td>*</td><td></td></tr>
+<tr><td>Ben W. Perks (6)</td><td></td><td>137,672</td><td></td><td>*</td><td></td></tr>
+<tr><td>Richard X. Fischer</td><td></td><td>14,650</td><td></td><td>*</td><td></td></tr>
+<tr><td>Thomas A. Gildehaus (7)</td><td></td><td>61,096</td><td></td><td>*</td><td></td></tr>
+<tr><td>Valerie B. Jarrett (8)</td><td></td><td>50,820</td><td></td><td>*</td><td></td></tr>
+<tr><td>Peter B. Pond (9)</td><td></td><td>128,043</td><td></td><td>*</td><td></td></tr>
+<tr><td>Samuel K. Skinner (10)</td><td></td><td>28,374</td><td></td><td>*</td><td></td></tr>
+<tr><td>James R. Thompson (11)</td><td></td><td>156,079</td><td></td><td>*</td><td></td></tr>
+<tr><td>All Directors and Executive Officers as a group (9 persons) (12)</td><td></td><td>1,651,911</td><td></td><td>2.9</td><td>%</td></tr>
+</table><p>* Less than 1%</p></body></html>`
+
+func TestHTMLColspanSpacerKeepsSharesAndPercent(t *testing.T) {
+	body := htmlColspanSharesPct
+	rows := ScreenRows(run(t, body))
+	if len(rows) != 13 {
+		t.Fatalf("want 13 real ownership rows, got %d: %+v", len(rows), rows)
+	}
+	for _, want := range []struct {
+		name        string
+		shares, pct float64
+		marker      string
+	}{
+		{"FMR Corp. 82 Devonshire Street Boston, MA 02109", 8049546, 13.9, ""}, {"Royce & Associates, Inc. 1414 Avenue of the Americas New York, NY 10019", 3182300, 5.5, ""},
+		{"T. Rowe Price Associates, Inc. . 100 E. Pratt Street Baltimore, MD 21202", 2887600, 5.0, ""}, {"William M. Goodyear", 919666, 1.6, ""},
+		{"Julie M. Howard", 155511, 0, "*"}, {"Ben W. Perks", 137672, 0, "*"},
+		{"Richard X. Fischer", 14650, 0, "*"}, {"Thomas A. Gildehaus", 61096, 0, "*"},
+		{"Valerie B. Jarrett", 50820, 0, "*"}, {"Peter B. Pond", 128043, 0, "*"},
+		{"Samuel K. Skinner", 28374, 0, "*"}, {"James R. Thompson", 156079, 0, "*"},
+		{"All Directors and Executive Officers as a group (9 persons)", 1651911, 2.9, ""},
+	} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.PctMarker != want.marker {
+			t.Errorf("holder %q: want shares=%g marker=%q, got %+v", want.name, want.shares, want.marker, r)
+			continue
+		}
+		if want.marker == "" && (r.Percent == nil || *r.Percent != want.pct) {
+			t.Errorf("holder %q: want percent=%g, got %+v", want.name, want.pct, r)
+		}
+		if want.marker != "" && r.Percent != nil {
+			t.Errorf("star is not an exact percent: %+v", r)
+		}
+	}
+}
+
+// 0001193125-12-195958 discloses owned shares and exercisable 60-day options,
+// not a total column. Recovering only the option component understates ownership.
+func TestHTMLColspanOwnedPlus60DayOptions(t *testing.T) {
+	body := `<html><body><p>SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS AND MANAGEMENT</p><table>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td colspan="10">Beneficial Ownership(1)</td><td></td></tr>
+<tr><td>Name and, in the Case of Greater Than 5% Stockholders, Address of Beneficial Owner</td><td></td><td colspan="2">Number of<br>Shares</td><td></td><td></td><td colspan="2">Shares Issuable<br>Under Options<br>Exercisable<br>Within 60 Days<br>of February 29, 2012</td><td></td><td></td><td colspan="2">Percent of Total<br>Outstanding<br>Shares Beneficially<br>Owned</td><td></td></tr>
+<tr><td>Fidelity Management &amp; Research Company LLC(2)</td><td></td><td></td><td>7,230,479</td><td></td><td></td><td></td><td>—</td><td></td><td></td><td></td><td>11.1</td><td>%</td></tr>
+<tr><td>82 Devonshire Street<br>Boston, MA 02109</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Daniel G. Welch</td><td></td><td></td><td>151,600</td><td></td><td></td><td></td><td>893,208</td><td></td><td></td><td></td><td>1.6</td><td></td></tr>
+<tr><td>Lars G. Ekman, M.D., Ph.D.</td><td></td><td></td><td>—</td><td></td><td></td><td></td><td>119,003</td><td></td><td></td><td></td><td>*</td><td></td></tr>
+<tr><td>All executive officers and directors as a group</td><td></td><td></td><td>415,655</td><td></td><td></td><td></td><td>1,736,654</td><td></td><td></td><td></td><td>3.2</td><td></td></tr>
+</table></body></html>`
+	rows := ScreenRows(run(t, body))
+	if len(rows) != 4 {
+		t.Fatalf("want four literal holdings, got %+v", rows)
+	}
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{
+		{"Fidelity Management & Research Company LLC", 7230479},
+		{"Daniel G. Welch", 1044808}, {"Lars G. Ekman", 119003},
+		{"All executive officers and directors as a group", 2152309},
+	} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares {
+			t.Errorf("holder %q: want owned+60-day-options=%g, got %+v", want.name, want.shares, r)
+		}
+	}
+}
+
+// The already-emitting ownership table in 0001193125-12-191126 must not be
+// reinterpreted by a zero-row recovery path.
+func TestHTMLColspanRecoveryPreservesAlreadyEmittingTable(t *testing.T) {
+	body := `<html><body><p>SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS AND MANAGEMENT</p><table>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td colspan="6">Beneficial Ownership - as of March 15, 2012</td><td></td></tr>
+<tr><td>5% Stockholders, Directors and Officers (1)</td><td></td><td colspan="2">Number of Shares (2)</td><td></td><td></td><td colspan="2">Percent of Total (2)</td><td></td></tr>
+<tr><td>BlueLine Partners, L.L.C. (3)</td><td></td><td></td><td>2,477,173</td><td></td><td></td><td></td><td>27.7</td><td>%</td></tr>
+<tr><td>Paragon Associates II Joint Venture (4)</td><td></td><td></td><td>750,000</td><td></td><td></td><td></td><td>8.4</td><td>%</td></tr>
+<tr><td>Dominik Beck, Ph.D. (12)</td><td></td><td></td><td>0</td><td></td><td></td><td></td><td>*</td><td>%</td></tr>
+</table></body></html>`
+	rows := ScreenRows(run(t, body))
+	if len(rows) != 1 {
+		t.Fatalf("zero-row-only recovery changed an already emitting table: %+v", rows)
+	}
+	r := find(rows, "Dominik Beck", "")
+	if r == nil || r.Shares != nil || r.Percent == nil || *r.Percent != 0 {
+		t.Fatalf("preserve original literal zero-percent holding: %+v", rows)
+	}
+}
+
+func TestHTMLColspanRecoveryPreservesOtherTablesInFiling(t *testing.T) {
+	before := ScreenRows(run(t, simpleHTML))
+	body := strings.Replace(simpleHTML, "</body></html>", strings.TrimPrefix(htmlColspanSharesPct, "<html><body>"), 1)
+	after := ScreenRows(run(t, body))
+	if len(after) != len(before) {
+		t.Fatalf("zero-filing-only recovery changed an already emitting filing: before=%d after=%d", len(before), len(after))
+	}
+	for i := range before {
+		if rowTSV(before[i]) != rowTSV(after[i]) {
+			t.Errorf("old row changed: before=%s after=%s", rowTSV(before[i]), rowTSV(after[i]))
+		}
+	}
+}
