@@ -28,7 +28,7 @@ setDefaultTimeout(60_000)
 const base = (over: Partial<Plan> = {}): Plan => ({
   tasks: [],
   mechanicalChecks: [],
-  reviewLenses: [],
+  lens: null,
   successCriteria: [],
   verification: [],
   testFirst: {},
@@ -205,21 +205,92 @@ test('transitive ordering counts as ordering', () => {
   expect(rules(p)).not.toContain('writable-paths-overlap')
 })
 
-// ---------------------------------------------------------------- lenses
+// ---------------------------------------------------------------- the lens (one, per the one-lens gate)
 
 test('a review lens with no severity is decorative and is flagged', () => {
-  const p = base({ tasks: [task()], reviewLenses: [{ key: 'k', text: 'judge whether the thing is right' }] })
+  const p = base({ tasks: [task()], lens: { key: 'lens', text: 'judge whether the thing is right' } })
   expect(rules(p)).toContain('lens-missing-severity')
 })
 
 test('a review lens stating a severity is clean', () => {
-  const p = base({ tasks: [task()], reviewLenses: [{ key: 'k', text: 'judge it. MAJOR; CRITICAL if X' }] })
+  const p = base({ tasks: [task()], lens: { key: 'lens', text: 'judge it. MAJOR; CRITICAL if X' } })
   expect(rules(p)).not.toContain('lens-missing-severity')
 })
 
 test('a review lens stating its severity in the schema\'s own lowercase is clean', () => {
-  const p = base({ tasks: [task()], reviewLenses: [{ key: 'k', text: 'judge it. `major` at minimum, `critical` where X' }] })
+  const p = base({ tasks: [task()], lens: { key: 'lens', text: 'judge it. `major` at minimum, `critical` where X' } })
   expect(rules(p)).not.toContain('lens-missing-severity')
+})
+
+test('a lens declared with no condition at all is flagged', () => {
+  const p = base({ tasks: [task()], lens: { key: 'lens', text: '   ' } })
+  expect(rules(p)).toContain('lens-missing-condition')
+})
+
+// An ABSENT lens is legal: work supplies a default prompt, so declaring none is a choice. Flagging it
+// would make every plan that relies on the default fail its own Tier 1 gate.
+test('a plan declaring no lens raises neither lens rule', () => {
+  const p = base({ tasks: [task()], lens: null })
+  expect(rules(p)).not.toContain('lens-missing-condition')
+  expect(rules(p)).not.toContain('lens-missing-severity')
+})
+
+// R9/R10 read `args.lens.prompt` — the single lens object, not an array of them.
+test('R9/R10 grade args.lens.prompt', () => {
+  const noSeverity = parseArgs({
+    tasks: [{ id: 'A', work: 'w', writablePaths: ['src/'], acceptance: '`bun test` passes', redCommand: 'bun test' }],
+    lens: { prompt: 'judge the deliverable against the approved plan', refs: [] },
+  })
+  expect(noSeverity.lens!.text).toBe('judge the deliverable against the approved plan')
+  expect(rules(noSeverity)).toContain('lens-missing-severity')
+
+  const withSeverity = parseArgs({
+    tasks: [{ id: 'A', work: 'w', writablePaths: ['src/'], acceptance: '`bun test` passes', redCommand: 'bun test' }],
+    lens: { prompt: 'judge the deliverable. MAJOR at minimum, CRITICAL where it is unreachable', refs: [] },
+  })
+  expect(rules(withSeverity)).not.toContain('lens-missing-severity')
+})
+
+// The retired array supplies NO lens: workflow.js refuses that arg outright, so the loud failure is
+// there rather than in a lint rule that would have to guess which of the entries was meant.
+test('the retired reviewLenses array yields no lens and no lens findings', () => {
+  const p = parseArgs({
+    tasks: [{ id: 'A', work: 'w', writablePaths: ['src/'], acceptance: '`bun test` passes', redCommand: 'bun test' }],
+    reviewLenses: [{ key: 'k', prompt: 'judge it' }],
+  })
+  expect(p.lens).toBeNull()
+  expect(rules(p)).not.toContain('lens-missing-severity')
+})
+
+// ---------------------------------------------------------------- the Run-sizing lens label
+
+const runSizingPlan = (line: string) =>
+  ['# Plan', '', '## Run sizing', '', '```', line, 'Mechanical checks: tests — `bun test`', '```', ''].join('\n')
+
+test('the Run-sizing parser accepts `Review lens:` and grades the whole line as the condition', () => {
+  const p = parseMarkdown(runSizingPlan('Review lens: deliverable vs the approved plan — MAJOR at minimum'))
+  expect(p.lens).not.toBeNull()
+  expect(p.lens!.text).toContain('deliverable vs the approved plan')
+  expect(rules(base({ tasks: [task()], lens: p.lens }))).not.toContain('lens-missing-severity')
+})
+
+test('`Review lens:` prose with no severity is flagged rather than silently discarded', () => {
+  const p = parseMarkdown(runSizingPlan('Review lens: judge the deliverable against the approved plan'))
+  expect(p.lens).not.toBeNull()
+  expect(rules(base({ tasks: [task()], lens: p.lens }))).toContain('lens-missing-severity')
+})
+
+// The old label still parses: a plan written against the previous spine lints instead of losing its
+// lens, which would read as "no lens declared" and raise nothing at all.
+test('the legacy `Review lenses:` label still parses to the one lens', () => {
+  const p = parseMarkdown(runSizingPlan('Review lenses: gate-integrity, spine-fidelity'))
+  expect(p.lens).not.toBeNull()
+  expect(p.lens!.text).toContain('gate-integrity')
+})
+
+test('a plan with no Run-sizing lens line declares no lens', () => {
+  const p = parseMarkdown(runSizingPlan('Mechanical checks: tests — `bun test`'))
+  expect(p.lens).toBeNull()
 })
 
 // ---------------------------------------------------------------- document-level
@@ -273,11 +344,12 @@ test('a work args object parses to the same model as a plan file', () => {
   const p = parseArgs({
     tasks: [{ id: 'A', work: 'w', writablePaths: ['src/'], acceptance: 'a', redCommand: 'bun test' }],
     mechanicalChecks: [{ name: 'tests', cmd: 'bun test' }],
-    reviewLenses: [{ key: 'k', prompt: 'p' }],
+    lens: { prompt: 'p', refs: [] },
   })
   expect(p.tasks[0].id).toBe('A')
   expect(p.tasks[0].dependsOn).toEqual([])
   expect(p.mechanicalChecks[0].name).toBe('tests')
+  expect(p.lens).toEqual({ key: 'lens', text: 'p' })
 })
 
 test('a clean plan produces no findings at all', () => {
@@ -286,7 +358,7 @@ test('a clean plan produces no findings at all', () => {
       task({ id: 'A', work: 'create `scripts/assert-x.sh`', writablePaths: ['scripts/'], acceptance: '`bun test tests/scaffold.test.ts` passes', redCommand: 'bun test tests/scaffold.test.ts' }),
       task({ id: 'B', dependsOn: ['A'], writablePaths: ['src/'], acceptance: '`bash scripts/assert-x.sh` exits 0', redCommand: 'bash scripts/assert-x.sh' }),
     ],
-    reviewLenses: [{ key: 'k', text: 'a condition. MAJOR' }],
+    lens: { key: 'lens', text: 'a condition. MAJOR' },
   })
   expect(lint(p)).toEqual([])
 })
@@ -529,7 +601,7 @@ function graphFixture(spec: [string, string[]][]) {
         redCommand: 'bash scripts/check.sh', acceptance: '`bash scripts/check.sh` exits 0',
       })),
       mechanicalChecks: [{ name: 'tests', cmd: 'bun test' }],
-      reviewLenses: [{ key: 'k', agentType: 'Explore', refs: [], prompt: 'raise MAJOR when the work is wrong' }],
+      lens: { agentType: 'Explore', refs: [], prompt: 'raise MAJOR when the work is wrong' },
     },
   }
   writeFileSync(plan, `# Plan\n\n## Run sizing\n\n<!-- work:dispatch\n${JSON.stringify(block, null, 2)}\n-->\n`)

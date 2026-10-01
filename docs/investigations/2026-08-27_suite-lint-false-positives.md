@@ -167,7 +167,7 @@ standard-library callee, which is definitionally not the input under test.
 
 Raw 24, false positives 23, one true positive.
 
-The one that survives is `skills/work/scripts/work-redispatch.test.ts:1045`:
+The one that survives is `skills/work/scripts/work-redispatch.test.ts:1670`:
 
 ```
 expect(r.out).toContain('CONVERGING')
@@ -182,7 +182,7 @@ matters. This is the exact run-2 defect shape and the rule earns its keep on it.
 The 23 false positives come from two mechanisms.
 
 **A paired negative assertion the rule cannot see (1 finding).**
-`skills/work/scripts/converge-check.test.ts:97` asserts `toContain('CONVERGING')` and is immediately
+`skills/work/scripts/converge-check.test.ts:115` asserts `toContain('CONVERGING')` and is immediately
 followed, on line 94, by `expect(r.stdout).not.toContain('NOT CONVERGING')`, which is precisely the
 repair the rule wants. The rule reads assertions one at a time and has no notion of a neighbouring
 assertion that neutralises the ambiguity, so a correctly written test scores the same as the
@@ -191,13 +191,13 @@ defective one above it.
 **File-wide literal pooling across unrelated tests (22 findings).** The rule collects failure-
 vocabulary literals from the whole file and matches any positive assertion against all of them, so a
 fixture string defined for one test taints an assertion belonging to another that can never see it.
-`skills/workflow-creator/scripts/wc-probe.test.ts:427` asserts `findings[0].detail` contains
+`skills/workflow-creator/scripts/wc-probe.test.ts:453` asserts `findings[0].detail` contains
 `guard.ts`; the matched "failure" literal is a fixture at line 470 belonging to a different test
 (`'Do NOT use guard.ts; it was deleted from the hook config.'`), which never reaches `detail`. The
-same mechanism produces `skills/workflow-creator/scripts/wc-probe.test.ts:269`,
-`skills/workflow-creator/scripts/wc-probe.test.ts:763`,
-`skills/workflow-creator/scripts/wc-probe.test.ts:3228` and
-`skills/workflow-creator/scripts/wc-probe.test.ts:3273`; both
+same mechanism produces `skills/workflow-creator/scripts/wc-probe.test.ts:295`,
+`skills/workflow-creator/scripts/wc-probe.test.ts:789`,
+`skills/workflow-creator/scripts/wc-probe.test.ts:3263` and
+`skills/workflow-creator/scripts/wc-probe.test.ts:3308`; both
 `skills/work/scripts/work-dispatch.test.ts:538` and
 `skills/work/scripts/work-dispatch.test.ts:549`, whose matched literal is a malformed-plan fixture
 about 150 lines away at line 682; `tests/public-extension-contract.test.ts:170`, where the assertion
@@ -254,9 +254,9 @@ The audited-corpus count for this rule is 43 rather than 41 because
 `skills/grind/scripts/grind.test.ts` joined the audited corpus through the
 `existence-only-artifact` citation below, and a file entering the corpus brings *every* finding in it,
 not only the one that was cited. Both are the dominant shape and both were read.
-`skills/grind/scripts/grind.test.ts:58` flags `readFileSync(journal, 'utf8')` for sharing `'utf8'`
+`skills/grind/scripts/grind.test.ts:59` flags `readFileSync(journal, 'utf8')` for sharing `'utf8'`
 across lines 58, 200 and 297; the encoding is not an input at all, and the varying argument is
-`journal`, a per-test temp path. `skills/grind/scripts/grind.test.ts:103` flags two `at(-1)` calls,
+`journal`, a per-test temp path. `skills/grind/scripts/grind.test.ts:104` flags two `at(-1)` calls,
 lines 103 and 153, for sharing `-1`: both read the LAST journal record, and the behaviour they
 distinguish is `'done'` versus `'stalled'` in the assertion, not the index. Neither is defective;
 neither moves the true-positive column.
@@ -266,7 +266,7 @@ calls; two of them, at lines 77 and 78, sit inside one test that calls `_audit("
 `_audit("tics.md", style="legal")` to prove the domain guide is gated by style. The fixture filename
 is deliberately constant *so that* style is the only difference. The rule flags the constant and
 misses that the variation is the presence of a second argument.
-`skills/workflow-creator/scripts/wc-probe.test.ts:424` is the same shape and worse: its call group
+`skills/workflow-creator/scripts/wc-probe.test.ts:450` is the same shape and worse: its call group
 (lines 416, 424, 470) is a defective/correct **pair**, the exact test structure the vendored doctrine
 asks for, where the fixture hook command is held identical and the second fixture adds the missing
 file. The rule penalises the control.
@@ -294,7 +294,7 @@ The `suite-lint.test.ts:462` reading above establishes the point without it.
 
 Raw 1, false positives 1, no true positives.
 
-The one finding is `skills/grind/scripts/grind.test.ts:299`, and it is a false positive of a shape the
+The one finding is `skills/grind/scripts/grind.test.ts:300`, and it is a false positive of a shape the
 rule cannot currently distinguish. The line is
 
 ```
@@ -330,10 +330,10 @@ Raw 43, false positives 43, no true positives.
 Three mechanisms, and the first is an extraction defect rather than a rule-design one.
 
 **A ternary parsed as a key-value pair (8 findings).**
-`skills/work/scripts/converge-check.test.ts:48` contains `verdict: r.blocking === 0 ? 'PASS' : 'FAIL'`
+`skills/work/scripts/converge-check.test.ts:52` contains `verdict: r.blocking === 0 ? 'PASS' : 'FAIL'`
 and is reported as the key `PASS` with the value `'FAIL'`. There is no such key. The same misparse
 produces the `PASS: 'FAIL'` findings at `skills/work/scripts/work-dispatch-loops.test.ts:48`,
-`skills/work/scripts/work-loop.test.ts:39` and `skills/work/scripts/work-result.test.ts:739`, and
+`skills/work/scripts/work-loop.test.ts:39` and `skills/work/scripts/work-result.test.ts:788`, and
 the `ACTIVE: "PROCESSING"` finding at `skills/cite-check/tests/gemini.test.ts:109`
 (`state: getCalls >= 2 ? "ACTIVE" : "PROCESSING"`) together with its three `scratch/` copies. The
 gemini case is doubly wrong: that line exists precisely to vary the state across polls.
@@ -348,13 +348,13 @@ the very sentence documenting the absence of the thing.
 
 **Harness plumbing, correctly held constant (31 findings).** The remainder are environment keys a test
 sets to configure its own harness rather than to exercise a branch: `CRAFT_DISPATCH_DRYRUN: '1'` (at
-`skills/work/scripts/plan-lint.test.ts:394`,
+`skills/work/scripts/plan-lint.test.ts:466`,
 `skills/work/scripts/work-dispatch-loops.test.ts:248`), `CRAFT_GOAL_PRINT: '1'` at
 `skills/work/scripts/work-dispatch.test.ts:100`, `CLAUDE_CODE_SESSION_ID: ''`
 at `skills/work/scripts/work-goal-resend.test.ts:78`, `CRAFT_FARM: '/bin/false'` at
-`skills/work/scripts/work-loop.test.ts:94`, `WORK_REDISPATCH_DRYRUN: '1'` and `WORK_NO_SCOPE: '1'` at
-`skills/work/scripts/work-redispatch.test.ts:258` and
-`skills/work/scripts/work-redispatch.test.ts:245`, `PATH` (four files) and `FARM_OUT_CHILD` (two),
+`skills/work/scripts/work-loop.test.ts:95`, `WORK_REDISPATCH_DRYRUN: '1'` and `WORK_NO_SCOPE: '1'` at
+`skills/work/scripts/work-redispatch.test.ts:277` and
+`skills/work/scripts/work-redispatch.test.ts:264`, `PATH` (four files) and `FARM_OUT_CHILD` (two),
 `CRAFT_SUITE_LINT_TIMEOUT: '2'` at `skills/work/scripts/suite-lint-dispatch.test.ts:186`, and the
 `GATE_STATUS`, `GATE_BLOCKED_TOOLS` and `GATE_REQUIRE_FIELDS` of the `scratch/` guard suites. A
 dry-run switch has one meaningful value, and a scope opt-out has none at all; the varying input is what
@@ -389,7 +389,7 @@ What `suite-lint-report.test.ts` re-executes, and therefore what cannot silently
 firmer than a whole-tree total: the audited-corpus counts above, reproduced exactly; every
 `path:line` cited in this document, confirmed to be a finding the tool really reports **under the
 rule in whose section it is cited**; and the one true positive this investigation found by reading,
-`skills/work/scripts/work-redispatch.test.ts:1045`, confirmed still to fire under
+`skills/work/scripts/work-redispatch.test.ts:1670`, confirmed still to fire under
 `positive-match-failure-vocabulary`. That re-execution is not decorative: it has caught drift three
 separate times, twice from edits landing while a run was still in flight, on documents whose prose
 was otherwise still accurate.

@@ -99,7 +99,7 @@ if [ -n "$WORKFLOW" ]; then
       || refuse "--args $ARGSFILE must hold a JSON object"
   fi
   # A workflow picks its agents PER LEG -- `agent(prompt, {agentType: "ds"})` in the
-  # script, or implementerAgentType / verifierAgentType / reviewLenses[].agentType in a
+  # script, or implementerAgentType / verifierAgentType / lens.agentType in a
   # work args file. One top-level persona is the wrong shape: the point is `ds` to
   # implement and `ds-reviewer` or `Explore` to judge. (A sealed persona also has no
   # Workflow tool, so it could not dispatch one anyway.)

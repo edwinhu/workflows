@@ -33,7 +33,7 @@ const scratch: string[] = []
 afterAll(() => scratch.forEach(d => rmSync(d, { recursive: true, force: true })))
 
 /** A work gate return with the seven required keys, so work-result.sh adjudicates rather than refuses. */
-function verdict(pass: boolean, tasksThatFlagged: string[] = []) {
+function verdict(pass: boolean, tasksThatFlagged: string[] = [], extra: Record<string, unknown> = {}) {
   return {
     overallPass: pass,
     verdict: pass ? 'PASS' : 'FAIL',
@@ -43,6 +43,7 @@ function verdict(pass: boolean, tasksThatFlagged: string[] = []) {
     mechanicalThatFailed: [],
     lensesThatFlagged: [],
     mechanical: [],
+    ...extra,
   }
 }
 
@@ -402,12 +403,53 @@ describe('a continuation round actually runs', () => {
   }, 240_000)
 })
 
-describe('the three selectors are reported, because work-result.sh prints none of them', () => {
+describe('the selectors are reported, because work-result.sh prints none of them', () => {
   test('a FAIL names the flagged task ids it read out of result.json', () => {
     const f = runDir({ 'result.json': verdict(false, ['T1']) })
     const r = loop(f, 1)
     expect(r.code).toBe(6)
     expect(r.out).toContain('T1')
+  })
+
+  /**
+   * `routes` and `planFindings` are what the one-lens gate added, and they are what the next round is
+   * actually narrowed BY: a route names the task that owns a failure the checks found, and a planFinding
+   * names an item no task can fix. A reader seeing only the three arrays cannot tell a round that will
+   * re-run T2 from one work-redispatch.sh is about to refuse with "amend the plan".
+   */
+  test('a FAIL prints the routes with the owner the lens assigned', () => {
+    const f = runDir({
+      'result.json': verdict(false, ['T2'], {
+        routes: [{ failure: 'mechanical check tests exited 1', ownerTask: 'T2',
+                   cause: 'the assertion reads a key nothing emits', fix: 'emit it' }],
+      }),
+    })
+    const r = loop(f, 1)
+    expect(r.code).toBe(6)
+    expect(r.out).toContain('routes:')
+    expect(r.out).toContain('T2 <- mechanical check tests exited 1')
+  })
+
+  test('a FAIL prints planFindings, which name no task and stop the loop at the amend message', () => {
+    const f = runDir({
+      'result.json': verdict(false, [], {
+        planFindings: [{ title: 'the generated file is outside every writablePath',
+                         severity: 'major', detail: 'd', ownerTask: 'plan' }],
+      }),
+    })
+    const r = loop(f, 1)
+    expect(r.code).toBe(6)
+    expect(r.out).toContain('planFindings:')
+    expect(r.out).toContain('plan <- the generated file is outside every writablePath')
+  })
+
+  // Empty is printed too: "routes: (none)" says the lens routed nothing, which is a different fact from
+  // a line that is absent because the loop does not read the channel at all.
+  test('both channels are printed even when empty', () => {
+    const f = runDir({ 'result.json': verdict(false, ['T1']) })
+    const r = loop(f, 1)
+    expect(r.out).toMatch(/routes:\s+\(none\)/)
+    expect(r.out).toMatch(/planFindings:\s+\(none\)/)
   })
 })
 

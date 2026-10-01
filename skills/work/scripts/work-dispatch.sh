@@ -245,12 +245,22 @@ if a.get("readOnly"):
 
 tasks = a.get("tasks") or []
 only = a.get("onlyTasks")
-if isinstance(only, list) and only:
+if isinstance(only, list):
     keep = set(only)
     tasks = [t for t in tasks if t.get("id") in keep]
-gated = [t for t in tasks if t.get("redCommand")]
+
+# Red evidence certifies the exact command; an amended command needs its own observed failure.
+proven = {(r.get("id"), r["command"]) for r in ((a.get("priorResults") or {}).get("red") or [])
+          if isinstance(r, dict) and r.get("verdict") == "red-green"
+          and isinstance(r.get("command"), str)}
+gated_all = [t for t in tasks if t.get("redCommand")]
+gated = [t for t in gated_all if (t.get("id"), t["redCommand"]) not in proven]
+for t in gated_all:
+    if (t.get("id"), t["redCommand"]) in proven:
+        print(f"  red-probe {t.get('id', '(unnamed)')}: carried red-green — not re-probed "
+              "(the pair was observed before the fix landed; probing a passing command proves nothing)")
 if not gated:
-    print("  red-probe: no active task declares redCommand — nothing to probe")
+    print("  red-probe: no active task needs a probe — none declares redCommand, or every one carries a proven pair")
     raise SystemExit(0)
 
 cwd = a.get("projectDir") or os.getcwd()
@@ -578,6 +588,14 @@ while :; do
 done
 
 plan="${1:-}"
+if [ -n "${1:-}" ]; then
+  shift
+  if [ "$#" -gt 0 ]; then
+    echo "work-dispatch.sh: unexpected argument(s) after the plan path: $* — flags go BEFORE the plan path" >&2
+    exit 2
+  fi
+fi
+
 if [ -z "$plan" ]; then
   plan=$(bash "$SKILL/scripts/work-pending.sh" "$PWD" | cut -f1)
   [ -n "$plan" ] || { echo "no armed work run in $PWD (and no plan given)" >&2; exit 2; }
@@ -721,14 +739,28 @@ python3 - "$out" <<'PY'
 import json, sys
 a = json.load(open(sys.argv[1]))
 t = a.get("tasks") or []
-red = sum(1 for x in t if x.get("redCommand"))
-lens = len(a.get("reviewLenses") or []) or 2
-mech, prior = len(a.get("mechanicalChecks") or []), len(a.get("priorFindings") or [])
+only = a.get("onlyTasks")
+active = [x for x in t if x.get("id") in set(only)] if isinstance(only, list) else t
+# Mirror workflow.js needsRedProbe: only proof of the current command costs no new probe.
+proven = {(r.get("id"), r["command"]) for r in ((a.get("priorResults") or {}).get("red") or [])
+          if isinstance(r, dict) and r.get("verdict") == "red-green"
+          and isinstance(r.get("command"), str)}
+ro = bool(a.get("readOnly"))
+impl = 0 if ro else len(active)
+red = 0 if ro else sum(1 for x in active if x.get("redCommand") and (x.get("id"), x["redCommand"]) not in proven)
+# ONE lens, always dispatched — including on a zero-implementer round, where it is the only judgement
+# there is. There is no per-prior-finding refuter term any more: `priorFindings`/`carriedFindings` are
+# ruled on by that same lens, so they cost no agents of their own.
+lens = 1
+mech = len(a.get("mechanicalChecks") or [])
+carried = len(a.get("carriedFindings") or []) + len(a.get("priorFindings") or [])
 scored = sum(len(s.get("items") or []) for s in (a.get("scoredChecks") or []))
 tp = len(a.get("thirdParty") or [])
-floor = 2*len(t) + 2*red + lens + mech + prior + scored + tp
-print(f"  readOnly={bool(a.get('readOnly'))} tasks={len(t)} red={red} lenses={lens} "
-      f"mech={mech} scored={scored} prior={prior} thirdParty={tp}")
+att = len(a.get("attempts") or [])
+rule = 1 if a.get("ruleChecks") else 0
+floor = 2*impl + 2*red + lens + mech + scored + tp + att + rule
+print(f"  readOnly={ro} tasks={len(t)} active={impl} red={red} lens={lens} "
+      f"mech={mech} scored={scored} carried={carried} thirdParty={tp} attempts={att} rule={rule}")
 print(f"  fan-out floor {floor} vs maxAgents {a.get('maxAgents', 50)}")
 PY
 red_summary "$out"

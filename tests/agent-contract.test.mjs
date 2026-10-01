@@ -29,6 +29,7 @@ import { join, dirname } from 'node:path'
 import { tmpdir, homedir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
+import { jsCodeView, parseLenses } from "../skills/plugin-creator/scripts/pc-probe.ts"
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
 const PLUGIN_AGENTS = join(ROOT, 'agents')
@@ -1287,14 +1288,22 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
    *  live path and the only one that decides whether the dispatch lands. */
   const typeResolves = t => BUILTINS.has(t) || userAgentTarget(t.replace(/^workflows:/, '')) !== null
 
-  /** A dispatch block is a fenced code block containing `reviewLenses:`. */
+  /** `work` takes ONE lens object. `reviewLenses:` is the shape it replaced. */
+  const SINGLE_LENS_RE = /(?<![\w$.'-])lens\s*:\s*\{/
+
+  /**
+   * A dispatch block is a fenced code block that declares a lens — the single `lens:` object, or a
+   * `reviewLenses:` array.
+   */
+  const declaresLens = t => SINGLE_LENS_RE.test(jsCodeView(t, true)) || /reviewLenses:/.test(t)
+
   const blocksOf = body => {
     const out = []
     let inFence = false, start = 0, buf = []
     body.split('\n').forEach((l, i) => {
       if (/^```/.test(l)) {
         if (!inFence) { inFence = true; start = i + 1; buf = [] }
-        else { inFence = false; if (buf.join('\n').includes('reviewLenses:')) out.push({ line: start + 1, text: buf.join('\n'), lines: buf }) }
+        else { inFence = false; if (declaresLens(buf.join('\n'))) out.push({ line: start + 1, text: buf.join('\n'), lines: buf }) }
         return
       }
       if (inFence) buf.push(l)
@@ -1302,14 +1311,43 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
     return out
   }
 
+  /**
+   * Every lens of a block as {key, agentType|null} — one entry for the single `lens:` object, or one
+   * per `reviewLenses` entry.
+   *
+   * `agentType` is matched with a lookbehind: `implementerAgentType:` and `verifierAgentType:` sit in
+   * the same args object, and a bare /agentType:/ reads either of them as the lens's.
+   */
+  const AGENT_TYPE_RE = /(?<![\w$])agentType:\s*"([^"]+)"/
+
   /** Every lens entry of a block as {key, agentType|null}. */
+
+  const attemptsOf = b => {
+    const text = b.text ?? b.lines.join('\n')
+    const out = []
+    const m = text.match(/attempts\s*:\s*\[([\s\S]*?)\]/)
+    if (!m) return out
+    for (const r of m[1].matchAll(/agentType\s*:\s*['"]([^'"]+)['"]/g)) {
+      out.push(r[1])
+    }
+    return out
+  }
+
   const lensesOf = b => {
-    const heads = b.lines.map((l, i) => ({ l, i })).filter(x => /^\s*\{\s*key:\s*"/.test(x.l))
-    return heads.map((x, n) => {
-      const seg = b.lines.slice(x.i, n + 1 < heads.length ? heads[n + 1].i : b.lines.length).join('\n')
-      const at = seg.match(/agentType:\s*"([^"]+)"/)
-      return { key: x.l.match(/key:\s*"([^"]+)"/)[1], agentType: at ? at[1] : null }
-    })
+    const text = b.text ?? b.lines.join('\n')
+    const out = []
+    if (SINGLE_LENS_RE.test(jsCodeView(text, true))) {
+      out.push(...parseLenses('dispatch.js', text, ROOT).map(l => ({ key: 'lens', agentType: l.agentType })))
+    }
+    const heads = b.lines.map((l, i) => ({ l, i })).filter(x => /^\s*\{\s*key:\s*['"]/.test(x.l))
+    if (heads.length > 0) {
+      out.push(...heads.map((x, n) => {
+        const seg = b.lines.slice(x.i, n + 1 < heads.length ? heads[n + 1].i : b.lines.length).join('\n')
+        const m = seg.match(AGENT_TYPE_RE)
+        return { key: x.l.match(/key:\s*['"]([^'"]+)['"]/)[1], agentType: m ? m[1] : null }
+      }))
+    }
+    return out
   }
 
   const SKILL_DIRS = [['workflows', SKILLS], ['teaching', TEACHING]]
@@ -1319,6 +1357,11 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
     if (!existsSync(dir)) continue
     for (const s of readdirSync(dir).filter(d => existsSync(join(dir, d, 'SKILL.md')))) {
       for (const b of blocksOf(readFileSync(join(dir, s, 'SKILL.md'), 'utf8'))) {
+
+        for (const type of attemptsOf(b)) {
+          ok(`${repo}/skills/${s}:${b.line} attempts agentType "${type}" resolves`, typeResolves(type),
+             'not a documented built-in and not linked into ~/.claude/agents/')
+        }
         for (const lens of lensesOf(b)) {
           lensCount++
           const at = `${repo}/skills/${s}:${b.line} lens ${lens.key}`
@@ -1333,7 +1376,7 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
       }
     }
   }
-  ok('lens entries were actually walked', lensCount >= 70, String(lensCount))
+  ok('lens entries were actually walked', lensCount >= 10, String(lensCount))
 
   // (c) PROSE IMPLEMENTERS. Every non-readOnly dispatch block of a prose workflow names one.
   // A readOnly block dispatches no implementer at all (workflow.js:724), so it is exempt BY THE
