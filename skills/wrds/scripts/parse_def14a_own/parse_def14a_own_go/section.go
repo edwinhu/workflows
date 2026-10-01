@@ -198,6 +198,7 @@ func ExtractHTML(body string, base Row) ([]Row, int, int) {
 	// headings, because a fund-family proxy puts a heading between per-fund
 	// tables; the adjacency window below is what keeps it a continuation.
 	var prev *compacted
+	stackedOwnedOnly := true
 	consider := func(startIdx int, kind string) {
 		misses := 0
 		var got []tres
@@ -228,6 +229,9 @@ func ExtractHTML(body string, base Row) ([]Row, int, int) {
 			}
 			used[it.Pos] = true
 			tablesUsed++
+			if reOwnCue.MatchString(it.Text) || !cg.shareHoldingsOwnedHeaders() {
+				stackedOwnedOnly = false
+			}
 			// Keep handing on the table that HAS the headers, not a
 			// continuation that borrowed them, so a run of header-less
 			// continuations all inherit from the same headed table.
@@ -271,9 +275,12 @@ func ExtractHTML(body string, base Row) ([]Row, int, int) {
 			consider(i+1, sectionKind(it.Text))
 		}
 	}
-	// Fallback: no heading located the table, so accept any table whose own
-	// text carries the ownership cue.
-	if len(out) == 0 {
+	// A heading's newly recognized stacked-owned table must not disable the
+	// legacy fallback that already recovered holdings elsewhere in the filing.
+	if len(out) == 0 || stackedOwnedOnly {
+		if len(out) > 0 {
+			prev = nil // no legacy heading table preceded this fallback scan
+		}
 		for fi, it := range items {
 			if it.Kind != "table" || used[it.Pos] {
 				continue

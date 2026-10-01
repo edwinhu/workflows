@@ -153,7 +153,7 @@ func screenNames(rows []Row) []Row {
 			continue
 		}
 		screenRepairPair(&r)
-		if screenNoHolder(strings.TrimSpace(r.HolderName)) {
+		if screenNoHolderWithNumberedHolder(strings.TrimSpace(r.HolderName), r.numberedHolder) {
 			if screenDropReasons != nil {
 				screenDropReasons["no_holder"]++
 			}
@@ -212,8 +212,12 @@ func screenRepairPair(r *Row) {
 
 // screenNoHolder reports whether a name cell names no holder at all.
 func screenNoHolder(name string) bool {
+	return screenNoHolderWithNumberedHolder(name, false)
+}
+
+func screenNoHolderWithNumberedHolder(name string, numberedHolder bool) bool {
 	switch {
-	case reScreenLeadNum.MatchString(name):
+	case reScreenLeadNum.MatchString(name) && !numberedHolder:
 		return true
 	case reScreenStreetFull.MatchString(name), reScreenCityStZip.MatchString(name),
 		reScreenStateZip.MatchString(name):
