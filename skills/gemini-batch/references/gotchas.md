@@ -15,6 +15,54 @@ Use `google-genai`, `from google import genai` and one shared Client. Cloud [Int
 
 Sources: [GCS batch](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/batch-inference/new-job-from-cloud-storage), [Cloud tiers](flex-inference.md). `dest` belongs inside config. Both dictionaries and documented SDK config types work; do not reinstate the old ban on CreateBatchJobConfig.
 
+## Cloud batch facts — measured 2026-10-01
+
+Founder web-search pilots and M100 used `gemini-3.8-flash`, location `global`, on Gemini Enterprise Agent Platform. These observations establish that tested combination, not every model/schema/location.
+
+| Fact | Consequence |
+|---|---|
+| Empty `{"googleSearch": {}}` failed import: `Query error: Cannot store struct 'request.tools.googleSearch' with no fields`; job FAILED before inference | Give the tool a field: `{"googleSearch": {"excludeDomains": ["example.invalid"]}}` was accepted and grounding ran |
+| M100 SUCCEEDED with 97/100 grounded rows; three returned RECITATION with no answer | Inspect finish reasons and usable content; job success does not mean every row has an answer |
+| Extra top-level JSONL fields such as `key` passed through to output; M100 reconciled all keys | Key rows outside `request` and reconcile by key, not content matching |
+| Uncapped pilot rows made 2, 23 and 47 queries. “Use at most 3 Google searches; stop searching as soon as you have found who founded the company.” yielded M100 mean 2.98, median 3, p90 5, max 7; 27/100 exceeded 3 | This is a soft cap, not a hard limit. Always measure about 100 rows and project search cost before a full grounded run |
+| Search tariff used in M100: 5,000 free queries/month, then $14/1,000 queries, billed per query | Budget queries separately from model tokens; observed query counts on failed rows may omit searches before failure, so projections are not billing reconciliation |
+| 2/5 pilot rows returned code 4 DEADLINE_EXCEEDED, `Request deadline exceeded before prefill finished`; the same keys succeeded on M100 resubmission | Plan a retry pass for failed keys; preserve identifiers rather than dropping rows |
+| A new project returned 403 `aiplatform.batchPredictionJobs.create` denied `(or it may not exist)` immediately after enabling aiplatform; a later submission succeeded without IAM grants | Wait a few minutes after enablement and retry before diagnosing missing IAM; `testIamPermissions` needs `cloudresourcemanager.googleapis.com` enabled |
+| google-genai 2.26.0 rejected `labels` in `batches.create` config with pydantic `extra_forbidden` | If labels are needed, use REST `batchPredictionJobs.create` rather than an unsupported SDK config field |
+
+Run attributable work in a per-payer project (for example, a generic research project), not AI Studio's default `gen-lang-client-*` project.
+
+### SDK backend spelling and precedence
+
+Current [SDK docs](https://github.com/googleapis/python-genai#api-selection) use `genai.Client(enterprise=True)` and `GOOGLE_GENAI_USE_ENTERPRISE=True`; `vertexai=True` remains a compatibility alias. Check the installed SDK before changing existing pins: legacy SDKs such as 1.0.0 only accept `vertexai`, while 2.20.0 already accepts both.
+
+Verified locally with `uv run --with google-genai`, version 2.26.0, without any API call. Source excerpts:
+
+```text
+client.py:404-410
+if enterprise is not None and vertexai is not None and enterprise != vertexai:
+  raise ValueError(
+      'enterprise and vertexai flags have conflicting values, please set'
+      ' enterprise value only.'
+  )
+resolved_vertexai = enterprise if enterprise is not None else vertexai
+
+_api_client.py:653-657
+self.vertexai = vertexai
+self.custom_base_url = None
+if self.vertexai is None:
+  env_enterprise_str = os.environ.get('GOOGLE_GENAI_USE_ENTERPRISE', None)
+  env_vertexai_str = os.environ.get('GOOGLE_GENAI_USE_VERTEXAI', None)
+
+_api_client.py:678-681
+if env_enterprise is not None:
+  self.vertexai = env_enterprise
+elif env_vertexai is not None:
+  self.vertexai = env_vertexai
+```
+
+The enterprise environment variable wins over the legacy environment variable when both are set; an explicit constructor flag takes precedence over either. Conflicting constructor flags raise, so use one spelling, not both.
+
 ## Grounding: measured, not inferred from format
 
 **Measured on the Developer API**, 3.8 Flash founder lookups, 2026-09-30 to 2026-10-01:
