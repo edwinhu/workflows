@@ -11694,3 +11694,213 @@ func TestFundSharesTitleDoesNotCapTheTableScan(t *testing.T) {
 		}
 	}
 }
+
+// 0001015402-03-001351 file lines 453-517: a vested-option count column
+// beside the holdings column, both headed "NUMBER OF SHARES ...".
+const asciiOptionCountBesideHoldingsLines = `     SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS, DIRECTORS AND EXECUTIVE
+                                    OFFICERS
+
+     The  following  table sets forth certain information as of the Record Date,
+concerning the beneficial ownership of the Company's outstanding Common Stock by
+persons  (other  than  depositories) known to the Company to own more than 5% of
+the Company's outstanding Common Stock, by the Company's Directors and executive
+officers, and by all Directors and executive officers of the Company as a group.
+
+     Except as indicated, the address of each of the persons listed below is c/o
+Community  West  Bancshares,  445  Pine  Avenue,  Goleta,  CA  93117.
+
+
+                                        3
+<PAGE>
+<TABLE>
+<CAPTION>
+                                          NUMBER OF SHARES OF    NUMBER OF SHARES   PERCENT OF CLASS
+                                             COMMON STOCK       SUBJECT TO VESTED     BENEFICIALLY
+NAME AND TITLE                           BENEFICIALLY OWNED(1)   STOCK OPTIONS(2)       OWNED(2)
+- ---------------------------------------  ---------------------  ------------------  -----------------
+<S>                                      <C>                    <C>                 <C>
+MICHAEL A. ALEXANDER, Chairman of                      121,724              8,545               2.29%
+  the Board and Chief Executive
+  Officer, Community West Bancshares
+
+CHARLES G. BALTUSKONIS, Senior Vice                          -                  -                  -
+  President and Chief Financial Officer,
+  Community West Bancshares and
+  Goleta National Bank
+
+ROBERT H. BARTLEIN, Director                           135,762              8,545               2.53%
+
+JEAN W. BLOIS, Director                                 48,824             20,099               1.21%
+
+STEPHEN W. HALEY, Director, President                        -              4,000                  *
+  and Chief Operating Officer,
+  Community West Bancshares (3)
+
+CYNTHIA M. HOOPER, Senior Vice                           9,600              2,400                  *
+  President, Goleta National Bank
+
+JOHN D. ILLGEN, Director                                46,956             22,959               1.22%
+
+INVESTORS OF AMERICA LIMITED                           568,696                  -               9.99%
+  PARTNERSHIP
+  135 North Meramec
+  Clayton, MO  63105
+
+BERNARD R. MERRY, Senior Vice                                -             12,200                  *
+  President, Goleta National Bank
+
+LYNDA NAHRA,  Director, President and                    1,350             19,000                  *
+  Chief Executive Officer, Goleta
+  National Bank
+
+WILLIAM R. PEEPLES, Vice Chairman of                   738,728              8,545              13.11%
+  the Board (4)
+
+JAMES R. SIMS, JR., Director                            19,141             22,959                  *
+
+ALL DIRECTORS AND EXECUTIVE                          1,122,085          129,252(5)             21.50%
+  OFFICERS AS A GROUP (11 in Number)
+<FN>
+*    Less  than  1%
+</TABLE>
+`
+
+func TestASCIIOptionCountBesideHoldingsColumn(t *testing.T) {
+	raw, _, _ := ExtractText(asciiOptionCountBesideHoldingsLines, Row{})
+	type hv struct{ shares, pct float64 }
+	got := map[string]hv{}
+	for _, r := range raw {
+		v := hv{-1, -1}
+		if r.Shares != nil {
+			v.shares = *r.Shares
+		}
+		if r.Percent != nil {
+			v.pct = *r.Percent
+		}
+		got[strings.ToUpper(r.HolderName)] = v
+	}
+	for key, want := range map[string]hv{
+		"ALEXANDER":            {121724, 2.29},
+		"BARTLEIN":             {135762, 2.53},
+		"INVESTORS OF AMERICA": {568696, 9.99},
+		"PEEPLES":              {738728, 13.11},
+	} {
+		found := false
+		for name, v := range got {
+			if strings.Contains(name, key) {
+				found = true
+				if v != want {
+					t.Errorf("%s: got %+v, want %+v", name, v, want)
+				}
+			}
+		}
+		if !found {
+			t.Errorf("%s lost; rows=%v", key, got)
+		}
+	}
+	for name, v := range got {
+		if strings.Contains(name, "HALEY") && v.shares == 4000 {
+			t.Errorf("option count read as holdings: %s %+v", name, v)
+		}
+	}
+}
+
+// 0001015402-04-001537 file lines 349-423: the lead-in paragraph wraps so its
+// last line ("79,017,575 of our Common Shares outstanding as of March 26,
+// 2004.") reads as a row, and the <TABLE>/<CAPTION> wrapper under it leaves
+// only blank lines before the real table.
+const asciiBeneficialOwnerStubLines = `                           Beneficial Ownership Table
+
+The  following  table sets forth certain information known to us with respect to
+the  beneficial  ownership  of our Common Shares as of March 26, 2004 by (i) all
+persons who are known to us to be beneficial owners of five percent (5%) or more
+of  the  Common  Shares,  (ii)  each of our directors, (iii) the chief executive
+officer  and  the  other  four  most  highly compensated executive officers (the
+"NAMED  EXECUTIVE  OFFICERS")  and  (iv)  all  current  directors  and executive
+officers  as  a  group.
+
+Beneficial  ownership  is  determined  in  accordance  with  the  rules  of  the
+Securities  and Exchange Commission and includes voting or investment power with
+respect  to  the  securities.  Common Shares subject to options or warrants that
+are  currently  exercisable  or exercisable within 60 days of March 26, 2004 are
+deemed  to  be  outstanding  and to be beneficially owned by the person or group
+holding  such  options  or  warrants for the purpose of computing the percentage
+ownership  of  such  person  or group but are not treated as outstanding for the
+purpose  of  computing  the  percentage  ownership of any other person or group.
+Unless  otherwise  indicated,  the address for each of the individuals listed in
+the  table  is  care  of Apollo Gold Corporation, 4601 DTC Boulevard, Suite 750,
+Denver,
+
+
+                                                                          Page 3
+<PAGE>
+Colorado  80237-2571.  Unless otherwise indicated by footnote, the persons named
+in  the  table  have  sole  voting and sole investment power with respect to all
+Common  Shares  shown  as  beneficially  owned  by  them,  subject to applicable
+community  property  laws.  Percentage  of  beneficial  ownership  is  based  on
+79,017,575  of  our  Common  Shares  outstanding  as  of  March  26,  2004.
+
+<TABLE>
+<CAPTION>
+BENEFICIAL OWNER                                    SHARES BENEFICIALLY OWNED   PERCENT OF CLASS
+<S>                                                 <C>                         <C>
+G.W. (Bill) Thompson                                                125,071(1)                 *
+W.S. (Steve) Vaughan                                                 68,365(1)                 *
+R. David Russell                                               1,574,928(1)(2)              1.98%
+G. Michael Hobart                                                   111,071(1)                 *
+Charles E. Stott                                                    112,071(1)                 *
+R. Llee Chapman                                                     354,929(1)                 *
+Richard F. Nanna                                                  1,321,166(1)              1.66%
+Donald W. Vagstad                                                   192,009(1)                 *
+David K.Young                                                       218,659(1)                 *
+Gerald J. Schissler                                                  35,000(1)                 *
+Robert A. Watts                                                           Nil                  *
+All officers and directors as a group (14 persons)                4,167,269(3)              5.12%
+Goodman & Company, Investment Counsel Ltd.                        5,375,000(4)              5.17%
+<FN>
+*    Represents  less  than  1%  of  our  outstanding  Common  Shares.
+
+(1)  Amounts  shown  include Common Shares subject to options exercisable within
+     60  days:  125,071 Common Shares for Mr. Thompson; 68,365 Common Shares for
+     Mr.  Vaughan;  550,403 Common Shares for Mr. Russell; 110,071 Common Shares
+     for  Mr. Hobart; 110,071 Common Shares for Mr. Stott; 340,829 Common Shares
+     for Mr. Chapman; 544,866 Common Shares for Mr. Nanna; 192,009 Common Shares
+     for  Mr.  Vagstad;  217,659  Common Shares for Mr. Young; and 35,000 Common
+     Shares  for  Mr.  Schissler.
+
+(2)  Shares  beneficially  owned  by  Mr. Russell also include 100 Common Shares
+     owned  by  a  member  of  Mr.  Russell's  immediate  family.
+
+(3)  Shares  beneficially owned by all officers and directors as a group include
+     options  and/or  warrants  to purchase up to 2,348,344 of our Common Shares
+     which  may  be  exercised  in  whole  or  in  part  within  60  days.
+
+(4)  The  address  for Goodman & Company, Investment Counsel Ltd. (f/k/a Dynamic
+     Mutual  Funds)  is  55th Floor, Scotia Plaza, 40 King Street West, Toronto,
+     Ontario,  Canada  M5H  4A9.  The  number  of shares indicated is based on a
+     statement  on  Schedule  13G  that  was filed jointly by Goodman & Company,
+     Investment Counsel Ltd. on March 5, 2004 and includes 1,625,000 warrants to
+     purchase  Common  Shares  of which 1,000,000 are exercisable at US$3.25 and
+     expire  on  December  23,  2006  and 625,000 are exercisable at US$1.60 and
+     expire  on  March  21,  2004.
+</TABLE>
+`
+
+func TestASCIIBeneficialOwnerStubColumn(t *testing.T) {
+	raw, _, _ := ExtractText(asciiBeneficialOwnerStubLines, Row{})
+	rows := ScreenRows(raw)
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{{"G.W. Thompson", 125071}, {"R. David Russell", 1574928}, {"Goodman & Company, Investment Counsel Ltd", 5375000}} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares {
+			t.Errorf("holder lost: %s %g; rows=%+v", want.name, want.shares, rows)
+		}
+	}
+	for _, r := range rows {
+		if r.Shares != nil && *r.Shares == 79017575 {
+			t.Errorf("lead-in sentence read as a holder: %+v", r)
+		}
+	}
+}

@@ -564,6 +564,8 @@ var reASCIICaptionAge = regexp.MustCompile(`(?i),\s*age\s+[0-9]{1,3}.*$`)
 var reASCIICommitteeNote = regexp.MustCompile(`\([A-Z](?:,[A-Z])+\)`)
 var reASCIINameAgeTail = regexp.MustCompile(`,\s*[0-9]{1,3}\s*$`)
 var reASCIIOnlyAge = regexp.MustCompile(`^[0-9]{1,3}$`)
+var reASCIIOwnerStubHdr = regexp.MustCompile(`(?i)^beneficial\s+owners?$`)
+var reASCIIOptionCountHdr = regexp.MustCompile(`(?i)\boptions?\b|exercisable|right\s+to\s+acquire`)
 var reASCIIParenAgeOnly = regexp.MustCompile(`(?i)^\(\s*age\s+[0-9]{1,3}\s*\)$`)
 
 // Caption columns, not numeric-tail alignment, distinguish shares from age,
@@ -634,6 +636,34 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 			}
 		}
 		shareCol, pctCol, nameCol, classCol := -1, -1, -1, -1
+		// "NUMBER OF SHARES SUBJECT TO VESTED STOCK OPTIONS" beside the
+		// holdings column is a count of options: when another column states
+		// the holding, it is never the share column. Nor, in that layout, is
+		// "PERCENT OF CLASS BENEFICIALLY OWNED", which is the percent column.
+		optionCol := map[int]bool{}
+		holdingCols := 0
+		for col, hdr := range headers {
+			h := norm(strings.ReplaceAll(norm(hdr), "%", ""))
+			if col == 0 || !reASCIICaptionShares.MatchString(h) {
+				continue
+			}
+			switch {
+			case reASCIIOptionCountHdr.MatchString(h):
+				optionCol[col] = true
+			case reASCIICaptionPercent.MatchString(norm(hdr)):
+			default:
+				holdingCols++
+			}
+		}
+		if holdingCols == 0 || len(optionCol) == 0 {
+			optionCol = nil
+		} else {
+			for col, hdr := range headers {
+				if col > 0 && reASCIICaptionPercent.MatchString(norm(hdr)) {
+					optionCol[col] = true
+				}
+			}
+		}
 		for col, hdr := range headers {
 			headers[col] = norm(hdr)
 			if strings.Contains(strings.ToLower(headers[col]), "name") {
@@ -646,7 +676,7 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 			if strings.EqualFold(headers[col], "Title of Class") {
 				classCol = col
 			}
-			if col > 0 && reASCIICaptionShares.MatchString(norm(strings.ReplaceAll(headers[col], "%", ""))) {
+			if col > 0 && !optionCol[col] && reASCIICaptionShares.MatchString(norm(strings.ReplaceAll(headers[col], "%", ""))) {
 				if shareCol != -1 {
 					shareCol = -2
 					break
@@ -694,6 +724,11 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 			strings.EqualFold(headers[0], "Directors and Executive Officers") &&
 			strings.Contains(ctx, "beneficial ownership") && strings.Contains(ctx, "common stock")
 		if splitAddress {
+			nameCol = 0
+		}
+		// A stub column headed "BENEFICIAL OWNER" names the holders without
+		// the word "name".
+		if nameCol == -1 && reASCIIOwnerStubHdr.MatchString(headers[0]) {
 			nameCol = 0
 		}
 		countOnly := pctCol == -1 && (len(spans) == 4 || len(spans) == 5) && nameCol == 0 && shareCol == len(spans)-1 &&
