@@ -7,11 +7,19 @@ Everything here was verified against the live setup, not taken from docs.
 One CLIProxyAPI instance on `127.0.0.1:8317` serves all three providers, so
 model IDs alone route across families:
 
-| `owned_by` | wrapper | OPUS / SONNET / HAIKU slots |
+| `owned_by` | wrapper | `farm.sh` provider |
 |---|---|---|
-| `anthropic` | `claude-code` | `claude-opus-5` / `claude-sonnet-5` / `claude-haiku-4-5-20251001` |
-| `openai` | `codex-code` | `gpt-5.6-sol` / `gpt-5.6-terra` / `gpt-5.6-luna` |
-| `antigravity` | `gemini-code` | `gemini-pro-agent` / `gemini-3.7-flash-high` / `gemini-3.1-flash-lite` |
+| `anthropic` | `claude-code` | `claude` |
+| `openai` | `codex-code` | `codex` |
+| `antigravity` | `gemini-code` | `gemini` |
+
+Which model to run is not recorded here: a per-wrapper slot table went stale. The pinned model
+ids live in `scripts/lib/routing.json` (`candidates`), and `bun scripts/lib/route.ts --refresh`
+re-checks their availability against the live proxy catalog and their prices against OpenRouter.
+
+An **unpinned** wrapper slot is wrapper-local and can name another family: on 2026-10-01
+`claude-code`'s OPUS slot was `gpt-6.1-sol`, so an unpinned `--provider claude` row ran on GPT.
+Routed rows always pass a full `--model`; give a hand-written row one too.
 
 `<wrapper> --settings-json` starts the proxy **and** prints the env block
 (`ANTHROPIC_BASE_URL`, `ANTHROPIC_AUTH_TOKEN`, the three

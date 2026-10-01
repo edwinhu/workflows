@@ -424,19 +424,27 @@ export function parseNoul(
 
 /**
  * The Decisions transport, and the ONLY place it is spelled: URL, model, token resolution and the
- * curl invocation. `judgeViaDecisions` below asks it one question; `skills/work/scripts/jev-rank.ts`
- * asks it N. A second copy of this would be a second set of env-var names and a second way for the
- * token lookup to go stale.
+ * curl invocation. `judgeViaDecisions` below asks it one question; `scripts/lib/route.ts` asks it
+ * one per routing candidate. A second copy of this would be a second set of env-var names and a
+ * second way for the token lookup to go stale.
  *
- * `questions` is the Decisions `questions` map verbatim — each entry {type, instructions}. Returns
- * raw stdout on success, or an `unavailable` reason. It NEVER throws and never interprets an answer.
+ * `questions` is the Decisions `questions` map verbatim — each entry {type, instructions} plus, for
+ * a `choice`, its `criteria`. `opts.maxTimeSeconds` caps the request (default 60);
+ * `opts.model` names the model and beats $WORK_HOLD_DECISIONS_MODEL — a caller that passes one is
+ * reading it from a table it owns. Returns raw stdout on success, or an `unavailable` reason. It
+ * NEVER throws and never interprets an answer.
  */
 export function decisionsCall(
   state: string,
-  questions: Record<string, { type: string; instructions: string }>,
+  questions: Record<string, { type: string; instructions: string; criteria?: Record<string, string> }>,
+  opts: { maxTimeSeconds?: number; model?: string } = {},
 ): { stdout: string; unavailable: null } | { stdout: null; unavailable: string } {
   const url = process.env.WORK_HOLD_DECISIONS_URL || 'https://openrouter.ai/api/alpha/decisions'
-  const model = process.env.WORK_HOLD_DECISIONS_MODEL || 'typesafe/jev-1.13'
+  const model = opts.model || process.env.WORK_HOLD_DECISIONS_MODEL || 'typesafe/jev-1.13'
+  const maxTime =
+    typeof opts.maxTimeSeconds === 'number' && Number.isFinite(opts.maxTimeSeconds) && opts.maxTimeSeconds > 0
+      ? opts.maxTimeSeconds
+      : 60
 
   let token = process.env.WORK_HOLD_JUDGE_TOKEN || ''
   if (!token) {
@@ -451,11 +459,12 @@ export function decisionsCall(
 
   const r = spawnSync(
     'curl',
-    ['-sS', '--max-time', '60', '-X', 'POST', url,
+    ['-sS', '--max-time', String(maxTime), '-X', 'POST', url,
      '-H', `Authorization: Bearer ${token}`,
      '-H', 'Content-Type: application/json',
      '--data-binary', '@-'],
-    { encoding: 'utf8', input: JSON.stringify({ state, model, questions }), timeout: 90_000 },
+    // The spawn timeout is a backstop 30 s behind curl's own cap: 90 s at the default 60.
+    { encoding: 'utf8', input: JSON.stringify({ state, model, questions }), timeout: (maxTime + 30) * 1000 },
   )
   if (r.error || r.status !== 0) return { stdout: null, unavailable: 'decisions endpoint unreachable' }
   return { stdout: r.stdout || '', unavailable: null }
