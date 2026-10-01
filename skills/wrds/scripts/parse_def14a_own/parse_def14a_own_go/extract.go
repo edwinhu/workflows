@@ -49,6 +49,9 @@ type Row struct {
 	// captionCount identifies a sole, explicit count column in an SGML biography table.
 	captionCount bool
 
+	// captionPerson records a director biography with an explicit name-and-age stub.
+	captionPerson bool
+
 	// classHint is a class / series / fund label recovered from a column
 	// header rather than from a class-shaped value. It is copied onto
 	// ShareClass by ScreenRows AFTER every drop rule has run, so recovering it
