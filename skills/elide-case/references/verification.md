@@ -1,6 +1,6 @@
 # Verification — what each gate leg decides
 
-The whole mechanical verdict is the exit code of `scripts/check.sh`. It runs five legs,
+The whole mechanical verdict is the exit code of `scripts/check.sh`. It runs six legs,
 none short-circuiting, and prints one PASS/FAIL line per leg.
 
 ```bash
@@ -20,6 +20,7 @@ flag of a pair is a FAIL that names the missing one.
 | `check-addendum.py --target` | arity, table truth against the PDF, per-reading length |
 | `widows.py`, `orphans.py`, `runts.py` --prose | the canonical stray-line checkers, from the typst plugin |
 | `check-stranded-headings.py` | a heading at a page foot with its text overleaf — this skill's own class |
+| `check-marks.py` | one elision mark per addendum; every retained `#super[N]` footnote renumbered 1..k per reading and paired with its body |
 
 **The widows leg is the one leg that is ON BY DEFAULT**, and that is its fail-closed form:
 naming no flag RUNS it, so its absence cannot read as a pass. `--no-widows` is the loud

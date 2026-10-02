@@ -218,9 +218,10 @@ added.
   goal: "<one sentence>",
 
   // ── The deterministic floor: ONE entry point, whose exit code IS the mechanical verdict. ──
-  // Five legs — the plan's interview answers, typst compile, check-quotes.py per derived caption,
-  // check-addendum.py --target, and the strays leg (canonical widows.py/orphans.py/runts.py
-  // plus check-stranded-headings.py) — none short-circuiting. A second entry here would spread the
+  // Six legs — the plan's interview answers, typst compile, check-quotes.py per derived caption,
+  // check-addendum.py --target, the strays leg (canonical widows.py/orphans.py/runts.py
+  // plus check-stranded-headings.py), and check-marks.py (one elision mark per addendum; every
+  // retained footnote renumbered 1..k and paired) — none short-circuiting. A second entry here would spread the
   // verdict over two commands and lose one silently; P10 refuses it.
   // The plan leg FAILS CLOSED: pass `--plan <md>` on a real run or `--no-plan` on a fixture run,
   // and passing neither is a FAIL naming the missing flag. `--plan` also carries the plan's
@@ -242,6 +243,15 @@ added.
       cmd: "bash /home/eh/projects/workflows/skills/elide-case/scripts/check.sh --addendum /home/eh/areas/secreg/addenda/NN-addendum.typ --pdf /home/eh/areas/secreg/output/addenda/NN-addendum.pdf --plan /home/eh/areas/secreg/.claude/plans/<slug>.md",
     },
   ],
+
+  // Jev scores the calibrated excerpt rules under constraints/jev/elide: an elision mark cutting
+  // inside a holding or rule sentence, a heading or ordinal sequence that skips with nothing
+  // marking it, editors' voice set as the court's, stress inside a quotation with no emphasis
+  // notation, and a reading's note that is only mechanical boilerplate. p >= 0.85 lands in
+  // rulesThatFailed and blocks; lower ones reach the lens ranked. It scores the assembled
+  // addendum by --files, not --project-dir: the course tree carries earlier addenda untracked,
+  // and every untracked file is "changed", so a project-dir run would grade old readings too.
+  ruleChecks: { name: "jev-elide-rules", cmd: "bun /home/eh/projects/workflows/skills/work/scripts/rule-check.ts --files /home/eh/areas/secreg/addenda/NN-addendum.typ --plan /home/eh/areas/secreg/.claude/plans/<slug>.md --project secreg --rules /home/eh/projects/workflows/constraints/jev/elide" },
 
   tasks: [
     // ── WAVE 1: ONE row, whatever the reading count. It is the only row that writes `docs/`,
@@ -365,7 +375,7 @@ added.
   lens: {
     agentType: "Explore",
     refs: [],
-    prompt: "Judge the delivered artifacts against the approved plan and the goal. CHECKLIST: (1) CRITERIA vs ARTIFACTS — for each success criterion in the plan and goal, is there an artifact that satisfies it? Missing or partial satisfaction is a finding, CRITICAL where the deliverable cannot stand without it. (2) SCOPE FIDELITY — did the changes stay inside the plan's task table and writable paths, limited to addenda/, output/addenda/ and docs/? Out-of-scope edits, unrequested features and silently skipped readings are findings, CRITICAL where an edit landed outside every declared writable path. Severity is MAJOR at minimum. Legibility and fidelity are advisory scoredChecks, not additional checklist items here. MODE — RED (a task was flagged or a mechanical check failed): diagnose EVERY failure in the digest and route it with cause and fix to its owner task id, or to 'plan' when no task can own the fix. MODE — GREEN (everything passed): make one open-ended pass over the checklist and report each finding with an ownerTask. In both modes, rule every carried finding open or closed against evidence you actually read; silence leaves it open.",
+    prompt: "Judge the delivered artifacts against the approved plan and the goal. CHECKLIST: (1) CRITERIA vs ARTIFACTS — for each success criterion in the plan and goal, is there an artifact that satisfies it? Missing or partial satisfaction is a finding, CRITICAL where the deliverable cannot stand without it. (2) SCOPE FIDELITY — did the changes stay inside the plan's task table and writable paths, limited to addenda/, output/addenda/ and docs/? Out-of-scope edits, unrequested features and silently skipped readings are findings, CRITICAL where an edit landed outside every declared writable path. Severity is MAJOR at minimum. Legibility and fidelity are advisory scoredChecks, not additional checklist items here. Holding-cutting elisions, unmarked heading or ordinal skips, editors' voice in the court's text, un-noted emphasis in quotations and boilerplate notes are the jev-elide-rules verdicts in the digest: do not re-grade them, except to rule on a verdict the digest ranks below the block line. MODE — RED (a task was flagged or a mechanical check failed): diagnose EVERY failure in the digest and route it with cause and fix to its owner task id, or to 'plan' when no task can own the fix. MODE — GREEN (everything passed): make one open-ended pass over the checklist and report each finding with an ownerTask. In both modes, rule every carried finding open or closed against evidence you actually read; silence leaves it open.",
   },
 
   authorityExtra: "DOMAIN RULE — every word of the excerpt is authentic reporter text, cut from the .westlaw.docx retrieved THIS RUN into docs/ and projected to text in memory — never from a .txt written beside it, which is not produced. Never from memory, a Teacher's Manual summary, a casebook note, or a previous excerpt. DOMAIN RULE — the summary table is written after the compile, from the checker's computed rows; never hand-edit a range to make the checker pass. WRITE SURFACE — addenda/, output/addenda/ and docs/ only. notes/, slides/ and templates/ are excluded, and notes/07-security.typ may be open in the user's editor. THE TYPST CORPUS IS ONE COMMAND AWAY, AND IS NOT IN YOUR REFS. Run `typst-rules notes,prose` for the index, then read the ones your edit touches; it is on PATH and needs no path or plugin variable. Do not work from a paraphrase of these rules.",

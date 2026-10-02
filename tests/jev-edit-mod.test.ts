@@ -16,6 +16,8 @@ const none = async () => null
 test('prose is writing, tests and shell scripts are dev, .py is ds only under a ds workflow', async () => {
   expect(await ruleSetFor('/p/drafts/intro.md', none)).toBe('writing')
   expect(await ruleSetFor('/p/paper.typ', none)).toBe('writing')
+  expect(await ruleSetFor('/course/addenda/03-addendum-salman.typ', none)).toBe('elide')
+  expect(await ruleSetFor('/course/notes/03-addenda.typ', none)).toBe('writing')
   expect(await ruleSetFor('/p/paper.tex', ds)).toBe('writing')
   expect(await ruleSetFor('/p/scripts/run.sh', none)).toBe('dev')
   expect(await ruleSetFor('/p/src/a.test.ts', none)).toBe('dev')
