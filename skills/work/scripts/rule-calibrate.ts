@@ -10,7 +10,7 @@ import { spawnSync } from 'child_process';
 import { cpSync, existsSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
 import { join, relative, resolve } from 'path';
-import { changedFiles, collectEvidence, scoreRule } from './rule-check.ts';
+import { changedFiles, changedRanges, collectEvidence, scoreRule } from './rule-check.ts';
 import { decisionsCall } from '../../../hooks/work-hold.ts';
 
 const BASE = join(import.meta.dir, '../../..');
@@ -18,7 +18,8 @@ const DEFAULT_MANIFEST = join(BASE, 'tests/fixtures/jev/calibration.json');
 const CONCURRENCY = 8;
 
 type Kind = 'violating' | 'compliant';
-interface CaseSpec { kind: Kind; path: string; source?: string }
+// base: a repo-relative dir committed as the before tree; the case dir is then the working tree on top of it
+interface CaseSpec { kind: Kind; path: string; source?: string; base?: string }
 interface SetSpec { rulesDir: string; uncalibratedDir?: string; layout: 'files' | 'diff'; rules: Record<string, CaseSpec[]> }
 interface Manifest { criterion: { violatingAtLeast: number; compliantBelow: number; crossFlagAbove: number }; sets: Record<string, SetSpec> }
 
@@ -44,12 +45,13 @@ function listFiles(dir: string): string[] {
 }
 
 // The extractor input for one case: files layout hands the case dir over as is, diff layout replays
-// before/ as a commit and after/ as the working tree, as jev-dev-rules.test.ts does.
-function caseInput(layout: string, caseDir: string, temps: string[]): { files: string[]; plan?: string; root: string } {
-  if (layout === 'files') {
+// before/ as a commit and after/ as the working tree, as jev-dev-rules.test.ts does. A case with a base
+// is replayed the same way, base as before/ and the case dir as after/, in either layout.
+function caseInput(layout: string, caseDir: string, temps: string[], baseDir?: string): { files: string[]; plan?: string; root: string; changed: Record<string, number[][]> | null } {
+  if (layout === 'files' && !baseDir) {
     const all = listFiles(caseDir);
     const plan = all.find(f => relative(caseDir, f) === 'plan.md');
-    return { files: all.filter(f => f !== plan), plan, root: caseDir };
+    return { files: all.filter(f => f !== plan), plan, root: caseDir, changed: null };
   }
   const d = mkdtempSync(join(tmpdir(), 'rule-calibrate-'));
   temps.push(d);
@@ -57,13 +59,14 @@ function caseInput(layout: string, caseDir: string, temps: string[]): { files: s
   git('init', '-q');
   git('config', 'user.email', 't@t');
   git('config', 'user.name', 't');
-  if (existsSync(join(caseDir, 'before'))) cpSync(join(caseDir, 'before'), d, { recursive: true });
+  const before = baseDir ?? join(caseDir, 'before');
+  if (existsSync(before)) cpSync(before, d, { recursive: true });
   stripSuffix(d);
   git('add', '-A');
   git('commit', '-qm', 'before', '--allow-empty');
-  cpSync(join(caseDir, 'after'), d, { recursive: true });
+  cpSync(baseDir ? caseDir : join(caseDir, 'after'), d, { recursive: true });
   stripSuffix(d);
-  return { files: changedFiles(d), root: d };
+  return { files: changedFiles(d), root: d, changed: changedRanges(d) };
 }
 
 // Worker mode: score one rule on one evidence entry in its own process, so the sync curl calls run in parallel.
@@ -136,9 +139,10 @@ async function main() {
     const setRules = new Map<string, boolean>();
     // evidence per case dir, collected once over both the wired and the uncalibrated rules directory
     const evCache = new Map<string, Record<string, any>>();
-    const evidenceFor = (casePath: string) => {
+    const evidenceFor = (c: CaseSpec) => {
+      const casePath = c.path;
       if (!evCache.has(casePath)) {
-        const input = caseInput(spec.layout, resolve(BASE, casePath), temps);
+        const input = caseInput(spec.layout, resolve(BASE, casePath), temps, c.base && resolve(BASE, c.base));
         const ev: Record<string, any> = {};
         for (const [dir, wired] of dirs) {
           const got = collectEvidence({ ...input, rulesDir: dir });
@@ -149,14 +153,14 @@ async function main() {
       return evCache.get(casePath)!;
     };
     // every rule the extractors know, so a rule without cases is reported rather than silently skipped
-    for (const cases of Object.values(spec.rules)) for (const c of cases) evidenceFor(c.path);
+    for (const cases of Object.values(spec.rules)) for (const c of cases) evidenceFor(c);
     for (const r of Object.keys(spec.rules)) if (!setRules.has(r)) { console.error(`manifest names ${s}/${r}, which no rules directory defines`); process.exit(1); }
     for (const [r, wired] of setRules) rules.push({ set: s, rule: r, wired });
     const project = `calibration-${s}`;
     for (let run = 1; run <= runs; run++) {
       for (const [caseRule, cases] of Object.entries(spec.rules)) {
         for (const c of cases) {
-          const ev = evidenceFor(c.path);
+          const ev = evidenceFor(c);
           const scorers = c.kind === 'violating' ? [...setRules.keys()] : [caseRule];
           for (const rule of scorers) {
             if (only && rule !== only && caseRule !== only) continue;

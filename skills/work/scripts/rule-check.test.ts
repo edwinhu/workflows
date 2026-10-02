@@ -244,3 +244,156 @@ test('an oversized state is truncated at 60000 chars', async () => {
   expect(capturedBody.length).toBeLessThan(60100);
   expect(capturedBody.endsWith('...[STATE TRUNCATED]...')).toBeTrue();
 });
+
+// ---- DQ4/DQ6 diff scope: only transforms on lines the round added or changed --------------------
+
+import { changedRanges } from './rule-check.ts';
+
+const LEGACY = [
+  'import polars as pl',
+  '',
+  'def build(raw, ref):',
+  '    kept = raw.filter(pl.col("x") > 0)',
+  '    joined = kept.join(ref, on="id", how="inner")',
+  '    out = joined.unique()',
+  '    return out',
+  '',
+].join('\n');
+
+function repo(prefix: string) {
+  const d = fs.mkdtempSync(join(require('os').tmpdir(), prefix));
+  const git = (...a: string[]) => spawnSync('git', ['-C', d, ...a], { encoding: 'utf8' });
+  git('init', '-q');
+  git('config', 'user.email', 'test@example.com');
+  git('config', 'user.name', 'test');
+  return { d, git };
+}
+
+// Every rule's state, keyed by rule, from one stubbed rule-check run.
+async function statesOf(args: string[]) {
+  const states: Record<string, any> = {};
+  const server = Bun.serve({
+    port: 0,
+    async fetch(req) {
+      const body = await req.json();
+      const rule = /\(rule (\S+)\)/.exec(body.questions.q0.instructions)![1];
+      states[rule] = JSON.parse(body.state.slice(body.state.indexOf('\n{')));
+      return Response.json({ answers: { q0: { probabilities: { VIOLATED: 0.1 } } } });
+    }
+  });
+  const res = await runRuleCheck(args, server.port);
+  server.stop(true);
+  expect(res.exitCode).toBe(0);
+  return states;
+}
+
+test('changedRanges: -U0 hunks of tracked files, a deletion as a half-line point, untracked = all lines', () => {
+  const { d, git } = repo('rule-check-ranges-');
+  try {
+    fs.writeFileSync(join(d, 'a.py'), Array.from({ length: 10 }, (_, i) => `l${i + 1}`).join('\n') + '\n');
+    fs.writeFileSync(join(d, 'same.py'), 'x = 1\n');
+    git('add', '.');
+    git('commit', '-qm', 'base');
+    const now = Array.from({ length: 10 }, (_, i) => `l${i + 1}`);
+    now[4] = 'l5 changed';            // line 5 changed
+    now.splice(7, 0, 'inserted');     // new line 8
+    now.splice(9, 1);                 // old line 9 deleted: new lines 9 and 10 are l8 and l10
+    fs.writeFileSync(join(d, 'a.py'), now.join('\n') + '\n');
+    fs.writeFileSync(join(d, 'new.py'), 'a = 1\nb = 2\nc = 3\n');
+    const r = changedRanges(d)!;
+    const real = fs.realpathSync(d);
+    expect(r[join(real, 'a.py')]).toEqual([[5, 5], [8, 8], [9.5, 9.5]]);
+    expect(r[join(real, 'new.py')]).toEqual([[1, 4]]);
+    expect(r[join(real, 'same.py')]).toBeUndefined();
+  } finally {
+    fs.rmSync(d, { recursive: true, force: true });
+  }
+});
+
+test('changedRanges is null outside a git repo', () => {
+  const d = fs.mkdtempSync(join(require('os').tmpdir(), 'rule-check-norepo-'));
+  try {
+    expect(changedRanges(d)).toBeNull();
+  } finally {
+    fs.rmSync(d, { recursive: true, force: true });
+  }
+});
+
+test('project-dir: DQ4/DQ6 consider only the changed transform and every transform of an untracked file', async () => {
+  const { d, git } = repo('rule-check-dq-scope-');
+  try {
+    fs.writeFileSync(join(d, 'legacy.py'), LEGACY);
+    git('add', '.');
+    git('commit', '-qm', 'base');
+    // one new transform in the legacy file; the three legacy transforms stay untouched
+    fs.writeFileSync(join(d, 'legacy.py'), LEGACY.replace('    return out\n', '    out = out.drop_nulls()\n    return out\n'));
+    fs.writeFileSync(join(d, 'fresh.py'), 'import polars as pl\n\ndef f(a, b):\n    c = a.filter(pl.col("y") > 1)\n    e = c.join(b, on="id")\n    return e\n');
+    const s = await statesOf(['--project-dir', d]);
+    for (const rule of ['DQ4', 'DQ6']) {
+      const sites = s[rule].transform_sites.map((x: any) => `${x.file}:${x.line}`).sort();
+      expect(sites).toEqual(['fresh.py:4', 'fresh.py:5', 'legacy.py:7']);
+      expect(s[rule].n_transforms_considered).toBe(3);
+      expect(s[rule].n_transforms_skipped_unchanged).toBe(3);
+    }
+  } finally {
+    fs.rmSync(d, { recursive: true, force: true });
+  }
+});
+
+test('a statement is in scope when a changed line falls inside its span, not next to it', async () => {
+  const { d, git } = repo('rule-check-dq-span-');
+  const multi = 'import polars as pl\n\ndef g(a, b):\n    c = a.join(\n        b,\n        on="id")\n    d = c.unique()\n    return d\n';
+  try {
+    fs.writeFileSync(join(d, 'm.py'), multi);
+    git('add', '.');
+    git('commit', '-qm', 'base');
+    // line 5 sits inside the 3-line join at 4-6; the unique() at 7 is untouched
+    fs.writeFileSync(join(d, 'm.py'), multi.replace('        b,\n', '        b.lazy().collect(),\n'));
+    const s = await statesOf(['--project-dir', d]);
+    expect(s.DQ4.transform_sites.map((x: any) => x.line)).toEqual([4]);
+    expect(s.DQ4.n_transforms_skipped_unchanged).toBe(1);
+    // deleting the line between the join and unique() touches neither statement's span
+    fs.writeFileSync(join(d, 'm.py'), multi.replace('    d = c.unique()\n', '    d = c.unique()\n    pass\n'));
+    git('commit', '-qam', 'pad');
+    fs.writeFileSync(join(d, 'm.py'), multi);
+    const s2 = await statesOf(['--project-dir', d]);
+    expect(s2.DQ4.transform_sites).toEqual([]);
+    expect(s2.DQ4.n_transforms_considered).toBe(0);
+    expect(s2.DQ4.n_transforms_skipped_unchanged).toBe(2);
+  } finally {
+    fs.rmSync(d, { recursive: true, force: true });
+  }
+});
+
+test('no diff info (--files outside a repo): DQ4/DQ6 see every transform and carry no scope fields', async () => {
+  const d = fs.mkdtempSync(join(require('os').tmpdir(), 'rule-check-dq-nodiff-'));
+  try {
+    fs.writeFileSync(join(d, 'legacy.py'), LEGACY);
+    const s = await statesOf(['--files', join(d, 'legacy.py')]);
+    for (const rule of ['DQ4', 'DQ6']) {
+      expect(s[rule].transform_sites.map((x: any) => x.line).sort()).toEqual([4, 5, 6]);
+      expect(s[rule]).not.toHaveProperty('n_transforms_considered');
+      expect(s[rule]).not.toHaveProperty('n_transforms_skipped_unchanged');
+    }
+  } finally {
+    fs.rmSync(d, { recursive: true, force: true });
+  }
+});
+
+test('the other ds rules see the same state with or without diff info', async () => {
+  const { d, git } = repo('rule-check-dq-others-');
+  try {
+    fs.writeFileSync(join(d, 'legacy.py'), LEGACY);
+    git('add', '.');
+    git('commit', '-qm', 'base');
+    fs.writeFileSync(join(d, 'legacy.py'), LEGACY + 'z = 1\n');
+    const scoped = await statesOf(['--project-dir', d]);
+    const plain = await statesOf(['--files', join(d, 'legacy.py')]);
+    for (const rule of Object.keys(plain).filter(r => r !== 'DQ4' && r !== 'DQ6')) {
+      expect(scoped[rule]).toEqual(plain[rule]);
+    }
+    expect(Object.keys(plain).length).toBeGreaterThan(2);
+  } finally {
+    fs.rmSync(d, { recursive: true, force: true });
+  }
+});
