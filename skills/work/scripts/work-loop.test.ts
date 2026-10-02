@@ -87,12 +87,12 @@ function runDir(results: Record<string, object>) {
  * into a real, unstubbed, detached agent run — a test suite that spends money and writes to the
  * repo when the code under test breaks. The stub makes that failure loud and inert instead.
  */
-function loop(f: { plan: string; R: string }, loops: number, extra: string[] = []) {
+function loop(f: { dir: string; plan: string; R: string }, loops: number, extra: string[] = []) {
   try {
     const out = execFileSync('bash', [SCRIPT, '--provider', 'claude', '--run-dir', f.R, '--plan', f.plan, '--loops', String(loops), ...extra], {
       encoding: 'utf8',
       timeout: 60_000,
-      env: { ...process.env, WORK_LOOP_POLL: '1', WORK_FARM: '/bin/false', CLAUDE_CODE_SESSION_ID: '' },
+      env: { ...process.env, TMPDIR: f.dir, WORK_LOOP_POLL: '1', WORK_FARM: '/bin/false', CLAUDE_CODE_SESSION_ID: '' },
     })
     return { code: 0, out }
   } catch (e: any) {
@@ -196,7 +196,7 @@ describe('the liveness leg — the thing the hand-written watcher lacked', () =>
     try {
       execFileSync('bash', [SCRIPT, '--provider', 'claude', '--run-dir', f.R, '--plan', f.plan, '--loops', '3'], {
         encoding: 'utf8', timeout: 30_000,
-        env: { ...process.env, WORK_LOOP_POLL: '0', CLAUDE_CODE_SESSION_ID: '' },
+        env: { ...process.env, TMPDIR: f.dir, WORK_LOOP_POLL: '0', CLAUDE_CODE_SESSION_ID: '' },
       })
     } catch (e: any) {
       code = e.status ?? -1
@@ -460,7 +460,7 @@ describe('argument handling', () => {
     let out = ''
     try {
       execFileSync('bash', [SCRIPT, '--provider', 'claude', '--run-dir', f.R, '--plan', f.plan, '--loops', 'lots'], {
-        encoding: 'utf8', timeout: 30_000, env: { ...process.env, CLAUDE_CODE_SESSION_ID: '' },
+        encoding: 'utf8', timeout: 30_000, env: { ...process.env, TMPDIR: f.dir, CLAUDE_CODE_SESSION_ID: '' },
       })
     } catch (e: any) {
       code = e.status ?? -1
@@ -475,7 +475,7 @@ describe('argument handling', () => {
     let code = 0
     try {
       execFileSync('bash', [SCRIPT, '--provider', 'claude', '--run-dir', f.R, '--plan', join(f.R, 'absent.md'), '--loops', '2'], {
-        encoding: 'utf8', timeout: 30_000, env: { ...process.env, CLAUDE_CODE_SESSION_ID: '' },
+        encoding: 'utf8', timeout: 30_000, env: { ...process.env, TMPDIR: f.dir, CLAUDE_CODE_SESSION_ID: '' },
       })
     } catch (e: any) { code = e.status ?? -1 }
     expect(code).toBe(2)

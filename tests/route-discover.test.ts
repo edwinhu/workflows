@@ -3,6 +3,9 @@ import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
+import { useTmp } from './helpers/tmp.ts'
+
+const mkTmp = useTmp()
 
 /**
  * The spec for `route.ts --propose`'s DISCOVERY section: a model the proxy serves that no candidate
@@ -44,7 +47,7 @@ function tableCopy(edit: (t: any) => void = () => {}): string {
   t.candidates.luna.openrouter = 'openai/gpt-5.6-luna'
   t.candidates.luna.price = { prompt: 2e-7, completion: 1.2e-6 }
   edit(t)
-  const p = join(mkdtempSync(join(tmpdir(), 'route-discover-')), 'table.json')
+  const p = join(mkTmp('route-discover-'), 'table.json')
   writeFileSync(p, JSON.stringify(t, null, 2) + '\n')
   return p
 }
@@ -71,7 +74,7 @@ function stub(opts: { catalog?: unknown[]; prices?: unknown[]; aa?: unknown[]; r
 async function propose(table: string, env: Record<string, string>, json = true) {
   const { ROUTING_TABLE: _t, OPENROUTER_API_KEY: _o, OP_SERVICE_ACCOUNT_TOKEN: _s, ...base } =
     HERMETIC_ENV as Record<string, string>
-  const dir = mkdtempSync(join(tmpdir(), 'route-discover-env-'))
+  const dir = mkTmp('route-discover-env-')
   const p = Bun.spawn(['bun', ROUTE, '--propose', ...(json ? ['--json'] : []), '--table', table], {
     env: {
       ...base, TMPDIR: dir, FARM_OUTCOMES: join(dir, 'outcomes.jsonl'),

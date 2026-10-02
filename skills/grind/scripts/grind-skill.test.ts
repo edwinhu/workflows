@@ -18,6 +18,10 @@ import { spawnSync } from 'node:child_process'
 import { existsSync, readFileSync, statSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { grindEnv } from './grind-test-env'
+import { useTmp } from '../../../tests/helpers/tmp.ts'
+
+// Sweeps the notifier shim dir grind-test-env makes on this file's behalf.
+useTmp()
 
 const SKILL_DIR = resolve(import.meta.dir, '..')
 const SKILL_MD = join(SKILL_DIR, 'SKILL.md')

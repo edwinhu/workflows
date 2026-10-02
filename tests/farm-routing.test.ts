@@ -3,6 +3,9 @@ import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileS
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
+import { useTmp } from './helpers/tmp.ts'
+
+const mkTmp = useTmp()
 
 /**
  * farm.sh routes each row through route.ts when no --provider is given, and appends one outcome
@@ -20,7 +23,7 @@ const KINDS = ['script', 'judgement', 'review', 'bulk']
 type Rig = { root: string; agentCwd: string; argvLog: string; outcomes: string; env: Record<string, string> }
 
 function rig(): Rig {
-  const root = mkdtempSync(join(tmpdir(), 'farm-routing-'))
+  const root = mkTmp('farm-routing-')
   const agentCwd = join(root, 'agentcwd')
   const bin = join(root, 'bin')
   mkdirSync(agentCwd); mkdirSync(bin)
