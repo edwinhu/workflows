@@ -1,9 +1,12 @@
-import { describe, expect, it, afterEach } from "bun:test";
+import { describe, expect, it, afterEach, beforeEach } from "bun:test";
+import { useTmp } from "../../../tests/helpers/tmp.ts";
 import { join } from "node:path";
-import { existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { cmdCiteCheck, cmdAsk, buildGroupPrompt } from "../cite-check";
 import type { CiteCheckFlags, AskFlags } from "../cite-check";
 import { __setGeminiClientForTesting } from "../gemini";
+
+const mkTmp = useTmp();
 
 afterEach(() => {
   __setGeminiClientForTesting(null);
@@ -36,15 +39,8 @@ function setupFixture(
 }
 
 describe("cmdCiteCheck multi-bib support", () => {
-  const tmpBase = "/tmp/cite-check-multi-bib-test";
-
-  afterEach(() => {
-    try {
-      rmSync(tmpBase, { recursive: true, force: true });
-    } catch {
-      // ignore cleanup errors
-    }
-  });
+  let tmpBase = "";
+  beforeEach(() => { tmpBase = mkTmp("cite-check-multi-bib-test-"); });
 
   it("accepts multiple bibPaths and merges entries (first wins on duplicates)", async () => {
     // Set up two bib files with overlapping keys.
@@ -176,15 +172,8 @@ describe("cmdCiteCheck multi-bib support", () => {
 });
 
 describe("cmdCiteCheck --audit mode", () => {
-  const tmpBase = "/tmp/cite-check-audit-test";
-
-  afterEach(() => {
-    try {
-      rmSync(tmpBase, { recursive: true, force: true });
-    } catch {
-      // ignore cleanup errors
-    }
-  });
+  let tmpBase = "";
+  beforeEach(() => { tmpBase = mkTmp("cite-check-audit-test-"); });
 
   it("returns 0 when all cited sources have PDFs on disk", async () => {
 
@@ -386,16 +375,11 @@ describe("cmdCiteCheck --audit mode", () => {
 });
 
 describe("cmdAsk", () => {
-  const tmpBase = "/tmp/cite-check-ask-test";
+  let tmpBase = "";
+  beforeEach(() => { tmpBase = mkTmp("cite-check-ask-test-"); });
 
   afterEach(() => {
     __setGeminiClientForTesting(null);
-
-    try {
-      rmSync(tmpBase, { recursive: true, force: true });
-    } catch {
-      // ignore cleanup errors
-    }
   });
 
   it("returns 1 when no --bib provided", async () => {
@@ -551,15 +535,8 @@ describe("cmdAsk", () => {
 });
 
 describe("cmdCiteCheck cross-directory audit", () => {
-  const tmpBase = "/tmp/cite-check-crossdir-audit-test";
-
-  afterEach(() => {
-    try {
-      rmSync(tmpBase, { recursive: true, force: true });
-    } catch {
-      // ignore cleanup errors
-    }
-  });
+  let tmpBase = "";
+  beforeEach(() => { tmpBase = mkTmp("cite-check-crossdir-audit-test-"); });
 
   it("finds PDF via cross-directory resolution in audit mode", async () => {
 
@@ -611,13 +588,11 @@ describe("cmdCiteCheck cross-directory audit", () => {
 });
 
 describe("cmdCiteCheck File Search Store pipeline", () => {
-  const tmpBase = "/tmp/cite-check-filesearch-integ-test";
+  let tmpBase = "";
+  beforeEach(() => { tmpBase = mkTmp("cite-check-filesearch-integ-test-"); });
 
   afterEach(() => {
     __setGeminiClientForTesting(null);
-    try {
-      rmSync(tmpBase, { recursive: true, force: true });
-    } catch {}
   });
 
   /**
@@ -1277,13 +1252,11 @@ describe("cmdCiteCheck File Search Store pipeline", () => {
 });
 
 describe("cmdCiteCheck manifest persistence (legacy)", () => {
-  const tmpBase = "/tmp/cite-check-manifest-integ-test";
+  let tmpBase = "";
+  beforeEach(() => { tmpBase = mkTmp("cite-check-manifest-integ-test-"); });
 
   afterEach(() => {
     __setGeminiClientForTesting(null);
-    try {
-      rmSync(tmpBase, { recursive: true, force: true });
-    } catch {}
   });
 
   it("creates .cite-check-store.json in drafts dir after sequential run", async () => {

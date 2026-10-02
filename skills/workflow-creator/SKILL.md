@@ -160,7 +160,7 @@ A vendored `<domain>-constraints` skill is the same error made eagerly. It looks
 
 **A round is shell checks, then ONE lens that reads a script-built digest at the top of its prompt and never re-runs a settled check.** An exit code is read by the shell (`work-checks.sh`), never transcribed by an agent; P14 refuses the agent leg.
 
-**Rule compliance is a calibrated Jev rule in `ruleChecks`, gating the changed lines only.** A rule is wired only after `rule-calibrate` passes it against real accepted material; a parked rule (`uncalibrated/`) never gates, and no lens or scoredChecks item re-grades a wired one (P15, P16).
+**Rule compliance is a calibrated Jev rule in `ruleChecks`, gating the changed lines only.** A rule is wired only after `rule-calibrate` passes it against real accepted material; a parked rule (`uncalibrated/`) never gates, and no lens or scoredChecks item re-grades a wired one (P15, P16). To build, calibrate or park one, invoke `Skill(skill="workflows:jev-rules")`; its `new-rule.ts --wire` is the only sanctioned move out of `uncalibrated/`.
 
 **A written rule that accepted practice breaks is the user's call, and the ruling is recorded in the rule.** Never settle it by loosening the rule or by flagging the practice.
 
