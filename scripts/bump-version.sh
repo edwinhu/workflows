@@ -127,7 +127,7 @@ check
 cat <<EOF
 
 Next, in order:
-  bun test $CONTRACT          # the six sites are enforced here
+  scripts/test.sh ./$CONTRACT   # the six sites are enforced here; bare scripts/test.sh runs everything
   git commit -am "chore: release v$NEW"
   git push origin main
   git tag -a workflows--v$NEW -m "workflows v$NEW" && git push origin workflows--v$NEW

@@ -181,7 +181,7 @@ if a version site is ever added, add it there and `--check` will keep everyone h
 **Then ship it — and the tag is what ships:**
 
 ```bash
-bun test tests/public-extension-contract.test.ts
+scripts/test.sh            # whole suite, files in parallel; or scripts/test.sh ./tests/public-extension-contract.test.ts
 git commit -am "chore: release vX.Y.Z"
 git push origin main
 git tag -a workflows--vX.Y.Z -m "workflows vX.Y.Z" && git push origin workflows--vX.Y.Z
