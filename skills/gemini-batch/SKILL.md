@@ -15,7 +15,7 @@ user-invocable: false
 - **2026-10-01, Developer API:** a 2,111-row grounded batch returned 1,307 `code 9 "Precondition check failed"` rows; its retry queue stalled over 40 minutes. Tier 1's `gemini-3.8-flash` queue cap was 3M tokens. Repeating that production route recreates the failure, not a cheaper solution. These are Developer limits, not Cloud quotas.
 </EXTREMELY-IMPORTANT>
 
-[Product name](https://docs.cloud.google.com/gemini-enterprise-agent-platform/vertex-ai-name-changes); SDK `vertexai=True`, `aiplatform.googleapis.com` and IAM `roles/aiplatform.*` retain their technical identifiers. Developer examples retained in references are **not for production**.
+[Product name](https://docs.cloud.google.com/gemini-enterprise-agent-platform/vertex-ai-name-changes); current SDK docs use `enterprise=True` / `GOOGLE_GENAI_USE_ENTERPRISE=True`; `vertexai=True` remains compatible. Check [SDK spelling and precedence](references/gotchas.md#sdk-backend-spelling-and-precedence) before changing pins. `aiplatform.googleapis.com` and IAM `roles/aiplatform.*` retain their identifiers. Developer examples retained in references are **not for production**.
 
 ## Choose the Cloud tier
 
@@ -76,10 +76,10 @@ Sources: [batch limits](https://docs.cloud.google.com/gemini-enterprise-agent-pl
 
 ## Grounding and acceptance
 
-- Configure Google Search through the Cloud GenerateContentRequest tool shape and inspect `candidates[].groundingMetadata` per row. [Cloud grounding](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/grounding/grounding-with-google-search) and model support are not a promise that every batch+search+schema combination works; the exact Cloud end-to-end sample must prove it. Cloud batch excludes RAG/File Search.
+- Configure Google Search through the Cloud GenerateContentRequest tool shape and inspect `candidates[].groundingMetadata` per row. [Cloud grounding](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/grounding/grounding-with-google-search) and model support are not a promise that every batch+search+schema combination works; the exact Cloud end-to-end sample must prove it. Read [measured Cloud gotchas](references/gotchas.md#cloud-batch-facts--measured-2026-10-01) before grounded submission: empty `googleSearch` fails import; M100 grounded 97/100 on 3.8 Flash/global. Cloud batch excludes RAG/File Search.
 - **Measured on Developer API, not a Cloud availability claim:** past-tense founder framing grounded 0/138; fresh framing (“Search the web NOW for current pages… report what they say TODAY”) grounded **10/10**, 1.9 searches/row. Flex shed load with 503s at peak, about 9 rows/hour. Prefer fresh framing and verify the Cloud sample; do not route bulk to Flex merely because an old prompt failed. More evidence: [gotchas](references/gotchas.md).
 - Bulk per-document extraction is one Cloud Batch job over pre-cut inputs, **never an interactive-agent fan-out**. A 297-prospectus coder run consumed all three shared Claude accounts; it belonged in Batch.
-- Reconcile every input identifier, duplicate/missing output and row error; preserve IDs on retry. A succeeded job or valid JSON is not correctness evidence. Budget input/output and search separately from Cloud pilot usage; a prompt search cap is not an enforced quota.
+- Reconcile every input identifier, duplicate/missing output and row error; preserve IDs on retry. A succeeded job or valid JSON is not correctness evidence. Budget input/output and search separately; a prompt search cap is not an enforced quota. Before a full grounded run, measure about 100 Cloud rows and project query cost from usage, not the requested cap.
 - Use the harness's background notification mechanism for long monitoring, not a model session repeatedly narrating status. Do not switch backend, model, schema or location to clear an error without retesting.
 
 ## Red flags — STOP
