@@ -2896,7 +2896,9 @@ var (
 		`A[LKZR]|C[AT]|DC|FL|GA|HI|I[AL]|K[SY]|M[ADINOST]|N[CDHJMVY]|O[HK]|PA|RI|S[CD]|T[NX]|UT|V[AT]|W[AIVY])\.?$`)
 	// A city/state/ZIP with a second address glued on: "Kirkland, WA 98033 &
 	// One Microsoft Way". Still nothing but address.
-	reCityZipIn = regexp.MustCompile(`^[A-Z][A-Za-z.\-' ]{1,40},\s+[A-Z][A-Za-z ]{1,20}\s+\d{5}(-\d{4})?\b`)
+	// "San Antonio TX 78249": the comma left off; only a real USPS state code.
+	reCityStZipBare = regexp.MustCompile(`^[A-Z][A-Za-z.\-' ]{1,40}\s+(?:A[KLRZ]|C[AOT]|D[CE]|FL|GA|HI|I[ADLN]|K[SY]|LA|M[ADEINOST]|N[CDEHJMVY]|O[HKR]|PA|RI|S[CD]|T[NX]|UT|V[AT]|W[AIVY])\s+\d{5}(-\d{4})?$`)
+	reCityZipIn     = regexp.MustCompile(`^[A-Z][A-Za-z.\-' ]{1,40},\s+[A-Z][A-Za-z ]{1,20}\s+\d{5}(-\d{4})?\b`)
 	// A bare corporate suffix: all that is left of a name whose head wrapped.
 	reBareSuffix = regexp.MustCompile(`(?i)^[\(,]?\s*(inc|inc\.|corp|corp\.|corporation|incorporated|company|co|co\.|l\.?\s?p\.?|llc|l\.l\.c\.|llp|ltd|ltd\.|limited|n\.?\s?a\.?|trust|plc|s\.a\.|n\.v\.|a\.g\.|partners|holdings|associates|management)\s*[\.,]?\s*\)?$`)
 	// "- --------------------" separator rules between holders.
@@ -2911,7 +2913,7 @@ var (
 func isAddressLine(s string) bool {
 	s = strings.TrimSpace(s)
 	return reStreetLine.MatchString(s) || reBoxLine.MatchString(s) || reCityZip.MatchString(s) ||
-		reCityState.MatchString(s) || reCityZipIn.MatchString(s)
+		reCityState.MatchString(s) || reCityZipIn.MatchString(s) || reCityStZipBare.MatchString(s)
 }
 
 // holderOverClassLine resolves the holder of a row whose stub is only a class
@@ -3051,6 +3053,8 @@ func percentBelow(line string, lo, hi int) (*float64, string, bool) {
 // numeric row's own name is itself an address line or a bare corporate suffix,
 // which is what keeps a heading or a prose lead-in from being glued onto the
 // first real holder beneath it.
+var reLeadClassWordCell = regexp.MustCompile(`(?i)^\s*(?:common|stock|common\s+stock|preferred(?:\s+stock)?|class\s+[a-d]|\$[0-9]+\.[0-9]+(?:\s+preferred)?)\s{3,}(\S.*)$`)
+
 func headNameAbove(clean []string, ln int, nm string) (string, bool) {
 	addr, suffix := isAddressLine(nm), reBareSuffix.MatchString(nm)
 	if !addr && !suffix {
@@ -3068,11 +3072,16 @@ func headNameAbove(clean []string, ln int, nm string) (string, bool) {
 	}
 	nameLines := 0
 	for k, steps := ln-1, 0; k >= 0 && steps < 6; k, steps = k-1, steps+1 {
-		p := strings.TrimSpace(clean[k])
+		raw := clean[k]
+		// a "Title of Class" cell written down the left of the record
+		if m := reLeadClassWordCell.FindStringSubmatch(raw); m != nil {
+			raw = m[1]
+		}
+		p := strings.TrimSpace(raw)
 		if p == "" || len(p) > 90 || reRuleLine.MatchString(p) {
 			break
 		}
-		if _, _, ok := parseTextRow(clean[k]); ok {
+		if _, _, ok := parseTextRow(raw); ok {
 			break // the previous holder's own numeric row
 		}
 		p = strings.TrimSpace(reDotLeader.ReplaceAllString(p, " "))

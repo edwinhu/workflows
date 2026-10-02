@@ -13891,3 +13891,168 @@ func TestASCIILeadParValueCellCut(t *testing.T) {
 		}
 	}
 }
+
+// 0000890566-99-001509: a split "Common" / "Stock" class cell left of the name
+// and street lines; the counts sit on the city line.
+const asciiClassCellNameAboveCityLines = `
+BENEFICIAL OWNERSHIP OF CERTAIN STOCKHOLDERS, DIRECTORS AND EXECUTIVE OFFICERS
+
+      This table shows, as of November 11, 1999, the beneficial ownership of
+billserv.com common stock by: (1) each person known by the Company to be the
+beneficial owner of more than 5% of the common stock, (2) each director of the
+Company, (3) each nominee for director of the Company, (4) each executive
+officer named in the Summary Compensation Table on page 8, and (5) all directors
+and executive officers as a group, as reported by each person. Except as noted,
+each person has sole voting and investment power over the shares shown in this
+table.
+
+
+                                       13
+<PAGE>
+                   SHARES OWNED BENEFICIALLY AND OF RECORD
+                                PERCENT OF CLASS
+
+                                         AMOUNT & NATURE   PERCENT OF OWNERSHIP
+TITLE OF                                 OF BENEFICIAL            AS OF
+CLASS          NAME AND ADDRESS            OWNERSHIP       NOVEMBER 11, 1999 (1)
+- --------------------------------------------------------------------------------
+
+Common      Michael R. Long (2)
+Stock       15546 Clover Ridge
+            San Antonio, TX 78248          1,183,333               9.6%
+
+Common      Louis A. Hoch (3)
+Stock       15138 Grayoak Forest
+            San Antonio, TX 78248          1,193,334               9.7%
+
+Common      David S. Jones (4)
+Stock       11530 Vance Jackson
+            San Antonio, TX 78230          1,183,333               9.6%
+
+Common      Lori Turner
+Stock       11205 Woodridge Forest
+            San Antonio TX 78249             100,000               0.8%
+
+Common      Marshall Millard
+Stock       18123 Summer Knoll
+            San Antonio, TX 78258            150,000               1.2%
+
+Common      All directors, officers
+Stock       and employees as a group (5)
+            (7 persons)                    4,000,000              30.8%
+
+
+      (1)   All ownership is stated as of November 11, 1999. In 1999, the
+`
+
+func TestASCIIClassCellNameAboveCityValues(t *testing.T) {
+	rows := ScreenRows(run(t, asciiClassCellNameAboveCityLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{{"Michael R. Long", 1183333}, {"Lori Turner", 100000}, {"Marshall Millard", 150000}} {
+		var r *Row
+		for i := range rows {
+			if strings.HasPrefix(rows[i].HolderName, want.name) {
+				r = &rows[i]
+			}
+		}
+		if r == nil || r.Shares == nil || *r.Shares != want.shares {
+			t.Errorf("holder %q %v lost: %s", want.name, want.shares, names(rows))
+		}
+	}
+	for _, r := range rows {
+		if strings.Contains(r.HolderName, "San Antonio") || strings.HasPrefix(r.HolderName, "Common") {
+			t.Errorf("address or class cell as holder: %q", r.HolderName)
+		}
+	}
+}
+
+// 0000950132-94-000102: dollar-dividend class cell ($3.625 Preferred) beside the holder name.
+const asciiDollarClassCellLines = `
+
+     The following table lists the beneficial ownership of common stock and
+$3.625 preferred stock with respect to all persons known by the Corporation to
+be the "beneficial owners" (as defined in Securities and Exchange Commission
+Rule 13d-3) of more than 5% of any such class.  Except as indicated, the
+information is as of December 31, 1993 and is based on reports filed with the
+Securities and Exchange Commission.  The percentage of the outstanding shares of
+each class owned by each such person or entity is based on the outstanding
+shares of such class as of December 31, 1993.
+
+<TABLE>
+<CAPTION>
+ 
+Title of     Name and Address      Number of Shares     % of Outstanding
+Class        of Beneficial Owner   Beneficially Owned   Shares of Class
+- --------     -------------------   ------------------   ---------------- 
+<S>         <C>                    <C>                  <C>
+ 
+Common      Alleghany Corporation
+            Park Avenue Plaza
+            New York, NY 10055           5,643,554 (1)            5.5%
+ 
+Common      Dietche & Field
+            Advisers, Inc.
+            437 Madison Avenue
+            New York, NY 10022           5,564,950 (2)            5.4%
+ 
+Common      Norwest Corporation
+            Norwest Center
+            Sixth and Marquette
+            Minneapolis, MN 55479       15,175,549 (3)           14.4%
+ 
+Common      T. Rowe Price
+            Associates, Inc.
+            100 East Pratt Street
+            Baltimore, MD 21202          5,513,502 (4)            5.3%
+</TABLE>
+
+                                      19
+<PAGE>
+ 
+<TABLE>
+<CAPTION>
+
+Title of    Name and Address          Number of Shares      % of Outstanding
+Class       of Beneficial Owner       Beneficially Owned    Shares of Class
+- --------    -------------------       -------------------   ----------------
+<S>          <C>                       <C>                  <C>
+ 
+$3.625       Putnam Investments, Inc.
+Preferred    One Post Office Square
+             Boston, MA 02109              380,250 (5)              14.1%
+ 
+$3.625       Norwest Corporation
+Preferred    Norwest Center
+             Sixth and Marquette
+             Minneapolis, MN 55479         204,200 (3)               7.6%
+ 
+$3.625       Neuberger & Berman
+Preferred    605 Third Avenue
+             New York, NY 10158            167,200 (6)              6.69%
+ 
+$3.625       Reliance Financial
+Preferred    Services Corporation
+             Park Avenue Plaza
+             55 East 52nd Street
+             New York, NY 10055            390,000 (7)               8.9%
+</TABLE>
+
+`
+
+func TestASCIIDollarClassCellNameCut(t *testing.T) {
+	rows := ScreenRows(run(t, asciiDollarClassCellLines))
+	found := false
+	for _, r := range rows {
+		if strings.HasPrefix(r.HolderName, "$") {
+			t.Errorf("dividend class cell in holder: %q", r.HolderName)
+		}
+		if strings.HasPrefix(r.HolderName, "Putnam Investments") && r.Shares != nil && *r.Shares == 380250 {
+			found = true
+		}
+	}
+	if !found {
+		t.Errorf("Putnam 380250 lost: %s", names(rows))
+	}
+}
