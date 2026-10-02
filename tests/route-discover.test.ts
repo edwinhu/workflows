@@ -16,6 +16,7 @@ const ROUTE = join(import.meta.dir, '..', 'scripts', 'lib', 'route.ts')
 const FIXTURE = join(import.meta.dir, 'fixtures', 'routing', 'table.json')
 const DEAD = 'http://127.0.0.1:1'
 const AA_KEY = 'aa-SENTINEL-d15c0'
+const OR_KEY = 'or-SENTINEL-d15c0'
 
 const CATALOG = [
   { id: 'claude-sonnet-5-5', owned_by: 'anthropic' },
@@ -48,7 +49,7 @@ function tableCopy(edit: (t: any) => void = () => {}): string {
   return p
 }
 
-function stub(opts: { catalog?: unknown[]; prices?: unknown[]; aa?: unknown[] } = {}) {
+function stub(opts: { catalog?: unknown[]; prices?: unknown[]; aa?: unknown[]; rankings?: unknown[] } = {}) {
   const server = Bun.serve({
     port: 0,
     fetch(req) {
@@ -56,12 +57,13 @@ function stub(opts: { catalog?: unknown[]; prices?: unknown[]; aa?: unknown[] } 
       if (path === '/v1/models') return Response.json({ data: opts.catalog ?? CATALOG })
       if (path === '/prices') return Response.json({ data: opts.prices ?? PRICES })
       if (path === '/aa') return Response.json({ data: opts.aa ?? AA })
+      if (path === '/rankings') return Response.json({ meta: { as_of: '2026-10-02' }, data: opts.rankings ?? [] })
       return new Response('not found', { status: 404 })
     },
   })
   const base = `http://127.0.0.1:${server.port}`
   return {
-    env: { ROUTE_PROXY_URL: `${base}/v1/models`, ROUTE_PRICES_URL: `${base}/prices`, ROUTE_AA_URL: `${base}/aa` },
+    env: { ROUTE_PROXY_URL: `${base}/v1/models`, ROUTE_PRICES_URL: `${base}/prices`, ROUTE_AA_URL: `${base}/aa`, ROUTE_RANKINGS_URL: `${base}/rankings` },
     stop: () => server.stop(true),
   }
 }
@@ -74,8 +76,8 @@ async function propose(table: string, env: Record<string, string>, json = true) 
     env: {
       ...base, TMPDIR: dir, FARM_OUTCOMES: join(dir, 'outcomes.jsonl'),
       ROUTE_PROXY_URL: `${DEAD}/v1/models`, ROUTE_PRICES_URL: `${DEAD}/prices`, ROUTE_AA_URL: `${DEAD}/aa`,
-      ROUTE_RANKINGS_URL: `${DEAD}/rankings`, ARTIFICIAL_ANALYSIS_API_KEY: AA_KEY,
-      ROUTE_AA_KEY_FILE: join(dir, 'no-key'), ...env,
+      ROUTE_RANKINGS_URL: `${DEAD}/rankings`, ARTIFICIAL_ANALYSIS_API_KEY: AA_KEY, OPENROUTER_API_KEY: OR_KEY,
+      ROUTE_AA_KEY_FILE: join(dir, 'no-key'), ROUTE_OPENROUTER_KEY_FILE: join(dir, 'no-key'), ...env,
     },
     stdout: 'pipe', stderr: 'pipe',
   })
@@ -160,4 +162,36 @@ test('discovery: an unreachable proxy skips discovery with a stderr line and sti
   } finally {
     s.stop()
   }
+}, 30_000)
+
+// Two newer luna-family models, both index 40 and both cheaper than luna's 2e-7: gpt-6-luna at 1e-7, gpt-7-luna at 5e-8.
+const RANK_CATALOG = [...CATALOG, { id: 'gpt-7-luna', owned_by: 'openai' }]
+const RANK_PRICES = [...PRICES, { id: 'openai/gpt-7-luna', pricing: { prompt: '0.00000005', completion: '0.00000025' } }]
+const RANK_AA = [aa('openai', 'gpt-5-6-luna', 37.3), aa('openai', 'gpt-6-luna', 40), aa('openai', 'gpt-7-luna', 40)]
+// OpenRouter ranks by total_tokens, so a smaller n here means more tokens and a better rank; ranks are never tied.
+const rank = (id: string, n: number) => ({ model_permaslug: id, total_tokens: 1e9 / n })
+
+async function lunaTo(rankings: unknown[], aaRows = RANK_AA) {
+  const s = stub({ catalog: RANK_CATALOG, prices: RANK_PRICES, aa: aaRows, rankings })
+  try {
+    const j = await propose(tableCopy(), s.env)
+    expect(j.code).toBe(0)
+    return JSON.parse(j.stdout).discoveries.map((d: any) => d.to)
+  } finally {
+    s.stop()
+  }
+}
+
+test('discovery rank: on an index tie the more-used model wins even when pricier', async () => {
+  expect(await lunaTo([rank('openai/gpt-6-luna', 4), rank('openai/gpt-7-luna', 30)])).toEqual(['gpt-6-luna'])
+}, 30_000)
+
+test('discovery rank: with neither model ranked the lower price wins', async () => {
+  expect(await lunaTo([])).toEqual(['gpt-7-luna'])
+  expect(await lunaTo([rank('openai/some-other-model', 1)])).toEqual(['gpt-7-luna'])
+}, 30_000)
+
+test('discovery rank: a higher index beats better usage', async () => {
+  const aaRows = [aa('openai', 'gpt-5-6-luna', 37.3), aa('openai', 'gpt-6-luna', 41), aa('openai', 'gpt-7-luna', 40)]
+  expect(await lunaTo([rank('openai/gpt-6-luna', 30), rank('openai/gpt-7-luna', 1)], aaRows)).toEqual(['gpt-6-luna'])
 }, 30_000)

@@ -278,7 +278,7 @@ test('no key anywhere: both sources say so on stderr, no request is made, the re
 
 // ---------------------------------------------------------------------------------- propose
 
-const sig = (intelligenceIndex: number | null) => ({ usageRank: null, intelligenceIndex, asOf: '2026-10-02' })
+const sig = (intelligenceIndex: number | null, usageRank: number | null = null) => ({ usageRank, intelligenceIndex, asOf: '2026-10-02' })
 
 /** The fixture plus a second gemini candidate, with signals on every candidate. */
 function proposeTable(edit: (t: any) => void = () => {}): string {
@@ -340,7 +340,7 @@ test('propose: the Claude default picks are never proposed away', async () => {
   expect(byKind.review?.to.pick ?? 'sonnet').toBe('sonnet')
 }, 30_000)
 
-test('propose --json: fallbacks reorder by intelligenceIndex among available, unavailable last, none dropped', async () => {
+test('propose --json: fallbacks reorder by index, usage, price among available, unavailable last, none dropped', async () => {
   const table = proposeTable(t => {
     t.kinds.review = { pick: 'sonnet', fallbacks: ['flash', 'luna', 'opus', 'flash38'] }
     t.candidates.flash38.available = false
@@ -354,7 +354,7 @@ test('propose --json: fallbacks reorder by intelligenceIndex among available, un
       kind: 'review',
       from: { pick: 'sonnet', fallbacks: ['flash', 'luna', 'opus', 'flash38'] },
       to: { pick: 'sonnet', fallbacks: ['opus', 'flash', 'luna', 'flash38'] },
-      reason: 'fallbacks by intelligenceIndex among available: opus 74, flash 61, luna null',
+      reason: 'fallbacks by index, usage, price among available: opus 74, flash 61, luna null',
     },
   ])
 }, 30_000)
@@ -372,4 +372,65 @@ test('--json without --propose, and --propose with --refresh, are refused', asyn
   const table = proposeTable()
   expect((await run(['--refresh', '--json', '--table', table], {})).code).toBe(2)
   expect((await run(['--propose', '--refresh', '--table', table], {})).code).toBe(2)
+}, 30_000)
+
+/** bulk's pick is flash (61, 7.5e-7); flash38 and flash39 are two more gemini candidates, both at index 66. */
+function rankTable(edit: (t: any) => void) {
+  return proposeTable(t => {
+    t.candidates.flash39 = {
+      provider: 'gemini', model: 'gemini-3.9-flash-high', owner: 'antigravity', openrouter: 'google/gemini-3.9-flash',
+      available: true, price: { prompt: 5e-7, completion: 2.5e-6 },
+    }
+    t.candidates.flash38.signals = sig(66)
+    t.candidates.flash39.signals = sig(66)
+    edit(t)
+  })
+}
+async function bulkTo(table: string) {
+  const r = await run(['--propose', '--json', '--table', table], {})
+  expect(r.code).toBe(0)
+  return JSON.parse(r.stdout).proposals.find((p: any) => p.kind === 'bulk').to.pick
+}
+
+test('propose rank: on an index tie the more-used candidate wins even when pricier (within the price filter)', async () => {
+  const table = rankTable(t => {
+    t.candidates.flash38.signals = sig(66, 3)
+    t.candidates.flash39.signals = sig(66, 9)
+  })
+  expect(await bulkTo(table)).toBe('flash38')
+}, 30_000)
+
+test('propose rank: a null usageRank loses an index tie to any ranked candidate, then price decides between nulls', async () => {
+  expect(await bulkTo(rankTable(t => { t.candidates.flash38.signals = sig(66, null); t.candidates.flash39.signals = sig(66, 40) }))).toBe('flash39')
+  expect(await bulkTo(rankTable(() => {}))).toBe('flash39')
+}, 30_000)
+
+test('propose rank: on an index and usage tie the lower price wins', async () => {
+  const table = rankTable(t => {
+    t.candidates.flash38.signals = sig(66, 5)
+    t.candidates.flash39.signals = sig(66, 5)
+  })
+  expect(await bulkTo(table)).toBe('flash39')
+}, 30_000)
+
+test('propose rank: a higher index beats better usage', async () => {
+  const table = rankTable(t => {
+    t.candidates.flash38.signals = sig(70, 9)
+    t.candidates.flash39.signals = sig(66, 1)
+  })
+  expect(await bulkTo(table)).toBe('flash38')
+}, 30_000)
+
+test('propose rank: fallbacks on an index tie order by usage, then price, then table order', async () => {
+  const table = rankTable(t => {
+    t.kinds.review = { pick: 'sonnet', fallbacks: ['flash', 'flash38', 'flash39', 'opus'] }
+    t.candidates.opus.signals = sig(80, 7)
+    t.candidates.flash.signals = sig(66, 9)
+    t.candidates.flash38.signals = sig(66, 2)
+    t.candidates.flash39.signals = sig(66, 2)
+  })
+  const r = await run(['--propose', '--json', '--table', table], {})
+  expect(r.code).toBe(0)
+  const review = JSON.parse(r.stdout).proposals.find((p: any) => p.kind === 'review')
+  expect(review.to.fallbacks).toEqual(['opus', 'flash39', 'flash38', 'flash'])
 }, 30_000)

@@ -54,10 +54,19 @@ to `routing.json`, a log or stdout. **`--propose` is advisory**: it prints sugge
 with a reason each (`--json` too) and writes nothing; the user approves by editing `kinds`. It never
 moves the Claude defaults (judgement → opus; script, review → sonnet); rule in the `route.ts` header.
 
+**Rank order** (user decision 2026-10-02: the AA ranking comes before popularity). Every ordering
+among eligible candidates, in the pick/fallback rule and in Discovery, is: (1) `intelligenceIndex`
+descending, null last; (2) `usageRank` ascending (1 = most used), null last; (3) `price.prompt`
+ascending, null last; (4) table order (Discovery: the model sharing the candidate's effort suffix,
+then catalog order). Price is a filter, not only a tiebreak: a replacement pick or discovered model
+must cost <= the current one, but among those that do, a more-used model beats a cheaper one on an
+index tie.
+
 **Discovery.** `--propose` also asks the proxy catalog, OpenRouter's model list and AA (one request
 each) for a model the proxy serves that no candidate names, of a candidate's owner and family (name
-minus version numbers and effort suffix), with a strictly higher AA index at <= its prompt price, and
-prints `candidate C: model <old> -> <M> (...)`. Reordering alone could never notice gpt-6-luna beside a
+minus version numbers and effort suffix), with a strictly higher AA index at <= its prompt price (several: rank order, `usageRank` from one
+more request to the rankings dataset; that source alone failing leaves usage null and discovery
+running), and prints `candidate C: model <old> -> <M> (...)`. Reordering alone could never notice gpt-6-luna beside a
 pinned gpt-5.6-luna. A failed source skips discovery on stderr; rule in the `route.ts` header.
 
 ## The outcomes file is a new state file
