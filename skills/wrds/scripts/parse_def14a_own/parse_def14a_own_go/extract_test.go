@@ -12380,6 +12380,200 @@ func TestASCIICaptionPercentOwnedHeader(t *testing.T) {
 	}
 }
 
+// asciiFootnoteListTailLines is a 0000950132-94-000128 excerpt (file lines 751-830):
+// a nature-of-ownership column whose cells carry footnote lists ("Sole(2,5,9)",
+// "Shared(3,4,6-8,10-14,15)") and a table continued on the next page.
+const asciiFootnoteListTailLines = `                          STOCKHOLDINGS OF MANAGEMENT
+
+  The following table sets forth certain information with respect to the
+beneficial ownership of Common Stock of the Company by each director, nominee
+for director, Named Executive Officer and all directors, nominees for director
+and executive officers as a group, according to information available to the
+Company as of February 11, 1994 unless otherwise noted.
+<TABLE>
+<CAPTION>
+ 
+                                                             PERCENTAGE OF
+                                 AMOUNT AND NATURE OF     OUTSTANDING SHARES
+NAME                           BENEFICIAL OWNERSHIP(1)    BENEFICIALLY OWNED
+- ------------------         -----------------------------  ------------------
+<S>                        <C>      <C>                   <C>
+ 
+J.C. Bates                   1,000  Sole                           *
+ 
+R.A. Byers                   5,250  Sole(2)                        *
+                               276  Shared(3)                      *
+ 
+R.W. Dean                    1,000  Sole                           *
+ 
+P.O. Elbert                 15,625  Sole(2)                        *
+                               525  Shared(3,4)                    *
+ 
+W.R. Jackson               165,994  Sole(5)                       7.14
+                           115,990  Shared(3,6-8)                 4.99
+ 
+W.R. Jackson, Jr.           91,660  Sole(9)                       3.94
+                           147,864  Shared(7,10,11)               6.36
+ 
+W.E. Lewellen                  400  Shared(12)                     *
+ 
+ 
+</TABLE>
+ 
+                                       9
+<PAGE>
+ 
+<TABLE>
+<S>                        <C>      <C>                          <C>
+T.R. Lloyd                   3,000  Sole(2)                        *
+                               124  Shared(3)                      *
+ 
+J.H. Long                    4,300  Sole                           *
+                               100  Shared(13)                     *
+ 
+W.W. McKee                   9,250  Sole(2)                        *
+                               341  Shared(3)                      *
+ 
+A.J. Paddock                 1,712  Sole                           *
+                            44,524  Shared(7,11,14)               1.92
+ 
+P.J. Townsend               92,205  Sole                          3.97
+                           110,523  Shared(8,11,15)               4.76
+ 
+Directors, Nominees and
+Executives Officers        390,996  Sole(2,5,9)                  16.82
+as a Group                 314,094  Shared(3,4,6-8,10-14,15)     13.52
+(12 persons)
+ 
+</TABLE>
+ 
+  *  Indicates beneficial ownership of less than one percent of the Company's
+     Common Stock.
+
+ (1) Beneficial ownership is defined by the Securities and Exchange Commission
+     to include the power (whether sole or shared, direct or indirect, through
+     contract, arrangement, understanding or relationship) to vote, invest or
+     dispose of, or to direct the voting, investment or disposition of shares of
+     stock (including shares over which such person(s) has the right to acquire
+     beneficial ownership within 60 days of February 11, 1994).  Except as
+     otherwise noted, the persons listed have both voting and investment power.
+
+(2)  Includes shares subject to vested options under the Company's Stock Option
+     Plan of 1990 as follows: R.A. Byers, 5,250 shares; P.O. Elbert, 5,625
+     shares; T.R. Lloyd, 3,000 shares; W.W. McKee, 8,250 shares and current
+     directors, nominees for director and executive officers as a group, 22,125
+     shares.
+`
+
+// asciiPageBreakAfterFirstRowLines is a 0000949459-96-000133 excerpt (file lines 900-1003):
+// a no-<TABLE> ownership table whose page breaks after its FIRST row, and again
+// before a group label that wraps onto the row line.
+const asciiPageBreakAfterFirstRowLines = `
+                          SECURITY OWNERSHIP OF CERTAIN
+                        BENEFICIAL OWNERS AND MANAGEMENT
+
+      The  following  table  sets forth  information  regarding  the  beneficial
+ownership  of the  Company's  Common Stock as of May 31, 1996 (i) by each person
+who is known to the  Company to be the owner of more than five  percent  (5%) of
+the Company's Common Stock,  (ii) by each of the Company's  Directors,  (iii) by
+each  of the  Company's  executive  officers,  and  (iv)  by all  Directors  and
+executive  officers of the Company as a group.  As of May 31,  1996,  there were
+issued and outstanding 10,020,668 shares of Common Stock of the Company.
+
+                                            Number of
+                                            Shares of
+                                            Common Stock            Percent of
+  Name and Address                          Beneficially            Beneficial
+or Identity of Group                        Owned                   Ownership
+- --------------------                        ------------            ---------
+
+Arvind Patel (1)                               255,414                2.5%
+47341 Bayside Parkway
+Fremont, CA  94538
+
+
+
+
+
+
+
+
+
+                                       12
+
+
+<PAGE>
+
+
+
+Andrew Intrater (2)                            204,526                2.0%
+47341 Bayside Parkway
+Fremont, CA  94538
+
+Andrew Wilson (3)                               47,219                0.5%
+47341 Bayside Parkway
+Fremont, CA  94538
+
+John Abeles (4)                                529,183                5.3%
+2365 Northwest 41st Street
+Boca Raton, FL  33431
+
+Jay M. Haft(5)                                 144,600                1.4%
+2 Grove Isle Dr, #1208B
+Coconut Grove, FL  33122
+
+Nitin T. Mehta (6)                             730,352                7.3%
+58 Greenoaks Drive
+Atherton, CA  94027
+
+Ted D. Morgan (7)                               16,000                0.2%
+5213 El Mecado Parkway
+Santa Rosa, CA 95403(7)
+
+Bruce L. Schindler (8)                         129,167                1.3%
+2255 Glades Road, #324A
+Boca Raton, FL  33431
+
+Windstar Investments N.V.                      666,667                6.7%
+200 East Broward Blvd.,
+Suite 1900
+Fort Lauderdale, FL  33302
+
+Equitable Life Assurance                     1,000,000               10.0%
+Society
+City Place House
+55 Basinghall Street
+London EC2V 5DR
+
+Valeo Limited                                  872,000                8.7%
+4th Floor, Celtic House
+Victoria Street
+Douglas, Isle of Man
+IM99 1QZ British Isles
+
+Clarion Finanz AG                              690,000                6.9%
+Muhlebachstrasse 42
+8024 Zurich
+Switzerland
+
+
+
+                                       13
+
+
+<PAGE>
+
+
+
+All Officers and Directors
+as a Group (8 persons) (9)                   2,056,461               20.5%
+
+- -----------------
+
+(1)   Includes  95,460 shares subject to stock options and 35,000 shares held as
+      a custodian for Mr. Patel's minor children. Also includes 16,096 shares of
+`
+
 // asciiWrappedLessThanPctLines is a 0000088053-99-000872 excerpt (file lines 321-364):
 // a director table whose percent cell wraps "Less than" / "1/4 of 1%" over two lines.
 const asciiWrappedLessThanPctLines = `Class I
@@ -12427,6 +12621,71 @@ All Directors and Officers as a group                                           
                                                                                                    1/4 of 1%
 </TABLE>
 `
+
+func TestASCIIFootnoteListNotShares(t *testing.T) {
+	rows := ScreenRows(run(t, asciiFootnoteListTailLines))
+	for _, r := range rows {
+		if r.Shares != nil && (*r.Shares == 259 || *r.Shares == 1415 || *r.Shares == 36) {
+			t.Errorf("footnote list read as shares: %+v", r)
+		}
+		if strings.HasPrefix(r.HolderName, "Executives Officers") {
+			t.Errorf("group-label fragment emitted as a holder: %+v", r)
+		}
+	}
+	var groups []Row
+	for _, r := range rows {
+		if r.IsGroupRow {
+			groups = append(groups, r)
+		}
+	}
+	if len(groups) != 1 || groups[0].Shares == nil || *groups[0].Shares != 390996 || groups[0].GroupN != 12 {
+		t.Errorf("want one group row 390,996 (12 persons), got %+v", groups)
+	}
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{
+		{"W.R. Jackson", 165994},
+		{"A.J. Paddock", 1712},
+		{"P.J. Townsend", 92205},
+	} {
+		if r := find(rows, want.name, ""); r == nil || r.Shares == nil || *r.Shares != want.shares {
+			t.Errorf("row lost: %+v; rows=%+v", want, rows)
+		}
+	}
+}
+
+func TestASCIITablePageBreakAfterFirstRow(t *testing.T) {
+	rows := ScreenRows(run(t, asciiPageBreakAfterFirstRowLines))
+	for _, want := range []struct {
+		name        string
+		shares, pct float64
+	}{
+		{"Arvind Patel", 255414, 2.5},
+		{"Andrew Intrater", 204526, 2.0},
+		{"Nitin T. Mehta", 730352, 7.3},
+		{"Clarion Finanz AG", 690000, 6.9},
+	} {
+		var got *Row
+		for i := range rows {
+			if strings.HasPrefix(rows[i].HolderName, want.name) {
+				got = &rows[i]
+			}
+		}
+		if got == nil || got.Shares == nil || *got.Shares != want.shares || got.Percent == nil || *got.Percent != want.pct {
+			t.Errorf("page-broken table row lost: %+v; rows=%+v", want, rows)
+		}
+	}
+	group := false
+	for _, r := range rows {
+		if r.IsGroupRow && r.Shares != nil && *r.Shares == 2056461 {
+			group = true
+		}
+	}
+	if !group {
+		t.Errorf("group row across second page break lost; rows=%+v", rows)
+	}
+}
 
 func TestASCIICaptionWrappedLessThanPercent(t *testing.T) {
 	rows := ScreenRows(run(t, asciiWrappedLessThanPctLines))
@@ -12520,5 +12779,1280 @@ func TestASCIIHolderByFundTable(t *testing.T) {
 		if r := find(rows, want.name, want.fund); r == nil || r.Percent == nil || *r.Percent != want.pct {
 			t.Errorf("holder lost past its city line: %+v; rows=%+v", want, rows)
 		}
+	}
+}
+
+// asciiWarrantPriceColumnLines is a 0001013799-98-000016 excerpt (file lines 517-582):
+// an ownership table whose last two columns are the warrants each holder owns and
+// their average exercise price. "Exercise Price" there is a column of the
+// ownership table, not a compensation table.
+const asciiWarrantPriceColumnLines = `         SECURITY OWNERSHIP OF CERTAIN BENEFICAIL OWNERS AND
+                             MANAGEMENT
+                                   
+  The following table sets forth information, to the best
+  knowledge of the Company, as of December 31, 1997, with
+  respect to each person known by the Company to own
+  beneficially more than 5% of the outstanding Common Stock,
+  each director and all directors, officers and principal
+  shareholders as a group.
+  
+Name and Address of    Number of Shares    Percentage  Number of        Average
+ Beneficial Owner     Beneficially Owned    Ownership  Warrants Owned  Exercise
+                                                                        Price
+                  
+  Gary E. Alexander *
+  9624 Brookline Avenue
+  Baton Rouge, LA 70809      1,367,201(2)       8 %      205,800         $1.61
+  
+  Robert McNamee
+  1398 Oakley Drive
+  Baton Rouge, LA 70806      1,205,826(3)       7 %      358,633          3.31
+  
+  Jerry Phipps
+  7530 Old Sturbridge Ln.
+  Baton Rouge, LA 70806      1,215,826(4)       7 %      473,632          2.91
+  
+  Robert L. diBenedetto *
+  781 Colonial Drive
+  Baton Rouge, La 70806        961,480(5)       5 %      407,000          2.64
+  
+  William D. Kiesel *
+  2355 Drusilla Lane
+  Baton Rouge, LA 70809      1,295,563(6)       7 %      655,166          2.42
+  
+  Edward P. Sutherland *
+  9624 Brookline Avenue
+  Baton Rouge, LA 70809        955,756(7)       6 %      243,000          1.58
+  
+  Kerry Frey *
+  9624 Brookline Avenue
+  Baton Rouge, LA 70809        661,138(8)       4 %       87,400          1.79
+  
+  Jane Cooper *
+  9624 Brookline Avenue
+  Baton Rouge, LA 70809         10,100(9)      .01%        5,000          4.25
+  
+  Timothy Andrus *
+  9624 Brookline Avenue
+  Baton Rouge, LA 70809        60,982(10)      .03%       44,982          1.14
+  
+  Directors and officers
+  as a group (7 persons)    7,773,872(11)       44%    2,480,613          2.49
+  
+                                  
+  *      Director
+  **     Unless otherwise indicated in the footnotes below, the Company
+         has been advised that each person above has sole voting power
+         over the shares indicated above.
+  
+  (1)    As of December 31, 1997, there were 13,120,810 shares of
+         common stock outstanding, which figure does not take into
+         consideration stock purchase warrants owned by certain
+         officers, directors  and shareholders, entitling the holders
+         to purchase an aggregate of 4,564,206 shares of common stock
+         and which are currently exercisable.  Therefore, for purposes
+         of the table above, as of the date hereof, 17,685,016 shares
+`
+
+func TestASCIIOwnershipWarrantPriceColumn(t *testing.T) {
+	rows := ScreenRows(run(t, asciiWarrantPriceColumnLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+		pct    float64
+	}{
+		{"Gary E. Alexander", 1367201, 8},
+		{"William D. Kiesel", 1295563, 7},
+		{"Robert McNamee", 1205826, 7},
+		{"Jerry Phipps", 1215826, 7},
+	} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("row lost: %+v; rows=%+v", want, rows)
+		}
+	}
+	for _, r := range rows {
+		if r.Shares != nil && (*r.Shares == 205800 || *r.Shares == 2480613) {
+			t.Errorf("warrant column read as the holding: %+v", r)
+		}
+	}
+	var groups []Row
+	for _, r := range rows {
+		if r.IsGroupRow {
+			groups = append(groups, r)
+		}
+	}
+	if len(groups) != 1 || groups[0].Shares == nil || *groups[0].Shares != 7773872 {
+		t.Errorf("want one group row 7,773,872, got %+v", groups)
+	}
+}
+
+// asciiPositionsHeldColumnLines is a 0001010412-99-000109 excerpt (file lines 300-370):
+// a "Positions Held" column between the name-and-address stub and the values,
+// its cells continuing ("Director") on the address lines below each holder.
+const asciiPositionsHeldColumnLines = `     The following table sets forth the Common Stock holdings of the Company's
+directors and executive officers and those persons who beneficially owned more
+than 5% of the Company's Common Stock as of the Record Date:
+
+                              Positions      Number and Percentage
+Name and Address              Held           of Shares Beneficially Owned
+- ----------------              ----           ----------------------------
+
+Gordon Muir                   CEO            19,328,000 (1) - 40.2%
+400 - 1111 West Georgia St.   Director
+Vancouver, British Columbia
+Canada V6E 4M3
+
+Penny Perfect                 President      19,328,000 (1) - 40.2%           
+400 - 1111 West Georgia St.   Director
+Vancouver, British Columbia
+Canada V6E 4M3
+
+Katharine Johnston            Vice President    175,000 (2) -  0.3%
+400 - 1111 West Hastings St.  Director
+Vancouver, British Columbia
+Canada V6E 4M3
+
+Victor Cardenas               Vice President
+400 - 1111 West Hastings St.  Director          250,000     -  0.5%
+Vancouver, British Columbia
+Canada V6E 4M3
+
+     (1) Because Mr. Muir and Ms. Perfect are husband and wife, all shares     
+         that are beneficially owned by one spouse may be deemed to be
+         beneficially owned by the other; this is reflected in the figures     
+         presented in this table.  These figures do not include unexercised    
+         warrants to acquire an additional 8,564,000 shares of Common Stock.
+
+     (2) These figures do not include warrants to purchase an additional       
+         175,000 shares of Common Stock.
+
+
+     The following table sets forth the Preferred Stock holdings of the
+Company's directors and executive officers and those persons who beneficially
+owned more than 5% of the Company's Preferred Stock as of the Record Date:
+
+                              Positions      Number and Percentage
+Name and Address              Held           of Shares Beneficially Owned
+- ----------------              ----           ----------------------------
+
+Gordon Muir                   CEO             1,750,000 (1) - 87.5%
+400 - 1111 West Georgia St.   Director
+Vancouver, British Columbia
+Canada V6E 4M3
+
+Penny Perfect                 President       1,750,000 (1) - 87.5%           
+400 - 1111 West Georgia St.   Director
+Vancouver, British Columbia
+Canada V6E 4M3
+
+Katharine Johnston            Vice President    100,000     -  5.0%
+400 - 1111 West Hastings St.  Director
+Vancouver, British Columbia
+Canada V6E 4M3
+
+Victor Cardenas               Vice President
+400 - 1111 West Hastings St.  Director              -0-     -  0.0%
+Vancouver, British Columbia
+Canada V6E 4M3
+
+     (1) Because Mr. Muir and Ms. Perfect are husband and wife, all shares     
+         that are beneficially owned by one spouse may be deemed to be
+         beneficially owned by the other; this is reflected in the figures     
+         presented in this table.
+
+`
+
+func TestASCIIPositionsHeldColumn(t *testing.T) {
+	rows := ScreenRows(run(t, asciiPositionsHeldColumnLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+		pct    float64
+	}{
+		{"Gordon Muir", 19328000, 40.2},
+		{"Penny Perfect", 19328000, 40.2},
+		{"Katharine Johnston", 175000, 0.3},
+	} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("row lost: %+v", want)
+		}
+	}
+	for _, r := range rows {
+		if strings.Contains(r.HolderName, "Canada") || strings.Contains(r.HolderName, "CEO") || strings.Contains(r.HolderName, "West Georgia") {
+			t.Errorf("position or address glued to the holder: %q", r.HolderName)
+		}
+	}
+}
+
+// asciiCenteredPositionHdrLines is a 0001005150-04-000828 excerpt (file lines 293-356):
+// the "Position" header is centred over its column, so a left-aligned cell
+// ("Executive Vice President and") starts ten columns before the header word.
+const asciiCenteredPositionHdrLines = `                  VOTING SECURITIES AND PRINCIPAL SHAREHOLDERS
+
+SECURITIES OWNERSHIP OF DIRECTORS, OFFICERS AND CERTAIN BENEFICIAL OWNERS
+
+         The following table sets forth certain information concerning the
+number and percentage of whole shares of the Company's common stock beneficially
+owned by its directors, nominees for director, executive officers whose
+compensation is disclosed, and by its directors and all executive officers as a
+group, as of March 12, 2004, as well as information regarding each other person
+known by the Company to own in excess of five percent of the outstanding common
+stock. Except as otherwise indicated, all shares are owned directly, and the
+named person possesses sole voting and sole investment power with respect to all
+such shares. Except as set forth below, the Company knows of no other person or
+persons, who beneficially own in excess of five percent of the Company's common
+stock. Further, the Company is not aware of any arrangement which at a
+subsequent date may result in a change of control of the Company.
+
+<TABLE>
+<CAPTION>
+
+                  Name                                      Position                    Number of Shares       Percentage(1)
+- ------------------------------------------     -----------------------------------    --------------------- -- ---------------
+<S>                                              <C>                                     <C>                        <C>
+Leonard L. Abel                                  Chairman of Board of Company,             177,350(2)                3.25%
+                                                        Director of Bank
+
+Leslie M. Alperstein, Ph.D.                           Director of Company                   32,300(3)                0.60%
+
+Dudley C. Dworken                                 Director of Company and Bank              56,686(4)                1.05%
+
+Michael T. Flynn                                  Executive Vice President and              15,100(5)                0.28%
+                                                Director of Company; President,
+                                                  Chief Executive Officer and
+                                                        Director of Bank
+
+Eugene F. Ford, Sr.                                   Director of Company                   83,859(6)                1.55%
+
+Phillip N. Margolius                              Director of Company and Bank             108,443(7)                2.01%
+
+Ronald D. Paul                                    Vice Chairman, President and             337,550(8)                6.14%
+                                               Treasurer of Company; Chairman of
+                                                         Board of Bank
+
+Thomas D. Murphy                                Executive Vice President, Chief             34,400(9)                0.63%
+                                               Operating Officer and Director of
+                                                              Bank
+
+Susan G. Riel                                   Executive Vice President, Chief             25,775(10)               0.48%
+                                                 Administrative Officer of Bank
+
+Wilmer L. Tinley                                Executive Vice President, Chief             23,355(11)               0.43%
+                                                       Financial Officer
+
+Martha Foulon-Tonat                             Executive Vice President, Chief             25,364(12)               0.47%
+                                                    Lending Officer of Bank
+                                                                                      ---------------------    ---------------
+All directors and executive officers of                                                    920,182(13)              16.22%
+Company as a group (11 persons)
+                                                                                      =====================    ===============
+All directors and executive officers of
+Company and Bank as a group (23  persons)                                                1,460,884(14)              25.50%
+                                                                                      =====================    ===============
+</TABLE>
+
+`
+
+func TestASCIICenteredPositionHeader(t *testing.T) {
+	rows := ScreenRows(run(t, asciiCenteredPositionHdrLines))
+	for _, want := range []string{"Leonard L. Abel", "Michael T. Flynn", "Thomas D. Murphy", "Susan G. Riel", "Martha Foulon-Tonat"} {
+		if find(rows, want, "") == nil {
+			t.Errorf("holder %q not emitted cleanly: %s", want, names(rows))
+		}
+	}
+	grp := false
+	for _, r := range rows {
+		if strings.Contains(r.HolderName, "Executive") || strings.Contains(r.HolderName, "Director") {
+			t.Errorf("position glued to the holder: %q", r.HolderName)
+		}
+		if r.IsGroupRow && strings.HasSuffix(r.HolderName, "(23 persons)") {
+			grp = true
+		}
+	}
+	if !grp {
+		t.Errorf("group label cut at its wrapped double space: %s", names(rows))
+	}
+}
+
+// asciiClassFirstPositionLines is a 0001350071-09-000052 excerpt (file lines 633-661):
+// a "Title of Class" column ahead of the name and a "Position" column after it.
+const asciiClassFirstPositionLines = `Information with respect to beneficial ownership has been furnished by each
+director, officer or beneficial owner of 5% or more of our voting Common
+Stock. Except as noted the persons named in the table have sole voting and
+investment power with respect to all shares of common stock shown as
+beneficially owned by them.  The number of shares of common stock used to
+calculate the percentage ownership of each listed person includes the shares
+of common stock underlying options or warrants.  Percentage ownership
+information is based on 10,873,750 shares of Common Stock outstanding as of
+the date of this Proxy Statement.
+
+<TABLE>
+<CAPTION>
+
+                                                     Amount
+Title     Name and Address                           of shares      Percent
+of        of Beneficial                              held by          of
+Class     Owner of Shares         Position           Owner          Class(1)
+- ----------------------------------------------------------------------------
+<S>        <C>                    <C>                <C>             <C>
+Common     T J Jesky (2)          Pres./Director     4,000,000       36.7%
+Common     Mark DeStefano (3)     Shareholder        3,500,000       32.2%
+- ---------------------------------------------------------------------------
+All Executive Officers, Directors
+as a Group  (1 person)                               4,000,000       36.7%
+
+(1)  The percentages listed in the Percent of Class column are based upon
+     10,873,750 issued and outstanding shares of Common Stock.
+(2)  T J Jesky, 2235 E. Flamingo, Suite 114, Las Vegas, NV 89119.
+(3)  Mark DeStefano, 500 N. Rainbow, Suite 300, Las Vegas, NV  89107.`
+
+func TestASCIIClassColumnBeforeNameWithPosition(t *testing.T) {
+	rows := ScreenRows(run(t, asciiClassFirstPositionLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{{"T J Jesky", 4000000}, {"Mark DeStefano", 3500000}} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares {
+			t.Errorf("holder %q lost or misnamed: %s", want.name, names(rows))
+		}
+	}
+}
+
+// asciiLeaderOnlyValueLines is a 0000033780-98-000007 excerpt (file lines 188-229):
+// each 5% holder's name stands on its own line and its values follow on a line
+// that is nothing but a dot leader and the numbers.
+const asciiLeaderOnlyValueLines = `
+PRINCIPAL STOCKHOLDERS
+
+      The following table sets forth the Common Stock of the Company owned as of
+June 1, 1998 by persons who were known by the Company to own  beneficially  more
+than 5% of the Company's outstanding Common Stock.
+
+                                          Amount of
+            Name and Address              Beneficial
+            of Beneficial Owner           Ownership              Percent
+
+D.B.
+Meltzer......................................1,071,720 (1)         21.2
+  36 South State Street
+  Chicago, IL  60603
+
+Peter Cundill & Associates (Bermuda), Ltd.
+ ...............................................678,811 (2)         13.4
+  Clarendon House
+  Church Street
+  Hamilton, Bermuda
+
+Dimensional Fund Advisors, Ltd.
+ ...............................................476,400 (3)          9.4
+  1299 Ocean Avenue
+  Santa Monica,  CA  90401
+- - ------
+
+(1)Including (a) 160,200 shares held in trust for benefit of Mr.  Meltzer,  with
+   the trustee and Mr. Meltzer having shared voting and investment power and (b)
+   an option to acquire 40,000 shares.
+
+(2)As  reported  in  Schedule  13D filed by said  firm on May 14,  1998 with the
+   Securities and Exchange Commission which report reflects sole voting power as
+   to 133,400 shares, shared voting power as to 383,854 shares, sole dispositive
+   power as to 383,854 shares and shared dispositive power as to 294,957 shares.
+
+(3)As reported in  Schedule  13G dated  February 9, 1998 filed by said firm with
+   the  Securities  and Exchange  Commission  which report  reflects sole voting
+   power as to 291,700 shares, shared voting power as to 184,700 shares and sole
+   dispositive power as to all shares.
+`
+
+func TestASCIILeaderOnlyValueLine(t *testing.T) {
+	rows := ScreenRows(run(t, asciiLeaderOnlyValueLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+		pct    float64
+	}{
+		{"Peter Cundill & Associates, Ltd", 678811, 13.4},
+		{"Dimensional Fund Advisors, Ltd", 476400, 9.4},
+	} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("holder %q lost: %s", want.name, names(rows))
+		}
+	}
+	n := 0
+	for _, r := range rows {
+		if r.Shares != nil && *r.Shares == 1071720 {
+			n++
+			if !strings.Contains(r.HolderName, "Meltzer") {
+				t.Errorf("Meltzer row misnamed: %q", r.HolderName)
+			}
+		}
+	}
+	if n != 1 {
+		t.Errorf("want one 1,071,720 row, got %d: %s", n, names(rows))
+	}
+}
+
+// asciiLeaderOnlyAddressCellLines is a 0001005477-00-005532 excerpt (file lines 286-316):
+// the leader-only value line sits under a name-and-address cell of up to six lines.
+const asciiLeaderOnlyAddressCellLines = `
+Shares Held by Certain Shareholders
+
+The following table sets forth, as of the close of business on July 31, 2000,
+certain information with respect to each person who is known to the Company to
+be the beneficial owner of more than five (5%) percent of the Common Stock.
+
+- --------------------------------------------------------------------------------
+Name and Address               Amount and Nature of                Percent (1)
+- ----------------               Beneficial Ownership (1)            -----------
+                               ------------------------
+- --------------------------------------------------------------------------------
+
+Chell.com Ltd. (2)
+500, 630 8th Avenue SW
+Calgary, AB T2P 1G6
+Canada.........................     462,894                           14.46%
+
+Hammock Group Ltd.
+Penthouse Suite
+129 Front Street
+Hamilton, Bermuda, HM 12
+ ...............................     462,893                           14.46%
+
+Anor Management Ltd.
+c/o Peter Rona
+Networks North, Inc.
+14 Meteor Drive
+Toronto, Ontario
+Canada M9W 1A4
+ ...............................     300,000 (2)                        9.37%`
+
+func TestASCIILeaderOnlyValueUnderAddressCell(t *testing.T) {
+	rows := ScreenRows(run(t, asciiLeaderOnlyAddressCellLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{{"Hammock Group Ltd", 462893}, {"Anor Management Ltd", 300000}} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares {
+			t.Errorf("holder %q lost: %s", want.name, names(rows))
+		}
+	}
+	for _, r := range rows {
+		if strings.Contains(r.HolderName, "Bermuda") || strings.Contains(r.HolderName, "Suite") || strings.Contains(r.HolderName, "Ontario") {
+			t.Errorf("address emitted as the holder: %q", r.HolderName)
+		}
+	}
+}
+
+// 0000899243-95-000066 (cik 36204): a captioned table whose count column is
+// headed "NO. OF SHARES" beside a principal-amount column for debentures.
+const asciiNoOfSharesCaptionLines = `
+ 
+             SECURITY HOLDINGS OF DIRECTORS AND EXECUTIVE OFFICERS
+ 
+  The following table sets forth certain information concerning the beneficial
+ownership of each class of outstanding FCC equity securities by each director
+and nominee of FCC, by each executive officer for whom compensation information
+is disclosed under the heading "Executive Compensation and Certain
+Transactions--Summary of Executive Compensation" ("Named Executive Officer"),
+and by all directors and executive officers of FCC as a group as of February
+13, 1995, determined in accordance with Rule 13d-3 of the Securities and
+Exchange Commission ("SEC"). In addition to its Common Stock, FCC currently has
+outstanding three other classes of equity securities, none of which are
+entitled to vote at the Meeting: 7.25% Cumulative Convertible Preferred Stock,
+Series 1992 ("Preferred Stock"), 12 3/4% Convertible Debentures due 2000,
+Series A ("A Debentures") and 12 3/4% Convertible Debentures due 2000, Series B
+("B Debentures"). Unless otherwise indicated, the equity securities shown are
+held with sole voting and investment power.
+ 
+<TABLE>
+<CAPTION>
+                          TYPE AND CLASS
+                             OF EQUITY     NO. OF        PRINCIPAL        PERCENT
+NAME OF BENEFICIAL OWNER     SECURITY      SHARES         AMOUNT        OF CLASS(1)
+- ------------------------  --------------- ---------     -----------     -----------
+<S>                       <C>             <C>           <C>             <C>
+DIRECTORS AND DIRECTOR
+ NOMINEES
+Ian Arnof...............  Common Stock      171,359(2)                         *
+James J. Bailey III.....  Common Stock      114,035(3)                         *
+                          Preferred Stock    10,000                            *
+John W. Barton..........  Common Stock       86,810                            *
+Sydney J. Besthoff III..  Common Stock        2,250                            *
+Robert H. Bolton........  Common Stock      195,052(4)                         *
+                          B Debentures                  $ 3,178,000         5.65%
+Frances B. Davis........  Common Stock      391,315(5)                      1.48%
+                          Preferred Stock     1,200                            *
+                          B Debentures                  $ 7,520,400(6)     13.37%
+Laurance Eustis, Jr.....  Common Stock       37,500                            *
+William P. Fuller.......  Common Stock       59,575(7)                         *
+Arthur Hollins III......  Common Stock      257,683(8)                         *
+                          A Debentures                  $ 5,304,225(9)     19.76%
+F. Ben James, Jr........  Common Stock       13,125                            *
+Erik F. Johnsen.........  Common Stock      147,686(10)                        *
+                          Preferred Stock     1,000(11)                        *
+J. Merrick Jones, Jr....  Common Stock      137,488(12)                        *
+Edwin Lupberger.........  Common Stock        2,312                            *
+Hermann Moyse, Jr.......  Common Stock      526,301(13)                     2.01%
+O. Miles Pollard, Jr....  Common Stock      181,632                            *
+G. Frank Purvis, Jr.....  Common Stock       59,817(14)                        *
+Edward M. Simmons.......  Common Stock      127,345(15)                        *
+H. Leighton Steward.....  Common Stock        4,205(3)                         *
+                          Preferred Stock     2,000                            *
+Joseph B. Storey........  Common Stock       93,852(3)                         *
+                          Preferred Stock     4,000                            *
+Robert A. Weigle........  Common Stock       56,606(16)                        *
+NAMED EXECUTIVE
+ OFFICERS(17)
+Michael A. Flick........  Common Stock       66,328(2)                         *
+Howard C. Gaines........  Common Stock       42,671(2)                         *
+Ashton J. Ryan, Jr......  Common Stock       27,189(2)                         *
+Joseph V. Wilson III....  Common Stock       35,717(2)                         *
+ALL DIRECTORS AND
+ EXECUTIVE OFFICERS
+ AS A GROUP (29
+ persons)...............  Common Stock    4,262,368(18)                    15.67%
+                          Preferred Stock    21,300(19)                        *
+                          A Debentures                  $11,119,665(20)    41.42%
+                          B Debentures                  $12,606,400(21)    22.41%
+</TABLE>
+`
+
+func TestASCIICaptionNoOfSharesHeader(t *testing.T) {
+	rows := ScreenRows(run(t, asciiNoOfSharesCaptionLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{{"Ian Arnof", 171359}, {"Frances B. Davis", 391315}, {"Hermann Moyse, Jr", 526301}, {"Joseph V. Wilson III", 35717}} {
+		var r *Row
+		for i := range rows {
+			if strings.HasPrefix(rows[i].HolderName, want.name) && rows[i].Shares != nil && *rows[i].Shares == want.shares {
+				r = &rows[i]
+			}
+		}
+		if r == nil {
+			t.Errorf("holder %q %v lost: %s", want.name, want.shares, names(rows))
+		}
+	}
+	for _, r := range rows {
+		if r.Shares != nil && (*r.Shares == 10000 || *r.Shares == 3178000 || *r.Shares == 21300) {
+			t.Errorf("preferred or debenture line emitted as a holding: %+v", r)
+		}
+	}
+}
+
+// 0000950153-96-001094 (cik 13606): one captioned column holds the count and
+// the parenthesized percent, "23,000 (1) (0.34%)".
+const asciiCombinedCountPctCaptionLines = `
+Set forth below is certain information concerning the nominees for election to
+the Board and information concerning the number of shares of Common Stock
+beneficially owned at December 16, 1996, by (a) each director and nominee, (b)
+each Named Executive Officer and (c) all directors and executive officers as a
+group. None of the group owns any shares of $3.00 Preferred Stock.
+
+<TABLE>
+<CAPTION>
+                                                                                          Shares of Common Stock
+                                                                                           Beneficially Owned
+Name and Age                                Biographical Information                        (Percent of Class)
+- ------------                                ------------------------                      -----------------------
+<S>                               <C>                                                        <C>
+FRED N. GERARD                    Current director and nominee for reelection.                23,000 (1) (0.34%)
+(66)                              Counsel since November 1992 to Bryan Cave,
+                                  the Corporation's corporate counsel, in that
+                                  firm's Phoenix, Arizona office. Previously,
+                                  during 1991 and 1992, he was with Scult,
+                                  Lazarus, French, Zwillinger and Smock and
+                                  Gallagher & Kennedy. Prior thereto, for more
+                                  than five years, he was a partner in the New
+                                  York office of Seyfarth, Shaw, Fairweather &
+                                  Geraldson. Mr. Gerard also serves as director
+                                  of Hearx Ltd. He has been a director of the
+                                  Corporation since 1977.
+
+THOMAS K. LANIN                   Current director and nominee for reelection.                151,500 (2) (2.21%)
+(53)                              Elected President and CEO of the Corporation
+                                  in June, 1995. Mr. Lanin had previously served
+                                  as Vice President Finance, Chief Financial
+                                  Officer, Secretary and Treasurer since 1987. He
+                                  has been a director since July, 1988.
+</TABLE>
+`
+
+func TestASCIICaptionCombinedCountPercentCell(t *testing.T) {
+	rows := ScreenRows(run(t, asciiCombinedCountPctCaptionLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+		pct    float64
+	}{{"FRED N. GERARD", 23000, 0.34}, {"THOMAS K. LANIN", 151500, 2.21}} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("holder %q %v (%v%%) lost: %s", want.name, want.shares, want.pct, names(rows))
+		}
+	}
+	if len(rows) != 2 {
+		t.Errorf("want 2 rows, got %d: %s", len(rows), names(rows))
+	}
+}
+
+// 0001010924-00-000096 (cik 925665): the lead-in paragraph ends on a street
+// address ("1877 West 2800 South,") that parses as a row, then an address line
+// and the <TABLE>/<CAPTION> wrapper blanks.
+const asciiLeadInAddressRowLines = `
+
+
+                  INFORMATION REGARDING BENEFICIAL OWNERSHIP OF
+                      PRINCIPAL SHAREHOLDERS AND MANAGEMENT
+
+     The following table sets forth certain  information  that has been provided
+to the Company with respect to  beneficial  ownership of shares of the Company's
+Common Stock as of September  29, 2000,  for (i) each person who is known by the
+Company to own  beneficially  more than 5% of the  outstanding  shares of Common
+Stock, (ii) each director of the Company,  (iii) each of the executive  officers
+of the Company named in the Summary  Compensation  Table of this Proxy Statement
+(the "Named Executive Officers"),  and (iv) all directors and executive officers
+of the  Company  as a group.  Unless  otherwise  indicated,  the  address of the
+shareholder is the Company's principal executive offices,  1877 West 2800 South,
+Suite 200, Ogden, Utah 84401.
+
+<TABLE>
+<CAPTION>
+                                                                             Amount and
+                                                                             Nature of        Percent of
+                                                                             Beneficial      Common Stock
+Name and Address of Beneficial Owner                                         Ownership(1)      Outstanding
+- -----------------------------------------------------------------------------------------------------------
+<S>                                                                        <C>                  <C>
+Darrell J. Saunders                                                        2,191,450            10.4%
+   998 Fifth Street
+   Ogden, Utah 84401
+Charles L. Crittenden (2)                                                  1,991,452             9.5%
+   2334 Filmore
+   Ogden, Utah 84401
+Aspen Capital Resources, LLC (3)                                           1,806,156             7.9%
+   8989 S. Schofield Cir.
+   Sandy, Utah 84093
+Edward B. Walker                                                           5,434,170            25.8%
+   Director
+Douglas R. Warren(4)                                                       2,016,118             9.5%
+   Director
+E. Todd Heiner (5)                                                           964,000             4.5%
+   Director
+Randall L. Hales(6)                                                          350,000             1.6%
+   Chief Executive Officer, Chairman
+Peter Sundwall(6)                                                             50,000                *
+   Director
+Bradley K. Andrews (6)                                                        40,000                *
+   Chief Operating Officer
+John L. Theler (6)                                                            40,000                *
+   Chief Financial Officer
+Gary Crittenden(6)                                                            24,500                *
+   Director
+Dan C. Jorgensen(6)                                                           24,500                *
+   Director
+Frank Cereska (6)                                                             14,000                *
+   Director
+
+All directors and executive officers as a group (10 persons)               8,957,288            40.5%
+
+- ---------------------------
+* Less than one percent.
+</TABLE>
+`
+
+func TestASCIILeadInParagraphEndsOnAddressRow(t *testing.T) {
+	rows := ScreenRows(run(t, asciiLeadInAddressRowLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{{"Darrell J. Saunders", 2191450}, {"Edward B. Walker", 5434170}, {"Frank Cereska", 14000}} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares {
+			t.Errorf("holder %q %v lost: %s", want.name, want.shares, names(rows))
+		}
+	}
+	for _, r := range rows {
+		if strings.Contains(r.HolderName, "shareholder") || strings.Contains(r.HolderName, "Utah") {
+			t.Errorf("lead-in or address emitted as a holder: %q", r.HolderName)
+		}
+	}
+}
+
+// 0000950152-96-001408 (cik 793500): the count cell carries its unit,
+// "346,670 shares;", under a class-first captioned 5% table.
+const asciiCaptionCountUnitLines = `
+                          SECURITY OWNERSHIP OF CERTAIN
+                        BENEFICIAL OWNERS AND MANAGEMENT
+
+   The following table sets forth as of December 31, 1995 information with
+respect to the only persons who are known to be the beneficial owner of more
+than 5 percent of the Common Stock of the Company:
+
+<TABLE>
+<CAPTION>
+- --------------------------------------------------------------------------------
+                     NAME AND ADDRESS          AMOUNT AND NATURE        PERCENT
+                       OF BENEFICIAL             OF BENEFICIAL            OF
+TITLE OF CLASS             OWNER                 OWNERSHIP (1)         CLASS (4)
+- --------------------------------------------------------------------------------
+<S>                <C>                         <C>                     <C>
+Common Stock        Chemed Corporation             5,144,551              84%
+Par Value $1        2600 Chemed Center           Shares; Direct       
+Per Share           255 East Fifth St.                (2)             
+                   Cincinnati, OH 45202                               
+- --------------------------------------------------------------------------------
+Common Stock       PNC Bank Corporation         346,670 shares;          5.7%
+Par Value $1           One PNC Plaza       Trustee of the Company's   
+Per Share            249 Fifth Avenue      Profit Sharing and Thrift  
+                   Pittsburgh, PA 15222        Savings Plan (3)       
+- --------------------------------------------------------------------------------
+</TABLE>
+`
+
+func TestASCIICaptionCountWithSharesUnit(t *testing.T) {
+	rows := ScreenRows(run(t, asciiCaptionCountUnitLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+		pct    float64
+	}{{"Chemed Corporation", 5144551, 84}, {"PNC Bank Corporation", 346670, 5.7}} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("holder %q %v (%v%%) lost: %s", want.name, want.shares, want.pct, names(rows))
+		}
+	}
+	if len(rows) != 2 {
+		t.Errorf("want 2 rows, got %d: %s", len(rows), names(rows))
+	}
+}
+
+// 0001011034-97-000086 (cik 725260): the <C> markers align with the data,
+// splitting the caption "AMOUNT | AND NATURE OF"; the class column repeats
+// by ditto marks.
+const asciiCaptionDittoClassLines = `
+     1.   SECURITY OWNERSHIP OF MANAGEMENT AND PRINCIPAL STOCKHOLDERS
+          -----------------------------------------------------------
+
+          The following table sets forth as of April 30, 1997, certain
+information with respect to the ownership of the Fund's common stock by
+(i) each of the Fund's directors individually, (ii) shareholders known by the
+Fund to own beneficially more than five percent (5%) of the outstanding common
+stock of the Fund, and (iii) all officers and directors as a group.  Each
+beneficial owner of the Fund's common stock listed below has sole investment
+and voting power of the shares that he beneficially owns, except as noted.
+
+<TABLE>
+<CAPTION>
+TITLE OF    NAME AND ADDRESS            AMOUNT AND NATURE OF       PERCENT
+CLASS       OF BENEFICIAL OWNER         BENEFICIAL OWNERSHIP    OF CLASS<F1>
+- --------    -------------------        ----------------------    -----------
+<S>         <C>                               <C>                  <C>   
+Common      D.A Davidson & Co. <F1>            229,280              35.8%
+Stock       8 Third Street, North
+            Great Falls, MT  59401
+
+  "         Stephen G. Calandrella             233,000              36.4%
+            4465 Northpark Drive
+            Colorado Springs, CO  80907
+
+  "         Charles C. Powell                      -0-                 0%
+            4475 Walnut, Suite 2-D
+            Boulder, CO  80301
+
+  "         Clifford C. Thygesen                 2,000               0.3%
+            4893 Idylwild Trail
+            Boulder, CO  80301
+
+  "         All Officers and
+              Directors as a
+              Group (5 Persons)                238,000              37.1%
+
+- --------------------------------------
+<FN>
+<F1> Voting and investment power with respect to securities held by D.A.
+     Davidson & Company is exercised by its Board of Directors.
+</FN>
+</TABLE>
+`
+
+func TestASCIICaptionMarkerSplitHeaderDittoClass(t *testing.T) {
+	rows := ScreenRows(run(t, asciiCaptionDittoClassLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{{"D.A Davidson & Co.", 229280}, {"Stephen G. Calandrella", 233000}, {"Clifford C. Thygesen", 2000}} {
+		var r *Row
+		for i := range rows {
+			if strings.HasPrefix(rows[i].HolderName, strings.TrimRight(want.name, ".")) && rows[i].Shares != nil && *rows[i].Shares == want.shares {
+				r = &rows[i]
+			}
+		}
+		if r == nil {
+			t.Errorf("holder %q %v lost: %s", want.name, want.shares, names(rows))
+		} else if !strings.HasPrefix(r.ShareClass, "Common") {
+			t.Errorf("ditto class not resolved: %+v", *r)
+		}
+	}
+	for _, r := range rows {
+		if isAddressLine(r.HolderName) || strings.Contains(r.HolderName, "Street") {
+			t.Errorf("address emitted as a holder: %q", r.HolderName)
+		}
+	}
+	if g := find(rows, "All Officers and Directors as a Group (5 Persons)", ""); g == nil || g.Shares == nil || *g.Shares != 238000 || !g.IsGroupRow {
+		t.Errorf("group row lost or garbled: %s", names(rows))
+	}
+}
+
+// 0000950152-02-005247 (cik 1101752): untagged class-first tables, the name
+// above the "Common Stock  <street>  count  pct" line, rules between holders.
+const asciiUntaggedClassAddressLines = `
+                          SECURITY OWNERSHIP OF CERTAIN
+                        BENEFICIAL OWNERS AND MANAGEMENT
+
+
+CERTAIN BENEFICIAL OWNERS
+
+The Company Common Stock is the only outstanding class of equity security of the
+Company. Ownership as of June 14, 2002 of AuGRID Common Stock (to the Company's
+knowledge), by beneficial holders of more than five percent of the Company
+Common Stock, is as follows:
+
+  ----------------------------------------------------------------------------
+  TITLE OF CLASS     NAME AND ADDRESS OF      AMOUNT AND NATURE OF    PERCENT
+                      BENEFICIAL OWNER          BENEFICIAL OWNER      OF CLASS
+  ----------------------------------------------------------------------------
+                    M. J. Shaheed
+  Common Stock      2275 East 55th Street          26,907,250          41.80%
+                    Cleveland, Ohio 44103
+  ----------------------------------------------------------------------------
+
+
+MANAGEMENT
+
+The following table sets forth, as of June 14, 2002, the ownership of AuGRID
+Common Stock by each of the Company's directors and executive officers, and by
+all directors and executive officers, as a group. Each director and executive
+officers has full voting and investment power with respect to his shares, and no
+shares listed in the table below are subject to any vesting requirement. There
+are no shares of any other class of capital stock outstanding, and no options or
+other rights to acquire such shares have been granted.
+
+- --------------------------------------------------------------------------------
+TITLE OF CLASS        NAME AND ADDRESS OF         AMOUNT AND NATURE OF  PERCENT
+                       BENEFICIAL OWNER             BENEFICIAL OWNER    OF CLASS
+- --------------------------------------------------------------------------------
+                M. J. Shaheed
+Common Stock    2275 East 55th Street                  26,907,250        41.80%
+                Cleveland, Ohio 44103
+- --------------------------------------------------------------------------------
+                Mary F. Sloat-Horoszko
+Common Stock    2275 East 55th Street                   2,000,000         3.11%
+                Cleveland, Ohio 44103
+- --------------------------------------------------------------------------------
+                Earle B. Higgins
+Common Stock    26161 Danvers Drive                       250,000        0.39%
+                Farmington Hills, Michigan 48334
+- --------------------------------------------------------------------------------
+                Essa Mashni
+Common Stock    175 Marsala Court                         322,000        0.50%
+                Canton, Michigan 48187
+- --------------------------------------------------------------------------------
+                Cecil Weatherspoon
+Common Stock    3407 Milan Road                           250,000        0.39%
+                Sandusky, Ohio 44870
+- --------------------------------------------------------------------------------
+Common Stock    All Directors and Executive
+                Officers, as a group (5 persons)       29,729,250       46.19%
+`
+
+func TestASCIIUntaggedClassAddressRows(t *testing.T) {
+	rows := ScreenRows(run(t, asciiUntaggedClassAddressLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{{"M. J. Shaheed", 26907250}, {"Mary F. Sloat-Horoszko", 2000000}, {"Essa Mashni", 322000}} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares {
+			t.Errorf("holder %q %v lost: %s", want.name, want.shares, names(rows))
+		}
+	}
+	for _, r := range rows {
+		if strings.Contains(r.HolderName, "Street") || strings.Contains(r.HolderName, "Ohio") || strings.Contains(r.HolderName, "Road") {
+			t.Errorf("address emitted as a holder: %q", r.HolderName)
+		}
+	}
+}
+
+// 0000903893-97-000098: the count column header hyphenates "Bene-" / "ficial
+// Ownership" down the column, and the table runs over a page break.
+const asciiHyphenatedColumnHeaderLines = `
+
+                             PRINCIPAL STOCKHOLDERS
+
+         Set  forth  below is  information  concerning  stock  ownership  of all
+persons  known by the  Company to own  beneficially  5% or more of the Shares or
+Preferred Shares,  each director,  each executive officer named under "Executive
+Compensation" and all directors and executive officers of the Company as a group
+based upon the number of outstanding  Shares and Preferred  Shares as of January
+23, 1997.
+
+                                       Amount &
+  Name of                           Nature of Bene-             Percent of
+Stockholder                       ficial Ownership(1)      Outstanding Class(15)
+- - - - - - -----------                       -------------------      ---------------------
+
+Lindsay A. Rosenwald, M.D.            2,580,152(2)                  6.3%
+
+Glenn L. Cooper, M.D.                   766,488(3)                  1.8%
+
+
+
+                                      - 2 -
+
+
+
+
+
+Mark S. Butler                          420,500(4)                  1.0%
+
+Thomas F. Farb                          133,406(5)                 *
+
+Bobby W. Sandage, Jr., Ph.D.            305,277(6)                 *
+
+Harry J. Gray                            38,250(7)                 *
+
+Alexander M. Haig, Jr.                  203,000(8)                 *
+
+Peter Barton Hutt                        38,250(7)                 *
+
+Malcolm Morville, Ph.D.                  50,750(9)                 *
+
+Robert K. Mueller                        50,750(9)                 *
+
+Lee J. Schroeder                         50,750(9)                 *
+
+David B. Sharrock                       50,250(10)                 *
+
+Richard Wurtman, M.D.                  927,351(11)                  2.3%
+
+J. Morton Davis                     10,799,458(12)                 26.3%
+c/o D.H. Blair Investment
+   Banking Corp.
+44 Wall Street
+New York, New York 10005
+
+American Home Products Corp.           244,425(13)                  100%
+Five Giralda Farms
+Madison, New Jersey 07940
+
+All directors and executive          5,615,174(14)                 13.0%
+officers as a group (13 persons)
+
+- - - - - - -----------
+*less than 1%
+
+(1)     Beneficial  ownership  is  defined in  accordance  with the rules of the
+        Securities and Exchange  Commission  ("S.E.C.") and generally  means the
+        power to vote  and/or to dispose  of the  securities  regardless  of any
+        economic interest therein.
+
+(2)     Includes (i) 7,671 Shares issuable upon exercise of outstanding warrants
+        and (ii) 60,000 Shares  issuable  upon  exercise of options  exercisable
+`
+
+func TestASCIIHyphenatedColumnHeaderOwnCue(t *testing.T) {
+	rows := ScreenRows(run(t, asciiHyphenatedColumnHeaderLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{{"Lindsay A. Rosenwald", 2580152}, {"Mark S. Butler", 420500}, {"J. Morton Davis", 10799458}} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares {
+			t.Errorf("holder %q %v lost: %s", want.name, want.shares, names(rows))
+		}
+	}
+}
+
+// 0001031833-05-000080: a "Title of Class" column ahead of the name holds a
+// par-value cell ("..0001 par" / "value" / "common" / "stock") on every row.
+const asciiLeadParValueCellLines = `
+
+     The following table provides information as of June 23, 2005 concerning the
+beneficial  ownership  of our common stock by (i) each director, (ii) each named
+executive officer, (iii) each shareholder known by us to be the beneficial owner
+of  more  than  5%  of  our outstanding Common Stock, and (iv) the directors and
+officers  as  a  group.  Except as otherwise indicated, the persons named in the
+table  have sole voting and investing power with respect to all shares of Common
+Stock  owned  by  them.
+
+                                        8
+                                      PAGE
+
+
+<TABLE>
+<CAPTION>
+
+<S>                     <C>                                    <C>                       <C>
+
+Title of                Name and Address of                    Amount and                 Percent of
+Class                   Beneficial Owner                       Nature of                  Class(1)
+                                                               Beneficial
+                                                               Ownership(1)
+- ----------              ----------------------                 ----------------           -----------
+..0001 par               James W. Benson, CEO                       6,699,707(2)                29.53%
+value                   and Chairman
+common                  13855 Stowe Drive
+stock                   Poway, California 92064
+
+..0001 par               Susan C. Benson                            6,699,707(3)                29.53%
+value                   13855 Stowe Drive
+common                  Poway, California 92064
+stock
+
+..0001 par               Richard B. Slansky                           415,544(4)                 1.85%
+value                   President and CFO
+common                  13855 Stowe Drive
+stock                   Poway, California 92064
+
+..0001 par               Frank Macklin                                243,073(5)                 1.10%
+value                   13855 Stowe Drive
+common                  Poway, California 92064
+stock
+
+..0001 par               Randall K. Simpson                           135,866(6)                 0.61%
+value                   13855 Stowe Drive
+common                  Poway, California 92064
+stock
+
+..0001 par               J. Mark Grosvenor                          1,330,376(7)                 6.00%
+value                   13855 Stowe Drive
+common                  Poway, California 92064
+stock
+
+..0001 par               Wesley T. Huntress Jr.                       140,515(8)                 0.63%
+value                   Director
+common                  13855 Stowe Drive
+stock                   Poway, California 92064
+
+..0001 par               Curt Dean Blake                              180,430(9)                 0.81%
+value                   Director
+common                  13855 Stowe Drive
+stock                   Poway, California 92064
+
+..0001 par               General Howell M.                            99,167(10)                 0.45%
+value                   Estes III, Director
+common                  13855 Stowe Drive
+stock                   Poway, California 92064
+
+..0001 par               Robert S. Walker                             85,667(11)                 0.38%
+value                   Director
+common                  13855 Stowe Drive
+stock                   Poway, California 92064
+
+..0001 par               Stuart Schaffer, Director                   218,206(12)                 0.98%
+value                   13855 Stowe Drive
+common                  Poway, California 92064
+stock
+
+..0001 par               Scott McClendon                              72,960(13)                 0.33%
+value                   Director
+common                  13855 Stowe Drive
+stock                   Poway, California 92064
+- ----------              ----------------------                 ----------------           -----------
+..0001 par               Officers and Directors as                11,291,135(14)                34.85%
+value                   a group (11 Persons)
+common
+stock
+- ----------              ----------------------                 ----------------           -----------
+- ----------              ----------------------                 ----------------           -----------
+
+</TABLE>
+`
+
+func TestASCIILeadParValueCellCut(t *testing.T) {
+	rows := ScreenRows(run(t, asciiLeadParValueCellLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{{"J. Mark Grosvenor", 1330376}, {"Frank Macklin", 243073}, {"Scott McClendon", 72960}} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares {
+			t.Errorf("holder %q %v lost: %s", want.name, want.shares, names(rows))
+		}
+	}
+	for _, r := range rows {
+		if strings.Contains(r.HolderName, "par") {
+			t.Errorf("par-value cell in holder name: %q", r.HolderName)
+		}
+	}
+}
+
+// 0000890566-99-001509: a split "Common" / "Stock" class cell left of the name
+// and street lines; the counts sit on the city line.
+const asciiClassCellNameAboveCityLines = `
+BENEFICIAL OWNERSHIP OF CERTAIN STOCKHOLDERS, DIRECTORS AND EXECUTIVE OFFICERS
+
+      This table shows, as of November 11, 1999, the beneficial ownership of
+billserv.com common stock by: (1) each person known by the Company to be the
+beneficial owner of more than 5% of the common stock, (2) each director of the
+Company, (3) each nominee for director of the Company, (4) each executive
+officer named in the Summary Compensation Table on page 8, and (5) all directors
+and executive officers as a group, as reported by each person. Except as noted,
+each person has sole voting and investment power over the shares shown in this
+table.
+
+
+                                       13
+<PAGE>
+                   SHARES OWNED BENEFICIALLY AND OF RECORD
+                                PERCENT OF CLASS
+
+                                         AMOUNT & NATURE   PERCENT OF OWNERSHIP
+TITLE OF                                 OF BENEFICIAL            AS OF
+CLASS          NAME AND ADDRESS            OWNERSHIP       NOVEMBER 11, 1999 (1)
+- --------------------------------------------------------------------------------
+
+Common      Michael R. Long (2)
+Stock       15546 Clover Ridge
+            San Antonio, TX 78248          1,183,333               9.6%
+
+Common      Louis A. Hoch (3)
+Stock       15138 Grayoak Forest
+            San Antonio, TX 78248          1,193,334               9.7%
+
+Common      David S. Jones (4)
+Stock       11530 Vance Jackson
+            San Antonio, TX 78230          1,183,333               9.6%
+
+Common      Lori Turner
+Stock       11205 Woodridge Forest
+            San Antonio TX 78249             100,000               0.8%
+
+Common      Marshall Millard
+Stock       18123 Summer Knoll
+            San Antonio, TX 78258            150,000               1.2%
+
+Common      All directors, officers
+Stock       and employees as a group (5)
+            (7 persons)                    4,000,000              30.8%
+
+
+      (1)   All ownership is stated as of November 11, 1999. In 1999, the
+`
+
+func TestASCIIClassCellNameAboveCityValues(t *testing.T) {
+	rows := ScreenRows(run(t, asciiClassCellNameAboveCityLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{{"Michael R. Long", 1183333}, {"Lori Turner", 100000}, {"Marshall Millard", 150000}} {
+		var r *Row
+		for i := range rows {
+			if strings.HasPrefix(rows[i].HolderName, want.name) {
+				r = &rows[i]
+			}
+		}
+		if r == nil || r.Shares == nil || *r.Shares != want.shares {
+			t.Errorf("holder %q %v lost: %s", want.name, want.shares, names(rows))
+		}
+	}
+	for _, r := range rows {
+		if strings.Contains(r.HolderName, "San Antonio") || strings.HasPrefix(r.HolderName, "Common") {
+			t.Errorf("address or class cell as holder: %q", r.HolderName)
+		}
+	}
+}
+
+// 0000950132-94-000102: dollar-dividend class cell ($3.625 Preferred) beside the holder name.
+const asciiDollarClassCellLines = `
+
+     The following table lists the beneficial ownership of common stock and
+$3.625 preferred stock with respect to all persons known by the Corporation to
+be the "beneficial owners" (as defined in Securities and Exchange Commission
+Rule 13d-3) of more than 5% of any such class.  Except as indicated, the
+information is as of December 31, 1993 and is based on reports filed with the
+Securities and Exchange Commission.  The percentage of the outstanding shares of
+each class owned by each such person or entity is based on the outstanding
+shares of such class as of December 31, 1993.
+
+<TABLE>
+<CAPTION>
+ 
+Title of     Name and Address      Number of Shares     % of Outstanding
+Class        of Beneficial Owner   Beneficially Owned   Shares of Class
+- --------     -------------------   ------------------   ---------------- 
+<S>         <C>                    <C>                  <C>
+ 
+Common      Alleghany Corporation
+            Park Avenue Plaza
+            New York, NY 10055           5,643,554 (1)            5.5%
+ 
+Common      Dietche & Field
+            Advisers, Inc.
+            437 Madison Avenue
+            New York, NY 10022           5,564,950 (2)            5.4%
+ 
+Common      Norwest Corporation
+            Norwest Center
+            Sixth and Marquette
+            Minneapolis, MN 55479       15,175,549 (3)           14.4%
+ 
+Common      T. Rowe Price
+            Associates, Inc.
+            100 East Pratt Street
+            Baltimore, MD 21202          5,513,502 (4)            5.3%
+</TABLE>
+
+                                      19
+<PAGE>
+ 
+<TABLE>
+<CAPTION>
+
+Title of    Name and Address          Number of Shares      % of Outstanding
+Class       of Beneficial Owner       Beneficially Owned    Shares of Class
+- --------    -------------------       -------------------   ----------------
+<S>          <C>                       <C>                  <C>
+ 
+$3.625       Putnam Investments, Inc.
+Preferred    One Post Office Square
+             Boston, MA 02109              380,250 (5)              14.1%
+ 
+$3.625       Norwest Corporation
+Preferred    Norwest Center
+             Sixth and Marquette
+             Minneapolis, MN 55479         204,200 (3)               7.6%
+ 
+$3.625       Neuberger & Berman
+Preferred    605 Third Avenue
+             New York, NY 10158            167,200 (6)              6.69%
+ 
+$3.625       Reliance Financial
+Preferred    Services Corporation
+             Park Avenue Plaza
+             55 East 52nd Street
+             New York, NY 10055            390,000 (7)               8.9%
+</TABLE>
+
+`
+
+func TestASCIIDollarClassCellNameCut(t *testing.T) {
+	rows := ScreenRows(run(t, asciiDollarClassCellLines))
+	found := false
+	for _, r := range rows {
+		if strings.HasPrefix(r.HolderName, "$") {
+			t.Errorf("dividend class cell in holder: %q", r.HolderName)
+		}
+		if strings.HasPrefix(r.HolderName, "Putnam Investments") && r.Shares != nil && *r.Shares == 380250 {
+			found = true
+		}
+	}
+	if !found {
+		t.Errorf("Putnam 380250 lost: %s", names(rows))
 	}
 }

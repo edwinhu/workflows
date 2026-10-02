@@ -61,6 +61,9 @@ type screenTable struct {
 	medianByClass        map[string]float64
 	registeredPctRepeats map[string]map[float64]int
 	pctRepeats           map[float64]int // how many distinct non-group rows carry each percent
+	// pctShares counts, per repeated percent, the rows carrying each share
+	// count: holders that share one block (a control group) repeat both.
+	pctShares map[float64]map[float64]int
 }
 
 // ScreenRows returns the rows of one filing that survive the layout screen, in
@@ -310,6 +313,15 @@ func screenTables(rows []Row) map[int]*screenTable {
 			}
 			if r.Percent != nil && *r.Percent >= 5.0 && !r.colspanRecovery && !r.fundRegistration {
 				t.pctRepeats[*r.Percent]++
+				if r.Shares != nil {
+					if t.pctShares == nil {
+						t.pctShares = map[float64]map[float64]int{}
+					}
+					if t.pctShares[*r.Percent] == nil {
+						t.pctShares[*r.Percent] = map[float64]int{}
+					}
+					t.pctShares[*r.Percent][*r.Shares]++
+				}
 			}
 			if r.Percent != nil && *r.Percent >= 5.0 && r.colspanRecovery {
 				if pctHolders[r.TableIndex] == nil {
@@ -476,7 +488,7 @@ func screenDropWhy(r Row, t *screenTable) string {
 			repeats = t.registeredPctRepeats[screenClassKey(r)][*r.Percent]
 		}
 	}
-	if t != nil && !t.prose && repeats >= 3 {
+	if t != nil && !t.prose && repeats >= 3 && !roundedPctAgrees(r, t) {
 		return "pct_repeats"
 	}
 	// shares and percent must imply the same outstanding total as the rest of
@@ -498,6 +510,34 @@ func screenDropWhy(r Row, t *screenTable) string {
 		}
 	}
 	return ""
+}
+
+// roundedPctAgrees reports a whole-number percent that the row's own share
+// count reproduces: shares lies inside the rounding interval (pct +/- 0.5) of
+// the table's median implied outstanding total. Small issuers round to whole
+// percents, so three holders near one size all print "7 %"; a value broadcast
+// down a mis-aligned column has share counts that disagree with it.
+func roundedPctAgrees(r Row, t *screenTable) bool {
+	if r.Shares == nil || r.Percent == nil || *r.Percent < 1 || *r.Percent != math.Trunc(*r.Percent) || !t.haveMedian {
+		return false
+	}
+	// A repeated block (several holders, one share count) is the group
+	// membership the pct_repeats rule exists for, whatever the rounding.
+	for _, n := range t.pctShares[*r.Percent] {
+		if n > 1 {
+			return false
+		}
+	}
+	med := t.medianTotal
+	if t.medianByClass != nil {
+		m, ok := t.medianByClass[screenClassKey(r)]
+		if !ok {
+			return false
+		}
+		med = m
+	}
+	lo, hi := med*(*r.Percent-0.5)/100, med*(*r.Percent+0.5)/100
+	return *r.Shares >= lo && *r.Shares <= hi
 }
 
 // isNonCommonClass reports a share_class that names a security OTHER than the
