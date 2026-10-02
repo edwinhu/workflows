@@ -47,6 +47,20 @@ real commits f2239344 and 41c871de. Patterns an exit code can decide are not rul
 Focused or skipped tests, TLS verification off, and committed keys are the `scan` leg of
 `check.sh` (`diff-scan.py`).
 
+**Calibrating Jev rules.** `bun skills/work/scripts/rule-calibrate.ts [--set ds|dev|writing|all]
+[--rule ID] [--runs 2] [--json]` scores every rule, wired and `uncalibrated`, on the committed set
+in `tests/fixtures/jev/calibration.json`. A rule passes when every violating case scores >= 0.85 and
+every compliant or real accepted case < 0.5, on every run. Each violating case is also scored by
+every other rule in its set; a score > 0.5 is a reported cross-rule hit, not a failure. Exit 1 if a
+wired rule fails, 2 if Jev is unreachable or any score is missing (never a pass), else 0. A passing
+uncalibrated rule is printed "ready to wire"; wiring stays a reviewed move of its file. Nothing is
+written to the repo. Run it when a rule's extractor, question or cases change, and when `jev.model`
+changes. To add a real case, copy a bounded, self-contained excerpt of an accepted deliverable into
+`tests/fixtures/jev/real/<RULE>-<name>/` (`before/`, `after/` with `.fixture` suffixes for `dev`),
+redact contacts and secrets (the repo is public), and list it under its rule with a `source` note
+(repo, path, commit, lines). The note lives in the manifest because every file in a case dir
+reaches the extractor.
+
 ## Refresh
 
 `route.ts --refresh` is the only sanctioned writer of `available`, `price` and `asOf`. It fetches

@@ -1,0 +1,130 @@
+{
+  "_doc": "Calibration set for skills/work/scripts/rule-calibrate.ts. Paths are repo-relative. layout 'files': every file in the case dir goes to the extractor, plan.md as --plan. layout 'diff': before/ is committed in a temp repo, after/ is laid over it, .fixture suffixes are stripped. A case with 'source' is a real excerpt copied 2026-10-02; the note lives here because every file in a case dir reaches the extractor.",
+  "criterion": { "violatingAtLeast": 0.85, "compliantBelow": 0.5, "crossFlagAbove": 0.5 },
+  "sets": {
+    "ds": {
+      "rulesDir": "constraints/jev",
+      "uncalibratedDir": "constraints/jev/uncalibrated",
+      "layout": "files",
+      "rules": {
+        "A1": [
+          { "kind": "violating", "path": "tests/fixtures/jev/A1/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/A1/sat" }
+        ],
+        "A4": [
+          { "kind": "violating", "path": "tests/fixtures/jev/A4/vio2" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/A4/sat2" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/A4-xs5_table2", "source": "mirror scripts/cit/xs5_table2_divergence.py @746f423, lines 125-195; accepted deliverable" }
+        ],
+        "DEN": [
+          { "kind": "violating", "path": "tests/fixtures/jev/DEN/vio2" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/DEN/sat2" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DEN-universe", "source": "founder-ceo-ipo src/universe.py (untracked in that repo), lines 205-222 and 355-421; accepted deliverable" }
+        ],
+        "DQ1": [
+          { "kind": "violating", "path": "tests/fixtures/jev/DQ1/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/DQ1/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DQ-32_agk2019", "source": "hidden-figures scripts/32_agk2019_russell_float.py @8a59d9f, lines 84-130 (russell_float, float_swapped); accepted deliverable" }
+        ],
+        "DQ4": [
+          { "kind": "violating", "path": "tests/fixtures/jev/DQ4/vio2" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/DQ4/sat2" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DQ-32_agk2019", "source": "hidden-figures scripts/32_agk2019_russell_float.py @8a59d9f, lines 84-130; accepted deliverable" }
+        ],
+        "DQ6": [
+          { "kind": "violating", "path": "tests/fixtures/jev/DQ6/vio2" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/DQ6/sat2" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DQ-32_agk2019", "source": "hidden-figures scripts/32_agk2019_russell_float.py @8a59d9f, lines 84-130; accepted deliverable" }
+        ],
+        "E7": [
+          { "kind": "violating", "path": "tests/fixtures/jev/E7/vio2" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/E7/sat2" },
+          { "kind": "violating", "path": "tests/fixtures/jev/real/E7-cl_download", "source": "board-structuring scripts/cl_download_opinion_pdfs.py @98167c0, lines 1-88, contact email redacted; a real client with no cited rate ceiling" }
+        ],
+        "M1": [
+          { "kind": "violating", "path": "tests/fixtures/jev/M1/vio2" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/M1/sat2" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/M1-08_agk_sample", "source": "hf-wt-float scripts/08_agk_sample.py @5f2c32b, lines 50-52, 566-571, 691-696 (main() bodies wrapped in stub defs so the excerpt parses); accepted deliverable, no plan supplied" }
+        ],
+        "R1": [
+          { "kind": "violating", "path": "tests/fixtures/jev/R1/vio2" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/R1/sat2" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/R1-run_s220", "source": "board-structuring scripts/run_s220_robustness.py @5489b70, lines 20-36 and 58-139; accepted deliverable" }
+        ],
+        "UNI": [
+          { "kind": "violating", "path": "tests/fixtures/jev/UNI/vio2" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/UNI/sat2" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/UNI-ownership", "source": "hidden-figures src/ownership.py @9aedfe8, lines 1670-1742 (body of panel_vs_agk_universe, wrapped in a stub def); accepted deliverable" }
+        ]
+      }
+    },
+    "dev": {
+      "rulesDir": "constraints/jev/dev",
+      "layout": "diff",
+      "rules": {
+        "LOOP": [
+          { "kind": "violating", "path": "tests/fixtures/jev/dev/LOOP/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/dev/LOOP/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DEV-route-agenix-key", "source": "workflows commit 41c871de, diff hunks with 12 lines of context; accepted change" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DEV-route-propose-rank", "source": "workflows commit f2239344, diff hunks with 12 lines of context; accepted change" }
+        ],
+        "MOCK": [
+          { "kind": "violating", "path": "tests/fixtures/jev/dev/MOCK/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/dev/MOCK/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DEV-route-agenix-key", "source": "workflows commit 41c871de, diff hunks with 12 lines of context; accepted change" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DEV-route-propose-rank", "source": "workflows commit f2239344, diff hunks with 12 lines of context; accepted change" }
+        ],
+        "NET": [
+          { "kind": "violating", "path": "tests/fixtures/jev/dev/NET/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/dev/NET/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DEV-route-agenix-key", "source": "workflows commit 41c871de, diff hunks with 12 lines of context; accepted change" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DEV-route-propose-rank", "source": "workflows commit f2239344, diff hunks with 12 lines of context; accepted change" }
+        ],
+        "SHELL": [
+          { "kind": "violating", "path": "tests/fixtures/jev/dev/SHELL/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/dev/SHELL/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DEV-route-agenix-key", "source": "workflows commit 41c871de, diff hunks with 12 lines of context; accepted change" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DEV-route-propose-rank", "source": "workflows commit f2239344, diff hunks with 12 lines of context; accepted change" }
+        ],
+        "WEAK": [
+          { "kind": "violating", "path": "tests/fixtures/jev/dev/WEAK/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/dev/WEAK/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DEV-route-agenix-key", "source": "workflows commit 41c871de, diff hunks with 12 lines of context; accepted change" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DEV-route-propose-rank", "source": "workflows commit f2239344, diff hunks with 12 lines of context; accepted change" }
+        ]
+      }
+    },
+    "writing": {
+      "rulesDir": "constraints/jev/writing",
+      "uncalibratedDir": "constraints/jev/writing/uncalibrated",
+      "layout": "files",
+      "rules": {
+        "W-ATTRIB": [
+          { "kind": "violating", "path": "tests/fixtures/jev/W-ATTRIB/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/W-ATTRIB/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/W-third-party-review", "source": "workflows docs/DESIGN-third-party-review.md @d04c8e30, lines 43-57; accepted prose" }
+        ],
+        "W-HEDGE": [
+          { "kind": "violating", "path": "tests/fixtures/jev/W-HEDGE/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/W-HEDGE/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/W-third-party-review", "source": "workflows docs/DESIGN-third-party-review.md @d04c8e30, lines 43-57; accepted prose" }
+        ],
+        "W-SIGNPOST": [
+          { "kind": "violating", "path": "tests/fixtures/jev/W-SIGNPOST/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/W-SIGNPOST/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/W-third-party-review", "source": "workflows docs/DESIGN-third-party-review.md @d04c8e30, lines 43-57; accepted prose" }
+        ],
+        "W-BULLETS": [
+          { "kind": "violating", "path": "tests/fixtures/jev/W-BULLETS/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/W-BULLETS/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/W-third-party-review", "source": "workflows docs/DESIGN-third-party-review.md @d04c8e30, lines 43-57 (a numbered list of four multi-sentence items); accepted prose" }
+        ],
+        "W-FIGURES": [
+          { "kind": "violating", "path": "tests/fixtures/jev/W-FIGURES/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/W-FIGURES/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/W-third-party-review", "source": "workflows docs/DESIGN-third-party-review.md @d04c8e30, lines 43-57; accepted prose" }
+        ]
+      }
+    }
+  }
+}

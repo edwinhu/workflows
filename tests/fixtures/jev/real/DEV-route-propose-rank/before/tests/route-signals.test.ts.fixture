@@ -1,0 +1,72 @@
+// --- excerpt ---
+      ROUTE_OPENROUTER_KEY_REF: 'op://Test Vault/OR/credential', ROUTE_AA_KEY_REF: 'op://Test Vault/AA/credential',
+    })
+    expect(r.code).toBe(0)
+    expect(r.stderr).toMatch(/usageRank left unchanged: no \$OPENROUTER_API_KEY, and op read op:\/\/Test Vault\/OR\/credential failed/)
+    expect(r.stderr).toMatch(/intelligenceIndex left unchanged: no \$ARTIFICIAL_ANALYSIS_API_KEY/)
+    expect(s.seen.filter(x => x.path === '/rankings' || x.path === '/aa')).toHaveLength(0)
+    expect(read(table).candidates.sonnet.signals).toBeUndefined()
+  } finally { s.stop() }
+}, 30_000)
+
+// ---------------------------------------------------------------------------------- propose
+
+const sig = (intelligenceIndex: number | null) => ({ usageRank: null, intelligenceIndex, asOf: '2026-10-02' })
+
+/** The fixture plus a second gemini candidate, with signals on every candidate. */
+function proposeTable(edit: (t: any) => void = () => {}): string {
+  return tableCopy(t => {
+    t.candidates.flash38 = {
+      provider: 'gemini', model: 'gemini-3.8-flash-high', owner: 'antigravity', openrouter: 'google/gemini-3.8-flash',
+      available: true, price: { prompt: 7.5e-7, completion: 3.75e-6 },
+    }
+    for (const [id, v] of Object.entries({ sonnet: 70, opus: 74, flash: 61, flash38: 60 }))
+      t.candidates[id].signals = sig(v)
+    edit(t)
+  })
+// --- excerpt ---
+    t.candidates.sonnet.signals = sig(90)
+    t.candidates.opus.signals = sig(95)
+    t.candidates.opus.price.prompt = 1e-6
+  })
+  const r = await run(['--propose', '--json', '--table', table], {})
+  expect(r.code).toBe(0)
+  const byKind = Object.fromEntries(JSON.parse(r.stdout).proposals.map((p: any) => [p.kind, p]))
+  expect(byKind.judgement?.to.pick ?? 'opus').toBe('opus')
+  expect(byKind.script?.to.pick ?? 'sonnet').toBe('sonnet')
+  expect(byKind.review?.to.pick ?? 'sonnet').toBe('sonnet')
+}, 30_000)
+
+test('propose --json: fallbacks reorder by intelligenceIndex among available, unavailable last, none dropped', async () => {
+  const table = proposeTable(t => {
+    t.kinds.review = { pick: 'sonnet', fallbacks: ['flash', 'luna', 'opus', 'flash38'] }
+    t.candidates.flash38.available = false
+    t.candidates.flash38.signals = sig(99)
+  })
+  const r = await run(['--propose', '--json', '--table', table], {})
+  expect(r.code).toBe(0)
+  const out = JSON.parse(r.stdout)
+  expect(out.proposals).toEqual([
+    {
+      kind: 'review',
+      from: { pick: 'sonnet', fallbacks: ['flash', 'luna', 'opus', 'flash38'] },
+      to: { pick: 'sonnet', fallbacks: ['opus', 'flash', 'luna', 'flash38'] },
+      reason: 'fallbacks by intelligenceIndex among available: opus 74, flash 61, luna null',
+    },
+  ])
+}, 30_000)
+
+test('propose on a malformed table exits 2 and writes nothing', async () => {
+  const table = tableCopy(t => { t.candidates.sonnet.signals = { usageRank: 'x' } })
+  const before = readFileSync(table, 'utf8')
+  const r = await run(['--propose', '--table', table], {})
+  expect(r.code).toBe(2)
+  expect(r.stderr).toContain('signals must be')
+  expect(readFileSync(table, 'utf8')).toBe(before)
+}, 30_000)
+
+test('--json without --propose, and --propose with --refresh, are refused', async () => {
+  const table = proposeTable()
+  expect((await run(['--refresh', '--json', '--table', table], {})).code).toBe(2)
+  expect((await run(['--propose', '--refresh', '--table', table], {})).code).toBe(2)
+}, 30_000)
