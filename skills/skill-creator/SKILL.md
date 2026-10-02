@@ -13,7 +13,7 @@ description: "This skill should be used when the user asks to 'create a skill', 
 
 This skill wraps the built-in `skill-creator:skill-creator` with enforcement pattern awareness from the superpowers framework. It adds an enforcement audit layer to the skill-creator's draft-test-iterate loop.
 
-**A path-validation hook runs on your edits.** `hooks/validate-skill-paths.ts` is registered on `PostToolUse Edit|Write` in `hooks/hooks.json`; it reports any `${CLAUDE_SKILL_DIR}` / `${CLAUDE_PLUGIN_ROOT}` reference resolving to a file that does not exist. It is non-blocking — read what it says. `hooks/plugin-validate.ts` is **not registered** (its only finding here is a constant symlink warning); run `claude plugin validate` by hand if you need it.
+**A path-validation hook runs on your edits.** `hooks/guards/skill-paths.ts` runs after every Edit/Write, in-process in the plugin's mod; it reports any `${CLAUDE_SKILL_DIR}` / `${CLAUDE_PLUGIN_ROOT}` reference resolving to a file that does not exist. It is non-blocking — read what it says. `hooks/plugin-validate.ts` is **not registered** (its only finding here is a constant symlink warning); run `claude plugin validate` by hand if you need it.
 
 ## When This Skill Applies
 

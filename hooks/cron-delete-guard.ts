@@ -1,261 +1,28 @@
 #!/usr/bin/env bun
 /**
  * PreToolUse on CronDelete: refuse to cancel the loop that drives a work run still in flight.
- *
- * The refusal is TASK-SPECIFIC. `--record` runs as PostToolUse on CronCreate and appends the new
- * job id to `heartbeatCrons` in the args.json of every `.work/<run>` whose name the prompt names,
- * so the guard denies only when a run CLAIMING this id is in flight; an id no run claims falls back
- * to the old rule (deny while any run is in flight).
- *
- * In flight is decided as work-goal-resend.sh decides it -- a run directory holds args.json with
- * no non-empty result.json beside it. That is a property of the filesystem, not of anyone's belief
- * that the run is over, which is exactly where the judgement failed (measured 2026-09-14: a loop
- * deleted at round 2 of 6 with the goal unmet, on the reasoning that the run had been halted).
+ * `--record` runs as PostToolUse on CronCreate and files the new job id under the run(s) its prompt
+ * names. Both halves are in guards/cron-delete.ts, shared with the plugin's mod; this file is the
+ * settings-hook entry point.
  */
-import { appendFileSync, existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { allow, deny, denyOnCrash, parsePayload } from "./_gate_common.ts";
-import { statePath, unevaluatedNote } from "./work-hold.ts";
+import { denyOnCrash } from "./_gate_common.ts";
+import { guardIO, readStdin, runPreToolUse } from "./guards/cli.ts";
+import { cronDeleteGuard, cronRecord } from "./guards/cron-delete.ts";
 
-/** A cron job id as CronCreate mints them: 8 lowercase hex chars. */
-const JOB_ID = /\b[0-9a-f]{8}\b/;
-
-/** Run directories under `<cwd>/.work` holding an args.json, with what that file says. */
-interface Run {
-  name: string;
-  /** The run root this one was found under. */
-  base: string;
-  argsPath: string;
-  argsMtime: number;
-  inFlight: boolean;
-  crons: string[];
-}
-
-const RUN_ROOTS = [".work"];
-
-function runsUnder(cwd: string): Run[] | null {
-  const runs: Run[] = [];
-  let sawRoot = false;
-  for (const base of RUN_ROOTS) {
-    const root = join(cwd, base);
-    let entries: string[];
-    try {
-      entries = readdirSync(root);
-    } catch {
-      continue; // this root is absent
-    }
-    sawRoot = true;
-    for (const name of entries) {
-      const argsPath = join(root, name, "args.json");
-      let argsMtime: number;
-      try {
-        argsMtime = statSync(argsPath).mtimeMs;
-      } catch {
-        continue; // not a run directory
-      }
-      let inFlight = true;
-      try {
-        if (statSync(join(root, name, "result.json")).size > 0) inFlight = false; // has a verdict
-      } catch {
-        // An absent result.json IS the in-flight shape.
-      }
-      let crons: string[] = [];
-      try {
-        const parsed = JSON.parse(readFileSync(argsPath, "utf8"));
-        if (parsed && typeof parsed === "object" && Array.isArray(parsed.heartbeatCrons)) {
-          crons = parsed.heartbeatCrons.filter((x: unknown) => typeof x === "string");
-        }
-      } catch {
-        // Unparseable args.json claims nothing; it is still a run directory for the fallback rule.
-      }
-      runs.push({ name, base, argsPath, argsMtime, inFlight, crons });
-    }
-  }
-  // Neither root exists: a determinate "no run here".
-  return sawRoot ? runs : null;
-}
-
-// ------------------------------------------------------------- heartbeats that belong to no run
-//
-// grind runs OUTSIDE every session, so the hourly backstop a launching session keeps for it is
-// claimed by no `.work` run and falls to the rule "nobody claims this id, and something is in
-// flight -> deny". That is a misfire: in any project that has ever dispatched work, the grind
-// heartbeat could not be deleted when the loop ended. `--record` marks such an id here, beside the
-// hold ledger the guard already reads, so no project file and no per-workflow state is added.
-//
-// farm.sh --workflow prints the same hourly backstop, naming its own run directory -- which is not a
-// `.work` run either whenever the caller is not work-dispatch.sh. The parenthesised nudge is matched,
-// not the bare word: "farm out the review" is prose about delegating, not a heartbeat.
-const NONRUN_PROMPT = /\bgrind\b|\(farm [^)\n]+\)/i;
-
-function markedPath(session: string): string {
-  return join(process.env.TMPDIR || tmpdir(), `work-cron-nonrun-${session}.txt`);
-}
-
-function isMarked(session: string, id: string): boolean {
-  if (!session) return false;
-  try {
-    return readFileSync(markedPath(session), "utf8").split("\n").includes(id);
-  } catch {
-    return false;
-  }
-}
-
-// ---------------------------------------------------------------- record mode (PostToolUse)
-
-/**
- * NEVER blocks and NEVER prints a decision: a PostToolUse hook that emits a PreToolUse shape gets
- * the payload rejected, and a crash here must not be visible at all. Every failure exits 0 silently.
- */
+// RECORD MODE (PostToolUse) never blocks and never prints a decision: a PostToolUse hook that emits
+// a PreToolUse shape gets the payload rejected, and a crash here must not be visible at all.
 if (process.argv.includes("--record")) {
   try {
-    const payload: Record<string, unknown> = JSON.parse(await Bun.stdin.text());
-    const toolInput = (payload?.tool_input ?? {}) as Record<string, unknown>;
-    const prompt = String(toolInput?.prompt ?? "");
-    const response = payload?.tool_response as unknown;
-
-    // tool_response is an object for some tools and a bare string for others, so both are read.
-    let id = "";
-    if (response && typeof response === "object" && typeof (response as Record<string, unknown>).id === "string") {
-      id = (response as Record<string, unknown>).id as string;
-    } else if (typeof response === "string") {
-      id = response.match(JOB_ID)?.[0] ?? "";
-    }
-    if (!JOB_ID.test(id)) process.exit(0);
-
-    const cwd = String(payload?.cwd ?? "") || process.cwd();
-    const runs = runsUnder(cwd) ?? [];
-
-    // A prompt that names a run belongs to that run, whatever else it says; only an id NO run
-    // claims can be a grind or farm heartbeat.
-    const session = String(payload?.session_id ?? "");
-    if (session && NONRUN_PROMPT.test(prompt) && !runs.some(r => r.name && prompt.includes(r.name))) {
-      if (!isMarked(session, id)) appendFileSync(markedPath(session), id + "\n");
-    }
-
-    for (const run of runs) {
-      if (!run.name || !prompt.includes(run.name)) continue;
-      if (run.crons.includes(id)) continue; // idempotent
-      const raw = readFileSync(run.argsPath, "utf8");
-      const parsed = JSON.parse(raw);
-      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) continue;
-      parsed.heartbeatCrons = [...run.crons, id];
-      // Keep the file's own formatting: the indent of its first nested line, and its trailing newline.
-      const indent = raw.match(/^\{\r?\n([ \t]+)"/)?.[1] ?? "";
-      writeFileSync(run.argsPath, JSON.stringify(parsed, null, indent) + (raw.endsWith("\n") ? "\n" : ""));
-    }
+    const payload = JSON.parse(await readStdin());
+    await cronRecord(payload, guardIO());
   } catch {
-    // Recording is best-effort: a run whose id was never recorded simply falls back to the old rule.
+    // best-effort
   }
   process.exit(0);
 }
 
-// ---------------------------------------------------------------- guard mode (PreToolUse)
-
-// FIRST STATEMENT WITH AN EFFECT: a throw below becomes a schema-valid deny instead of an exit-1,
-// which Claude Code treats as NON-BLOCKING -- i.e. a silent allow in a PreToolUse gate.
+// FIRST STATEMENT WITH AN EFFECT in guard mode: a throw below becomes a schema-valid deny instead
+// of an exit-1, which Claude Code treats as NON-BLOCKING -- i.e. a silent allow in a PreToolUse gate.
 denyOnCrash("CRON DELETE GUARD");
 
-const hookInput: Record<string, unknown> = parsePayload(await Bun.stdin.text());
-
-if (String(hookInput?.tool_name ?? "") !== "CronDelete") allow();
-
-// The deliberate override, for genuinely abandoning a run.
-if (process.env.WORK_ALLOW_CRON_DELETE === "1") allow();
-
-const cwd = String(hookInput?.cwd ?? "") || process.cwd();
-const deleteId = String(((hookInput?.tool_input ?? {}) as Record<string, unknown>)?.id ?? "");
-
-// ------------------------------------------------------------ the hold gate: DONE MEANS GOAL MET
-//
-// The heartbeat's teardown clause fires on "this goal closes", and the session decides that from
-// what it can see -- which used to be a green check and nothing else. Measured 2026-09-26: a work
-// run armed with no `--goal`, `work-result.sh` exited 0, the hold released on the check alone, and the
-// loop was deleted with the user's actual objective (an estimate landing inside the published
-// interval) untouched. So the authority on "closed" is the HOLD'S OWN RELEASE, read from the same
-// per-session ledger work-hold.ts writes -- not this hook's opinion and not the session's.
-// ONLY the payload. A PreToolUse payload always carries session_id, so an ambient fallback buys
-// nothing and costs correctness: measured 2026-09-27, `CLAUDE_CODE_SESSION_ID` leaking in from the
-// session that merely LAUNCHED the process made this gate answer about that session's hold instead
-// of the one the call belongs to -- four tests denied by the real ledger of the shell's own session.
-//
-// SCOPE: an ARMED hold only. A RELEASED hold is not this gate's business, whatever verb it released
-// on -- the PASSED_UNJUDGED verb used to deny too, and that was wrong in both directions: it held the
-// heartbeat open on a run the user had already walked away from, while saying nothing a re-arm
-// could not say. The sanctioned escape is `work-abandon.sh`, which settles the run and releases the
-// hold in one step, rather than an env var the session sets for itself.
-//
-// AN UNEVALUATED HOLD STILL DENIES, and says so with the remedy. This guard's path never changed
-// while the Stop-side hook file was deleted under it, so a session predating that rename enforces its hold
-// here from a hook that is running and has NOTHING evaluating the hold on the Stop side — rounds 0
-// forever, no release after a PASS, and every heartbeat delete refused. Weakening the deny would
-// hand the session an argument for deleting a live run's loop; naming the skew costs nothing and is
-// the only thing that ends the deadlock.
-const session = String(hookInput?.session_id ?? "");
-if (session && existsSync(statePath(session))) {
-  let skew: string | null = null;
-  try {
-    skew = unevaluatedNote(JSON.parse(readFileSync(statePath(session), "utf8")), Math.floor(Date.now() / 1000));
-  } catch {
-    // An unreadable state file says nothing about the hook's liveness; the deny below is unchanged.
-  }
-  deny(
-    (skew ? `The hold for this session was ${skew}. Until that is fixed the hold cannot release itself, so this delete stays refused — reload, then let the hold run. ` : "") +
-    "A hold is ARMED for this session, so its objective has not closed yet. The heartbeat " +
-      "is what re-enters the session while the hold is working; deleting it now leaves the hold " +
-      "with nothing to wake it. Let the hold release itself (the check goes green AND the " +
-      "classifier judges the goal met), or have the USER confirm `work-hold.sh --disarm` at a " +
-      "terminal. If the USER has abandoned this run, retire it with " +
-      "`work-abandon.sh <run-dir> --why '<reason>'`: it writes the run's verdict, releases the " +
-      "hold, and this delete is then allowed.",
-  );
-}
-
-// No .work at all is a determinate "no run here", not a failure to decide, so it allows. An
-// unreadable directory that EXISTS is a different case and reaches denyOnCrash via the throw.
-const runs = runsUnder(cwd);
-if (runs === null) allow();
-
-// A run that CLAIMS this id answers the question by itself: a heartbeat recorded for run A says
-// nothing about run B, so an unrelated in-flight run must not hold A's finished loop open.
-const claiming = deleteId ? runs.filter(r => r.crons.includes(deleteId)) : [];
-
-// A heartbeat recorded as belonging to no run -- a grind or farm backstop -- is not a work run's loop, so
-// an unrelated in-flight run says nothing about it. A run that CLAIMS the id still wins.
-if (!claiming.length && isMarked(session, deleteId)) allow();
-
-const candidates = claiming.length ? claiming : runs;
-
-// The newest in-flight run among the candidates, by args.json mtime -- the file the dispatch writes.
-let newest = "";
-let newestBase = ".work";
-let newestMtime = 0;
-for (const run of candidates) {
-  if (!run.inFlight) continue;
-  if (run.argsMtime > newestMtime) {
-    newestMtime = run.argsMtime;
-    newest = run.name;
-    newestBase = run.base;
-  }
-}
-
-if (!newest) allow();
-
-// A run-directory name that is not a plain slug is withheld rather than repeated: .work can be
-// repo-shipped, so the name is untrusted text inside a message the reader acts on.
-const run = /^[A-Za-z0-9._-]+$/.test(newest) ? newest : `(a run under ${newestBase}/)`;
-
-deny(
-  (claiming.length
-    ? `The loop you are deleting drives a work run that is still in flight: ${newestBase}/${run}/args.json ` +
-      "records this cron in heartbeatCrons and has no verdict beside it. "
-    : `A work run is still in flight: ${newestBase}/${run}/args.json has no verdict beside it, and no run ` +
-      "claims this cron, so it cannot be told apart from that run's heartbeat. ") +
-    "The loop is usually what drives that run to completion -- it is what re-enters the session to " +
-    "read the verdict, fix what failed and redispatch. Deleting it now strands the run: the " +
-    "dispatch keeps going detached and nothing comes back for it. Let the run finish " +
-    "(work-result.sh exits 0, or the round cap or time ceiling is reached), then delete the loop. " +
-    "If you genuinely mean to abandon the run, set WORK_ALLOW_CRON_DELETE=1 for the call and say " +
-    "so out loud.",
-);
+await runPreToolUse(cronDeleteGuard);

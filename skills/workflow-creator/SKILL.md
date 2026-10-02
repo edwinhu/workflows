@@ -14,7 +14,7 @@ hooks:
     # measured). SKILL.md and agent `.md` — this checker's primary targets — are exactly the class
     # still written here, so the reach farmOutOnly removes is the reach this hook never needed.
     # Its `.ts`/`hooks.json` rows do lose the main thread; P2 there is carried by the plugin-wide
-    # hooks/validate-skill-paths.ts and by wc-probe at gate time, so no rule is left unenforced.
+    # hooks/guards/skill-paths.ts (the plugin mod) and by wc-probe at gate time, so no rule is left unenforced.
     - matcher: "Write|Edit"
       hooks:
         - type: command
