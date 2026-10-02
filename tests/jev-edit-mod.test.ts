@@ -18,6 +18,8 @@ const none = async () => null
 test('prose is writing, tests and shell scripts are dev, .py is ds only under a ds workflow', async () => {
   expect(await ruleSetFor('/p/drafts/intro.md', none)).toBe('writing')
   expect(await ruleSetFor('/p/paper.typ', none)).toBe('writing')
+  expect(await ruleSetFor('/course/addenda/03-addendum-salman.typ', none)).toBe('elide')
+  expect(await ruleSetFor('/course/handouts/addenda-guide.typ', none)).toBe('writing')
   expect(await ruleSetFor('/p/paper.tex', ds)).toBe('writing')
   expect(await ruleSetFor('/p/scripts/run.sh', none)).toBe('dev')
   expect(await ruleSetFor('/p/src/a.test.ts', none)).toBe('dev')
@@ -64,7 +66,7 @@ test("a lecture's notes are notes and its deck is slides; other .typ in a course
   expect(await ruleSetFor('/c/secreg/slides/05-10b5/14.typ', ds)).toBe('slides')
   expect(await ruleSetFor('/c/secreg/notes/_reg-s.typ', none)).toBe('writing')
   expect(await ruleSetFor('/c/secreg/slides/05-10b5.typ', none)).toBe('writing')
-  expect(await ruleSetFor('/c/secreg/addenda/01.typ', none)).toBe('writing')
+  expect(await ruleSetFor('/c/secreg/addenda/01.typ', none)).toBe('elide') // an excerpt: the elide-case rules
   expect([...TEACHING_SETS].sort()).toEqual(['notes', 'slides'])
 })
 

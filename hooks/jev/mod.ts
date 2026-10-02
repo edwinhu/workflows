@@ -5,7 +5,7 @@
 //              -> authoring, lecture notes -> notes and a lecture deck -> slides (both from the
 //              teaching plugin, $TEACHING_PLUGIN_ROOT or ~/.claude/skills/teaching; writing when it
 //              is absent), a talk's slides/notes .typ (or any .typ under a `workflow: workshop`
-//              cursor) -> typst, other prose -> writing, tests and shell -> dev, .py under a
+//              cursor) -> typst, addenda/*.typ -> elide, other prose -> writing, tests and shell -> dev, .py under a
 //              `workflow: ds` ACTIVE_WORKFLOW.md -> ds; anything else is left alone. Writing prose
 //              also gets its register set (legal, econ) when that cursor says `style: legal|econ`
 //   scoring    ONE $.process.run of skills/work/scripts/rule-check.ts --batch: the set's own
