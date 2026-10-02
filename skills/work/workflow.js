@@ -1,11 +1,11 @@
 export const meta = {
   name: 'work',
-  description: 'work loop core: sequential plan-bound implementation, blind verification in parallel with mechanical checks, then ONE review lens over their results, JS-computed gate',
+  description: 'work loop core: sequential plan-bound implementation, blind verification for tasks no command settles; work-checks.sh runs every command, then ONE review lens (a farm row) over the digest, JS-computed gate',
   whenToUse: 'Invoked by the work skill after plan approval; never discovers authority — requires planPath + specHash + tasks as args.',
   phases: [
     { title: 'Implement', detail: 'one agent per task, in dependsOn waves (shared working tree); not opened at all under readOnly' },
-    { title: 'Verify', detail: 'per-task blind verifiers when not readOnly, then ONE review lens over a digest of everything the checks reported — diagnose-and-route on red, one open-ended pass on green' },
-    { title: 'Mechanical', detail: 'optional whole-deliverable commands; the agent runs them, the JS reads the exit codes' },
+    { title: 'Verify', detail: 'blind verifiers only for tasks with no acceptanceCmd, never under readOnly; the ONE review lens runs after the checks as a farm row of kind review — diagnose-and-route on red, one open-ended pass on green' },
+    { title: 'Mechanical', detail: 'commands run by work-checks.sh (red after, acceptanceCmd, mechanicalChecks, red-suite re-hash); the JS reads the exit codes' },
     { title: 'Gate', detail: 'JS arithmetic over raw counts; the task dimensions are n/a under readOnly' },
   ],
 }
@@ -80,6 +80,13 @@ for (const t of taskList) {
         'Flags and quotes are fine (pytest tests/x.py -k "a or b"); a shell program is not. ' +
         'If the check genuinely needs several steps, put them in a script and name the script.'
       )
+    }
+  }
+  // acceptanceCmd: the command whose exit code IS this task's acceptance. A task carrying one gets no
+  // verifier agent — work-checks.sh runs it after the workflow returns and the gate reads the code.
+  if (t.acceptanceCmd !== undefined && t.acceptanceCmd !== null) {
+    if (typeof t.acceptanceCmd !== 'string' || !t.acceptanceCmd.trim()) {
+      throw new Error(`work: task ${t.id}: acceptanceCmd must be a non-empty string: ${JSON.stringify(t.acceptanceCmd)}`)
     }
   }
   if (t.dependsOn !== undefined && t.dependsOn !== null) {
@@ -221,6 +228,22 @@ const mechanicalChecks = Array.isArray(args.mechanicalChecks) ? args.mechanicalC
 for (const c of mechanicalChecks) {
   if (!c || !c.name || !c.cmd) throw new Error(`work: mechanicalCheck missing name/cmd: ${JSON.stringify(c)}`)
 }
+// The shell side of the round. work-dispatch.sh runs every red-gated task's redCommand BEFORE launch
+// (`redBefore`, by task id) and hashes the red suite (`redSuiteHashes`: every existing file a
+// redCommand names, plus `redSuite`). work-checks.sh runs red-after, each acceptanceCmd, each
+// mechanical cmd and the re-hash once the agents return, and hands the result back as `round`.
+// No agent ever runs a command whose exit code decides the gate.
+if (args.redSuite !== undefined && (!Array.isArray(args.redSuite) || args.redSuite.some(p => typeof p !== 'string' || !p.trim()))) {
+  throw new Error(`work: redSuite must be an array of path strings: ${JSON.stringify(args.redSuite)}`)
+}
+const isPlainObject = v => !!v && typeof v === 'object' && !Array.isArray(v)
+for (const key of ['redBefore', 'redSuiteHashes', 'round']) {
+  if (args[key] !== undefined && args[key] !== null && !isPlainObject(args[key])) {
+    throw new Error(`work: ${key} must be an object: ${JSON.stringify(args[key])}`)
+  }
+}
+const redBefore = isPlainObject(args.redBefore) ? args.redBefore : {}
+const round = isPlainObject(args.round) ? args.round : null
 const ruleChecksArg = args.ruleChecks
 let ruleChecks = null
 if (ruleChecksArg !== undefined) {
@@ -339,8 +362,8 @@ const implementerAgentType = args.implementerAgentType || null
 const verifierAgentType = args.verifierAgentType || null
 // Every call site spreads `...agentTypeOpt(X)`, which contributes no key at all when X is absent.
 //
-// Read-only agents by default. Under readOnly EVERY dispatched leg — the lens and the mechanical
-// probes — defaults to the Explore agent type, which structurally has no Edit
+// Read-only agents by default. Under readOnly EVERY review leg — the lens row and the scored, attempt
+// and rule probes — defaults to the Explore agent type, which structurally has no Edit
 // and no Write tool. A prompt that says "modify nothing" is a request; an agent type is a boundary,
 // and a readOnly run is exactly the case where the tree must not be touched. Precedence: an explicit
 // lens agentType wins over this default.
@@ -348,15 +371,10 @@ const verifierAgentType = args.verifierAgentType || null
 // agentTypeOpt(null) contributes {}, and agent() receives NO agentType key whatsoever,
 // byte-identical to before this change.
 //
-// The mechanical leg was the gap: it carried no agentType at all, so on a readOnly run it inherited
-// the dispatcher default and COULD write, while the skill built on top of this described readOnly as
-// "nothing can write." Explore is the right type because it keeps Bash — a probe that cannot run its
-// command is not a probe — while removing the tools an agent writes with by choice.
-//
-// RESIDUAL, stated because a boundary nobody can see the edge of is not a boundary: Explore keeps
-// Bash, and a `mechanicalChecks` cmd runs VERBATIM. A caller who passes a command that writes still
-// writes. What this pins is the agent's own volition, not the caller's command — so a readOnly
-// charter must still pass commands that only read.
+// Explore keeps Bash — a probe that cannot run its command is not a probe — while removing the tools
+// an agent writes with by choice. RESIDUAL: `mechanicalChecks` cmds run VERBATIM in work-checks.sh,
+// so a caller who passes a command that writes still writes; a readOnly charter must pass commands
+// that only read.
 const READ_ONLY_AGENT_TYPE = 'Explore'
 const reviewAgentType = explicit => explicit || (readOnly ? READ_ONLY_AGENT_TYPE : null)
 const agentTypeOpt = t => (t ? { agentType: t } : {})
@@ -377,7 +395,7 @@ const kindModels = routingArg.kindModels && typeof routingArg.kindModels === 'ob
   ? routingArg.kindModels : {}
 const routedModel = (explicit, kind, fallback) =>
   isModel(explicit) ? explicit : (isModel(kindModels[kind]) ? kindModels[kind] : fallback)
-// Probe model. A mechanical/red/scored/rules probe RUNS A COMMAND and reports {name,
+// Probe model. A scored/rules probe RUNS A COMMAND and reports {name,
 // exitCode, output}; the JS reads the exit code and no probe asserts a pass. There is no judgement to
 // downgrade, so the session's top tier is spent on process supervision — and probes outnumber
 // every other non-refuter leg. Default sonnet; pass null to inherit the session model.
@@ -467,20 +485,16 @@ const needsRedProbe = t => isRedGated(t) && !provenRedById.has(t.id)
 // floor below is the actual count rather than a floor under an open-ended tail.
 const MAX_AGENTS_DEFAULT = 50
 const maxAgents = Number.isFinite(args.maxAgents) ? args.maxAgents : MAX_AGENTS_DEFAULT
-// Two probes per red-gated task (before + after the implementer). Under readOnly the Implement phase
-// is never opened, so no probe is dispatched and the term is zero. A task carrying a PROVEN red
-// adjudication is not re-probed, so it costs nothing here either.
-const redGatedActive = readOnly ? [] : activeTasks.filter(needsRedProbe)
+// Agents only. A red probe, an acceptanceCmd and a mechanical check are exit codes, and the shell
+// runs them (work-dispatch.sh before launch, work-checks.sh after): none of them costs an agent.
+// A task carrying acceptanceCmd needs no verifier — the command's exit code is its acceptance.
+const verifiedByAgent = t => !t.acceptanceCmd
 const fanOut = {
   implementers: readOnly ? 0 : activeTasks.length,
-  verifiers: readOnly ? 0 : activeTasks.length,
+  verifiers: readOnly ? 0 : activeTasks.filter(verifiedByAgent).length,
   // ONE lens, always dispatched — including on a zero-implementer round, where it is the only
-  // judgement there is.
+  // judgement there is. It runs as one farm.sh row after the checks, not inside this workflow.
   lens: 1,
-  mechanical: mechanicalChecks.length,
-  // Key omitted entirely when nothing is red-gated, so the sizing error a caller without redCommand
-  // sees is byte-identical to before.
-  ...(redGatedActive.length ? { redProbes: redGatedActive.length * 2 } : {}),
   // Key omitted entirely without scoredChecks, so an existing caller's sizing error is unchanged.
   // Advisory agents still cost the same budget as gating ones.
   ...(scoredJobs.length ? { scored: scoredJobs.length } : {}),
@@ -774,15 +788,6 @@ const routedDisposition = (f, why) => ({
   claimedSeverity: f.severity,
   routedBecause: why,
 })
-const MECHANICAL_SCHEMA = {
-  type: 'object',
-  required: ['name', 'exitCode', 'output'],
-  properties: {
-    name: { type: 'string', description: 'the check name exactly as given to you' },
-    exitCode: { type: 'number', description: 'the integer exit status of the command as run, verbatim — never your judgement of whether it passed' },
-    output: { type: 'string', description: 'the last 60 lines of combined stdout+stderr' },
-  },
-}
 const ATTEMPT_SCHEMA = {
   type: 'object',
   required: ['key', 'answer'],
@@ -859,6 +864,7 @@ const digestLines = d => [
         + `${OUTPUT_TAIL_LINES} lines of output:`,
        ...d.mechanicalFailures.flatMap(m => ['', `### ${m.name} — exitCode ${m.exitCode}`, outputTail(m.output)])]
     : []),
+  ...bullets('RED-SUITE FILES CHANGED DURING THE ROUND (each is already a CRITICAL):', d.suiteChanges || []),
   ...bullets('RULE CHECKS THAT FAILED (p >= block-at, or the runner died):', d.rulesThatFailed),
   ...bullets('RULE CHECKLIST (advisory, ranked by p):', d.advisoryRules),
   ...(d.carried.length
@@ -870,9 +876,10 @@ const digestLines = d => [
     : []),
 ]
 
-// Returns {routes, findings, dispositions, carriedRulings, reported}. `reported: false` means the
-// agent produced nothing — the caller synthesizes the critical, and every carried finding stays open.
-const runLensLeg = async digest => {
+// The lens is NOT dispatched from this file: work-stage.mjs reads `lensSpec` from the digest stage
+// and runs it as ONE farm.sh row of kind review, after work-checks.sh has run every command. The
+// prompt and schema are built here so the digest the lens reads is the one the gate reads.
+const lensSpec = digest => {
   const inactiveChannel = digest.mode === MODE_RED ? 'findings' : 'routes'
   const schema = {
     ...LENS_SCHEMA,
@@ -882,30 +889,36 @@ const runLensLeg = async digest => {
       [inactiveChannel]: { ...LENS_SCHEMA.properties[inactiveChannel], maxItems: 0 },
     },
   }
-  const review = await agent(
-    [
-      AUTHORITY,
-      '',
-      'You are the SINGLE READ-ONLY REVIEW LENS for this run. Nothing else reviews this deliverable, so a dimension you skip is a dimension nobody judged.',
-      lens.prompt,
-      ...refLines(lens.refs, JUDGE_REFS_INTRO),
-      ...digestLines(digest),
-      '',
-      'Rules: modify nothing; cite files and lines; run read-only commands and quote their output as your evidence.',
-      'Put a line number in the `line` field, NOT in `file`. A `file` of "src/a.go:135" matches no path in the plan\'s task table, so the fix loop cannot route it and re-runs everything.',
-      'A FINDING IS A DEFECT CLAIM AND NOTHING ELSE. Every entry in `findings` must assert that something is WRONG. "I checked X and it holds", "constraint Y is satisfied", "no violation found", "recorded for completeness" — none of those are findings, and filing one as a finding fails the run on a true statement.',
-      'Put every satisfied check in `dispositions` instead. It is REPORTED to the user in full, so the obligation to show what you examined is discharged there, not by inflating the findings list. If you must file a non-defect under `findings` anyway, set `defect: false` on it.',
-    ].join('\n'),
-    {
-      label: LENS_KEY, phase: 'Verify', schema,
-      ...agentTypeOpt(reviewAgentType(lens.agentType)),
-      ...optIf('model', lensLegModel),
-      ...optIf('effort', lens.effort),
-    }
-  )
-  // A null result is an agent that never reported. An object with empty arrays is a lens that ran and
-  // found nothing — only the first is `reported: false`.
-  if (!review) return { routes: [], findings: [], dispositions: [], carriedRulings: [], reported: false }
+  const prompt = [
+    AUTHORITY,
+    '',
+    'You are the SINGLE READ-ONLY REVIEW LENS for this run. Nothing else reviews this deliverable, so a dimension you skip is a dimension nobody judged.',
+    lens.prompt,
+    ...refLines(lens.refs, JUDGE_REFS_INTRO),
+    ...digestLines(digest),
+    '',
+    'Rules: modify nothing; cite files and lines; run read-only commands and quote their output as your evidence.',
+    'Put a line number in the `line` field, NOT in `file`. A `file` of "src/a.go:135" matches no path in the plan\'s task table, so the fix loop cannot route it and re-runs everything.',
+    'A FINDING IS A DEFECT CLAIM AND NOTHING ELSE. Every entry in `findings` must assert that something is WRONG. "I checked X and it holds", "constraint Y is satisfied", "no violation found", "recorded for completeness" — none of those are findings, and filing one as a finding fails the run on a true statement.',
+    'Put every satisfied check in `dispositions` instead. It is REPORTED to the user in full, so the obligation to show what you examined is discharged there, not by inflating the findings list. If you must file a non-defect under `findings` anyway, set `defect: false` on it.',
+  ].join('\n')
+  return {
+    label: LENS_KEY, kind: 'review', mode: digest.mode, prompt, schema,
+    // Null means "inherit": the key is omitted, never passed as null to the farm row.
+    ...(reviewAgentType(lens.agentType) ? { agentType: reviewAgentType(lens.agentType) } : {}),
+    ...(lensLegModel ? { model: lensLegModel } : {}),
+    ...(lens.effort ? { effort: lens.effort } : {}),
+  }
+}
+
+// Returns {routes, findings, dispositions, carriedRulings, reported}. `reported: false` means the
+// lens produced nothing — the caller synthesizes the critical, and every carried finding stays open.
+const parseLens = review => {
+  // A null (or non-object) result is a lens that never reported. An object with empty arrays is a
+  // lens that ran and found nothing — only the first is `reported: false`.
+  if (!review || typeof review !== 'object' || Array.isArray(review)) {
+    return { routes: [], findings: [], dispositions: [], carriedRulings: [], reported: false }
+  }
 
   // The two defect channels and the disposition channel, separated here. A lens's own `dispositions`
   // are taken as given; a satisfied check it filed under `findings` is ROUTED there instead of
@@ -927,33 +940,10 @@ const runLensLeg = async digest => {
 }
 
 // ---------------------------------------------------------------- red gate (executed, never self-reported)
-// The probe is a separate agent from the implementer and is told nothing about which exit code is
-// wanted — an implementer that reports its own RED certifies its own work (gate-laws L5). Explore
-// unconditionally: a probe that can Edit can make its own command pass.
+// Both sides are run by a SCRIPT, not an agent: work-dispatch.sh runs `before` ahead of launch and
+// work-checks.sh runs `after` once the implementers return. Neither is told which exit code is
+// wanted, and no implementer reports its own RED (gate-laws L5).
 const RED_VERDICT_OK = 'red-green'
-const redProbe = (t, when) => agent(
-  [
-    AUTHORITY,
-    '',
-    `You are a RED PROBE for task ${t.id}. You are not a reviewer, not an implementer, and you fix nothing.`,
-    'Run this command VERBATIM via Bash, from the project directory:',
-    '',
-    t.redCommand,
-    '',
-    'Rules:',
-    '- Run it EXACTLY as written. Do not substitute a different command, do not add or drop flags, do not re-run a "corrected" version.',
-    '- Change nothing. Do not create, edit or delete any file, do not install anything, do not fix whatever the command complains about.',
-    '- Either exit code is a valid and useful answer. Report what happened; do not try to make the command succeed or fail.',
-    `- Report name="${t.id}", exitCode = the command's actual integer exit status (capture it, e.g. append "; echo EXIT=$?"), and output = the last ${OUTPUT_TAIL_LINES} lines of combined stdout+stderr.`,
-    '- Never report an exit code you did not observe. The gate reads your exitCode as fact.',
-  ].join('\n'),
-  { label: `red:${when}:${t.id}`, phase: 'Implement', effort: 'low', schema: MECHANICAL_SCHEMA, ...optIf('model', probeModel),
-    ...agentTypeOpt(READ_ONLY_AGENT_TYPE) }
-// The agent's own id is not evidence — this leg was dispatched for a known task, so stamp it.
-).then(r => (r && Number.isFinite(r.exitCode)
-  ? { ...r, name: t.id }
-  : { name: t.id, exitCode: -1, output: r ? 'probe reported no integer exitCode' : 'probe agent died or was skipped' }))
-
 // Fail closed on an absent probe: -1 on either side is `red-unproven`, never a pass (gate-laws L4).
 // A missing side is unproven for the same reason — nothing observed the command there.
 const redVerdict = (before, after) => {
@@ -963,26 +953,33 @@ const redVerdict = (before, after) => {
   return RED_VERDICT_OK
 }
 
+// What the shell runs this round. `round: {plan: true}` returns it before any agent is dispatched,
+// so work-dispatch.sh probes red-before from this predicate rather than a copy of it in jq.
+const checkPlan = {
+  red: readOnly ? [] : activeTasks.filter(needsRedProbe).map(t => ({ id: t.id, command: t.redCommand })),
+  acceptance: readOnly ? [] : activeTasks.filter(t => t.acceptanceCmd).map(t => ({ id: t.id, command: t.acceptanceCmd })),
+  mechanical: mechanicalChecks.map(c => ({ name: c.name, cmd: c.cmd })),
+}
+if (round && round.plan === true) return { stage: 'plan', checkPlan, fanOut }
+
 // ---------------------------------------------------------------- Implement (sequential: shared working tree)
 // Skipped ENTIRELY under readOnly: the phase is not opened and no implementer agent is dispatched.
-const implemented = []
-// One entry per red-gated task dispatched this run. [] when no task declares redCommand.
-const redResults = []
+// A staged re-entry (`args.round`, see the barrier) replays the agents stage's records instead of
+// dispatching anything: the digest and gate stages are pure arithmetic over what already came back.
+const staged = round ? round.agents : null
+if (round && (!isPlainObject(staged) || !Array.isArray(staged.implemented))) {
+  throw new Error('work: args.round.agents must carry the agents stage\'s output (implemented, verified, …)')
+}
+const implemented = staged ? [...staged.implemented] : []
 // Flat rather than a wrapping `if (!readOnly) { … }` whose body sat at the outer indent — the
 // indentation then lied about the nesting. Same idiom the verify leg uses (`readOnly ? [] : …`):
 // under readOnly the phase is never opened and the loop body never runs, so no agent is dispatched.
-if (!readOnly) phase('Implement')
-// One wave at a time; tasks WITHIN a wave concurrently. Each task keeps its own
-// red-probe → implementer → red-probe chain, so a `redCommand` still brackets its own implementer
-// and never observes a sibling's. With no dependsOn there is exactly one wave and `parallel()` over
-// it preserves array order in its results, so a caller that declared no order sees no change beyond
-// concurrency it did not forbid.
-for (const wave of IMPLEMENT_WAVES) {
+if (!readOnly && !staged) phase('Implement')
+// One wave at a time; tasks WITHIN a wave concurrently. With no dependsOn there is exactly one wave
+// and `parallel()` over it preserves array order in its results. The red bracket is no longer here:
+// `before` ran in the dispatcher ahead of the whole round, `after` runs in work-checks.sh after it.
+for (const wave of staged ? [] : IMPLEMENT_WAVES) {
   const outcomes = await parallel(wave.map(t => async () => {
-  // Absent redCommand => no probe agent is dispatched and nothing below this line differs. A task
-  // carrying a PROVEN red adjudication is not re-probed either: after the fix landed, a second
-  // `before` probe observes exit 0 and returns `red-not-red` on a task that is in fact done (M1).
-  const redBefore = needsRedProbe(t) ? await redProbe(t, 'before') : null
   const r = await agent(
     [
       AUTHORITY,
@@ -1000,55 +997,34 @@ for (const wave of IMPLEMENT_WAVES) {
       'Rules:',
       '- Leave changes in the working tree. Do NOT commit, push, or switch branches.',
       '- Prove acceptance: run the relevant command/check and paste its VERBATIM output as evidence.',
-      '- A separate verifier will judge the files themselves without seeing this report — your report cannot substitute for the work.',
+      ...(t.acceptanceCmd
+        ? [`- After you return, a script runs \`${t.acceptanceCmd}\` from the project directory and its exit code alone decides acceptance — your report cannot substitute for it.`]
+        : ['- A separate verifier will judge the files themselves without seeing this report — your report cannot substitute for the work.']),
       '- If blocked, set done=false and list blockers; do not loosen the acceptance to pass.',
     ].join('\n'),
     { label: `implement:${t.id}`, phase: 'Implement', schema: IMPL_SCHEMA, ...agentTypeOpt(implementerAgentType), ...optIf('model', implementerModelFor(t)), ...optIf('effort', implementerEffort) }
   )
   // The agent's own id is not evidence — this leg was dispatched for a known task, so stamp it.
   const record = r ? { ...r, id: t.id } : { id: t.id, done: false, changedFiles: [], evidence: '', blockers: ['agent died or was skipped'] }
-  let red = null
-  if (needsRedProbe(t)) {
-    // Adjudicated AFTER dispatch, like the contract it ports: a failed verdict fails the task rather
-    // than skipping the implementer, so the second probe always observes the post-implementation tree.
-    const redAfter = await redProbe(t, 'after')
-    red = {
-      id: t.id,
-      command: t.redCommand,
-      verdict: redVerdict(redBefore, redAfter),
-      beforeExit: redBefore ? redBefore.exitCode : -1,
-      afterExit: redAfter ? redAfter.exitCode : -1,
-      beforeOutput: redBefore ? redBefore.output : 'probe agent died or was skipped',
-      afterOutput: redAfter ? redAfter.output : 'probe agent died or was skipped',
-    }
-  }
-  return { record, red }
+  return { record }
   }))
   // parallel() resolves a throwing thunk to null; a null here would drop the task from `implemented`
   // and read downstream as "no such task" rather than "task failed" — fail closed on the task id.
   wave.forEach((t, i) => {
     const o = outcomes[i]
     implemented.push(o ? o.record : { id: t.id, done: false, changedFiles: [], evidence: '', blockers: ['implement leg threw or was dropped'] })
-    if (o && o.red) redResults.push(o.red)
-    else if (!o && needsRedProbe(t)) {
-      redResults.push({
-        id: t.id, command: t.redCommand, verdict: 'red-unproven',
-        beforeExit: -1, afterExit: -1,
-        beforeOutput: 'implement leg threw or was dropped', afterOutput: 'implement leg threw or was dropped',
-      })
-    }
   })
 }
 
-// ------------------------------------- Verify ∥ Mechanical ∥ Scored (barrier, then the lens)
-// The per-task verifiers, the mechanical probes and the scored probes are independent of each other,
-// so they run as one parallel group. The LENS is NOT in that group: it
-// reads their results.
+// ------------------------------------- Verify ∥ Scored ∥ Attempts ∥ Rules (barrier, then the checks)
+// Independent of each other, so one parallel group. The commands and the LENS come after: they read
+// the tree these agents leave behind.
 const verifyLeg = async () => {
   // Under readOnly the per-task verifier fan-out is skipped ENTIRELY — parallel() is not called and
   // no verifier agent is dispatched. `verified` is [] because nothing was judged, which is why the
   // gate marks the task dimensions n/a rather than reading [] as clean.
-  const perTask = readOnly ? [] : await parallel(activeTasks.map(t => () =>
+  const judged = readOnly ? [] : activeTasks.filter(verifiedByAgent)
+  const perTask = readOnly ? [] : await parallel(judged.map(t => () =>
     agent(
       [
         AUTHORITY,
@@ -1066,45 +1042,14 @@ const verifyLeg = async () => {
   ))
   // The agent's own id is not evidence — this leg was dispatched for a known task, so stamp it.
   const verified = perTask.map((v, i) => (v
-    ? { ...v, id: activeTasks[i].id }
-    : { id: activeTasks[i].id, pass: false, evidence: '', failures: ['verifier died or was skipped'] }))
+    ? { ...v, id: judged[i].id }
+    : { id: judged[i].id, pass: false, evidence: '', failures: ['verifier died or was skipped'] }))
 
-  // No lens here. It runs after this leg, over the digest of what this leg and the mechanical checks
-  // reported — which is exactly why it cannot be inside the same parallel group.
   return verified
 }
 
-// Mechanical checks are whole-deliverable: they ALWAYS run, including under onlyTasks, and are never
-// carried forward from priorResults — an empty-set carry-forward would be a vacuous pass.
-const mechanicalLeg = async () => {
-  if (mechanicalChecks.length === 0) return []
-  const results = await parallel(mechanicalChecks.map(c => () =>
-    agent(
-      [
-        AUTHORITY,
-        '',
-        `You are a MECHANICAL PROBE for check "${c.name}". You are not a reviewer and you fix nothing.`,
-        'Run this command VERBATIM via Bash, from the project directory:',
-        '',
-        c.cmd,
-        '',
-        'Rules:',
-        '- Run it EXACTLY as written. Do not substitute a different command, do not add or drop flags, do not re-run a "corrected" version.',
-        '- Change nothing. Do not fix anything the command complains about, do not create missing files, do not install anything.',
-        '- If the command fails, that is the answer. Report it. A non-zero exit code is a valid and useful result.',
-        `- Report name="${c.name}", exitCode = the command's actual integer exit status (capture it, e.g. append "; echo EXIT=$?"), and output = the last ${OUTPUT_TAIL_LINES} lines of combined stdout+stderr.`,
-        '- Never report an exit code you did not observe. The gate reads your exitCode as fact.',
-      ].join('\n'),
-      { label: `mechanical:${c.name}`, phase: 'Mechanical', effort: 'low', schema: MECHANICAL_SCHEMA, ...optIf('model', probeModel),
-        ...agentTypeOpt(reviewAgentType()) }
-    ).then(r => r ? { ...r, name: c.name } : { name: c.name, exitCode: -1, output: 'probe agent died or was skipped' })
-  ))
-  // Fail closed: parallel() may itself yield null slots; those become exitCode -1 → FAILED.
-  return results.map((r, i) => r || { name: mechanicalChecks[i].name, exitCode: -1, output: 'probe agent died or was skipped' })
-}
-
 // ---------------------------------------------------------------- scored checks (counts in, scores computed HERE)
-// Mirrors mechanicalLeg: one agent per item, one parallel group, fail closed per slot. What it does
+// One agent per item, one parallel group, fail closed per slot. What it does
 // not mirror is the gate — no value produced below this line is read by overallPass, on any path.
 const NO_SCORES = { scores: [], scoresRun: null, scoresReported: null }
 // An unmeasured item is null WITH A REASON: never the base (a check that subtracted no penalties
@@ -1239,18 +1184,79 @@ const ruleChecksLeg = async () => {
   return r || { name: ruleChecks.name, exitCode: -1, stdout: 'probe agent died or was skipped' }
 }
 
-const [verifyOut, mechanicalOut, scoredOut, attemptsOut, ruleChecksOut] = await parallel([verifyLeg, mechanicalLeg, scoredLeg, attemptsLeg, ruleChecksLeg])
+const [verifyOut, scoredOut, attemptsOut, ruleChecksOut] = staged
+  ? [staged.verified, staged.scoredResult, staged.attempts, staged.ruleChecksOut]
+  : await parallel([verifyLeg, scoredLeg, attemptsLeg, ruleChecksLeg])
 const attemptsResult = attemptsOut || attempts.map(a => ({ key: a.key, answer: null }))
 // Fail closed at the leg level: a dead verify leg means nothing judged the tasks, not that they passed.
-const verified = verifyOut || (readOnly
+const agentVerified = verifyOut || (readOnly
   ? []
-  : activeTasks.map(t => ({ id: t.id, pass: false, evidence: '', failures: ['verify leg failed'] })))
-// Fail closed once more: if the whole leg died, every declared check is a failure, not a pass.
-const mechanical = mechanicalOut || mechanicalChecks.map(c => ({ name: c.name, exitCode: -1, output: 'mechanical leg failed' }))
+  : activeTasks.filter(verifiedByAgent).map(t => ({ id: t.id, pass: false, evidence: '', failures: ['verify leg failed'] })))
 // Fail closed on the scored leg too. It is NOT joined into `findings` and no conjunct below reads it:
 // a scored value that reached the verdict would make an advisory channel a gate by the back door.
 const scoredResult = scoredOut || deadScoredLeg()
 const scores = scoredResult.scores
+
+// ---------------------------------------------------------------- the round's stages (no shell in here)
+// Every command a round runs — red after, acceptanceCmd, mechanicalChecks, the red-suite re-hash — is
+// run by work-checks.sh, because this sandbox has no shell and an agent wrapped around a command is a
+// model asserting an exit code. So a round re-enters this file in three stages, keyed by args.round:
+//   {plan: true}     -> PLAN:   no agent; checkPlan + fanOut for work-dispatch.sh's red-before
+//   absent           -> AGENTS: implementers + verifiers dispatched; returns `checkPlan` for the script
+//   {agents, checks} -> DIGEST: no agent; returns the digest and the ONE lens row's spec
+//   {…, lens}        -> GATE:   no agent; the full result contract below
+if (!round) {
+  return {
+    stage: 'agents',
+    agents: { implemented, verified: agentVerified, scoredResult, attempts: attemptsResult, ruleChecksOut },
+    checkPlan,
+    fanOut,
+  }
+}
+const checks = isPlainObject(round.checks) ? round.checks : {}
+const checkList = key => (Array.isArray(checks[key]) ? checks[key] : [])
+// A command the script never reported is a command nobody ran: -1, never a pass (gate-laws L4).
+const checkRecord = (key, match) => checkList(key).find(match) || null
+const asExit = r => (r && Number.isInteger(r.exitCode) ? r.exitCode : -1)
+const redResults = checkPlan.red.map(({ id, command }) => {
+  const b = isPlainObject(redBefore[id]) ? redBefore[id] : null
+  const a = checkRecord('red', r => r && r.id === id)
+  const before = b ? { exitCode: asExit(b), output: String(b.output || '') } : null
+  const after = a ? { exitCode: asExit(a), output: String(a.output || '') } : null
+  return {
+    id, command, verdict: redVerdict(before, after),
+    beforeExit: before ? before.exitCode : -1, afterExit: after ? after.exitCode : -1,
+    beforeOutput: before ? before.output : 'the dispatcher recorded no before-probe for this task',
+    afterOutput: after ? after.output : 'work-checks.sh reported no after-probe for this task',
+  }
+})
+const mechanical = mechanicalChecks.map(c => {
+  const r = checkRecord('mechanical', x => x && x.name === c.name)
+  return r ? { name: c.name, exitCode: asExit(r), output: String(r.output || '') }
+    : { name: c.name, exitCode: -1, output: 'work-checks.sh reported no result for this check' }
+})
+// An acceptanceCmd task is judged by its exit code, recorded in the verifier's shape so every
+// downstream reader (carry-forward, taskDims, the digest) is unchanged.
+const commandVerified = checkPlan.acceptance.map(({ id, command }) => {
+  const r = checkRecord('acceptance', x => x && x.id === id)
+  const code = asExit(r)
+  return code === 0
+    ? { id, pass: true, evidence: `\`${command}\` exit 0`, failures: [], byCommand: true }
+    : { id, pass: false, evidence: r ? outputTail(r.output) : '', failures: [r ? `\`${command}\` exit ${code}: ${outputTail(r.output).split('\n').slice(-5).join(' | ')}` : `\`${command}\` was never run (exit -1)`], byCommand: true }
+})
+const verified = [...agentVerified, ...commandVerified]
+// The red suite is the tests a red gate trusts. An edited suite can turn any red green, so a hash
+// change is a CRITICAL that no freeze defers, owned by the task whose writablePaths reach the file.
+const suiteChanged = isPlainObject(checks.suite) && Array.isArray(checks.suite.changed) ? checks.suite.changed : []
+const suiteFindings = suiteChanged.filter(c => c && c.path).map(c => ({
+  title: `[Red suite modified] ${c.path}`,
+  severity: 'critical',
+  file: c.path,
+  detail: `A file the red gate trusts changed during the round (sha256 ${c.before || 'absent'} -> ${c.after || 'absent'}). A red-green pair over an edited suite proves nothing.`,
+  ownerTask: typeof c.owner === 'string' && c.owner ? c.owner : 'plan',
+  lens: 'checks',
+  syntheticSuiteChange: true,
+}))
 
 // ---------------------------------------------------------------- what the checks said (the lens's input)
 // Computed BEFORE the lens, because the mode and the digest are derived from it. The gate below reads
@@ -1329,7 +1335,7 @@ if (ruleChecks) {
 // ---------------------------------------------------------------- the lens (one agent, after the checks)
 // The mode is decided HERE, from the same arrays the gate reads — never by the lens, which would then
 // be choosing how hard to be judged.
-const lensMode = (taskDimsFlagged.length || mechanicalThatFailed.length || rulesThatFailed.length) ? MODE_RED : MODE_GREEN
+const lensMode = (taskDimsFlagged.length || mechanicalThatFailed.length || rulesThatFailed.length || suiteFindings.length) ? MODE_RED : MODE_GREEN
 const dimReason = {
   notDone: 'the implementer reported done=false or never reported',
   missingImpl: 'no implementer record exists for it this round or in priorResults',
@@ -1349,6 +1355,7 @@ const digest = {
   redOutcomes: allRed.map(r =>
     `${r.id}: ${r.verdict} (before exit ${r.beforeExit}, after exit ${r.afterExit}) — ${r.command || 'command not recorded'}`),
   mechanicalFailures: mechanicalThatFailed,
+  suiteChanges: suiteFindings.map(f => `${f.file} (owner ${f.ownerTask}): ${f.detail}`),
   rulesThatFailed: rulesThatFailed.map(id => {
     if (id.startsWith('ruleChecks:')) return `${id} (check died, unparseable, or unavailable is non-empty)`
     const v = ruleVerdicts.find(x => x.rule === id)
@@ -1358,12 +1365,12 @@ const digest = {
   carried: carriedFindings,
   attempts: attemptsResult,
 }
-// parallel() converts a rejected thunk to null, which is how a leg that THREW is told apart from an
-// agent that returned nothing. Both are dead; neither is clean.
-const lensLeg = (await parallel([() => runLensLeg(digest)]))[0]
+if (!('lens' in round)) return { stage: 'digest', mode: lensMode, digest, lens: lensSpec(digest) }
+// null (missing or unparsable lens.json) is a lens that never reported — the dead-lens critical.
+const lensLeg = parseLens(round.lens)
 const lensResult = lensLeg && lensLeg.reported ? lensLeg : {
   routes: [],
-  findings: [deadLensFinding(lensLeg ? 'it produced no result' : 'its leg threw or was dropped before it could report')],
+  findings: [deadLensFinding('it produced no parseable result')],
   dispositions: [],
   carriedRulings: [],
   reported: false,
@@ -1371,7 +1378,8 @@ const lensResult = lensLeg && lensLeg.reported ? lensLeg : {
 const lensReported = lensResult.reported
 const lensFindings = [
   ...lensResult.findings,
-  ...attemptsResult.filter(a => !a.answer).map(a => deadAttemptFinding(a.key))
+  ...attemptsResult.filter(a => !a.answer).map(a => deadAttemptFinding(a.key)),
+  ...suiteFindings,
 ]
 const routes = lensResult.routes
 // Satisfied checks the lens reported, plus any it filed as a finding and the backstop routed out.
@@ -1405,8 +1413,11 @@ const isBlocking = f => f.severity === 'critical' || f.severity === 'major'
 // The synthesized dead-lens critical is NOT a fresh finding: it is the absence of the adjudication
 // the freeze depends on, so it gates in both modes (gate-laws L4). Separating it here is what keeps
 // `freezeFindingSet` from deferring a review that never happened into residue.
-const deadLensBlocking = lensFindings.filter(f => f.syntheticDeadLens || f.syntheticDeadAttempt)
-const freshBlocking = lensFindings.filter(f => !(f.syntheticDeadLens || f.syntheticDeadAttempt) && isBlocking(f))
+// A red-suite change is the same kind of fact — observed by a script, not judged by the lens — so the
+// freeze cannot defer it either; unlike the dead lens it names a file and an owner, so it routes.
+const isSynthetic = f => f.syntheticDeadLens || f.syntheticDeadAttempt || f.syntheticSuiteChange
+const deadLensBlocking = lensFindings.filter(isSynthetic)
+const freshBlocking = lensFindings.filter(f => !isSynthetic(f) && isBlocking(f))
 // Under freezeFindingSet the blocking channel is the CARRIED set only: a fresh blocking lens finding
 // is residue — reported, never gating. `residue` is [] (and both keys absent from the return) without
 // the flag.

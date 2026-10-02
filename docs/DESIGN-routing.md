@@ -67,8 +67,13 @@ plus bulk when a task declares it: at most four calls, never per task or step), 
 `args.routing` `{kindModels, source: table|jev, decisions}`. The claude wrapper hosts the run and
 each step names its kind's full id. A refusal for any kind blocks the round before anything runs.
 `--provider` stays the whole-run override: `{source: flag, provider}`, `route.ts` not consulted.
-Step to kind: an implementer is `judgement` or its task's `kind`; the verifier and every probe (red,
-mechanical, scored, rules) are `script`; the lens is `review`. An explicit model wins.
+Step to kind: an implementer is `judgement` or its task's `kind`; the verifier (only for a task with
+no `acceptanceCmd`) and the scored and rules legs are `script`; the lens is `review`. An explicit
+model wins. Red probes, `acceptanceCmd`s and mechanical checks are not steps and have no kind: the
+dispatcher runs red-before and hashes the red suite, and `work-round.sh` runs the rest through
+`work-checks.sh` after `farm.sh --workflow` returns the agents stage. The lens is ONE
+`farm.sh --tasks` row of kind review whose `provider` and `model` come from `args.routing` /
+`args.lens.model` — `route.ts` is not re-asked — with `expect` on its JSON.
 
 **`lensProvider`** (CLARIFY axis 6) adds `provider` to the review row; `route.ts` answers a
 kind+provider row with no model by that provider's first available candidate in the kind's chain

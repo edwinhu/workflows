@@ -38,9 +38,10 @@ function script(dir: string, name: string, body: string) {
 }
 
 /**
- * A stand-in for farm.sh, reached through WORK_FARM (work-dispatch.sh:64). It writes the verdict
- * the case needs to the --out path it was handed, which is exactly the contract the real runner has
- * with work — so the loop under test polls a real file written by a real detached process.
+ * A stand-in for the round runner, reached through WORK_ROUND. It writes the verdict the case needs
+ * to the RESULT path it was handed (ARGS RESULT CWD HOST), which is exactly the contract
+ * work-round.sh has with the dispatcher — so the loop under test polls a real file written by a
+ * real detached process. The real chain is covered by realChainFarm below.
  */
 function stubFarm(dir: string, pass: boolean, delaySec = 0) {
   const verdict = JSON.stringify({
@@ -54,14 +55,46 @@ function stubFarm(dir: string, pass: boolean, delaySec = 0) {
     mechanical: [],
   })
   return script(dir, 'stub-farm.sh', [
-    'out=""',
-    'while [ $# -gt 0 ]; do case "$1" in --out) out="$2"; shift 2 ;; *) shift ;; esac; done',
+    'out="$2"   # work-round.sh ARGS RESULT CWD HOST',
     '[ -n "$out" ] || exit 2',
     `sleep ${delaySec}`,
     `cat > "$out" <<'VERDICT'`,
     verdict,
     'VERDICT',
   ].join('\n'))
+}
+
+/**
+ * A protocol-correct farm.sh for the REAL work-round.sh: --workflow runs workflow.js's agents stage
+ * with a stub implementer that creates src/done (turning the red gate green) and a passing
+ * verifier; --tasks writes a clean lens reply to the row's `expect` path.
+ */
+function realChainFarm(dir: string) {
+  const agents = join(dir, 'agents.mjs')
+  writeFileSync(agents, `
+import { readFileSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { load } from ${JSON.stringify(join(import.meta.dir, 'work-stage.mjs'))}
+const [argsPath, out] = process.argv.slice(2)
+const args = JSON.parse(readFileSync(argsPath, 'utf8'))
+const agent = async (_p, o) => {
+  const id = o.label.split(':')[1]
+  if (o.label.startsWith('implement:')) { writeFileSync(join(args.projectDir, 'src', 'done'), 'y'); return { id, done: true, changedFiles: ['src/done'], evidence: 'e' } }
+  if (o.label.startsWith('verify:')) return { id, pass: true, evidence: 'e', failures: [] }
+  return null
+}
+const parallel = ts => Promise.all(ts.map(async t => { try { return await t() } catch { return null } }))
+const pipeline = async (items, ...st) => { const o = []; for (let i = 0; i < items.length; i++) { let v = items[i]; try { for (const s of st) v = await s(v, items[i], i); o.push(v) } catch { o.push(null) } } return o }
+writeFileSync(out, JSON.stringify(await load()(args, agent, () => {}, parallel, pipeline, () => {})))
+`)
+  return script(dir, 'real-farm.sh', `set -eu
+while [ $# -gt 0 ]; do case $1 in
+  --args) a=$2; shift 2;; --out) out=$2; shift 2;; --tasks) rows=$2; shift 2;; *) shift;; esac; done
+if [ -n "\${rows:-}" ]; then
+  printf '%s' '{"routes":[],"findings":[],"carried":[],"dispositions":[]}' > "$(jq -r '.[0].expect[0]' "$rows")"
+  exit 0
+fi
+bun ${JSON.stringify(agents)} "$a" "$out"`)
 }
 
 /** A lint-clean plan whose one task carries a genuinely-red gate, so no probe tier refuses. */
@@ -132,7 +165,7 @@ function loopExit(runDir: string, timeoutMs = 120_000): string {
 describe('--loops 0 is today\'s behaviour, unchanged', () => {
   test('the wait heredoc still prints and the script still exits 0', () => {
     const f = fixture()
-    const r = dispatch(f, { WORK_FARM: stubFarm(f.dir, true) }, '--loops', '0')
+    const r = dispatch(f, { WORK_ROUND: stubFarm(f.dir, true), WORK_FARM: '/bin/false' }, '--loops', '0')
     expect(r.code).toBe(0)
     expect(r.out).toMatch(HEREDOC)
   })
@@ -147,7 +180,7 @@ describe('the default when --loops is omitted is the plan\'s maxRounds', () => {
    */
   test('a plan carrying maxRounds loops rather than printing, and honours that number', () => {
     const f = fixture({ maxRounds: 1 })
-    const r = dispatch(f, { WORK_FARM: stubFarm(f.dir, false) })   // no --loops at all
+    const r = dispatch(f, { WORK_ROUND: stubFarm(f.dir, false), WORK_FARM: '/bin/false' })   // no --loops at all
     expect(r.out).not.toMatch(HEREDOC)
     expect(r.out).toMatch(DETACHED)
     expect(r.code).toBe(0)                    // the hand-off succeeded; the verdict is the loop's
@@ -156,7 +189,7 @@ describe('the default when --loops is omitted is the plan\'s maxRounds', () => {
 
   test('a plan with no maxRounds falls back to 3 rather than to zero or to unbounded', () => {
     const f = fixture()
-    const r = dispatch(f, { WORK_FARM: stubFarm(f.dir, true) })    // no --loops at all
+    const r = dispatch(f, { WORK_ROUND: stubFarm(f.dir, true), WORK_FARM: '/bin/false' })    // no --loops at all
     expect(r.out).not.toMatch(HEREDOC)
     expect(r.out).toMatch(DETACHED)
     expect(r.code).toBe(0)
@@ -167,13 +200,24 @@ describe('the default when --loops is omitted is the plan\'s maxRounds', () => {
 describe('--loops N > 0 hands the driver off DETACHED instead of printing', () => {
   test('the heredoc is NOT printed, the script returns at once, and the detached loop reaches the PASS verdict', () => {
     const f = fixture()
-    const r = dispatch(f, { WORK_FARM: stubFarm(f.dir, true) }, '--loops', '2')
+    const r = dispatch(f, { WORK_ROUND: stubFarm(f.dir, true), WORK_FARM: '/bin/false' }, '--loops', '2')
     expect(r.out).not.toMatch(HEREDOC)
     expect(r.out).toMatch(DETACHED)
     expect(r.code).toBe(0)
     expect(loopExit(f.runDir)).toBe('0')
     expect(existsSync(join(f.runDir, 'result.json'))).toBe(true)
     expect(existsSync(join(f.runDir, 'loop.log'))).toBe(true)
+  })
+
+  test('the REAL work-round.sh under a protocol-correct farm.sh turns the red gate green and PASSes', () => {
+    const f = fixture()
+    script(f.dir, 'check.sh', '[ -f src/done ] && exit 0\necho "1 failed, 0 passed"\nexit 1')
+    const r = dispatch(f, { WORK_FARM: realChainFarm(f.dir) }, '--loops', '1')
+    expect(r.code).toBe(0)
+    expect(loopExit(f.runDir)).toBe('0')
+    const res = JSON.parse(readFileSync(join(f.runDir, 'result.json'), 'utf8'))
+    expect(res.overallPass).toBe(true)
+    expect(existsSync(join(f.dir, 'src', 'done'))).toBe(true)
   })
 
   /**
@@ -194,7 +238,7 @@ describe('--loops N > 0 hands the driver off DETACHED instead of printing', () =
       encoding: 'utf8',
       cwd: f.dir,
       env: { ...process.env, CLAUDE_CODE_SESSION_ID: '', WORK_LOOP_POLL: '1', WORK_NO_SCOPE: '1',
-             WORK_FARM: stubFarm(f.dir, true, 4) },
+             WORK_ROUND: stubFarm(f.dir, true, 4), WORK_FARM: '/bin/false' },
     }).trim()
 
     const deadline = Date.now() + 120_000
@@ -211,7 +255,7 @@ describe('--loops N > 0 hands the driver off DETACHED instead of printing', () =
 
   test('a failing gate at the loop cap surfaces the driver\'s halt code in loop.exit, not a bare 0', () => {
     const f = fixture()
-    const r = dispatch(f, { WORK_FARM: stubFarm(f.dir, false) }, '--loops', '1')
+    const r = dispatch(f, { WORK_ROUND: stubFarm(f.dir, false), WORK_FARM: '/bin/false' }, '--loops', '1')
     expect(r.code).toBe(0)
     expect(loopExit(f.runDir)).toBe('6')
   })
@@ -220,7 +264,7 @@ describe('--loops N > 0 hands the driver off DETACHED instead of printing', () =
 describe('--loops validation', () => {
   test('a non-numeric value is refused with exit 2 naming the flag, before anything is dispatched', () => {
     const f = fixture()
-    const r = dispatch(f, { WORK_FARM: stubFarm(f.dir, true) }, '--loops', 'lots')
+    const r = dispatch(f, { WORK_ROUND: stubFarm(f.dir, true), WORK_FARM: '/bin/false' }, '--loops', 'lots')
     expect(r.code).toBe(2)
     expect(r.out).toContain('--loops')
     expect(existsSync(join(f.runDir, 'args.json'))).toBe(false)
@@ -228,7 +272,7 @@ describe('--loops validation', () => {
 
   test('a missing value is refused with exit 2 rather than swallowing the plan path as the count', () => {
     const f = fixture()
-    const r = dispatch(f, { WORK_FARM: stubFarm(f.dir, true) }, '--loops')
+    const r = dispatch(f, { WORK_ROUND: stubFarm(f.dir, true), WORK_FARM: '/bin/false' }, '--loops')
     expect(r.code).toBe(2)
   })
 })
