@@ -7,9 +7,9 @@
  * Precedence, highest first:
  *   1. an explicit model in args — implementerModel, verifierModel, probeModel, lens.model;
  *   2. args.routing.kindModels — the implementer takes kindModels[task.kind ?? 'judgement'], the
- *      verifier and the remaining agent probe (rules) take kindModels.script, and the lens
- *      takes kindModels.review. The red and mechanical probes are no longer agents: the dispatcher
- *      and work-checks.sh run them as commands, so no model reaches them;
+ *      verifier takes kindModels.script, and the lens takes kindModels.review. The red, mechanical
+ *      and rule-check probes are no longer agents: the dispatcher and work-checks.sh run them as
+ *      commands, so no model reaches them;
  *   3. today's defaults — probe sonnet, verifier sonnet, implementer inherit, lens sonnet. Those are
  *      already pinned by workflow.test.ts ("the lens defaults to sonnet…") and are not restated here.
  *
@@ -31,7 +31,7 @@ const routing = (kindModels: Record<string, string> = KIND_MODELS) => ({
   kindModels, source: 'table', decisions: {},
 })
 
-/** One run that dispatches every routed leg: implement, verify, rules, lens — and scripts red + mechanical. */
+/** One run that dispatches every routed leg: implement, verify, lens — and scripts red, mechanical + rules. */
 const allLegs = (over: any = {}, taskOver: any = {}) => ({
   ...baseArgs,
   tasks: [task({ redCommand: 'bash scripts/check.sh', ...taskOver })],
@@ -50,9 +50,7 @@ const dispatchOpts = async (args: any) => {
 }
 
 // Commands run by a script: they reach the reply stub flagged `scripted`, never through agent().
-const SCRIPTED = ['red:before:T1', 'red:after:T1', 'mechanical:tests']
-// The probe legs that are still agents read the same model setting.
-const PROBES = ['rules:rules']
+const SCRIPTED = ['red:before:T1', 'red:after:T1', 'mechanical:tests', 'rules:rules']
 
 describe('kindModels routes each leg when no explicit model is given', () => {
   test('the implementer of a kind-less task takes kindModels.judgement', async () => {
@@ -72,12 +70,8 @@ describe('kindModels routes each leg when no explicit model is given', () => {
     expect(opts.get('verify:T1')?.model).toBe('script-model')
   })
 
-  test('every agent probe takes kindModels.script; red before/after and mechanical are scripts with no model', async () => {
+  test('red before/after, mechanical and rules are scripts with no model', async () => {
     const opts = await dispatchOpts(allLegs())
-    for (const label of PROBES) {
-      expect(opts.has(label)).toBe(true)
-      expect({ label, model: opts.get(label)?.model }).toEqual({ label, model: 'script-model' })
-    }
     for (const label of SCRIPTED) {
       expect({ label, scripted: opts.get(label)?.scripted, model: opts.get(label)?.model }).toEqual({ label, scripted: true, model: undefined })
     }
@@ -103,16 +97,16 @@ describe('an explicit model in args beats kindModels, leg by leg', () => {
     expect(opts.get('verify:T1')?.model).toBe('script-model')
   })
 
-  test('verifierModel wins for the verifier; the probes still route', async () => {
+  test('verifierModel wins for the verifier; the other legs still route', async () => {
     const opts = await dispatchOpts(allLegs({ verifierModel: 'explicit-verify' }))
     expect(opts.get('verify:T1')?.model).toBe('explicit-verify')
-    for (const label of PROBES) expect({ label, model: opts.get(label)?.model }).toEqual({ label, model: 'script-model' })
+    expect(opts.get('lens')?.model).toBe('review-model')
     expect(opts.get('implement:T1')?.model).toBe('judgement-model')
   })
 
-  test('probeModel wins for every probe; the verifier still routes', async () => {
+  test('probeModel reaches no scripted probe; the verifier still routes', async () => {
     const opts = await dispatchOpts(allLegs({ probeModel: 'explicit-probe' }))
-    for (const label of PROBES) expect({ label, model: opts.get(label)?.model }).toEqual({ label, model: 'explicit-probe' })
+    for (const label of SCRIPTED) expect({ label, model: opts.get(label)?.model }).toEqual({ label, model: undefined })
     expect(opts.get('verify:T1')?.model).toBe('script-model')
     expect(opts.get('implement:T1')?.model).toBe('judgement-model')
   })

@@ -25,8 +25,8 @@ function load(path) {
  * then the DIGEST stage, the ONE lens row work-stage.mjs would farm out, and the GATE stage.
  * @param args      the args object the workflow receives (args.round set => one stage, as given)
  * @param agentReply (label, prompt, opts) => result | null   — null models a dead/skipped agent, and
- *                   for a scripted command (red:before/red:after/acceptance/mechanical) a command
- *                   that could not run (exit -1)
+ *                   for a scripted command (red:before/red:after/acceptance/mechanical/rules) a
+ *                   command that could not run (exit -1)
  * @param overrides  replace a hook wholesale, e.g. {pipeline: () => Promise.reject(...)}. The
  *                   default stubs swallow a per-ITEM throw, so a LEG-level rejection — what a real
  *                   dispatcher does on budget exhaustion — is only reachable by replacing the hook.
@@ -35,7 +35,7 @@ function load(path) {
  *   dispatched         every MODEL agent the round cost: workflow.js's agents plus the farmed lens
  *   workflowDispatched only what workflow.js itself dispatched through agent()
  *   scripted           every command a script ran, labelled red:before:<id>, red:after:<id>,
- *                      acceptance:<id>, mechanical:<name>
+ *                      acceptance:<id>, mechanical:<name>, rules:<name>
  *   order              agents and scripted commands interleaved, in the order the round ran them
  */
 export async function run(args, agentReply, path = WORKFLOW, overrides = {}) {
@@ -103,11 +103,22 @@ export async function run(args, agentReply, path = WORKFLOW, overrides = {}) {
   if (!agentsStage || agentsStage.stage !== 'agents') return out({ result: agentsStage })
   const plan = agentsStage.checkPlan
   const checks = {
-    red: [], acceptance: [], mechanical: [], suite: { checked: 0, changed: [] },
+    red: [], acceptance: [], mechanical: [], rules: [], suite: { checked: 0, changed: [] },
   }
   for (const { id, command: c } of plan.red) checks.red.push({ id, command: c, ...(await command(`red:after:${id}`, c)) })
   for (const { id, command: c } of plan.acceptance) checks.acceptance.push({ id, command: c, ...(await command(`acceptance:${id}`, c)) })
   for (const { name, cmd } of plan.mechanical) checks.mechanical.push({ name, cmd, ...(await command(`mechanical:${name}`, cmd)) })
+  // A rule check's reply is {exitCode, stdout}; one that could not run records -1, as work-checks.sh does.
+  for (const { name, cmd } of plan.rules || []) {
+    scripted.push(`rules:${name}`)
+    order.push(`rules:${name}`)
+    prompts.set(`rules:${name}`, cmd)
+    let r = null
+    try { r = await agentReply(`rules:${name}`, cmd, { label: `rules:${name}`, scripted: true }) } catch { r = null }
+    checks.rules.push(r && Number.isInteger(r.exitCode)
+      ? { name, cmd, exitCode: r.exitCode, stdout: String(r.stdout ?? ''), output: '' }
+      : { name, cmd, exitCode: -1, stdout: '', output: `could not run: ${cmd}` })
+  }
   Object.assign(checks, checksOverride || {})
 
   const staged = { ...args, redBefore }

@@ -796,7 +796,7 @@ describe('the fan-out sizing print counts one lens and no refuters', () => {
     expect(r.out).toMatch(/fan-out floor 6 vs maxAgents 50/)
   })
 
-  test('the fan-out print counts ruleChecks', () => {
+  test('the fan-out print lists ruleChecks as scripted, outside the agent floor', () => {
     const f = fixture({
       redCommand: 'bash scripts/check.sh',
       extraArgs: {
@@ -807,8 +807,9 @@ describe('the fan-out sizing print counts one lens and no refuters', () => {
     const r = dispatch(f)
     if (r.code !== 0) console.log(r.out)
     expect(r.code).toBe(0)
-    expect(r.out).toMatch(/rule=1\b/)
-    expect(r.out).toMatch(/fan-out floor 4 vs maxAgents 50/)
+    expect(r.out).toMatch(/scripted \(no agent\):.*rule-checks=1\b/)
+    expect(r.out).not.toMatch(/ rule=1\b/)
+    expect(r.out).toMatch(/fan-out floor 3 vs maxAgents 50/)
   })
 
   // M1. A task carrying a PROVEN red pair is not re-probed by workflow.js, so it must not be counted

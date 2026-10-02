@@ -1018,8 +1018,8 @@ a = json.load(open(sys.argv[1]))
 t = a.get("tasks") or []
 only = a.get("onlyTasks")
 active = [x for x in t if x.get("id") in set(only)] if isinstance(only, list) else t
-# Mirror workflow.js fanOut: agents only. Red before/after, acceptanceCmds and mechanicalChecks are
-# exit codes the shell runs (the probe above, work-checks.sh after) and cost no agent; a task carrying
+# Mirror workflow.js fanOut: agents only. Red before/after, acceptanceCmds, mechanicalChecks and
+# ruleChecks are commands the shell runs (the probe above, work-checks.sh after) and cost no agent; a task carrying
 # acceptanceCmd needs no verifier.
 ro = bool(a.get("readOnly"))
 impl = 0 if ro else len(active)
@@ -1035,10 +1035,10 @@ carried = len(a.get("carriedFindings") or []) + len(a.get("priorFindings") or []
 scored = sum(len(s.get("items") or []) for s in (a.get("scoredChecks") or []))
 att = len(a.get("attempts") or [])
 rule = 1 if a.get("ruleChecks") else 0
-floor = impl + ver + lens + scored + att + rule
+floor = impl + ver + lens + scored + att
 print(f"  readOnly={ro} tasks={len(t)} active={impl} verifiers={ver} lens={lens} "
-      f"scored={scored} carried={carried} attempts={att} rule={rule}")
-print(f"  scripted (no agent): red-before={red} acceptanceCmd={acc} mech={mech}")
+      f"scored={scored} carried={carried} attempts={att}")
+print(f"  scripted (no agent): red-before={red} acceptanceCmd={acc} mech={mech} rule-checks={rule}")
 print(f"  fan-out floor {floor} vs maxAgents {a.get('maxAgents', 50)}")
 PY
 red_summary "$out"

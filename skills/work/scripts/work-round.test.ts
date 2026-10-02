@@ -3,14 +3,15 @@
 /**
  * The scripted half of a work round — every leg an exit code decides, and the ONE lens row.
  *
- *   work-checks.sh   an unrunnable command is exitCode -1; output keeps the last 60 lines; a
+ *   work-checks.sh   an unrunnable command is exitCode -1, and so is a rule check with no JSON line;
+ *                    output keeps the last 60 lines; a
  *                    red-suite file whose hash moved is a change owned by the covering task, else 'plan'
  *   work-stage.mjs   the digest maps owners and pre-flags out-of-scope paths; a suite change is a
  *                    CRITICAL in the gate
  *   work-round.sh    the lens is ONE farm.sh --tasks row of kind review, carrying lens.model and
  *                    lens.agentType, with `expect` on its JSON; route.ts is not re-asked
  *   work-result.sh   PASS/FAIL verdicts on an assembled result are the verdicts it always gave
- *   workflow.js      dispatches zero red/mechanical/lens agents, and no verifier for an acceptanceCmd task
+ *   workflow.js      dispatches zero red/mechanical/rules/lens agents, and no verifier for an acceptanceCmd task
  *
  * No model and no network: farm.sh is a stub (WORK_FARM), FARM_OUTCOMES and TMPDIR are temp paths.
  *
@@ -338,9 +339,78 @@ describe('workflow.js dispatches no agent for anything a command decides', () =>
     expect(fanOut).toMatchObject({ implementers: 2, verifiers: 1, lens: 1 })
   })
 
+  test('ruleChecks costs no agent: the round scripts rules:<name> and dispatches no rules: label', async () => {
+    const args = { ...baseArgs, tasks: [task()], ruleChecks: { name: 'rules', cmd: 'bun rule-check.ts', blockAt: 0.85 } }
+    const { workflowDispatched, scripted, checkPlan } = await run(args, replies())
+    expect(workflowDispatched.filter((l: string) => /^rules\b/.test(l))).toEqual([])
+    expect(scripted).toContain('rules:rules')
+    expect(checkPlan.rules).toEqual([{ name: 'rules', cmd: 'bun rule-check.ts' }])
+  })
+
   test('the plan stage dispatches nothing at all', async () => {
     const { result } = await runStage({ ...baseArgs, tasks: [task({ redCommand: 'pytest a' })], lens: { prompt: 'p', refs: [] } }, { plan: true })
     expect(result.stage).toBe('plan')
     expect(result.checkPlan.red).toEqual([{ id: 'T1', command: 'pytest a' }])
+  })
+})
+
+describe('work-checks.sh runs ruleChecks.cmd and records {name, exitCode, stdout}', () => {
+  const VIOLATED = '{"verdicts":[{"rule":"R1","p":0.9,"verdict":"VIOLATED"}],"unavailable":[]}'
+  const MET = '{"verdicts":[{"rule":"R1","p":0.1,"verdict":"MET"}],"unavailable":[]}'
+  const stub = (dir: string, line: string, code: number) => {
+    const p = join(dir, 'rule-check.sh')
+    writeFileSync(p, `#!/usr/bin/env bash\necho 'scanning…' >&2\necho 'progress'\necho '${line}'\nexit ${code}\n`)
+    chmodSync(p, 0o755)
+    return p
+  }
+
+  test('VIOLATED: exit 2 and the JSON line are recorded as the rule check printed them', () => {
+    const dir = repo({ 'a.txt': 'a' })
+    const r = checks({ projectDir: dir, tasks: [] }, { rules: [{ name: 'rules', cmd: `bash ${stub(dir, VIOLATED, 2)}` }] })
+    expect(r.code).toBe(0)
+    expect(r.checks.rules).toHaveLength(1)
+    expect(r.checks.rules[0]).toMatchObject({ name: 'rules', exitCode: 2, stdout: VIOLATED })
+  })
+
+  test('MET: exit 0 and the JSON line', () => {
+    const dir = repo({ 'a.txt': 'a' })
+    const r = checks({ projectDir: dir, tasks: [] }, { rules: [{ name: 'rules', cmd: `bash ${stub(dir, MET, 0)}` }] })
+    expect(r.checks.rules[0]).toMatchObject({ name: 'rules', exitCode: 0, stdout: MET })
+  })
+
+  test('a crashing cmd, or one that prints no JSON object, fails closed at -1', () => {
+    const dir = repo({ 'a.txt': 'a' })
+    const r = checks({ projectDir: dir, tasks: [] }, { rules: [
+      { name: 'crash', cmd: 'exit 127' },
+      { name: 'absent', cmd: 'definitely-not-a-command-xyz' },
+      { name: 'prose', cmd: 'echo "all rules met"; exit 0' },
+      { name: 'array', cmd: 'echo "[1,2]"; exit 0' },
+    ] })
+    for (const name of ['crash', 'absent', 'prose', 'array']) {
+      const rec = r.checks.rules.find((x: any) => x.name === name)
+      expect({ name, exitCode: rec?.exitCode }).toEqual({ name, exitCode: -1 })
+    }
+  })
+
+  test('the gate blocks on the recorded VIOLATED line', async () => {
+    const dir = repo({ 'a.txt': 'a' })
+    const rec = checks({ projectDir: dir, tasks: [] }, { rules: [{ name: 'rules', cmd: `bash ${stub(dir, VIOLATED, 2)}` }] }).checks.rules[0]
+    const args = { ...baseArgs, tasks: [task()], ruleChecks: { name: 'rules', cmd: 'x', blockAt: 0.85 } }
+    const r = await run(args, replies({ rules: { rules: { exitCode: rec.exitCode, stdout: rec.stdout } } }))
+    expect(r.result.rulesThatFailed.length).toBeGreaterThan(0)
+    expect(r.result.rulesThatFailed.join(' ')).toMatch(/R1/)
+  })
+  test('the digest lists a failed rule with its owner; a clean rule check is settled', () => {
+    const tasks = [{ id: 'T1', writablePaths: ['src/'] }, { id: 'T2', writablePaths: ['lib/'] }]
+    const rc = { name: 'rules', cmd: 'bun rule-check.ts', blockAt: 0.85 }
+    const stdout = '{"verdicts":[{"rule":"R1 lib/b.ts","p":0.9,"verdict":"VIOLATED"}],"unavailable":[]}'
+    const gate = (failed: string[]) => ({ mode: 'RED', digest: { rulesThatFailed: failed }, agents: { implemented: [], verified: [] } })
+    const dir = repo({ 'a.txt': 'a' })
+    const d = buildDigest({ tasks, ruleChecks: rc }, { rules: [{ name: 'rules', cmd: rc.cmd, exitCode: 2, stdout, output: '' }] }, gate(['R1 lib/b.ts: p=0.9 — VIOLATED']), dir)
+    expect(d.failures.map((f: any) => [f.check, f.owner, f.exitCode, f.command])).toEqual([['rules:rules', 'T2', 2, 'bun rule-check.ts']])
+    expect(d.failures[0].output).toMatch(/R1 lib\/b\.ts: p=0\.9/)
+    const clean = buildDigest({ tasks, ruleChecks: rc }, { rules: [{ name: 'rules', cmd: rc.cmd, exitCode: 0, stdout: '{"verdicts":[],"unavailable":[]}', output: '' }] }, gate([]), dir)
+    expect(clean.failures).toEqual([])
+    expect(clean.settled.map((s: any) => s.check)).toEqual(['rules:rules'])
   })
 })

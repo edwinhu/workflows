@@ -485,8 +485,8 @@ const needsRedProbe = t => isRedGated(t) && !provenRedById.has(t.id)
 // floor below is the actual count rather than a floor under an open-ended tail.
 const MAX_AGENTS_DEFAULT = 50
 const maxAgents = Number.isFinite(args.maxAgents) ? args.maxAgents : MAX_AGENTS_DEFAULT
-// Agents only. A red probe, an acceptanceCmd and a mechanical check are exit codes, and the shell
-// runs them (work-dispatch.sh before launch, work-checks.sh after): none of them costs an agent.
+// Agents only. A red probe, an acceptanceCmd, a mechanical check and ruleChecks are commands, and the
+// shell runs them (work-dispatch.sh before launch, work-checks.sh after): none of them costs an agent.
 // A task carrying acceptanceCmd needs no verifier — the command's exit code is its acceptance.
 const verifiedByAgent = t => !t.acceptanceCmd
 const fanOut = {
@@ -499,7 +499,6 @@ const fanOut = {
   // Advisory agents still cost the same budget as gating ones.
   ...(scoredJobs.length ? { scored: scoredJobs.length } : {}),
   ...(attempts.length ? { attempts: attempts.length } : {}),
-  ...(ruleChecks ? { ruleChecks: 1 } : {}),
 }
 const fanOutFloor = Object.values(fanOut).reduce((a, b) => a + b, 0)
 if (fanOutFloor > maxAgents) {
@@ -796,16 +795,6 @@ const ATTEMPT_SCHEMA = {
     answer: { type: 'string' },
   },
 }
-const RULE_CHECKS_SCHEMA = {
-  type: 'object',
-  required: ['name', 'exitCode', 'stdout'],
-  properties: {
-    name: { type: 'string', description: 'the check name exactly as given to you' },
-    exitCode: { type: 'number', description: 'the integer exit status of the command as run, verbatim — never your judgement of whether it passed' },
-    stdout: { type: 'string', description: 'the single JSON line the command printed, copied verbatim' },
-  },
-}
-
 // ---------------------------------------------------------------- the lens leg (runs AFTER the checks)
 // ONE lens, dispatched after the per-task verifiers and the mechanical checks have all reported,
 // over a DIGEST of what they said. The order is the whole design: a reviewer that
@@ -959,6 +948,7 @@ const checkPlan = {
   red: readOnly ? [] : activeTasks.filter(needsRedProbe).map(t => ({ id: t.id, command: t.redCommand })),
   acceptance: readOnly ? [] : activeTasks.filter(t => t.acceptanceCmd).map(t => ({ id: t.id, command: t.acceptanceCmd })),
   mechanical: mechanicalChecks.map(c => ({ name: c.name, cmd: c.cmd })),
+  rules: ruleChecks ? [{ name: ruleChecks.name, cmd: ruleChecks.cmd }] : [],
 }
 if (round && round.plan === true) return { stage: 'plan', checkPlan, fanOut }
 
@@ -1016,7 +1006,7 @@ for (const wave of staged ? [] : IMPLEMENT_WAVES) {
   })
 }
 
-// ------------------------------------- Verify ∥ Scored ∥ Attempts ∥ Rules (barrier, then the checks)
+// ------------------------------------------- Verify ∥ Scored ∥ Attempts (barrier, then the checks)
 // Independent of each other, so one parallel group. The commands and the LENS come after: they read
 // the tree these agents leave behind.
 const verifyLeg = async () => {
@@ -1163,30 +1153,9 @@ const attemptsLeg = async () => {
   return results.map((r, i) => r || { key: attempts[i].key, answer: null })
 }
 
-const ruleChecksLeg = async () => {
-  if (!ruleChecks) return null
-  const r = await agent(
-    [
-      AUTHORITY,
-      '',
-      `You are a RULE CHECKS PROBE for "${ruleChecks.name}". You are not a reviewer and you fix nothing.`,
-      'Run this command VERBATIM via Bash, from the project directory:',
-      '',
-      ruleChecks.cmd,
-      '',
-      'Rules:',
-      '- Run it EXACTLY as written. Do not substitute a different command, do not add or drop flags.',
-      '- Change nothing.',
-      `- Report name="${ruleChecks.name}", exitCode = the command's actual integer exit status, and stdout = the single JSON line the command printed to stdout, copied verbatim.`,
-    ].join('\n'),
-    { label: `rules:${ruleChecks.name}`, phase: 'Verify', effort: 'low', schema: RULE_CHECKS_SCHEMA, ...optIf('model', probeModel), ...agentTypeOpt(reviewAgentType()) }
-  )
-  return r || { name: ruleChecks.name, exitCode: -1, stdout: 'probe agent died or was skipped' }
-}
-
-const [verifyOut, scoredOut, attemptsOut, ruleChecksOut] = staged
-  ? [staged.verified, staged.scoredResult, staged.attempts, staged.ruleChecksOut]
-  : await parallel([verifyLeg, scoredLeg, attemptsLeg, ruleChecksLeg])
+const [verifyOut, scoredOut, attemptsOut] = staged
+  ? [staged.verified, staged.scoredResult, staged.attempts]
+  : await parallel([verifyLeg, scoredLeg, attemptsLeg])
 const attemptsResult = attemptsOut || attempts.map(a => ({ key: a.key, answer: null }))
 // Fail closed at the leg level: a dead verify leg means nothing judged the tasks, not that they passed.
 const agentVerified = verifyOut || (readOnly
@@ -1198,7 +1167,7 @@ const scoredResult = scoredOut || deadScoredLeg()
 const scores = scoredResult.scores
 
 // ---------------------------------------------------------------- the round's stages (no shell in here)
-// Every command a round runs — red after, acceptanceCmd, mechanicalChecks, the red-suite re-hash — is
+// Every command a round runs — red after, acceptanceCmd, mechanicalChecks, ruleChecks, the red-suite re-hash — is
 // run by work-checks.sh, because this sandbox has no shell and an agent wrapped around a command is a
 // model asserting an exit code. So a round re-enters this file in three stages, keyed by args.round:
 //   {plan: true}     -> PLAN:   no agent; checkPlan + fanOut for work-dispatch.sh's red-before
@@ -1208,7 +1177,7 @@ const scores = scoredResult.scores
 if (!round) {
   return {
     stage: 'agents',
-    agents: { implemented, verified: agentVerified, scoredResult, attempts: attemptsResult, ruleChecksOut },
+    agents: { implemented, verified: agentVerified, scoredResult, attempts: attemptsResult },
     checkPlan,
     fanOut,
   }
@@ -1218,6 +1187,8 @@ const checkList = key => (Array.isArray(checks[key]) ? checks[key] : [])
 // A command the script never reported is a command nobody ran: -1, never a pass (gate-laws L4).
 const checkRecord = (key, match) => checkList(key).find(match) || null
 const asExit = r => (r && Number.isInteger(r.exitCode) ? r.exitCode : -1)
+// The {name, exitCode, stdout} record work-checks.sh wrote; missing or -1 fails closed below.
+const ruleChecksOut = ruleChecks ? checkRecord('rules', r => r && r.name === ruleChecks.name) : null
 const redResults = checkPlan.red.map(({ id, command }) => {
   const b = isPlainObject(redBefore[id]) ? redBefore[id] : null
   const a = checkRecord('red', r => r && r.id === id)
@@ -1298,7 +1269,7 @@ const ruleVerdicts = []
 if (ruleChecks) {
   let parsed = null
   let parseFailed = false
-  if (!ruleChecksOut || ruleChecksOut.exitCode === -1) {
+  if (!ruleChecksOut || asExit(ruleChecksOut) === -1) {
     parseFailed = true
   } else {
     try {
