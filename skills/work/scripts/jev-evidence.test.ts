@@ -4,7 +4,9 @@ import { join } from "path";
 import { spawnSync } from "child_process";
 import * as fs from "fs";
 
-const RULES = ["DEN", "DQ4", "A4", "DQ1", "DQ6", "R1", "E7", "M1", "UNI", "A1"];
+const WIRED = ["A1"];
+const UNCALIBRATED = ["DEN", "DQ4", "A4", "DQ1", "DQ6", "R1", "E7", "M1", "UNI"];
+const RULES = [...UNCALIBRATED, ...WIRED];
 const BASE_DIR = join(import.meta.dir, "../../..");
 
 async function getEvidence(rule: string, twin: "sat" | "vio") {
@@ -12,17 +14,18 @@ async function getEvidence(rule: string, twin: "sat" | "vio") {
     let ext = "py";
     if (rule === "A4") ext = "md";
     const file = join(BASE_DIR, `tests/fixtures/jev/${rule}/${twin}/test.${ext}`);
-    const { stdout } = await $`python3 ${py} --files ${file}`.quiet();
+    const dir = UNCALIBRATED.includes(rule) ? ["--rules-dir", join(BASE_DIR, "constraints/jev/uncalibrated")] : [];
+    const { stdout } = await $`python3 ${py} --files ${file} ${dir}`.quiet();
     return JSON.parse(stdout.toString());
 }
 
-test("evidence.py discovers all ten rules", async () => {
-    const state = await getEvidence("DEN", "sat");
-    expect(Object.keys(state).sort()).toEqual(RULES.sort());
+test("evidence.py discovers only the wired rules; the uncalibrated ones sit below the glob", async () => {
+    expect(Object.keys(await getEvidence("A1", "sat")).sort()).toEqual([...WIRED].sort());
+    expect(Object.keys(await getEvidence("DEN", "sat")).sort()).toEqual([...UNCALIBRATED].sort());
 });
 
 test("every rule's criteria carry the four options", async () => {
-    const state = await getEvidence("DEN", "sat");
+    const state = { ...(await getEvidence("A1", "sat")), ...(await getEvidence("DEN", "sat")) };
     for (const r of RULES) {
         expect(Object.keys(state[r].criteria).sort()).toEqual([
             "INSUFFICIENT_EVIDENCE",
@@ -93,9 +96,7 @@ test('evidence.py labels files relative to --root', async () => {
     const { stdout } = await $`python3 ${py} --files ${testFile} --root ${tmpDir}`.quiet();
     const stateAll = JSON.parse(stdout.toString());
     
-    // Check DEN or another rule that echoes files
-    const denState = stateAll['DEN'].state;
-    // We just check if the path is data/output/x.csv
-    const fileMatches = denState.files.some((f: any) => f.path === 'data/output/x.csv');
+    const a1State = stateAll['A1'].state;
+    const fileMatches = a1State.files.some((f: any) => f.path === 'data/output/x.csv');
     expect(fileMatches).toBe(true);
 });

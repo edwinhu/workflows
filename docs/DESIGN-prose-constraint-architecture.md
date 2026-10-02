@@ -383,7 +383,7 @@ They are now split four ways:
   - `W-ATTRIB` covers vague attribution and unsourced statistics.
 
   `evidence.py --rules-dir` reads that directory alone. Each rule declares `DELIVERABLE = 'prose'`,
-  so the preamble names a prose deliverable, and the default ten ds rules are untouched.
+  so the preamble names a prose deliverable, and the default ds rules are untouched.
 - **Advisory, never gating.** This bucket holds the soft Strunk table, bold density, the em-dash
   budget and the quote and modal rates. The reason is `skills/work/references/scored-checks.md`:
   advisory scores never gate.

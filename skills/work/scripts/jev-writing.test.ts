@@ -35,9 +35,9 @@ test("--rules-dir writing discovers exactly the wired W- rules, each a prose rul
   }
 });
 
-test("the default rules directory still yields the ten ds rules and no writing rule", () => {
+test("the default rules directory still yields the wired ds rules and no writing rule", () => {
   const out = evidence(null, "W-HEDGE", "vio");
-  expect(Object.keys(out)).toHaveLength(10);
+  expect(Object.keys(out)).toEqual(["A1"]);
   expect(Object.keys(out).some(k => k.startsWith("W-"))).toBe(false);
 });
 

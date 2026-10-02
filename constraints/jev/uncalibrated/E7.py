@@ -1,3 +1,6 @@
+"""UNCALIBRATED -- not wired. Calibration 2026-10-02: margin +0.02: violating 0.04, compliant 0.01. Nothing in the state separates a constant named "limit" from one named "ceiling".
+Kept here, below the glob rule-check.ts reads, until the question or the extractor earns it back.
+"""
 import re
 from _common import _search, render_json
 

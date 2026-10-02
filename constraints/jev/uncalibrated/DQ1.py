@@ -1,3 +1,6 @@
+"""UNCALIBRATED -- not wired. Calibration 2026-10-02: margin +0.50 but violating only 0.63, and 0.58-0.73 on every other rule's fixtures: an absence of profiling reads as a violation on any file.
+Kept here, below the glob rule-check.ts reads, until the question or the extractor earns it back.
+"""
 import re
 from _common import _search, render_json
 
