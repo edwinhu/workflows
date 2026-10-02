@@ -87,6 +87,16 @@ export function buildDigest(args, checks, gate, cwd) {
     const row = { kind: 'mechanical', check: `mechanical:${r.name}`, command: r.cmd, exitCode: r.exitCode, output: tail(r.output), owner: r.exitCode === 0 ? null : ownerFromOutput(tasks, r.output) }
     ;(r.exitCode === 0 ? settled : failures).push(row)
   }
+  // One row for the rule check, failed when the gate's rulesThatFailed is non-empty (p >= blockAt, or
+  // a record that is missing, -1 or unparsable). The owner is named the way a mechanical one is.
+  if (args.ruleChecks) {
+    const rc = args.ruleChecks
+    const rec = (checks.rules || []).find(r => r && r.name === rc.name) || null
+    const failed = (gate.digest && gate.digest.rulesThatFailed) || []
+    const output = [...failed, tail(rec ? rec.stdout || rec.output : 'work-checks.sh reported no rule-check record')].filter(Boolean).join('\n')
+    const row = { kind: 'rules', check: `rules:${rc.name}`, command: rc.cmd, exitCode: rec && Number.isInteger(rec.exitCode) ? rec.exitCode : -1, output, owner: failed.length ? ownerFromOutput(tasks, `${output}\n${rec ? rec.output || '' : ''}`) : null }
+    ;(failed.length ? failures : settled).push(row)
+  }
   for (const c of (checks.suite && checks.suite.changed) || []) {
     failures.push({ kind: 'suite', check: `suite:${c.path}`, command: `sha256 ${c.path}`, exitCode: 1, output: `${c.before || 'absent'} -> ${c.after || 'absent'}`, owner: c.owner, severity: 'critical' })
   }

@@ -2061,14 +2061,25 @@ test('rulesThatFailed gates under freezeFindingSet', async () => {
   expect(result.rulesThatFailed).toEqual(['R1'])
 })
 
-test('fan-out counts ruleChecks', async () => {
-  const stdout = JSON.stringify({ verdicts: [], unavailable: [] })
+test('ruleChecks costs no agent: the shell runs it, so fan-out stays 3 under maxAgents 3', async () => {
   const r = await runCatching(
     { ...baseArgs, tasks: one, maxAgents: 3, ruleChecks: { name: 'rules', cmd: 'x' } },
     replies()
   )
-  expect(r.threw).toBe(true)
-  expect(String(r.error)).toContain('fan-out 4 exceeds maxAgents 3')
+  expect(r.threw).toBe(false)
+  expect((r as any).fanOut.ruleChecks).toBeUndefined()
+  expect((r as any).scripted).toContain('rules:rules')
+  expect((r as any).workflowDispatched.filter((l: string) => l.startsWith('rules:'))).toEqual([])
+  expect((r as any).checkPlan.rules).toEqual([{ name: 'rules', cmd: 'x' }])
+})
+
+test('a rules record work-checks.sh never wrote fails closed', async () => {
+  const { result } = await run(
+    { ...baseArgs, tasks: one, ruleChecks: { name: 'rules', cmd: 'x' } },
+    replies(), undefined, { checks: { rules: [] } }
+  )
+  expect(result.overallPass).toBe(false)
+  expect(result.rulesThatFailed).toEqual(['ruleChecks:rules'])
 })
 
 test('invalid blockAt throws', async () => {

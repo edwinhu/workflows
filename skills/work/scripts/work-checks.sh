@@ -6,10 +6,12 @@
 # ARGS  the staged args (projectDir, tasks, redSuiteHashes from work-dispatch.sh)
 # RAW   the AGENTS stage's output (farm.sh --workflow --out), whose checkPlan names the commands
 # OUT   {red:[{id,command,exitCode,output}], acceptance:[…], mechanical:[{name,cmd,exitCode,output}],
-#        suite:{checked, changed:[{path,before,after,owner}]}}
+#        rules:[{name,cmd,exitCode,stdout,output}], suite:{checked, changed:[{path,before,after,owner}]}}
 #
 # A command that cannot run — timeout, cannot spawn, exit 126/127 — records exitCode -1, which the
 # gate reads as unproven, never as a pass. Output keeps the LAST 60 lines: the evidence is at the end.
+# A rule check's stdout is its last non-empty stdout line, which must parse as a JSON object, else -1;
+# its stderr tail goes to output.
 # A red-suite file whose sha256 differs from the dispatcher's is a change owned by the task whose
 # writablePaths reach it, else by 'plan'. WORK_CHECK_TIMEOUT (seconds, default 1800) bounds each command.
 set -euo pipefail
@@ -46,14 +48,41 @@ def run(cmd):
         return -1, f'could not run (exit {p.returncode}): {cmd}\n{out}'
     return p.returncode, out
 
+def run_rules(cmd):
+    try:
+        p = subprocess.run(['bash', '-c', cmd], cwd=cwd, capture_output=True, text=True,
+                           errors='replace', timeout=timeout)
+    except subprocess.TimeoutExpired:
+        return -1, '', f'could not run: timed out after {timeout}s: {cmd}'
+    except OSError as e:
+        return -1, '', f'could not run: {e}: {cmd}'
+    err = tail(p.stderr or '')
+    if p.returncode in (126, 127):
+        return -1, tail(p.stdout or ''), f'could not run (exit {p.returncode}): {cmd}\n{err}'
+    lines = [l for l in (p.stdout or '').splitlines() if l.strip()]
+    line = lines[-1].strip() if lines else ''
+    try:
+        ok = isinstance(json.loads(line), dict)
+    except ValueError:
+        ok = False
+    if not ok:
+        return -1, tail(p.stdout or ''), f'no JSON object on stdout (exit {p.returncode}): {cmd}\n{err}'
+    return p.returncode, line, err
+
 jobs = [('red', r['id'], r['command']) for r in plan.get('red') or []] \
      + [('acceptance', r['id'], r['command']) for r in plan.get('acceptance') or []] \
-     + [('mechanical', r['name'], r['cmd']) for r in plan.get('mechanical') or []]
+     + [('mechanical', r['name'], r['cmd']) for r in plan.get('mechanical') or []] \
+     + [('rules', r['name'], r['cmd']) for r in plan.get('rules') or []]
 with ThreadPoolExecutor(max_workers=max(1, min(8, len(jobs)))) as ex:
-    results = list(ex.map(lambda j: run(j[2]), jobs))
+    results = list(ex.map(lambda j: run_rules(j[2]) if j[0] == 'rules' else run(j[2]), jobs))
 
-out = {'red': [], 'acceptance': [], 'mechanical': []}
-for (kind, key, cmd), (code, text) in zip(jobs, results):
+out = {'red': [], 'acceptance': [], 'mechanical': [], 'rules': []}
+for (kind, key, cmd), res in zip(jobs, results):
+    if kind == 'rules':
+        code, stdout, text = res
+        out[kind].append({'name': key, 'cmd': cmd, 'exitCode': code, 'stdout': stdout, 'output': text})
+        continue
+    code, text = res
     if kind == 'mechanical':
         out[kind].append({'name': key, 'cmd': cmd, 'exitCode': code, 'output': text})
     else:
@@ -92,7 +121,7 @@ out['suite'] = {'checked': len(hashes), 'changed': changed}
 with open(out_path, 'w') as fh:
     json.dump(out, fh, indent=2)
     fh.write('\n')
-bad = [f"{k}:{r.get('id') or r.get('name')}={r['exitCode']}" for k in ('red', 'acceptance', 'mechanical') for r in out[k] if r['exitCode'] != 0]
+bad = [f"{k}:{r.get('id') or r.get('name')}={r['exitCode']}" for k in ('red', 'acceptance', 'mechanical', 'rules') for r in out[k] if r['exitCode'] != 0]
 print(f"work-checks: {len(jobs)} command(s), {len(bad)} non-zero{(' (' + ', '.join(bad) + ')') if bad else ''}; "
       f"red suite {len(hashes)} file(s), {len(changed)} changed -> {out_path}")
 PY

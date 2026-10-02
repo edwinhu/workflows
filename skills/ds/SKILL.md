@@ -217,7 +217,7 @@ Omitting it silently runs the user's codex request on claude.
     { name: "ds",
       cmd: "bash ${CLAUDE_PLUGIN_ROOT}/skills/ds/scripts/check.sh --plan <planPath> --project-dir <projectDir> [--test-cmd \"<the project's test command>\"] [--lint-cmd \"<the project's lint command>\"]" },
   ],
-  // Jev scores the ten DS rules; a rule with p >= 0.85 lands in rulesThatFailed and blocks, lower ones reach the lens as a ranked checklist.
+  // work-checks.sh runs it as a command (no agent); Jev scores the ten DS rules; a rule with p >= 0.85 lands in rulesThatFailed and blocks, lower ones reach the lens as a ranked checklist.
   ruleChecks: { name: "jev-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --project-dir <projectDir> --plan <planPath>" },
 
   // One lens after verification and mechanical checks; its checklist covers all five dimensions.
