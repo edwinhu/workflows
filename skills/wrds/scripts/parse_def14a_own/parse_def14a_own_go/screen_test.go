@@ -525,3 +525,41 @@ func TestProseTailIsNotAHolder(t *testing.T) {
 		t.Fatalf("want only Valhi, got %s", names(got))
 	}
 }
+
+// A whole-number percent repeated down the column is kept only when each holder
+// carries its own share count that rounds to it (three 7% holders of one small
+// issuer). Holders that report ONE shared block -- the Hyperion partnerships and
+// their two principals, 12,415,333 shares and 64% each in 0000950136-98-000422 --
+// are the group membership pct_repeats drops, even though the block rounds right.
+func TestRoundedPctRepeatNeedsDistinctShares(t *testing.T) {
+	row := func(i int, name string, sh, pct float64) Row {
+		return Row{HolderName: name, TableIndex: 1, RowIndex: i, Shares: pf(sh), Percent: pf(pct)}
+	}
+	shared := []Row{
+		row(1, "Hyperion Partners II L.P", 12415333, 64),
+		row(2, "Hyperion TW Fund L.P", 12415333, 64),
+		row(3, "Lewis S. Ranieri", 12415333, 64),
+		row(4, "Scott A. Shay", 12415333, 64),
+		row(5, "John Smith", 970000, 5),
+		row(6, "Mary Jones", 1940000, 10),
+		row(7, "Ann Lee", 19400, 0.1),
+	}
+	got := ScreenRows(shared)
+	for _, r := range got {
+		if r.Shares != nil && *r.Shares == 12415333 {
+			t.Errorf("shared 64%% block kept: %s", names(got))
+			break
+		}
+	}
+	distinct := []Row{
+		row(1, "Gary E. Alexander", 1367201, 8),
+		row(2, "William D. Kiesel", 1295563, 7),
+		row(3, "Robert McNamee", 1205826, 7),
+		row(4, "Jerry Phipps", 1215826, 7),
+		row(5, "Ann Lee", 180000, 1),
+	}
+	got = ScreenRows(distinct)
+	if len(got) != 5 {
+		t.Errorf("distinct rounded 7%% holders dropped: %d of 5 kept: %s", len(got), names(got))
+	}
+}
