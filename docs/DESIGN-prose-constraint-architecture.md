@@ -368,3 +368,36 @@ receipt-selected plan under `.planning/.state/review.json`. It now walks up to t
 `.claude/plans/*.md` carrying a `work:dispatch` block and a `## Writing Intent` heading. The plan
 grammar it parses — `Domain:` under Writing Intent, `Notebook:` under Source Plan — is unchanged,
 which is why the domain style guides still load for the right drafts.
+
+## 8. Jev rule checks and a style script (2026-10-02)
+
+The register rules were all graded by the lens, so every one was a judgement nobody could compute.
+They are now split four ways:
+
+- **Scripted.** `skills/writing/scripts/writing_style_check.py` handles Ship-table diction,
+  ALL-CAPS emphasis and register-crossing markers. It runs as a leg of `check.sh`, inside the one
+  `writing` mechanical entry, because P10 allows one entry.
+- **Judged by Jev.** `ruleChecks` scores `constraints/jev/writing/*.py` through `rule-check.ts --rules`:
+  - `W-SIGNPOST` covers prose that announces instead of saying;
+  - `W-HEDGE` covers stacked hedges;
+  - `W-ATTRIB` covers vague attribution and unsourced statistics.
+
+  `evidence.py --rules-dir` reads that directory alone. Each rule declares `DELIVERABLE = 'prose'`,
+  so the preamble names a prose deliverable, and the default ten ds rules are untouched.
+- **Advisory, never gating.** This bucket holds the soft Strunk table, bold density, the em-dash
+  budget and the quote and modal rates. The reason is `skills/work/references/scored-checks.md`:
+  advisory scores never gate.
+- **Lens only.** This bucket holds the VINDICATED and dropped phrases, metaphor, elegant variation
+  and the four writing judgements.
+
+A rule is wired only if live Jev scores its violating fixture ≥ 0.85 and an accepted passage < 0.5.
+Two rules failed that bar:
+
+| Rule | Result | Why |
+|---|---|---|
+| `W-FIGURES` | violating fixture scored 0.71, then 0.68 | manufactured contrast and aphoristic closers |
+| `W-BULLETS` | accepted passage scored 0.87 | a numbered list of settled questions in `DESIGN-third-party-review.md` |
+
+Both sit in `constraints/jev/writing/uncalibrated/`, which the glob does not descend into. The lens
+keeps those two under the tic table. No `scoredChecks` entry was removed: `writing` had none, and
+`elide-case`'s legibility and fidelity are covered by no rule.

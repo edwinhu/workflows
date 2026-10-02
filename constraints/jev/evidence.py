@@ -11,6 +11,7 @@ def main(my_dir=None):
     parser.add_argument('--files', nargs='+', required=True)
     parser.add_argument('--plan')
     parser.add_argument('--root')
+    parser.add_argument('--rules-dir', help='directory of rule modules; default: this one')
     args = parser.parse_args()
 
     root_dir = args.root
@@ -43,11 +44,15 @@ def main(my_dir=None):
             print(f"Warning: could not read plan file {args.plan}: {e}", file=sys.stderr)
 
     out = {}
-    my_dir = my_dir or os.path.dirname(os.path.abspath(__file__))
-    if my_dir not in sys.path:
-        sys.path.insert(0, my_dir)
+    here = os.path.dirname(os.path.abspath(__file__))
+    # --rules-dir, or a rules subdirectory's own evidence.py calling main(<its dir>), or this one
+    rules_dir = os.path.abspath(args.rules_dir) if args.rules_dir else (my_dir or here)
+    # a rules subdirectory's modules import _common from here and their own helpers from there
+    for d in (here, rules_dir):
+        if d not in sys.path:
+            sys.path.insert(0, d)
 
-    for path in glob.glob(os.path.join(my_dir, "*.py")):
+    for path in sorted(glob.glob(os.path.join(rules_dir, "*.py"))):
         name = os.path.basename(path)
         if name.startswith('_') or name == 'evidence.py':
             continue
@@ -59,7 +64,8 @@ def main(my_dir=None):
         out[mod_name] = {
             'state': state,
             'proposition': mod.PROPOSITION,
-            'criteria': mod.CRITERIA
+            'criteria': mod.CRITERIA,
+            'deliverable': getattr(mod, 'DELIVERABLE', 'data-science')
         }
         if getattr(mod, 'SUBJECT', None):
             out[mod_name]['subject'] = mod.SUBJECT

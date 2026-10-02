@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 import { spawnSync } from 'child_process';
+import { existsSync } from 'fs';
 import { join, basename, dirname } from 'path';
 import { decisionsCall } from '../../../hooks/work-hold.ts';
 
@@ -8,7 +9,8 @@ let projectDir = '';
 let projectOverride = '';
 let plan = '';
 let blockAt = 0.85;
-let rulesDir = join(__dirname, '../../../constraints/jev');
+const defaultRulesDir = join(__dirname, '../../../constraints/jev');
+let rulesDir = defaultRulesDir;
 
 const argv = process.argv.slice(2);
 for (let i = 0; i < argv.length; i++) {
@@ -73,7 +75,14 @@ if (projectDir) {
   argsList.push('--root', projectDir);
 }
 
-const evidenceRes = spawnSync('python3', [join(rulesDir, 'evidence.py'), ...argsList], { encoding: 'utf8' });
+// a rules directory without its own evidence.py (constraints/jev/writing) is run by the default one
+let evidenceScript = join(rulesDir, 'evidence.py');
+if (!existsSync(evidenceScript)) {
+  evidenceScript = join(defaultRulesDir, 'evidence.py');
+  argsList.push('--rules-dir', rulesDir);
+}
+
+const evidenceRes = spawnSync('python3', [evidenceScript, ...argsList], { encoding: 'utf8' });
 if (evidenceRes.status !== 0) {
   console.error("evidence.py failed:", evidenceRes.stderr);
   process.exit(1);
@@ -101,14 +110,14 @@ const verdicts: Verdict[] = [];
 const unavailable: Unavailable[] = [];
 
 for (const [ruleName, data] of Object.entries(evidenceData)) {
-  const { state, proposition, criteria, subject } = data as any;
+  const { state, proposition, criteria, subject, deliverable } = data as any;
   
   let filePaths: string[] = [];
   if (state && state.files && Array.isArray(state.files)) {
     filePaths = state.files.map((f: any) => f.path).filter(Boolean);
   }
   
-  const preamble = `You are auditing ${subject || 'one data-science deliverable'} against a written RULE.\nPROJECT: ${projectName}\nEVIDENCE: ${filePaths.join(', ')}\nThe state is a JSON object. Named fields carry what the extractor found; \`searches\` records every pattern looked for, every file covered, and an EMPTY match list where nothing matched -- an absence is a fact, not a gap.\n\n`;
+  const preamble = `You are auditing ${subject || `one ${deliverable ?? 'data-science'} deliverable`} against a written RULE.\nPROJECT: ${projectName}\nEVIDENCE: ${filePaths.join(', ')}\nThe state is a JSON object. Named fields carry what the extractor found; \`searches\` records every pattern looked for, every file covered, and an EMPTY match list where nothing matched -- an absence is a fact, not a gap.\n\n`;
   
   let fullState = preamble + JSON.stringify(state, null, 1);
   if (fullState.length > 60000) {
