@@ -71,7 +71,7 @@ const COUNTS: [string, (s: any) => number][] = [
   ["L-FNARG", s => s.discursive_footnotes.reduce((a: number, x: any) => a + x.discursive_words, 0)],
   ["L-DIGEST", s => s.runs_of_case_paragraphs.reduce((a: number, r: any) => a + r.n_paragraphs, 0)],
   ["L-SUPRA", s => s.supra_short_forms.filter((x: any) => x.authority_kind_hint_from_that_clause
-    .some((k: string) => ["case", "statute", "bill or other legislative material"].includes(k))).length],
+    .some((k: string) => ["case", "statute", "regulation", "bill or other legislative material"].includes(k))).length],
   ["E-WEFIND", s => s.n_listed_with_no_exhibit_in_sentence_neighbours_or_paragraph],
   ["E-CITEFORM", s => s.n_text_citation_candidates + s.n_footnote_citation_candidates],
   ["E-CAUSAL", s => s.n_causal_language_sentences_listed],

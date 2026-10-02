@@ -4,7 +4,7 @@
  *
  * WHERE THE INPUTS COME FROM. The existing suites, run here with GUARD_PARITY_RECORD set: the golden
  * cases of the five guards that have them, plus the spawn-based tests of pgrep-self-match,
- * cron-delete-guard (both halves), read-guard, work-abandon and typst-convention-guard. Each script invocation records its
+ * bun-parallel-guard, cron-delete-guard (both halves), read-guard, work-abandon and typst-convention-guard. Each script invocation records its
  * stdin, cwd, environment and every file it observed (hooks/guards/cli.ts). Nothing here restates a
  * fixture.
  *
@@ -12,7 +12,8 @@
  * then fed to (1) the script, spawned as hooks.json spawned it, and (2) the mod's tool.call handler
  * from registerGuards, narrowed to that one guard, over a node-backed `$`. The deny text, the
  * context text, and the files left behind must be identical. When git can produce the pre-port tree
- * (PARITY_BASE, default the commit before the port), (3) the ORIGINAL script runs too and must agree.
+ * (PARITY_BASE, default the commit before the port), (3) the ORIGINAL script runs too and must agree
+ * — for the guards that existed then; one written after the port has no original.
  *
  * WHAT CANNOT REACH A MOD. A payload that is not a JSON object, or whose tool_input is not an object:
  * the engine hands a tool.call hook the tool's parsed arguments, never raw stdin. Those records are
@@ -45,7 +46,7 @@ const tape = join(mkTmp('parity-tape-', P), 'tape.jsonl')
 const recEnv = { ...process.env, GUARD_PARITY_RECORD: tape }
 const sources: [string, string[]][] = [
   ['bun', ['scripts/hook-golden.ts', 'image-read-guard', 'suggest-compact', 'atomic-constraint-guard', 'typst-convention-guard', 'validate-skill-paths', '--quiet']],
-  ['bun', ['test', 'tests/pgrep-self-match.test.ts', 'tests/cron-delete-guard.test.ts', 'hooks/read-guard.test.ts', 'tests/work-abandon.test.ts']],
+  ['bun', ['test', '--parallel', 'tests/pgrep-self-match.test.ts', 'tests/bun-parallel-guard.test.ts', 'tests/cron-delete-guard.test.ts', 'hooks/read-guard.test.ts', 'tests/work-abandon.test.ts']],
   // The typst goldens all assert silence; this harness holds the cases that report.
   ['bun', ['tests/typst-convention-guard.test.mjs']],
 ]
@@ -266,7 +267,7 @@ describe('script and mod handler agree on every recorded input', () => {
         expect(handler.files).toEqual(script.files)
         // Never an approval: a deny, or the result next(e) gave with context added — nothing else.
         expect(handler.keys.every(k => ['deny', 'result', 'context'].includes(k))).toBe(true)
-        if (baseRoot) {
+        if (baseRoot && existsSync(join(baseRoot, 'hooks', r.script))) {
           const original = runScript(r, baseRoot)
           expect({ deny: original.deny, context: original.context }).toEqual({ deny: script.deny, context: script.context })
           expect(original.files).toEqual(script.files)

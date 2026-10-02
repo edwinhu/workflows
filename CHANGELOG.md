@@ -1,10 +1,13 @@
 # Changelog
 
-## [Unreleased]
+## [6.37.1] - 2026-10-02
 
 ### Changed
 
+- **A guard denies a multi-file `bun test` without `--parallel`.** `hooks/guards/bun-test.ts`, run in the guards mod on Bash (`bun-parallel-guard`): `bun test` over several paths, a directory or name filter, a glob or the whole repo, with no `--parallel`, is denied with the remedy (`bun test --parallel ...` or `scripts/test.sh`, TMPDIR outside `~/.tmp`). A single file, `--help`, `--parallel`, `scripts/test.sh` and harnesses that run bun internally pass, and a target the text cannot settle (a variable, a substitution, a quoted glob, `xargs`) is allowed. bun 1.4.0 has no bunfig or environment default for `--parallel` (`[test] parallel = true` is silently ignored), so the flag is the only switch. A serial run took 661-881 s from `~/.tmp` vs 63 s parallel.
 - **Jev `A-PAD` exempts fact rows and is wired.** A line, list item or table row carrying a number, threshold, measurement, date or named incident that backs a rule the file states is a fact row, never padding; narrated history with no number or incident, and restated rationale, still are. The extractor reads list items one at a time and reports `fact_row` and `backs_rule` per passage. Moved out of `constraints/jev/authoring/uncalibrated/` after two consecutive `rule-calibrate --set authoring --runs 2` passes (the accepted State Files doctrine now 0.21-0.31, the violating twin 0.98).
+- **Jev `L-SUPRA` is wired and follows Bluebook rule 4.2.** Moved out of `constraints/jev/legal/uncalibrated/`. An unenacted bill and a statute cited through an institutional author may not take supra. A Federal Register final or proposed rule is a regulation (rule 14.2(a)), so it takes no supra either: its short form is the rule 14.6(c) form (`Title, 60 Fed. Reg. at 50381`) when the rule was cited in the same footnote or one of the five before it, and the full cite otherwise. A release outside the Federal Register (no-action letter, litigation release) may still take supra. Kind hints gain `release` and `Fed. Reg.`, split hearings from bills, read `General Corporation Law Section N` as a statute and no longer read `U.S. 426` as the bill `S. 426`. New real cases: the Mirror intro (fn 6, `119th Congress, supra note 3`) and the OPV article (fn 20, `2020 SEC Regulation, supra note 4`) are violating, each with a compliant twin that changes only that span. `rule-calibrate --set legal --runs 2` passed both times.
+- **Jev `T-CALLOUT` and `T-STORY` gate changed lines and are wired** into workshop's `ruleChecks`. The typst extractors already listed only spans on the round's changed lines; the calibration now matches: accepted decks and notes that break a written rule are legacy bases, each with a new violating and a new compliant span. Two consecutive `rule-calibrate --set typst --runs 2` passes. `T-TAKEAWAY`, `T-NARRATE` and `T-TRANSITION` stay parked with the measured numbers in their docstrings.
 
 ## [6.37.0] - 2026-10-02
 

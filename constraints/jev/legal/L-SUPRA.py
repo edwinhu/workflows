@@ -7,25 +7,29 @@ DELIVERABLE = 'law review'
 
 PROPOSITION = ('A "supra" short form is used for an authority Bluebook rule 4.2 bars from it: a case; a '
                'statute, including one cited through an institutional author or website ("State of '
-               'Delaware, supra note 25" for DGCL § 216); a constitution; a codified regulation; a '
-               'restatement; a model code; or legislative material other than a hearing, including a '
-               'bill, enacted or not ("119th Congress, supra note 3" for S. 1670). Those take their own '
-               'short forms ("Brown, 347 U.S. at 495"; "tit. 8, § 216"; "S. 1670 § 2") or a repeated full '
-               'cite. An agency adopting or proposing release cited by its release title, such as an SEC '
-               'final or proposed rule in the Federal Register with a [hereinafter] short form, MAY take '
-               'supra by law-review practice, though rule 4.2 lists regulations. A supra for a book, '
-               'article, report, hearing, court filing, release, periodical, unpublished or nonprint '
-               'source is correct, and so is an internal cross-reference ("supra Part II.A", "supra note '
-               '12").')
+               'Delaware, supra note 25" for DGCL § 216); a constitution; a regulation; a restatement; a '
+               'model code; or legislative material other than a hearing, including a bill, enacted or not '
+               '("119th Congress, supra note 3" for S. 1670). A regulation includes an agency adopting or '
+               'proposing release published in the Federal Register (rule 14.2(a)), such as an SEC final '
+               'or proposed rule cited by its release title with a [hereinafter] short form ("2020 SEC '
+               'Regulation, supra note 4" for 85 Fed. Reg. 55,082). Rule 4.2 excepts only an extremely '
+               'long name, which a release title is not. Those take their own short forms ("Brown, 347 '
+               'U.S. at 495"; "tit. 8, § 216"; "S. 1670 § 2"; "Proxy Voting Advice, 87 Fed. Reg. at '
+               '43,170" if the rule is cited in the same footnote or one of the preceding five, rule '
+               '14.6(c)) or a repeated full cite. A release not published in the Federal Register, such '
+               'as a no-action letter or a litigation release, is not a regulation, and rule 4.2 allows '
+               'it supra as an unpublished or agency document. A supra for a book, article, report, '
+               'hearing, court filing, periodical, unpublished or nonprint source is correct, and so is '
+               'an internal cross-reference ("supra Part II.A", "supra note 12").')
 
 CRITERIA = {
     'VIOLATED': 'at least one supra short form refers to a case, a statute (also when cited through an '
-                'institutional author or website), a constitution, a codified regulation, a restatement, a '
-                'model code, a bill (enacted or not) or other non-hearing legislative material',
+                'institutional author or website), a constitution, a regulation (including an agency '
+                'adopting or proposing release published in the Federal Register), a restatement, a model '
+                'code, a bill (enacted or not) or other non-hearing legislative material',
     'SATISFIED': 'every supra short form refers to a source rule 4.2 allows (books, articles, reports, '
-                 'hearings, court filings, periodicals, unpublished or nonprint material), to an agency '
-                 'adopting or proposing release cited by its release title, or is an internal '
-                 'cross-reference',
+                 'hearings, court filings, periodicals, unpublished or nonprint material, an agency release '
+                 'not published in the Federal Register) or is an internal cross-reference',
     'NOT_APPLICABLE': 'the state holds no supra short form that names a source',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
