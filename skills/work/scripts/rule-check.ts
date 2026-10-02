@@ -101,14 +101,14 @@ const verdicts: Verdict[] = [];
 const unavailable: Unavailable[] = [];
 
 for (const [ruleName, data] of Object.entries(evidenceData)) {
-  const { state, proposition, criteria } = data as any;
+  const { state, proposition, criteria, subject } = data as any;
   
   let filePaths: string[] = [];
   if (state && state.files && Array.isArray(state.files)) {
     filePaths = state.files.map((f: any) => f.path).filter(Boolean);
   }
   
-  const preamble = `You are auditing one data-science deliverable against a written RULE.\nPROJECT: ${projectName}\nEVIDENCE: ${filePaths.join(', ')}\nThe state is a JSON object. Named fields carry what the extractor found; \`searches\` records every pattern looked for, every file covered, and an EMPTY match list where nothing matched -- an absence is a fact, not a gap.\n\n`;
+  const preamble = `You are auditing ${subject || 'one data-science deliverable'} against a written RULE.\nPROJECT: ${projectName}\nEVIDENCE: ${filePaths.join(', ')}\nThe state is a JSON object. Named fields carry what the extractor found; \`searches\` records every pattern looked for, every file covered, and an EMPTY match list where nothing matched -- an absence is a fact, not a gap.\n\n`;
   
   let fullState = preamble + JSON.stringify(state, null, 1);
   if (fullState.length > 60000) {

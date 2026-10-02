@@ -1,0 +1,11 @@
+#!/usr/bin/env bun
+import { readFileSync, writeFileSync } from 'fs'
+import { spawnSync } from 'child_process'
+
+const rows: { id: string; text: string }[] = JSON.parse(readFileSync(process.argv[2], 'utf8'))
+console.error(`${rows.length} filings to classify`)
+const batch = rows.map(row => JSON.stringify({ id: row.id, prompt: `Classify this filing: ${row.text}` })).join('\n')
+writeFileSync('batch.jsonl', batch + '\n')
+// one batched farm-out for every row
+const r = spawnSync('bash', ['scripts/farm.sh', '--kind', 'bulk', '--rows', 'batch.jsonl', '--out', 'labels.jsonl'], { stdio: 'inherit' })
+if (r.status !== 0) process.exit(r.status ?? 1)

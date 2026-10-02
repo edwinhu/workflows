@@ -1,0 +1,6 @@
+export interface TaxService { rate(region: string): number }
+
+export function total(items: { price: number; qty: number }[], region: string, tax: TaxService): number {
+  const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0)
+  return Math.round(subtotal * (1 + tax.rate(region)) * 100) / 100
+}
