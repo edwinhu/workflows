@@ -12,7 +12,7 @@
 #   work-dispatch.sh --abandon [plan] record the plan as not-to-be-run; releases the guard
 #   work-dispatch.sh --print [plan]   write args.preview.json and stop; the run stays armed
 #   work-dispatch.sh --no-lint [plan] skip EVERY dispatch tier below
-#   work-dispatch.sh --no-red-probe   skip only the red-gate probe; keep plan-lint
+#   work-dispatch.sh --no-red-probe   record the red before-run but refuse nothing; keep plan-lint
 #   work-dispatch.sh --no-mech-probe  skip only the mechanical baseline probe; keep plan-lint
 #   work-dispatch.sh --no-suite-lint  skip only the suite-lint report; keep every gate
 #   work-dispatch.sh --run-dir DIR    put args/result/log under DIR/<run-id> instead of $PWD/.work/
@@ -97,6 +97,7 @@ SKILL=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 PLUGIN_ROOT=$(cd "$SKILL/../.." && pwd)
 # farm-out ships alongside work; a sibling copy wins, an installed one is the fallback, and
 # WORK_FARM overrides both.
+# WORK_ROUND overrides the round runner, work-round.sh (ARGS RESULT CWD HOST), as tests do.
 FARM=${WORK_FARM:-}
 if [ -z "$FARM" ]; then
   if [ -f "$SKILL/../farm-out/scripts/farm.sh" ]; then
@@ -234,21 +235,42 @@ if [ "${1:-}" = "--covers" ]; then
 fi
 
 # ---------------------------------------------------------------- the red-gate probe, executed here
-# Runs each active task's redCommand ONCE and classifies the outcome:
-#   exit 0 before the work         -> red-not-red; the gate proves nothing, refuse
+# Runs each active task's redCommand ONCE — this IS the round's red-before; no agent re-runs it — and
+# classifies the outcome:
+#   exit 0 before the work         -> red-not-red; reported, and the round launches: the gate reads it
 #   127 / missing runner / pytest 4|5 / no test output at all -> could-not-run; not a verdict, refuse
 #   non-zero WITH a real test result -> genuine RED, proceed
-# Exit 0 = every probe is a genuine red; exit 3 = refuse, exactly like the plan-lint gate.
+# Writes into the args file, in place: `redBefore` {id: {exitCode, output}} (exit -1 = could not run,
+# output = last 60 lines) and `redSuiteHashes` {path: sha256} over every existing file a redCommand
+# names plus `redSuite` — work-checks.sh re-hashes them after the agents, and a change is CRITICAL.
+# Mode `record` (--no-red-probe, --no-lint) records the same evidence and refuses nothing: without a
+# before-run the round's red verdict can only be red-unproven.
+# Exit 0 = launch; exit 3 = refuse, exactly like the plan-lint gate.
 red_probe_gate() {
-  python3 - "$1" <<'PY'
-import json, os, re, subprocess, sys
+  python3 - "$1" "${2:-gate}" <<'PY'
+import hashlib, json, os, re, shlex, subprocess, sys
 
 try:
     a = json.load(open(sys.argv[1]))
 except (json.JSONDecodeError, OSError) as exc:
     sys.exit(f"red-probe: cannot read {sys.argv[1]} ({exc}) — refusing to dispatch unprobed")
 
+record_only = sys.argv[2] == "record"
+TAIL = 60
+
+
+def save(before, hashes):
+    a["redBefore"] = before
+    a["redSuiteHashes"] = hashes
+    with open(sys.argv[1], "w") as fh:
+        json.dump(a, fh, indent=2)
+        fh.write("\n")
+
+
 if a.get("readOnly"):
+    a.pop("redBefore", None)
+    a.pop("redSuiteHashes", None)
+    save({}, {})
     print("  red-probe: readOnly run — no redCommand is dispatched, nothing probed")
     raise SystemExit(0)
 
@@ -268,11 +290,69 @@ for t in gated_all:
     if (t.get("id"), t["redCommand"]) in proven:
         print(f"  red-probe {t.get('id', '(unnamed)')}: carried red-green — not re-probed "
               "(the pair was observed before the fix landed; probing a passing command proves nothing)")
+cwd = a.get("projectDir") or os.getcwd()
+
+
+# The red suite: every existing file a redCommand names (a directory contributes its files), plus
+# `redSuite`. Keys are paths relative to projectDir, the way work-checks.sh resolves them.
+SKIP_DIRS = {".git", "node_modules", "__pycache__", ".pixi", ".venv", ".work"}
+
+
+def files_under(rel):
+    full = rel if os.path.isabs(rel) else os.path.join(cwd, rel)
+    if os.path.isfile(full):
+        return [rel]
+    if not os.path.isdir(full):
+        return []
+    out = []
+    for root, dirs, names in os.walk(full):
+        dirs[:] = sorted(d for d in dirs if d not in SKIP_DIRS)
+        for n in sorted(names):
+            out.append(os.path.relpath(os.path.join(root, n), cwd) if not os.path.isabs(rel)
+                       else os.path.join(root, n))
+            if len(out) >= 5000:
+                return out
+    return out
+
+
+def named_paths(cmd):
+    try:
+        toks = shlex.split(cmd)
+    except ValueError:
+        toks = cmd.split()
+    for tok in toks:
+        tok = tok.split("=", 1)[1] if tok.startswith("-") and "=" in tok else tok
+        tok = tok.split("::", 1)[0]
+        if not tok or tok.startswith("-") or tok in (".", "./", "/"):
+            continue
+        yield os.path.normpath(tok) if not tok.startswith("./") else os.path.normpath(tok[2:])
+
+
+def sha(rel):
+    full = rel if os.path.isabs(rel) else os.path.join(cwd, rel)
+    with open(full, "rb") as fh:
+        return hashlib.sha256(fh.read()).hexdigest()
+
+
+suite = set()
+for t in gated_all:
+    for tok in named_paths(t["redCommand"]):
+        suite.update(files_under(tok))
+for p in a.get("redSuite") or []:
+    suite.update(files_under(os.path.normpath(p)))
+hashes = {}
+for f in sorted(suite):
+    try:
+        hashes[f] = sha(f)
+    except OSError:
+        pass
+
 if not gated:
+    save({}, hashes)
     print("  red-probe: no active task needs a probe — none declares redCommand, or every one carries a proven pair")
+    print(f"  red-suite: {len(hashes)} file(s) hashed")
     raise SystemExit(0)
 
-cwd = a.get("projectDir") or os.getcwd()
 try:
     timeout = float(os.environ.get("WORK_RED_PROBE_TIMEOUT", "300"))
 except ValueError:
@@ -327,7 +407,7 @@ def classify(cmd, code, out):
     return "red", "non-zero with a real test result"
 
 
-rows, refusals = [], []
+before, refusals, not_red = {}, [], []
 for t in gated:
     cmd, tid = t["redCommand"], t.get("id", "(unnamed)")
     try:
@@ -340,11 +420,23 @@ for t in gated:
         code, out = None, f"(could not spawn a shell: {exc})"
     verdict, why = classify(cmd, code, out)
     shown = "n/a" if code is None else code
+    # could-not-run is -1 whatever the shell said: the gate reads -1 as unproven, never as red.
+    before[tid] = {"exitCode": -1 if verdict == "could-not-run" else code,
+                   "output": "\n".join(out.splitlines()[-TAIL:])}
     print(f"  red-probe {tid}: {verdict} (exit {shown}) — {why}")
-    if verdict != "red":
+    if verdict == "red-not-red":
+        not_red.append(tid)
+    elif verdict != "red":
         refusals.append((tid, verdict, shown, why, cmd, out[-800:].strip()))
 
-if not refusals:
+save(before, hashes)
+print(f"  red-suite: {len(hashes)} file(s) hashed; redBefore recorded for {len(before)} task(s)")
+if not_red:
+    print(f"  red-probe: REPORTED, not refused — {', '.join(not_red)} already exit 0 before the work, so "
+          "the round will score them red-not-red. Launching anyway.")
+if not refusals or record_only:
+    if refusals:
+        print(f"  red-probe: record-only — {len(refusals)} could-not-run probe(s) recorded as exit -1, not refused")
     raise SystemExit(0)
 
 w = sys.stderr
@@ -357,7 +449,7 @@ for tid, verdict, shown, why, cmd, tail in refusals:
 print("\nwork would have reached the same verdict a round later, after paying for the implementers,"
       "\nverifiers, lenses and mechanical checks. Run the command by hand to see what it needs, fix it"
       "\nin the plan, and re-hash.", file=w)
-print("Override (probes nothing, gates nothing): --no-red-probe, or --no-lint to drop both gates.", file=w)
+print("Override (records the before-run, refuses nothing): --no-red-probe, or --no-lint to drop both gates.", file=w)
 raise SystemExit(3)
 PY
 }
@@ -705,7 +797,7 @@ if [ "${1:-}" = "--red-summary" ]; then
 fi
 if [ "${1:-}" = "--red-probe" ]; then
   [ -f "${2:-}" ] || { echo "--red-probe needs an existing args.json" >&2; exit 2; }
-  red_probe_gate "$2"
+  red_probe_gate "$2" "${3:-gate}"
   exit $?
 fi
 if [ "${1:-}" = "--resolve-routing" ]; then
@@ -892,8 +984,10 @@ if [ "$rr" -ne 0 ]; then rm -f "$tmp"; exit "$rr"; fi
 
 # TIER 2, still before $out exists, so a refusal leaves args.json exactly as it was (or absent) and
 # the run armed. Skipped under --print: that mode promises to build and stop, not to run commands.
-if [ "$redprobe" = 1 ] && [ "$mode" != print ]; then
-  red_probe_gate "$tmp"
+# --no-red-probe still RECORDS the before-run (mode `record`): it refuses nothing, but a round with no
+# redBefore can only score red-unproven, so skipping the run would fail every red-gated task.
+if [ "$mode" != print ]; then
+  if [ "$redprobe" = 1 ]; then red_probe_gate "$tmp"; else red_probe_gate "$tmp" record; fi
   rp=$?
   if [ "$rp" -ne 0 ]; then rm -f "$tmp"; exit "$rp"; fi
 fi
@@ -924,25 +1018,27 @@ a = json.load(open(sys.argv[1]))
 t = a.get("tasks") or []
 only = a.get("onlyTasks")
 active = [x for x in t if x.get("id") in set(only)] if isinstance(only, list) else t
-# Mirror workflow.js needsRedProbe: only proof of the current command costs no new probe.
-proven = {(r.get("id"), r["command"]) for r in ((a.get("priorResults") or {}).get("red") or [])
-          if isinstance(r, dict) and r.get("verdict") == "red-green"
-          and isinstance(r.get("command"), str)}
+# Mirror workflow.js fanOut: agents only. Red before/after, acceptanceCmds and mechanicalChecks are
+# exit codes the shell runs (the probe above, work-checks.sh after) and cost no agent; a task carrying
+# acceptanceCmd needs no verifier.
 ro = bool(a.get("readOnly"))
 impl = 0 if ro else len(active)
-red = 0 if ro else sum(1 for x in active if x.get("redCommand") and (x.get("id"), x["redCommand"]) not in proven)
-# ONE lens, always dispatched — including on a zero-implementer round, where it is the only judgement
-# there is. There is no per-prior-finding refuter term any more: `priorFindings`/`carriedFindings` are
-# ruled on by that same lens, so they cost no agents of their own.
+ver = 0 if ro else sum(1 for x in active if not x.get("acceptanceCmd"))
+# ONE lens, always — a single farm.sh row of kind review after the checks, including on a
+# zero-implementer round, where it is the only judgement there is. Prior and carried findings are
+# ruled on by that same lens.
 lens = 1
+red = len(a.get("redBefore") or {})
 mech = len(a.get("mechanicalChecks") or [])
+acc = 0 if ro else sum(1 for x in active if x.get("acceptanceCmd"))
 carried = len(a.get("carriedFindings") or []) + len(a.get("priorFindings") or [])
 scored = sum(len(s.get("items") or []) for s in (a.get("scoredChecks") or []))
 att = len(a.get("attempts") or [])
 rule = 1 if a.get("ruleChecks") else 0
-floor = 2*impl + 2*red + lens + mech + scored + att + rule
-print(f"  readOnly={ro} tasks={len(t)} active={impl} red={red} lens={lens} "
-      f"mech={mech} scored={scored} carried={carried} attempts={att} rule={rule}")
+floor = impl + ver + lens + scored + att + rule
+print(f"  readOnly={ro} tasks={len(t)} active={impl} verifiers={ver} lens={lens} "
+      f"scored={scored} carried={carried} attempts={att} rule={rule}")
+print(f"  scripted (no agent): red-before={red} acceptanceCmd={acc} mech={mech}")
 print(f"  fan-out floor {floor} vs maxAgents {a.get('maxAgents', 50)}")
 PY
 red_summary "$out"
@@ -1077,9 +1173,9 @@ fi
 host=${provider:-claude}
 
 # One argument vector, so the two dispatch paths cannot drift apart.
-farm_cmd=(bash "$FARM" --provider "$host"
-  --workflow "$SKILL/workflow.js"
-  --args "$R/args.json" --out "$R/result.json" --cwd "$PWD")
+# work-round.sh runs the whole round: the workflow's agents, the checks, the digest, the ONE lens row.
+farm_cmd=(env WORK_FARM="$FARM" bash "${WORK_ROUND:-$SKILL/scripts/work-round.sh}"
+  "$R/args.json" "$R/result.json" "$PWD" "$host")
 
 if [ "$scope" = transient ]; then
   setsid nohup "$SYSTEMD_RUN" --user --scope --collect --quiet --unit "$scope_unit" \

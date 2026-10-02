@@ -11,9 +11,15 @@ test('work-redispatch resolves the runner to farm.sh', () => {
   expect(SRC.includes('farm-out/scripts/farm.sh')).toBe(true)
 })
 
+// The round itself runs in work-round.sh, so that is where the runner is invoked; redispatch hands
+// it the runner path and launches it with bash.
+const ROUND = readFileSync(join(import.meta.dir, '..', 'skills', 'work', 'scripts', 'work-round.sh'), 'utf8')
+
 test('work-redispatch invokes the runner with bash, not bun', () => {
   expect(SRC.includes('bun "$FARM"')).toBe(false)
-  expect(SRC.includes('bash "$FARM"')).toBe(true)
+  expect(SRC.includes('WORK_FARM="$FARM" bash "${WORK_ROUND:-$SKILL/scripts/work-round.sh}"')).toBe(true)
+  expect(ROUND.includes('bun "$FARM"')).toBe(false)
+  expect(ROUND.includes('bash "$FARM"')).toBe(true)
 })
 
 test('no liveness check in work-redispatch names a runner file', () => {

@@ -254,7 +254,7 @@ describe('a continuation round actually runs', () => {
     writeFileSync(p, [
       '#!/usr/bin/env bash',
       'out=""',
-      'while [ $# -gt 0 ]; do case "$1" in --out) out="$2"; shift 2 ;; *) shift ;; esac; done',
+      'out="$2"   # work-round.sh ARGS RESULT CWD HOST',
       '[ -n "$out" ] || exit 2',
       'd="${TMPDIR:-/tmp}/farm-events"; mkdir -p "$d"',
       'printf "farm: START workflow out=%s expect=1\\n" "$out" > "$d/$$.ndjson"',
@@ -304,7 +304,7 @@ describe('a continuation round actually runs', () => {
     try {
       out = execFileSync('bash', [SCRIPT, '--provider', 'claude', '--run-dir', f.R, '--plan', f.plan, '--loops', '3'], {
         encoding: 'utf8', timeout: 180_000, cwd: f.dir,
-        env: { ...process.env, TMPDIR: f.dir, WORK_FARM: farm, WORK_LOOP_POLL: '1',
+        env: { ...process.env, TMPDIR: f.dir, WORK_ROUND: farm, WORK_FARM: '/bin/false', WORK_LOOP_POLL: '1',
                WORK_NO_SCOPE: '1', CLAUDE_CODE_SESSION_ID: '' },
       })
       code = 0
@@ -331,7 +331,7 @@ describe('a continuation round actually runs', () => {
     writeFileSync(p, [
       '#!/usr/bin/env bash',
       'out=""',
-      'while [ $# -gt 0 ]; do case "$1" in --out) out="$2"; shift 2 ;; *) shift ;; esac; done',
+      'out="$2"   # work-round.sh ARGS RESULT CWD HOST',
       'd="${TMPDIR:-/tmp}/farm-events"; mkdir -p "$d"',
       'printf "farm: START workflow out=%s expect=1\\n" "$out" > "$d/$$.ndjson"',
       'sleep 2',
@@ -348,7 +348,7 @@ describe('a continuation round actually runs', () => {
     try {
       execFileSync('bash', [SCRIPT, '--provider', 'claude', '--run-dir', f.R, '--plan', f.plan, '--loops', '3'], {
         encoding: 'utf8', timeout: 180_000, cwd: f.dir,
-        env: { ...process.env, TMPDIR: f.dir, WORK_FARM: dyingFarm(f.dir), WORK_LOOP_POLL: '1',
+        env: { ...process.env, TMPDIR: f.dir, WORK_ROUND: dyingFarm(f.dir), WORK_FARM: '/bin/false', WORK_LOOP_POLL: '1',
                WORK_NO_SCOPE: '1', CLAUDE_CODE_SESSION_ID: '' },
       })
     } catch (e: any) {
@@ -373,7 +373,7 @@ describe('a continuation round actually runs', () => {
     writeFileSync(p, [
       '#!/usr/bin/env bash',
       'out=""',
-      'while [ $# -gt 0 ]; do case "$1" in --out) out="$2"; shift 2 ;; *) shift ;; esac; done',
+      'out="$2"   # work-round.sh ARGS RESULT CWD HOST',
       'sleep 1',             // startup latency BEFORE the runner registers in farm-events
       'd="${TMPDIR:-/tmp}/farm-events"; mkdir -p "$d"',
       'printf "farm: START workflow out=%s expect=1\\n" "$out" > "$d/$$.ndjson"',
@@ -390,7 +390,7 @@ describe('a continuation round actually runs', () => {
     try {
       execFileSync('bash', [SCRIPT, '--provider', 'claude', '--run-dir', f.R, '--plan', f.plan, '--loops', '3'], {
         encoding: 'utf8', timeout: 180_000, cwd: f.dir,
-        env: { ...process.env, TMPDIR: f.dir, WORK_FARM: slowStartFarm(f.dir), WORK_LOOP_POLL: '1',
+        env: { ...process.env, TMPDIR: f.dir, WORK_ROUND: slowStartFarm(f.dir), WORK_FARM: '/bin/false', WORK_LOOP_POLL: '1',
                WORK_LOOP_SETTLE: settle, WORK_NO_SCOPE: '1', CLAUDE_CODE_SESSION_ID: '' },
       })
       return 0
