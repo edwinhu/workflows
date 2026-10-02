@@ -107,11 +107,14 @@ export function buildDigest(args, checks, gate, cwd) {
     if (!i.done) failures.push({ kind: 'implementer', check: `implement:${i.id}`, command: null, exitCode: null, output: (i.blockers || []).join('; '), owner: i.id })
   }
   const active = Array.isArray(args.onlyTasks) ? tasks.filter(t => args.onlyTasks.includes(t.id)) : tasks
+  // A digest row reporting a task's diff, not a task row: it carries no refs because it dispatches nothing.
+  // <!-- wc-probe: ignore-refs:start -->
   const scope = active.map(t => ({
     id: t.id,
     writablePaths: t.writablePaths || [],
     diffStat: (t.writablePaths || []).length ? gitDiffStat(cwd, t.writablePaths) : '(no writablePaths declared)',
   }))
+  // <!-- wc-probe: ignore-refs:end -->
   const changed = changedFiles(cwd)
   const outOfScope = changed == null ? null : changed.filter(f => !tasks.some(t => covers(t.writablePaths, f)) && !f.startsWith('.planning/'))
   // What no command checks: acceptance prose with no acceptanceCmd, and the plan's criteria.
