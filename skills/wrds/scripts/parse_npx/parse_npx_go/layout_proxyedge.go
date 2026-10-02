@@ -27,6 +27,9 @@ import "strings"
 // the header from the numbered row underneath: the row's first cell is an item
 // number and belongs to no vocabulary.
 var peVocabulary = map[string]string{
+	"#":              peItem,
+	"MGT REC":        peMgmtRec,
+	"SPONSOR":        peBy,
 	"ITEM":           peItem,
 	"ITEM NUMBER":    peItem,
 	"PROPOSAL":       peDesc,
@@ -508,8 +511,15 @@ func matchProxyEdge(head string) bool {
 	lines := peNonBlank(head)
 	band, identity := false, false
 	for i := range lines {
-		if !band && peHeaderAt(lines, i) != nil {
-			band = true
+		if !band {
+			if h := peHeaderAt(lines, i); h != nil {
+				band = true
+				// These aliases read ordinary HTML ballots inside mixed reports;
+				// they do not identify the ProxyEdge layout at dispatch.
+				if peAliasBand(h.labels) {
+					band = false
+				}
+			}
 		}
 		// Dispatch keeps the colon. Inside a filing already known to be this
 		// vendor's a bare `Security` is unambiguous, but as the test that
@@ -543,6 +553,17 @@ func peCount(s string) (string, bool) {
 	return v, true
 }
 
+// peAliasBand reports a header that only the ISS-style aliases made readable.
+func peAliasBand(labels []string) bool {
+	for _, label := range labels {
+		switch strings.ToUpper(label) {
+		case "#", "MGT REC", "SPONSOR":
+			return true
+		}
+	}
+	return false
+}
+
 // peItemNumber reports a cell that prints a ballot's item number: one short
 // token carrying a digit, which is what parts `1`, `4` and `2a` from the
 // sentence a wrapped resolution's tail puts in the same position. It is asked
@@ -564,6 +585,12 @@ func peItemNumber(s string) bool {
 // asks first: a cell carrying a fund word may still be a ballot's own
 // resolution text rather than a banner the vendor printed.
 func peFundName(s string) bool {
+	if label, _, ok := strings.Cut(s, ":"); ok {
+		switch htmlCanonLabel(label) {
+		case "ADVISOR", "SUB ADVISOR", "SUB-ADVISOR", "SUBADVISOR", "ADVISER", "SUB ADVISER", "SUB-ADVISER", "SUBADVISER":
+			return false
+		}
+	}
 	if peBallotProse(s) {
 		return false
 	}
@@ -1008,9 +1035,9 @@ func peBandCell(tbl []int, band, heading int, labels []string) bool {
 // -- `Amend` / `Sasol Inzalo Foundation Trust Deed` -- satisfies peFundName and
 // clears the section's banner for every row after it.
 //
-// The item number is the structural evidence, not the vocabulary: a bare count
-// standing in the cell before this one, inside the same table, is the ballot's
-// own numbering, and what follows it is that ballot's description. A banner the
+// The item number is the structural evidence, not the vocabulary: an item token
+// (including decimal sub-items) in the preceding cell of the same table is the
+// ballot's own numbering, and what follows it is that ballot's description. A banner the
 // vendor printed between two sections never has one before it -- it stands
 // outside the grid's table (BBH Trust prints its wrapped banner in a div between
 // two tables, after the registrant name), which the table test refuses.
@@ -1018,8 +1045,7 @@ func peNumberedRowCell(lines []string, tbl []int, i, heading int) bool {
 	if i < 0 || tbl[i] != tbl[heading] {
 		return false
 	}
-	_, ok := peCount(lines[i])
-	return ok
+	return htmlIsItemNumber(lines[i])
 }
 
 // peBallotRowCell reports that `heading` is the PROPOSAL column of a ballot row
@@ -1256,6 +1282,16 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 	seriesIx := issFilingIndex(meta.SeriesDecls, normalizeSeriesName(meta.CompanyName), meta.CIK, metaPeriod(meta))
 	issFormerKeys(seriesIx, meta.FormerNames)
 	dict := cikDict.exactFallback(meta)
+	grids, gridHeaders := peColumnGrids(raw)
+	contexts := peStackedContexts(raw, lines, tbl)
+	for i, line := range lines {
+		if opener, ok := gridHeaders[tbl[i]]; ok && htmlFlat(line) == opener {
+			for j := i; j < len(lines) && tbl[j] == tbl[i]; j++ {
+				summary[j] = true
+			}
+			delete(gridHeaders, tbl[i])
+		}
+	}
 
 	var (
 		rows       []VoteRow
@@ -1273,13 +1309,139 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		// column of one row, which is what tells a wrapped proposal's
 		// continuation cell from a fund banner (peBandCell).
 		band = -1
+		// plainLabels is the last band the ISS-style aliases did not open,
+		// which an alias band hands back to when it leaves its ballot.
+		plainLabels []string
+		plainBand   = -1
 	)
 
+	setFund := func(name string) {
+		fund = name
+		fundSeries = icrResolveFundShared(seriesIx, name)
+		if fundSeries == "" {
+			fundSeries = htmlDictionaryFund(seriesIx, dict, name)
+		}
+		// The registrant's own name heads a section without naming a fund.
+		if fundSeries == "" && normalizeSeriesName(name) == normalizeSeriesName(meta.CompanyName) {
+			fund = ""
+		}
+	}
+	labelledFund := func(line string) bool {
+		if value, ok := brLabelledFundLine(line); ok {
+			if d := brResolveLabelledFund(seriesIx, value); d != nil {
+				fund, fundSeries = value, d.SeriesID
+				return true
+			}
+		}
+		return false
+	}
+	registrantFund := func(cell string) bool {
+		if value, ok := peGluedRegistrantBanner(cell); ok {
+			if name := peRegistrantFund(value, meta.CompanyName); name != "" {
+				if _, d := issResolveFund(seriesIx, name); d != nil {
+					fund, fundSeries = name, d.SeriesID
+					return true
+				}
+			}
+		}
+		return false
+	}
+	typeDropFund := func(line string) bool {
+		if d := peTypeDropDeclaredFund(seriesIx, line); d != nil {
+			fund, fundSeries = line, d.SeriesID
+			return true
+		}
+		return false
+	}
+
 	for i := 0; i < len(lines); i++ {
+		if events, ok := grids[tbl[i]]; ok {
+			for _, event := range events {
+				if c := event.context; c != (htmlContext{}) {
+					if c.Issuer != "" {
+						issuer = c.Issuer
+						ticker, cusip, isin, mtgDate, mtgType = "", "", "", "", ""
+					}
+					if c.Ticker != "" {
+						ticker = c.Ticker
+					}
+					if c.CUSIP != "" {
+						cusip = c.CUSIP
+					}
+					if c.ISIN != "" {
+						isin = c.ISIN
+					}
+					if c.MeetingDate != "" {
+						mtgDate = c.MeetingDate
+					}
+					continue
+				}
+				if event.banner != "" {
+					if event.explicitFund {
+						setFund(event.banner)
+						continue
+					}
+					if !labelledFund(event.banner) && !registrantFund(event.banner) {
+						if peFundName(event.banner) {
+							setFund(event.banner)
+						} else {
+							typeDropFund(event.banner)
+						}
+					}
+					continue
+				}
+				row := event.row
+				// A resolved section banner is authoritative: the per-row
+				// account column prints the registrant, a custodian or the
+				// vendor's own label as often as the fund. The cell fills a
+				// section with no fund, and replaces an unresolved banner only
+				// when it resolves to one of this registrant's own series.
+				cell := row.FundName
+				row.FundName, row.SeriesID = fund, fundSeries
+				if cell != "" && fundSeries == "" && normalizeSeriesName(cell) != normalizeSeriesName(meta.CompanyName) {
+					id := htmlFundCellSeries(seriesIx, cell)
+					if id == "" {
+						id = htmlDictionaryFund(seriesIx, dict, cell)
+					}
+					if id != "" || fund == "" {
+						row.FundName, row.SeriesID = cell, id
+					}
+				}
+				rows = append(rows, row)
+			}
+			table := tbl[i]
+			for {
+				// Later stacked ballots can reuse a proposal band whose cells
+				// were read as a grid here.
+				if h := peHeaderAt(lines, i); h != nil && (mtgDate != "" || !peAliasBand(h.labels)) {
+					labels, band = h.labels, table
+					if !peAliasBand(labels) {
+						plainLabels, plainBand = labels, band
+					}
+				}
+				if i+1 >= len(lines) || tbl[i+1] != table {
+					break
+				}
+				i++
+			}
+			continue
+		}
+		if block, ok := contexts[i]; ok {
+			c := block.context
+			issuer, ticker, cusip, isin, mtgDate = c.Issuer, c.Ticker, c.CUSIP, c.ISIN, c.MeetingDate
+			mtgType = ""
+			i = block.end
+			continue
+		}
 		line := lines[i]
-		if h := peHeaderAt(lines, i); h != nil {
+		// The ISS-style aliases open a band only under a meeting already read:
+		// the same labels head this vendor's identity and summary tables.
+		if h := peHeaderAt(lines, i); h != nil && (mtgDate != "" || !peAliasBand(h.labels)) {
 			labels = h.labels
 			band = tbl[i]
+			if !peAliasBand(labels) {
+				plainLabels, plainBand = labels, band
+			}
 			i += h.consumed - 1
 			continue
 		}
@@ -1345,11 +1507,7 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 				// sees it; without this case the value is dropped and every row
 				// keeps the registrant-level fund the cover page left behind.
 				if name := strings.TrimSpace(value); name != "" {
-					fund = name
-					fundSeries = icrResolveFundShared(seriesIx, name)
-					if fundSeries == "" {
-						fundSeries = htmlDictionaryFund(seriesIx, dict, name)
-					}
+					setFund(name)
 				}
 			case "REGISTRANT":
 				// The banner that opens a section. It names the section's fund
@@ -1358,17 +1516,21 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 				// paragraph, which names no fund -- and it re-seeds at every
 				// section, not once per document.
 				if name := peRegistrantFund(value, meta.CompanyName); name != "" {
-					fund = name
-					fundSeries = icrResolveFundShared(seriesIx, name)
-					if fundSeries == "" {
-						fundSeries = htmlDictionaryFund(seriesIx, dict, name)
-					}
+					setFund(name)
 				}
 			}
 			continue
 		}
 		if labels != nil && run[i] == i {
 			if row, rowEnd, ok := peVoteRow(lines, run, i, labels); ok {
+				// A new issuer heading clears the meeting; an alias band read
+				// past it has left its ballot for a table it cannot identify,
+				// so the row is read again under the band before it.
+				if mtgDate == "" && peAliasBand(labels) {
+					labels, band = plainLabels, plainBand
+					i--
+					continue
+				}
 				row.IssuerName = issuer
 				row.Ticker = ticker
 				row.CUSIP = icrCUSIP(cusip)
@@ -1403,11 +1565,8 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		// standing rather than clearing it. The line must open its cell, as every
 		// other banner scan here requires of the line it reads.
 		if run[i] == i {
-			if value, ok := brLabelledFundLine(line); ok {
-				if d := brResolveLabelledFund(seriesIx, value); d != nil {
-					fund, fundSeries = value, d.SeriesID
-					continue
-				}
+			if labelledFund(line) {
+				continue
 			}
 		}
 		// The section banner with the `Registrant:` label and the section's
@@ -1418,14 +1577,9 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		// resolves against nothing. As with the labelled cover line above, only a
 		// value resolving against THIS filing's own declarations acts.
 		if run[i] == i {
-			if value, ok := peGluedRegistrantBanner(cell); ok {
-				if name := peRegistrantFund(value, meta.CompanyName); name != "" {
-					if _, d := issResolveFund(seriesIx, name); d != nil {
-						fund, fundSeries = name, d.SeriesID
-						i = cellEnd
-						continue
-					}
-				}
+			if registrantFund(cell) {
+				i = cellEnd
+				continue
 			}
 		}
 		// The issuer heading is the bare line standing above the ballot's
@@ -1462,6 +1616,24 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 				continue
 			}
 		}
+		if run[i] == i && peGridIssuerHeading(cell) {
+			if c, end, ok := peInlineCellContext(lines, run, tbl, cellEnd+1); ok {
+				issuer, ticker, cusip, isin, mtgDate = cell, c.Ticker, c.CUSIP, c.ISIN, c.MeetingDate
+				mtgType = ""
+				i = end
+				continue
+			}
+			if cell == issuer {
+				i = cellEnd
+				continue
+			}
+		}
+		// A rejected ballot's description is still a data cell, even when no
+		// recognised header opened its table. Do not let a bare banner arm read it.
+		if run[i] == i && (peNumberedRowCell(lines, tbl, i-1, i) || peBallotRowCell(lines, run, tbl, i, cellEnd)) {
+			i = cellEnd
+			continue
+		}
 		// A bare heading. The vendor prints the fund above its ballots and the
 		// issuer above each one, with nothing to mark either.
 		// Only a whole cell can be a heading, and never the cell that follows
@@ -1487,11 +1659,7 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		if whole[i] && !summary[i] && !wrapped[i] && !peItemCell(lines, tbl, i-1, i, labels) &&
 			!peBandCell(tbl, band, i, labels) && !peBallotRowCell(lines, run, tbl, i, i) &&
 			peFundName(line) {
-			fund = line
-			fundSeries = icrResolveFundShared(seriesIx, line)
-			if fundSeries == "" {
-				fundSeries = htmlDictionaryFund(seriesIx, dict, line)
-			}
+			setFund(line)
 			continue
 		}
 		// The same bare heading, with the trailing type word of the declared name
@@ -1505,9 +1673,7 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		// just resolved.
 		if whole[i] && !summary[i] && !wrapped[i] && !peItemCell(lines, tbl, i-1, i, labels) &&
 			!peBandCell(tbl, band, i, labels) {
-			if d := peTypeDropDeclaredFund(seriesIx, line); d != nil {
-				fund = line
-				fundSeries = d.SeriesID
+			if typeDropFund(line) {
 				continue
 			}
 		}
@@ -1537,11 +1703,7 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 				i = cellEnd
 				continue
 			}
-			fund = cell
-			fundSeries = icrResolveFundShared(seriesIx, cell)
-			if fundSeries == "" {
-				fundSeries = htmlDictionaryFund(seriesIx, dict, cell)
-			}
+			setFund(cell)
 			i = cellEnd
 			continue
 		}
@@ -1551,6 +1713,414 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		return nil, errLayoutDeclined
 	}
 	return rows, nil
+}
+
+// peInlineCellContext reads label:value cells following an issuer heading.
+func peInlineCellContext(lines []string, run, tables []int, start int) (htmlContext, int, bool) {
+	var ctx htmlContext
+	end := start - 1
+	for pos, count := start, 0; pos < len(lines) && count < 12; count++ {
+		if run[pos] != pos || tables[pos] != tables[start] {
+			break
+		}
+		cell, last := peCellAt(lines, run, pos)
+		if !htmlStackedLabelledLine(cell) {
+			break
+		}
+		label, value, _ := strings.Cut(htmlFlat(cell), ":")
+		field := htmlStackedLabelSet[htmlStackedLabelKey(label)]
+		ctx.merge(htmlStackedValues([]string{strings.TrimSpace(value)}, map[int]string{0: field}))
+		end, pos = last, last+1
+	}
+	return ctx, end, ctx.MeetingDate != "" && (ctx.CUSIP != "" || ctx.ISIN != "")
+}
+
+type peContextRun struct {
+	context htmlContext
+	end     int
+}
+
+// peStackedContexts reads stacked identity headers without claiming their ballot
+// tables. Exact line alignment keeps the legacy reader from treating the labels
+// as issuer headings, while leaving its proposal grammar unchanged.
+func peStackedContexts(raw []byte, lines []string, tables []int) map[int]peContextRun {
+	body := htmlTableBody(raw)
+	base := len(raw) - len(body)
+	marks := peTableMarks(raw)
+	feed := &htmlRowFeed{src: body}
+	out := make(map[int]peContextRun)
+	ordinal, cursor := 0, 0
+	for {
+		row, ok := feed.next()
+		if !ok {
+			break
+		}
+		for ordinal < len(marks) && marks[ordinal] < base+row.off {
+			ordinal++
+		}
+		labels, name, ok := htmlSplitStackedLabelsWithIssuer(row.cells, feed)
+		if !ok {
+			if lower, exists := feed.peek(0); exists && !lower.newTable && len(lower.cells) == len(row.cells) {
+				joined := make([]string, len(row.cells))
+				for j := range joined {
+					joined[j] = htmlFlat(row.cells[j] + " " + lower.cells[j])
+				}
+				if candidate, issuer, valid := htmlStackedLabelsWithIssuer(joined); valid && issuer != "" {
+					labels, name, ok = candidate, issuer, true
+					feed.next()
+				}
+			}
+		}
+		if !ok {
+			labels, name, ok = htmlStackedLabelsWithIssuer(row.cells)
+		}
+		if !ok || name == "" {
+			continue
+		}
+		values, ok := feed.next()
+		for ok && !values.newTable && htmlFilledCells(values.cells) == 0 {
+			values, ok = feed.next()
+		}
+		if !ok || values.newTable {
+			continue
+		}
+		ctx := htmlStackedValues(values.cells, labels)
+		if ctx.MeetingDate == "" {
+			continue
+		}
+		ctx.Issuer = name
+		span, _, _ := peCellLines(string(stripHTMLCells(body[row.off : values.off+len(values.raw)])))
+		if len(span) == 0 {
+			continue
+		}
+		for cursor < len(lines) && tables[cursor] < ordinal {
+			cursor++
+		}
+		for cursor+len(span) <= len(lines) && tables[cursor] == ordinal {
+			match := true
+			for j, text := range span {
+				if lines[cursor+j] != text || tables[cursor+j] != ordinal {
+					match = false
+					break
+				}
+			}
+			if match {
+				out[cursor] = peContextRun{context: ctx, end: cursor + len(span) - 1}
+				cursor += len(span)
+				break
+			}
+			cursor++
+		}
+	}
+	return out
+}
+
+// peGridEvent preserves banners and votes in source order. The line reader
+// supplies the entering fund and keeps the last banner when it leaves the table.
+type peGridEvent struct {
+	banner       string
+	explicitFund bool
+	row          VoteRow
+	context      htmlContext
+}
+
+// peColumnGrids owns whole table runs, including headers and rejected data rows:
+// none of their individual cells may reach the line reader's banner scan.
+func peColumnGrids(raw []byte) (map[int][]peGridEvent, map[int]string) {
+	marks := peTableMarks(raw)
+	body := htmlTableBody(raw)
+	base := len(raw) - len(body)
+	feed := &htmlRowFeed{src: body}
+	repeats := &htmlHeaderRepeats{body: body}
+	grids := make(map[int][]peGridEvent)
+	gridHeaders := make(map[int]string)
+	var mapping map[string]int
+	var header []string
+	var ctx htmlContext
+	var carry, partitioned, sawData, sawGrid, identityTable, identityOnly, inherited bool
+	var events []peGridEvent
+	var proposalPrefix string
+	table, ordinal := -1, 0
+	for {
+		row, ok := feed.next()
+		if !ok {
+			break
+		}
+		for ordinal < len(marks) && marks[ordinal] < base+row.off {
+			ordinal++
+		}
+		if ordinal != table {
+			table = ordinal
+			identityTable, identityOnly = false, true
+			events = nil
+			proposalPrefix = ""
+			if !sawData && !carry {
+				mapping, header = nil, nil
+				ctx = htmlContext{}
+			}
+			carry, sawData = false, false
+			inherited = mapping != nil
+		}
+		cells := row.cells
+		if htmlFilledCells(cells) == 2 {
+			label := ""
+			for _, cell := range cells {
+				text := htmlFlat(cell)
+				if text == "" {
+					continue
+				}
+				if label == "" {
+					label = strings.ToUpper(strings.TrimSuffix(text, ":"))
+				} else if label == "FUND NAME" || label == "PORTFOLIO NAME" {
+					events = append(events, peGridEvent{banner: text, explicitFund: true})
+				}
+			}
+		}
+		probe := *feed
+		m, joined, mayCarry, mayPartition, _, mapped := htmlSplitHeaderMapping(cells, &probe, repeats)
+		_, splitIssuer := m[htmlFieldIssuer]
+		_, splitDate := m[htmlFieldMtgDate]
+		if mapped && splitIssuer && splitDate {
+			*feed = probe
+		} else {
+			m, mayCarry, mayPartition, mapped = htmlHeaderMapping(cells, feed, repeats)
+			joined = cells
+		}
+		if mapped {
+			proposalPrefix = ""
+			identityOnly = false
+			_, issuer := m[htmlFieldIssuer]
+			_, date := m[htmlFieldMtgDate]
+			_, cusip := m[htmlFieldCUSIP]
+			_, ticker := m[htmlFieldTicker]
+			_, item := m[htmlFieldItem]
+			if !item && issuer && date && (cusip || ticker) {
+				for col, cell := range cells {
+					if strings.EqualFold(htmlFlat(cell), "Ballot Issue Number") && htmlItemColumnConfirmed(col, len(cells), feed) {
+						m[htmlFieldItem], item = col, true
+						break
+					}
+				}
+			}
+			if issuer && date && (cusip || ticker) {
+				gridHeaders[table] = htmlFlat(joined[m[htmlFieldIssuer]])
+				// Numberless exports still print complete proposals and votes.
+				// Ownership is granted by a readable data row, not the header.
+				mapping, header = m, joined
+				inherited = false
+				carry, partitioned, sawData = mayCarry, mayPartition, false
+				ctx = htmlContext{}
+				identityTable = false
+			} else {
+				// A ballot header ends the preceding column-grid grammar.
+				mapping, header = nil, nil
+				ctx = htmlContext{}
+				if identityTable {
+					delete(grids, table)
+					identityTable = false
+					events = nil
+				}
+			}
+			continue
+		}
+		if _, _, headerLike := htmlHeaderShape(cells); headerLike {
+			identityOnly = false
+			ctx = htmlContext{}
+			if identityTable {
+				delete(grids, table)
+				identityTable = false
+				events = nil
+			}
+			continue
+		}
+		// A mixed report can return to ballots through a labelled identity
+		// table instead of a stacked block. Read that boundary explicitly:
+		// the skipped grid's column labels must not seed the next ballot.
+		if sawGrid && identityOnly && mapping == nil && !htmlHasVoteCell(cells) {
+			if next, labelled := htmlReadContext(cells); labelled &&
+				(identityTable || next.Issuer != "" && next.MeetingDate != "") {
+				identityTable = true
+				if next != (htmlContext{}) {
+					events = append(events, peGridEvent{context: next})
+				}
+				grids[table] = events
+				continue
+			}
+		}
+		if htmlFilledCells(cells) > 1 {
+			identityOnly = false
+			if identityTable {
+				delete(grids, table)
+				identityTable = false
+				events = nil
+			}
+		}
+		// Description-only rows are column continuations, never banners. Some
+		// exports put the entire description above a vote with an empty cell.
+		if desc, ok := mapping[htmlFieldDesc]; ok && desc < len(cells) &&
+			htmlComparableArity(len(cells), len(header)) && htmlFilledCells(cells) == 1 && htmlFlat(cells[desc]) != "" {
+			proposalPrefix = strings.TrimSpace(proposalPrefix + " " + htmlFlat(cells[desc]))
+			continue
+		}
+		prefix := proposalPrefix
+		proposalPrefix = ""
+		emitted := false
+		if mapping != nil && htmlComparableArity(len(cells), len(header)) {
+			if !partitioned || htmlMappedVoteValue(cells, mapping, len(header)) {
+				cells = peGridMergedDate(cells, header, mapping)
+				cells = peGridJoinedItem(cells, header, mapping)
+				cells = peGridMissingSpacer(cells, header, mapping, ctx)
+				cells = htmlRealignBySpacers(cells, header, mapping)
+				cells = htmlRealignTailPad(cells, header, mapping)
+				if desc, ok := mapping[htmlFieldDesc]; ok && desc < len(cells) && prefix != "" &&
+					htmlFlat(cells[desc]) == "" && htmlMappedVoteValue(cells, mapping, len(header)) {
+					cells = append([]string(nil), cells...)
+					cells[desc] = prefix
+				}
+				_, numbered := mapping[htmlFieldItem]
+				identity := true
+				if inherited {
+					issuerCol, dateCol := mapping[htmlFieldIssuer], mapping[htmlFieldMtgDate]
+					identity = issuerCol < len(cells) && dateCol < len(cells) &&
+						(htmlFlat(cells[issuerCol]) == "" || htmlDate(cells[dateCol]) != "")
+				}
+				if r, ok := htmlDataRow(cells, mapping, len(header), ctx); ok && identity && (numbered && !inherited ||
+					r.IssuerName != "" && !htmlIsIdentityLabel(r.IssuerName) && r.MeetingDate != "" && htmlIsVoteValue(r.HowVoted)) {
+					r.FundName = htmlFundCell(cells, mapping, len(header))
+					events = append(events, peGridEvent{row: r})
+					grids[table] = events
+					sawGrid = true
+					sawData, emitted = true, true
+					ctx.merge(htmlContext{Issuer: r.IssuerName, CUSIP: r.CUSIP, ISIN: r.ISIN, Ticker: r.Ticker, MeetingDate: r.MeetingDate})
+				}
+			}
+		}
+		if !emitted && htmlFilledCells(cells) == 1 {
+			for _, cell := range cells {
+				if text := htmlFlat(cell); text != "" {
+					events = append(events, peGridEvent{banner: text})
+					break
+				}
+			}
+		}
+		if _, recognised := grids[table]; recognised {
+			grids[table] = events
+		}
+	}
+	return grids, gridHeaders
+}
+
+// peGridMergedDate splits a date/type colspan whose value lands under Type.
+func peGridMergedDate(cells, header []string, mapping map[string]int) []string {
+	col, ok := mapping[htmlFieldMtgDate]
+	if !ok || col+1 >= len(cells) || col+1 >= len(header) || htmlFlat(cells[col]) != "" || htmlCanonLabel(header[col+1]) != "MEETING TYPE" {
+		return cells
+	}
+	date, kind, found := strings.Cut(htmlFlat(cells[col+1]), " ")
+	if !found || htmlDate(date) == "" || !htmlMeetingTypeWord(kind) {
+		return cells
+	}
+	fixed := append([]string(nil), cells...)
+	fixed[col], fixed[col+1] = date, kind
+	return fixed
+}
+
+// peGridJoinedItem restores adjacent item/description columns merged on a
+// continuation page. The shorter row must print both values in the item cell.
+func peGridJoinedItem(cells, header []string, mapping map[string]int) []string {
+	item, hasItem := mapping[htmlFieldItem]
+	desc, hasDesc := mapping[htmlFieldDesc]
+	if !hasItem || !hasDesc || desc != item+1 || len(cells)+1 != len(header) || item >= len(cells) {
+		return cells
+	}
+	number, proposal, found := strings.Cut(htmlFlat(cells[item]), " ")
+	if !found || !htmlIsItemNumber(number) || len(brAlphaWords(proposal)) == 0 {
+		return cells
+	}
+	fixed := make([]string, len(header))
+	copy(fixed, cells[:item])
+	fixed[item], fixed[desc] = number, proposal
+	copy(fixed[desc+1:], cells[item+1:])
+	if !htmlMappedVoteValue(fixed, mapping, len(header)) {
+		return cells
+	}
+	return fixed
+}
+
+// peGridMissingSpacer restores an omitted empty cell before a continuation's
+// item number. Every identity cell is empty, and the repaired row must place
+// both an item and a vote under their own columns.
+func peGridMissingSpacer(cells, header []string, mapping map[string]int, ctx htmlContext) []string {
+	item, ok := mapping[htmlFieldItem]
+	if !ok || item < 1 || ctx.Issuer == "" || len(cells)+1 != len(header) || item > len(cells) ||
+		htmlFlat(header[item-1]) != "" || !htmlIsItemNumber(htmlFlat(cells[item-1])) {
+		return cells
+	}
+	for _, col := range mapping {
+		if col == item-1 {
+			return cells
+		}
+	}
+	for _, cell := range cells[:item-1] {
+		if htmlFlat(cell) != "" {
+			return cells
+		}
+	}
+	fixed := make([]string, len(header))
+	copy(fixed, cells[:item-1])
+	copy(fixed[item:], cells[item-1:])
+	if r, ok := htmlDataRow(fixed, mapping, len(header), ctx); ok && htmlIsVoteValue(r.HowVoted) {
+		return fixed
+	}
+	return cells
+}
+
+// peTableMarks uses the stripper's tag rules so row offsets and peCellLines
+// refer to the same table runs. Scan once, not once per header in a large filing.
+func peTableMarks(src []byte) []int {
+	var marks []int
+	for i := 0; i < len(src); {
+		i = indexByteFrom(src, i, '<')
+		if i < 0 {
+			break
+		}
+		if i+4 <= len(src) && string(src[i:i+4]) == "<!--" {
+			end := indexFrom(src, i+4, "-->")
+			if end < 0 {
+				break
+			}
+			i = end + 3
+			continue
+		}
+		if i+1 < len(src) && (src[i+1] == '!' || src[i+1] == '?') {
+			end := indexByteFrom(src, i+1, '>')
+			if end < 0 {
+				break
+			}
+			i = end + 1
+			continue
+		}
+		name, after, ok := tagName(src, i, 0)
+		if !ok {
+			i++
+			continue
+		}
+		if droppedTags[name] {
+			close := indexFrom(src, after, "</"+name)
+			if close < 0 {
+				break
+			}
+			after = close
+		} else if name == "table" {
+			marks = append(marks, i)
+		}
+		end := indexByteFrom(src, after, '>')
+		if end < 0 {
+			break
+		}
+		i = end + 1
+	}
+	return marks
 }
 
 // peVoteRow reads one ballot row: len(labels) consecutive cells, positional

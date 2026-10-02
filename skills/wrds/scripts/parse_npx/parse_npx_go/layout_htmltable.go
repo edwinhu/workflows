@@ -2817,12 +2817,12 @@ const (
 var htmlSynonyms = map[string][]string{
 	htmlFieldItem: {
 		"#", "NO", "NO.", "ITEM", "ITEM NO", "PROPOSAL NO", "PROPOSAL NUMBER",
-		"ISSUE NO", "BALLOT ITEM", "PROP", "PROP NO", "SEQ",
+		"ISSUE NO", "BALLOT ITEM", "PROP", "PROP NO", "SEQ", "AGENDA ITEM NUMBER",
 	},
 	htmlFieldDesc: {
 		"PROPOSAL", "PROPOSALS", "DESCRIPTION", "MATTER", "MATTERS",
-		"BALLOT ISSUE", "BALLOT ISSUES", "AGENDA", "ITEM DESC", "ITEM DESCRIPTION",
-		"PROPOSAL DESCRIPTION", "MEETING AGENDA",
+		"BALLOT ISSUE", "BALLOT ISSUES", "AGENDA", "AGENDA ITEM DESCRIPTION", "ITEM DESC", "ITEM DESCRIPTION",
+		"PROPOSAL DESCRIPTION", "MEETING AGENDA", "PROPOSAL TEXT",
 		// Eagle Series Trust decorates its column names with a parenthetical
 		// gloss. The gloss carries the word VOTED, which the word-sequence
 		// fallback reads as the vote column; the exact phrase claims the
