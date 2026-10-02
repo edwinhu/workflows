@@ -177,7 +177,10 @@ guides were run through the corpora — so it told you to cut hedges from law re
 (passive: 7.91% law vs 8.55% finance, not a register marker at all). Grade against the register
 files' *Ship* tables for the draft's domain, and against their *Advisory* and *Dropped* tables for
 what not to report — the shared tables live in `writing-general`, the domain-specific ones in
-`writing-legal` or `writing-econ`.
+`writing-legal` or `writing-econ`. Id. antecedents, footnotes carrying the argument and
+case-by-case digests (legal), and unanchored findings, citation form, causal language on
+correlational results and bare estimates (econ) are Jev verdicts in your prompt when the run has
+them: cite the verdict, do not re-grade.
 
 ### Check Against AI Anti-Patterns
 

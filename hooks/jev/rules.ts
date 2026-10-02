@@ -11,6 +11,13 @@ export const RULE_DIRS: Record<RuleSet, string> = {
   ds: 'constraints/jev',
 }
 
+/** Register sets, scored ON TOP of `writing` for prose whose nearest ACTIVE_WORKFLOW.md carries
+ *  `style: legal` or `style: econ` (writing_receipt.py writes it from the plan's Domain:). */
+export const REGISTER_DIRS: Record<string, string> = {
+  legal: 'constraints/jev/legal',
+  econ: 'constraints/jev/econ',
+}
+
 export const BLOCK_AT = 0.85
 
 const PROSE = /\.(md|typ|tex)$/i
@@ -21,6 +28,17 @@ const TEST_PATH = /(^|\/)(tests?|__tests__|spec)\/|[._-](test|spec)\.[A-Za-z]+$|
 /** `workflow:` from an ACTIVE_WORKFLOW.md's text, as constraints/run-constraints.py reads it. */
 export function workflowOf(text: string): string | null {
   return /^workflow:\s*([\w-]+)/m.exec(text)?.[1] ?? null
+}
+
+/** `style:` from an ACTIVE_WORKFLOW.md's text: the writing run's register. */
+export function styleOf(text: string): string | null {
+  return /^style:\s*([\w-]+)/m.exec(text)?.[1] ?? null
+}
+
+/** The rules directories one evaluation scores: the set's own, plus the register's for prose. */
+export function ruleDirsFor(set: RuleSet, style: string | null): string[] {
+  const reg = set === 'writing' && style ? REGISTER_DIRS[style] : undefined
+  return reg ? [RULE_DIRS[set], reg] : [RULE_DIRS[set]]
 }
 
 /**

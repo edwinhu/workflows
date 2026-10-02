@@ -5,7 +5,8 @@ import { expect, test } from 'bun:test'
 import { readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import {
-  BLOCK_AT, RULE_DIRS, ancestors, changedFromInput, contextLines, enabled, merge, rangesFromDiff, ruleSetFor, workflowOf,
+  BLOCK_AT, REGISTER_DIRS, RULE_DIRS, ancestors, changedFromInput, contextLines, enabled, merge, rangesFromDiff, ruleDirsFor,
+  ruleSetFor, styleOf, workflowOf,
 } from '../hooks/jev/rules.ts'
 
 const ROOT = join(import.meta.dir, '..')
@@ -38,8 +39,18 @@ test('the workflow walk asks each directory up to $HOME, nearest first', async (
   expect(workflowOf('---\nstyle: econ\n---')).toBeNull()
 })
 
+test('the writing cursor `style:` adds its register set to prose, and only to prose', () => {
+  expect(styleOf('---\nworkflow: writing\nstyle: econ\n---\n')).toBe('econ')
+  expect(styleOf('---\nworkflow: ds\n---\n')).toBeNull()
+  expect(ruleDirsFor('writing', 'legal')).toEqual(['constraints/jev/writing', 'constraints/jev/legal'])
+  expect(ruleDirsFor('writing', 'econ')).toEqual(['constraints/jev/writing', 'constraints/jev/econ'])
+  expect(ruleDirsFor('writing', 'general')).toEqual(['constraints/jev/writing'])
+  expect(ruleDirsFor('writing', null)).toEqual(['constraints/jev/writing'])
+  expect(ruleDirsFor('dev', 'legal')).toEqual(['constraints/jev/dev'])
+})
+
 test('every rule set points at a wired directory; its uncalibrated/ is below the glob', () => {
-  for (const dir of Object.values(RULE_DIRS)) {
+  for (const dir of [...Object.values(RULE_DIRS), ...Object.values(REGISTER_DIRS)]) {
     const wired = readdirSync(join(ROOT, dir)).filter(f => /^[^_].*\.py$/.test(f) && f !== 'evidence.py')
     expect(wired.length).toBeGreaterThan(0)
     expect(dir).not.toContain('uncalibrated')

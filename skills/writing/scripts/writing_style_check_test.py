@@ -42,6 +42,12 @@ GENERAL_CROSS = "As explained supra, This Article argues the point; see Part II.
 
 LEGAL_OK = "As Part II above explains, see supra note 4; Section 10(b) of the Exchange Act applies.\n"
 LEGAL_BAD = "As Section 2 above explains, the rule fails.\n"
+LEGAL_PAPER = "This paper argues that the rule fails.\n"
+LEGAL_INLINE = "The court so held in Guth v. Loft, Inc., 5 A.2d 503, 510 (Del. 1939), and later cases agree.\n"
+LEGAL_FOOTNOTED = """The court so held in Guth v. Loft.[^1] Later cases agree.^[Weinberger v. UOP, Inc., 457 A.2d 701 (Del. 1983).]
+
+[^1]: Guth v. Loft, Inc., 5 A.2d 503, 510 (Del. 1939); see 8 Del. C. § 144; 73 Harv. L. Rev. 1041.
+"""
 
 
 def run(draft: str | None, style: str) -> tuple[int, str]:
@@ -86,6 +92,19 @@ def main() -> int:
     expect("a statute's Section 10(b) is not a cross-reference", rc == 0, out)
     rc, out = run(LEGAL_BAD, "legal")
     expect("legal register flags `Section 2 above`", rc == 1 and "REGISTER-CROSSING" in out, out)
+
+    rc, out = run(LEGAL_PAPER, "legal")
+    expect("legal register flags `This paper`", rc == 1 and "REGISTER-CROSSING: `This paper`" in out, out)
+    rc, out = run(LEGAL_PAPER, "econ")
+    expect("`This paper` is the econ self-reference", rc == 0, out)
+
+    rc, out = run(LEGAL_INLINE, "legal")
+    expect("a full citation in law review body text is INLINE-CITE",
+           rc == 1 and "drafts/Intro.md:1: INLINE-CITE" in out, out)
+    rc, out = run(LEGAL_FOOTNOTED, "legal")
+    expect("citations in footnotes, inline or defined, are not INLINE-CITE", rc == 0, out)
+    rc, out = run(LEGAL_INLINE, "general")
+    expect("INLINE-CITE is a law review rule only", "INLINE-CITE" not in out, out)
 
     rc, out = run(LEGAL_OK, "econ")
     expect("econ register flags Part II and supra", rc == 1 and out.count("REGISTER-CROSSING") == 2, out)

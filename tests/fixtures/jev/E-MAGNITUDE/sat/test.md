@@ -1,0 +1,3 @@
+# 4. Results
+
+Table 3 reports regressions of abnormal returns around proxy-fight announcements on hedge-fund ownership. A one-standard-deviation increase in hedge-fund ownership is associated with a 1.4 percentage point higher announcement return (t = 3.6), about a third of the sample mean of 4.1%. The interaction with the staggered-board indicator cuts that association roughly in half (−0.7 percentage points, standard error 0.3), while the coefficient on analyst coverage is small and insignificant (0.1 percentage points, t = 0.4). With industry fixed effects the main estimate is 1.3 percentage points (t = 3.2; column 4).

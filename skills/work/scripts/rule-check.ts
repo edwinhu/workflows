@@ -210,12 +210,14 @@ export function statement(proposition: string): string {
   return one.length > 140 ? one.slice(0, 139) + '…' : one;
 }
 
-// Score every rule in rulesDir (or only the named ones) on these files; verdicts sorted by p descending.
+// Score every rule in rulesDir, or in each of rulesDirs (a register set on top of the writing set), or
+// only the named ones, on these files; verdicts sorted by p descending.
 export function checkRules(opts: {
-  files: string[]; plan?: string; root?: string; rulesDir?: string; projectName: string; blockAt: number; only?: string[];
+  files: string[]; plan?: string; root?: string; rulesDir?: string; rulesDirs?: string[]; projectName: string; blockAt: number; only?: string[];
   changed?: Record<string, number[][]> | null; batch?: boolean; maxTimeSeconds?: number;
 }): { verdicts: Verdict[]; unavailable: Unavailable[] } {
-  const evidenceData = collectEvidence(opts);
+  const dirs = opts.rulesDirs?.length ? opts.rulesDirs : [opts.rulesDir || defaultRulesDir];
+  const evidenceData = Object.assign({}, ...dirs.map(rulesDir => collectEvidence({ ...opts, rulesDir })));
   const verdicts: Verdict[] = [];
   const unavailable: Unavailable[] = [];
   const picked = Object.fromEntries(Object.entries(evidenceData).filter(([n]) => !opts.only || opts.only.includes(n)));
@@ -241,7 +243,7 @@ function main() {
   let projectOverride = '';
   let plan = '';
   let blockAt = 0.85;
-  let rulesDir = defaultRulesDir;
+  const rulesDirs: string[] = [];
   let batch = false;
   let maxTimeSeconds: number | undefined;
   let changedFile = '';
@@ -264,7 +266,8 @@ function main() {
     } else if (arg === '--changed-lines') {
       changedFile = argv[++i];
     } else if (arg === '--rules') {
-      rulesDir = argv[++i];
+      // repeatable: `--rules <writing> --rules <legal>` scores the register set on top of the general one
+      rulesDirs.push(argv[++i]);
     } else if (arg === '--files') {
       while (i + 1 < argv.length && !argv[i + 1].startsWith('--')) {
         files.push(argv[++i]);
@@ -311,7 +314,7 @@ function main() {
 
   let result!: ReturnType<typeof checkRules>;
   try {
-    result = checkRules({ files, plan: plan || undefined, root: projectDir || undefined, rulesDir, projectName, blockAt, changed, batch, maxTimeSeconds });
+    result = checkRules({ files, plan: plan || undefined, root: projectDir || undefined, rulesDirs, projectName, blockAt, changed, batch, maxTimeSeconds });
   } catch (e: any) {
     console.error(e.message);
     process.exit(1);

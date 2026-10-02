@@ -2,7 +2,8 @@
 // WIRED Jev rules and add one line of context per rule at p(VIOLATED) >= 0.85. Advisory only.
 //
 //   rule set   hooks/jev/rules.ts ruleSetFor: prose -> writing, tests and shell -> dev, .py under a
-//              `workflow: ds` ACTIVE_WORKFLOW.md -> ds; anything else is left alone
+//              `workflow: ds` ACTIVE_WORKFLOW.md -> ds; anything else is left alone. Prose also gets
+//              its register set (legal, econ) when that cursor says `style: legal|econ`
 //   scoring    ONE $.process.run of skills/work/scripts/rule-check.ts --batch: the set's own
 //              evidence.py (uncalibrated/ is below its glob), then ONE Decisions call for all its
 //              rules through work-hold.ts decisionsCall, the plugin's one Jev transport
@@ -16,8 +17,8 @@
 // with context added or not; it never denies. Any failure adds nothing and goes to the debug log.
 import type { EngineInterface, On, ToolCallResult } from 'claude-code'
 import {
-  RULE_DIRS, ancestors, changedFromInput, contextLines, enabled, merge, rangesFromDiff, ruleSetFor,
-  workflowOf, dirname, type Range, type RuleSet, type Verdict,
+  ancestors, changedFromInput, contextLines, enabled, merge, rangesFromDiff, ruleDirsFor, ruleSetFor,
+  styleOf, workflowOf, dirname, type Range, type RuleSet, type Verdict,
 } from './rules.ts'
 
 type $ = EngineInterface
@@ -49,18 +50,22 @@ function shown(cwd: string, file: string): string {
   return file.startsWith(root) ? file.slice(root.length) : file
 }
 
-async function workflowAt($: $, dir: string): Promise<string | null> {
+/** The nearest `.planning/ACTIVE_WORKFLOW.md` text at or above `dir`, up to $HOME. */
+async function cursorAt($: $, dir: string): Promise<string | null> {
   const home = (await $.env.get('HOME')) || '/'
   for (const d of ancestors(dir, home)) {
-    let text: string
     try {
-      text = await $.fs.read(`${d === '/' ? '' : d}/.planning/ACTIVE_WORKFLOW.md`)
+      return await $.fs.read(`${d === '/' ? '' : d}/.planning/ACTIVE_WORKFLOW.md`)
     } catch {
       continue
     }
-    return workflowOf(text)
   }
   return null
+}
+
+async function workflowAt($: $, dir: string): Promise<string | null> {
+  const text = await cursorAt($, dir)
+  return text === null ? null : workflowOf(text)
 }
 
 async function changedLines($: $, tool: string, input: Record<string, unknown>, file: string): Promise<Range[]> {
@@ -78,9 +83,10 @@ async function changedLines($: $, tool: string, input: Record<string, unknown>, 
 /** The context lines for one evaluation; [] when nothing reaches the bar or anything failed. */
 async function evaluate($: $, set: RuleSet, file: string, ranges: Range[], cwd: string): Promise<string[]> {
   const root = $.plugin.root
+  const style = set === 'writing' ? styleOf((await cursorAt($, dirname(file))) ?? '') : null
   const argv = [
     'bun', `${root}/skills/work/scripts/rule-check.ts`, '--batch',
-    '--rules', `${root}/${RULE_DIRS[set]}`, '--files', file,
+    ...ruleDirsFor(set, style).flatMap(d => ['--rules', `${root}/${d}`]), '--files', file,
     '--changed-lines', '-', '--max-time', JEV_MAX_SECONDS,
   ]
   const started = await $.clock.now()
@@ -100,7 +106,7 @@ async function evaluate($: $, set: RuleSet, file: string, ranges: Range[], cwd: 
   }
   const ms = (await $.clock.now()) - started
   if (out.unavailable?.length) log($, `${file}: unavailable ${out.unavailable.map(u => `${u.rule} (${u.reason})`).join('; ')}`)
-  log($, `${file}: ${set} ${(out.verdicts ?? []).map(v => `${v.rule}=${v.p}`).join(' ')} in ${ms} ms`)
+  log($, `${file}: ${set}${style ? `+${style}` : ''} ${(out.verdicts ?? []).map(v => `${v.rule}=${v.p}`).join(' ')} in ${ms} ms`)
   return contextLines(out.verdicts ?? [], shown(cwd, file), ranges)
 }
 

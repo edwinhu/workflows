@@ -12,7 +12,9 @@ Jev's, under constraints/jev/writing, and the reviewer's):
   ALL-CAPS           a common word set in capitals for emphasis ("this is NOT the rule").
   REGISTER-CROSSING  a marker that belongs to another domain's register: Bluebook short forms
                      or `This Article` outside a law review, `Part II.B` outside one, a
-                     directional `Section 2 above` inside one.
+                     directional `Section 2 above` or `This paper` inside one.
+  INLINE-CITE        (legal) a full citation — volume, reporter or journal, page — in the body
+                     text of a law review draft. Footnotes carry the citations.
 
 Quoted text is skipped — a quotation reproduces someone else's diction. Frontmatter, code,
 tables and headings are not prose and are skipped too.
@@ -57,8 +59,32 @@ REGISTER = {
              (r"\bThis Article\b", "the law review self-reference; write `This paper`"),
              (ROMAN_PART, "cross-reference by Section, numerically")],
     "legal": [(r"\b(?:[Ss]ections? \d+(?:\.\d+)*,? (?:above|below)|(?:above|below) in [Ss]ection \d+)\b",
-               "cross-reference by Part, not by section number")],
+               "cross-reference by Part, not by section number"),
+              (r"\bThis (?:[Pp]aper|[Ss]tudy)\b", "the law review self-reference is `This Article` (`This Note`)")],
 }
+
+# volume + reporter, code or journal + page: a full citation, not a case name or "Section 10(b)"
+FULL_CITE = re.compile(
+    r"\b\d+\s+(?:U\.S\.|S\.\s?Ct\.|L\.\s?Ed\.(?:\s?2d)?|F\.(?:\s?Supp\.)?(?:\s?(?:2d|3d|4th))?|"
+    r"A\.(?:2d|3d)|N\.[EW]\.(?:2d|3d)?|S\.[EW]\.(?:2d|3d)?|So\.(?:\s?[23]d)?|P\.(?:2d|3d)|Cal\.\s?Rptr\.|"
+    r"WL|U\.S\.C\.|C\.F\.R\.|Fed\.\s?Reg\.|Stat\.|(?:[A-Z][\w.&']*\s){0,5}?L\.\s?(?:Rev|J)\.)\s+(?:§+\s*)?\d")
+NOTE_OPEN = re.compile(r"#footnote\[|\\footnote\{|\^\[")
+
+
+def body_only(line: str) -> str:
+    """The line with its inline footnotes cut out; a footnote left open runs to the line's end."""
+    out, i = "", 0
+    for m in NOTE_OPEN.finditer(line):
+        if m.start() < i:
+            continue
+        out += line[i:m.start()]
+        opener, close = m.group(0)[-1], "}" if m.group(0).endswith("{") else "]"
+        depth, j = 1, m.end()
+        while j < len(line) and depth:
+            depth += {opener: 1, close: -1}.get(line[j], 0)
+            j += 1
+        i = j
+    return out + line[i:]
 
 QUOTED = re.compile(r"“[^”]*”|\"[^\"\n]*\"")
 
@@ -96,6 +122,9 @@ def check(path: Path, style: str):
         for rx, rule, msg in rules:
             for m in rx.finditer(text):
                 yield n, rule, msg.format(m=m.group(0))
+        if style == "legal" and not re.match(r"\s*\[\^[^\]]+\]:", text):
+            for m in FULL_CITE.finditer(body_only(text)):
+                yield n, "INLINE-CITE", f"`{m.group(0)}…` in body text: put the citation in a footnote"
 
 
 def main(argv=None) -> int:
