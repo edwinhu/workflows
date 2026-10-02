@@ -80,6 +80,7 @@ Sources: [batch limits](https://docs.cloud.google.com/gemini-enterprise-agent-pl
 - **Measured on Developer API, not a Cloud availability claim:** past-tense founder framing grounded 0/138; fresh framing (“Search the web NOW for current pages… report what they say TODAY”) grounded **10/10**, 1.9 searches/row. Flex shed load with 503s at peak, about 9 rows/hour. Prefer fresh framing and verify the Cloud sample; do not route bulk to Flex merely because an old prompt failed. More evidence: [gotchas](references/gotchas.md).
 - Bulk per-document extraction is one Cloud Batch job over pre-cut inputs, **never an interactive-agent fan-out**. A 297-prospectus coder run consumed all three shared Claude accounts; it belonged in Batch.
 - Reconcile every input identifier, duplicate/missing output and row error; preserve IDs on retry. A succeeded job or valid JSON is not correctness evidence. Budget input/output and search separately; a prompt search cap is not an enforced quota. Before a full grounded run, measure about 100 Cloud rows and project query cost from usage, not the requested cap.
+- **NO GROUNDED RUN OVER ~100 ROWS WITHOUT A USER-APPROVED COST PROJECTION:** rows × pilot-measured queries/row × $14/1,000, minus the remaining free allowance; set a budget alert first. Searches were $390 of a $421 bill and every alert arrived after the spend. Formula, SKUs and the Billing → Reports URL: [search cost gate](references/gotchas.md#search-cost-gate--the-real-bill-sep-28--oct-2).
 - Use the harness's background notification mechanism for long monitoring, not a model session repeatedly narrating status. Do not switch backend, model, schema or location to clear an error without retesting.
 
 ## Red flags — STOP
@@ -92,6 +93,7 @@ Sources: [batch limits](https://docs.cloud.google.com/gemini-enterprise-agent-pl
 | Use a bare model resource after a Cloud batch 404 | **STOP.** Use `publishers/google/models/<id>` and verify the exact endpoint |
 | Infer batch availability from `models.list()` or downgrade to clear 404 | **STOP.** Check Cloud support and run the same-model Cloud batch sample |
 | Put Batch requests into `interactions.create` | **STOP.** Batch uses GenerateContentRequest JSONL and `client.batches.create` |
+| Switch platforms or abandon a batch approach | **STOP.** Cancel every job and runner of the old approach — list its batches, stop the poller/farm — and confirm none are pending. An unstopped AI Studio retry runner billed searches for ~8h after the move to Vertex |
 | Accept a succeeded job without row reconciliation | **STOP.** Inspect status, content, finish reason, identifiers and grounding |
 
 Operations: [GCS](references/gcs-setup.md), [CLI](references/cli-reference.md), [troubleshooting](references/troubleshooting.md), [production patterns](references/best-practices.md). Historical [Developer File Search](references/file-search.md) and Files/Interactions/embedding examples are **not for production**; never use them as production fallbacks.

@@ -30,6 +30,45 @@ Founder web-search pilots and M100 used `gemini-3.8-flash`, location `global`, o
 | A new project returned 403 `aiplatform.batchPredictionJobs.create` denied `(or it may not exist)` immediately after enabling aiplatform; a later submission succeeded without IAM grants | Wait a few minutes after enablement and retry before diagnosing missing IAM; `testIamPermissions` needs `cloudresourcemanager.googleapis.com` enabled |
 | google-genai 2.26.0 rejected `labels` in `batches.create` config with pydantic `extra_forbidden` | If labels are needed, use REST `batchPredictionJobs.create` rather than an unsupported SDK config field |
 
+### Search cost gate — the real bill, Sep 28 – Oct 2
+
+UVA Research billing account, Billing → Reports grouped by SKU: **$420.90 total, of which searches were $390.14 and tokens about $30.** Searches, not tokens, are the cost of a grounded run; a projection that prices only tokens understates it about 14×.
+
+| SKU | Service | Usage | Cost |
+|---|---|---|---|
+| `Generate content search query gemini 3 paid one` | Gemini API (AI Studio) | 26,344 count | $368.82 — $14/1,000, **no free allowance applied** |
+| `Grounding with Google Search on Gemini 3` | Vertex AI | 6,523 count | $21.32 — first 5,000 free, then $14/1,000 |
+| `Gemini 3.8 Flash Global Text Output - Batch Predictions` | Vertex AI | 10.4M | $39.05 list, −$19.53 credit, $19.53 net |
+| Gemini API batch output tokens | Gemini API | 3.2M | $5.98 |
+| Gemini API batch input tokens | Gemini API | 6.4M | $2.41 |
+
+| Fact | Consequence |
+|---|---|
+| Vertex: 6,675 `groundingMetadata.webSearchQueries` visible in outputs vs 6,523 billed | On Vertex, queries counted from the pilot's outputs predict the bill; project from them |
+| AI Studio: 5,490 visible vs 26,344 billed, about **4.8×**. Most likely the code 9 rows (1,307/2,111 in the main batch, plus failures in every retry chunk) ran searches that were billed but never returned — inferred, not confirmed | Counting visible queries on AI Studio understates the bill about 5×; one more reason it is banned for production |
+| An abandoned AI Studio retry runner (sequential 200-row chunks) was never stopped and kept submitting for about 8 hours after production moved to Vertex | Switching platforms without cancelling the old jobs and runners pays for both; most of the $368.82 accrued here |
+| The cost-anomaly email arrived at about $346; budget alerts at 50/100/150% of a $100 monthly budget came after most of the spend | Alerts lag the spend by hours. They are a post-mortem, not a brake: set a budget alert before the run and gate on a projection |
+| Thinking was about 88% of output tokens on an extraction job left at the default thinking level | For extraction, set `generationConfig.thinkingConfig.thinkingLevel: "LOW"` (see [thinking](#thinking-and-sampling)) |
+
+**Projection, shown to the user and approved before any grounded run over about 100 rows:**
+
+```
+projected $ = max(0, rows × queries_per_row − free_remaining) × $14 / 1,000
+```
+
+- `queries_per_row` is the mean `len(groundingMetadata.webSearchQueries)` over a ~100-row Cloud pilot, never the prompt's requested cap (the cap is soft: M100 mean 2.98, max 7).
+- `free_remaining` is the Vertex monthly 5,000 minus queries already billed this month (read the bill, below). AI Studio applied none.
+- Vertex bills reported queries. On AI Studio multiply by 5 for hidden billed searches — and AI Studio is banned for production regardless.
+- State the token cost beside it and the total. A projection the user never saw is not a gate.
+
+**Read the real bill** — the console is the source of truth, not the outputs:
+
+```
+https://console.cloud.google.com/billing/<ACCOUNT_ID>/reports;timeRange=CUSTOM_RANGE;from=YYYY-MM-DD;to=YYYY-MM-DD;grouping=GROUP_BY_SKU
+```
+
+Look for the two search SKUs above (`Generate content search query gemini 3 paid one`, `Grounding with Google Search on Gemini 3`) and the `... Batch Predictions` token SKUs. Reports lag usage by hours; check after the pilot and again after the run, and reconcile billed queries against counted ones.
+
 Run attributable work in a per-payer project (for example, a generic research project), not AI Studio's default `gen-lang-client-*` project.
 
 ### SDK backend spelling and precedence
@@ -89,6 +128,8 @@ Prompt framing, not markdown alone, changed the observed search behavior: past-t
 Omit temperature, top_p and top_k for Gemini 3.x. Current 3.8 migration removes these parameters, not merely a low-temperature override. Thinking is exact-model-specific: 3.8/3.7 Flash low/medium/high; 3.5 Flash-Lite minimal/low/medium/high; 3.1 Pro Preview low/medium/high. See [models-and-pricing.md](models-and-pricing.md).
 
 A MAX_TOKENS response can spend its whole output budget on thinking. Check content and finish reason, adjust a model-supported thinking level/output budget, and retest. Default high is not universal; 2.5 does not universally reject thinking configuration.
+
+**Extraction jobs: set `thinkingLevel` LOW.** A 2026-10-01 extraction batch at the default level spent about 88% of output tokens on thinking; output tokens are billed whether or not they reach the answer.
 
 ## Cloud batch (historical identifiers retained)
 
