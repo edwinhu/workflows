@@ -10,13 +10,11 @@
 // waking itself about its own runs would loop.
 import type { EngineInterface, On } from 'claude-code'
 import {
-  classify, parseEvents, statusLine, table, wakeable, wakeText, workPhase, workRound,
+  classify, parseEvents, statusLine, table, wakeable, wakeText, workPhase, workRound, WAKE_HORIZON_MS,
   type Facts, type Run, type View,
 } from './runs.ts'
 
 const TICK_MS = 15_000
-// A finished run older than this is history, not news: no wake for it after a resume.
-const WAKE_HORIZON_MS = 24 * 3600_000
 // Notified keys older than this are pruned from the shared store.
 const KEEP_NOTIFIED_MS = 7 * 24 * 3600_000
 
