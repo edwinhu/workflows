@@ -48,13 +48,13 @@ SKILL_ROOT = RUNNER.parent.parent
 FIXTURES = SKILL_ROOT / "fixtures"
 CLEAN = FIXTURES / "clean"
 
-MATRIX = ["CMP", "CON", "SPEC", "NOTE", "INV", "WID", "OVR", "ENUM", "FID", "CONV", "VIS"]
+MATRIX = ["CMP", "CON", "SPEC", "NOTE", "INV", "VSL", "WID", "OVR", "ENUM", "FID", "CONV", "VIS"]
 MODEL_EVALUATED_CHECKS = ("FID", "CONV", "VIS")
-COMPUTED_CHECKS = ("CMP", "CON", "SPEC", "NOTE", "INV", "WID", "OVR", "ENUM")
+COMPUTED_CHECKS = ("CMP", "CON", "SPEC", "NOTE", "INV", "VSL", "WID", "OVR", "ENUM")
 # ENUM is a meta-check over the emitted line set: a line WAS emitted for each ID even on a run where
 # every artifact check failed closed, so it stays PASS there. These are the ones that must all go
 # red when the plan declares nothing the probe can open.
-ARTIFACT_CHECKS = ("CMP", "CON", "SPEC", "NOTE", "INV", "WID", "OVR")
+ARTIFACT_CHECKS = ("CMP", "CON", "SPEC", "NOTE", "INV", "VSL", "WID", "OVR")
 
 # Everything the probe's subprocesses reach for, minus `typst`: check-overflow.sh needs a shell and
 # uv, and run-constraints.py is invoked through uv when uv is on PATH.
@@ -792,8 +792,11 @@ def test_spec_does_not_degenerate_into_a_row_count(tmp_path: Path):
     # passing an equality nobody evaluated. Asserting SPEC alone here would forbid that.
     assert report.status("INV") == "FAIL", report["INV"]
     assert "match no Slide Spec row by normalized title" in report["INV"]["detail"]
+    # VSL fails closed on it for the same reason: the retitled slide has no `Visual` cell.
+    assert report.status("VSL") == "FAIL", report["VSL"]
+    assert "1 built slide(s) match no Slide Spec row" in report["VSL"]["detail"]
     for other in ARTIFACT_CHECKS:
-        if other not in ("SPEC", "INV"):
+        if other not in ("SPEC", "INV", "VSL"):
             assert report.status(other) == "PASS", (other, report[other])
     assert report.code == 1, report.stdout
 
@@ -990,6 +993,71 @@ def test_note_fails_when_the_notes_source_has_no_heading(tmp_path: Path):
     assert "no `== ` heading" in report["NOTE"]["detail"]
     assert "notes_headings=0" in report["NOTE"]["evidence"]
     assert report.code == 1
+
+
+def test_note_fails_when_a_matched_notes_section_carries_no_spoken_line(tmp_path: Path):
+    # The heading matches the slide's key and nothing is under it but a comment and code: a
+    # heading-only join reads this clean, and the presenter has no words for the slide.
+    root = stage(tmp_path)
+    substitute(
+        notes_src(root),
+        "- Give the point estimate once.\n\n- Then move to the event study.\n",
+        "// TODO: write this slide's notes\n#v(1em)\n",
+    )
+    report = probe(root)
+    assert report.status("NOTE") == "FAIL", report["NOTE"]
+    assert "1 notes section(s) carry no spoken line" in report["NOTE"]["detail"]
+    assert "Blockholders raise dividends by four points." in report["NOTE"]["detail"]
+    assert_only_failure(report, "NOTE")
+
+
+# ------------------------------------------------------------------------------------------------
+# VSL -- each slide's visual elements agree with its Slide Spec `Visual` cell
+# ------------------------------------------------------------------------------------------------
+
+
+def test_vsl_fails_when_a_text_only_slide_builds_a_visual(tmp_path: Path):
+    root = stage(tmp_path)
+    substitute(
+        deck_src(root),
+        "- The event study shows the same jump\n",
+        "- The event study shows the same jump\n\n#table(columns: 2, inset: 10pt, [a], [b])\n",
+    )
+    report = probe(root)
+    assert report.status("VSL") == "FAIL", report["VSL"]
+    assert "1 text-only slide(s) build a visual" in report["VSL"]["detail"]
+    assert "Blockholders raise dividends by four points. (Visual `none`, builds #table)" in report["VSL"]["detail"]
+    assert report.code == 1
+
+
+def test_vsl_fails_when_a_spec_row_names_a_visual_the_slide_never_builds(tmp_path: Path):
+    root = stage(tmp_path)
+    plan = root / "plan.md"
+    substitute(plan, "| R1, F2 | none |", "| R1, F2 | Event-study figure from the paper |")
+    report = probe(root)
+    assert report.status("VSL") == "FAIL", report["VSL"]
+    assert "1 slide(s) whose Visual cell names a visual build none" in report["VSL"]["detail"]
+    assert "spec_rows_naming_a_visual=1" in report["VSL"]["evidence"]
+    assert_only_failure(report, "VSL")
+
+
+def test_vsl_ignores_a_visual_that_sits_in_a_comment(tmp_path: Path):
+    root = stage(tmp_path)
+    substitute(
+        deck_src(root),
+        "- The event study shows the same jump\n",
+        "- The event study shows the same jump\n\n// #image(\"assets/event-study.png\")\n",
+    )
+    report = probe(root)
+    assert report.status("VSL") == "PASS", report["VSL"]
+
+
+def test_vsl_fails_when_the_built_deck_has_no_title_line(tmp_path: Path):
+    root = stage(tmp_path)
+    deck_src(root).write_text("#let inv(..ids) = none\n\nNo slides at all.\n", encoding="utf-8")
+    report = probe(root)
+    assert report.status("VSL") == "FAIL", report["VSL"]
+    assert "built_slides=0" in report["VSL"]["evidence"]
 
 
 # ------------------------------------------------------------------------------------------------

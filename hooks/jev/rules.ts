@@ -1,20 +1,35 @@
 // The per-edit Jev mod's pure half: which rule set a file belongs to, which lines an edit changed,
 // and the one line a violation becomes. No `$` and no Node, so bun tests and the mod kit share it.
 
-export type RuleSet = 'writing' | 'dev' | 'ds' | 'elide'
+export type RuleSet = 'writing' | 'dev' | 'ds' | 'authoring' | 'typst' | 'notes' | 'slides' | 'elide'
 
-/** Each set's rules directory under the plugin root. Only the directory itself is globbed by
- *  evidence.py, so its `uncalibrated/` subdirectory is never read: the layout is the wiring. */
+/** Each set's rules directory under its plugin's root: this plugin's, or the teaching plugin's for
+ *  TEACHING_SETS. Only the directory itself is globbed by evidence.py, so its `uncalibrated/`
+ *  subdirectory is never read: the layout is the wiring. */
 export const RULE_DIRS: Record<RuleSet, string> = {
   writing: 'constraints/jev/writing',
   dev: 'constraints/jev/dev',
   ds: 'constraints/jev',
+  authoring: 'constraints/jev/authoring',
+  typst: 'constraints/jev/typst',
+  notes: 'constraints/jev/notes',
+  slides: 'constraints/jev/slides',
   elide: 'constraints/jev/elide',
 }
+
+/** The sets the teaching plugin ships (its constraints/jev); without that plugin they score as writing. */
+export const TEACHING_SETS: ReadonlySet<RuleSet> = new Set<RuleSet>(['notes', 'slides'])
 
 export const BLOCK_AT = 0.85
 
 const PROSE = /\.(md|typ|tex)$/i
+// what the harness loads as a skill, agent or command, a plugin's manifests, and .planning/ files
+const AUTHORING = /(^|\/)(SKILL\.md|CLAUDE\.md|AGENTS\.md|plugin\.json|marketplace\.json|hooks\.json)$|\/(agents|commands)\/[^/]+\.md$|\/\.planning\//
+// A talk's deck and speaker notes: slides*.typ / notes*.typ, or any .typ in a presentation/ directory.
+const DECK = /(^|\/)(slides|notes)[^/]*\.typ$|(^|\/)presentation\/[^/]*\.typ$/i
+// teaching's course layout: lecture notes are notes/NN-topic.typ, a lecture's deck slides/<chapter>/NN.typ
+const LECTURE_NOTES = /(^|\/)notes\/\d{2}-[^/]*\.typ$/
+const LECTURE_DECK = /(^|\/)slides\/[^/]+\/\d{2}\.typ$/
 // a casebook reading cut from an opinion: elide-case writes these, and its rules are about the cut
 const ADDENDUM = /(^|\/)addenda\/[^/]+\.typ$/i
 const SHELL = /\.(sh|bash)$/i
@@ -27,13 +42,24 @@ export function workflowOf(text: string): string | null {
 }
 
 /**
- * The rule set for `path`, or null for none. A .typ under addenda/ is elide; other prose (.md .typ .tex) is writing; a test file or a
+ * The rule set for `path`, or null for none. A SKILL.md, agent or command .md, CLAUDE.md/AGENTS.md,
+ * plugin.json, marketplace.json, hooks.json or a .planning/ file is authoring, ahead of the .md rule.
+ * Lecture notes are notes and a lecture's deck is slides (the teaching rules: notes are spoken, and the
+ * writing rules would flag the signposts they need). A talk's .typ deck or notes (by name, by a
+ * presentation/ directory, or under a `workflow: workshop` cursor) is typst. A .typ under addenda/ is
+ * elide (an excerpt cut from an opinion). Other prose (.md .typ .tex)
+ * is writing; a test file or a
  * shell script is dev; any other .py is ds when the nearest `.planning/ACTIVE_WORKFLOW.md` above it
  * (the workflow cursor; `workflowAt` walks up and answers its `workflow:`) says `ds`. A test file
  * inside a ds project is still dev: the dev rules are the ones written about tests.
  */
 export async function ruleSetFor(path: string, workflowAt: (dir: string) => Promise<string | null>): Promise<RuleSet | null> {
+  if (AUTHORING.test(path)) return 'authoring'
+  if (LECTURE_NOTES.test(path)) return 'notes'
+  if (LECTURE_DECK.test(path)) return 'slides'
   if (ADDENDUM.test(path)) return 'elide'
+  if (DECK.test(path)) return 'typst'
+  if (/\.typ$/i.test(path)) return (await workflowAt(dirname(path))) === 'workshop' ? 'typst' : 'writing'
   if (PROSE.test(path)) return 'writing'
   if (SHELL.test(path) || TEST_PATH.test(path)) return 'dev'
   if (/\.py$/i.test(path)) return (await workflowAt(dirname(path))) === 'ds' ? 'ds' : null

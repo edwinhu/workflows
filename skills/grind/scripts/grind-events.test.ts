@@ -18,6 +18,10 @@ import { mkdtempSync, rmSync, writeFileSync, readFileSync, readdirSync, existsSy
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { grindEnv } from './grind-test-env'
+import { useTmp } from '../../../tests/helpers/tmp.ts'
+
+// Sweeps the notifier shim dir grind-test-env makes on this file's behalf.
+useTmp()
 import { classify, parseEvents, wakeable, wakeText, type View } from '../../../hooks/watch/runs.ts'
 
 const GRIND = `${import.meta.dir}/grind.sh`

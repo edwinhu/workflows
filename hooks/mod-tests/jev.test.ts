@@ -87,6 +87,31 @@ test('an Edit reports the lines its new string occupies; a .py under a ds workfl
   expect(argv[argv.indexOf('--rules') + 1]!.endsWith('/constraints/jev')).toBe(true)
 })
 
+test("a lecture's notes and deck use the teaching plugin's notes and slides rules", async ($, on) => {
+  const lecture = '/home/u/.claude/skills/teaching/constraints/jev/_lecture.py'
+  const w = world(on, { tree: { [lecture]: '' }, verdicts: [{ rule: 'N-HOLLOW', p: 0.9, statement: 'At least one candidate bullet is HOLLOW' }] })
+  const r = await $.tool.call(write('notes/14-10b5.typ', '- There are six scenarios; let us walk through each.\n'))
+  expect(jevLines(r)).toEqual(['Jev N-HOLLOW: notes/14-10b5.typ:1 — At least one candidate bullet is HOLLOW (p=0.90)'])
+  await $.tool.call(write('/home/u/p/slides/05-10b5/14.typ', '#slide[\n=== The answer:\n]\n'))
+  const rules = w.runs.map(x => x.argv[x.argv.indexOf('--rules') + 1])
+  expect(rules).toEqual(['/home/u/.claude/skills/teaching/constraints/jev/notes', '/home/u/.claude/skills/teaching/constraints/jev/slides'])
+})
+
+test('TEACHING_PLUGIN_ROOT names the teaching plugin', async ($, on) => {
+  const w = world(on, { tree: { '/opt/teaching/constraints/jev/_lecture.py': '' }, env: { TEACHING_PLUGIN_ROOT: '/opt/teaching' } })
+  await $.tool.call(write('/home/u/p/notes/14-10b5.typ'))
+  expect(w.runs[0]!.argv[w.runs[0]!.argv.indexOf('--rules') + 1]).toBe('/opt/teaching/constraints/jev/notes')
+})
+
+test('no teaching plugin: lecture notes are scored by the writing rules, and the fallback is logged', async ($, on) => {
+  const w = world(on, { verdicts: [hedgy] })
+  await $.tool.call(write('/home/u/p/notes/14-10b5.typ'))
+  const rules = w.runs[0]!.argv[w.runs[0]!.argv.indexOf('--rules') + 1]!
+  expect(rules.endsWith('/constraints/jev/writing')).toBe(true)
+  expect(rules.includes('teaching')).toBe(false)
+  expect(w.logs.some(l => l.includes('scored as writing'))).toBe(true)
+})
+
 test('a file no rule set covers is left alone: no run, no context', async ($, on) => {
   const w = world(on, { tree: { '/home/u/p/src/build.py': 'x = 1\n' }, verdicts: [hedgy] })
   await $.tool.call(write('/home/u/p/data.json', '{}'))

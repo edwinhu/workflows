@@ -5,6 +5,9 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
 import { loadTable, route } from '../scripts/lib/route.ts'
+import { useTmp } from './helpers/tmp.ts'
+
+const mkTmp = useTmp()
 
 /**
  * The spec for scripts/lib/route.ts: one row in, one routing decision out.
@@ -27,7 +30,7 @@ const CANDIDATES = ['sonnet', 'opus', 'flash', 'luna']
 function fixtureCopy(edit: (t: any) => void): string {
   const t = JSON.parse(readFileSync(FIXTURE, 'utf8'))
   edit(t)
-  const p = join(mkdtempSync(join(tmpdir(), 'route-')), 'table.json')
+  const p = join(mkTmp('route-'), 'table.json')
   writeFileSync(p, JSON.stringify(t, null, 2))
   return p
 }

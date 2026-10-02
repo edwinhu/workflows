@@ -19,6 +19,9 @@ import { spawnSync } from 'node:child_process'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { useTmp } from '../../../tests/helpers/tmp.ts'
+
+const mkTmp = useTmp()
 
 const SCRIPT = join(import.meta.dir, 'converge-check.ts')
 const scratch: string[] = []
@@ -38,7 +41,7 @@ type Round = {
 
 /** A run dir: one result-round<N>.json per entry, plus the args.json the rounds ran under. */
 function mkRun(rounds: Round[], tasks: unknown[] = [{ id: 'T1', name: 'n', work: 'w', acceptance: 'a', writablePaths: ['src/'] }]) {
-  const dir = mkdtempSync(join(tmpdir(), 'converge-'))
+  const dir = mkTmp('converge-')
   scratch.push(dir)
   writeFileSync(join(dir, 'args.json'), JSON.stringify({ projectDir: dir, tasks }, null, 2))
   rounds.forEach((r, i) => {
@@ -83,7 +86,7 @@ test('a single-round dir reports too short to judge, not a verdict', () => {
 })
 
 test('a dir with no result files at all cannot judge and says so', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'converge-'))
+  const dir = mkTmp('converge-')
   scratch.push(dir)
   writeFileSync(join(dir, 'args.json'), JSON.stringify({ projectDir: dir, tasks: [] }))
   const r = run(dir)

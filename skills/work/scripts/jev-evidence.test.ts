@@ -3,6 +3,9 @@ import { $ } from "bun";
 import { join } from "path";
 import * as fs from "fs";
 import * as os from "os";
+import { useTmp } from "../../../tests/helpers/tmp.ts";
+
+const mkTmp = useTmp();
 
 // The ds rules under constraints/jev: extractor state on each rule's fixtures, and rule-check.ts
 // against a local stub Jev. No network.
@@ -103,7 +106,7 @@ test("M1 state records whether a plan was supplied", async () => {
 
 async function ruleCheck(rule: string, kase: "vio2" | "sat2") {
     const { dir, file, plan } = twin2(rule, kase);
-    const d = fs.mkdtempSync(join(os.tmpdir(), `jev-ds-${rule}-${kase}-`));
+    const d = mkTmp(`jev-ds-${rule}-${kase}-`);
     made.push(d);
     fs.cpSync(dir, d, { recursive: true });
     const server = Bun.serve({
@@ -140,7 +143,7 @@ for (const rule of Object.keys(DEFECT)) {
 }
 
 test('evidence.py labels files relative to --root', async () => {
-    const tmpDir = fs.mkdtempSync(join(os.tmpdir(), 'jev-evidence-root-'));
+    const tmpDir = mkTmp('jev-evidence-root-');
     made.push(tmpDir);
     fs.mkdirSync(join(tmpDir, 'data', 'output'), { recursive: true });
     const testFile = join(tmpDir, 'data', 'output', 'x.csv');

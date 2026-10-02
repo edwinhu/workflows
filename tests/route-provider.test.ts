@@ -3,6 +3,9 @@ import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
+import { useTmp } from './helpers/tmp.ts'
+
+const mkTmp = useTmp()
 
 /**
  * Provider-constrained rows: a row naming a kind AND a provider but no model resolves to the first
@@ -27,7 +30,7 @@ const DEAD = 'http://127.0.0.1:1/'
 function fixtureCopy(edit: (t: any) => void): string {
   const t = JSON.parse(readFileSync(FIXTURE, 'utf8'))
   edit(t)
-  const p = join(mkdtempSync(join(tmpdir(), 'route-provider-')), 'table.json')
+  const p = join(mkTmp('route-provider-'), 'table.json')
   writeFileSync(p, JSON.stringify(t, null, 2))
   return p
 }

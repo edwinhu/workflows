@@ -30,6 +30,9 @@ import { tmpdir, homedir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import { jsCodeView, parseLenses } from "../skills/plugin-creator/scripts/pc-probe.ts"
+import { useTmp } from './helpers/tmp.ts'
+
+const mkTmp = useTmp()
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
 const PLUGIN_AGENTS = join(ROOT, 'agents')
@@ -811,7 +814,7 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
 
     // NON-VACUITY. The assertion above is only worth its line if it can fail. Inject a known
     // accepted tic into a TEMP COPY of a register skill and prove the same scanner catches it.
-    const tmp = mkdtempSync(join(tmpdir(), 'tic-nonvacuity-'))
+    const tmp = mkTmp('tic-nonvacuity-')
     mkdirSync(join(tmp, 'writing-fixture'), { recursive: true })
     writeFileSync(join(tmp, 'writing-fixture', 'SKILL.md'),
                   '# fixture\n\nNever write `rich tapestry` — describe what it contains.\n')
@@ -925,7 +928,7 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
   const { buildSetupSection } = await import('../hooks/session-start.ts')
 
   // A project that uses the plugin, with every preload resolving.
-  const clean = mkdtempSync(join(tmpdir(), 'setup-clean-'))
+  const clean = mkTmp('setup-clean-')
   writeFileSync(join(clean, '.claude-workflows.json'), '{"farmOutOnly": true}\n')
   spawnSync('mkdir', ['-p', join(clean, '.claude')], { timeout: 120_000 })
   writeFileSync(join(clean, '.claude', 'settings.json'), '{"plansDirectory": "./.planning"}\n')
@@ -933,24 +936,24 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
   ok('the detector is SILENT on a healthy project', cleanOut === '', JSON.stringify(cleanOut))
 
   // Unrelated repo — no governance file, no .planning/, no .work/: the gate keeps it quiet.
-  const unrelated = mkdtempSync(join(tmpdir(), 'setup-unrelated-'))
+  const unrelated = mkTmp('setup-unrelated-')
   ok('the detector does not nag in an unrelated repo', buildSetupSection(unrelated, ROOT) === '')
 
   // UNSET plansDirectory is a working default, not a finding.
-  const noplans = mkdtempSync(join(tmpdir(), 'setup-noplans-'))
+  const noplans = mkTmp('setup-noplans-')
   writeFileSync(join(noplans, '.claude-workflows.json'), '{}\n')
   ok('unset plansDirectory is NOT reported', buildSetupSection(noplans, ROOT) === '',
      JSON.stringify(buildSetupSection(noplans, ROOT)))
 
   // An ABSENT .claude-workflows.json is the normal state for a project that never opted in.
-  const nogov = mkdtempSync(join(tmpdir(), 'setup-nogov-'))
+  const nogov = mkTmp('setup-nogov-')
   spawnSync('mkdir', ['-p', join(nogov, '.planning')], { timeout: 120_000 })
   ok('an absent .claude-workflows.json is NOT reported', buildSetupSection(nogov, ROOT) === '',
      JSON.stringify(buildSetupSection(nogov, ROOT)))
 
   // A DANGLING PRELOAD in a fixture plugin root — the failure that survived a major version, and
   // the ONLY finding this detector still emits.
-  const fakePlugin = mkdtempSync(join(tmpdir(), 'setup-plugin-'))
+  const fakePlugin = mkTmp('setup-plugin-')
   spawnSync('mkdir', ['-p', join(fakePlugin, 'agents')], { timeout: 120_000 })
   spawnSync('mkdir', ['-p', join(fakePlugin, 'user-agents')], { timeout: 120_000 })
   spawnSync('mkdir', ['-p', join(fakePlugin, 'skills', 'real-skill')], { timeout: 120_000 })
@@ -1168,7 +1171,7 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
 
   // NON-VACUITY. The assertion is worth its line only if it can fail. Run the SAME detector over
   // three temp agent files: the law + Bash + no hook must be caught, and neither control may fire.
-  const tmp = mkdtempSync(join(tmpdir(), 'sendlaw-'))
+  const tmp = mkTmp('sendlaw-')
   const fixture = (name, fmText, body) => {
     const p = join(tmp, name)
     writeFileSync(p, `---\n${fmText}---\n\n${body}\n`)

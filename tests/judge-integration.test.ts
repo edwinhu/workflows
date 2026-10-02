@@ -2,6 +2,9 @@ import { expect, test } from "bun:test";
 import { mkdtempSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
+import { useTmp } from "./helpers/tmp.ts";
+
+const mkTmp = useTmp();
 
 /**
  * End-to-end: state file -> hook -> judge -> decision.
@@ -48,7 +51,7 @@ function runHook(env: Record<string, string>, payload: unknown) {
 }
 
 function fixture(session: string, goal: string, extra: Record<string, unknown> = {}) {
-  const dir = mkdtempSync(join(tmpdir(), "holdit-"));
+  const dir = mkTmp("holdit-");
   writeFileSync(join(dir, `work-hold-${session}.json`), JSON.stringify({
     check: "true",                    // exits 0: the floor is met
     goal,
@@ -269,7 +272,7 @@ function runBrief(dir: string, session: string) {
 }
 
 test("--brief is SILENT on a session that is not armed", () => {
-  const dir = mkdtempSync(join(tmpdir(), "holdit-"));
+  const dir = mkTmp("holdit-");
   const r = runBrief(dir, "never-armed");
   expect(r.out.trim()).toBe("");
   expect(r.code).toBe(0);

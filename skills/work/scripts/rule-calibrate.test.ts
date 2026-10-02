@@ -1,7 +1,7 @@
 import { afterAll, expect, test } from "bun:test";
 import { copyFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "fs";
 import { tmpdir } from "os";
-import { join } from "path";
+import { join, relative } from "path";
 
 // rule-calibrate against a stub Jev: no network. The calibration set is built in a temp dir from the
 // writing fixtures, each file renamed <kind>-<rule>.md so the stub can read which case it is scoring off
@@ -28,7 +28,7 @@ writeFileSync(MANIFEST, JSON.stringify({
 }));
 
 // p(rule, kind, owner): the default is a perfectly calibrated model; `override` replaces single cells.
-async function calibrate(override: (rule: string, kind: string, owner: string) => number | undefined = () => undefined, opts: { down?: boolean; json?: boolean } = {}) {
+async function calibrate(override: (rule: string, kind: string, owner: string) => number | undefined = () => undefined, opts: { down?: boolean; json?: boolean; manifest?: string } = {}) {
   const seen: string[] = [];
   const server = Bun.serve({
     port: 0,
@@ -45,7 +45,7 @@ async function calibrate(override: (rule: string, kind: string, owner: string) =
   });
   const port = server.port;
   if (opts.down) server.stop(true);
-  const args = ["bun", SCRIPT, "--manifest", MANIFEST, "--set", "writing", "--runs", "2"];
+  const args = ["bun", SCRIPT, "--manifest", opts.manifest ?? MANIFEST, "--set", "writing", "--runs", "2"];
   if (opts.json) args.push("--json");
   // async spawn: a spawnSync would block the event loop the stub answers on
   const proc = Bun.spawn(args, {
@@ -100,4 +100,23 @@ test("a rule scoring another rule's violating case above 0.5 is a flagged cross-
   expect(r.out).toMatch(/W-HEDGE \S*vio-?\S*\s.*0\.70\*/);
   expect(r.out).toContain("Cross-rule hits:\n  writing/W-ATTRIB on W-HEDGE's");
   expect(r.out).not.toContain("Cross-rule hits: none");
+}, 60000);
+
+test("a manifest with a root resolves its rules and case paths against that root, not this repo", async () => {
+  // a plugin shipping its own rule set (teaching) keeps its manifest in its own tree, paths relative
+  const sub = join(tmp, "plugin", "tests");
+  mkdirSync(sub, { recursive: true });
+  const rel: Record<string, any[]> = {};
+  for (const [rule, cases] of Object.entries(rules)) rel[rule] = cases.map(c => ({ ...c, path: relative(tmp, c.path) }));
+  const manifest = join(sub, "calibration.json");
+  writeFileSync(manifest, JSON.stringify({
+    root: "../..",
+    criterion: { violatingAtLeast: 0.85, compliantBelow: 0.5, crossFlagAbove: 0.5 },
+    sets: { writing: { rulesDir: relative(tmp, join(BASE, "constraints/jev/writing")), uncalibratedDir: relative(tmp, join(BASE, "constraints/jev/writing/uncalibrated")), layout: "files", rules: rel } },
+  }));
+  const r = await calibrate(undefined, { manifest });
+  expect(r.err).toBe("");
+  expect(r.code).toBe(0);
+  expect(r.out).toContain("All wired rules within the criterion.");
+  expect(r.seen).toContain("W-HEDGE:vio-W-HEDGE");
 }, 60000);
