@@ -174,7 +174,9 @@ the holdout Jev must clear before it may decide.
 `bun scripts/lib/route.ts --refresh`, run from a checkout of this repo and never the plugin cache,
 updates availability (proxy catalog) and prices (OpenRouter) and never touches `kinds` or `jev`.
 Review its `routing.json` diff before committing. `route.ts --propose` reads the refreshed signals
-and prints suggested `kinds` changes with reasons, writing nothing: you approve by editing `kinds`.
+and prints suggested `kinds` changes with reasons, plus newer same-family models the proxy serves
+that beat a candidate at <= its price (`candidate C: model <old> -> <new>`), writing nothing: you
+approve by editing `kinds`, or that candidate's `model` and `openrouter` then `--refresh`.
 Design: `docs/DESIGN-routing.md`.
 
 ## Red flags
