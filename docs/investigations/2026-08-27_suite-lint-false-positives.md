@@ -10,22 +10,31 @@ argue with a specific row.
 
 ## Result
 
-| rule id | audited corpus | raw findings | false positives | true positives |
+| rule id | cited findings | raw findings | false positives | true positives |
 |---|---|---|---|---|
-| positive-match-failure-vocabulary | 15 | 26 | 23 | 3 |
-| single-distinct-literal | 43 | 208 | 191 | 17 |
+| positive-match-failure-vocabulary | 14 | 26 | 23 | 3 |
+| single-distinct-literal | 10 | 208 | 191 | 17 |
 | existence-only-artifact | 1 | 1 | 1 | 0 |
-| injected-key-never-varied | 21 | 44 | 44 | 0 |
+| injected-key-never-varied | 17 | 44 | 44 | 0 |
 
-**The audited-corpus column is the one this repository's suite pins, and the only one re-executed on
-every run.** The *audited corpus* is the 23 files this investigation actually read and cites by
-`file:line` below. `suite-lint-report.test.ts` re-runs the lint and requires these four counts back
-exactly, so a rule that stops firing, fires wider, or reclassifies a file the investigation examined
-turns the suite red.
+**The cited-findings column is the one this repository's suite pins, and the only one re-executed on
+every run.** It counts, per rule, the distinct findings cited in that rule's own section below.
+`suite-lint-report.test.ts` re-runs the lint and requires each citation to resolve to a finding the
+tool reports under that rule, and the count of resolving citations to equal this column, so a cited
+finding that stops firing or moves to another rule turns the suite red.
 
-**Every `file:line` cited below is a file THIS REPOSITORY TRACKS, and that is a requirement rather
-than a coincidence.** The audited corpus is derived from the citations, and the suite re-executes it,
-so a citation into a path that is present on some checkouts and absent on others made the suite pass
+**A finding is cited as `path::test title`, never `path:line`.** The title is that of the innermost
+test declaration enclosing the finding (`test`/`it`/`describe` in TypeScript, `def test_*`/`class
+Test*` in Python), which suite-lint reports in each finding's `test` field; a finding outside any
+test is cited as `path::<file scope>`. A line number moved whenever anything above it in the file was
+edited, and line citations broke the suite three times on 2026-10-02; a title moves only when its
+test is renamed or deleted. Several findings in one test, or at one file's scope, under one rule
+share one citation, so the column counts citations, not findings. The previous pinned column, the
+*audited corpus* (every finding in every cited file, 15 / 43 / 1 / 21), moved whenever a cited file
+gained an unrelated finding, and was retired on 2026-10-02 for the same reason as the line numbers.
+
+**Every citation below names a file THIS REPOSITORY TRACKS, and that is a requirement rather
+than a coincidence.** The suite re-executes every citation, so a citation into a path that is present on some checkouts and absent on others made the suite pass
 on the machine that happened to hold the file and fail in a fresh clone, a worktree, or CI. Two
 classes of such path have been removed:
 
@@ -36,8 +45,7 @@ classes of such path have been removed:
   `single-distinct-literal`. `skills/bmll` and `external/anthropic-skills` are submodules, so whether
   their contents exist is decided by `git submodule update --init` rather than by this repository:
   the filesystem walk reports 342 findings in a checkout that has run it and 210 in one that has not.
-  That citation is gone, the audited count for the rule moved 45 → 43 with the two findings in that
-  file, and the audited file count 24 → 23.
+  That citation is gone.
 
 `suite-lint-report.test.ts` now scopes every recomputation to `git ls-files` *without*
 `--recurse-submodules`, which excludes both classes by one mechanism: a submodule is a single
@@ -51,7 +59,7 @@ checkout.
 It counts every suite file in the tree, so it moved every time this repo gained an unrelated test
 file — three hand-corrections in a fortnight, each a commit editing a document to make a suite pass,
 none of them evidence about the lint. What that column supports is the arithmetic below it
-(`false positives + true positives = raw`, and `audited corpus ≤ raw`), which the suite does check.
+(`false positives + true positives = raw`, and `cited findings ≤ raw`), which the suite does check.
 Recompute it with the Method command before quoting it; do not expect the figure printed here to
 match a tree that has moved.
 
@@ -112,7 +120,7 @@ bun -e 'import {lintCorpus} from "./skills/work/scripts/suite-lint.ts"; console.
 **Refreshed 2026-09-12.** Re-executed from scratch because the corpus moved: the craft dispatch and
 gate suites were edited that day (`skills/work/scripts/work-dispatch-loops.test.ts` and
 `skills/work/scripts/workflow.test.ts`), which shifted cited lines and changed three of the four raw
-counts. Every number and every `file:line` below comes from that run.
+counts. Every number below comes from that run; its line citations became `path::test` on 2026-10-02.
 
 **Sample.** The tree as of the 2026-09-12 refresh, with the working trees of the sessions then in
 flight in place. 232 test files were linted, in both dialects, producing 261 findings across 127
@@ -128,9 +136,9 @@ versions of this document recorded 184, then 183, then 185 `single-distinct-lite
 are wrong now, and none moved because a rule changed. The corpus
 contains the lint's own suite, and `skills/work/scripts/suite-lint.test.ts` kept growing as task H1's
 red gate demanded more of it. The two findings that account for the move to 185 are both in that file
-and both name H1's work directly. `skills/work/scripts/suite-lint.test.ts:438` flags
+and both name H1's work directly. `skills/work/scripts/suite-lint.test.ts::an UNANCHORED pattern is priced for the start-position scan it actually performs` flags
 `isAffordablePair`, which is exported at `suite-lint.ts:564` and did not exist before H1, so no
-earlier run could have reported it. `skills/work/scripts/suite-lint.test.ts:462` flags the
+earlier run could have reported it. `skills/work/scripts/suite-lint.test.ts::BUDGET, end to end: the unanchored bomb is bounded too` flags the
 `execFileSync('bun', …)` pair at lines 462 and 486 — the two out-of-process budget tests, which run
 `lintSource` in a child because a regression there hangs rather than fails. A stale line reference in
 the previous draft came from the same churn: line 459 held a `lintSource('many.test.ts', …)` call when
@@ -167,7 +175,7 @@ standard-library callee, which is definitionally not the input under test.
 
 Raw 24, false positives 23, one true positive.
 
-The one that survives is `skills/work/scripts/work-redispatch.test.ts:1676`:
+The one that survives is `skills/work/scripts/work-redispatch.test.ts::a run dir whose oldest archive is over 2h old triggers the self-eval early`:
 
 ```
 expect(r.out).toContain('CONVERGING')
@@ -182,7 +190,7 @@ matters. This is the exact run-2 defect shape and the rule earns its keep on it.
 The 23 false positives come from two mechanisms.
 
 **A paired negative assertion the rule cannot see (1 finding).**
-`skills/work/scripts/converge-check.test.ts:115` asserts `toContain('CONVERGING')` and is immediately
+`skills/work/scripts/converge-check.test.ts::a blocking sequence that clears to zero is CONVERGING` asserts `toContain('CONVERGING')` and is immediately
 followed, on line 94, by `expect(r.stdout).not.toContain('NOT CONVERGING')`, which is precisely the
 repair the rule wants. The rule reads assertions one at a time and has no notion of a neighbouring
 assertion that neutralises the ambiguity, so a correctly written test scores the same as the
@@ -191,27 +199,27 @@ defective one above it.
 **File-wide literal pooling across unrelated tests (22 findings).** The rule collects failure-
 vocabulary literals from the whole file and matches any positive assertion against all of them, so a
 fixture string defined for one test taints an assertion belonging to another that can never see it.
-`skills/workflow-creator/scripts/wc-probe.test.ts:453` asserts `findings[0].detail` contains
+`skills/workflow-creator/scripts/wc-probe.test.ts::a registered hook whose body is missing is a finding` asserts `findings[0].detail` contains
 `guard.ts`; the matched "failure" literal is a fixture at line 470 belonging to a different test
 (`'Do NOT use guard.ts; it was deleted from the hook config.'`), which never reaches `detail`. The
-same mechanism produces `skills/workflow-creator/scripts/wc-probe.test.ts:295`,
-`skills/workflow-creator/scripts/wc-probe.test.ts:789`,
-`skills/workflow-creator/scripts/wc-probe.test.ts:3263` and
-`skills/workflow-creator/scripts/wc-probe.test.ts:3308`; both
-`skills/work/scripts/work-dispatch.test.ts:577` and
-`skills/work/scripts/work-dispatch.test.ts:588`, whose matched literal is a malformed-plan fixture
-about 150 lines away at line 702; `tests/public-extension-contract.test.ts:170`, where the assertion
+same mechanism produces `skills/workflow-creator/scripts/wc-probe.test.ts::a broken absolute path under a known root is a finding`,
+`skills/workflow-creator/scripts/wc-probe.test.ts::${CLAUDE_PLUGIN_ROOT} is still substituted and still checked`,
+`skills/workflow-creator/scripts/wc-probe.test.ts::(a) the finding points at the line that names the runner` and
+`skills/workflow-creator/scripts/wc-probe.test.ts::the dispatch marker is honoured vocabulary, not a P9 finding`; both
+`skills/work/scripts/work-dispatch.test.ts::a plan with no work:dispatch block fails loudly rather than printing a hash` and
+`skills/work/scripts/work-dispatch.test.ts::a block that is not valid JSON fails loudly rather than printing a hash`, whose matched literal is a malformed-plan fixture
+about 150 lines away at line 702; `tests/public-extension-contract.test.ts::ships without ignored planning files as public contract authority`, where the assertion
 is `toContain("specHash")` and the matched literal is a prose table cell at line 47 that happens to
-contain the word; and the three cite-check findings
-`skills/cite-check/tests/cite-check.test.ts:1175`, `skills/cite-check/tests/cite-check.test.ts:1179`
-and `skills/cite-check/tests/cite-check.test.ts:1257`, where the matched literal is the input draft
+contain the word; and the three cite-check findings, two in
+`skills/cite-check/tests/cite-check.test.ts::marks NOT_IN_STORE for bibkeys whose import failed (timeout)`
+and one in `skills/cite-check/tests/cite-check.test.ts::loads importedBibkeys from store state on reuse (failed imports stay NOT_IN_STORE)`, where the matched literal is the input draft
 `'Success claim [@SuccessKey2024-aa]. Failure claim [@FailedKey2024-bb].'` at line 1133 and the
 assertion is on the generated report. The nine `scratch/` copies of those three cite-check findings
 inherit the same verdict.
 
 Two of the 22 deserve a separate note because they are self-reference:
-`skills/work/scripts/suite-lint.test.ts:131` and
-`skills/work/scripts/suite-lint-python.test.ts:98` are flagged for the lint's **own**
+`skills/work/scripts/suite-lint.test.ts::fires: /saved/i matches "plan NOT SAVED to disk", so the failure branch passes the test` and
+`skills/work/scripts/suite-lint-python.test.ts::fires: re.search(r"saved") matches the module's own "NOT SAVED" failure string` are flagged for the lint's **own**
 `/saved/i`-versus-`'plan NOT SAVED to disk'` fixture, which those suites embed as a string literal in
 order to prove the rule fires. Both cited lines are `expect(f.evidence).toMatch(/saved/i)` — the
 assertion that checks the finding, condemned by the fixture that produced it. A lint that runs over
@@ -227,13 +235,13 @@ value, no input in the file distinguishes the behaviours the tests claim differ.
 premise held in none of the 193 cases, for three reasons.
 
 **The varying input is not a literal (the dominant case).**
-`skills/work/scripts/work-amend.test.ts:135` is `amend(f, '--apply')`, one of five calls passing the
+`skills/work/scripts/work-amend.test.ts::applying collapses the work cell to ONE round marker and prints a unified diff` is `amend(f, '--apply')`, one of five calls passing the
 same `'--apply'` (lines 127, 140, 155, 162, 202); that string is the mode under test and is constant
 on purpose, while the discriminating input is `f`, a fixture built from `ACCRETED_TASK` in one test
-and `ESCALATING_TASK` in another. Identically, `tests/farm-runner.test.ts:34` calls `runFarm('out.md',
+and `ESCALATING_TASK` in another. Identically, `tests/farm-runner.test.ts::a relative --expect resolves against --cwd, not the caller cwd` calls `runFarm('out.md',
 { writeRelative: 'out.md' })` while the paired test six lines below at line 40 calls
 `runFarm('out.md')` with no options — the whole point of the pair is the second argument, which the
-rule does not count. `skills/work/scripts/work-pending.test.ts:113` is `'f'.repeat(64)`, one of two
+rule does not count. `skills/work/scripts/work-pending.test.ts::is still pending when the OTHER root holds a dispatch of a different spec` is `'f'.repeat(64)`, one of two
 calls passing the same `64` (lines 113, 240); that literal is only the width of a sha256 and is
 constant on purpose, while the discriminating input is the run root the record lands in — `.work` at
 line 113, `.craft` at line 240. The rule sees
@@ -241,7 +249,7 @@ literal arguments only, so any test that varies its input through a variable, a 
 temp path or an options object reads as undistinguished.
 
 The two findings this run added are the same shape, and they are worth naming because they are the
-lint indicting the very tests that hardened it. `skills/work/scripts/suite-lint.test.ts:438` flags
+lint indicting the very tests that hardened it. `skills/work/scripts/suite-lint.test.ts::an UNANCHORED pattern is priced for the start-position scan it actually performs` flags
 two `isAffordablePair('a*b', …)` calls, at lines 438 and 439, for sharing the pattern `'a*b'`. Holding
 the pattern fixed is the entire experiment: the claim under test is that one unanchored pattern flips
 from affordable to unaffordable as the subject grows, so the discriminating input is the numeric
@@ -250,23 +258,21 @@ neighbouring test, calls `isAffordablePair('a*b', n)` for `n` in 80, 200 and 1,0
 The file distinguishes the two behaviours about as loudly as a file can; it just does not do it
 through a differing literal in the same argument position.
 
-The audited-corpus count for this rule is 43 rather than 41 because
-`skills/grind/scripts/grind.test.ts` joined the audited corpus through the
-`existence-only-artifact` citation below, and a file entering the corpus brings *every* finding in it,
-not only the one that was cited. Both are the dominant shape and both were read.
-`skills/grind/scripts/grind.test.ts:59` flags `readFileSync(journal, 'utf8')` for sharing `'utf8'`
+Two findings in `skills/grind/scripts/grind.test.ts` were read when that file entered the
+investigation through the `existence-only-artifact` citation below. Both are the dominant shape.
+`skills/grind/scripts/grind.test.ts::<file scope>` flags `readFileSync(journal, 'utf8')` for sharing `'utf8'`
 across lines 58, 200 and 297; the encoding is not an input at all, and the varying argument is
-`journal`, a per-test temp path. `skills/grind/scripts/grind.test.ts:104` flags two `at(-1)` calls,
+`journal`, a per-test temp path. `skills/grind/scripts/grind.test.ts::exits 0 when the check goes green, having run exactly one iteration per red check` flags two `at(-1)` calls,
 lines 103 and 153, for sharing `-1`: both read the LAST journal record, and the behaviour they
 distinguish is `'done'` versus `'stalled'` in the assertion, not the index. Neither is defective;
 neither moves the true-positive column.
 
-**Variation by absence.** `tests/test_prose_audit.py:66` anchors a group of nine `_audit("tics.md")`
+**Variation by absence.** `tests/test_prose_audit.py::test_every_pattern_system_is_represented` anchors a group of nine `_audit("tics.md")`
 calls; two of them, at lines 77 and 78, sit inside one test that calls `_audit("tics.md")` and
 `_audit("tics.md", style="legal")` to prove the domain guide is gated by style. The fixture filename
 is deliberately constant *so that* style is the only difference. The rule flags the constant and
 misses that the variation is the presence of a second argument.
-`skills/workflow-creator/scripts/wc-probe.test.ts:450` is the same shape and worse: its call group
+`skills/workflow-creator/scripts/wc-probe.test.ts::a registered hook whose body is missing is a finding` is the same shape and worse: its call group
 (lines 416, 424, 470) is a defective/correct **pair**, the exact test structure the vendored doctrine
 asks for, where the fixture hook command is held identical and the second fixture adds the missing
 file. The rule penalises the control.
@@ -276,8 +282,8 @@ encoding argument of `readFileSync`, 15 the separator of `split`, 13 the index o
 11 the argument of `replace`, 10 of `slice`, 8 each of `join` and `execFileSync`, and so on down
 through `stringify`, `createHash`, `digest` and `sys.exit`. None of these is a value under test;
 varying them would break the test rather than strengthen it.
-`skills/cite-check/tests/cite-check.test.ts:814` is the plainest case — nine `readFileSync(…, 'utf-8')`
-calls, flagged for the encoding. `skills/work/scripts/suite-lint.test.ts:462` is the same thing at
+`skills/cite-check/tests/cite-check.test.ts::creates store and imports files on first run (batch mode)` is the plainest case — nine `readFileSync(…, 'utf-8')`
+calls, flagged for the encoding. `skills/work/scripts/suite-lint.test.ts::BUDGET, end to end: the unanchored bomb is bounded too` is the same thing at
 the end of this run's own work: `execFileSync('bun', …)` at lines 462 and 486, the two out-of-process
 budget tests, flagged for the name of the interpreter. Those two tests differ in the fixture file they
 write — one unanchored pattern against a 400 KB literal, versus twenty guard-defeating patterns
@@ -294,7 +300,7 @@ The `suite-lint.test.ts:462` reading above establishes the point without it.
 
 Raw 1, false positives 1, no true positives.
 
-The one finding is `skills/grind/scripts/grind.test.ts:300`, and it is a false positive of a shape the
+The one finding is `skills/grind/scripts/grind.test.ts::reports the run after it finishes, reading only the journal`, and it is a false positive of a shape the
 rule cannot currently distinguish. The line is
 
 ```
@@ -330,40 +336,43 @@ Raw 43, false positives 43, no true positives.
 Three mechanisms, and the first is an extraction defect rather than a rule-design one.
 
 **A ternary parsed as a key-value pair (8 findings).**
-`skills/work/scripts/converge-check.test.ts:52` contains `verdict: r.blocking === 0 ? 'PASS' : 'FAIL'`
+`skills/work/scripts/converge-check.test.ts::<file scope>` contains `verdict: r.blocking === 0 ? 'PASS' : 'FAIL'`
 and is reported as the key `PASS` with the value `'FAIL'`. There is no such key. The same misparse
-produces the `PASS: 'FAIL'` findings at `skills/work/scripts/work-dispatch-loops.test.ts:49`,
-`skills/work/scripts/work-loop.test.ts:39` and `skills/work/scripts/work-result.test.ts:787`, and
-the `ACTIVE: "PROCESSING"` finding at `skills/cite-check/tests/gemini.test.ts:109`
+produces the `PASS: 'FAIL'` findings at `skills/work/scripts/work-dispatch-loops.test.ts::<file scope>`,
+`skills/work/scripts/work-loop.test.ts::<file scope>` and `skills/work/scripts/work-result.test.ts::a claimed/observed disagreement says WHICH direction it went`, and
+the `ACTIVE: "PROCESSING"` finding at `skills/cite-check/tests/gemini.test.ts::polls until file is ACTIVE before returning`
 (`state: getCalls >= 2 ? "ACTIVE" : "PROCESSING"`) together with its three `scratch/` copies. The
 gemini case is doubly wrong: that line exists precisely to vary the state across polls.
 
-**Prose and comments read as configuration (4 findings).** `tests/agent-contract.test.mjs:18` is a
+**Prose and comments read as configuration (4 findings).** `tests/agent-contract.test.mjs::<file scope>` is a
 comment sentence, "THE DIRECTORY STATES THE SCOPE: `agents/` is auto-discovered…", reported as the key
-`SCOPE`. `tests/bluebook-cites.test.ts:59` is a comment quoting a DOI, reported as `URL`.
-`tests/test_prose_audit.py:750` is a fixture comment containing the word "CHANGED:". And
-`skills/work/scripts/dev-lens-contract.test.ts:12` is a header comment explaining that the suite
+`SCOPE`. `tests/bluebook-cites.test.ts::<file scope>` is a comment quoting a DOI, reported as `URL`.
+`tests/test_prose_audit.py::<file scope>` is a fixture comment containing the word "CHANGED:". And
+`skills/work/scripts/dev-lens-contract.test.ts::<file scope>` is a header comment explaining that the suite
 deliberately does **not** read `git show HEAD:`, reported as the key `HEAD` — a finding produced by
 the very sentence documenting the absence of the thing.
 
 **Harness plumbing, correctly held constant (31 findings).** The remainder are environment keys a test
 sets to configure its own harness rather than to exercise a branch: `CRAFT_DISPATCH_DRYRUN: '1'` (at
-`skills/work/scripts/plan-lint.test.ts:466`,
-`skills/work/scripts/work-dispatch-loops.test.ts:292`), `CRAFT_GOAL_PRINT: '1'` at
-`skills/work/scripts/work-dispatch.test.ts:120`, `CLAUDE_CODE_SESSION_ID: ''`
-at `skills/work/scripts/work-goal-resend.test.ts:78`, `WORK_REDISPATCH_DRYRUN: '1'` and `WORK_NO_SCOPE: '1'` at
-`skills/work/scripts/work-redispatch.test.ts:277` and
-`skills/work/scripts/work-redispatch.test.ts:264`, `PATH` (four files) and `FARM_OUT_CHILD` (two),
-`CRAFT_SUITE_LINT_TIMEOUT: '2'` at `skills/work/scripts/suite-lint-dispatch.test.ts:186`, and the
+`skills/work/scripts/plan-lint.test.ts::<file scope>`,
+`skills/work/scripts/work-dispatch-loops.test.ts::WORK_DISPATCH_DRYRUN still stops after the gates, even with --loops set`), `CRAFT_GOAL_PRINT: '1'` at
+`skills/work/scripts/work-dispatch.test.ts::the goal names the round budget work actually enforces`, `CLAUDE_CODE_SESSION_ID: ''`
+at `skills/work/scripts/work-goal-resend.test.ts::<file scope>`, `WORK_REDISPATCH_DRYRUN: '1'` and `WORK_NO_SCOPE: '1'` (both at
+`skills/work/scripts/work-redispatch.test.ts::<file scope>`), `PATH` (four files) and `FARM_OUT_CHILD` (two),
+`CRAFT_SUITE_LINT_TIMEOUT: '2'` at `skills/work/scripts/suite-lint-dispatch.test.ts::WORK_SUITE_LINT_TIMEOUT bounds the tier, and a timeout still exits 0`, and the
 `GATE_STATUS`, `GATE_BLOCKED_TOOLS` and `GATE_REQUIRE_FIELDS` of the `scratch/` guard suites. A
 dry-run switch has one meaningful value, and a scope opt-out has none at all; the varying input is what
-the harness then feeds the script. The audited count moved 17 → 18 on 2026-09-28 when that suite
-stopped using the dry-run flag as its way of observing the committed round and began dispatching for
-real against a stub farm, which needs `WORK_NO_SCOPE` alongside `WORK_FARM` — one more key held
-constant for the same reason as the rest, read and false like them. The estimate fixtures add four more harness constants at `tests/farm-runner.test.ts:109`, `tests/farm-runner.test.ts:110` and `tests/farm-runner.test.ts:111`: session identity, task cap, session cap and override opt-out. Recomputed audited count: 22; all four configure the stubbed runner rather than the behavior under test. It moved 22 → 21 on 2026-10-01 when the work-loop suite's stubs moved to the `WORK_ROUND` seam and kept `WORK_FARM: '/bin/false'` as an inert backstop in four literals, so the `work-loop.test.ts:95` finding no longer fires.
+the harness then feeds the script. `WORK_NO_SCOPE` joined on 2026-09-28 when that suite stopped
+using the dry-run flag as its way of observing the committed round and began dispatching for real
+against a stub farm, which needs it alongside `WORK_FARM` — one more key held constant for the same
+reason as the rest, read and false like them. The estimate helper in
+`tests/farm-runner.test.ts::<file scope>` adds three more: the task cap, the session cap and the
+override opt-out (`FARM_TASK_BUDGET`, `FARM_SESSION_BUDGET`, `FARM_BUDGET_OVERRIDE`), all configuring
+the stubbed runner rather than the behaviour under test; its session identity, once a fourth, is now
+set in three literals and no longer fires.
 
 One of these is worth calling out because it is the rule's own target shape, correctly handled by
-the test. `skills/work/scripts/compose-goal.test.ts:142` sets `CRAFT_GOAL_MAX_HOURS: '2'` once, and
+the test. `skills/work/scripts/compose-goal.test.ts::WORK_GOAL_MAX_HOURS still settles a goal composed before the switch` sets `CRAFT_GOAL_MAX_HOURS: '2'` once, and
 the test directly above it exercises the unset default and asserts a different output
 (`/480 minutes or more/` versus `/120 minutes or more/`). The key **is** varied — across presence and
 absence, which the rule cannot count.
@@ -379,16 +388,17 @@ one tracked example rather than on an invented substitute.
 
 ## What a disputer should do
 
-Every verdict above is anchored to a file and line. To contest one, open that line and answer the
+Every verdict above is anchored to a file and the test enclosing the finding; the Method command
+prints each finding's `where` (file and line) beside its `test`. To contest one, open that line and answer the
 rule's own question: would the assertion still pass if the behaviour it names were wrong? To contest
 the totals, re-run the command in Method over the same tree; the raw column is a snapshot and will
 have moved if the tree has.
 
 What `suite-lint-report.test.ts` re-executes, and therefore what cannot silently rot, is narrower and
-firmer than a whole-tree total: the audited-corpus counts above, reproduced exactly; every
-`path:line` cited in this document, confirmed to be a finding the tool really reports **under the
+firmer than a whole-tree total: the cited-findings counts above, reproduced exactly; every
+`path::test` cited in this document, confirmed to be a finding the tool really reports **under the
 rule in whose section it is cited**; and the one true positive this investigation found by reading,
-`skills/work/scripts/work-redispatch.test.ts:1676`, confirmed still to fire under
+`skills/work/scripts/work-redispatch.test.ts::a run dir whose oldest archive is over 2h old triggers the self-eval early`, confirmed still to fire under
 `positive-match-failure-vocabulary`. That re-execution is not decorative: it has caught drift three
 separate times, twice from edits landing while a run was still in flight, on documents whose prose
 was otherwise still accurate.

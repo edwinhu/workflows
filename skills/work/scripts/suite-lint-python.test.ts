@@ -311,3 +311,30 @@ describe('a correct Python suite is clean under all four rules at once', () => {
     ))).toEqual([])
   })
 })
+
+// ---------------------------------------------------------------- the enclosing test
+
+describe('a Python finding names the innermost def test_ that encloses it', () => {
+  test('indentation bounds the test, and a dedented docstring line does not end it', async () => {
+    const found = await lint('test_scope.py', src(
+      'class TestReport:',
+      '    def test_alpha(self):',
+      '        """Docstring',
+      'flush left on purpose',
+      '"""',
+      "        run_it('q')",
+      "        run_it('q')",
+      '',
+      'def helper():',
+      "    return os.path.exists('docs/helper.md')",
+      '',
+      'def test_beta():',
+      "    assert os.path.exists('docs/report.md')",
+    ))
+    expect(found.map((f: any) => [f.rule, f.where, f.test])).toEqual([
+      [R2, 'test_scope.py:6', 'test_alpha'],
+      [R3, 'test_scope.py:10', undefined],
+      [R3, 'test_scope.py:13', 'test_beta'],
+    ])
+  })
+})

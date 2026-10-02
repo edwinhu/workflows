@@ -25,7 +25,9 @@
  * `Finding` is plan-lint.ts's exported shape, reused rather than redeclared: { rule, severity,
  * where, message, evidence? }. `where` is `${file}:${line}` with a 1-indexed line, and `evidence`
  * carries the offending text — which is how a finding "names file, line, rule id and the offending
- * text" without growing a second Finding type in this repo.
+ * text" without growing a second Finding type in this repo. A finding inside a test declaration also
+ * carries `test`, the innermost enclosing title — the line-independent handle the investigation
+ * report cites findings by.
  */
 import { afterAll, describe, expect, test } from 'bun:test'
 import { execFileSync } from 'node:child_process'
@@ -76,11 +78,13 @@ describe('the exported surface', () => {
     )))[0]
     expect(ours).toBeDefined()
 
-    // Every key assert-lint emits is a key plan-lint also emits — a redeclared local type that
-    // grew or renamed a field would fail here, which is what "reuse the shape" has to mean.
+    // Every key suite-lint emits is a key plan-lint also emits, save the one declared extension
+    // `test` (SuiteFinding = Finding & { test?: string }) — a redeclared local type that grew or
+    // renamed any other field would fail here, which is what "reuse the shape" has to mean.
     const planKeys = new Set(planFindings.flatMap((f: any) => Object.keys(f)))
     expect(planKeys.has('evidence')).toBe(true)
-    for (const key of Object.keys(ours)) expect([...planKeys]).toContain(key)
+    expect(ours.test).toBe('the report exists')
+    for (const key of Object.keys(ours)) expect([...planKeys, 'test']).toContain(key)
     for (const key of ['rule', 'severity', 'where', 'message']) {
       expect(Object.keys(ours)).toContain(key)
       expect(Object.keys(planFinding)).toContain(key)
@@ -534,6 +538,44 @@ describe(`${R4} counts \`process.env.KEY =\` as the same injection as \`{ KEY: �
       '  expect(run().ok).toBe(false)',
       '})',
     ))).not.toContain(R4)
+  })
+})
+
+// ---------------------------------------------------------------- the enclosing test
+
+describe('a finding names the innermost test that encloses it', () => {
+  const nested = src(
+    "const FAILURE = 'plan NOT SAVED to disk'",
+    "describe('the outer group', () => {",
+    "  test('the inner test', () => {",
+    "    expect(out).toContain('SAVED')",
+    '  })',
+    "  test('a sibling', () => {",
+    "    expect(out).toMatch(/saved/i)",
+    '  })',
+    '})',
+  )
+
+  test('each finding carries its own test title, not a neighbour\'s and not the describe\'s', async () => {
+    const found = (await lint('t.test.ts', nested)).filter((f: any) => f.rule === R1)
+    expect(found.map((f: any) => [f.where, f.test])).toEqual([
+      ['t.test.ts:4', 'the inner test'],
+      ['t.test.ts:7', 'a sibling'],
+    ])
+  })
+
+  test('the title survives an edit above it that moves the line', async () => {
+    const shifted = '// one\n// two\n// three\n' + nested
+    const found = (await lint('t.test.ts', shifted)).filter((f: any) => f.rule === R1)
+    expect(found.map((f: any) => [f.where, f.test])).toEqual([
+      ['t.test.ts:7', 'the inner test'],
+      ['t.test.ts:10', 'a sibling'],
+    ])
+  })
+
+  test('a finding at file scope carries no title', async () => {
+    const found = await lint('t.test.ts', src("const env = { ONLY_KEY: '1' }", "test('x', () => run(env))"))
+    expect(found.map((f: any) => [f.rule, f.test])).toEqual([[R4, undefined]])
   })
 })
 
