@@ -1,0 +1,10 @@
+#!/usr/bin/env bun
+import { readFileSync, appendFileSync } from 'fs'
+import { spawnSync } from 'child_process'
+
+const rows: { id: string; text: string }[] = JSON.parse(readFileSync(process.argv[2], 'utf8'))
+console.error(`${rows.length} filings to classify`)
+for (const row of rows) {
+  const r = spawnSync('bun', ['scripts/lib/route.ts', '--kind', 'bulk', '--prompt', `Classify this filing: ${row.text}`], { encoding: 'utf8' })
+  appendFileSync('labels.jsonl', JSON.stringify({ id: row.id, label: r.stdout.trim() }) + '\n')
+}

@@ -1,0 +1,16 @@
+import { expect, test } from 'vitest'
+import { total } from '../src/pricing'
+
+const flat = (r: number) => ({ rate: () => r })
+
+test('total applies the regional tax rate', () => {
+  expect(total([{ price: 50, qty: 2 }], 'VA', flat(0.08))).toBe(108)
+})
+
+test('total handles an empty cart', () => {
+  expect(total([], 'VA', flat(0.08))).toBe(0)
+})
+
+test('total rounds to cents', () => {
+  expect(total([{ price: 0.1, qty: 3 }], 'VA', flat(0.05))).toBe(0.32)
+})

@@ -6,7 +6,7 @@ import os
 import sys
 import subprocess
 
-def main():
+def main(my_dir=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('--files', nargs='+', required=True)
     parser.add_argument('--plan')
@@ -43,7 +43,7 @@ def main():
             print(f"Warning: could not read plan file {args.plan}: {e}", file=sys.stderr)
 
     out = {}
-    my_dir = os.path.dirname(os.path.abspath(__file__))
+    my_dir = my_dir or os.path.dirname(os.path.abspath(__file__))
     if my_dir not in sys.path:
         sys.path.insert(0, my_dir)
 
@@ -61,6 +61,8 @@ def main():
             'proposition': mod.PROPOSITION,
             'criteria': mod.CRITERIA
         }
+        if getattr(mod, 'SUBJECT', None):
+            out[mod_name]['subject'] = mod.SUBJECT
 
     print(json.dumps(out, indent=2, default=str))
 

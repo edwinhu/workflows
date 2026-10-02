@@ -1,0 +1,9 @@
+#!/usr/bin/env bun
+import { readFileSync } from 'fs'
+import { spawnSync } from 'child_process'
+
+const plan = JSON.parse(readFileSync(process.argv[2], 'utf8'))
+console.log(`# Release notes for ${plan.version}`)
+const r = spawnSync('git', ['log', '--oneline', `${plan.fromTag}..${plan.branch}`, '--', ...plan.paths], { encoding: 'utf8' })
+if (r.status !== 0) throw new Error(r.stderr)
+for (const line of r.stdout.trim().split('\n')) console.log(`- ${line}`)
