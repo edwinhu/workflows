@@ -340,9 +340,12 @@ than from a render is a declared reduction: `look_at.py` is not vendored.
 `ruleChecks` runs `rule-check.ts --rules ${CLAUDE_PLUGIN_ROOT}/constraints/jev/typst`: one judged
 proposition per calibrated rule over spans an extractor pulls with `file:line`, diff-scoped to the
 round's changed lines. Wired: `T-HOLLOW` (a notes bullet announcing scenarios, factors or examples
-the notes never write out). p >= 0.85 lands in `rulesThatFailed`; lower scores reach the lens as a
-ranked checklist. The six rules in `constraints/jev/typst/uncalibrated/` are not scored -- each
-module's docstring records the calibration that kept it out.
+the notes never write out), `T-CALLOUT` (a `#callout` quoting source text) and `T-STORY` (a
+`// Storytelling:` comment naming no visual mechanism or no insight). Accepted decks that break
+`T-CALLOUT` or `T-STORY` are not re-judged: only spans on changed lines are. p >= 0.85 lands in
+`rulesThatFailed`; lower scores reach the lens as a ranked checklist. The four rules in
+`constraints/jev/typst/uncalibrated/` are not scored -- each module's docstring records the
+calibration that kept it out.
 
 ## How to use in subagent prompts
 

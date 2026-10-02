@@ -11,8 +11,8 @@ const EVIDENCE = join(BASE, "constraints/jev/evidence.py");
 const TYPST = join(BASE, "constraints/jev/typst");
 const UNCAL = join(TYPST, "uncalibrated");
 const FIX = join(BASE, "tests/fixtures/jev/typst");
-const WIRED = ["T-HOLLOW"];
-const UNWIRED = ["T-CALLOUT", "T-ECHO", "T-NARRATE", "T-STORY", "T-TAKEAWAY", "T-TRANSITION"];
+const WIRED = ["T-CALLOUT", "T-HOLLOW", "T-STORY"];
+const UNWIRED = ["T-ECHO", "T-NARRATE", "T-TAKEAWAY", "T-TRANSITION"];
 const made: string[] = [];
 afterAll(() => made.forEach(d => rmSync(d, { recursive: true, force: true })));
 
@@ -40,7 +40,7 @@ function state(rule: string, kase: "vio" | "sat", changed?: Record<string, numbe
   return evidence(dir, [join(root, FILE[rule])], root, changed)[rule].state;
 }
 
-test("--rules-dir typst discovers exactly the wired rule; uncalibrated/ holds the other six", () => {
+test("--rules-dir typst discovers exactly the wired rules; uncalibrated/ holds the other four", () => {
   const root = join(FIX, "T-HOLLOW", "vio");
   const out = evidence(TYPST, [join(root, "notes.typ")], root);
   expect(Object.keys(out).sort()).toEqual(WIRED);
@@ -143,10 +143,12 @@ async function ruleCheck(kase: "vio" | "sat") {
     port: 0,
     async fetch(req) {
       const body = JSON.parse(await req.text());
-      seen.push(/\(rule ([\w-]+)\)/.exec(body.questions.q0.instructions)![1]);
+      const rule = /\(rule ([\w-]+)\)/.exec(body.questions.q0.instructions)![1];
+      seen.push(rule);
       preamble = body.state.slice(0, 200);
       const s = JSON.parse(body.state.slice(body.state.indexOf("{")));
-      const hollow = s.announcing_bullets.some((b: any) => !/^(First|Second|Third)\b/.test(b.following_bullets[0]?.text ?? ""));
+      // the deck rules find no callout or storytelling comment in a notes-only round
+      const hollow = rule === "T-HOLLOW" && s.announcing_bullets.some((b: any) => !/^(First|Second|Third)\b/.test(b.following_bullets[0]?.text ?? ""));
       const p = hollow ? 0.95 : 0.05;
       return Response.json({ answers: { q0: { probabilities: { VIOLATED: p }, choice: p > 0.5 ? "VIOLATED" : "SATISFIED" } } });
     },
@@ -164,11 +166,11 @@ async function ruleCheck(kase: "vio" | "sat") {
 
 test("T-HOLLOW: rule-check --rules typst blocks the violating notes and passes the compliant ones", async () => {
   const vio = await ruleCheck("vio");
-  expect(vio.seen).toEqual(WIRED);
+  expect(vio.seen.sort()).toEqual(WIRED);
   expect(vio.preamble).toStartWith("You are auditing one Typst slide deck and its speaker notes against a written RULE.");
   expect(vio.code).toBe(2);
-  expect(vio.out.verdicts).toMatchObject([{ rule: "T-HOLLOW", verdict: "VIOLATED" }]);
+  expect(vio.out.verdicts.filter((v: any) => v.verdict === "VIOLATED")).toMatchObject([{ rule: "T-HOLLOW" }]);
   const sat = await ruleCheck("sat");
   expect(sat.code).toBe(0);
-  expect(sat.out.verdicts).toMatchObject([{ rule: "T-HOLLOW", verdict: "MET" }]);
+  expect(sat.out.verdicts.map((v: any) => v.verdict)).toEqual(["MET", "MET", "MET"]);
 }, 30000);

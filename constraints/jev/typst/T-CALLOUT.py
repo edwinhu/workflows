@@ -1,11 +1,4 @@
-"""UNCALIBRATED -- not wired. Calibration 2026-10-02, two runs each of two rounds: vio 0.99-1.00, sat and the charter question callouts <= 0.01, but two accepted decks DO quote in callouts: Tornetta-short 01.typ:135 (0.94-0.96) and 99-landscape 01.typ:282, Clark (0.99). The written rule is not the accepted practice.
-Kept here, below the glob rule-check.ts reads, until the question or the extractor earns it back.
-"""
-import os
-import sys
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # _typst
-
+"""T-CALLOUT: a `#callout` box quotes source text. Diff-scoped calibration 2026-10-02, two consecutive two-run rounds: vio 1.00, sat and the charter question callouts <= 0.01; accepted decks that quote in callouts (Tornetta-short 01.typ:135, 99-landscape Clark) are legacy bases, new quoting callout 0.98-1.00, new question/caution callout <= 0.01."""
 from _common import _read, render_json
 from _typst import DELIVERABLE, MAX_ITEMS, SUBJECT, clip, heading, in_changed, scope_note
 

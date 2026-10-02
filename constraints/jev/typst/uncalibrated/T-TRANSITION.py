@@ -1,4 +1,4 @@
-"""UNCALIBRATED -- not wired. Calibration 2026-10-02, two runs each of two rounds: run 1 vio 0.75/0.78, real 0.60-0.65; with the rule's own GOOD examples (bare signposts) in the question vio 0.97/0.98 and Texas notes 0.20/0.35, but the accepted charter notes stayed at 0.74/0.76 ("Start with Weinberger v. UOP ...").
+"""UNCALIBRATED -- not wired. Calibration 2026-10-02, two runs each of two rounds: run 1 vio 0.75/0.78, real 0.60-0.65; with the rule's own GOOD examples (bare signposts) in the question vio 0.97/0.98 and Texas notes 0.20/0.35, but the accepted charter notes stayed at 0.74/0.76 ("Start with Weinberger v. UOP ..."). Diff-scoped recalibration 2026-10-02 (charter notes as legacy base), two two-run rounds: vio 0.97-0.98, sat <= 0.03, Texas notes 0.26-0.45, new cold sections 0.89-0.97, new charter section opening with a turn 0.14-0.19, but a new Texas section opening "Standing is the first gate. The second is the books-and-records demand ..." scored 0.94/0.91, 0.93/0.91.
 Kept here, below the glob rule-check.ts reads, until the question or the extractor earns it back.
 """
 import os

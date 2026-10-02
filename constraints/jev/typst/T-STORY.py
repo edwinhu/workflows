@@ -1,11 +1,4 @@
-"""UNCALIBRATED -- not wired. Calibration 2026-10-02, two runs each of two rounds: vio 0.96-0.97 and sat <= 0.10, but the accepted charter-deck comment ("the controller sits above both merger parties -> the price the minority receives is set by the buyer's own agent") scored 0.49/0.54, then 0.45/0.50 with node layout extracted.
-Kept here, below the glob rule-check.ts reads, until the question or the extractor earns it back.
-"""
-import os
-import sys
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # _typst
-
+"""T-STORY: a `// Storytelling:` comment lacks the visual mechanism or the insight. Diff-scoped calibration 2026-10-02, two consecutive two-run rounds: vio 0.95-0.97, sat 0.08-0.09, Tornetta-short deck 0.11-0.15; charter and Tornetta decks as legacy bases, new label-only comment 0.85-0.98, new mechanism+insight comment <= 0.09."""
 import re
 
 from _common import _read, render_json
