@@ -8,8 +8,9 @@
       "layout": "files",
       "rules": {
         "A1": [
-          { "kind": "violating", "path": "tests/fixtures/jev/A1/vio" },
-          { "kind": "compliant", "path": "tests/fixtures/jev/A1/sat" }
+          { "kind": "violating", "path": "tests/fixtures/jev/A1/vio2" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/A1/sat2" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/A1-core_estimands", "source": "board-structuring scripts/run_core_estimands.py @5489b70, lines 72-216 (cluster_ols through run_b: a definition x exposure x controls grid, placebos at t-1y..t-3y); accepted deliverable" }
         ],
         "A4": [
           { "kind": "violating", "path": "tests/fixtures/jev/A4/vio2" },
