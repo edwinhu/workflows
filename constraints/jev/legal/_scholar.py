@@ -266,7 +266,7 @@ KINDS = [
     ('statute', re.compile(r'\bU\.S\.C\.|\bStat\.\s+\d|\bCode Ann\.|\b(?:Act|Code) (?:of \d{4} )?§|\btit\.\s+\d+,?\s+§|'
                            r'\b(?:Corporation|Business) (?:Law|Code)\b,? (?:Section|§)\s*\d')),
     ('constitution', re.compile(r'\bConst\.\s')),
-    ('regulation', re.compile(r'\bC\.F\.R\.|\bReg\.\s+[A-Z]-?\d')),
+    ('regulation', re.compile(r'\bC\.F\.R\.|\bReg\.\s+[A-Z]-?\d|\bFed\. Reg\.')),
     ('restatement or model code', re.compile(r'\bRestatement\b|\bModel (?:Bus\. Corp\. )?(?:Act|Code)\b|\bU\.C\.C\.')),
     ('release', re.compile(r'\bRelease No\.|\bRel\. No\.|\bFed\. Reg\.')),
     ('hearing', re.compile(r'\bHearings?\b')),

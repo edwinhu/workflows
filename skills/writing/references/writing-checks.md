@@ -207,7 +207,8 @@ lens's under the tic table.
 set. Legal (`constraints/jev/legal`): `L-ID` (an Id. whose antecedent is not one source), `L-FNARG`
 (a footnote carrying a step the body needs), `L-DIGEST` (precedent digested case by case with no
 synthesis), `L-SUPRA` (supra for an authority rule 4.2 bars: a case, a statute even through an
-institutional author, a bill; an agency release cited by its title may take supra). Econ (`constraints/jev/econ`): `E-WEFIND` (a body finding with no table, figure or
+institutional author, a bill, a Federal Register adopting or proposing release; its short form is
+rule 14.6(c)). Econ (`constraints/jev/econ`): `E-WEFIND` (a body finding with no table, figure or
 exhibit in reach), `E-CITEFORM` (a paper cited in law review or numbered form, or a parenthetical
 cite used as a noun), `E-CAUSAL` (causal language on a correlational result), `E-MAGNITUDE` (an
 estimate by sign or significance alone, or with no precision). Their extractors read footnotes
