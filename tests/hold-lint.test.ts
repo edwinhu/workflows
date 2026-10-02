@@ -14,6 +14,9 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
+import { useTmp } from './helpers/tmp.ts'
+
+const mkTmp = useTmp()
 
 const LINT = join(import.meta.dir, '..', 'skills', 'work', 'scripts', 'hold-lint.ts')
 const ARM = join(import.meta.dir, '..', 'skills', 'work', 'scripts', 'work-hold.sh')
@@ -104,7 +107,7 @@ describe('the migrated objective rules apply to the check AND to --goal', () => 
 
 describe('work-hold.sh refuses on a CRITICAL finding', () => {
   test('arming on a work-result.sh check exits 2 and writes no state', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'holdlint-arm-'))
+    const dir = mkTmp('holdlint-arm-')
     const sid = 'holdlint-test'
     const run = join(dir, 'result.json')
     writeFileSync(run, '{}')
@@ -120,7 +123,7 @@ describe('work-hold.sh refuses on a CRITICAL finding', () => {
   })
 
   test('a CRITICAL in the --goal refuses too, and arms nothing', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'holdlint-goal-'))
+    const dir = mkTmp('holdlint-goal-')
     const sid = 'holdlint-goal'
     mkdirSync(join(dir, 'scripts'), { recursive: true })
     writeFileSync(join(dir, 'scripts', 'measure.sh'), '#!/usr/bin/env bash\nexit 1\n', { mode: 0o755 })
@@ -174,7 +177,7 @@ describe('hold-lint with a --goal and no check', () => {
 
 describe('work-hold.sh --goal with no check arms a CHECK-LESS hold', () => {
   test('it arms, records an empty check, and says so', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'holdless-'))
+    const dir = mkTmp('holdless-')
     const sid = 'holdless-ok'
     const r = spawnSync('bash', [ARM, '--goal', 'every suite is green', '--rounds', '3', '--minutes', '60'], { timeout: 120_000,
       encoding: 'utf8', cwd: dir,
@@ -188,7 +191,7 @@ describe('work-hold.sh --goal with no check arms a CHECK-LESS hold', () => {
   })
 
   test('--run is recorded absolute, which is what the in-flight rule reads', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'holdless-'))
+    const dir = mkTmp('holdless-')
     const sid = 'holdless-run'
     mkdirSync(join(dir, 'r'), { recursive: true })
     const r = spawnSync('bash', [ARM, '--goal', 'every suite is green', '--run', 'r'], { timeout: 120_000,
@@ -201,7 +204,7 @@ describe('work-hold.sh --goal with no check arms a CHECK-LESS hold', () => {
 
   /** The two arm-time refusals are facts about a COMMAND, so neither can apply with no command. */
   test('the already-green and could-not-run refusals are skipped, not silently passed', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'holdless-'))
+    const dir = mkTmp('holdless-')
     const sid = 'holdless-nogreen'
     const r = spawnSync('bash', [ARM, '--goal', 'every suite is green'], { timeout: 120_000,
       encoding: 'utf8', cwd: dir,
@@ -212,7 +215,7 @@ describe('work-hold.sh --goal with no check arms a CHECK-LESS hold', () => {
   })
 
   test('hold-lint still runs on the goal, and a CRITICAL arms nothing', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'holdless-'))
+    const dir = mkTmp('holdless-')
     const sid = 'holdless-crit'
     const r = spawnSync('bash', [ARM, '--goal', 'the report exists'], { timeout: 120_000,
       encoding: 'utf8', cwd: dir,
@@ -224,7 +227,7 @@ describe('work-hold.sh --goal with no check arms a CHECK-LESS hold', () => {
   })
 
   test('no check AND no goal is a usage refusal', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'holdless-'))
+    const dir = mkTmp('holdless-')
     const r = spawnSync('bash', [ARM, '--run', dir], { timeout: 120_000,
       encoding: 'utf8', cwd: dir,
       env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: 'holdless-none', WORK_HOLD_COMPACT_WINDOW: '0' },

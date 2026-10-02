@@ -1,0 +1,16 @@
+---
+name: csv-audit
+description: "Use when the user asks to 'audit this CSV', 'check the export', 'is this file safe to load', 'why does the file have blank rows', 'the import keeps failing', or hands over a delimited export to vet. Use proactively before loading any CSV a vendor sent. NEGATIVE ROUTING: building or merging a dataset is /ds; reading an .xlsx is xlsx."
+---
+
+# CSV Audit
+
+Reads one delimited export and reports what would break a load.
+
+## Step 1: Inventory
+
+Run `bun ${CLAUDE_SKILL_DIR}/scripts/inventory.ts <file>` and read its column table.
+
+## Step 2: Report
+
+List each defect with its row number.

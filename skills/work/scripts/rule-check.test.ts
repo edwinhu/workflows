@@ -3,6 +3,9 @@ import { $ } from "bun";
 import { join, basename } from "path";
 import { spawnSync } from "child_process";
 import * as fs from "fs";
+import { useTmp } from "../../../tests/helpers/tmp.ts";
+
+const mkTmp = useTmp();
 
 const TEST_TOKEN = 'test-token-123';
 
@@ -129,7 +132,7 @@ test('project-dir mode reads changed and untracked files', async () => {
     }
   });
 
-  const projectDir = fs.mkdtempSync(join(require('os').tmpdir(), 'rule-check-test-projdir-'));
+  const projectDir = mkTmp('rule-check-test-projdir-');
   try {
     const git = (...a: string[]) => spawnSync('git', a, { timeout: 120_000, cwd: projectDir });
     git('init', '-q');
@@ -168,7 +171,7 @@ test('the state carries the C8 preamble and project-relative paths', async () =>
     }
   });
 
-  const tmpDir = fs.mkdtempSync(join(require('os').tmpdir(), 'rule-check-test-'));
+  const tmpDir = mkTmp('rule-check-test-');
   fs.mkdirSync(join(tmpDir, 'data'));
   fs.mkdirSync(join(tmpDir, 'data', 'output'));
   fs.writeFileSync(join(tmpDir, 'data', 'output', 'x.csv'), 'a,b,c\n1,2,3');
@@ -224,7 +227,7 @@ test('an oversized state is truncated at 60000 chars', async () => {
     }
   });
 
-  const tmpDir = fs.mkdtempSync(join(require('os').tmpdir(), 'rule-check-test-huge-'));
+  const tmpDir = mkTmp('rule-check-test-huge-');
   const hugeString = '# spec curve ' + 'x'.repeat(250) + '\n';
   // every rule lists every file uncapped, so 300 long paths outgrow 60000 chars in any extractor
   const name = (i: number) => 'huge' + i + '_' + 'x'.repeat(200) + '.py';
@@ -313,7 +316,7 @@ test('changedRanges: -U0 hunks of tracked files, a deletion as a half-line point
 });
 
 test('changedRanges is null outside a git repo', () => {
-  const d = fs.mkdtempSync(join(require('os').tmpdir(), 'rule-check-norepo-'));
+  const d = mkTmp('rule-check-norepo-');
   try {
     expect(changedRanges(d)).toBeNull();
   } finally {
@@ -368,7 +371,7 @@ test('a statement is in scope when a changed line falls inside its span, not nex
 });
 
 test('no diff info (--files outside a repo): DQ4/DQ6 see every transform and carry no scope fields', async () => {
-  const d = fs.mkdtempSync(join(require('os').tmpdir(), 'rule-check-dq-nodiff-'));
+  const d = mkTmp('rule-check-dq-nodiff-');
   try {
     fs.writeFileSync(join(d, 'legacy.py'), LEGACY);
     const s = await statesOf(['--files', join(d, 'legacy.py')]);
@@ -415,7 +418,7 @@ async function runBatch(args: string[], port: number, stdin?: string) {
 const WRITING_DIR = join(import.meta.dir, '../../../constraints/jev/writing');
 
 test('--batch: ONE Decisions call carrying every wired writing rule, none of uncalibrated/', async () => {
-  const d = fs.mkdtempSync(join(require('os').tmpdir(), 'rule-check-batch-'));
+  const d = mkTmp('rule-check-batch-');
   try {
     const md = join(d, 'note.md');
     fs.writeFileSync(md, 'It may perhaps possibly be the case that the rate rose.\n');

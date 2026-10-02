@@ -1,0 +1,24 @@
+---
+name: workflow-creator
+description: 'Design, repair, or audit a multi-phase workflow. Use when the user says "create a workflow", "design a workflow", "scaffold a new workflow", "add a phase to this workflow", "improve/repair/redesign this workflow", "migrate this workflow", "audit this workflow", "why doesn''t my workflow''s gate work", "check this workflow''s gate", "the gate passes when it shouldn''t", or "/workflow-creator". Covers all three — fresh creation, corrective improvement, and read-only audit. Use proactively when a workflow''s gate looks vacuous or wc-probe reports CLEAN over nothing, even if the user never says "workflow". NEGATIVE ROUTING: a plain SKILL.md with no phases, no work dispatch and no computed gate goes to skill-creator, not here — this skill owns the artifacts that pass parameters to `work`''s workflow.js and are judged by wc-probe; plugin manifests, hooks wiring and multi-component scaffolding go to plugin-creator.'
+argument-hint: 'the workflow to create, improve, or audit'
+allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Monitor]
+hooks:
+  PostToolUse:
+    # Not widened to Bash — a Bash payload carries `command`, not the `file_path` this hook reads,
+    # so the matcher alone would fire and validate nothing; the gate re-derives every check here.
+    #
+    # SKILL-SCOPED ON PURPOSE — do not "fix" this to agent scope. A skill hook reaches the main
+    # session's writes only (hook-reach.md Cell A, re-measured 2.1.257 2026-09-17), and
+    # farmOutOnly denies the main thread everything BUT `*.md` (main-thread-guard.sh fo_exempt,
+    # measured). SKILL.md and agent `.md` — this checker's primary targets — are exactly the class
+    # still written here, so the reach farmOutOnly removes is the reach this hook never needed.
+    # Its `.ts`/`hooks.json` rows do lose the main thread; P2 there is carried by the plugin-wide
+    # hooks/guards/skill-paths.ts (the plugin mod) and by wc-probe at gate time, so no rule is left unenforced.
+    - matcher: "Write|Edit"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/skills/workflow-creator/scripts/validate-skill-write.ts"
+---
+
+# workflow-creator

@@ -18,7 +18,9 @@ Exit 0 when every check flips; non-zero otherwise.
 """
 from __future__ import annotations
 
+import atexit
 import hashlib
+import os
 import json
 import re
 import shutil
@@ -54,8 +56,11 @@ def run(*argv: str) -> tuple[int, str]:
 
 
 def fresh() -> Path:
-    """A throwaway copy of fixtures/clean. Never mutate the fixture itself."""
+    """A throwaway copy of fixtures/clean. Never mutate the fixture itself.
+    Removed at exit unless KEEP_TMP=1."""
     root = Path(tempfile.mkdtemp(prefix="wr-flip-"))
+    if os.environ.get("KEEP_TMP") != "1":
+        atexit.register(shutil.rmtree, root, True)
     dst = root / "proj"
     shutil.copytree(CLEAN, dst)
     return dst
