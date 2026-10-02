@@ -229,8 +229,33 @@ test('with no $OPENROUTER_API_KEY, the agenix secret file supplies it and op is 
       noKeyLeaks(r, table)
     }
     expect(op.calls()).not.toContain('op://Test Vault/OR/credential')
-    // AA has no file fallback: it still came from op.
+    // No AA key file here, so AA still came from op.
     expect(op.calls()).toContain('op://Test Vault/AA/credential')
+  } finally { s.stop() }
+}, 60_000)
+
+test('with no $ARTIFICIAL_ANALYSIS_API_KEY, the agenix secret file supplies it and op is never asked for AA', async () => {
+  const s = stubAll()
+  const op = stubOp({ 'op://Test Vault/OR/credential': OR_KEY })
+  const keyFile = join(op.xdg, 'agenix', 'artificial-analysis-api-key')
+  writeFileSync(keyFile, `${AA_KEY}\n`)
+  const table = tableCopy()
+  try {
+    for (const where of [{ XDG_RUNTIME_DIR: op.xdg }, { XDG_RUNTIME_DIR: join(op.dir, 'elsewhere'), ROUTE_AA_KEY_FILE: keyFile }]) {
+      s.seen.length = 0
+      const r = await run(['--refresh', '--table', table], {
+        ...s.env, PATH: `${op.dir}:${process.env.PATH}`, ...where,
+        ROUTE_OPENROUTER_KEY_REF: 'op://Test Vault/OR/credential', ROUTE_AA_KEY_REF: 'op://Test Vault/AA/credential',
+      })
+      expect(r.code).toBe(0)
+      expect(s.seen.find(x => x.path === '/aa')?.apiKey).toBe(AA_KEY)
+      expect(s.seen.filter(x => x.path !== '/aa').every(x => !String(x.auth).includes(AA_KEY) && !String(x.apiKey).includes(AA_KEY))).toBe(true)
+      expect(read(table).candidates.sonnet.signals).toMatchObject({ usageRank: 1, intelligenceIndex: 70 })
+      noKeyLeaks(r, table)
+    }
+    expect(op.calls()).not.toContain('op://Test Vault/AA/credential')
+    // No OpenRouter key file here, so OpenRouter still came from op.
+    expect(op.calls()).toContain('op://Test Vault/OR/credential')
   } finally { s.stop() }
 }, 60_000)
 
