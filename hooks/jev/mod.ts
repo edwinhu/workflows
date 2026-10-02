@@ -1,7 +1,7 @@
 // The per-edit Jev mod: after an Edit/Write/MultiEdit lands, score the file against its rule set's
 // WIRED Jev rules and add one line of context per rule at p(VIOLATED) >= 0.85. Advisory only.
 //
-//   rule set   hooks/jev/rules.ts ruleSetFor: prose -> writing, tests and shell -> dev, .py under a
+//   rule set   hooks/jev/rules.ts ruleSetFor: addenda/*.typ -> elide, other prose -> writing, tests and shell -> dev, .py under a
 //              `workflow: ds` ACTIVE_WORKFLOW.md -> ds; anything else is left alone
 //   scoring    ONE $.process.run of skills/work/scripts/rule-check.ts --batch: the set's own
 //              evidence.py (uncalibrated/ is below its glob), then ONE Decisions call for all its
