@@ -31,6 +31,8 @@ pass. It is reported from an exit code observed on this run.
 | CITE | Every draft citation resolves to a bibliography key and to an outline-pinned source | COMPUTED | `writing_gate_probe.py` | CRITICAL |
 | CLAIM | Every drafted section carries the claims the Claim → Section Map assigns it | COMPUTED | `writing_gate_probe.py` | CRITICAL |
 | PROSE-HARD | The hard-severity structural prose constraints | COMPUTED | `writing_prose_gate.py` (wraps `prose-audit.py`) | MAJOR |
+| STYLE | Ship-table diction, ALL-CAPS emphasis, register-crossing markers | COMPUTED | `writing_style_check.py` | MAJOR |
+| JEV-RULES | Signposting, stacked hedges, vague attribution (`W-SIGNPOST`, `W-HEDGE`, `W-ATTRIB`) | JUDGED, scored | `rule-check.ts --rules constraints/jev/writing` (`ruleChecks`) | MAJOR at p >= 0.85 |
 | COVER | Every outline point is expanded in the draft | MODEL-EVALUATED | review lens | MAJOR |
 | FIDELITY | No claim goes beyond the sources its outline pinned | MODEL-EVALUATED | review lens | CRITICAL |
 | TRANSITION | Each section's first and last sentences connect to its neighbours | MODEL-EVALUATED | review lens | MAJOR |
@@ -174,6 +176,30 @@ them — which the wrapper reports as a gate defect rather than as clean prose.
 
 A PROSE-HARD result produced by any command other than the one quoted above is not a PROSE-HARD
 result.
+
+### STYLE: the style rules a regex settles
+
+```
+uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_style_check.py --project <proj> --style <domain>
+```
+
+`check.sh` runs it as a leg of the one `writing` entry. Three rules, each a pattern with no judgement
+left: `SHIP-DICTION` (the Ship table's phrases — the table names the replacement), `ALL-CAPS` (a
+common word capitalised for emphasis) and `REGISTER-CROSSING` (Bluebook short forms, `This Article`
+or `Part II.B` outside a law review; a directional `Section 2 above` inside one). Quoted text,
+code, tables and headings are skipped. Exit `0` clean, `1` findings (`file:line: RULE: text`), `2`
+refusal — no prose under `drafts/`.
+
+### JEV-RULES: the judged register rules, scored
+
+`ruleChecks` runs `rule-check.ts --rules ${CLAUDE_PLUGIN_ROOT}/constraints/jev/writing`. Each rule's
+extractor pulls bounded candidate sentences (with `file:line` and their neighbours) from the prose
+deliverable, and Jev returns P(VIOLATED) for the rule's proposition; p >= 0.85 blocks, lower verdicts
+reach the lens ranked. Only calibrated rules sit in that directory: a rule is wired when live Jev
+scores its violating fixture >= 0.85 and an accepted passage < 0.5. `W-FIGURES` (0.71 on its
+violating fixture) and `W-BULLETS` (0.87 on an accepted numbered list) failed that bar and wait in
+`constraints/jev/writing/uncalibrated/`, which the rule glob does not read; those two remain the
+lens's under the tic table.
 
 ---
 
