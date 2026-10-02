@@ -1592,8 +1592,13 @@ func extractGridColumns(g *Grid, tableText string, base Row, tableIdx int, prev 
 			}
 		}
 	}
+	// The previous row was a valueless name row that set lastName: a name
+	// written over several valueless rows is named by the first of them.
+	nameHeadAbove := false
 	for i := c.nHeader; i < len(c.rows); i++ {
 		r := c.rows[i]
+		contName := nameHeadAbove
+		nameHeadAbove = false
 		// When the funds outrun the page width a fund-family table repeats its
 		// COLUMN HEADER inside itself for the next batch of funds. Without this
 		// the second batch is labelled with the first batch's funds and every
@@ -1683,15 +1688,21 @@ func extractGridColumns(g *Grid, tableText string, base Row, tableIdx int, prev 
 			name, fns = StripFootnotes(rescued)
 		} else if ((reAddrLine.MatchString(name) &&
 			!(c.shareHoldingsOwnedHeaders() && rowIsData(r) && !isAddressLine(name))) ||
-			isParenQualifier(name)) && lastName != "" {
+			isParenQualifier(name) || (contName && !rowIsValueless(c, r) && isAddressLine(name))) && lastName != "" {
 			// A 5% holder is often laid out over two grid rows: the name alone,
 			// then the address with the numbers beside it.
 			// ... and the second row may be a parenthesised qualifier rather than
 			// an address ("(Vanguard Variable Annuity)"), which cleanHolderName
 			// later strips to nothing, leaving a row with no holder at all.
 			name = lastName
-		} else if name != "" {
+		} else if name != "" && !(contName && rowIsValueless(c, r)) {
 			lastName = name
+			nameHeadAbove = rowIsValueless(c, r)
+		}
+		// the continuation of a name written over several valueless rows
+		// ("CHARLES SCHWAB" / "& CO INC SPECIAL" / "CUSTODY ACCT" ...)
+		if contName && name != "" && rowIsValueless(c, r) {
+			nameHeadAbove = true
 		}
 		if name == "" || !hasWords(name, 1) || reSkipName.MatchString(name) {
 			continue

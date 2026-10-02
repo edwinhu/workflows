@@ -14056,3 +14056,878 @@ func TestASCIIDollarClassCellNameCut(t *testing.T) {
 		t.Errorf("Putnam 380250 lost: %s", names(rows))
 	}
 }
+
+// 0000946275-98-000451 file lines 304-430: a sole 5% holder under a percent
+// header, then footnotes and the next proposal's prose. The lone row is the
+// table, not a lead-in sentence to set aside.
+const asciiSoleHolderThenProseLines = `
+         Persons and groups owning in excess of 5% of the outstanding  shares of
+Common Stock are  required to file  certain  reports  regarding  such  ownership
+pursuant to the  Securities  Exchange  Act of 1934,  as amended  (the  "Exchange
+Act").  Other than as noted below,  management  knows of no person or group that
+owns more than 5% of the outstanding shares of Common Stock at the Record Date.
+<TABLE>
+<CAPTION>
+
+                                                                Percent of Shares of
+                                         Amount and Nature of       Common Stock
+Name and Address of Beneficial Owner     Beneficial Ownership       Outstanding
+- ------------------------------------     --------------------   --------------------
+<S>                                              <C>                  <C>   
+Bernard A. Brown
+71 West Park Avenue
+Vineland, New Jersey 08360                        2,297,331(1)         32.87%
+</TABLE>
+
+- --------------------
+(1)      Includes  shares of Common Stock held directly as well as by spouses or
+         minor  children,  in trust and other  indirect  ownership,  over  which
+         shares the individual  effectively  exercise sole voting and investment
+         power, unless otherwise indicated. Includes 619,807 options that may be
+         exercised  within  60 days of the  Record  Date to  purchase  shares of
+         Common Stock.  Excludes 64,396 options to purchase shares which are not
+         presently exercisable within 60 days of the Record Date.
+
+Vote Required for Approval
+
+         The affirmative  vote of a majority of the votes cast at the Meeting is
+required for  adoption of the  amendment to the  Certificate  without  regard to
+proxies marked "ABSTAIN" and broker non-votes.
+
+         THE BOARD OF  DIRECTORS  RECOMMENDS  THAT  SHAREHOLDERS  VOTE "FOR" THE
+AMENDMENT  TO THE  CERTIFICATE.  UNLESS  MARKED  TO  THE  CONTRARY,  THE  SHARES
+REPRESENTED  BY  SIGNED  PROXIES  WILL BE VOTED  FOR  ADOPTION  OF THE  PROPOSAL
+RELATING TO THE AMENDMENT TO THE CERTIFICATE.
+
+                                       -2-
+
+<PAGE>
+
+- --------------------------------------------------------------------------------
+                     PROPOSAL I - AMENDMENT TO THE COMPANY'S
+                AMENDED AND RESTATED CERTIFICATE OF INCORPORATION
+                          TO INCREASE AUTHORIZED SHARES
+- --------------------------------------------------------------------------------
+
+         The Board has approved and recommends to the Company's shareholders for
+their  adoption  at the  Meeting an  amendment  to the  Company  Certificate  to
+increase the number of shares of Common Stock authorized for issuance thereunder
+from 10,000,000  shares to 25,000,000  shares. As of the Record Date, there were
+6,370,271 shares of Common Stock issued and outstanding. If the amendment is not
+adopted by the  Company's  shareholders,  the  Company  believes it will soon be
+significantly  hindered in its ability to issue additional  shares of the Common
+Stock and unduly restricted in the conduct of its financial affairs. On July 20,
+1998,  the  Company  announced  that it had  signed a  definitive  agreement  to
+purchase eight  Delaware  branches from Household  Bank,  f.s.b.,  the parent of
+Beneficial Bank. The branches have  approximately  $168 million in deposits.  In
+connection  with this  transaction,  the  Company  expects  to raise  additional
+capital through a public offering  consisting of Common Stock and possibly other
+securities of the Company.  The Company's public securities offering is expected
+to occur by the end of the third quarter or the beginning of the fourth  quarter
+of 1998.  Upon  completion  of this  offering,  the Company  expects to have few
+remaining  authorized  shares of Common Stock available for future issuance.  In
+addition,  in connection  with the offering,  the Company may elect to declare a
+stock split or stock  dividend in order to make the trading  price of the Common
+Stock  more  attractive  to  potential  investors.  There  can be no  assurance,
+however, that the Company will declare a stock split or dividend with respect to
+the Common Stock. A stock split or stock dividend,  if declared and paid,  would
+also  require the Company  have  sufficient  authorized  shares of Common  Stock
+available to effect the split or dividend.
+
+         The proposed  amendment would give the Company  greater  flexibility in
+its  financial  affairs by making 15 million  additional  shares of Common Stock
+available  for  issuance  in such  transactions  and at such  times as the Board
+considers appropriate,  whether in public or private offerings,  as stock splits
+or dividends or in connection with mergers and  acquisitions  or otherwise.  The
+Company's shareholders may or may not be given the opportunity to vote on such a
+transaction,  depending on the nature of the  transaction,  applicable  law, the
+rules and policies of the  National  Association  of  Securities  Dealers,  Inc.
+applicable to Nasdaq National  Market issuing  companies and the judgment of the
+Company Board  regarding the  submission  of such  transaction  to a vote of the
+Company  shareholders.  Because shareholders do not have preemptive rights under
+the  Certificate,  the interests of existing  shareholders may (depending on the
+particular circumstances in which additional capital stock is issued) be diluted
+by any such issuance.
+
+         It is possible that additional shares of the Company Common Stock could
+be issued for the purpose of making an  acquisition  by an unwanted  suitor of a
+controlling interest in the Company more difficult,  time-consuming or costly or
+to otherwise discourage an attempt to acquire control of the Common Stock. Under
+such circumstances,  the availability of authorized and unissued shares may make
+it more difficult for  shareholders of the Company to obtain a premium for their
+shares.  Such  authorized and unissued  shares could be used to create voting of
+other  impediments  or to frustrate a person or other  entity  seeking to obtain
+control of the Company by means of merger,  tender offer, proxy contest or other
+means.  For instance,  such shares could be privately placed with purchasers who
+might  cooperate  with the Board in opposing an attempt by a third party to gain
+control of the Company by voting such shares  against the  transaction  with the
+third party or could be used to dilute the stock ownership or voting rights of a
+person or entity  seeking to obtain  control of the Company.  Although the Board
+does not currently
+
+                                       -3-
+
+<PAGE>
+
+
+
+anticipate  issuing additional shares of Common Stock for purposes of preventing
+a takeover of the Company,  the Board  reserves its right  (consistent  with its
+fiduciary responsibilities) to issue shares for such purpose.
+
+         If the  amendment  is adopted,  the first  sentence of Article V of the
+Certificate would be amended to read as follows:
+
+         "The  aggregate  number of shares of all classes of capital stock which
+the Corporation has authority to issue is 26,000,000 of which  25,000,000 are to
+be shares of common stock, $1.00 par value per share, and of which 1,000,000 are
+to be shares of serial preferred stock, $1.00 par value per share."
+
+         Adoption of the proposed  amendment  requires the affirmative vote of a
+majority of the votes cast at the  Meeting.  As soon as  practicable  after such
+affirmative  vote has been taken, the amendment will be filed with the Secretary
+of State of the State of New Jersey and will thereupon become effective.
+
+`
+
+func TestASCIISoleHolderNotSetAsideAsLeadIn(t *testing.T) {
+	raw, _, _ := ExtractText(asciiSoleHolderThenProseLines, Row{})
+	rows := ScreenRows(raw)
+	r := find(rows, "Bernard A. Brown", "")
+	if r == nil || r.Shares == nil || *r.Shares != 2297331 || r.Percent == nil || *r.Percent != 32.87 {
+		t.Fatalf("sole 5%% holder lost: rows=%+v", rows)
+	}
+	if len(rows) != 1 {
+		t.Errorf("want 1 row, got %d: %+v", len(rows), rows)
+	}
+}
+
+// 0001013799-97-000011 file lines 525-600: the warrants-owned column header is
+// stacked down its column ("Number of" / "Warrants" / "Owned"), so the
+// "Average Exercise Price" beside it describes those holdings, not a grant.
+const asciiStackedWarrantsOwnedLines = `
+      SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS AND MANAGEMENT
+
+     The following table sets forth, to the best knowledge of the
+Company, as of May 3, 1997, with respect to each person known by
+the Company to own beneficially more than 5% of the outstanding
+Common Stock, each director and all directors, officers and
+principal shareholders as a group.
+
+Name and Address of   Number of Shares     Percentage Number of   Average
+ Beneficial Owner     Beneficially Owned    Ownership Warrants    Exercise
+                                                       Owned      Price
+                
+Gary E. Alexander *         1,306,193(2)       10.6%   195,800    1.63
+9624 Brookline Avenue
+Baton Rouge, LA 70809
+
+Robert McNamee              1,205,826(3)       9.8%    358,633     3.31
+1398 Oakley Drive
+Baton Rouge, LA 70806
+                              
+Jerry Phipps                1,215,826(4)       9.8%    473,632     2.91
+7530 Old Sturbridge Ln.
+Baton Rouge, LA 70806
+
+Robert L. diBenedetto *       930,480(5)       7.5%    377,000     2.75
+781 Colonial Drive
+Baton Rouge, La 70806
+
+William D. Kiesel *         1,202,363(6)       9.7%    565,166     2.61
+2355 Drusilla Lane
+Baton Rouge, LA 70809 
+
+Edward P. Sutherland *        920,000(7)       7.4%    213,000     1.63
+9624 Brookline Avenue
+Baton Rouge, LA 70809
+
+Kerry Frey *                  562,400(8)       4.6%     57,400     2.07
+9624 Brookline Avenue
+Baton Rouge, LA 70809
+
+Paul R. Radle, Jr. *          171,000(9)       1.4%     67,000     1.82
+9624 Brookline Avenue
+Baton Rouge, LA 70809
+
+Jane Cooper *                   9,100(10)      0.1%      5,000     4.25
+9624 Brookline Avenue
+Baton Rouge, LA 70809
+<PAGE>
+Timothy Andrus *               6,833(11)      0.1%      3,833     1.00
+9624 Brookline Avenue
+Baton Rouge, LA 70809
+
+Wade Fallin *                   1,000         .01%        0         N/A
+9624 Brookline Avenue
+Baton Rouge, LA 70809
+
+Directors, officers         7,529,921(12)    61.0%   2,314,864     2.60
+and principal shareholders
+as a group (11 persons)       
+
+* Director
+
+** Unless otherwise indicated in the footnotes below, the Company
+has been advised that each person above has sole voting power over
+the shares indicated above.
+
+(1)  As of May 3, 1997, there were 12,349,040 shares of common
+     stock outstanding, which figure does not take into
+     consideration stock purchase warrants owned by certain
+     officers, directors and principal shareholders, entitling the
+     holders to purchase an aggregate of 2,314,864 shares of common
+     stock and which are currently exercisable.  Therefore, for
+     purposes of the table above, as of the date hereof, 14,663,904
+     shares of common stock are deemed to be issued and outstanding
+     in accordance with Rule 13d-3 adopted by the Securities and
+     Exchange Commission under the Securities Exchange Act of 1934,
+`
+
+func TestASCIIStackedWarrantsOwnedHeader(t *testing.T) {
+	rows := ScreenRows(run(t, asciiStackedWarrantsOwnedLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+		pct    float64
+	}{
+		{"Gary E. Alexander", 1306193, 10.6},
+		{"Robert McNamee", 1205826, 9.8},
+		{"Jerry Phipps", 1215826, 9.8},
+		{"William D. Kiesel", 1202363, 9.7},
+	} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("row lost: %+v; rows=%+v", want, rows)
+		}
+	}
+	for _, r := range rows {
+		if r.Shares != nil && (*r.Shares == 195800 || *r.Shares == 2314864) {
+			t.Errorf("warrant column read as the holding: %+v", r)
+		}
+	}
+}
+
+// 0000933259-97-000048 file lines 275-345: an ownership table whose last
+// column pair is the warrants or options each holder holds and the percent of
+// class if they were fully exercised. "Options Granted" stacked down that
+// column is no option-grant table, and the pair is no second holding.
+const asciiWarrantsFullyExercisedLines = `
+Principal Shareholders
+
+    The following  table sets forth  certain  information  regarding  beneficial
+ownership  of thr  Company's  Common Stock as of May 19, 1997 by (i) each person
+(or group or affiliated persons) who is known by the Company to own beneficially
+more than five percent (5%) of the outstanding shares of its Commmon Stock, (ii)
+each  director of the  Company and  director  nominees  and (iii) all  executive
+officers and directors of the Company as a group:
+
+<PAGE>
+
+                    Beneficial                 Warrants  Percent
+                    Ownership       Current    or        of Class
+  Name and          of Common       Percent     Options   if Fully
+   Address            Stock        of Class     Granted  Exercised
+
+Jack Y. L.          1,458,334        10.3%     1,958,334   13.8%
+Lee,  Chief
+Executive
+Officer
+   28 Old Park Lane
+   Richmond Hill,
+   Ont. L4B 2L4
+
+David Kerzner,      2,337,500        16.6%     3,187,500   22.3%
+President
+   120 Arnold Ave.,
+   Thornhill,
+   Ont. L4S 1B7
+
+Richard Brogan        104,000         0.7%         ---      0.4%
+Vice President for
+Marketing and Sales
+  3242 S. Birchett Dr.
+  Tempe, Az. 85282
+
+Jacob Kerzner,         ---            ---       562,500     2.3%
+Director
+  148 Faywood Blvd.
+   Downsview,
+   Ont. M3H 2W7
+
+Sarah Casse         1,475,000        10.4%     1,875,000   13.5%
+  63 Otter Crescent 
+  North York, Ont.
+  M5N 2W7
+
+George Sukornyk     1,250,000        8.9%         ---       5.1%
+  49 St. Clair Ave.
+  Toronto, Ont.
+   M4V 1K6
+
+Mendel Raksin       1,666,680        11.8%     1,666,680   13.5%
+  338 Crown Street
+  New York, N.Y.
+  11225
+
+
+<PAGE>
+
+All directors,      8,291,514        58.7%     9,250,014   70.9%
+executive
+officers, and
+5% owners, as
+a group:
+
+
+
+                              ELECTION OF DIRECTORS
+                                  (Proposal 1)
+
+`
+
+func TestASCIIWarrantsIfFullyExercisedColumns(t *testing.T) {
+	rows := ScreenRows(run(t, asciiWarrantsFullyExercisedLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+		pct    float64
+	}{
+		{"David Kerzner", 2337500, 16.6},
+		{"Sarah Casse", 1475000, 10.4},
+		{"George Sukornyk", 1250000, 8.9},
+		{"Mendel Raksin", 1666680, 11.8},
+	} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("row lost: %+v; rows=%+v", want, rows)
+		}
+	}
+	for _, r := range rows {
+		if r.Shares != nil && (*r.Shares == 3187500 || *r.Shares == 9250014 || *r.Shares == 1958334) {
+			t.Errorf("warrant column read as a holding: %+v", r)
+		}
+	}
+}
+
+// 0000950144-98-006426: a "Title of Class" column written ahead of the name
+// with no colon ("Common          C. J. Lett, III(3)   1,197,556   13.8%"),
+// the table split across a page break into Common and Preferred rows.
+const asciiLeadTitleOfClassCellLines = `
+
+         The following table sets forth the shares of the Company's common and
+preferred stock beneficially owned by those persons known by the Company to be
+the beneficial owner of more than five percent of the Company's issued and
+outstanding common and preferred stock as of December 31, 1997:
+
+   
+<TABLE>
+<CAPTION>
+             Title of                Name and Address of            Amount and Nature of          Percent of
+              Class(5)                Beneficial Owner              Beneficial Ownership             Class
+              --------                ----------------              --------------------             -----
+
+             <S>              <C>                                   <C>                           <C>  
+              Common          C. J. Lett, III(3)                          1,197,556                  13.8%
+                              9320 East Central
+                              Wichita, Kansas 67206
+
+              Common          Kaiser-Francis Oil Company(3)               3,333,334                  38.3%
+                              6733 South Yale
+                              Tulsa, Oklahoma 74136
+
+              Common          Weskids, L.P.(1)(4)                           843,687                  10.0%
+                              310 South Street
+                              Morristown, NJ  07960
+
+              Common          Weskids, Inc.                                 843,687                  10.0%
+                              310 South Street
+                              Morristown, NJ  07960
+</TABLE>
+    
+
+
+
+
+                                      -4-
+<PAGE>   8
+
+
+
+<TABLE>
+             <S>              <C>                                           <C>                      <C> 
+             Common           Alvin V. Shoemaker(2)(3)                      661,222                   8.9%
+                              8800 First Avenue
+                              Stone Harbor, NJ  08247
+
+             Preferred        Weskids, L.P.(4)                              117,467                  44.1%
+             Series B         310 South Street
+                              Morristown, NJ  07960
+
+             Preferred        Weskids, Inc.                                 117,467                  44.1%
+             Series B         310 South Street
+                              Morristown, NJ  07960
+
+             Preferred        Alvin V. Shoemaker(3)                         117,466                  44.1%
+             Series B         8800 First Avenue
+                              Stone Harbor, NJ  08247
+
+             Preferred        Stephen W. Herod(3)                            15,867                   5.9%
+             Series B         1110 Briar Ridge Drive
+                              Houston, TX  77057
+
+             Preferred        W. Tim Sexton(3)                               15,867                   5.9%
+             Series B         12010 Winwood
+                              Houston, TX  77024
+</TABLE>
+
+(1)      Weskids, L.P. has agreed that, for a period of one year from June 30,
+         1997, its voting power will be restricted to not more than votes
+         representing 20% of the total number of shares of the Company's common
+         stock issued and outstanding and eligible to vote at the time in
+`
+
+func TestASCIILeadTitleOfClassCell(t *testing.T) {
+	rows := ScreenRows(run(t, asciiLeadTitleOfClassCellLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+		pct    float64
+	}{
+		{"C. J. Lett, III", 1197556, 13.8},
+		{"Kaiser-Francis Oil Company", 3333334, 38.3},
+		{"Alvin V. Shoemaker", 661222, 8.9},
+	} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("row lost: %+v; rows=%+v", want, rows)
+		}
+	}
+	for _, r := range rows {
+		if strings.HasPrefix(r.HolderName, "Common ") || strings.HasPrefix(r.HolderName, "Preferred ") {
+			t.Errorf("class cell glued to the name: %+v", r)
+		}
+		if r.Shares != nil && *r.Shares == 310 {
+			t.Errorf("street number read as a holding: %+v", r)
+		}
+	}
+}
+
+// 0000899243-01-500922 file lines 929-975: the lead-in prose ends on an
+// address with a zip code ("Suite 130, Richardson, Texas  75080.") read as a
+// lone row, then the page number, <PAGE>, and the table on the next page.
+const asciiLeadInRowThenPageBreakLines = `
+         SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS AND MANAGEMENT
+
+     The following table sets forth certain information as of June 12, 2001,
+with respect to the beneficial ownership of common stock by: (i) each director
+and nominee for election to the Board of Directors; (ii) each executive officer;
+(iii) all of the directors and executive officers as a group; and (iv) to the
+best of the Company's knowledge, each person who is a beneficial owner of more
+than 5% of the outstanding shares of common stock. The information has been
+determined in accordance with Rule 13d-3 promulgated under the Exchange Act
+based upon information furnished by the persons listed or contained in filings
+made by them with the SEC.  Except as provided in the table below, the
+stockholders listed in the table below have sole voting and investment power
+with respect to their shares.  Unless otherwise indicated, the business address
+of each of the persons listed below is c/o DataVoN Inc., 635 West Campbell Road,
+Suite 130, Richardson, Texas  75080.
+
+                                       14
+<PAGE>
+
+                                    Number of Shares of             Percent
+Name or Identity of Group     Common Stock Beneficially Owned      of Class(1)
+- -------------------------     -------------------------------     -------------
+
+Hugh D. Simpson                        38,738,877                     68.30%
+Philip N. O'Reilly                      5,267,201(2)                   9.29%
+James S. Holden                               -0-(3)                   --
+Amar Budarapu                              55,670(4)                    *
+Robert E. Conn                             25,000(5)                    *
+David G. Olson                             75,000(6)                    *
+G. Edward Powell                           16,667(7)                    *
+Robert A. Veschi                           25,000(8)                    *
+Rodney Jones                                   -0-(9)                  --
+Michael G. Donohoe                             -0-(10)                 --
+All Directors and Executive
+   Officers as a Group                 44,203,415(11)                 77.67%
+
+
+- ---------------------
+(1) Based on 56,715,726 shares of common stock issued and outstanding as of
+June 12, 2001.
+
+(2) Includes 5,256,137 shares of common stock and options to purchase 11,064
+shares of common stock held by Mr. O'Reilly.  The options to purchase 11,064
+shares of common stock are exercisable within 60 days of June 12, 2001.
+
+(3) Does not include options to purchase 900,000 shares of common stock held by
+Mr. Holden, which are not exercisable within 60 days of June 12, 2001.
+`
+
+func TestASCIILeadInRowThenPageBreak(t *testing.T) {
+	rows := ScreenRows(run(t, asciiLeadInRowThenPageBreakLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+		pct    float64
+	}{
+		{"Hugh D. Simpson", 38738877, 68.30},
+		{"Philip N. O'Reilly", 5267201, 9.29},
+	} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("row lost: %+v; rows=%+v", want, rows)
+		}
+	}
+	for _, r := range rows {
+		if strings.Contains(r.HolderName, "Suite 130") {
+			t.Errorf("lead-in address read as a holder: %+v", r)
+		}
+	}
+}
+
+// 0001324443-11-000058 file lines 2370-2566: a fund record-holder grid whose
+// second holder is named over five valueless rows ("CHARLES SCHWAB" / "& CO
+// INC SPECIAL" / "CUSTODY ACCT" ... / "101 MONTGOMERY ST") above the row that
+// carries its city/ZIP and the numbers.
+const htmlHolderNamedOverValuelessRows = `<html><body>
+
+<p align=center style="margin-left:0in;margin-right:0in;text-align:center;"><b><font face="Times New Roman" lang=EN-US style="font-size:11.0pt;">BENEFICIAL
+OWNERS OF TRUST SHARES</font></b></p>
+
+<p align=center style="margin-left:0in;margin-right:0in;text-align:center;"><b><font face="Times New Roman" lang=EN-US style="font-size:11.0pt;">&nbsp;</font></b></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="Times New Roman" lang=EN-US style="font-size:11.0pt;">As of the Record
+Date, the table below provides information on the persons owning, or beneficially
+owning, as of record 5% or more of the Fund. Wespac, through beneficial
+ownership of shares or through shares for which they have investment
+discretion, can vote for a majority of the shares outstanding of the Fund.
+Wespac accounts are maintained at either Ameritrade or Charles Schwab.</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="Times New Roman" lang=EN-US style="font-size:12.0pt;">&nbsp;</font></p>
+
+<div align=left><table cellpadding=0 cellspacing=0 border=0 style="border-collapse:collapse;margin-left:4.65pt;width:482.899994pt;">
+ <tr style="height:39.0pt;">
+  <td valign=bottom width=23% style="border-bottom:double windowtext 2.25pt;height:39.0pt;padding:0in 5.4pt 0in 5.4pt;">
+   <p align=center style="margin:0in;margin-bottom:.0001pt;text-align:center;"><b><font color=black face="Times New Roman" style="font-size:10.0pt;">Fund</font></b></p>
+   </td>
+ <td valign=bottom width=47% style="border-bottom:double windowtext 2.25pt;height:39.0pt;padding:0in 5.4pt 0in 5.4pt;">
+   <p align=center style="margin:0in;margin-bottom:.0001pt;text-align:center;"><b><font color=black face="Times New Roman" style="font-size:10.0pt;">Name and Address of Beneficial Owner</font></b></p>
+   </td>
+ <td valign=bottom width=17% style="border-bottom:double windowtext 2.25pt;height:39.0pt;padding:0in 5.4pt 0in 5.4pt;">
+   <p align=center style="margin:0in;margin-bottom:.0001pt;margin-right:.05in;text-align:center;"><b><font color=black face="Times New Roman" style="font-size:10.0pt;">Shares
+   Outstanding Owned</font></b></p>
+   </td>
+ <td valign=bottom width=13% style="border-bottom:double windowtext 2.25pt;height:39.0pt;padding:0in 5.4pt 0in 5.4pt;">
+   <p align=center style="margin:0in;margin-bottom:.0001pt;text-align:center;"><b><font color=black face="Times New Roman" style="font-size:10.0pt;">Percent of Fund by Class</font></b></p>
+   </td>
+ </tr>
+<tr style="height:12.75pt;">
+  <td rowspan=4 valign=bottom width=23% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;"><b><font color=black face="Times New Roman" style="font-size:10.0pt;">FUSION FUND
+  INSTITUTIONAL CLASS&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></b></p>
+  </td>
+ <td nowrap valign=bottom width=47% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;"><font color=black face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ <td nowrap valign=bottom width=17% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;margin-right:.05in;"><font color=black face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ <td nowrap valign=bottom width=13% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;"><font color=black face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ </tr>
+<tr style="height:12.75pt;">
+  <td nowrap valign=bottom width=47% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;"><font color=black face="Times New Roman" style="font-size:10.0pt;">AMERITRADE INC
+  FBO 9140419131&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+  </td>
+ <td nowrap valign=bottom width=17% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;margin-right:.05in;"><font color=black face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ <td nowrap valign=bottom width=13% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p align=right style="margin:0in;margin-bottom:.0001pt;text-align:right;"><font color=black face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ </tr>
+<tr style="height:12.75pt;">
+  <td nowrap valign=bottom width=47% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;"><font color=black face="Times New Roman" style="font-size:10.0pt;">PO BOX 2226</font></p>
+  </td>
+ <td nowrap valign=bottom width=17% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;margin-right:.05in;"><font color=black face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ <td nowrap valign=bottom width=13% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;"><font color=black face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ </tr>
+<tr style="height:12.75pt;">
+  <td nowrap valign=bottom width=47% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;"><font color=black face="Times New Roman" style="font-size:10.0pt;">OMAHA, NE&#160; 68103-2226</font></p>
+  </td>
+ <td nowrap valign=bottom width=17% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p align=right style="margin:0in;margin-bottom:.0001pt;margin-right:.05in;text-align:right;"><font face="MS Sans Serif" style="font-size:10.0pt;">&#160; 264,326.046 </font></p>
+  </td>
+ <td nowrap valign=bottom width=13% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p align=right style="margin:0in;margin-bottom:.0001pt;text-align:right;"><font face="MS Sans Serif" style="font-size:10.0pt;">89.2%</font></p>
+  </td>
+ </tr>
+<tr style="height:12.75pt;">
+  <td nowrap valign=bottom width=23% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;"><font color=black face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ <td nowrap valign=bottom width=47% style="border-bottom:solid windowtext 1.0pt;height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;"><font color=black face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ <td nowrap valign=bottom width=17% style="border-bottom:solid windowtext 1.0pt;height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p align=right style="margin:0in;margin-bottom:.0001pt;margin-right:.05in;text-align:right;"><font face="MS Sans Serif" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ <td nowrap valign=bottom width=13% style="border-bottom:solid windowtext 1.0pt;height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p align=right style="margin:0in;margin-bottom:.0001pt;text-align:right;"><font face="MS Sans Serif" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ </tr>
+<tr style="height:5.35pt;">
+  <td nowrap valign=bottom width=23% style="height:5.35pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;"><font color=black face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ <td nowrap valign=bottom width=47% style="height:5.35pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;"><font color=black face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ <td nowrap valign=bottom width=17% style="height:5.35pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p align=right style="margin:0in;margin-bottom:.0001pt;margin-right:.05in;text-align:right;"><font face="MS Sans Serif" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ <td nowrap valign=bottom width=13% style="height:5.35pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p align=right style="margin:0in;margin-bottom:.0001pt;text-align:right;"><font face="MS Sans Serif" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ </tr>
+<tr style="height:12.75pt;">
+  <td nowrap valign=bottom width=23% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;"><font color=black face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ <td nowrap valign=bottom width=47% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;"><font color=black face="Times New Roman" style="font-size:10.0pt;">CHARLES SCHWAB
+  &amp; CO INC SPECIAL&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+  </td>
+ <td nowrap valign=bottom width=17% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p align=right style="margin:0in;margin-bottom:.0001pt;margin-right:.05in;text-align:right;"><font face="MS Sans Serif" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ <td nowrap valign=bottom width=13% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p align=right style="margin:0in;margin-bottom:.0001pt;text-align:right;"><font face="MS Sans Serif" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ </tr>
+<tr style="height:12.75pt;">
+  <td nowrap valign=bottom width=23% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;"><font color=black face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ <td nowrap valign=bottom width=47% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;"><font color=black face="Times New Roman" style="font-size:10.0pt;">CUSTODY ACCT
+  FOR THE EXCLUSIVE</font></p>
+  </td>
+ <td nowrap valign=bottom width=17% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p align=right style="margin:0in;margin-bottom:.0001pt;margin-right:.05in;text-align:right;"><font face="MS Sans Serif" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ <td nowrap valign=bottom width=13% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p align=right style="margin:0in;margin-bottom:.0001pt;text-align:right;"><font face="MS Sans Serif" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ </tr>
+<tr style="height:12.75pt;">
+  <td nowrap valign=bottom width=23% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;"><font color=black face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ <td nowrap valign=bottom width=47% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;margin-left:11.45pt;"><font color=black face="Times New Roman" style="font-size:10.0pt;">BENEFIT OF CUSTOMERS</font></p>
+  </td>
+ <td nowrap valign=bottom width=17% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p align=right style="margin:0in;margin-bottom:.0001pt;margin-right:.05in;text-align:right;"><font face="MS Sans Serif" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ <td nowrap valign=bottom width=13% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p align=right style="margin:0in;margin-bottom:.0001pt;text-align:right;"><font face="MS Sans Serif" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ </tr>
+<tr style="height:12.75pt;">
+  <td nowrap valign=bottom width=23% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;"><font color=black face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ <td nowrap valign=bottom width=47% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;"><font color=black face="Times New Roman" style="font-size:10.0pt;">ATTN MUTUAL
+  FUNDS</font></p>
+  </td>
+ <td nowrap valign=bottom width=17% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p align=right style="margin:0in;margin-bottom:.0001pt;margin-right:.05in;text-align:right;"><font face="MS Sans Serif" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ <td nowrap valign=bottom width=13% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p align=right style="margin:0in;margin-bottom:.0001pt;text-align:right;"><font face="MS Sans Serif" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ </tr>
+<tr style="height:12.75pt;">
+  <td nowrap valign=bottom width=23% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;"><font color=black face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ <td nowrap valign=bottom width=47% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;"><font color=black face="Times New Roman" style="font-size:10.0pt;">101 MONTGOMERY
+    ST</font></p>
+  </td>
+ <td nowrap valign=bottom width=17% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p align=right style="margin:0in;margin-bottom:.0001pt;margin-right:.05in;text-align:right;"><font face="MS Sans Serif" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ <td nowrap valign=bottom width=13% style="height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p align=right style="margin:0in;margin-bottom:.0001pt;text-align:right;"><font face="MS Sans Serif" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ </tr>
+<tr style="height:12.75pt;">
+  <td nowrap valign=bottom width=23% style="border-bottom:solid windowtext 1.0pt;height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;"><font color=black face="Times New Roman" style="font-size:10.0pt;">&nbsp;</font></p>
+  </td>
+ <td nowrap valign=bottom width=47% style="border-bottom:solid windowtext 1.0pt;height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p style="margin:0in;margin-bottom:.0001pt;"><font color=black face="Times New Roman" style="font-size:10.0pt;">SAN FRANCISCO CA 94104-4151</font></p>
+  </td>
+ <td nowrap valign=bottom width=17% style="border-bottom:solid windowtext 1.0pt;height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p align=right style="margin:0in;margin-bottom:.0001pt;margin-right:.05in;text-align:right;"><font face="MS Sans Serif" style="font-size:10.0pt;">&#160; 32,009.949 </font></p>
+  </td>
+ <td nowrap valign=bottom width=13% style="border-bottom:solid windowtext 1.0pt;height:12.75pt;padding:0in 5.4pt 0in 5.4pt;">
+  <p align=right style="margin:0in;margin-bottom:.0001pt;text-align:right;"><font face="MS Sans Serif" style="font-size:10.0pt;">10.8%</font></p>
+  </td>
+ </tr>
+</table></div>
+</body></html>`
+
+func TestHTMLHolderNamedOverValuelessRows(t *testing.T) {
+	rows := ScreenRows(run(t, htmlHolderNamedOverValuelessRows))
+	for _, want := range []struct {
+		head   string
+		shares float64
+		pct    float64
+	}{
+		{"AMERITRADE INC", 264326.046, 89.2},
+		{"CHARLES SCHWAB", 32009.949, 10.8},
+	} {
+		var r *Row
+		for i := range rows {
+			if strings.HasPrefix(rows[i].HolderName, want.head) {
+				r = &rows[i]
+			}
+		}
+		if r == nil || r.Shares == nil || *r.Shares != want.shares || r.Percent == nil || *r.Percent != want.pct {
+			t.Errorf("row lost: %+v; rows=%+v", want, rows)
+		}
+	}
+	for _, r := range rows {
+		if isAddressLine(r.HolderName) {
+			t.Errorf("address read as a holder: %+v", r)
+		}
+	}
+}
+
+// 0001008886-98-000022 file lines 640-712: a "Title of Class" column naming
+// a lettered common class ("Class A Common     Michael W. Miller   37,052  *"),
+// its header under the <S> marker row.
+const asciiLeadLetteredCommonCellLines = `
+
+
+
+                   SECURITY OWNERSHIP OF PRINCIPAL STOCKHOLDERS
+                                  AND MANAGEMENT
+
+      The  following  table sets  forth,  as of March 16,  1998,  the number and
+percentage  of  outstanding  shares of Common Stock  beneficially  owned by each
+person known by the Company to  beneficially  own more than 5% of such stock, by
+each director,  director nominee,  and Named Officer of the Company,  and by all
+directors and executive officers of the Company as a group.
+
+<TABLE>
+<CAPTION>
+
+            SECURITY OWNERSHIP OF PRINCIPAL STOCKHOLDERS AND MANAGEMENT
+
+<S>                <C>                                 <C>               <C>    
+                                                       Amount & Nature
+                                                        of Beneficial
+Title of Class         Name of Beneficial Owner<F1>     Ownership<F2>    Percent of Class
+                                                                         41.1% of Class A
+Class A & Class B  David R. Parker &                    6,958,725<F3>    100.0% of Class B
+    Common         Jacqueline F. Parker                                  51.3% of Total
+Class A Common     Michael W. Miller                       37,052               *
+Class A Common     R. H. Lovin, Jr.                        30,000               *
+Class A Common     Joey B. Hogan                            5,750               *
+Class A Common     Ronald B. Pope                           9,204               *
+                   William T. Alt
+ No Securities     300 Forest Avenue                          0                 *
+     Owned         Chattanooga, TN  37405
+                   Hugh O. Maclellan, Jr.
+Class A Common     501 Provident Building                   5,700               *
+                   Chattanooga, TN  37402                                      
+Class A Common     Mark A. Scudder<F4>                      2,650               *
+                   Robert E. Bosworth
+Class A Common     174 Meadow Pond Run                      1,000               *
+                   Lookout Mountain, GA 30750
+Class A Common     Clyde M. Fuller<F5>                  2,100,000        18.7% of Class A
+                                                                         15.5% of Total
+Class A Common     Dresdner RCM Global Investors LLC(6) 1,323,900        11.8% of Class A
+                                                                          9.8% of Total
+Class A & Class B  All directors and executive officers 
+    Common         as a group (8 persons)               7,049,081        52.0% of Total
+
+- ---------------------
+<FN>
+*     Less than one percent (1%).
+<F1>  The business address of Mr. and Mrs. Parker, Mr. Lovin, Mr. Hogan, 
+      Mr. Pope, Mr. Miller, and Mr. Fuller is 400 Birmingham Highway, 
+      Chattanooga, TN 37419.
+<F2>  In accordance with applicable  rules under the Securities  Exchange Act of
+      1934,  as  amended,   the  number  of  shares  of  Class  A  Common  Stock
+      beneficially  owned  includes (i) the following  shares  underlying  stock
+      options that are exercisable or will become  exercisable within 60 days of
+      the date of this proxy:  Mr.  Parker - 53,500;  Mr.  Miller - 34,000;  Mr.
+      Lovin -  30,000;  Mr.  Pope -  9,000;  Mr.  Hogan -  5,000;  and  (ii) the
+      following shares  attributable to Named Officers  invested in the employer
+      stock fund through the  Company's  401(k)  Plan,  assuming (a) all amounts
+      allocated to such fund by Named Officers were fully invested, and (b) that
+      the number of shares is equivalent  to the dollar amount  invested in such
+      fund divided by the $21.75  closing price of the Company's  Class A Common
+      Stock on March 16, 1998:  Mr. Parker - 225; Mr. Miller - 152; and Mr. Pope
+      - 104.
+<F3>  Includes  4,555,225  shares of Class A Common Stock;  2,350,000  shares of
+      Class B Common Stock; and 53,500 shares of Class A Common Stock underlying
+      stock options that are  exercisable or will become  exercisable  within 60
+      days of the date of this proxy statement.  All shares are owned by Mr. and
+      Mrs. Parker as Joint Tenants with Rights of  Survivorship,  except 200,000
+      shares  of  Class A  Common  Stock  owned  by the  Parker  Family  Limited
+      Partnership, of which Mr. and Mrs. Parker are general partners.
+<F4>  Mr. Scudder's business address is 411 S. 13th Street,  Suite 200, Lincoln,
+      NE 68508.  His holdings include 200 shares of Class A Common Stock held as
+`
+
+func TestASCIILeadLetteredCommonClassCell(t *testing.T) {
+	rows := ScreenRows(run(t, asciiLeadLetteredCommonCellLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{
+		{"Michael W. Miller", 37052},
+		{"R. H. Lovin, Jr", 30000},
+		{"Ronald B. Pope", 9204},
+		{"Clyde M. Fuller", 2100000},
+		// the count follows the footnote marker after a single space:
+		// "Dresdner RCM Global Investors LLC(6) 1,323,900        11.8% of Class A"
+		{"Dresdner RCM Global Investors LLC", 1323900},
+	} {
+		r := find(rows, want.name, "Class A Common")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares {
+			t.Errorf("row lost: %+v; rows=%+v", want, rows)
+		}
+	}
+	for _, r := range rows {
+		if strings.HasPrefix(r.HolderName, "Class ") {
+			t.Errorf("class cell glued to the name: %+v", r)
+		}
+		if reBigNum.MatchString(r.HolderName) {
+			t.Errorf("share count glued to the name: %+v", r)
+		}
+		// "    Common         Jacqueline F. Parker      51.3% of Total" is
+		// the wrapped second line of the "David R. Parker &" row
+		if strings.HasPrefix(r.HolderName, "Jacqueline") {
+			t.Errorf("wrapped line emitted as a holder: %+v", r)
+		}
+	}
+}
