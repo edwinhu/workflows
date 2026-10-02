@@ -58,17 +58,17 @@
     },
     "luna": {
       "provider": "codex",
-      "model": "gpt-5.6-luna",
+      "model": "gpt-6-luna",
       "owner": "openai",
-      "openrouter": "openai/gpt-5.6-luna",
+      "openrouter": "openai/gpt-6-luna",
       "available": true,
       "price": {
-        "prompt": 2e-7,
-        "completion": 0.0000012
+        "prompt": 1e-7,
+        "completion": 5e-7
       },
       "signals": {
-        "usageRank": 5,
-        "intelligenceIndex": 37.3,
+        "usageRank": 19,
+        "intelligenceIndex": 38.1,
         "asOf": "2026-10-02"
       }
     },
