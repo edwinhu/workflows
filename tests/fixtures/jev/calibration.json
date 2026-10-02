@@ -142,6 +142,57 @@
           { "kind": "compliant", "path": "tests/fixtures/jev/real/W-third-party-review", "source": "workflows docs/DESIGN-third-party-review.md @d04c8e30, lines 43-57; accepted prose" }
         ]
       }
+    },
+    "typst": {
+      "rulesDir": "constraints/jev/typst",
+      "uncalibratedDir": "constraints/jev/typst/uncalibrated",
+      "layout": "files",
+      "rules": {
+        "T-TAKEAWAY": [
+          { "kind": "violating", "path": "tests/fixtures/jev/typst/T-TAKEAWAY/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/typst/T-TAKEAWAY/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-charter-deck", "source": "~/areas/colloquium slides/01-charter-competition.typ @ede4dcc, lines 1-210; presented deck (Class 1, PDFs rendered)" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-tornetta-short-deck", "source": "~/areas/colloquium slides/04-tornetta-short/01.typ @f222fbd, lines 1-215; presented deck, subtitles rewritten by the user in bb47e8a" }
+        ],
+        "T-ECHO": [
+          { "kind": "violating", "path": "tests/fixtures/jev/typst/T-ECHO/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/typst/T-ECHO/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-charter-deck", "source": "~/areas/colloquium slides/01-charter-competition.typ @ede4dcc, lines 1-210; presented deck (Class 1, PDFs rendered)" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-tornetta-short-deck", "source": "~/areas/colloquium slides/04-tornetta-short/01.typ @f222fbd, lines 1-215; presented deck, subtitles rewritten by the user in bb47e8a" }
+        ],
+        "T-STORY": [
+          { "kind": "violating", "path": "tests/fixtures/jev/typst/T-STORY/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/typst/T-STORY/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-charter-deck", "source": "~/areas/colloquium slides/01-charter-competition.typ @ede4dcc, lines 1-210; presented deck (Class 1, PDFs rendered)" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-tornetta-short-deck", "source": "~/areas/colloquium slides/04-tornetta-short/01.typ @f222fbd, lines 1-215; presented deck, subtitles rewritten by the user in bb47e8a" }
+        ],
+        "T-CALLOUT": [
+          { "kind": "violating", "path": "tests/fixtures/jev/typst/T-CALLOUT/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/typst/T-CALLOUT/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-charter-callouts", "source": "~/areas/colloquium slides/01-charter-competition.typ @ede4dcc, lines 270-380 (four question callouts); presented deck" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-tornetta-short-deck", "source": "~/areas/colloquium slides/04-tornetta-short/01.typ @f222fbd, lines 1-215 (callout at 135 quotes the opinion); presented deck" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-landscape-callout", "source": "~/areas/colloquium slides/99-landscape/01.typ @48abe72, lines 262-300 (callout at 282 quotes Clark); accepted deck" }
+        ],
+        "T-NARRATE": [
+          { "kind": "violating", "path": "tests/fixtures/jev/typst/T-NARRATE/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/typst/T-NARRATE/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-charter-notes", "source": "~/areas/colloquium notes/01-charter-competition.typ @48abe72, lines 1-220; presented teleprompter notes" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-texas-notes", "source": "~/areas/colloquium notes/03-texas.typ @48abe72, lines 1-183; presented teleprompter notes" }
+        ],
+        "T-HOLLOW": [
+          { "kind": "violating", "path": "tests/fixtures/jev/typst/T-HOLLOW/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/typst/T-HOLLOW/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-charter-questions", "source": "~/areas/colloquium notes/01-charter-competition.typ @48abe72, lines 386-412 (\"four questions\", then each written out); presented teleprompter notes" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-charter-close", "source": "~/areas/colloquium notes/01-charter-competition.typ @48abe72, lines 744-770 (\"Four questions to close on\", then each written out); presented teleprompter notes" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-secreg-damages", "source": "~/areas/secreg notes/17-10b5.typ @7446f5f, lines 168-200 (\"two statutory limits\", \"two steps\", each written out); presented lecture notes" }
+        ],
+        "T-TRANSITION": [
+          { "kind": "violating", "path": "tests/fixtures/jev/typst/T-TRANSITION/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/typst/T-TRANSITION/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-charter-notes", "source": "~/areas/colloquium notes/01-charter-competition.typ @48abe72, lines 1-220; presented teleprompter notes" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-texas-notes", "source": "~/areas/colloquium notes/03-texas.typ @48abe72, lines 1-183; presented teleprompter notes" }
+        ]
+      }
     }
   }
 }

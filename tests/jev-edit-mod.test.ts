@@ -28,6 +28,19 @@ test('prose is writing, tests and shell scripts are dev, .py is ds only under a 
   expect(await ruleSetFor('/p/data.json', none)).toBeNull()
 })
 
+test("a talk's deck and notes are typst; other .typ stays writing unless the cursor says workshop", async () => {
+  const workshop = async () => 'workshop'
+  expect(await ruleSetFor('/p/presentation/slides.typ', none)).toBe('typst')
+  expect(await ruleSetFor('/p/presentation/notes.typ', none)).toBe('typst')
+  expect(await ruleSetFor('/p/talk/notes-seminar.typ', none)).toBe('typst')
+  expect(await ruleSetFor('/p/presentation/fragments.typ', none)).toBe('typst')
+  expect(await ruleSetFor('/p/paper/body.typ', none)).toBe('writing')
+  expect(await ruleSetFor('/p/paper/body.typ', workshop)).toBe('typst')
+  expect(await ruleSetFor('/p/drafts/notes.md', none)).toBe('writing')
+  // a lecture deck's per-lecture file is neither named slides* nor under presentation/
+  expect(await ruleSetFor('/c/slides/05-10b5/15.typ', none)).toBe('writing')
+})
+
 test('the workflow walk asks each directory up to $HOME, nearest first', async () => {
   expect(ancestors('/home/u/p/src', '/home/u')).toEqual(['/home/u/p/src', '/home/u/p', '/home/u'])
   expect(ancestors('/opt/x', '/home/u')).toEqual(['/opt/x', '/opt', '/'])

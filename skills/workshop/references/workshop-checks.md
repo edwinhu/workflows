@@ -30,7 +30,7 @@ detector is absent and therefore passes vacuously. **A check that cannot fail is
 **`N/A` is not a third kind of pass.** An `N/A` line carries a machine-generated reason and is still
 owed a disposition by the verifier against task-local evidence, exactly like a `MODEL-EVALUATED` row.
 It is not permission to stop looking. No computed check in this matrix is `always N/A`: each of
-`CMP CON SPEC NOTE INV WID OVR ENUM` has a fixture that makes it FAIL.
+`CMP CON SPEC NOTE INV VSL WID OVR ENUM` has a fixture that makes it FAIL.
 
 **A `MODEL-EVALUATED` line is never `PASS`.** Reporting `FID`, `CONV` or `VIS` as PASS — in the
 probe, in a task report, or in a verifier summary — is a defect of the same class as a vacuous
@@ -43,8 +43,9 @@ computed pass.
 | CMP | `slides.typ` and `notes.typ` compile clean | computed |
 | CON | Vendored Typst constraints report no failure, no error, no skip, over a non-zero inspected-file count | computed |
 | SPEC | Slide Spec rows and built slides correspond one-to-one by normalized title | computed |
-| NOTE | Every built slide has a `notes.typ` section under the same normalized title key | computed |
+| NOTE | Every built slide has a non-empty `notes.typ` section under the same normalized title key | computed |
 | INV | Each built slide's emitted ID set equals that slide's Slide Spec `Inventory` cell | computed |
+| VSL | Each built slide builds a visual exactly when its Slide Spec `Visual` cell names one | computed |
 | WID | Zero widow lines in the handout build of the deck PDF | computed |
 | OVR | Zero frame-overflowing slides | computed |
 | ENUM | A line was emitted for every ID, and FID/CONV/VIS carry MODEL-EVALUATED status | computed |
@@ -138,7 +139,8 @@ count comparison; matching cardinality is not correspondence.
 ### NOTE: Speaker notes, keyed by the same title — computed
 
 **Means:** every built slide has a `== <title>` section in `notes.typ` under the **same normalized
-title key** used by `SPEC`.
+title key** used by `SPEC`, and that section carries at least one spoken line (not blank, not code,
+not a sub-heading) before the next `=`/`==` heading.
 
 **Evidence:** the built slide titles, the notes headings, and the list of slides with no matching
 notes section.
@@ -146,6 +148,8 @@ notes section.
 **Non-vacuity (R11).** `NOTE` FAILs when:
 
 - any built slide has no notes section under its normalized key;
+- a matched notes section carries no spoken line -- a heading with nothing under it matched the key
+  and gave the presenter no words, which a heading-only join reports clean;
 - `notes.typ` is absent or unreadable;
 - the built deck has zero titles, or `notes.typ` has zero `== ` headings — an empty comparison is not
   a pass.
@@ -197,6 +201,22 @@ was verified as a live hole: a slide declaring nothing read clean.
 
 The empty-set cases fail closed because an empty set is contained in anything, and an empty set
 equals an empty set — both are a pass having compared nothing.
+
+### VSL: Visual cell vs built slide — computed
+
+**Means:** for every built slide, matched to its Slide Spec row by the normalized title key, the
+slide builds a visual element -- `#fletcher-diagram(`, `cetz.canvas(`, `lq.diagram(`, `#image(`,
+`#table(` or `#figure(`, after comments are stripped -- exactly when the row's `Visual` cell is not
+the literal `none`. Whether the visual is legible and says what the slide claims stays `VIS`.
+
+**Evidence:** the built-slide count, the number of rows naming a visual, and each disagreeing slide
+with its cell and the element kinds it builds.
+
+**Non-vacuity (R11).** `VSL` FAILs when:
+
+- a `none` slide builds a visual, or a slide whose cell names a visual builds none;
+- a built slide matches no Slide Spec row -- it has no cell to agree with, as in `INV`;
+- the Slide Spec is malformed, or the built deck has zero `=== ` title lines.
 
 ### WID: Widows in the handout build — computed
 
@@ -314,6 +334,15 @@ sizing, no figure contradicting its caption.
 **Evidence a lens reads:** the Typst diagram **source** in `slides.typ` (cetz/fletcher blocks, figure
 references) and the `Visual` cell of the corresponding Slide Spec row. Judging from source rather
 than from a render is a declared reduction: `look_at.py` is not vendored.
+
+## Jev rule checks
+
+`ruleChecks` runs `rule-check.ts --rules ${CLAUDE_PLUGIN_ROOT}/constraints/jev/typst`: one judged
+proposition per calibrated rule over spans an extractor pulls with `file:line`, diff-scoped to the
+round's changed lines. Wired: `T-HOLLOW` (a notes bullet announcing scenarios, factors or examples
+the notes never write out). p >= 0.85 lands in `rulesThatFailed`; lower scores reach the lens as a
+ranked checklist. The six rules in `constraints/jev/typst/uncalibrated/` are not scored -- each
+module's docstring records the calibration that kept it out.
 
 ## How to use in subagent prompts
 

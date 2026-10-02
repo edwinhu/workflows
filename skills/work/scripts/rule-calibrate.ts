@@ -24,7 +24,7 @@ interface SetSpec { rulesDir: string; uncalibratedDir?: string; layout: 'files' 
 interface Manifest { criterion: { violatingAtLeast: number; compliantBelow: number; crossFlagAbove: number }; sets: Record<string, SetSpec> }
 
 function usage(code: number): never {
-  console.error('usage: bun skills/work/scripts/rule-calibrate.ts [--set ds|dev|writing|all] [--rule ID] [--runs 2] [--json] [--manifest PATH]');
+  console.error('usage: bun skills/work/scripts/rule-calibrate.ts [--set ds|dev|writing|typst|all] [--rule ID] [--runs 2] [--json] [--manifest PATH]');
   process.exit(code);
 }
 
