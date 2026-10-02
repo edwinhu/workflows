@@ -142,6 +142,67 @@
           { "kind": "compliant", "path": "tests/fixtures/jev/real/W-third-party-review", "source": "workflows docs/DESIGN-third-party-review.md @d04c8e30, lines 43-57; accepted prose" }
         ]
       }
+    },
+    "legal": {
+      "rulesDir": "constraints/jev/legal",
+      "uncalibratedDir": "constraints/jev/legal/uncalibrated",
+      "layout": "files",
+      "rules": {
+        "L-ID": [
+          { "kind": "violating", "path": "tests/fixtures/jev/L-ID/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/L-ID/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/L-opv-glj", "source": "opv paper/typst/opv-body.typ @7f256aeb (Hu, Malenko & Zytnick, Other People's Votes, accepted at Georgetown L.J. vol. 115.4), lines 11-25 and 55-69 (Introduction opening; Part I.A opening), read-only copy; accepted law review prose" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/L-mirror-intro-partI", "source": "mirror paper/typst/body.typ (working tree of @9009293a, rendered 2026-09-16; Mirror Voting, submitted to law reviews 2026-08-08), lines 1-70 (abstract, Introduction, Part I.A-I.B.1; starts at line 1 so literal supra note numbers resolve); submitted law review prose" }
+        ],
+        "L-SUPRA": [
+          { "kind": "violating", "path": "tests/fixtures/jev/L-SUPRA/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/L-SUPRA/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/L-opv-glj", "source": "opv paper/typst/opv-body.typ @7f256aeb (Hu, Malenko & Zytnick, Other People's Votes, accepted at Georgetown L.J. vol. 115.4), lines 11-25 and 55-69 (Introduction opening; Part I.A opening), read-only copy; accepted law review prose" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/L-mirror-intro-partI", "source": "mirror paper/typst/body.typ (working tree of @9009293a, rendered 2026-09-16; Mirror Voting, submitted to law reviews 2026-08-08), lines 1-70 (abstract, Introduction, Part I.A-I.B.1; starts at line 1 so literal supra note numbers resolve); submitted law review prose" }
+        ],
+        "L-FNARG": [
+          { "kind": "violating", "path": "tests/fixtures/jev/L-FNARG/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/L-FNARG/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/L-opv-glj", "source": "opv paper/typst/opv-body.typ @7f256aeb (Hu, Malenko & Zytnick, Other People's Votes, accepted at Georgetown L.J. vol. 115.4), lines 11-25 and 55-69 (Introduction opening; Part I.A opening), read-only copy; accepted law review prose" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/L-mirror-intro-partI", "source": "mirror paper/typst/body.typ (working tree of @9009293a, rendered 2026-09-16; Mirror Voting, submitted to law reviews 2026-08-08), lines 1-70 (abstract, Introduction, Part I.A-I.B.1; starts at line 1 so literal supra note numbers resolve); submitted law review prose" }
+        ],
+        "L-DIGEST": [
+          { "kind": "violating", "path": "tests/fixtures/jev/L-DIGEST/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/L-DIGEST/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/L-opv-glj", "source": "opv paper/typst/opv-body.typ @7f256aeb (Hu, Malenko & Zytnick, Other People's Votes, accepted at Georgetown L.J. vol. 115.4), lines 11-25 and 55-69 (Introduction opening; Part I.A opening), read-only copy; accepted law review prose" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/L-mirror-intro-partI", "source": "mirror paper/typst/body.typ (working tree of @9009293a, rendered 2026-09-16; Mirror Voting, submitted to law reviews 2026-08-08), lines 1-70 (abstract, Introduction, Part I.A-I.B.1; starts at line 1 so literal supra note numbers resolve); submitted law review prose" }
+        ]
+      }
+    },
+    "econ": {
+      "rulesDir": "constraints/jev/econ",
+      "uncalibratedDir": "constraints/jev/econ/uncalibrated",
+      "layout": "files",
+      "rules": {
+        "E-WEFIND": [
+          { "kind": "violating", "path": "tests/fixtures/jev/E-WEFIND/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/E-WEFIND/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/E-hf-agk-appendix", "source": "hidden-figures paper/drafts/agk2019_replication_appendix.md @57529ec2, lines 84-132 (Sections C-E: controls, first stages, second stage); the user's finance internet-appendix draft, the only finance-register prose under ~/projects" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/E-mirror-intro", "source": "mirror paper/typst/body.typ (working tree of @9009293a), lines 1-30 (abstract and Introduction: findings previewed, estimates summarized); submitted manuscript" }
+        ],
+        "E-CAUSAL": [
+          { "kind": "violating", "path": "tests/fixtures/jev/E-CAUSAL/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/E-CAUSAL/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/E-hf-agk-appendix", "source": "hidden-figures paper/drafts/agk2019_replication_appendix.md @57529ec2, lines 84-132 (Sections C-E: controls, first stages, second stage); the user's finance internet-appendix draft, the only finance-register prose under ~/projects" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/E-mirror-intro", "source": "mirror paper/typst/body.typ (working tree of @9009293a), lines 1-30 (abstract and Introduction: findings previewed, estimates summarized); submitted manuscript" }
+        ],
+        "E-MAGNITUDE": [
+          { "kind": "violating", "path": "tests/fixtures/jev/E-MAGNITUDE/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/E-MAGNITUDE/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/E-hf-agk-appendix", "source": "hidden-figures paper/drafts/agk2019_replication_appendix.md @57529ec2, lines 84-132 (Sections C-E: controls, first stages, second stage); the user's finance internet-appendix draft, the only finance-register prose under ~/projects" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/E-mirror-intro", "source": "mirror paper/typst/body.typ (working tree of @9009293a), lines 1-30 (abstract and Introduction: findings previewed, estimates summarized); submitted manuscript" }
+        ],
+        "E-CITEFORM": [
+          { "kind": "violating", "path": "tests/fixtures/jev/E-CITEFORM/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/E-CITEFORM/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/E-hf-agk-appendix", "source": "hidden-figures paper/drafts/agk2019_replication_appendix.md @57529ec2, lines 84-132 (Sections C-E: controls, first stages, second stage); the user's finance internet-appendix draft, the only finance-register prose under ~/projects" }
+        ]
+      }
     }
   }
 }
