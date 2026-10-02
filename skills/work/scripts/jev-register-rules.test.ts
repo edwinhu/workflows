@@ -17,7 +17,7 @@ const ECON = join(BASE, "constraints/jev/econ");
 const FIX = join(BASE, "tests/fixtures/jev");
 
 const WIRED: Record<string, string[]> = {
-  [LEGAL]: ["L-DIGEST", "L-FNARG", "L-ID"],
+  [LEGAL]: ["L-DIGEST", "L-FNARG", "L-ID", "L-SUPRA"],
   [ECON]: ["E-CAUSAL", "E-CITEFORM", "E-MAGNITUDE", "E-WEFIND"],
 };
 const DIR_OF = (rule: string) => (rule.startsWith("L-") ? LEGAL : ECON);
@@ -70,6 +70,8 @@ const COUNTS: [string, (s: any) => number][] = [
   ["L-ID", s => s.id_short_forms.filter((x: any) => x.n_antecedent_citation_clauses !== 1).length],
   ["L-FNARG", s => s.discursive_footnotes.reduce((a: number, x: any) => a + x.discursive_words, 0)],
   ["L-DIGEST", s => s.runs_of_case_paragraphs.reduce((a: number, r: any) => a + r.n_paragraphs, 0)],
+  ["L-SUPRA", s => s.supra_short_forms.filter((x: any) => x.authority_kind_hint_from_that_clause
+    .some((k: string) => ["case", "statute", "bill or other legislative material"].includes(k))).length],
   ["E-WEFIND", s => s.n_listed_with_no_exhibit_in_sentence_neighbours_or_paragraph],
   ["E-CITEFORM", s => s.n_text_citation_candidates + s.n_footnote_citation_candidates],
   ["E-CAUSAL", s => s.n_causal_language_sentences_listed],
@@ -176,7 +178,7 @@ test("--rules repeats: writing plus legal scores both sets in one run", async ()
   expect(res.exitCode).toBe(2);
   const out = JSON.parse(res.stdout.toString());
   expect(out.verdicts.map((v: any) => v.rule).sort())
-    .toEqual(["L-DIGEST", "L-FNARG", "L-ID", "W-ATTRIB", "W-HEDGE", "W-SIGNPOST"]);
-  expect(bodies).toHaveLength(6);
-  expect(bodies.filter(b => b.includes("law review deliverable")).length).toBe(3);
+    .toEqual(["L-DIGEST", "L-FNARG", "L-ID", "L-SUPRA", "W-ATTRIB", "W-HEDGE", "W-SIGNPOST"]);
+  expect(bodies).toHaveLength(7);
+  expect(bodies.filter(b => b.includes("law review deliverable")).length).toBe(4);
 });
