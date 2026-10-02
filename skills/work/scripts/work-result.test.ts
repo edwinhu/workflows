@@ -52,7 +52,6 @@ const valid = () => ({
     planFindings: 0,
     mechanicalRun: 2,
     mechanicalPassed: 2,
-    thirdPartyAdvisoryFindings: 0,
   },
   findings: [],
   tasksThatFlagged: [],

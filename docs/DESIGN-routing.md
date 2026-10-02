@@ -68,7 +68,15 @@ plus bulk when a task declares it: at most four calls, never per task or step), 
 each step names its kind's full id. A refusal for any kind blocks the round before anything runs.
 `--provider` stays the whole-run override: `{source: flag, provider}`, `route.ts` not consulted.
 Step to kind: an implementer is `judgement` or its task's `kind`; the verifier and every probe (red,
-mechanical, third-party, scored, rules) are `script`; the lens is `review`. An explicit model wins.
+mechanical, scored, rules) are `script`; the lens is `review`. An explicit model wins.
+
+**`lensProvider`** (CLARIFY axis 6) adds `provider` to the review row; `route.ts` answers a
+kind+provider row with no model by that provider's first available candidate in the kind's chain
+(`source: table`, no Jev), refusing with exit 2 when none is available. A chain with no candidate of
+that provider keeps today's passthrough, so those farm rows still run (the dispatchers refuse its
+null model for the lens). Under `--provider` the review row is the only `route.ts` call and its
+model goes into `args.lens.model`: a normalised lens's default `'sonnet'` would beat `lensModel`.
+The third-party runners retired on 2026-10-01: a cross-family lens gates; they could only advise.
 
 `skills/work/scripts/work-outcomes.ts <run-dir>` runs from `work-loop.sh` after each accepted round
 (`work-result.sh` exit 0 or 1, never 2; its failure never changes the loop's exit). It appends to

@@ -1,3 +1,5 @@
+> **Retired 2026-10-01** in favour of `lensProvider`, which runs the review lens itself on another provider so its findings gate — see [`DESIGN-routing.md`](DESIGN-routing.md#work-runs). This record is history.
+
 # Optional third-party review
 
 Design record. Settled 2026-08-03 against the beat primitives; carried to the work spine in v6.0.0.

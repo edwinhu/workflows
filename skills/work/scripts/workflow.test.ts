@@ -1034,11 +1034,11 @@ const dispatchOpts = async (args: any, reply: any = replies()) => {
   await run(args, (label: string, prompt: string, o: any) => { opts.set(label, o); return reply(label, prompt, o) })
   return opts
 }
-// One run that dispatches all four dialable legs: implement, verify, scored and third-party.
+// One run that dispatches all three dialable legs: implement, verify and scored.
 const allLegs = (over: any = {}) => ({
-  ...baseArgs, tasks: one, thirdParty: ['codex'], scoredChecks: [scoredCheck()], ...over,
+  ...baseArgs, tasks: one, scoredChecks: [scoredCheck()], ...over,
 })
-const DIALED = ['implement:T1', 'verify:T1', 'scored:slides:L1', 'third-party:codex']
+const DIALED = ['implement:T1', 'verify:T1', 'scored:slides:L1']
 
 test('each dialable leg carries its default effort when the arg is absent', async () => {
   const opts = await dispatchOpts(allLegs(), scoredReplies())
@@ -1046,12 +1046,11 @@ test('each dialable leg carries its default effort when the arg is absent', asyn
   expect(opts.get('implement:T1').effort).toBe('xhigh')
   expect(opts.get('verify:T1').effort).toBe('medium')
   expect(opts.get('scored:slides:L1').effort).toBe('low')
-  expect(opts.get('third-party:codex').effort).toBe('low')
 })
 
 test('null on a dial omits the effort key entirely — the leg inherits the session default', async () => {
   const opts = await dispatchOpts(allLegs({
-    implementerEffort: null, verifierEffort: null, scoredEffort: null, thirdPartyEffort: null,
+    implementerEffort: null, verifierEffort: null, scoredEffort: null,
   }), scoredReplies())
   // `in`, not `=== undefined`: an explicit `effort: undefined` is still a key the dispatcher reads.
   for (const label of DIALED) expect('effort' in opts.get(label)).toBe(false)
@@ -1059,19 +1058,18 @@ test('null on a dial omits the effort key entirely — the leg inherits the sess
 
 test('an explicit effort overrides the default on every dial', async () => {
   const opts = await dispatchOpts(allLegs({
-    implementerEffort: 'low', verifierEffort: 'xhigh', scoredEffort: 'high', thirdPartyEffort: 'medium',
+    implementerEffort: 'low', verifierEffort: 'xhigh', scoredEffort: 'high',
   }), scoredReplies())
   expect(opts.get('implement:T1').effort).toBe('low')
   expect(opts.get('verify:T1').effort).toBe('xhigh')
   expect(opts.get('scored:slides:L1').effort).toBe('high')
-  expect(opts.get('third-party:codex').effort).toBe('medium')
 })
 
 test('the red and mechanical probes stay pinned at low — no dial reaches them', async () => {
   const opts = await dispatchOpts({
     ...baseArgs, tasks: [task({ redCommand: 'pytest x' })],
     mechanicalChecks: [{ name: 'tests', cmd: 'bun test' }],
-    implementerEffort: 'xhigh', verifierEffort: 'xhigh', scoredEffort: 'xhigh', thirdPartyEffort: 'xhigh',
+    implementerEffort: 'xhigh', verifierEffort: 'xhigh', scoredEffort: 'xhigh',
   })
   expect(opts.get('red:before:T1').effort).toBe('low')
   expect(opts.get('red:after:T1').effort).toBe('low')
@@ -1339,14 +1337,14 @@ test('the lens refs are named with a read-in-full instruction, and absent refs a
 
 // ---------------------------------------------------------------- (2) the lens runs AFTER the checks
 
-test('lens runs after mechanical: completion barrier over parallel verify, mechanical, scored and thirdParty legs', async () => {
-  const checks = ['verify:T1', 'mechanical:lint', 'scored:slides:L1', 'scored:slides:L2', 'third-party:codex']
+test('lens runs after mechanical: completion barrier over parallel verify, mechanical and scored legs', async () => {
+  const checks = ['verify:T1', 'mechanical:lint', 'scored:slides:L1', 'scored:slides:L2']
   const events: string[] = []
   const completed = new Set<string>()
   const reply = scoredReplies()
   const { dispatched } = await run(
     { ...baseArgs, tasks: one, mechanicalChecks: [{ name: 'lint', cmd: 'x' }],
-      scoredChecks: [scoredCheck()], thirdParty: ['codex'] },
+      scoredChecks: [scoredCheck()] },
     async (label: string, prompt: string, opts: any) => {
       events.push(`start:${label}`)
       if (checks.includes(label)) {

@@ -17,9 +17,10 @@
 #   work-dispatch.sh --no-suite-lint  skip only the suite-lint report; keep every gate
 #   work-dispatch.sh --run-dir DIR    put args/result/log under DIR/<run-id> instead of $PWD/.work/
 #   work-dispatch.sh --provider claude|codex|gemini  whole-run override: that wrapper hosts every
-#                                      step and route.ts is not consulted. Without it the claude
-#                                      wrapper hosts the run and each step takes its model from
-#                                      args.routing.kindModels, resolved through route.ts
+#                                      step and route.ts is not consulted, except for one review
+#                                      row when the plan sets args.lensProvider. Without it the
+#                                      claude wrapper hosts the run and each step takes its model
+#                                      from args.routing.kindModels, resolved through route.ts
 #   work-dispatch.sh --no-cron        do NOT print the CronCreate call; the farm-runs plugin monitor
 #                                      becomes the only wake (and it dies with the session)
 #   work-dispatch.sh --cron           accepted no-op alias — the cron is the default
@@ -32,7 +33,8 @@
 #                                      by work-redispatch.sh so there is one implementation)
 #   work-dispatch.sh --archive-plan SRC DIR HASH  archive a plan into a run dir (same reuse)
 #   work-dispatch.sh --resolve-routing ARGS RUNID [PROVIDER]  write args.routing into ARGS in place;
-#                                      exit 3 when route.ts refuses a kind (same reuse)
+#                                      exit 3 when route.ts refuses a kind or lensProvider is
+#                                      refused (same reuse)
 #   work-dispatch.sh --spec-hash PLAN print the plan's spec hash and nothing else
 #   work-dispatch.sh --scaffold PLAN PATH is PATH declared in scaffoldPaths? 0 yes, 1 no, 2 undecidable
 #   work-dispatch.sh --covers PLAN PATH  is PATH inside some task's writablePaths? 0 yes, 1 no,
@@ -538,8 +540,14 @@ archive_plan() {
 # resolved; bulk only when a task declares it, so a bulk task always has a model.
 #   no provider    {kindModels:{kind: model}, source: jev|table, decisions:{kind: route.ts output}}
 #   --provider X   {source:'flag', provider:X}; route.ts is not consulted
-# A route.ts failure for any kind exits 3 with the args file untouched: nothing may launch on a
-# partial map. The row reaches route.ts as ONE argv element, built by json.dumps — never a shell string.
+# args.lensProvider P (claude|codex|gemini) puts provider:P on the review row, so route.ts answers with
+# P's first available candidate in kinds.review's chain. Under --provider X it is the ONE call made:
+# routing gains lens:<decision> and the model goes into args.lens.model, because workflow.js's
+# normalised lens defaults model to 'sonnet', which beats lensModel. P beside an explicit lens.model
+# or lensModel is refused: two answers to one question.
+# A route.ts failure for any kind, or a refused lensProvider, exits 3 with the args file untouched:
+# nothing may launch on a partial map. The row reaches route.ts as ONE argv element, built by
+# json.dumps — never a shell string.
 resolve_routing() {
   python3 - "$1" "$2" "${3:-}" "$PLUGIN_ROOT/scripts/lib/route.ts" <<'PY'
 import json, os, subprocess, sys
@@ -553,18 +561,40 @@ except (OSError, json.JSONDecodeError) as exc:
 if not isinstance(a, dict):
     sys.exit(f"routing: {args_path} is not a JSON object")
 
-if provider:
-    routing = {"source": "flag", "provider": provider}
-    summary = f"routing: --provider {provider} hosts every step; route.ts not consulted"
-else:
-    kinds = ["judgement", "script", "review"]
-    if any(isinstance(t, dict) and t.get("kind") == "bulk" for t in (a.get("tasks") or [])):
-        kinds.append("bulk")
+w = sys.stderr
+
+
+def refuse(msg):
+    print(f"routing: {msg}\n\nBLOCKED: Nothing dispatched; the args file is unchanged.", file=w)
+    raise SystemExit(3)
+
+
+# The key's presence is the opt-in, so any value outside the three is refused, null included.
+lens_provider = None
+if "lensProvider" in a:
+    lp = a["lensProvider"]
+    if not (isinstance(lp, str) and lp in ("claude", "codex", "gemini")):
+        refuse(f"lensProvider must be claude|codex|gemini, got: {json.dumps(lp)}")
+    lens = a.get("lens")
+    if lens is not None and not isinstance(lens, dict):
+        refuse(f"lensProvider {lp} needs args.lens to be an object, got: {json.dumps(lens)}")
+    explicit = [n for n, present in (("lens.model", isinstance(lens, dict) and "model" in lens),
+                                     ("lensModel", "lensModel" in a)) if present]
+    if explicit:
+        refuse(f"lensProvider {lp} cannot be combined with an explicit {' and '.join(explicit)}: "
+               "both name the lens's model. Drop one from the plan.")
+    lens_provider = lp
+
+
+def resolve(kinds):
+    """One route.ts call per kind, in parallel. Returns ({kind: decision}, [(kind, code, why)])."""
     procs, failed, decisions = {}, [], {}
     for k in kinds:
-        row = json.dumps({"kind": k, "label": f"work:{run_id}:{k}"})
+        row = {"kind": k, "label": f"work:{run_id}:{k}"}
+        if k == "review" and lens_provider:
+            row["provider"] = lens_provider
         try:
-            procs[k] = subprocess.Popen(["bun", route_ts, "--row", row], stdout=subprocess.PIPE,
+            procs[k] = subprocess.Popen(["bun", route_ts, "--row", json.dumps(row)], stdout=subprocess.PIPE,
                                         stderr=subprocess.PIPE, text=True, errors="replace")
         except OSError as exc:
             failed.append((k, "n/a", f"could not run bun {route_ts}: {exc}"))
@@ -585,25 +615,63 @@ else:
         except json.JSONDecodeError:
             d = None
         if not (isinstance(d, dict) and isinstance(d.get("model"), str) and d["model"]):
-            failed.append((k, 0, "route.ts exited 0 without a decision naming a model"))
+            # A provider absent from the review chain passes through with a null model.
+            why = "route.ts exited 0 without a decision naming a model"
+            if k == "review" and lens_provider:
+                why += f" (kinds.review's chain holds no {lens_provider} candidate)"
+            failed.append((k, 0, why))
+            continue
+        if k == "review" and lens_provider and d.get("provider") != lens_provider:
+            failed.append((k, 0, f"route.ts answered provider {d.get('provider')!r}, not {lens_provider}"))
             continue
         decisions[k] = d
+    return decisions, failed
+
+
+def blocked(failed):
+    for k, code, why in failed:
+        tag = f"lensProvider {lens_provider}: " if k == "review" and lens_provider else ""
+        print(f"routing: {tag}route.ts could not route kind {k} (exit {code}):", file=w)
+        print("  " + why.replace("\n", "\n  "), file=w)
+    names = ", ".join(k for k, _, _ in failed)
+    fix = ("Fix the routing table (bun scripts/lib/route.ts --refresh re-derives availability), or\n"
+           "override the whole run with --provider claude|codex|gemini.")
+    if lens_provider and any(k == "review" for k, _, _ in failed):
+        fix = ("Fix the routing table (bun scripts/lib/route.ts --refresh re-derives availability), or\n"
+               f"drop lensProvider {lens_provider} from the plan.")
+    print(f"\nBLOCKED: no model for kind(s) {names}. Nothing dispatched; the args file is unchanged.\n{fix}",
+          file=w)
+    raise SystemExit(3)
+
+
+if provider and lens_provider:
+    decisions, failed = resolve(["review"])
     if failed:
-        w = sys.stderr
-        for k, code, why in failed:
-            print(f"routing: route.ts could not route kind {k} (exit {code}):", file=w)
-            print("  " + why.replace("\n", "\n  "), file=w)
-        names = ", ".join(k for k, _, _ in failed)
-        print(f"\nBLOCKED: no model for kind(s) {names}. Nothing dispatched; the args file is unchanged.\n"
-              "Fix the routing table (bun scripts/lib/route.ts --refresh re-derives availability), or\n"
-              "override the whole run with --provider claude|codex|gemini.", file=w)
-        raise SystemExit(3)
+        blocked(failed)
+    d = decisions["review"]
+    routing = {"source": "flag", "provider": provider, "lens": d}
+    # Only `model` is added; every other field the plan gave the lens is kept as it was.
+    a["lens"] = {**(a.get("lens") or {}), "model": d["model"]}
+    summary = (f"routing: --provider {provider} hosts every step; the lens runs {d['model']} "
+               f"(lensProvider {lens_provider}, one route.ts call)")
+elif provider:
+    routing = {"source": "flag", "provider": provider}
+    summary = f"routing: --provider {provider} hosts every step; route.ts not consulted"
+else:
+    kinds = ["judgement", "script", "review"]
+    if any(isinstance(t, dict) and t.get("kind") == "bulk" for t in (a.get("tasks") or [])):
+        kinds.append("bulk")
+    decisions, failed = resolve(kinds)
+    if failed:
+        blocked(failed)
     routing = {
         "kindModels": {k: decisions[k]["model"] for k in kinds},
         "source": "jev" if any(d.get("source") == "jev" for d in decisions.values()) else "table",
         "decisions": {k: decisions[k] for k in kinds},
     }
     summary = f"routing: {routing['source']} — " + ", ".join(f"{k} {m}" for k, m in routing["kindModels"].items())
+    if lens_provider:
+        summary += f" (review constrained to lensProvider {lens_provider})"
 
 # Injected, never read from the plan block: a stale map there would be a lie about this round.
 a["routing"] = routing
@@ -659,7 +727,8 @@ rundir=""
 loops=""
 # --provider is the WHOLE-RUN OVERRIDE. Given, farm.sh hosts the run on that CLIProxyAPI wrapper,
 # which remaps the tier names (ANTHROPIC_DEFAULT_SONNET_MODEL=gpt-5.6-terra under codex), route.ts is
-# not consulted, and args.routing records {source:'flag', provider}. Absent, the claude wrapper hosts
+# not consulted (bar the one lensProvider review row), and args.routing records {source:'flag',
+# provider}. Absent, the claude wrapper hosts
 # the run and resolve_routing writes the kind map, so each step names a full model id the proxy routes
 # across families. Either way args.routing is injected per dispatch and re-resolved by
 # work-redispatch.sh every round: it describes this round, never the plan, so it can change between rounds.
@@ -869,12 +938,11 @@ lens = 1
 mech = len(a.get("mechanicalChecks") or [])
 carried = len(a.get("carriedFindings") or []) + len(a.get("priorFindings") or [])
 scored = sum(len(s.get("items") or []) for s in (a.get("scoredChecks") or []))
-tp = len(a.get("thirdParty") or [])
 att = len(a.get("attempts") or [])
 rule = 1 if a.get("ruleChecks") else 0
-floor = 2*impl + 2*red + lens + mech + scored + tp + att + rule
+floor = 2*impl + 2*red + lens + mech + scored + att + rule
 print(f"  readOnly={ro} tasks={len(t)} active={impl} red={red} lens={lens} "
-      f"mech={mech} scored={scored} carried={carried} thirdParty={tp} attempts={att} rule={rule}")
+      f"mech={mech} scored={scored} carried={carried} attempts={att} rule={rule}")
 print(f"  fan-out floor {floor} vs maxAgents {a.get('maxAgents', 50)}")
 PY
 red_summary "$out"

@@ -7,7 +7,7 @@
  * Precedence, highest first:
  *   1. an explicit model in args — implementerModel, verifierModel, probeModel, lens.model;
  *   2. args.routing.kindModels — the implementer takes kindModels[task.kind ?? 'judgement'], the
- *      verifier and every probe (red, mechanical, third-party) take kindModels.script, and the lens
+ *      verifier and every probe (red, mechanical) take kindModels.script, and the lens
  *      takes kindModels.review;
  *   3. today's defaults — probe sonnet, verifier sonnet, implementer inherit, lens sonnet. Those are
  *      already pinned by workflow.test.ts ("the lens defaults to sonnet…") and are not restated here.
@@ -30,12 +30,11 @@ const routing = (kindModels: Record<string, string> = KIND_MODELS) => ({
   kindModels, source: 'table', decisions: {},
 })
 
-/** One run that dispatches every routed leg: implement, verify, red before/after, mechanical, third-party, lens. */
+/** One run that dispatches every routed leg: implement, verify, red before/after, mechanical, lens. */
 const allLegs = (over: any = {}, taskOver: any = {}) => ({
   ...baseArgs,
   tasks: [task({ redCommand: 'bash scripts/check.sh', ...taskOver })],
   mechanicalChecks: [{ name: 'tests', cmd: 'bun test' }],
-  thirdParty: ['codex'],
   lens: { prompt: 'raise MAJOR when the work is wrong', refs: [] },
   routing: routing(),
   ...over,
@@ -48,7 +47,7 @@ const dispatchOpts = async (args: any) => {
   return opts
 }
 
-const PROBES = ['red:before:T1', 'red:after:T1', 'mechanical:tests', 'third-party:codex']
+const PROBES = ['red:before:T1', 'red:after:T1', 'mechanical:tests']
 
 describe('kindModels routes each leg when no explicit model is given', () => {
   test('the implementer of a kind-less task takes kindModels.judgement', async () => {
@@ -68,7 +67,7 @@ describe('kindModels routes each leg when no explicit model is given', () => {
     expect(opts.get('verify:T1')?.model).toBe('script-model')
   })
 
-  test('every probe — red before/after, mechanical, third-party — takes kindModels.script', async () => {
+  test('every probe — red before/after, mechanical — takes kindModels.script', async () => {
     const opts = await dispatchOpts(allLegs())
     for (const label of PROBES) {
       expect(opts.has(label)).toBe(true)
