@@ -1,0 +1,5 @@
+export async function starCount(base: string, repo: string): Promise<number> {
+  const r = await fetch(`${base}/repos/${repo}`)
+  if (!r.ok) throw new Error(`HTTP ${r.status}`)
+  return (await r.json()).stargazers_count
+}

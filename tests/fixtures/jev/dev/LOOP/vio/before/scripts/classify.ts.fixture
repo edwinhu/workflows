@@ -1,0 +1,5 @@
+#!/usr/bin/env bun
+import { readFileSync } from 'fs'
+
+const rows: { id: string; text: string }[] = JSON.parse(readFileSync(process.argv[2], 'utf8'))
+console.error(`${rows.length} filings to classify`)

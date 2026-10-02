@@ -1,0 +1,21 @@
+import { afterAll, expect, test } from 'bun:test'
+import { starCount } from '../src/repo'
+
+const server = Bun.serve({
+  port: 0,
+  fetch(req) {
+    const path = new URL(req.url).pathname
+    if (path === '/repos/oven-sh/bun') return Response.json({ stargazers_count: 4242 })
+    return new Response('not found', { status: 404 })
+  },
+})
+afterAll(() => server.stop(true))
+const base = `http://localhost:${server.port}`
+
+test('reads the star count from the API', async () => {
+  expect(await starCount(base, 'oven-sh/bun')).toBe(4242)
+})
+
+test('a missing repo throws', async () => {
+  await expect(starCount(base, 'nobody/missing')).rejects.toThrow('HTTP 404')
+})

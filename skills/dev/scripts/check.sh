@@ -40,6 +40,14 @@ leg tests "$TESTCMD"
 leg lint  "$LINTCMD"
 leg build "$BUILDCMD"
 
+# Always runs, never counts as declared: it reads the diff, not a project command.
+python3 "$(dirname "$0")/diff-scan.py" "$PROJ"
+case $? in
+  0) report scan 0 ;;
+  3) report scan 0 "not a git repo" ;;
+  *) report scan 1 "focused/skipped test, TLS off or secret in added lines; 'scan: allow' exempts a line" ;;
+esac
+
 # A run in which nothing was declared examined nothing, and must not read as a clean gate.
 if [ "$DECLARED" -eq 0 ]; then
   echo "check.sh: no command was declared — this gate ran nothing, which is not a pass" >&2

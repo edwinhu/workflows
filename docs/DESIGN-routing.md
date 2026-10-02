@@ -36,6 +36,17 @@ switch is a reviewed edit of `jev.mode` to `"decide"` in the committed table, ne
 In decide mode the cheapest available chain candidate (by `price.prompt`, null last) scoring at least
 `jev.threshold` wins (`source: jev`). If none does, the table pick stands.
 
+**Rule checks for code.** Jev also scores rules, not routes. `dev` declares `ruleChecks` with
+`--rules constraints/jev/dev`: five rules (MOCK, WEAK, NET, SHELL, LOOP), one extractor each over the
+change's diff. Rules declare a `SUBJECT`, which `rule-check.ts` puts in its preamble; discovery
+is non-recursive, so `ds` still finds exactly its ten. A rule is wired only when it scores its
+violating fixture >= 0.85 and its compliant fixture and real clean commits < 0.5. A rule that
+misses keeps its file, marked `uncalibrated` in its header, and is not wired. Calibrated
+2026-10-02: all five gave >= 0.92 on violating fixtures and <= 0.09 on compliant fixtures and on
+real commits f2239344 and 41c871de. Patterns an exit code can decide are not rules.
+Focused or skipped tests, TLS verification off, and committed keys are the `scan` leg of
+`check.sh` (`diff-scan.py`).
+
 ## Refresh
 
 `route.ts --refresh` is the only sanctioned writer of `available`, `price` and `asOf`. It fetches

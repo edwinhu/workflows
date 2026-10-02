@@ -1,0 +1,15 @@
+import { expect, test, vi } from 'vitest'
+import { total } from '../src/pricing'
+
+test('total applies the regional tax rate', () => {
+  const tax = { rate: vi.fn().mockReturnValue(0.08) }
+  total([{ price: 50, qty: 2 }], 'VA', tax)
+  expect(tax.rate).toHaveBeenCalledTimes(1)
+  expect(tax.rate).toHaveBeenCalledWith('VA')
+})
+
+test('total handles an empty cart', () => {
+  const tax = { rate: vi.fn().mockReturnValue(0.08) }
+  total([], 'VA', tax)
+  expect(tax.rate).toHaveBeenCalled()
+})

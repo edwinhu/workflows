@@ -1,0 +1,11 @@
+import { expect, test } from 'bun:test'
+import { starCount } from '../src/repo'
+
+test('reads the star count of a public repo', async () => {
+  const n = await starCount('https://api.github.com', 'oven-sh/bun')
+  expect(n).toBeGreaterThan(1000)
+})
+
+test('a missing repo throws', async () => {
+  await expect(starCount('https://api.github.com', 'nobody/does-not-exist-xyz')).rejects.toThrow('HTTP 404')
+})
