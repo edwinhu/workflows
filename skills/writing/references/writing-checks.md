@@ -31,8 +31,8 @@ pass. It is reported from an exit code observed on this run.
 | CITE | Every draft citation resolves to a bibliography key and to an outline-pinned source | COMPUTED | `writing_gate_probe.py` | CRITICAL |
 | CLAIM | Every drafted section carries the claims the Claim → Section Map assigns it | COMPUTED | `writing_gate_probe.py` | CRITICAL |
 | PROSE-HARD | The hard-severity structural prose constraints | COMPUTED | `writing_prose_gate.py` (wraps `prose-audit.py`) | MAJOR |
-| STYLE | Ship-table diction, ALL-CAPS emphasis, register-crossing markers | COMPUTED | `writing_style_check.py` | MAJOR |
-| JEV-RULES | Signposting, stacked hedges, vague attribution (`W-SIGNPOST`, `W-HEDGE`, `W-ATTRIB`) | JUDGED, scored | `rule-check.ts --rules constraints/jev/writing` (`ruleChecks`) | MAJOR at p >= 0.85 |
+| STYLE | Ship-table diction, ALL-CAPS emphasis, register-crossing markers; legal: full citation in body text | COMPUTED | `writing_style_check.py` | MAJOR |
+| JEV-RULES | Signposting, stacked hedges, vague attribution (`W-SIGNPOST`, `W-HEDGE`, `W-ATTRIB`); legal adds `L-ID`, `L-FNARG`, `L-DIGEST`; econ adds `E-WEFIND`, `E-CITEFORM`, `E-CAUSAL`, `E-MAGNITUDE` | JUDGED, scored | `rule-check.ts --rules constraints/jev/writing [--rules constraints/jev/<domain>]` (`ruleChecks`) | MAJOR at p >= 0.85 |
 | COVER | Every outline point is expanded in the draft | MODEL-EVALUATED | review lens | MAJOR |
 | FIDELITY | No claim goes beyond the sources its outline pinned | MODEL-EVALUATED | review lens | CRITICAL |
 | TRANSITION | Each section's first and last sentences connect to its neighbours | MODEL-EVALUATED | review lens | MAJOR |
@@ -183,10 +183,12 @@ result.
 uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_style_check.py --project <proj> --style <domain>
 ```
 
-`check.sh` runs it as a leg of the one `writing` entry. Three rules, each a pattern with no judgement
+`check.sh` runs it as a leg of the one `writing` entry. Four rules, each a pattern with no judgement
 left: `SHIP-DICTION` (the Ship table's phrases — the table names the replacement), `ALL-CAPS` (a
-common word capitalised for emphasis) and `REGISTER-CROSSING` (Bluebook short forms, `This Article`
-or `Part II.B` outside a law review; a directional `Section 2 above` inside one). Quoted text,
+common word capitalised for emphasis), `REGISTER-CROSSING` (Bluebook short forms, `This Article`
+or `Part II.B` outside a law review; a directional `Section 2 above` or `This paper` inside one) and,
+for `--style legal`, `INLINE-CITE` (a volume–reporter–page or volume–journal–page citation in body
+text, outside every footnote). Quoted text,
 code, tables and headings are skipped. Exit `0` clean, `1` findings (`file:line: RULE: text`), `2`
 refusal — no prose under `drafts/`.
 
@@ -200,6 +202,17 @@ scores its violating fixture >= 0.85 and an accepted passage < 0.5. `W-FIGURES` 
 violating fixture) and `W-BULLETS` (0.87 on an accepted numbered list) failed that bar and wait in
 `constraints/jev/writing/uncalibrated/`, which the rule glob does not read; those two remain the
 lens's under the tic table.
+
+`Domain: legal` and `Domain: econ` add a second `--rules` directory, scored on top of the writing
+set. Legal (`constraints/jev/legal`): `L-ID` (an Id. whose antecedent is not one source), `L-FNARG`
+(a footnote carrying a step the body needs), `L-DIGEST` (precedent digested case by case with no
+synthesis). Econ (`constraints/jev/econ`): `E-WEFIND` (a body finding with no table, figure or
+exhibit in reach), `E-CITEFORM` (a paper cited in law review or numbered form, or a parenthetical
+cite used as a noun), `E-CAUSAL` (causal language on a correlational result), `E-MAGNITUDE` (an
+estimate by sign or significance alone, or with no precision). Their extractors read footnotes
+(Markdown, Typst, LaTeX) and score only changed lines when the round has a diff. `L-SUPRA` (supra
+for a case or statute) waits in `constraints/jev/legal/uncalibrated/`: a submitted manuscript's
+`119th Congress, supra note 3` (a bill) scored 0.49–0.64 against the < 0.5 bar.
 
 ---
 

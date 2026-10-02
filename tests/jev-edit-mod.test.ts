@@ -6,7 +6,8 @@ import { existsSync, readdirSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import {
-  BLOCK_AT, RULE_DIRS, TEACHING_SETS, ancestors, changedFromInput, contextLines, enabled, merge, rangesFromDiff, ruleSetFor, workflowOf,
+  BLOCK_AT, REGISTER_DIRS, RULE_DIRS, TEACHING_SETS, ancestors, changedFromInput, contextLines, enabled, merge,
+  rangesFromDiff, registerDir, ruleSetFor, styleOf, workflowOf,
 } from '../hooks/jev/rules.ts'
 
 const ROOT = join(import.meta.dir, '..')
@@ -17,6 +18,8 @@ const none = async () => null
 test('prose is writing, tests and shell scripts are dev, .py is ds only under a ds workflow', async () => {
   expect(await ruleSetFor('/p/drafts/intro.md', none)).toBe('writing')
   expect(await ruleSetFor('/p/paper.typ', none)).toBe('writing')
+  expect(await ruleSetFor('/course/addenda/03-addendum-salman.typ', none)).toBe('elide')
+  expect(await ruleSetFor('/course/handouts/addenda-guide.typ', none)).toBe('writing')
   expect(await ruleSetFor('/p/paper.tex', ds)).toBe('writing')
   expect(await ruleSetFor('/p/scripts/run.sh', none)).toBe('dev')
   expect(await ruleSetFor('/p/src/a.test.ts', none)).toBe('dev')
@@ -63,7 +66,7 @@ test("a lecture's notes are notes and its deck is slides; other .typ in a course
   expect(await ruleSetFor('/c/secreg/slides/05-10b5/14.typ', ds)).toBe('slides')
   expect(await ruleSetFor('/c/secreg/notes/_reg-s.typ', none)).toBe('writing')
   expect(await ruleSetFor('/c/secreg/slides/05-10b5.typ', none)).toBe('writing')
-  expect(await ruleSetFor('/c/secreg/addenda/01.typ', none)).toBe('writing')
+  expect(await ruleSetFor('/c/secreg/addenda/01.typ', none)).toBe('elide') // an excerpt: the elide-case rules
   expect([...TEACHING_SETS].sort()).toEqual(['exams', 'notes', 'slides'])
 })
 
@@ -85,6 +88,20 @@ test('the workflow walk asks each directory up to $HOME, nearest first', async (
   expect(asked).toEqual(['/home/u/p/src'])
   expect(workflowOf('---\nworkflow: ds\n---\n# plan')).toBe('ds')
   expect(workflowOf('---\nstyle: econ\n---')).toBeNull()
+})
+
+test('the writing cursor `style:` adds its register set to prose, and only to prose', () => {
+  expect(styleOf('---\nworkflow: writing\nstyle: econ\n---\n')).toBe('econ')
+  expect(styleOf('---\nworkflow: ds\n---\n')).toBeNull()
+  expect(registerDir('writing', 'legal')).toBe('constraints/jev/legal')
+  expect(registerDir('writing', 'econ')).toBe('constraints/jev/econ')
+  expect(registerDir('writing', 'general')).toBeNull()
+  expect(registerDir('writing', null)).toBeNull()
+  expect(registerDir('typst', 'legal')).toBeNull()
+  for (const dir of Object.values(REGISTER_DIRS)) {
+    const wired = readdirSync(join(ROOT, dir)).filter(f => /^[^_].*\.py$/.test(f))
+    expect(wired.length).toBeGreaterThan(0)
+  }
 })
 
 test('every rule set points at a wired directory; its uncalibrated/ is below the glob', () => {
