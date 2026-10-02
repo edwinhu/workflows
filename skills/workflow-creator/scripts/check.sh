@@ -6,7 +6,7 @@
 #
 # Usage: check.sh --target <skill dir> [--agent <agent .md outside the skill dir>]
 #
-# Legs (all six run; none short-circuits, so one line is printed per leg every time):
+# Legs (all seven run; none short-circuits, so one line is printed per leg every time):
 #   wc-probe     the probe over --target (and --agent, which lives outside it)
 #   sc-probe     SKILL shape over --target — the TOC bang, the four ways a bang aborts a load,
 #                paths the prose cannot resolve
@@ -15,6 +15,9 @@
 #                skill-scoped view can answer it. Going red for a sibling skill is CORRECT —
 #                structure is a plugin property, so a workflow's gate owns its plugin's structure.
 #   parity       gate-vs-write-hook agreement — takes no target
+#   authoring-lint  the authoring rules a string settles, over the lines the change ADDED under
+#                --target (a SKILL_DIR climb, a retired enforcement table, plugin.json
+#                dependencies, a non-canonical state file)
 #   node-check   `node --check` over <target>/*.js; PASSES when the target ships none
 #   probe-tests  `bun test <target>/scripts/*.test.ts` — TARGET-relative, so pointing this at a
 #                generated skill runs THAT skill's suite; a scripts/ dir with no test file FAILS
@@ -144,6 +147,10 @@ fi
 # --- leg: parity -------------------------------------------------------------------------------
 bash "$SCRIPT_DIR/parity-check.sh" >&2
 report parity $?
+
+# --- leg: authoring-lint -----------------------------------------------------------------------
+bun "$SCRIPT_DIR/authoring-lint.ts" --target "$TARGET" >&2
+report authoring-lint $?
 
 # --- leg: node-check ---------------------------------------------------------------------------
 # A workflow that ships no .js is the normal case and passes; only a real syntax error fails.

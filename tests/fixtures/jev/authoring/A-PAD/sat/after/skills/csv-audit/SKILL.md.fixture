@@ -1,0 +1,22 @@
+---
+name: csv-audit
+description: "Use when the user asks to 'audit this CSV', 'check the export', 'why does the file have blank rows', or hands over a delimited export to vet before it is loaded. NEGATIVE ROUTING: building or merging a dataset is /ds."
+---
+
+# CSV Audit
+
+Reads one delimited export and reports what would break a load.
+
+## Step 1: Inventory
+
+Run `bun ${CLAUDE_SKILL_DIR}/scripts/inventory.ts <file>` and read its column table.
+
+## Step 2: Report
+
+List each defect with its row number.
+
+## Encoding
+
+**Read the file as bytes before parsing it.** Vendor exports arrive as cp1252 about one time in five
+(measured 2026-09-12 over 41 exports), and a UTF-8 parse turns every accented name into U+FFFD
+without raising — run `file -bi <file>` first and pass its charset to inventory.ts.
