@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+## [6.35.2] - 2026-10-02
+
+### Changed
+
+- **`route.ts --propose` ranks by Artificial Analysis index, then usage, then price.** Every ordering among eligible candidates, in the pick/fallback rule and in discovery, is `intelligenceIndex` descending, then `usageRank` ascending, then `price.prompt` ascending (null last at each step), then table order. Price stays a filter: a replacement pick must cost no more than the current one. Rule recorded in `docs/DESIGN-routing.md`.
+
+- **`routing.json`: `luna` moves from `gpt-5.6-luna` to `gpt-6-luna`** (index 37.3 → 38.1, prompt price 2e-7 → 1e-7, completion 1.2e-6 → 5e-7).
+
+### Added
+
+- **`route.ts --propose` discovers newer same-family models the proxy serves.** It asks the proxy catalog, OpenRouter's model list and Artificial Analysis for a model that no candidate names, of a candidate's owner and family, with a strictly higher AA index at no more than its prompt price, and prints `candidate C: model <old> -> <new>`; it still writes nothing. A failed source skips discovery with a note on stderr, and a failing rankings request alone leaves usage null. `tests/route-discover.test.ts` covers it; the OpenRouter and Artificial Analysis keys keep falling back to their agenix secrets.
+
 ## [6.35.0] - 2026-10-02
 
 ### Changed
