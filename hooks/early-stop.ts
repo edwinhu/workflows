@@ -26,6 +26,10 @@
  *      this hook's own blocks cannot rotate the key that caps them.
  *   3. NEVER DOUBLE-BLOCKS WITH `work-hold`. An armed hold is already holding the session on an
  *      objective and speaks for itself; this one stands down for the duration.
+ *   4. NEVER BLOCKS WHILE THE WATCHER WILL WAKE THE SESSION. When a farm or work run this session
+ *      launched is still live and the watcher mod (`hooks/watch/watcher.ts`) is running here, the owed
+ *      work is in flight and its finish arrives as a `$.prompt.submit` — a block would only force
+ *      busy-work. See `liveOwnedRuns` and `watcherActive`.
  *
  * The judge is the one `work-hold.ts` already uses — Jev, through the Decisions API — reached
  * through that file's exported `decisionsCall`/`parseNoul`. There is exactly one Decisions transport
@@ -34,11 +38,13 @@
  * Opt out for a session with `EARLY_STOP_HOOK=0`. Tune the bar with `EARLY_STOP_THRESHOLD`.
  */
 
-import { appendFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { appendFileSync, existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { createHash } from 'node:crypto'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { decisionsCall, lastLedgerEntry, ledgerPath, parseNoul, statePath } from './work-hold.ts'
+import { belowMinClaudeCode, runningClaudeVersion } from './session-start.ts'
+import { classify, dirname, parseEvents, wakeable, WAKE_HORIZON_MS, type Facts, type Run } from './watch/runs.ts'
 
 /** Blocks allowed per user turn. Two is one more chance than the session gets by itself. */
 export const MAX_BLOCKS_PER_TURN = 2
@@ -126,6 +132,88 @@ export function workHoldArmed(session: string): boolean {
   } catch {
     return false
   }
+}
+
+function pidAlive(pid: number): boolean {
+  try {
+    process.kill(pid, 0)
+    return true
+  } catch (e) {
+    // EPERM: the pid exists under another uid.
+    return (e as NodeJS.ErrnoException)?.code === 'EPERM'
+  }
+}
+
+function nonEmpty(p: string): boolean {
+  try {
+    return statSync(p).size > 0
+  } catch {
+    return false
+  }
+}
+
+/**
+ * The runs THIS session launched that are still running and that the watcher will wake it for.
+ *
+ * Read exactly where and how the watcher reads them: `<root>/farm-events/<session>/<pid>.ndjson` under
+ * `$TMPDIR` and `/tmp`, parsed and classified by `watch/runs.ts`. The directory's session key is the
+ * ownership marker, so another session's runs are never in it. A run past the watcher's wake horizon
+ * would finish silently, so it does not count.
+ */
+export function liveOwnedRuns(session: string, nowMs: number = Date.now()): string[] {
+  const runs: Run[] = []
+  const firstSeen = new Map<string, number>()
+  for (const root of new Set([tmp(), '/tmp'])) {
+    const dir = `${root.replace(/\/+$/, '')}/farm-events/${session}`
+    let names: string[]
+    try {
+      names = readdirSync(dir)
+    } catch {
+      continue
+    }
+    for (const n of names) {
+      const m = /^(\d+)\.ndjson$/.exec(n)
+      if (!m) continue
+      const file = `${dir}/${n}`
+      try {
+        firstSeen.set(file, Math.min(nowMs, statSync(file).mtimeMs))
+        runs.push(...parseEvents(readFileSync(file, 'utf8'), file, Number(m[1]), session))
+      } catch {
+        /* an unreadable event file is a run this hook cannot vouch for */
+      }
+    }
+  }
+  if (!runs.length) return []
+  const facts: Facts = {
+    alive: new Set(runs.filter((r) => !r.done && pidAlive(r.pid)).map((r) => r.pid)),
+    present: new Set(runs.flatMap((r) => [r.out, ...r.claims]).filter((p) => p.startsWith('/') && nonEmpty(p))),
+    firstSeen, loopExit: new Map(), round: new Map(), phase: new Map(),
+  }
+  // A work loop is done once loop.exit holds its code, whatever its pid says.
+  for (const r of runs) {
+    if (r.label !== 'work-loop' || !r.out) continue
+    try {
+      const code = readFileSync(`${dirname(r.out)}/loop.exit`, 'utf8').trim()
+      if (code) facts.loopExit.set(r.out, code)
+    } catch {}
+  }
+  return wakeable(classify(runs, facts))
+    .filter((v) => v.state === 'running' && !(v.startedMs && nowMs - v.startedMs > WAKE_HORIZON_MS))
+    .map((v) => v.label)
+}
+
+/**
+ * Is the watcher mod running in this session? It registers only on an interactive `session.start`
+ * (and never for a farm child, already allowed above), and mods load only from Claude Code 2.1.287.
+ * The mod writes no marker, so both halves are read from what the harness exports to hooks:
+ * `CLAUDE_CODE_ENTRYPOINT` is `cli` only for the interactive terminal REPL — the binary rewrites it
+ * to `sdk-cli` under `-p` — and `$CLAUDE_CODE_EXECPATH --version` is the running binary's version.
+ * Any other entrypoint, or a version that cannot be read, counts as not active: the hook then judges
+ * exactly as before.
+ */
+export function watcherActive(): boolean {
+  if (process.env.CLAUDE_CODE_ENTRYPOINT !== 'cli') return false
+  return belowMinClaudeCode(runningClaudeVersion()) === false
 }
 
 /** The tail of a string, marked when it was cut — the tell is at the END of a turn-ending message. */
@@ -245,6 +333,10 @@ function main(): void {
 
   if (workHoldArmed(session))
     return allowNow(session, '-', 'a work-hold is armed: it speaks for this session')
+
+  const live = liveOwnedRuns(session)
+  if (live.length && watcherActive())
+    return allowNow(session, '-', `owned runs live, the watcher wakes the session: ${live.join(', ')}`)
 
   const message = typeof payload.last_assistant_message === 'string' ? payload.last_assistant_message : ''
   if (!message.trim()) return allowNow(session, '-', 'empty last_assistant_message')
