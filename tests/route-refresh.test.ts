@@ -3,6 +3,9 @@ import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
+import { useTmp } from './helpers/tmp.ts'
+
+const mkTmp = useTmp()
 
 /**
  * The spec for `route.ts --refresh`: re-derive each candidate's `available` from the proxy catalog
@@ -34,7 +37,7 @@ const PRICES: Price[] = [
 function tableCopy(edit: (t: any) => void = () => {}): string {
   const t = JSON.parse(readFileSync(FIXTURE, 'utf8'))
   edit(t)
-  const p = join(mkdtempSync(join(tmpdir(), 'route-refresh-')), 'table.json')
+  const p = join(mkTmp('route-refresh-'), 'table.json')
   writeFileSync(p, JSON.stringify(t, null, 2) + '\n')
   return p
 }

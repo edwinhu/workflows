@@ -1,0 +1,51 @@
+---
+name: ds
+description: "This skill should be used when the user asks to 'start data analysis', 'plan a data project', 'explore this dataset', 'what should I analyze', 'set up a new study', or needs the data-science workflow."
+hooks:
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow ds"
+    - matcher: "Read|Glob|Grep|Bash"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/clarify-before-recon-guard.ts --workflow ds"
+  PostToolUse:
+    - matcher: "AskUserQuestion"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/episode-phase.ts --workflow ds"
+    - matcher: "ExitPlanMode"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-persist.ts --workflow ds"
+---
+
+# Data Science Workflow
+
+
+Loading a dataset or proposing a method before the user has stated the outcome anchors the work to
+whatever data happens to be nearby. Skipping a necessary profile replaces evidence with a convenient
+guess. Neither shortcut is helpful: it creates an analysis that is fast to start and expensive to
+correct.
+</EXTREMELY-IMPORTANT>
+
+## 1. Clarify
+
+**Write no sentinel.** `.planning/DS_CLARIFIED.json` is retired, and with it the two `printf`
+commands that used to live here. A hook records the clarify phase into
+`.planning/.state/episode.json` when it OBSERVES your `AskUserQuestion` call, which is direct
+evidence the user was actually asked. The sentinel was this skill telling the guard that it had
+clarified — a claim the guard had a special Bash exemption to let through, and one that could be
+made without ever asking a question.
+
+Read `${CLAUDE_SKILL_DIR}/../beat-clarify/SKILL.md` and follow it before examining task files, data,
+code, or prior analysis artifacts. Reconnaissance unlocks when the phase is recorded, so the only
+way through the guard is to genuinely ask.
+
+Supply the DS-specific axes the primitive needs:
+
+| Axis | Establish with the user |
+|---|---|
+| Outcome | Question, audience, decision the analysis informs, and deliverables |
+| Universe | Unit of observation, entity inclusion rule, sample period, and authoritative source when sources disagree |
+| Sources | Available data, access/location, expected refresh/vintage, and known restrictions |

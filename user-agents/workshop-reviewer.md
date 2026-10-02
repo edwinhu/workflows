@@ -62,7 +62,7 @@ What is genuinely yours is the judgement inside each module that no regex reache
 | A takeaway is a claim | A takeaway that names a topic instead of asserting something |
 | No subtitle echo | A bullet restating its own slide title in other words |
 | Notes expand the slide | Notes duplicating the bullets instead of carrying the spoken words |
-| Teleprompter register | Outline fragments where speakable sentences belong |
+| Teleprompter register | Outline fragments or slide narration where speakable sentences belong. Hollow bullets are not yours in a `/workshop` run: Jev's T-HOLLOW scores them |
 | Section hierarchy | A structure the deck's argument does not actually have |
 | Diagram legibility, from source | Clipped or overlapping labels, arrows routed through nodes, illegible sizing, a diagram contradicting its caption |
 | Computed values | A number presented as computed that the source does not compute |

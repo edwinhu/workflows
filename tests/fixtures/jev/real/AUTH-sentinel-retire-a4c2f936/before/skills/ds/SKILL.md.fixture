@@ -1,0 +1,52 @@
+---
+name: ds
+description: "This skill should be used when the user asks to 'start data analysis', 'plan a data project', 'explore this dataset', 'what should I analyze', 'set up a new study', or needs the data-science workflow."
+hooks:
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/orchestrator-mutation-guard.ts --workflow ds"
+    - matcher: "Read|Glob|Grep|Bash"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/clarify-before-recon-guard.ts --workflow ds"
+  PostToolUse:
+    - matcher: "ExitPlanMode"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/hooks/approved-artifact-persist.ts --workflow ds"
+---
+
+# Data Science Workflow
+
+
+Loading a dataset or proposing a method before the user has stated the outcome anchors the work to
+whatever data happens to be nearby. Skipping a necessary profile replaces evidence with a convenient
+guess. Neither shortcut is helpful: it creates an analysis that is fast to start and expensive to
+correct.
+</EXTREMELY-IMPORTANT>
+
+## 1. Clarify
+
+At `/ds` entry, before asking any question, overwrite the narrow session sentinel with this exact
+non-authorizing JSON (create `.planning/` if needed):
+
+```bash
+mkdir -p .planning && printf '%s\n' '{"status":"pending"}' > .planning/DS_CLARIFIED.json
+```
+
+Read `${CLAUDE_SKILL_DIR}/../beat-clarify/SKILL.md` and follow it before examining task files,
+data, code, or prior analysis artifacts. Immediately after the user responds to the first
+clarification questions, overwrite the sentinel with this exact strict JSON; it contains only the
+current session identity and authorization status, never user requirements:
+
+```bash
+printf '%s\n' "{\"status\":\"clarified\",\"sessionId\":\"${CLAUDE_SESSION_ID}\"}" > .planning/DS_CLARIFIED.json
+```
+
+Supply the DS-specific axes the primitive needs:
+
+| Axis | Establish with the user |
+|---|---|
+| Outcome | Question, audience, decision the analysis informs, and deliverables |
+| Universe | Unit of observation, entity inclusion rule, sample period, and authoritative source when sources disagree |
+| Sources | Available data, access/location, expected refresh/vintage, and known restrictions |

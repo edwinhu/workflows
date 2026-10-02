@@ -89,7 +89,7 @@ VALIDATION_TYP = OVERFLOW_DRIVER.parent / "validation.typ"
 
 # The matrix in references/workshop-checks.md, in matrix order. ENUM asserts that a line was
 # emitted for every ID here -- the whole point of computing ENUM rather than claiming it.
-MATRIX = ["CMP", "CON", "SPEC", "NOTE", "INV", "WID", "OVR", "ENUM", "FID", "CONV", "VIS"]
+MATRIX = ["CMP", "CON", "SPEC", "NOTE", "INV", "VSL", "WID", "OVR", "ENUM", "FID", "CONV", "VIS"]
 
 # Checks no script can settle. Reported as MODEL-EVALUATED, never PASS/FAIL/N/A.
 MODEL_EVALUATED = {
@@ -361,6 +361,8 @@ def parse_outputs(plan_text: str) -> dict[str, str]:
 SLIDE_TITLE_RE = re.compile(r"^[ \t]*===(?!=)[ \t]+(\S.*?)[ \t]*$", re.MULTILINE)
 NOTES_HEADING_RE = re.compile(r"^[ \t]*==(?!=)[ \t]+(\S.*?)[ \t]*$", re.MULTILINE)
 INV_CALL_RE = re.compile(r"#inv\s*\(([^)]*)\)")
+# A visual element a slide builds: a diagram, a plot, an image, a table or a figure.
+VISUAL_RE = re.compile(r"(#fletcher-diagram|cetz\.canvas|lq\.diagram|#image|#table|#figure)\s*\(")
 INV_ARG_RE = re.compile(r'"([^"]*)"')
 
 
@@ -428,6 +430,33 @@ def strip_typst_comments(source: str) -> str:
             continue
         i += 1
     return "".join(out)
+
+
+def deck_slide_spans(deck_text: str) -> list[tuple[str, str]]:
+    """(title, comment-stripped source) for each `=== ` slide: title line to the next one or EOF."""
+    deck_text = strip_typst_comments(deck_text)
+    matches = list(SLIDE_TITLE_RE.finditer(deck_text))
+    return [(m.group(1), deck_text[m.end():matches[i + 1].start() if i + 1 < len(matches) else len(deck_text)])
+            for i, m in enumerate(matches)]
+
+
+def notes_section_bodies(notes_text: str) -> dict[str, str]:
+    """Normalized `== ` heading -> its comment-stripped body, up to the next `=` or `==` heading."""
+    text = strip_typst_comments(notes_text)
+    heads = list(re.finditer(r"^[ \t]*(=+)(?!=)[ \t]+(\S.*?)[ \t]*$", text, re.MULTILINE))
+    out: dict[str, str] = {}
+    for i, m in enumerate(heads):
+        if len(m.group(1)) != 2:
+            continue
+        end = next((h.start() for h in heads[i + 1:] if len(h.group(1)) <= 2), len(text))
+        out.setdefault(normalize_title(m.group(2)), text[m.end():end])
+    return out
+
+
+def spoken_lines(body: str) -> list[str]:
+    """Lines of a notes body a presenter reads: not blank, not code, not a sub-heading."""
+    return [ln.strip() for ln in body.splitlines()
+            if ln.strip() and not ln.strip().startswith(("#", "="))]
 
 
 def deck_slide_citations(deck_text: str) -> list[tuple[str, list[str], int]]:
@@ -713,11 +742,63 @@ def check_note(deck_src: Path, notes_src: Path) -> dict:
             f"title key: {'; '.join(missing)}",
             evidence,
         )
+    # A heading with nothing under it is a slide the presenter has no words for: the key matched
+    # and nothing was written, which is the vacuous pass a heading-only join would report.
+    bodies = notes_section_bodies(notes_text)
+    empty = [t for t in built if not spoken_lines(bodies.get(normalize_title(t), ""))]
+    if empty:
+        return result(
+            "FAIL",
+            f"{len(empty)} notes section(s) carry no spoken line under their heading: {'; '.join(empty)}",
+            evidence + f" empty_sections={len(empty)}",
+        )
     return result(
         "PASS",
-        f"all {len(built)} built slide(s) have a notes section under the same normalized title key.",
+        f"all {len(built)} built slide(s) have a non-empty notes section under the same normalized "
+        "title key.",
         evidence,
     )
+
+
+def check_vsl(deck_src: Path, spec_rows: list[dict] | None, spec_error: str | None) -> dict:
+    """R7: each built slide's visual elements agree with its Slide Spec `Visual` cell. A cell of
+    `none` is a text-only slide, so a diagram, plot, image, table or figure on it is a FAIL; any
+    other cell names a visual, so a slide that builds none is a FAIL. Joined on the normalized title
+    key; an unmatched slide has no cell to compare against and fails closed, as in INV."""
+    if spec_rows is None:
+        return result("FAIL", f"`## Slide Spec` is malformed or absent: {spec_error}")
+    deck_text, err = _read_text(deck_src)
+    if deck_text is None:
+        return result("FAIL", f"built deck: {err}")
+    spans = deck_slide_spans(deck_text)
+    if not spans:
+        return result("FAIL", f"built deck `{deck_src.name}` has no `=== ` slide title line; there "
+                      "is no slide whose visual could agree with a spec row.", "built_slides=0")
+    cells = {normalize_title(r["slide"]): r["visual"] for r in spec_rows}
+    unmatched, spurious, absent, n_visual = [], [], [], 0
+    for title, span in spans:
+        key = normalize_title(title)
+        if key not in cells:
+            unmatched.append(title)
+            continue
+        kinds = sorted({m.group(1) for m in VISUAL_RE.finditer(span)})
+        text_only = cells[key].strip().lower() == "none"
+        n_visual += not text_only
+        if text_only and kinds:
+            spurious.append(f"{title} (Visual `none`, builds {', '.join(kinds)})")
+        elif not text_only and not kinds:
+            absent.append(f"{title} (Visual {cells[key]!r}, builds no diagram, plot, image, table or figure)")
+    evidence = f"built_slides={len(spans)} spec_rows_naming_a_visual={n_visual}"
+    problems = []
+    if unmatched:
+        problems.append(f"{len(unmatched)} built slide(s) match no Slide Spec row: {'; '.join(unmatched)}.")
+    if spurious:
+        problems.append(f"{len(spurious)} text-only slide(s) build a visual: {'; '.join(spurious)}.")
+    if absent:
+        problems.append(f"{len(absent)} slide(s) whose Visual cell names a visual build none: {'; '.join(absent)}.")
+    if problems:
+        return result("FAIL", " ".join(problems), evidence)
+    return result("PASS", f"all {len(spans)} built slide(s) agree with their Slide Spec `Visual` cell.", evidence)
 
 
 def parse_inventory_cell(cell: str) -> list[str]:
@@ -1291,6 +1372,7 @@ def _run(plan_text: str, root: Path, slides_override: str | None, notes_override
     checks["INV"] = guarded(
         "INV", check_inv, deck_src, inventory, inventory_error, spec_rows, spec_error
     )
+    checks["VSL"] = guarded("VSL", check_vsl, deck_src, spec_rows, spec_error)
     checks["WID"] = guarded("WID", check_wid, deck_src, root, spec_rows, spec_error)
     checks["OVR"] = guarded("OVR", check_ovr, deck_src)
     for check in MODEL_EVALUATED:

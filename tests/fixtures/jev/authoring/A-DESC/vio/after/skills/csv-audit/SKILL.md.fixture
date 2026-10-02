@@ -1,0 +1,16 @@
+---
+name: csv-audit
+description: "Audits a CSV in three phases: first it runs inventory.ts to profile every column, then it dispatches two reviewer agents in parallel to check types and encodings, then a scoring script merges their findings and writes REPORT.md with one row per defect. Use for CSV files."
+---
+
+# CSV Audit
+
+Reads one delimited export and reports what would break a load.
+
+## Step 1: Inventory
+
+Run `bun ${CLAUDE_SKILL_DIR}/scripts/inventory.ts <file>` and read its column table.
+
+## Step 2: Report
+
+List each defect with its row number.

@@ -1,5 +1,5 @@
 // check.test.ts — the entry point's own suite. Its job is to prove that a failure in EACH of the
-// six legs reaches check.sh's exit code, so no leg can be silently dropped or stubbed out.
+// seven legs reaches check.sh's exit code, so no leg can be silently dropped or stubbed out.
 //
 // It never runs check.sh against this skill itself: check.sh's suite leg runs
 // `bun test <target>/scripts/*.test.ts`, which is this file, and a self-target would recurse.
@@ -50,6 +50,7 @@ function harness(opts: { parityStub?: string; noSiblings?: boolean } = {}): stri
   copyFileSync(CHECK, join(s, 'check.sh'))
   symlinkSync(join(SCRIPTS, 'wc-probe.ts'), join(s, 'wc-probe.ts'))
   symlinkSync(join(SCRIPTS, 'validate-skill-write.ts'), join(s, 'validate-skill-write.ts'))
+  symlinkSync(join(SCRIPTS, 'authoring-lint.ts'), join(s, 'authoring-lint.ts'))
   if (opts.parityStub === undefined) {
     symlinkSync(join(SCRIPTS, 'parity-check.sh'), join(s, 'parity-check.sh'))
   } else {
@@ -112,21 +113,21 @@ function legStatus(stdout: string, name: string): string {
   return line
 }
 
-test('leg-count: check.sh statically declares exactly the six legs', () => {
+test('leg-count: check.sh statically declares exactly the seven legs', () => {
   // Decided by READING check.sh, not by running it: check.sh is the run's own mechanical gate, so a
   // check.sh that dropped a leg would still exit 0 and certify its own completeness.
   const src = readFileSync(CHECK, 'utf8')
   const names = new Set<string>()
   for (const m of src.matchAll(/^[ \t]*report[ \t]+([A-Za-z0-9_-]+)\b/gm)) names.add(m[1]!)
-  expect([...names].sort()).toEqual(['node-check', 'parity', 'pc-probe', 'probe-tests', 'sc-probe', 'wc-probe'])
-  expect(names.size).toBe(6)
+  expect([...names].sort()).toEqual(['authoring-lint', 'node-check', 'parity', 'pc-probe', 'probe-tests', 'sc-probe', 'wc-probe'])
+  expect(names.size).toBe(7)
 })
 
-test('leg-count: a clean target prints exactly six leg lines and exits 0', () => {
+test('leg-count: a clean target prints exactly seven leg lines and exits 0', () => {
   const r = run(harness(), ['--target', target({ tests: { 'fixture.test.ts': PASSING_TEST } })])
   expect(r.stdout + r.stderr).toContain('leg')
-  expect(legLines(r.stdout).length).toBe(6)
-  for (const leg of ['wc-probe', 'sc-probe', 'pc-probe', 'parity', 'node-check', 'probe-tests']) {
+  expect(legLines(r.stdout).length).toBe(7)
+  for (const leg of ['wc-probe', 'sc-probe', 'pc-probe', 'parity', 'authoring-lint', 'node-check', 'probe-tests']) {
     expect(legStatus(r.stdout, leg)).toContain('exit=0')
   }
   expect(r.code).toBe(0)
@@ -142,7 +143,7 @@ test('a forced failure in the sc-probe leg propagates', () => {
   const r = run(harness(), ['--target', t])
   expect(legStatus(r.stdout, 'sc-probe')).not.toContain('exit=0')
   expect(legStatus(r.stdout, 'wc-probe')).toContain('exit=0')
-  expect(legLines(r.stdout).length).toBe(6)
+  expect(legLines(r.stdout).length).toBe(7)
   expect(r.code).not.toBe(0)
 })
 
@@ -167,7 +168,7 @@ test('the pc-probe leg REFUSES with exit 2 when no plugin root resolves above th
   const r = run(harness(), ['--target', target({ noPluginRoot: true })])
   expect(legStatus(r.stdout, 'pc-probe')).toContain('exit=2')
   expect(r.stderr).toContain('.claude-plugin/plugin.json')
-  expect(legLines(r.stdout).length).toBe(6)
+  expect(legLines(r.stdout).length).toBe(7)
   expect(r.code).toBe(2)
 })
 
@@ -189,8 +190,18 @@ test('a forced failure in the wc-probe leg propagates', () => {
   })
   const r = run(harness(), ['--target', t])
   expect(legStatus(r.stdout, 'wc-probe')).not.toContain('exit=0')
-  expect(legLines(r.stdout).length).toBe(6)
+  expect(legLines(r.stdout).length).toBe(7)
   expect(r.code).not.toBe(0)
+})
+
+test('a forced failure in the authoring-lint leg propagates', () => {
+  // A retired excuse/reality table on an added line; the fixture target is untracked, so every line is added.
+  const t = target({ skill: `${CLEAN_SKILL}\n| Excuse | Reality |\n|---|---|\n| later | now |\n`, tests: { 'fixture.test.ts': PASSING_TEST } })
+  const r = run(harness(), ['--target', t])
+  expect(legStatus(r.stdout, 'authoring-lint')).toContain('exit=1')
+  expect(legStatus(r.stdout, 'wc-probe')).toContain('exit=0')
+  expect(legLines(r.stdout).length).toBe(7)
+  expect(r.code).toBe(1)
 })
 
 test('a forced failure in the parity leg propagates', () => {
@@ -200,7 +211,7 @@ test('a forced failure in the parity leg propagates', () => {
   ])
   expect(legStatus(r.stdout, 'parity')).not.toContain('exit=0')
   expect(legStatus(r.stdout, 'wc-probe')).toContain('exit=0')
-  expect(legLines(r.stdout).length).toBe(6)
+  expect(legLines(r.stdout).length).toBe(7)
   expect(r.code).not.toBe(0)
 })
 
@@ -210,14 +221,14 @@ test('a forced failure in the node-check leg propagates', () => {
     target({ js: 'const x = ;;;\n', tests: { 'fixture.test.ts': PASSING_TEST } }),
   ])
   expect(legStatus(r.stdout, 'node-check')).not.toContain('exit=0')
-  expect(legLines(r.stdout).length).toBe(6)
+  expect(legLines(r.stdout).length).toBe(7)
   expect(r.code).not.toBe(0)
 })
 
 test('a forced failure in the probe-tests leg propagates', () => {
   const r = run(harness(), ['--target', target({ tests: { 'fixture.test.ts': FAILING_TEST } })])
   expect(legStatus(r.stdout, 'probe-tests')).not.toContain('exit=0')
-  expect(legLines(r.stdout).length).toBe(6)
+  expect(legLines(r.stdout).length).toBe(7)
   expect(r.code).not.toBe(0)
 })
 
@@ -241,7 +252,7 @@ test('the suite leg fails when the target ships scripts/ with no test file', () 
 test('the suite leg passes when the target ships no scripts/ directory at all', () => {
   const r = run(harness(), ['--target', target()])
   expect(legStatus(r.stdout, 'probe-tests')).toContain('exit=0')
-  expect(legLines(r.stdout).length).toBe(6)
+  expect(legLines(r.stdout).length).toBe(7)
   expect(r.code).toBe(0)
 })
 

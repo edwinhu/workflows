@@ -8,6 +8,9 @@
 //
 // Run: bun tests/overflow-check.test.mjs
 import { resolveTypTarget, isOverflowTarget, resolveCheckScript } from '../hooks/overflow-check.ts'
+import { useTmp } from './helpers/tmp.ts'
+
+const mkTmp = useTmp()
 const PLUGIN_ROOT = new URL('..', import.meta.url).pathname.replace(/\/$/, '')
 import { execFileSync } from 'node:child_process'
 
@@ -54,7 +57,7 @@ ok('unrelated command: no trigger', resolveTypTarget('ls -la') === null)
 const DECK = '#import "@preview/touying:0.5.0": *\n#slide[\n=== x\n]\n'
 const PROSE = '#set page(margin: 1in)\nDear Professor,\nSincerely.\n'
 const fixture = (rel, body) => {
-  const root = mkdtempSync(join(tmpdir(), 'ovf-'))
+  const root = mkTmp('ovf-')
   const abs = join(root, rel)
   mkdirSync(dirname(abs), { recursive: true })
   writeFileSync(abs, body)

@@ -1,0 +1,30 @@
+---
+name: skill-creator
+description: "This skill should be used when the user asks to 'create a skill', 'improve a skill', 'edit a skill', 'add a skill to a plugin', 'add enforcement patterns', 'add Iron Laws or fact rows', 'fix a skill description', 'audit skill enforcement', or needs to substantially create or edit any SKILL.md file — including a single skill inside a plugin. Use plugin-creator only for plugin-level work (manifest, hooks wiring, multi-component scaffolding)."
+---
+Before drafting, classify the skill being created:
+
+| Type | Description | Enforcement Needs |
+|------|-------------|-------------------|
+| **Workflow skill** | Multi-phase process (like /dev, /ds, /writing) | High — needs Iron Laws, gates, rationalization tables |
+| **Tool skill** | Wraps a tool or API (like readwise, wrds, bluebook) | Medium — needs Red Flags for common misuse |
+| **Knowledge skill** | Domain knowledge reference (like ai-anti-patterns) | Low — needs trigger-only descriptions |
+
+This classification determines how much enforcement audit to apply after each draft.
+
+### Anti-Patterns: Read Before Drafting
+
+!`cat ${CLAUDE_SKILL_DIR}/../../references/creator-anti-patterns.md`
+
+**`<bang>` in this file means a literal `!` followed by a backtick.** Written out, it would RUN:
+the parser fires on that sequence at line start or after whitespace, and a fenced code block does
+not protect it — nor does inline code. Both creator skills were taken offline on 2026-09-15 by
+their own examples, one of which executed a placeholder named `cmd`.
+
+### Where a thing goes — the plugin root
+
+Claude Code auto-discovers these at a plugin root, no manifest needed (`plugins-reference.md`):
+`skills/` `commands/` `agents/` `workflows/` `output-styles/` `themes/` `monitors/` `hooks/` `bin/`.
+Everything else is a local convention, so the names below are ours and worth keeping uniform:
+
+| directory | holds | found by |

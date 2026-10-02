@@ -18,13 +18,16 @@ import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { auditStyle, isTypDeck, editRanges, inRanges, runProseAudit, runCheckAll, profileFor } from '../hooks/writing-prose-check.ts'
+import { useTmp } from './helpers/tmp.ts'
+
+const mkTmp = useTmp()
 
 let PASS = 0, FAIL = 0
 const ok = (name, condition, extra = '') => {
   if (condition) PASS++
   else { FAIL++; console.log(`FAIL  ${name}${extra ? ` — ${extra}` : ''}`) }
 }
-const tmp = () => mkdtempSync(join(tmpdir(), 'prose-check-'))
+const tmp = () => mkTmp('prose-check-')
 const write = (dir, name, body) => { const p = join(dir, name); writeFileSync(p, body); return p }
 
 // ── A slide deck is not prose, and must not be linted as prose ───────────────

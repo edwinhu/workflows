@@ -92,7 +92,8 @@ describe("writing-no-bold-lead resolves the engine it delegates to", () => {
       `spec=importlib.util.spec_from_file_location("nbl", ${JSON.stringify(MODULE)});` +
       "m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);" +
       "m.PROSE_AUDIT=pathlib.Path('/nonexistent/prose-audit.py');" +
-      "d=tempfile.mkdtemp();dr=pathlib.Path(d)/'drafts';dr.mkdir();" +
+      "import atexit,shutil;d=tempfile.mkdtemp();atexit.register(shutil.rmtree,d,True);" +
+      "dr=pathlib.Path(d)/'drafts';dr.mkdir();" +
       "(dr/'a.md').write_text('**Bold lead.** Body text follows here.\\n');" +
       "\ntry:\n m.check({'cwd': d})\nexcept Exception as e:\n print('RAISED'); sys.exit(0)\nprint('SILENT'); sys.exit(1)",
     ], { timeout: 120_000 });

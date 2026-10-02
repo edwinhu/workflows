@@ -2,10 +2,11 @@
 // changed, the threshold and the one line a violation becomes, and where the mod runs. The mod
 // itself, under the engine's own host, is hooks/mod-tests/jev.test.ts (scripts/mod-test.sh).
 import { expect, test } from 'bun:test'
-import { readdirSync } from 'node:fs'
+import { existsSync, readdirSync } from 'node:fs'
+import { homedir } from 'node:os'
 import { join } from 'node:path'
 import {
-  BLOCK_AT, RULE_DIRS, ancestors, changedFromInput, contextLines, enabled, merge, rangesFromDiff, ruleSetFor, workflowOf,
+  BLOCK_AT, RULE_DIRS, TEACHING_SETS, ancestors, changedFromInput, contextLines, enabled, merge, rangesFromDiff, ruleSetFor, workflowOf,
 } from '../hooks/jev/rules.ts'
 
 const ROOT = join(import.meta.dir, '..')
@@ -17,7 +18,7 @@ test('prose is writing, tests and shell scripts are dev, .py is ds only under a 
   expect(await ruleSetFor('/p/drafts/intro.md', none)).toBe('writing')
   expect(await ruleSetFor('/p/paper.typ', none)).toBe('writing')
   expect(await ruleSetFor('/course/addenda/03-addendum-salman.typ', none)).toBe('elide')
-  expect(await ruleSetFor('/course/notes/03-addenda.typ', none)).toBe('writing')
+  expect(await ruleSetFor('/course/handouts/addenda-guide.typ', none)).toBe('writing')
   expect(await ruleSetFor('/p/paper.tex', ds)).toBe('writing')
   expect(await ruleSetFor('/p/scripts/run.sh', none)).toBe('dev')
   expect(await ruleSetFor('/p/src/a.test.ts', none)).toBe('dev')
@@ -28,6 +29,44 @@ test('prose is writing, tests and shell scripts are dev, .py is ds only under a 
   expect(await ruleSetFor('/p/src/build.py', none)).toBeNull()
   expect(await ruleSetFor('/p/src/app.ts', ds)).toBeNull()
   expect(await ruleSetFor('/p/data.json', none)).toBeNull()
+})
+
+test("a talk's deck and notes are typst; other .typ stays writing unless the cursor says workshop", async () => {
+  const workshop = async () => 'workshop'
+  expect(await ruleSetFor('/p/presentation/slides.typ', none)).toBe('typst')
+  expect(await ruleSetFor('/p/presentation/notes.typ', none)).toBe('typst')
+  expect(await ruleSetFor('/p/talk/notes-seminar.typ', none)).toBe('typst')
+  expect(await ruleSetFor('/p/presentation/fragments.typ', none)).toBe('typst')
+  expect(await ruleSetFor('/p/paper/body.typ', none)).toBe('writing')
+  expect(await ruleSetFor('/p/paper/body.typ', workshop)).toBe('typst')
+  expect(await ruleSetFor('/p/drafts/notes.md', none)).toBe('writing')
+  // a lecture deck's per-lecture file is neither named slides* nor under presentation/: it is the
+  // teaching plugin's slides set, not a talk's
+  expect(await ruleSetFor('/c/slides/05-10b5/15.typ', none)).toBe('slides')
+})
+
+test('skill, agent and command files, CLAUDE.md, manifests and .planning/ are authoring, ahead of prose', async () => {
+  expect(await ruleSetFor('/p/skills/csv-audit/SKILL.md', none)).toBe('authoring')
+  expect(await ruleSetFor('/p/agents/reviewer.md', none)).toBe('authoring')
+  expect(await ruleSetFor('/home/u/.claude/agents/guard.md', ds)).toBe('authoring')
+  expect(await ruleSetFor('/p/commands/ship.md', none)).toBe('authoring')
+  expect(await ruleSetFor('/p/.claude/CLAUDE.md', none)).toBe('authoring')
+  expect(await ruleSetFor('/p/.claude-plugin/plugin.json', none)).toBe('authoring')
+  expect(await ruleSetFor('/p/hooks/hooks.json', none)).toBe('authoring')
+  expect(await ruleSetFor('/p/.planning/SPEC.md', none)).toBe('authoring')
+  // a reference or a README beside a skill is still prose
+  expect(await ruleSetFor('/p/skills/csv-audit/references/notes.md', none)).toBe('writing')
+  expect(await ruleSetFor('/p/README.md', none)).toBe('writing')
+  expect(await ruleSetFor('/p/package.json', none)).toBeNull()
+})
+
+test("a lecture's notes are notes and its deck is slides; other .typ in a course is still writing", async () => {
+  expect(await ruleSetFor('/c/secreg/notes/14-10b5.typ', none)).toBe('notes')
+  expect(await ruleSetFor('/c/secreg/slides/05-10b5/14.typ', ds)).toBe('slides')
+  expect(await ruleSetFor('/c/secreg/notes/_reg-s.typ', none)).toBe('writing')
+  expect(await ruleSetFor('/c/secreg/slides/05-10b5.typ', none)).toBe('writing')
+  expect(await ruleSetFor('/c/secreg/addenda/01.typ', none)).toBe('elide') // an excerpt: the elide-case rules
+  expect([...TEACHING_SETS].sort()).toEqual(['notes', 'slides'])
 })
 
 test('the workflow walk asks each directory up to $HOME, nearest first', async () => {
@@ -41,8 +80,12 @@ test('the workflow walk asks each directory up to $HOME, nearest first', async (
 })
 
 test('every rule set points at a wired directory; its uncalibrated/ is below the glob', () => {
-  for (const dir of Object.values(RULE_DIRS)) {
-    const wired = readdirSync(join(ROOT, dir)).filter(f => /^[^_].*\.py$/.test(f) && f !== 'evidence.py')
+  // the teaching sets live under the teaching plugin, checked where it is installed
+  const teaching = process.env.TEACHING_PLUGIN_ROOT || join(homedir(), '.claude/skills/teaching')
+  for (const [set, dir] of Object.entries(RULE_DIRS)) {
+    const root = TEACHING_SETS.has(set as keyof typeof RULE_DIRS) ? teaching : ROOT
+    if (root === teaching && !existsSync(join(root, dir))) continue
+    const wired = readdirSync(join(root, dir)).filter(f => /^[^_].*\.py$/.test(f) && f !== 'evidence.py')
     expect(wired.length).toBeGreaterThan(0)
     expect(dir).not.toContain('uncalibrated')
   }
