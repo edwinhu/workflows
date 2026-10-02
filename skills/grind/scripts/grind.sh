@@ -423,7 +423,7 @@ NOTIFY= NOTIFY_TO= NOTIFY_JOURNAL= PUSH=
 # The notification above only fires when the loop reaches an ending. A loop killed hard -- reboot,
 # OOM, kill -9 -- reaches none, writes no terminal journal record either, and nothing ever says so.
 # The launching session already runs a watcher for exactly that shape: the watcher mod
-# (hooks/register.ts) reads $TMPDIR/farm-events/<session>/<pid>.ndjson and wakes the session for any
+# (hooks/watch/watcher.ts) reads $TMPDIR/farm-events/<session>/<pid>.ndjson and wakes the session for any
 # file whose pid is gone with no DONE line. So the loop files itself there.
 #
 # ONE protocol, not two: line shape, percent encoding and write discipline are farm.sh's

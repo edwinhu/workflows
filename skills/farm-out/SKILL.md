@@ -57,7 +57,7 @@ append it automatically. Do not hand-roll a delegation that skips it.
 ## One watcher per SESSION, not one per dispatch
 
 **Do NOT arm a `Monitor` or an `until test -s` loop to be woken.** The watcher mod
-(`hooks/register.ts`) reads every farm run, work round and grind loop this session launches from
+(`hooks/watch/watcher.ts`) reads every farm run, work round and grind loop this session launches from
 `$TMPDIR/farm-events/<session>/`, keeps one status line while any runs (`farm: 2 running (ds-rules
 43m, …) · work <run> round 2/3 2/5 checks`), and wakes YOU — not the user — ONCE per run on `DONE`
 and on a run whose process is gone with no verdict (`GONE`), naming its report path. `/farm` prints

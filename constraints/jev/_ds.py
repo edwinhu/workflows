@@ -138,7 +138,7 @@ def transform_sites(rel, lines):
         if source != target:
             before += _counted(code, e + 1, e + WINDOW, source)
         after = _counted(code, e + 1, e + WINDOW, target)
-        out.append({'file': rel, 'line': s, 'statement': clip(lines[s - 1]),
+        out.append({'file': rel, 'line': s, 'end_line': e, 'statement': clip(lines[s - 1]),
                     'target': target, 'source': source, 'row_changing_methods': row,
                     'input_count_lines': sorted(set(before))[:4],
                     'output_count_lines': after[:4],
@@ -146,3 +146,14 @@ def transform_sites(rel, lines):
                     'before_and_after_shown': bool(before) and bool(after)})
     out.sort(key=lambda r: (r['file'], r['line']))
     return out
+
+
+def in_scope(sites, changed):
+    """(sites whose statement intersects the round's changed lines, n skipped as unchanged). `changed`
+    maps file label -> [[lo, hi], ...]; a file it does not name has no diff info, so all its sites count."""
+    if changed is None:
+        return sites, 0
+    keep = [s for s in sites
+            if s['file'] not in changed
+            or any(lo <= s['end_line'] and s['line'] <= hi for lo, hi in changed[s['file']])]
+    return keep, len(sites) - len(keep)

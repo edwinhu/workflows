@@ -1,5 +1,5 @@
 /**
- * The watcher mod (hooks/register.ts) reads what the scripts REALLY write. Its parser and classifier
+ * The watcher mod (hooks/watch/watcher.ts) reads what the scripts REALLY write. Its parser and classifier
  * (hooks/watch/runs.ts) are pure, so they run here against the event files farm.sh and work-loop.sh
  * produce, in a sandbox TMPDIR and a sentinel session id, never the caller's own stream. The mod's
  * `$` side runs under the mod kit, which this file drives through scripts/mod-test.sh.

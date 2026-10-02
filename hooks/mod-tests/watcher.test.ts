@@ -1,4 +1,4 @@
-// The watcher mod (hooks/register.ts) under the mod kit: `claude plugin test hooks/mod-tests` from
+// The watcher mod (hooks/watch/watcher.ts, entered through hooks/register.ts) under the mod kit: `claude plugin test hooks/mod-tests` from
 // the plugin root. No real file, process or store is touched: a fake tree answers $.fs, a fake ps
 // answers $.process.run, and the store is a Map that outlives one test, which is what a reload is.
 import { expect, mock, test } from 'claude-code/testing'

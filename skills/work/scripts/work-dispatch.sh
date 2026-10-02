@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Phase 3 + Phase 4, mechanically: hash the plan, dispatch workflow.js detached, and arm the HOLD on
 # this session — the goal check when the plan states one, Jev alone on the goal when it does not.
-# The primary wake is the watcher mod (hooks/register.ts); an hourly CronCreate backstop is printed
+# The primary wake is the watcher mod (hooks/watch/watcher.ts); an hourly CronCreate backstop is printed
 # by default (--no-cron opts out), because a cron fires even when no session was running.
 #
 # Everything it needs is in the plan's `<!-- work:dispatch … -->` block, so a session that has
@@ -1055,7 +1055,7 @@ echo "args:  $out"
 
 # Phase 3: the WAKE and the HOLD.
 #
-# THE WAKE is the watcher mod (hooks/register.ts). Its timer restarts with every session start and
+# THE WAKE is the watcher mod (hooks/watch/watcher.ts). Its timer restarts with every session start and
 # reload, it reads $TMPDIR/farm-events/$CLAUDE_CODE_SESSION_ID — where work-round.sh, work-loop.sh and
 # the farm.sh they launch file themselves — and wakes the session once on the loop's exit (or the
 # round's verdict when no loop runs) and on a run that dies without one. So the
