@@ -1,7 +1,7 @@
 // The per-edit Jev mod's pure half: which rule set a file belongs to, which lines an edit changed,
 // and the one line a violation becomes. No `$` and no Node, so bun tests and the mod kit share it.
 
-export type RuleSet = 'writing' | 'dev' | 'ds' | 'authoring' | 'typst' | 'notes' | 'slides'
+export type RuleSet = 'writing' | 'dev' | 'ds' | 'authoring' | 'typst' | 'notes' | 'slides' | 'exams'
 
 /** Each set's rules directory under its plugin's root: this plugin's, or the teaching plugin's for
  *  TEACHING_SETS. Only the directory itself is globbed by evidence.py, so its `uncalibrated/`
@@ -14,14 +14,24 @@ export const RULE_DIRS: Record<RuleSet, string> = {
   typst: 'constraints/jev/typst',
   notes: 'constraints/jev/notes',
   slides: 'constraints/jev/slides',
+  exams: 'constraints/jev/exams',
 }
 
 /** The sets the teaching plugin ships (its constraints/jev); without that plugin they score as writing. */
-export const TEACHING_SETS: ReadonlySet<RuleSet> = new Set<RuleSet>(['notes', 'slides'])
+export const TEACHING_SETS: ReadonlySet<RuleSet> = new Set<RuleSet>(['notes', 'slides', 'exams'])
+
+/** The file whose presence under the teaching plugin root says a teaching set's rules are installed. */
+export const TEACHING_PROBE: Partial<Record<RuleSet, string>> = {
+  notes: 'constraints/jev/_lecture.py',
+  slides: 'constraints/jev/_lecture.py',
+  exams: 'constraints/jev/exams/_exam.py',
+}
 
 export const BLOCK_AT = 0.85
 
 const PROSE = /\.(md|typ|tex)$/i
+// teaching's exam layout (skills/exams): a set root's question files, or an assembled exam under exams/
+const EXAM = /(^|\/)\.planning\/(?:[^/]+\/)?(?:mc\/\d+|issue-spotter|policy)\.typ$|(^|\/)exams\/[^/]+(?<!-rubric)\.typ$/
 // what the harness loads as a skill, agent or command, a plugin's manifests, and .planning/ files
 const AUTHORING = /(^|\/)(SKILL\.md|CLAUDE\.md|AGENTS\.md|plugin\.json|marketplace\.json|hooks\.json)$|\/(agents|commands)\/[^/]+\.md$|\/\.planning\//
 // A talk's deck and speaker notes: slides*.typ / notes*.typ, or any .typ in a presentation/ directory.
@@ -39,7 +49,8 @@ export function workflowOf(text: string): string | null {
 }
 
 /**
- * The rule set for `path`, or null for none. A SKILL.md, agent or command .md, CLAUDE.md/AGENTS.md,
+ * The rule set for `path`, or null for none. An exam question file (teaching's `.planning/` set root
+ * or an assembled `exams/*.typ`, rubrics aside) is exams, ahead of every other rule. A SKILL.md, agent or command .md, CLAUDE.md/AGENTS.md,
  * plugin.json, marketplace.json, hooks.json or a .planning/ file is authoring, ahead of the .md rule.
  * Lecture notes are notes and a lecture's deck is slides (the teaching rules: notes are spoken, and the
  * writing rules would flag the signposts they need). A talk's .typ deck or notes (by name, by a
@@ -50,6 +61,7 @@ export function workflowOf(text: string): string | null {
  * inside a ds project is still dev: the dev rules are the ones written about tests.
  */
 export async function ruleSetFor(path: string, workflowAt: (dir: string) => Promise<string | null>): Promise<RuleSet | null> {
+  if (EXAM.test(path)) return 'exams'
   if (AUTHORING.test(path)) return 'authoring'
   if (LECTURE_NOTES.test(path)) return 'notes'
   if (LECTURE_DECK.test(path)) return 'slides'

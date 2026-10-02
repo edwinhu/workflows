@@ -1,8 +1,9 @@
 // The per-edit Jev mod: after an Edit/Write/MultiEdit lands, score the file against its rule set's
 // WIRED Jev rules and add one line of context per rule at p(VIOLATED) >= 0.85. Advisory only.
 //
-//   rule set   hooks/jev/rules.ts ruleSetFor: skill/agent/command files, manifests and .planning/
-//              -> authoring, lecture notes -> notes and a lecture deck -> slides (both from the
+//   rule set   hooks/jev/rules.ts ruleSetFor: exam question .typ -> exams, skill/agent/command
+//              files, manifests and .planning/ -> authoring, lecture notes -> notes and a lecture
+//              deck -> slides (all three from the
 //              teaching plugin, $TEACHING_PLUGIN_ROOT or ~/.claude/skills/teaching; writing when it
 //              is absent), a talk's slides/notes .typ (or any .typ under a `workflow: workshop`
 //              cursor) -> typst, other prose -> writing, tests and shell -> dev, .py under a
@@ -20,7 +21,7 @@
 // with context added or not; it never denies. Any failure adds nothing and goes to the debug log.
 import type { EngineInterface, On, ToolCallResult } from 'claude-code'
 import {
-  RULE_DIRS, TEACHING_SETS, ancestors, changedFromInput, contextLines, enabled, merge, rangesFromDiff, ruleSetFor,
+  RULE_DIRS, TEACHING_PROBE, TEACHING_SETS, ancestors, changedFromInput, contextLines, enabled, merge, rangesFromDiff, ruleSetFor,
   workflowOf, dirname, type Range, type RuleSet, type Verdict,
 } from './rules.ts'
 
@@ -67,11 +68,11 @@ async function workflowAt($: $, dir: string): Promise<string | null> {
   return null
 }
 
-/** The teaching plugin's root when its lecture rules are there to run, else null. */
-async function teachingRoot($: $): Promise<string | null> {
+/** The teaching plugin's root when the set's rules are there to run, else null. */
+async function teachingRoot($: $, set: RuleSet): Promise<string | null> {
   const root = (await $.env.get('TEACHING_PLUGIN_ROOT')) || `${(await $.env.get('HOME')) || ''}/.claude/skills/teaching`
   try {
-    await $.fs.read(`${root}/constraints/jev/_lecture.py`)
+    await $.fs.read(`${root}/${TEACHING_PROBE[set]}`)
     return root
   } catch {
     return null
@@ -86,9 +87,9 @@ interface Target {
 
 async function targetFor($: $, set: RuleSet): Promise<Target> {
   if (!TEACHING_SETS.has(set)) return { set, dir: `${$.plugin.root}/${RULE_DIRS[set]}` }
-  const root = await teachingRoot($)
+  const root = await teachingRoot($, set)
   if (root) return { set, dir: `${root}/${RULE_DIRS[set]}` }
-  log($, `no teaching plugin with constraints/jev: lecture ${set} scored as writing`)
+  log($, `no teaching plugin with constraints/jev: teaching ${set} scored as writing`)
   return { set: 'writing', dir: `${$.plugin.root}/${RULE_DIRS.writing}` }
 }
 

@@ -97,6 +97,14 @@ test("a lecture's notes and deck use the teaching plugin's notes and slides rule
   expect(rules).toEqual(['/home/u/.claude/skills/teaching/constraints/jev/notes', '/home/u/.claude/skills/teaching/constraints/jev/slides'])
 })
 
+test("an exam question .typ uses the teaching plugin's exam rules", async ($, on) => {
+  const exam = '/home/u/.claude/skills/teaching/constraints/jev/exams/_exam.py'
+  const w = world(on, { tree: { [exam]: '' }, verdicts: [{ rule: 'EX-KEY', p: 0.96, statement: "At least one MC question's ANSWER KEY IS INCONSISTENT WITH ITS STEM" }] })
+  const r = await $.tool.call(write('/home/u/c/.planning/mc/03.typ', '1. Which are correct?\n'))
+  expect(jevLines(r)).toEqual(["Jev EX-KEY: /home/u/c/.planning/mc/03.typ:1 — At least one MC question's ANSWER KEY IS INCONSISTENT WITH ITS STEM (p=0.96)"])
+  expect(w.runs[0]!.argv[w.runs[0]!.argv.indexOf('--rules') + 1]).toBe('/home/u/.claude/skills/teaching/constraints/jev/exams')
+})
+
 test('TEACHING_PLUGIN_ROOT names the teaching plugin', async ($, on) => {
   const w = world(on, { tree: { '/opt/teaching/constraints/jev/_lecture.py': '' }, env: { TEACHING_PLUGIN_ROOT: '/opt/teaching' } })
   await $.tool.call(write('/home/u/p/notes/14-10b5.typ'))
