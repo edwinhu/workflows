@@ -10,9 +10,8 @@ import { changedFiles, changedRanges, collectEvidence } from "./rule-check.ts";
 // so no probe mistakes a fixture SKILL.md for a skill of this plugin.
 const BASE = join(import.meta.dir, "../../..");
 const RULES_DIR = join(BASE, "constraints/jev/authoring");
-const UNCAL_DIR = join(RULES_DIR, "uncalibrated");
 const FIX = join(BASE, "tests/fixtures/jev/authoring");
-const RULES = ["A-DESC", "A-FLAG", "A-GATE", "A-SOFT", "A-STATE"] as const;
+const RULES = ["A-DESC", "A-FLAG", "A-GATE", "A-PAD", "A-SOFT", "A-STATE"] as const;
 const SUBJECT = "one skill, plugin or workflow authoring change (SKILL.md, agent .md, manifests, .planning/ files)";
 const made: string[] = [];
 afterAll(() => made.forEach(d => rmSync(d, { recursive: true, force: true })));
@@ -59,10 +58,10 @@ const SIGNAL: Record<string, (s: any) => boolean> = {
   "A-GATE": s => s.n_naming_no_decidable_check > 0,
   "A-SOFT": s => s.n_with_soft_words > 0,
   "A-STATE": s => s.planning_files_in_change.some((p: any) => !p.canonical_name) && s.files_deleted_by_change.length === 0,
-  "A-PAD": s => s.added_passages.some((p: any) => p.history_markers.length > 0 && !p.carries_a_number),
+  "A-PAD": s => s.n_history_marked_not_fact_rows > 0,
 };
 
-test("authoring discovery finds exactly the five wired rules, each with the authoring subject", () => {
+test("authoring discovery finds exactly the six wired rules, each with the authoring subject", () => {
   const out = evidence(repo("A-DESC", "vio"));
   expect(Object.keys(out).sort()).toEqual([...RULES].sort());
   for (const r of RULES) {
@@ -71,16 +70,13 @@ test("authoring discovery finds exactly the five wired rules, each with the auth
     expect(Object.keys(out[r].criteria).sort()).toEqual(["INSUFFICIENT_EVIDENCE", "NOT_APPLICABLE", "SATISFIED", "VIOLATED"]);
     expect(JSON.stringify(out[r].state).length).toBeLessThan(60000);
   }
-  // uncalibrated/ sits below the glob rule-check reads; it is reached only by naming it
-  expect(Object.keys(evidence(repo("A-PAD", "vio"), UNCAL_DIR))).toEqual(["A-PAD"]);
 });
 
-for (const rule of [...RULES, "A-PAD"]) {
+for (const rule of RULES) {
   test(`${rule}: extractor state separates the violating twin from the compliant one`, () => {
-    const dir = rule === "A-PAD" ? UNCAL_DIR : RULES_DIR;
-    const vio = evidence(repo(rule, "vio"), dir);
+    const vio = evidence(repo(rule, "vio"));
     expect(SIGNAL[rule](vio[rule].state)).toBe(true);
-    expect(SIGNAL[rule](evidence(repo(rule, "sat"), dir)[rule].state)).toBe(false);
+    expect(SIGNAL[rule](evidence(repo(rule, "sat"))[rule].state)).toBe(false);
     // every wired rule other than this one stays quiet on this rule's violating twin
     const all = evidence(repo(rule, "vio"));
     for (const other of RULES.filter(r => r !== rule)) expect(SIGNAL[other](all[other].state)).toBe(false);
@@ -102,6 +98,20 @@ test("A-FLAG state: a table row's first cell is the trigger", () => {
   expect(s.changed_red_flags[0].trigger).toBe("If you catch yourself thinking the blank rows are probably harmless");
   const sat = evidence(repo("A-FLAG", "sat"))["A-FLAG"].state;
   expect(sat.changed_red_flags.filter((f: any) => f.trigger.startsWith("About to")).length).toBe(3);
+});
+
+test("A-PAD state: a dated fact backing a rule is a fact row; narrated history is not", () => {
+  const vio = evidence(repo("A-PAD", "vio"))["A-PAD"].state;
+  expect(vio.added_passages[0]).toMatchObject({ fact_row: false, backs_rule: null });
+  const sat = evidence(repo("A-PAD", "sat"))["A-PAD"].state;
+  expect(sat.added_passages[0]).toMatchObject({ fact_row: true, history_markers: ["2026-09-12"] });
+  // the accepted State Files doctrine: each dated Facts bullet is read alone and backs a stated rule
+  const real = replay(join(BASE, "tests/fixtures/jev/real/AUTH-statefiles-claudemd/before"), join(BASE, "tests/fixtures/jev/real/AUTH-statefiles-claudemd/after"));
+  const s = evidence(real)["A-PAD"].state;
+  expect(s.n_history_marked_not_fact_rows).toBe(0);
+  const facts = s.added_passages.filter((p: any) => p.section === "Facts");
+  expect(facts.length).toBe(6);
+  for (const f of facts) expect(f.fact_row).toBe(true);
 });
 
 test("A-STATE state: a new .planning noun and the lines naming it; nothing retired", () => {
