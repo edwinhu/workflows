@@ -41,7 +41,9 @@ RAW="$RUN/raw.json" CHECKS="$RUN/checks.json" ROWS="$RUN/rows.json" LENS="$RUN/l
 rm -f -- "$RAW" "$CHECKS" "$ROWS" "$LENS"
 
 step "1/5 agents (farm.sh --workflow)"
-bash "$FARM" --provider "$HOST" --workflow "$SKILL/workflow.js" --args "$ARGS" --out "$RAW" --cwd "$CWD"
+# JEV_EDIT_MOD=1: the implementers are headless farm children, which the per-edit Jev mod (hooks/jev/)
+# skips unless asked; they are the ones its feedback is for. The lens row below stays without it.
+JEV_EDIT_MOD=1 bash "$FARM" --provider "$HOST" --workflow "$SKILL/workflow.js" --args "$ARGS" --out "$RAW" --cwd "$CWD"
 frc=$?
 jq -e '.stage == "agents"' "$RAW" >/dev/null 2>&1 \
   || die "agents stage left no agents-stage $RAW (farm.sh exit $frc); see the log above"
