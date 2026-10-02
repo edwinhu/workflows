@@ -56,8 +56,9 @@
  *   asOf               the date of the last refresh in which either source answered.
  * No match is null. A source with no key, or one that fails, leaves that field as it was and says so
  * on stderr; it never fails the refresh. Keys are read at RUNTIME and never written anywhere:
- * $OPENROUTER_API_KEY / $ARTIFICIAL_ANALYSIS_API_KEY; for OpenRouter only, then the agenix secret
- * $ROUTE_OPENROUTER_KEY_FILE (default $XDG_RUNTIME_DIR/agenix/openrouter-api-key); else `op read` of
+ * $OPENROUTER_API_KEY / $ARTIFICIAL_ANALYSIS_API_KEY; then the agenix secret $ROUTE_OPENROUTER_KEY_FILE
+ * / $ROUTE_AA_KEY_FILE (defaults $XDG_RUNTIME_DIR/agenix/openrouter-api-key and
+ * $XDG_RUNTIME_DIR/agenix/artificial-analysis-api-key); else `op read` of
  * $ROUTE_OPENROUTER_KEY_REF / $ROUTE_AA_KEY_REF (defaults below), with the agenix service-account
  * token loaded when unset.
  *
@@ -621,7 +622,9 @@ async function fetchSignals(): Promise<{ ranks: Map<string, number> | null; inte
     }
   }
   let intelligence: Map<string, number> | null = null
-  const aaKey = readKey('ARTIFICIAL_ANALYSIS_API_KEY', 'ROUTE_AA_KEY_REF', DEFAULT_AA_KEY_REF)
+  const aaFile = process.env.ROUTE_AA_KEY_FILE ||
+    (process.env.XDG_RUNTIME_DIR ? join(process.env.XDG_RUNTIME_DIR, 'agenix/artificial-analysis-api-key') : undefined)
+  const aaKey = readKey('ARTIFICIAL_ANALYSIS_API_KEY', 'ROUTE_AA_KEY_REF', DEFAULT_AA_KEY_REF, aaFile)
   const aaUrl = process.env.ROUTE_AA_URL || DEFAULT_AA_URL
   if ('missing' in aaKey) warn(`intelligenceIndex left unchanged: ${aaKey.missing}`)
   else {
