@@ -72,6 +72,9 @@ const EXCLUSIONS: Record<string, string> = {
   "scripts/grind-notify-hermetic-check.sh":
     "ZERO ARGS IS THE INVOCATION: runs this repo's own grind/early-stop suites (located from " +
     "BASH_SOURCE) and checks they notify nobody. It takes minutes, so the sweep does not run it.",
+  "scripts/test.sh":
+    "ZERO ARGS IS THE INVOCATION: runs this repo's whole bun suite (located from $0) in parallel. " +
+    "The sweep is part of that suite, so running it here would recurse.",
   "scripts/mod-test.sh":
     "ZERO ARGS IS THE INVOCATION: stages this repo's own hooks module (located from BASH_SOURCE) " +
     "into a temp plugin and runs `claude plugin test` on it. tests/farm-watch-runs.test.ts drives it.",
