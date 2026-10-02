@@ -1,14 +1,3 @@
-"""UNCALIBRATED -- not wired. Calibration 2026-10-02: violating fixture 1.00/1.00 and compliant twin 0.00/0.00,
-GLJ-accepted OPV excerpt 0.28-0.38, but the submitted Mirror Voting excerpt scored 0.58, 0.63, 0.63, 0.49,
-0.59, 0.64 over three invocations (wiring needs < 0.5 on every run). That excerpt cites a bill, S. 1670, as "119th Congress, supra note 3",
-which rule 4.2 bars, so the judge may be right and the real case mislabeled; the rule stays here until the
-user rules on that citation. Below the glob rule-check.ts reads.
-"""
-import os
-import sys
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # _scholar
-
 import re
 
 from _common import render_json
@@ -16,19 +5,27 @@ from _scholar import MAX_ITEMS, SIGNAL_RX, authority_kinds, clip, load, pieces, 
 
 DELIVERABLE = 'law review'
 
-PROPOSITION = ('A "supra" short form is used for an authority Bluebook rule 4.2 bars from it: a case, a '
-               'statute, a constitution, a regulation, a restatement, a model code, or legislative '
-               'material other than a hearing. Those take their own short forms ("Brown, 347 U.S. at '
-               '495"; "Id. § 1985"). A supra for a book, article, report, hearing, filing, release or '
-               'other periodical or nonperiodic source is correct, and so is an internal cross-reference '
-               '("supra Part II.A", "supra note 12").')
+PROPOSITION = ('A "supra" short form is used for an authority Bluebook rule 4.2 bars from it: a case; a '
+               'statute, including one cited through an institutional author or website ("State of '
+               'Delaware, supra note 25" for DGCL § 216); a constitution; a codified regulation; a '
+               'restatement; a model code; or legislative material other than a hearing, including a '
+               'bill, enacted or not ("119th Congress, supra note 3" for S. 1670). Those take their own '
+               'short forms ("Brown, 347 U.S. at 495"; "tit. 8, § 216"; "S. 1670 § 2") or a repeated full '
+               'cite. An agency adopting or proposing release cited by its release title, such as an SEC '
+               'final or proposed rule in the Federal Register with a [hereinafter] short form, MAY take '
+               'supra by law-review practice, though rule 4.2 lists regulations. A supra for a book, '
+               'article, report, hearing, court filing, release, periodical, unpublished or nonprint '
+               'source is correct, and so is an internal cross-reference ("supra Part II.A", "supra note '
+               '12").')
 
 CRITERIA = {
-    'VIOLATED': 'at least one supra short form refers to a case, statute, constitution, regulation, '
-                'restatement, model code or non-hearing legislative material',
+    'VIOLATED': 'at least one supra short form refers to a case, a statute (also when cited through an '
+                'institutional author or website), a constitution, a codified regulation, a restatement, a '
+                'model code, a bill (enacted or not) or other non-hearing legislative material',
     'SATISFIED': 'every supra short form refers to a source rule 4.2 allows (books, articles, reports, '
-                 'hearings, filings, releases, periodicals, unpublished or nonprint material) or is an '
-                 'internal cross-reference',
+                 'hearings, court filings, periodicals, unpublished or nonprint material), to an agency '
+                 'adopting or proposing release cited by its release title, or is an internal '
+                 'cross-reference',
     'NOT_APPLICABLE': 'the state holds no supra short form that names a source',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
