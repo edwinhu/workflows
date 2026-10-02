@@ -209,6 +209,31 @@ test('with no env keys, keys come from `op read` of the overridable refs with th
   } finally { s.stop() }
 }, 30_000)
 
+test('with no $OPENROUTER_API_KEY, the agenix secret file supplies it and op is never asked for OpenRouter', async () => {
+  const s = stubAll()
+  const op = stubOp({ 'op://Test Vault/AA/credential': AA_KEY })
+  const keyFile = join(op.xdg, 'agenix', 'openrouter-api-key')
+  writeFileSync(keyFile, `${OR_KEY}\n`)
+  const table = tableCopy()
+  try {
+    for (const where of [{ XDG_RUNTIME_DIR: op.xdg }, { XDG_RUNTIME_DIR: join(op.dir, 'elsewhere'), ROUTE_OPENROUTER_KEY_FILE: keyFile }]) {
+      s.seen.length = 0
+      const r = await run(['--refresh', '--table', table], {
+        ...s.env, PATH: `${op.dir}:${process.env.PATH}`, ...where,
+        ROUTE_OPENROUTER_KEY_REF: 'op://Test Vault/OR/credential', ROUTE_AA_KEY_REF: 'op://Test Vault/AA/credential',
+      })
+      expect(r.code).toBe(0)
+      expect(s.seen.find(x => x.path === '/rankings')?.auth).toBe(`Bearer ${OR_KEY}`)
+      expect(s.seen.filter(x => x.path !== '/rankings').every(x => !String(x.auth).includes(OR_KEY) && !String(x.apiKey).includes(OR_KEY))).toBe(true)
+      expect(read(table).candidates.sonnet.signals).toMatchObject({ usageRank: 1, intelligenceIndex: 70 })
+      noKeyLeaks(r, table)
+    }
+    expect(op.calls()).not.toContain('op://Test Vault/OR/credential')
+    // AA has no file fallback: it still came from op.
+    expect(op.calls()).toContain('op://Test Vault/AA/credential')
+  } finally { s.stop() }
+}, 60_000)
+
 test('no key anywhere: both sources say so on stderr, no request is made, the refresh succeeds', async () => {
   const s = stubAll()
   const op = stubOp('fail')

@@ -48,7 +48,8 @@ from a repo checkout, never the plugin cache, and review the diff before committ
 `openrouter` slug: one request each to OpenRouter's rankings dataset and the Artificial Analysis
 data API. No match is null; a failed or keyless source leaves its field unchanged, warns on stderr,
 and never fails the refresh. Keys are read at runtime only (`OPENROUTER_API_KEY` /
-`ARTIFICIAL_ANALYSIS_API_KEY`, else `op read` from the `Shared with Agents` vault), never written
+`ARTIFICIAL_ANALYSIS_API_KEY`; for OpenRouter, then the agenix secret
+`$XDG_RUNTIME_DIR/agenix/openrouter-api-key`; else `op read` from the `Shared with Agents` vault), never written
 to `routing.json`, a log or stdout. **`--propose` is advisory**: it prints suggested `kinds` changes
 with a reason each (`--json` too) and writes nothing; the user approves by editing `kinds`. It never
 moves the Claude defaults (judgement → opus; script, review → sonnet); rule in the `route.ts` header.
