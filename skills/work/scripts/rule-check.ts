@@ -11,6 +11,8 @@ export interface Verdict {
   rule: string;
   p: number;
   verdict: string;
+  /** --batch only: the rule's one-line statement (statement()). */
+  statement?: string;
 }
 export interface Unavailable {
   rule: string;
@@ -103,20 +105,26 @@ export function collectEvidence(opts: { files: string[]; plan?: string; root?: s
 }
 
 // One rule's Decisions call: P(VIOLATED), or the reason it could not be had (one retry).
+const STATE_CAP = 60000;
+
+function evidencePaths(state: any): string[] {
+  return state && Array.isArray(state.files) ? state.files.map((f: any) => f.path).filter(Boolean) : [];
+}
+
+function preamble(subject: string, projectName: string, paths: string[]): string {
+  return `You are auditing ${subject} against a written RULE.\nPROJECT: ${projectName}\nEVIDENCE: ${paths.join(', ')}\nThe state is a JSON object. Named fields carry what the extractor found; \`searches\` records every pattern looked for, every file covered, and an EMPTY match list where nothing matched -- an absence is a fact, not a gap.\n\n`;
+}
+
+function cap(text: string, n: number): string {
+  return text.length > n ? text.substring(0, n) + "\n...[STATE TRUNCATED]..." : text;
+}
+
 export function scoreRule(ruleName: string, data: any, projectName: string): { p: number } | { unavailable: string } {
   const { state, proposition, criteria, subject, deliverable } = data;
-
-  let filePaths: string[] = [];
-  if (state && state.files && Array.isArray(state.files)) {
-    filePaths = state.files.map((f: any) => f.path).filter(Boolean);
-  }
-
-  const preamble = `You are auditing ${subject || `one ${deliverable ?? 'data-science'} deliverable`} against a written RULE.\nPROJECT: ${projectName}\nEVIDENCE: ${filePaths.join(', ')}\nThe state is a JSON object. Named fields carry what the extractor found; \`searches\` records every pattern looked for, every file covered, and an EMPTY match list where nothing matched -- an absence is a fact, not a gap.\n\n`;
-
-  let fullState = preamble + JSON.stringify(state, null, 1);
-  if (fullState.length > 60000) {
-    fullState = fullState.substring(0, 60000) + "\n...[STATE TRUNCATED]...";
-  }
+  const fullState = cap(
+    preamble(subject || `one ${deliverable ?? 'data-science'} deliverable`, projectName, evidencePaths(state)) + JSON.stringify(state, null, 1),
+    STATE_CAP,
+  );
 
   const questions = {
     q0: {
@@ -160,24 +168,67 @@ export function scoreRule(ruleName: string, data: any, projectName: string): { p
   return { unavailable: finalError };
 }
 
+// Every rule in ONE Decisions call: one question per rule over one state holding each rule's evidence
+// under its own heading, the state cap split evenly between them. No retry: the per-edit Jev mod
+// (hooks/jev/) spends one call per edit, and a failure is every rule unavailable.
+export function scoreRulesBatch(
+  evidenceData: Record<string, any>, projectName: string, opts: { maxTimeSeconds?: number } = {},
+): Record<string, { p: number } | { unavailable: string }> {
+  const names = Object.keys(evidenceData);
+  if (names.length === 0) return {};
+  const first = evidenceData[names[0]];
+  const paths = [...new Set(names.flatMap(n => evidencePaths(evidenceData[n].state)))];
+  const share = Math.floor(STATE_CAP / names.length);
+  const sections = names.map(n => cap(`=== RULE ${n} STATE ===\n${JSON.stringify(evidenceData[n].state, null, 1)}`, share));
+  const state = preamble(first.subject || `one ${first.deliverable ?? 'data-science'} deliverable`, projectName, paths)
+    + `Each rule's state is under its own === RULE <name> STATE === heading; judge each question on its rule's section alone.\n\n`
+    + sections.join('\n\n');
+  const questions = Object.fromEntries(names.map((n, i) => [`q${i}`, {
+    type: 'choice',
+    instructions: `Decide whether this is true of the state under === RULE ${n} STATE === (rule ${n}):\n\n${evidenceData[n].proposition}`,
+    criteria: evidenceData[n].criteria,
+  }]));
+
+  const all = (reason: string) => Object.fromEntries(names.map(n => [n, { unavailable: reason }]));
+  const callRes = decisionsCall(state, questions, opts);
+  if (callRes.unavailable) return all(callRes.unavailable);
+  let ans: any;
+  try {
+    ans = JSON.parse(callRes.stdout!);
+  } catch {
+    return all('empty or invalid reply');
+  }
+  return Object.fromEntries(names.map((n, i) => {
+    const p = ans?.answers?.[`q${i}`]?.probabilities?.VIOLATED;
+    return [n, typeof p === 'number' ? { p } : { unavailable: `missing answers.q${i}.probabilities.VIOLATED in reply` }];
+  }));
+}
+
+// The first clause of a rule's proposition: the one line a per-edit note quotes.
+export function statement(proposition: string): string {
+  const one = String(proposition ?? '').replace(/\s+/g, ' ').trim().split(/(?<=[^.]{12})[:.;](?:\s|$)/)[0];
+  return one.length > 140 ? one.slice(0, 139) + '…' : one;
+}
+
 // Score every rule in rulesDir (or only the named ones) on these files; verdicts sorted by p descending.
 export function checkRules(opts: {
   files: string[]; plan?: string; root?: string; rulesDir?: string; projectName: string; blockAt: number; only?: string[];
-  changed?: Record<string, number[][]> | null;
+  changed?: Record<string, number[][]> | null; batch?: boolean; maxTimeSeconds?: number;
 }): { verdicts: Verdict[]; unavailable: Unavailable[] } {
   const evidenceData = collectEvidence(opts);
   const verdicts: Verdict[] = [];
   const unavailable: Unavailable[] = [];
+  const picked = Object.fromEntries(Object.entries(evidenceData).filter(([n]) => !opts.only || opts.only.includes(n)));
+  const batched = opts.batch ? scoreRulesBatch(picked, opts.projectName, { maxTimeSeconds: opts.maxTimeSeconds }) : null;
 
-  for (const [ruleName, data] of Object.entries(evidenceData)) {
-    if (opts.only && !opts.only.includes(ruleName)) continue;
-    const r = scoreRule(ruleName, data, opts.projectName);
+  for (const [ruleName, data] of Object.entries(picked)) {
+    const r = batched ? batched[ruleName] : scoreRule(ruleName, data, opts.projectName);
     if ('unavailable' in r) {
       unavailable.push({ rule: ruleName, reason: r.unavailable });
       continue;
     }
     const verdict = r.p >= opts.blockAt ? 'VIOLATED' : 'MET';
-    verdicts.push({ rule: ruleName, p: r.p, verdict });
+    verdicts.push(batched ? { rule: ruleName, p: r.p, verdict, statement: statement(data.proposition) } : { rule: ruleName, p: r.p, verdict });
   }
 
   verdicts.sort((a, b) => b.p - a.p);
@@ -191,6 +242,9 @@ function main() {
   let plan = '';
   let blockAt = 0.85;
   let rulesDir = defaultRulesDir;
+  let batch = false;
+  let maxTimeSeconds: number | undefined;
+  let changedFile = '';
 
   const argv = process.argv.slice(2);
   for (let i = 0; i < argv.length; i++) {
@@ -203,6 +257,12 @@ function main() {
       plan = argv[++i];
     } else if (arg === '--block-at') {
       blockAt = parseFloat(argv[++i]);
+    } else if (arg === '--batch') {
+      batch = true;
+    } else if (arg === '--max-time') {
+      maxTimeSeconds = parseFloat(argv[++i]);
+    } else if (arg === '--changed-lines') {
+      changedFile = argv[++i];
     } else if (arg === '--rules') {
       rulesDir = argv[++i];
     } else if (arg === '--files') {
@@ -213,6 +273,15 @@ function main() {
   }
 
   let changed: Record<string, number[][]> | null = null;
+  if (changedFile) {
+    try {
+      // '-' reads it from stdin: the per-edit Jev mod passes it there, so no temp file is written
+      changed = JSON.parse(readFileSync(changedFile === '-' ? 0 : changedFile, 'utf8'));
+    } catch (e) {
+      console.error(`Failed to read --changed-lines ${changedFile}:`, e);
+      process.exit(1);
+    }
+  }
   if (projectDir) {
     try {
       files = files.concat(changedFiles(projectDir));
@@ -242,7 +311,7 @@ function main() {
 
   let result!: ReturnType<typeof checkRules>;
   try {
-    result = checkRules({ files, plan: plan || undefined, root: projectDir || undefined, rulesDir, projectName, blockAt, changed });
+    result = checkRules({ files, plan: plan || undefined, root: projectDir || undefined, rulesDir, projectName, blockAt, changed, batch, maxTimeSeconds });
   } catch (e: any) {
     console.error(e.message);
     process.exit(1);
