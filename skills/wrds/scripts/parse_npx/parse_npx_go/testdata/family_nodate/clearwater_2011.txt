@@ -1,0 +1,1094 @@
+<SEC-DOCUMENT>0000897101-11-001772.txt : 20111014
+<SEC-HEADER>0000897101-11-001772.hdr.sgml : 20111014
+<ACCEPTANCE-DATETIME>20111014080816
+ACCESSION NUMBER:		0000897101-11-001772
+CONFORMED SUBMISSION TYPE:	N-PX/A
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20110630
+FILED AS OF DATE:		20111014
+DATE AS OF CHANGE:		20111014
+EFFECTIVENESS DATE:		20111014
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			CLEARWATER INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0000811161
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MN
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX/A
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-05038
+		FILM NUMBER:		111140888
+
+	BUSINESS ADDRESS:	
+		STREET 1:		2000 WELLS FARGO PLACE
+		STREET 2:		30 EAST 7TH STREET
+		CITY:			ST PAUL
+		STATE:			MN
+		ZIP:			55101-4930
+		BUSINESS PHONE:		6122280935
+
+	MAIL ADDRESS:	
+		STREET 1:		2000 WELLS FARGO PLACE
+		STREET 2:		30 EAST 7TH STREET
+		CITY:			ST PAUL
+		STATE:			MN
+		ZIP:			55101
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000000697
+<SERIES-NAME>Clearwater Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002050
+<CLASS-CONTRACT-NAME>Clearwater Growth Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000000698
+<SERIES-NAME>Clearwater Small Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002051
+<CLASS-CONTRACT-NAME>Clearwater Small Cap Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000000699
+<SERIES-NAME>Clearwater Tax-Exempt Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002052
+<CLASS-CONTRACT-NAME>Clearwater Tax-Exempt Bond Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000024756
+<SERIES-NAME>CLEARWATER INTERNATIONAL FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000073549
+<CLASS-CONTRACT-NAME>CLEARWATER INTERNATIONAL FUND
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX/A
+<SEQUENCE>1
+<FILENAME>clearwater114838_npxa.htm
+<DESCRIPTION>AMENDMENT TO FORM N-PX
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY STYLE="font: 10pt Times New Roman, Times, Serif">
+
+<P STYLE="margin: 0"></P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">UNITED STATES<BR>
+SECURITIES AND EXCHANGE COMMISSION<BR>
+<FONT STYLE="text-transform: uppercase">W</FONT>ashington, DC 20549</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">&nbsp;</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center"><B>FORM N-PX/A</B></P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">&nbsp;</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center"><B>ANNUAL REPORT OF PROXY VOTING RECORD OF <BR>REGISTERED MANAGEMENT INVESTMENT COMPANY</B></P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">&nbsp;</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">Investment Company Act file number <U>811-05038</U></P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">&nbsp;</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center"><U>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Clearwater
+Investment Trust&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<BR></U>(Exact name of registrant as specified in charter)</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">&nbsp;</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">2000 Wells Fargo Place, 30 East 7<SUP>th</SUP>Street,</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center"><U>St. Paul, Minnesota 55101-4930<BR></U>(Address of principal executive offices) (Zip code)</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">&nbsp;</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">Jennifer D. Lammers</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">Chief Compliance Officer</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">Fiduciary Counselling, Inc.</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">2000 Wells Fargo Place, 30 East 7<SUP>th</SUP>
+Street</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">St. Paul, Minnesota 55101-4930</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">&nbsp;</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">With a copy to:</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">&nbsp;</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">John V. O&rsquo;Hanlon, Esq.</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">Dechert LLP</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">200 Clarendon Street, 27<SUP>th</SUP> Floor</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center"><U>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Boston, Massachusetts
+02116-5021&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<BR>
+</U>(Name and address of agents for service)</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">&nbsp;</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">Registrant's telephone number, including area
+code: <U> (651) 228-0935</U></P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">&nbsp;</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">Date of fiscal year end: <U>12/31/2011</U></P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">&nbsp;</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">Date of reporting period: <U>07/01/10 - 06/30/11</U></P>
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: justify"><B>Explanatory Note</B>: Clearwater Investment
+Trust is amending and restating in its entirety the Form N-PX filed with the U.S. Securities and Exchange Commission on August
+29, 2011 for the period of July 1, 2010 to June 30, 2011.</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: justify"><B>Item 1. Proxy Voting Record.</B></P>
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0 0 0 0.5in; text-align: justify"><B>&nbsp;</B></P>
+
+<BR>
+
+<HR NOSHADE ALIGN=CENTER WIDTH="100%" SIZE=3><P STYLE='PAGE-BREAK-BEFORE: ALWAYS'></P><PAGE>
+
+<BR>
+
+<P><FONT SIZE="2"><B>CLEARWATER GROWTH FUND</B> </FONT></P>
+
+
+<P><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif"><B>Vote Audit Report</B></FONT></P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 8pt Arial, Helvetica, Sans-Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: top;">
+    <TD STYLE="width: 38%; padding-top: 3pt; padding-bottom: 3pt; padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal"><B>Company Name</B></FONT></TD>
+    <TD NOWRAP STYLE="width: 11%; padding-top: 3pt; padding-bottom: 3pt; padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal"><B>Meeting
+    Type</B></FONT></TD>
+    <TD NOWRAP STYLE="width: 10%; padding-top: 3pt; padding-bottom: 3pt; padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal"><B>Meeting
+    Date</B></FONT></TD>
+    <TD NOWRAP STYLE="width: 11%; padding-top: 3pt; padding-bottom: 3pt; padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal"><B>Ballot
+    Shares</B></FONT></TD>
+    <TD NOWRAP STYLE="width: 11%; padding-top: 3pt; padding-bottom: 3pt; padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal"><B>Voted
+    Shares</B></FONT></TD>
+    <TD NOWRAP STYLE="width: 10%; padding-top: 3pt; padding-bottom: 3pt; padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal"><B>Security</B></FONT></TD>
+    <TD NOWRAP STYLE="width: 9%; padding-top: 3pt; padding-bottom: 3pt; padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal"><B>Ticker</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">AGILENT TECHNOLOGIES, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">01-Mar-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">34810</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">00846U101</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">A</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">AMERICAN WATER WORKS COMPANY, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">06-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">36935</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">030420103</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">AWK</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">APACHE CORPORATION</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">05-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">9691</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">037411105</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">APA</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">AVERY DENNISON CORPORATION</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">28-Apr-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">24320</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">053611109</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">AVY</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">BAYER AG</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">29-Apr-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">19695</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">072730302</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">BAYRY</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">CITIGROUP INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">21-Apr-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">304030</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">172967101</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">C</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">COMPUTER SCIENCES CORPORATION</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">08-Aug-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">24480</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">205363104</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">CSC</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">CROWN HOLDINGS, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">28-Apr-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">40505</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">228368106</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">CCK</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">DIGITALGLOBE, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">19-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">31995</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">25389M877</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">DGI</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">FIRST REPUBLIC BANK SAN</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">17-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">24600</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">33616C100</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">FRC</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">GEN-PROBE INCORPORATED</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">19-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">19760</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">36866T103</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">GPRO</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">HEALTHSOUTH CORPORATION</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">05-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">60090</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">421924309</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">HLS</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">HEWLETT-PACKARD COMPANY</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">23-Mar-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">24155</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">428236103</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">HPQ</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">JOHNSON &amp; JOHNSON</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">28-Apr-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">24001</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">478160104</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">JNJ</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">KRAFT FOODS INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">24-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">29300</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">50075N104</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">KFT</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">MAGELLAN MIDSTREAM PARTNERS L.P.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">27-Apr-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">21250</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">559080106</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">MMP</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">NALCO HOLDING COMPANY</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">29-Apr-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">25620</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">62985Q101</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">NLC</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">OCCIDENTAL PETROLEUM CORPORATION</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">06-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">11640</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">674599105</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">OXY</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">QUALCOMM, INCORPORATED</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">08-Mar-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">8883</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">747525103</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">QCOM</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">QUESTAR CORPORATION</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">10-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">67975</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">748356102</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">STR</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">REGAL ENTERTAINMENT GROUP</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">04-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">8620</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">758766109</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">RGC</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">REPUBLIC SERVICES, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">12-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">48118</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">760759100</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">RSG</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">SAFEWAY INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">19-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">46549</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">786514208</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">SWY</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">SPIRIT AEROSYSTEMS HOLDINGS INC</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">03-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">40520</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">848574109</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">SPR</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">SYMETRA FINANCIAL CORPORATION</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">11-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">52395</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">87151Q106</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">SYA</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">TELEFLEX INCORPORATED</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">26-Apr-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">16775</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">879369106</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">TFX</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">THE WILLIAMS COMPANIES, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">19-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">44840</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">969457100</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">WMB</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">TRANSATLANTIC HOLDINGS, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">26-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">24125</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">893521104</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">TRH</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">VALEANT PHARMACEUTICALS INTERNATIONAL</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">16-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">46095</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">91911K102</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">VRX</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">WEBSENSE, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">07-Jun-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">49525</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">947684106</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">WBSN</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">ABB LTD</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">29-Apr-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">35000</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">000375204</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">ABB</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">AT&amp;T INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">29-Apr-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">30325</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">00206R102</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">T</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">ATMI, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">25-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">57900</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">00207R101</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">ATMI</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">AVERY DENNISON CORPORATION</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">28-Apr-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">17800</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">053611109</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">AVY</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">BANCORPSOUTH, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">27-Apr-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">59450</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">059692103</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">BXS</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">BB&amp;T CORPORATION</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">26-Apr-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">39522</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">054937107</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">BBT</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">BENCHMARK ELECTRONICS, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">17-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">59175</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">08160H101</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">BHE</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">BOSTON SCIENTIFIC CORPORATION</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">10-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">126500</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">101137107</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">BSX</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">BUNGE LIMITED</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">27-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">12900</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">G16962105</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">BG</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">CAPITAL ONE FINANCIAL CORPORATION</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">11-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">19700</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">14040H105</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">COF</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">CLOUD PEAK ENERGY, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">18-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">46800</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">18911Q102</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">CLD</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">COVIDIEN PLC</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">15-Mar-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">20400</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">G2554F105</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">COV</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">CVS CAREMARK CORPORATION</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">11-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">28697</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">126650100</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">CVS</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">DEVON ENERGY CORPORATION</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">08-Jun-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">11400</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">25179M103</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">DVN</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">EMCOR GROUP, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">01-Jun-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">30475</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">29084Q100</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">EME</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">ENDO PHARMACEUTICALS HOLDINGS INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">25-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">16500</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">29264F205</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">ENDP</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">ENSCO PLC</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">24-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">17850</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">29358Q109</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">ESV</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">ENSCO PLC</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Special</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">31-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">17850</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">29358Q109</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">ESV</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">FIRST INTERSTATE BANCSYSTEM,INC</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">24-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">50000</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">32055Y201</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">FIBK</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">FOREST LABORATORIES, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Contested Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">18-Aug-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">23600</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">345838106</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">FRX</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">HAWAIIAN ELECTRIC INDUSTRIES, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">10-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">37400</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">419870100</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">HE</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">INLAND REAL ESTATE CORPORATION</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">15-Jun-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">105000</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">457461200</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">IRC</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">JOHNSON &amp; JOHNSON</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">28-Apr-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">100</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">478160104</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">JNJ</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">KIRBY CORPORATION</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">26-Apr-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">20000</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">497266106</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">KEX</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">LOWE'S COMPANIES, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">27-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">36567</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">548661107</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">LOW</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">MARATHON OIL CORPORATION</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">27-Apr-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">28586</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">565849106</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">MRO</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">MASTEC, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">05-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">63000</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">576323109</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">MTZ</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">MICREL, INCORPORATED</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">26-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">63000</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">594793101</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">MCRL</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">MORGAN STANLEY</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">18-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">24908</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">617446448</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">MS</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">OVERSEAS SHIPHOLDING GROUP, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">07-Jun-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">41375</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">690368105</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">OSG</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">PATTERSON-UTI ENERGY, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">08-Jun-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">44500</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">703481101</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">PTEN</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">PFIZER INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">28-Apr-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">50725</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">717081103</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">PFE</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">PNM RESOURCES, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">17-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">71225</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">69349H107</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">PNM</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">QUEST DIAGNOSTICS INCORPORATED</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">17-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">16600</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">74834L100</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">DGX</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">RAYMOND JAMES FINANCIAL, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">24-Feb-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">10000</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">754730109</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">RJF</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">SAFEWAY INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">19-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">44200</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">786514208</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">SWY</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">SELECTIVE INSURANCE GROUP, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">27-Apr-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">49325</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">816300107</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">SIGI</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">SOUTHERN UNION COMPANY</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">04-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">32700</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">844030106</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">SUG</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">TELLABS, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">04-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">178550</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">879664100</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">TLAB</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">THE ALLSTATE CORPORATION</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">17-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">26900</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">020002101</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">ALL</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">THE PNC FINANCIAL SERVICES GROUP, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">26-Apr-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">15575</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">693475105</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">PNC</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">TORCHMARK CORPORATION</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">28-Apr-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">14825</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">891027104</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">TMK</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">TYCO ELECTRONICS LTD</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">09-Mar-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">27550</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">H8912P106</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">TEL</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">UNIVERSAL FOREST PRODUCTS, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">13-Apr-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">26025</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">913543104</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">UFPI</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">UNUM GROUP</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">25-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">35200</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">91529Y106</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">UNM</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">WATTS WATER TECHNOLOGIES, INC.</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">Annual</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">11-May-11</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">12700</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">0</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">942749102</TD>
+    <TD NOWRAP STYLE="padding-right: 5.4pt; padding-left: 5.4pt; font-weight: normal">WTS</TD></TR>
+</TABLE>
+
+<P STYLE="margin: 0">&nbsp;</P>
+
+<BR>
+
+<HR NOSHADE ALIGN=CENTER WIDTH="100%" SIZE=3><P STYLE='PAGE-BREAK-BEFORE: ALWAYS'></P><PAGE>
+
+<BR>
+
+
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+<TR STYLE="FONT-SIZE:1PX">
+<TD WIDTH="8%"><P>&nbsp;</P></TD>
+<TD WIDTH="7%"><P>&nbsp;</P></TD>
+<TD WIDTH="38%"><P>&nbsp;</P></TD>
+<TD WIDTH="4%"><P>&nbsp;</P></TD>
+<TD WIDTH="13%"><P>&nbsp;</P></TD>
+<TD WIDTH="7%"><P>&nbsp;</P></TD>
+<TD WIDTH="10%"><P>&nbsp;</P></TD>
+<TD WIDTH="13%"><P>&nbsp;</P></TD></TR>
+<TR><TD><P><FONT SIZE="1"><B>Fund Name</B> </FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1><B>CLEARWATER
+ INVESTMENT TRUST</B></FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>Issuer</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1><B>CEMEX,
+ S.A.B. DE C.V.</B></FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD COLSPAN=2><P><FONT SIZE=1><B>Security
+ ID<BR>
+ Ticker Symbol<BR>
+ ISIN</B></FONT></P></TD>
+<TD><P><FONT SIZE=1>151290889<BR>
+ CX<BR>
+ US1512908898</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1><B>Meeting
+ Type<BR>
+ Meeting Date<BR>
+ Agenda</B></FONT></P></TD>
+<TD><P><FONT SIZE=1>Special<BR>
+ 24-Feb-2011<BR>
+ 933370796</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1><B>Item</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Proposal</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Type</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Vote</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>For/Against
+ Management</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Shares
+ Voted</B></FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>1</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>PROPOSAL TO AMEND ARTICLE 8
+ OF THE BY LAWS, IN ACCORDANCE WITH THE PROVISIONS SET FORTH IN ARTICLES 13,
+ NUMERAL V, AND 48 OF THE MEXICAN SECURITIES MARKET LAW (LEY DEL MERCADO DE
+ VALORES).</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>AGAINST</FONT></P></TD>
+<TD><P><FONT SIZE=1>AGAINST</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>2</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>PROPOSAL TO INCREASE THE
+ CAPITAL STOCK OF THE COMPANY IN ITS VARIABLE PORTION, AND TO ISSUE NOTES
+ CONVERTIBLE INTO SHARES.</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>3</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>APPOINTMENT OF DELEGATES TO
+ FORMALIZE THE RESOLUTIONS ADOPTED AT THE MEETING.</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>4</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>PRESENTATION OF THE REPORT
+ BY THE CHIEF EXECUTIVE OFFICER, ALL AS MORE FULLY DESCRIBED IN THE PROXY
+ STATEMENT.</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>5</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>RESOLUTION ON ALLOCATION OF
+ PROFITS.</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>6</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>PROPOSAL TO INCREASE THE
+ CAPITAL STOCK OF THE COMPANY IN ITS VARIABLE PORTION THROUGH: (A)
+ CAPITALIZATION OF RETAINED EARNINGS; AND (B) ISSUANCE OF TREASURY SHARES IN
+ ORDER TO PRESERVE THE RIGHTS OF NOTE HOLDERS PURSUANT TO THE COMPANY&#146;S
+ ISSUANCE OF CONVERTIBLE NOTES.</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>7</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>APPROVAL OF A PROPOSAL TO
+ EXTEND UNTIL DECEMBER 2013 THE CURRENT OPTIONAL STOCK PURCHASE PROGRAM FOR
+ THE COMPANY&#146;S EMPLOYEES, OFFICERS, AND MEMBERS OF THE BOARD OF DIRECTORS.</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>8</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>APPOINTMENT OF DIRECTORS,
+ MEMBERS AND PRESIDENT OF THE AUDIT, CORPORATE PRACTICES AND FINANCE
+ COMMITTEES.</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>ABSTAIN</FONT></P></TD>
+<TD><P><FONT SIZE=1>AGAINST</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>9</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>COMPENSATION OF THE MEMBERS
+ OF THE BOARD OF DIRECTORS AND OF THE AUDIT, CORPORATE PRACTICES AND FINANCE
+ COMMITTEE.</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>10</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>APPOINTMENT OF DELEGATES TO
+ FORMALIZE THE RESOLUTIONS ADOPTED AT THE MEETING.</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+</TABLE>
+
+<BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+<TR STYLE="FONT-SIZE:1PX">
+<TD WIDTH="8%"><P>&nbsp;</P></TD>
+<TD WIDTH="7%"><P>&nbsp;</P></TD>
+<TD WIDTH="38%"><P>&nbsp;</P></TD>
+<TD WIDTH="4%"><P>&nbsp;</P></TD>
+<TD WIDTH="13%"><P>&nbsp;</P></TD>
+<TD WIDTH="7%"><P>&nbsp;</P></TD>
+<TD WIDTH="10%"><P>&nbsp;</P></TD>
+<TD WIDTH="13%"><P>&nbsp;</P></TD></TR>
+<TR><TD><P><FONT SIZE="1"><B>Issuer</B> </FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1><B>CEMEX,
+ S.A.B. DE C.V.</B></FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD COLSPAN=2><P><FONT SIZE=1><B>Security
+ ID<BR>
+ Ticker Symbol<BR>
+ ISIN</B></FONT></P></TD>
+<TD><P><FONT SIZE=1>151290889<BR>
+ CX<BR>
+ US1512908898</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1><B>Meeting
+ Type<BR>
+ Meeting Date<BR>
+ Agenda</B></FONT></P></TD>
+<TD><P><FONT SIZE=1>Special<BR>
+ 25-Mar-11<BR>
+ 933378487</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1><B>Item</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Proposal</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Type</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Vote</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>For/Against
+ Management</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Shares
+ Voted</B></FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>1</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>TO AMEND CLAUSE FIRST OF
+ THE INDENTURE GOVERNING NON-REDEEMABLE ORDINARY PARTICIPATION CERTIFICATES
+ NAMED &#147;CEMEX.CPO&#148; AND TO INCREASE NUMBER OF &#147;CEMEX.CPO&#148;S TO BE SUBSCRIBED AT
+ A LATER DATE AS A RESULT OF CONVERSION OF NOTES ISSUED BY CEMEX, S.A.B. DE
+ C.V., ALL OF FOREGOING TO COMPLY WITH THE RESOLUTIONS ADOPTED BY THE
+ EXTRAORDINARY GENERAL SHAREHOLDERS MEETING.</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>2</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>APPOINTMENT OF SPECIAL
+ DELEGATES.</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>3</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>READING AND APPROVAL OF THE
+ MINUTES OF THE MEETING.</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+</TABLE>
+<HR NOSHADE ALIGN=CENTER WIDTH="100%" SIZE=3><P STYLE='PAGE-BREAK-BEFORE: ALWAYS'></P><PAGE>
+
+<BR>
+
+
+<P><FONT SIZE="2"><B>CLEARWATER SMALL CAP FUND</B> </FONT></P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="width: 80%; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+   <TD COLSPAN="5" STYLE="font: bold 8pt Times New Roman, Times, Serif; padding-right: 5.4pt; padding-left: 5.4pt">ONLINE RESOURCES CORP</TD></TR>
+<TR STYLE="vertical-align: top">
+   <TD STYLE="width: 20%; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+   <TD STYLE="width: 15%; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+   <TD STYLE="width: 11%; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+   <TD STYLE="width: 15%; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+   <TD STYLE="width: 41%; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+   <TD STYLE="font: bold 8pt Times New Roman, Times, Serif; padding-right: 5.4pt; padding-left: 5.4pt">Ticker:</TD>
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt">ORCC</TD>
+   <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+   <TD STYLE="font: bold 8pt Times New Roman, Times, Serif; padding-right: 5.4pt; padding-left: 5.4pt">Security ID:</TD>
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt">68273G101</TD></TR>
+<TR STYLE="vertical-align: top">
+   <TD STYLE="font: bold 8pt Times New Roman, Times, Serif; padding-right: 5.4pt; padding-left: 5.4pt">Meeting Date:</TD>
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: right">7/1/2010</TD>
+   <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+   <TD STYLE="font: bold 8pt Times New Roman, Times, Serif; padding-right: 5.4pt; padding-left: 5.4pt">Meeting Type:</TD>
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt">Annual</TD></TR>
+<TR STYLE="vertical-align: top">
+   <TD STYLE="font: bold 8pt Times New Roman, Times, Serif; padding-right: 5.4pt; padding-left: 5.4pt">Record Date:</TD>
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: right">5/19/2010</TD>
+   <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+   <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+   <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD></TR>
+</TABLE>
+<P STYLE="font: bold 8pt Times New Roman Bold; margin: 0">&nbsp;</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="width: 80%; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+   <TD NOWRAP STYLE="width: 10%; font: bold 8pt Times New Roman, Times, Serif; padding-right: 5.4pt; padding-left: 5.4pt">#</TD>
+   <TD NOWRAP STYLE="width: 47%; font: bold 8pt Times New Roman, Times, Serif; padding-right: 5.4pt; padding-left: 5.4pt">Proposal</TD>
+   <TD NOWRAP STYLE="width: 3%; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+   <TD NOWRAP STYLE="width: 10%; font: bold 8pt Times New Roman, Times, Serif; padding-right: 5.4pt; padding-left: 5.4pt">Mgt Rec</TD>
+   <TD NOWRAP STYLE="width: 3%; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+   <TD NOWRAP STYLE="width: 10%; font: bold 8pt Times New Roman, Times, Serif; padding-right: 5.4pt; padding-left: 5.4pt">Vote</TD>
+   <TD NOWRAP STYLE="width: 3%; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+   <TD NOWRAP STYLE="width: 15%; font: bold 8pt Times New Roman, Times, Serif; padding-right: 5.4pt; padding-left: 5.4pt">Sponsor</TD></TR>
+<TR STYLE="vertical-align: top">
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: right">1.1</TD>
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt">Elect Nominee - DONALD W. LAYDEN JR.</TD>
+   <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+   <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+   <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt">Management</TD></TR>
+<TR STYLE="vertical-align: top">
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: right">1.2</TD>
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt">Elect Nominee - ERVIN R. SHAMES</TD>
+   <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+   <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+   <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt">Management</TD></TR>
+<TR STYLE="vertical-align: top">
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: right">1.3</TD>
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt">Elect Nominee - BARRY D. WESSLER</TD>
+   <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+   <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+   <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt">Management</TD></TR>
+<TR STYLE="vertical-align: top">
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: right">2</TD>
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt">Ratify Appointment of Auditors</TD>
+   <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+   <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+   <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-size: 8pt">&nbsp;</FONT></TD>
+   <TD STYLE="font-size: 8pt; padding-right: 5.4pt; padding-left: 5.4pt">Management</TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
