@@ -507,6 +507,53 @@ export function buildSetupSection(
   return lines.join("\n");
 }
 
+/**
+ * The plugin's tool-call guards and bulk-guard exist only as a mod (`hooks/register.ts`), and mods
+ * load on Claude Code 2.1.287+. The manifest has no field for a minimum Claude Code version
+ * (`engines`, `minClaudeCodeVersion` and kin are "Unknown field ... ignored"), so this is the gate.
+ */
+export const MIN_CLAUDE_CODE = "2.1.287";
+
+function versionParts(v: string): number[] | null {
+  const m = v.match(/(\d+)\.(\d+)\.(\d+)/);
+  return m ? m.slice(1).map(Number) : null;
+}
+
+/** "" unless `version` parses and is below MIN_CLAUDE_CODE; an unreadable version says nothing. */
+export function buildVersionSection(version: string): string {
+  const have = versionParts(version);
+  const need = versionParts(MIN_CLAUDE_CODE)!;
+  if (!have) return "";
+  for (let i = 0; i < 3; i++) {
+    if (have[i] > need[i]) return "";
+    if (have[i] < need[i]) {
+      return [
+        `## ⚠ WORKFLOWS GUARDS INACTIVE — Claude Code ${have.join(".")} < ${MIN_CLAUDE_CODE}`,
+        "",
+        `The workflows plugin requires Claude Code >= ${MIN_CLAUDE_CODE}. Its tool-call guards ` +
+          "(image-read-guard, read-guard, suggest-compact, pgrep-self-match, cron-delete-guard, " +
+          "atomic-constraint-guard, typst-convention-guard, validate-skill-paths) and bulk-guard " +
+          "run only as a mod, and this version does not load mods: none of them is enforcing. " +
+          "Tell the user to update Claude Code.",
+        "",
+      ].join("\n");
+    }
+  }
+  return "";
+}
+
+/** The running binary's version, from the path the harness exports; "" when it cannot tell. */
+function runningClaudeVersion(): string {
+  const exe = process.env.CLAUDE_CODE_EXECPATH;
+  if (!exe) return "";
+  try {
+    const proc = Bun.spawnSync([exe, "--version"], { stdout: "pipe", stderr: "ignore", timeout: 5000 });
+    return proc.exitCode === 0 ? new TextDecoder().decode(proc.stdout) : "";
+  } catch {
+    return "";
+  }
+}
+
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -598,16 +645,21 @@ async function main(): Promise<void> {
   const patternSection = checkPendingPatterns();
   const calendarSection = buildCalendarSection();
   const setupSection = buildSetupSection();
+  const versionSection = buildVersionSection(runningClaudeVersion());
 
   // Appended only when it fires. The other sections are joined unconditionally to stay byte-identical
   // to session-start.py (scripts/parity.ts compares bytes); a separator emitted for a silent section
   // would be a diff on every clean project.
   const combinedContext =
+    (versionSection ? versionSection + "\n" : "") +
     envSection + "\n" + calendarSection + "\n" + (setupSection ? setupSection + "\n" : "") +
     inProgressSection + "\n" + patternSection + "\n" + usingSkills;
 
   console.log(
     pyJson({
+      // systemMessage reaches the user; additionalContext reaches only the model.
+      ...(versionSection ? { systemMessage: versionSection.split("\n")[0].replace(/^## /, "") +
+        `: the workflows plugin requires Claude Code >= ${MIN_CLAUDE_CODE}; its guards are not running. Update Claude Code.` } : {}),
       hookSpecificOutput: {
         hookEventName: "SessionStart",
         additionalContext: combinedContext,
