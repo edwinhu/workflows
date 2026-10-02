@@ -77,16 +77,21 @@ Metrics, each printed with its denominator:
                                dollar-range tables and X4 per-fund compensation
                                tables) are reported as DIAGNOSTICS with their own
                                denominators, per clause, never gated.
+                               Since 2026-10-01 a third GATED rate,
+                               `regress_lost_recovered`: share of the LOST set
+                               (c) (`panel` 092b6fb9 n_rows > 0,
+                               `panel_a449b66c` n_rows == 0, minus X1-X4,
+                               X10-X13 and X14-X20) that parses to >= 1 row.
 
 GATED vs DIAGNOSTIC. The gated set is EXACTLY the keys under `minimums` (a floor,
 val >= thr) plus the keys under `maximums` (a ceiling, val <= thr) in
 thresholds.json — nothing in this file hard-codes it, and no metric outside those
 two sets can change the exit code. Since the 2026-09-29 regression round that is
-TEN metrics: filing yield (parsed percent), holder recall vs blockw, holder
+ELEVEN metrics (set (c) added 2026-10-01): filing yield (parsed percent), holder recall vs blockw, holder
 precision vs blockw, group-row detection, ISS director recall, the sample's
 worst-year yield margin, two ceilings on the sample's IDENTICAL-ROW duplicate
 excess rate (pooled and worst year; the same-table pair they replaced on
-2026-09-29 is now diagnostic), and the two regression-set recovery rates in (vii).
+2026-09-29 is now diagnostic), and the three regression-set recovery rates in (vii).
 The two FactSet aggregate metrics in (iii)
 are computed and printed with their denominators every run and NEVER affect the
 exit code, because the FactSet gold is defined by a proxy window over all FactSet
@@ -676,6 +681,16 @@ def main():
     reg_excl_zero_by_clause = defaultdict(set)
     reg_meta = {}
     present = []
+    # Set (c), 2026-10-01: the LOST set (old panel rows > 0, panel_a449b66c 0 rows).
+    # Read from the same gold file; absent columns mean a pre-(c) gold and an empty set.
+    LOST_EXCL_COLS = ["lost_excl_x1_x4", "lost_excl_x10_x13",
+                      "excl_x14_year_as_shares", "excl_x15_percent_only_prose",
+                      "excl_x16_small_int_shares", "excl_x17_no_value_rows",
+                      "excl_x18_prose_lead_name", "excl_x19_function_word_tail",
+                      "excl_x20_compensation_title_rows"]
+    reg_c, reg_c_excl = set(), set()
+    reg_c_excl_by_clause = defaultdict(set)
+    lost_present = False
     if not args.no_regress:
         rpath = os.path.join(g, "gold_regress.tsv")
         with open(rpath) as fh:
@@ -684,9 +699,18 @@ def main():
             if not present:
                 sys.exit("ERROR: %s carries none of the exclusion columns %s — rebuild it "
                          "with gold/build_regress_set.py" % (rpath, EXCL_COLS))
+            lost_present = "cand_lost" in (rdr.fieldnames or [])
             for r in rdr:
                 key = (r["cik"].lstrip("0") or "0", r["accession"])
                 reg_meta[key] = r
+                if lost_present and r["cand_lost"] == "1":
+                    if r["in_set_lost"] == "1":
+                        reg_c.add(key)
+                    else:
+                        reg_c_excl.add(key)
+                        for c in LOST_EXCL_COLS:
+                            if r[c] == "1":
+                                reg_c_excl_by_clause[c].add(key)
                 if r["in_set_zero_row"] == "1":
                     reg_a.add(key)
                 if r["in_set_group_row_gated"] == "1":
@@ -721,6 +745,10 @@ def main():
         print("[in ] regress set-(b)-only exclusion clauses: %s" % ", ".join(
             "%s=%d" % (c.replace("excl_", ""), len(reg_excl_group_by_clause[c]))
             for c in GROUP_EXCL_COLS))
+        if lost_present:
+            print("[in ] regress set(c) LOST: %d candidates, gated %d, excluded %d (%s)" % (
+                len(reg_c) + len(reg_c_excl), len(reg_c), len(reg_c_excl), ", ".join(
+                    "%s=%d" % (c, len(reg_c_excl_by_clause[c])) for c in LOST_EXCL_COLS)))
 
     # ---- parser output ------------------------------------------------------
     man = {}
@@ -1288,7 +1316,8 @@ def main():
 
     # ---- (vii) REGRESSION SET ------------------------------------------------
     #
-    # Two GATED recovery rates over denominators fixed in gold_regress.tsv:
+    # Three GATED recovery rates over denominators fixed in gold_regress.tsv
+    # (the third, regress_lost_recovered over set (c), since 2026-10-01):
     #   regress_zero_row_recovered   = |{set(a): >= 1 parsed row now}| / |set(a)|
     #   regress_group_row_recovered  = |{set(b) gated: >= 1 group row with a parsed
     #                                   percent now}| / |set(b) gated|
@@ -1349,6 +1378,22 @@ def main():
             print("        %-32s %d / %d = %.4f" % (
                 c.replace("excl_", ""), len(hit), len(den), rrate(hit, den)))
 
+        c_hit = reg.recovered_zero_row(reg_c)
+        c_ex_hit = reg.recovered_zero_row(reg_c_excl)
+        c_rate = rrate(c_hit, reg_c)
+        if lost_present:
+            print("  (c) LOST set: old panel (092b6fb9) n_rows > 0, panel_a449b66c n_rows == 0,")
+            print("      after X1-X4 / X10-X13 re-applied and X14-X20")
+            print("      recovered >=1 row   [GATED]: %d / %d = %.4f" % (
+                len(c_hit), len(reg_c), c_rate))
+            print("      EXCLUDED set-(c) filings emitting >=1 row again: %d / %d = %.4f "
+                  "[DIAGNOSTIC]" % (len(c_ex_hit), len(reg_c_excl), rrate(c_ex_hit, reg_c_excl)))
+            for c in LOST_EXCL_COLS:
+                den = reg_c_excl_by_clause[c]
+                if den:
+                    hit = reg.recovered_zero_row(den)
+                    print("        %-36s %d / %d = %.4f" % (c, len(hit), len(den), rrate(hit, den)))
+
         group_ex_hit = reg.recovered_group_row(reg_excl_group)
         print("      EXCLUDED set-(b) targets, group row with percent back: %d / %d = %.4f" % (
             len(group_ex_hit), len(reg_excl_group), rrate(group_ex_hit, reg_excl_group)))
@@ -1378,6 +1423,14 @@ def main():
             "regress_candidate_filings": len(reg_meta),
             "regress_manifest_covered": len(reg_man),
         }
+        if lost_present:
+            regress_metrics.update({
+                "regress_lost_recovered": c_rate,
+                "regress_lost_denominator": len(reg_c),
+                "regress_lost_recovered_n": len(c_hit),
+                "regress_lost_excluded_emitting_rows_rate": rrate(c_ex_hit, reg_c_excl),
+                "regress_lost_excluded_denominator": len(reg_c_excl),
+            })
         # Per-clause diagnostics, never gated. Named after the clause so the
         # 2026-09-30 X3/X4 correction is checkable from metrics_dev.json alone.
         for c in EXCL_COLS:
@@ -1397,18 +1450,19 @@ def main():
                          "\tin_set_group_row_diag\texcluded\texcl_clauses\told_n_rows"
                          "\told_group_rows"
                          "\told_group_rows_with_percent\tnew_n_rows\tnew_group_row_any"
-                         "\tnew_group_row_with_percent\trecovered\n")
+                         "\tnew_group_row_with_percent\trecovered\tin_set_lost\n")
                 for k in sorted(reg_meta):
                     r = reg_meta[k]
                     in_a = r["in_set_zero_row"] == "1"
                     in_bg = r["in_set_group_row_gated"] == "1"
+                    in_c = lost_present and r["in_set_lost"] == "1"
                     # `recovered` is only meaningful for a filing in a GATED set;
                     # for the diagnostic and excluded rows it is `na`, not 1, so
                     # counting the column cannot overstate the recovery.
-                    if not (in_a or in_bg):
+                    if not (in_a or in_bg or in_c):
                         rec = "na"
                     else:
-                        rec = 1 if ((not in_a or reg.rows.get(k, 0) > 0)
+                        rec = 1 if ((not (in_a or in_c) or reg.rows.get(k, 0) > 0)
                                     and (not in_bg or k in reg.group_pct)) else 0
                     fh.write("\t".join(str(x) for x in [
                         k[0], k[1], r["filing_date"], r["in_set_zero_row"],
@@ -1418,7 +1472,7 @@ def main():
                         r["old_n_rows"], r["old_group_rows"],
                         r["old_group_rows_with_percent"], reg.rows.get(k, 0),
                         1 if k in reg.group_any else 0, 1 if k in reg.group_pct else 0,
-                        rec]) + "\n")
+                        rec, r["in_set_lost"] if lost_present else 0]) + "\n")
             print("[out] %s: %d rows" % (args.regress_report, len(reg_meta)))
 
     # ---- miss decomposition -------------------------------------------------

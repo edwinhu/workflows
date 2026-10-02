@@ -168,6 +168,20 @@ var (
 	// Compensation, option-grant and pay-ratio tables also carry names, share
 	// counts and percents. "Percent of total options granted" is the one that
 	// slips past the ownership cue, so the option-grant vocabulary is listed.
+	// An ownership table's lead-in names its people by pointing at another table:
+	// "each of the executive officers named in the Summary Compensation Table".
+	// That is a cross-reference, not a compensation header, and it is removed
+	// before reCompCue reads the ASCII block's header text. The table's own
+	// column header ("Salary", "Bonus", "Year") still trips the cue.
+	// The title inside a sentence is a reference too, even when a line break
+	// cut the verb off: after "the" ('the "Summary Compensation Table"'), or
+	// followed on its own line by more of the sentence ('...Summary
+	// Compensation Table" and (iv)', 'Table; and by all'). The table's own
+	// title ends its line or runs into its capitalised column header.
+	reSCTReference = regexp.MustCompile(`(?i:\b(?:named|listed|identified|appearing|included|shown|set\s+forth)\s+(?:in|on|under)\s+(?:the\s+)?["'\x{201C}]?\s*summary\s+compensation(?:\s+table)?["'\x{201D}]?)` +
+		`|(?i:\bthe[ \t]+["'\x{201C}]?[ \t]*summary\s+compensation\s+table)` +
+		`|(?i:summary\s+compensation\s+table)["'\x{201D}]?(?:[ \t]*[;,)]|[ \t]+[a-z]+\b)`)
+
 	reCompCue = regexp.MustCompile(`(?i)equity\s+compensation\s+plan|weighted[- ]average\s+exercise\s+price|securities\s+remaining\s+available|option\s+awards|stock\s+awards|salary|bonus|summary\s+compensation|options?\s+granted|exercise\s+price|expiration\s+date|grant\s+date\s+present\s+value|all\s+other\s+compensation|long[- ]term\s+incentive|individual\s+grants|realizable\s+value`)
 )
 

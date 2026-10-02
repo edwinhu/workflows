@@ -169,8 +169,18 @@ func isHeadingChunk(t string) bool {
 	if reTOCish.MatchString(t) {
 		return false
 	}
-	return reOwnHeading.MatchString(t)
+	return reOwnHeading.MatchString(t) ||
+		(reOwnTitleIssuer.MatchString(t) && !reOwnTitleFund.MatchString(t))
 }
+
+// A section title naming the issuer between "ownership of" and the security
+// noun: "OWNERSHIP OF KB HOME SECURITIES". Held to the whole chunk, since in a
+// sentence "ownership of our common stock" is prose, not a title.
+// A fund family's "Ownership of Fund Shares" heads one table per fund, more
+// than one heading's window reads; the scan of every ownership table reads them.
+var reOwnTitleFund = regexp.MustCompile(`(?i)\b(?:funds?|portfolios?)\b`)
+
+var reOwnTitleIssuer = regexp.MustCompile(`(?i)^\s*ownership\s+of\s+(?:[\w.&'-]+\s+){1,4}(?:securities|stock|shares)\s*$`)
 
 // ExtractHTML runs the DOM path: find ownership headings, take the tables that
 // follow each, and emit rows.

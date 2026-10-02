@@ -401,8 +401,9 @@ rows) is pulled by running `pull_def14a_index.py` with `--start 2002-01-01 --end
 2025-12-31` into a scratch dir and renaming. The original index is left alone so
 gold sets (a) and (b) stay reproducible.
 
-**TEN metrics gate as of the 2026-09-29 regression round** (the eight below plus
-`regress_zero_row_recovered` and `regress_group_row_recovered`, both floors at 0.95 —
+**ELEVEN metrics gate as of 2026-10-01** (the eight below plus
+`regress_zero_row_recovered`, `regress_group_row_recovered` and, since 2026-10-01,
+`regress_lost_recovered` over the lost set (c), all floors at 0.95 —
 see the regression-ruler section). `minimums` are floors, `maximums` are
 ceilings, and score.py reads both from the locked thresholds file. The duplicate-row
 round (`GRIND_PLAN.md` §9) added a fourth ruler — `gold/sample_full.tsv`, a fixed

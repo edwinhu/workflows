@@ -158,7 +158,7 @@ func screenNames(rows []Row) []Row {
 		if !r.fundRegistration {
 			screenRepairPair(&r)
 		}
-		if screenNoHolderWithNumberedHolder(strings.TrimSpace(r.HolderName), r.numberedHolder) {
+		if screenNoHolderWithNumberedHolder(strings.TrimSpace(r.HolderName), r.numberedHolder, r.fundRegistration) {
 			if screenDropReasons != nil {
 				screenDropReasons["no_holder"]++
 			}
@@ -233,10 +233,12 @@ func screenRepairPair(r *Row) {
 
 // screenNoHolder reports whether a name cell names no holder at all.
 func screenNoHolder(name string) bool {
-	return screenNoHolderWithNumberedHolder(name, false)
+	return screenNoHolderWithNumberedHolder(name, false, false)
 }
 
-func screenNoHolderWithNumberedHolder(name string, numberedHolder bool) bool {
+// wholeCell marks a name the parser assembled from every line of its cell,
+// so a single word in it is not the tail of a wrapped name.
+func screenNoHolderWithNumberedHolder(name string, numberedHolder, wholeCell bool) bool {
 	switch {
 	case reScreenLeadNum.MatchString(name) && !numberedHolder:
 		return true
@@ -263,7 +265,7 @@ func screenNoHolderWithNumberedHolder(name string, numberedHolder bool) bool {
 		}
 	}
 	// A lone bare surname: the tail of a wrapped name column.
-	if !strings.ContainsAny(name, "0123456789.&/") {
+	if !wholeCell && !strings.ContainsAny(name, "0123456789.&/") {
 		if w := reScreenWord.FindAllString(name, -1); len(w) == 1 && w[0] == name &&
 			!reScreenInstWord.MatchString(name) {
 			return true
