@@ -13530,3 +13530,80 @@ func TestASCIICaptionCountWithSharesUnit(t *testing.T) {
 		t.Errorf("want 2 rows, got %d: %s", len(rows), names(rows))
 	}
 }
+
+// 0001011034-97-000086 (cik 725260): the <C> markers align with the data,
+// splitting the caption "AMOUNT | AND NATURE OF"; the class column repeats
+// by ditto marks.
+const asciiCaptionDittoClassLines = `
+     1.   SECURITY OWNERSHIP OF MANAGEMENT AND PRINCIPAL STOCKHOLDERS
+          -----------------------------------------------------------
+
+          The following table sets forth as of April 30, 1997, certain
+information with respect to the ownership of the Fund's common stock by
+(i) each of the Fund's directors individually, (ii) shareholders known by the
+Fund to own beneficially more than five percent (5%) of the outstanding common
+stock of the Fund, and (iii) all officers and directors as a group.  Each
+beneficial owner of the Fund's common stock listed below has sole investment
+and voting power of the shares that he beneficially owns, except as noted.
+
+<TABLE>
+<CAPTION>
+TITLE OF    NAME AND ADDRESS            AMOUNT AND NATURE OF       PERCENT
+CLASS       OF BENEFICIAL OWNER         BENEFICIAL OWNERSHIP    OF CLASS<F1>
+- --------    -------------------        ----------------------    -----------
+<S>         <C>                               <C>                  <C>   
+Common      D.A Davidson & Co. <F1>            229,280              35.8%
+Stock       8 Third Street, North
+            Great Falls, MT  59401
+
+  "         Stephen G. Calandrella             233,000              36.4%
+            4465 Northpark Drive
+            Colorado Springs, CO  80907
+
+  "         Charles C. Powell                      -0-                 0%
+            4475 Walnut, Suite 2-D
+            Boulder, CO  80301
+
+  "         Clifford C. Thygesen                 2,000               0.3%
+            4893 Idylwild Trail
+            Boulder, CO  80301
+
+  "         All Officers and
+              Directors as a
+              Group (5 Persons)                238,000              37.1%
+
+- --------------------------------------
+<FN>
+<F1> Voting and investment power with respect to securities held by D.A.
+     Davidson & Company is exercised by its Board of Directors.
+</FN>
+</TABLE>
+`
+
+func TestASCIICaptionMarkerSplitHeaderDittoClass(t *testing.T) {
+	rows := ScreenRows(run(t, asciiCaptionDittoClassLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{{"D.A Davidson & Co.", 229280}, {"Stephen G. Calandrella", 233000}, {"Clifford C. Thygesen", 2000}} {
+		var r *Row
+		for i := range rows {
+			if strings.HasPrefix(rows[i].HolderName, strings.TrimRight(want.name, ".")) && rows[i].Shares != nil && *rows[i].Shares == want.shares {
+				r = &rows[i]
+			}
+		}
+		if r == nil {
+			t.Errorf("holder %q %v lost: %s", want.name, want.shares, names(rows))
+		} else if !strings.HasPrefix(r.ShareClass, "Common") {
+			t.Errorf("ditto class not resolved: %+v", *r)
+		}
+	}
+	for _, r := range rows {
+		if isAddressLine(r.HolderName) || strings.Contains(r.HolderName, "Street") {
+			t.Errorf("address emitted as a holder: %q", r.HolderName)
+		}
+	}
+	if g := find(rows, "All Officers and Directors as a Group (5 Persons)", ""); g == nil || g.Shares == nil || *g.Shares != 238000 || !g.IsGroupRow {
+		t.Errorf("group row lost or garbled: %s", names(rows))
+	}
+}
