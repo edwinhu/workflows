@@ -1323,6 +1323,10 @@ func textFundShareMatrix(body string, base Row) ([]Row, int) {
 // Count-count-percent-percent ASCII columns must be paired by class, not proximity.
 // This retry is available only when the legacy filing has no screened holdings.
 var reASCIIPageNumber = regexp.MustCompile(`^[0-9]{1,3}$`)
+
+// reDashedPageNumber is a page number framed by dashes ("- 2 -"), a page
+// break in a filing that carries no <PAGE> marker.
+var reDashedPageNumber = regexp.MustCompile(`^-\s*[0-9]{1,3}\s*-$`)
 var reASCIIGroupCount = regexp.MustCompile(`(?i)\(\s*[0-9]{1,3}\s+(?:persons?|people|individuals?)\s*\)`)
 
 // reHFOrdinalStreet is a street line whose name is an ordinal ("707 2nd Avenue"),
@@ -2046,7 +2050,7 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 			// stacked ASCII header spells its column labels vertically and the
 			// row-wise flattening interleaves them into nonsense.
 			colHdr := hdrColumnText(header)
-			body := hdr + " " + ownHdr + " " + colHdr + " " +
+			body := hdr + " " + ownHdr + " " + colHdr + " " + hdrHyphenWords(hdrRows) + " " +
 				strings.Join(sliceLines(clean, block), " ")
 			switch {
 			case !reOwnCue.MatchString(body):
@@ -3486,6 +3490,49 @@ func hdrColumnText(lines []string) string {
 			rows = append(rows, g)
 		}
 	}
+	return hdrColumnTextRows(rows)
+}
+
+// reHdrHyphenBreak is a word hyphenated at the end of one header line and
+// finished on the next ("Bene- ficial").
+var reHdrHyphenBreak = regexp.MustCompile(`([a-z])- ([a-z])`)
+
+// reHdrHyphenTail / reHdrHyphenHead are the halves of a word a stacked header
+// hyphenates at a line end ("Bene-" over "ficial").
+var (
+	reHdrHyphenTail = regexp.MustCompile(`([A-Za-z]+)-$`)
+	reHdrHyphenHead = regexp.MustCompile(`^([a-z]+)`)
+)
+
+// hdrHyphenWords returns only the words a header hyphenates down a column,
+// rejoined from vertically overlapping cells of adjacent header lines. The
+// rest of the column text adds phrases built across lines ("SHARES" /
+// "OWNED") that are no evidence of ownership.
+func hdrHyphenWords(rows [][]hdrGroup) string {
+	var words []string
+	for r := 0; r+1 < len(rows); r++ {
+		for _, a := range rows[r] {
+			m := reHdrHyphenTail.FindStringSubmatch(strings.TrimSpace(a.text))
+			if m == nil {
+				continue
+			}
+			for _, b := range rows[r+1] {
+				if b.lo < a.hi && a.lo < b.hi {
+					if h := reHdrHyphenHead.FindStringSubmatch(strings.TrimSpace(b.text)); h != nil {
+						words = append(words, m[1]+h[1])
+					}
+				}
+			}
+		}
+	}
+	return strings.Join(words, " ")
+}
+
+func hdrColumnTextRows(rows [][]hdrGroup) string {
+	return reHdrHyphenBreak.ReplaceAllString(hdrColumnTextRaw(rows), "$1$2")
+}
+
+func hdrColumnTextRaw(rows [][]hdrGroup) string {
 	if len(rows) < 2 {
 		return ""
 	}
@@ -3959,10 +4006,10 @@ func pageBreakRowAt(lines, clean []string, consumed map[int]bool, j, limit int, 
 			return -1
 		}
 		t := strings.TrimSpace(clean[k])
-		if strings.Contains(strings.ToLower(lines[k]), "<page>") {
+		if strings.Contains(strings.ToLower(lines[k]), "<page>") || reDashedPageNumber.MatchString(t) {
 			sawPage = true
 		}
-		if t == "" || reASCIIPageNumber.MatchString(t) {
+		if t == "" || reASCIIPageNumber.MatchString(t) || reDashedPageNumber.MatchString(t) {
 			continue
 		}
 		break

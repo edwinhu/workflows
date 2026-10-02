@@ -13687,3 +13687,93 @@ func TestASCIIUntaggedClassAddressRows(t *testing.T) {
 		}
 	}
 }
+
+// 0000903893-97-000098: the count column header hyphenates "Bene-" / "ficial
+// Ownership" down the column, and the table runs over a page break.
+const asciiHyphenatedColumnHeaderLines = `
+
+                             PRINCIPAL STOCKHOLDERS
+
+         Set  forth  below is  information  concerning  stock  ownership  of all
+persons  known by the  Company to own  beneficially  5% or more of the Shares or
+Preferred Shares,  each director,  each executive officer named under "Executive
+Compensation" and all directors and executive officers of the Company as a group
+based upon the number of outstanding  Shares and Preferred  Shares as of January
+23, 1997.
+
+                                       Amount &
+  Name of                           Nature of Bene-             Percent of
+Stockholder                       ficial Ownership(1)      Outstanding Class(15)
+- - - - - - -----------                       -------------------      ---------------------
+
+Lindsay A. Rosenwald, M.D.            2,580,152(2)                  6.3%
+
+Glenn L. Cooper, M.D.                   766,488(3)                  1.8%
+
+
+
+                                      - 2 -
+
+
+
+
+
+Mark S. Butler                          420,500(4)                  1.0%
+
+Thomas F. Farb                          133,406(5)                 *
+
+Bobby W. Sandage, Jr., Ph.D.            305,277(6)                 *
+
+Harry J. Gray                            38,250(7)                 *
+
+Alexander M. Haig, Jr.                  203,000(8)                 *
+
+Peter Barton Hutt                        38,250(7)                 *
+
+Malcolm Morville, Ph.D.                  50,750(9)                 *
+
+Robert K. Mueller                        50,750(9)                 *
+
+Lee J. Schroeder                         50,750(9)                 *
+
+David B. Sharrock                       50,250(10)                 *
+
+Richard Wurtman, M.D.                  927,351(11)                  2.3%
+
+J. Morton Davis                     10,799,458(12)                 26.3%
+c/o D.H. Blair Investment
+   Banking Corp.
+44 Wall Street
+New York, New York 10005
+
+American Home Products Corp.           244,425(13)                  100%
+Five Giralda Farms
+Madison, New Jersey 07940
+
+All directors and executive          5,615,174(14)                 13.0%
+officers as a group (13 persons)
+
+- - - - - - -----------
+*less than 1%
+
+(1)     Beneficial  ownership  is  defined in  accordance  with the rules of the
+        Securities and Exchange  Commission  ("S.E.C.") and generally  means the
+        power to vote  and/or to dispose  of the  securities  regardless  of any
+        economic interest therein.
+
+(2)     Includes (i) 7,671 Shares issuable upon exercise of outstanding warrants
+        and (ii) 60,000 Shares  issuable  upon  exercise of options  exercisable
+`
+
+func TestASCIIHyphenatedColumnHeaderOwnCue(t *testing.T) {
+	rows := ScreenRows(run(t, asciiHyphenatedColumnHeaderLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{{"Lindsay A. Rosenwald", 2580152}, {"Mark S. Butler", 420500}, {"J. Morton Davis", 10799458}} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares {
+			t.Errorf("holder %q %v lost: %s", want.name, want.shares, names(rows))
+		}
+	}
+}
