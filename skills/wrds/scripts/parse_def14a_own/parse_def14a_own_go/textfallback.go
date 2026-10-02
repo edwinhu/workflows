@@ -29,7 +29,10 @@ var (
 	reHdrLineCue = regexp.MustCompile(`(?i)percent|shares|beneficial|amount|name\s+of`)
 	reWrapCont   = regexp.MustCompile(`(?i)^(as\s+a\s+group|and\s+|as\s+a\s+)`)
 	reTrailClass = regexp.MustCompile(`(?i)\s+(class\s+[a-d](?:\s+common(?:\s+stock)?)?|common\s+stock|common|series\s+[a-z0-9]+(?:\s+\w+)?|preferred(?:\s+stock)?|ordinary\s+shares)$`)
-	reClassOnly  = regexp.MustCompile(`(?i)^(class\s+[a-d](?:\s+common(?:\s+stock)?)?|common\s+stock|common|series\s+[a-z0-9]+(?:\s+\w+)?|preferred(?:\s+stock)?|ordinary\s+shares)$`)
+	// reClassLabelLine is a row stub that names only a share class, in the
+	// "Shares" wording as well: the holder is on the line above it.
+	reClassLabelLine = regexp.MustCompile(`(?i)^(?:class\s+[a-d](?:\s+(?:common|preferred|non-?voting|voting))?(?:\s+(?:stock|shares?))?|common(?:\s+(?:stock|shares?))?|preferred(?:\s+(?:stock|shares?))?|series\s+[a-z0-9]+(?:\s+(?:common|preferred))?(?:\s+(?:stock|shares?))?|ordinary\s+shares?)$`)
+	reClassOnly      = regexp.MustCompile(`(?i)^(class\s+[a-d](?:\s+common(?:\s+stock)?)?|common\s+stock|common|series\s+[a-z0-9]+(?:\s+\w+)?|preferred(?:\s+stock)?|ordinary\s+shares)$`)
 
 	// Many ASCII proxies give the 5% table no heading at all: the anchor is the
 	// sentence that introduces it ("The following persons are known by the
@@ -347,6 +350,23 @@ func stripEntities(s string) string {
 var reASCIISlashParenNote = regexp.MustCompile(`/\(\s*([0-9]{1,2})\s*\)/`)
 
 func ExtractText(body string, base Row) ([]Row, int, int) {
+	hf, spans := textHolderFundColumns(body, base)
+	if len(ScreenRows(hf)) == 0 {
+		return extractTextLayouts(body, base)
+	}
+	// The holder-by-fund tables are read; the generic scan would fuse the
+	// holder and fund cells into one name, so it sees the rest of the body.
+	lines := strings.Split(body, "\n")
+	for _, sp := range spans {
+		for k := sp[0]; k <= sp[1]; k++ {
+			lines[k] = ""
+		}
+	}
+	rows, seen, used := extractTextLayouts(strings.Join(lines, "\n"), base)
+	return append(rows, hf...), seen + len(spans), used + len(spans)
+}
+
+func extractTextLayouts(body string, base Row) ([]Row, int, int) {
 	rows, seen, used := extractText(body, base, false)
 	if len(ScreenRows(rows)) != 0 || len(ScreenRows(ExtractProse(body, base))) != 0 {
 		return rows, seen, used
@@ -554,13 +574,18 @@ func textFundRegistrationCounts(body string, base Row) ([]Row, int) {
 
 var reASCIIBraceNote = regexp.MustCompile(`\{\(([0-9]+)\)\}`)
 var reASCIICaptionShares = regexp.MustCompile(`(?i)beneficially\s+owned|shares\s+owned|number\s+of\s+(?:common\s+)?shares|amount\s+and\s+nature\s+of\s+beneficial\s+ownership`)
-var reASCIICaptionPercent = regexp.MustCompile(`(?i)(?:percent|%)\s+(?:of\s+)?(?:class|shares|outstanding)|^shares\s+outstanding$`)
+var reLessThanHead = regexp.MustCompile(`(?i)^less\s+than$`)
+
+var reASCIICaptionPercent = regexp.MustCompile(`(?i)(?:percent|%)\s+(?:of\s+)?(?:class|shares|outstanding)|^shares\s+outstanding$|\bpercent\s+owned\b`)
 var reASCIICountOnly = regexp.MustCompile(`^(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})+|--|-0-)$`)
 var reASCIICaptionCount = regexp.MustCompile(`^(?:(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})+)(?:\.[0-9]+)?|--|-0-)$`)
 var reASCIICaptionAge = regexp.MustCompile(`(?i),\s*age\s+[0-9]{1,3}.*$`)
 var reASCIICommitteeNote = regexp.MustCompile(`\([A-Z](?:,[A-Z])+\)`)
 var reASCIINameAgeTail = regexp.MustCompile(`,\s*[0-9]{1,3}\s*$`)
 var reASCIIOnlyAge = regexp.MustCompile(`^[0-9]{1,3}$`)
+var reASCIIOwnerStubHdr = regexp.MustCompile(`(?i)^beneficial\s+owners?$`)
+var reASCIIOptionCountHdr = regexp.MustCompile(`(?i)\boptions?\b|exercisable|right\s+to\s+acquire`)
+var reASCIIParenAgeOnly = regexp.MustCompile(`(?i)^\(\s*age\s+[0-9]{1,3}\s*\)$`)
 
 // Caption columns, not numeric-tail alignment, distinguish shares from age,
 // position and election-year columns. Retry only when the legacy filing is empty.
@@ -630,6 +655,34 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 			}
 		}
 		shareCol, pctCol, nameCol, classCol := -1, -1, -1, -1
+		// "NUMBER OF SHARES SUBJECT TO VESTED STOCK OPTIONS" beside the
+		// holdings column is a count of options: when another column states
+		// the holding, it is never the share column. Nor, in that layout, is
+		// "PERCENT OF CLASS BENEFICIALLY OWNED", which is the percent column.
+		optionCol := map[int]bool{}
+		holdingCols := 0
+		for col, hdr := range headers {
+			h := norm(strings.ReplaceAll(norm(hdr), "%", ""))
+			if col == 0 || !reASCIICaptionShares.MatchString(h) {
+				continue
+			}
+			switch {
+			case reASCIIOptionCountHdr.MatchString(h):
+				optionCol[col] = true
+			case reASCIICaptionPercent.MatchString(norm(hdr)):
+			default:
+				holdingCols++
+			}
+		}
+		if holdingCols == 0 || len(optionCol) == 0 {
+			optionCol = nil
+		} else {
+			for col, hdr := range headers {
+				if col > 0 && reASCIICaptionPercent.MatchString(norm(hdr)) {
+					optionCol[col] = true
+				}
+			}
+		}
 		for col, hdr := range headers {
 			headers[col] = norm(hdr)
 			if strings.Contains(strings.ToLower(headers[col]), "name") {
@@ -642,7 +695,7 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 			if strings.EqualFold(headers[col], "Title of Class") {
 				classCol = col
 			}
-			if col > 0 && reASCIICaptionShares.MatchString(norm(strings.ReplaceAll(headers[col], "%", ""))) {
+			if col > 0 && !optionCol[col] && reASCIICaptionShares.MatchString(norm(strings.ReplaceAll(headers[col], "%", ""))) {
 				if shareCol != -1 {
 					shareCol = -2
 					break
@@ -692,10 +745,15 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 		if splitAddress {
 			nameCol = 0
 		}
+		// A stub column headed "BENEFICIAL OWNER" names the holders without
+		// the word "name".
+		if nameCol == -1 && reASCIIOwnerStubHdr.MatchString(headers[0]) {
+			nameCol = 0
+		}
 		countOnly := pctCol == -1 && (len(spans) == 4 || len(spans) == 5) && nameCol == 0 && shareCol == len(spans)-1 &&
 			strings.Contains(lowerHdr, "age") && strings.Contains(lowerHdr, "principal occupation") &&
 			shareCol >= 0 && strings.Contains(strings.ToLower(headers[shareCol]), "shares") &&
-			(strings.Contains(lowerHdr, "director since") || strings.Contains(lowerHdr, "trustee since") || strings.Contains(lowerHdr, "became director"))
+			(strings.Contains(lowerHdr, "director since") || strings.Contains(lowerHdr, "trustee since") || strings.Contains(lowerHdr, "became director") || strings.Contains(lowerHdr, "became trustee") || strings.Contains(lowerHdr, "became a trustee"))
 		if os.Getenv("DEF14A_DEBUG_TEXTBLOCK") != "" {
 			fmt.Fprintf(os.Stderr, "--- caption columns=%q shares=%d percent=%d\n", headers, shareCol, pctCol)
 		}
@@ -720,6 +778,10 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 			pctText := ""
 			if !countOnly {
 				pctText = cell(clean[j], pctCol)
+				// "Less than" / "1/4 of 1%": the percent cell wraps onto the next line.
+				if reLessThanHead.MatchString(pctText) && j+1 < end {
+					pctText += " " + cell(clean[j+1], pctCol)
+				}
 			}
 			if strings.Contains(count, "$") || (countOnly && strings.Contains(clean[j], "$")) {
 				money = true
@@ -779,6 +841,11 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 				groupHead = nil
 			}
 			if countOnly {
+				// "(Age 68)" under the name is the holder's second line, holding
+				// another fund's shares: never a holder of its own.
+				if reASCIIParenAgeOnly.MatchString(nm) {
+					continue
+				}
 				stub := strings.TrimSpace(reDotLeader.ReplaceAllString(clean[j][:min(len(clean[j]), spans[shareCol])], " "))
 				if grp, _ := isGroupRow(stub); grp {
 					nm = stub
@@ -857,6 +924,184 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 		start = end
 	}
 	return out, blocks
+}
+
+var (
+	reHFFundHdr   = regexp.MustCompile(`(?i)\bfunds?\b|\bportfolios?\b`)
+	reHFHolderHdr = regexp.MustCompile(`(?i)shareholder|stockholder|beneficial\s+owner\b|record\s+(?:holder|owner)|name\s+and\s+address`)
+	reHFPctHdr    = regexp.MustCompile(`(?i)percent`)
+	reHFSharesHdr = regexp.MustCompile(`(?i)\bshares\b|\bamount\b`)
+)
+
+// markerCell cuts column col of an SGML-wrapped ASCII table line at the
+// <S>/<C> marker offsets, widened left to the start of a word a marker splits.
+func markerCell(line string, spans []int, col int) string {
+	boundary := func(pos int) int {
+		if pos >= len(line) {
+			return len(line)
+		}
+		for pos > 0 && line[pos] != ' ' && line[pos-1] != ' ' {
+			pos--
+		}
+		return pos
+	}
+	lo, hi := boundary(spans[col]), len(line)
+	if col+1 < len(spans) {
+		hi = boundary(spans[col+1])
+	}
+	if lo >= hi {
+		return ""
+	}
+	return strings.TrimSpace(line[lo:hi])
+}
+
+// textHolderFundColumns reads a fund complex's 5% table laid out by holder
+// and fund: an SGML-wrapped table whose columns name the holder, the fund
+// and the percent held (and optionally the shares), one row per holding,
+// the fund as the share class. It returns the rows and the line span of
+// each table it read.
+func textHolderFundColumns(body string, base Row) ([]Row, [][2]int) {
+	raw := strings.Split(body, "\n")
+	var out []Row
+	var spans [][2]int
+	for start := 0; start < len(raw); start++ {
+		if !strings.Contains(strings.ToLower(raw[start]), "<table") {
+			continue
+		}
+		end := start + 1
+		for end < len(raw) && !strings.Contains(strings.ToLower(raw[end]), "</table") {
+			end++
+		}
+		if end == len(raw) {
+			break
+		}
+		if rows := holderFundTable(raw, start, end, base); rows != nil {
+			out = append(out, rows...)
+			spans = append(spans, [2]int{start, end})
+		}
+		start = end
+	}
+	return out, spans
+}
+
+// holderFundTable reads one holder-by-fund table between raw[start] and
+// raw[end], or returns nil. A holder stub (NAME AND ADDRESS) wraps the
+// holder's name over lines that may carry further holdings, and the address
+// or a blank line ends the name; an interior holder column starts a holder
+// on every line with a percent. A fund name wrapped onto the next line
+// joins the fund above it.
+func holderFundTable(raw []string, start, end int, base Row) []Row {
+	marker := -1
+	var cols []int
+	for j := start + 1; j < end; j++ {
+		if m := reASCIIColumnMark.FindAllStringIndex(raw[j], -1); len(m) > 0 {
+			marker = j
+			for _, c := range m {
+				cols = append(cols, c[0])
+			}
+			break
+		}
+	}
+	if marker < 0 || len(cols) < 3 || len(cols) > 4 || strings.Contains(strings.Join(raw[start:end], " "), "$") {
+		return nil
+	}
+	headers := make([]string, len(cols))
+	for j := start + 1; j < marker; j++ {
+		line := stripEntities(reAnyTag.ReplaceAllString(raw[j], ""))
+		if reRuleLine.MatchString(strings.TrimSpace(line)) {
+			continue
+		}
+		for c := range headers {
+			headers[c] += " " + markerCell(line, cols, c)
+		}
+	}
+	fundCol, holderCol, pctCol, sharesCol := -1, -1, -1, -1
+	for c, h := range headers {
+		fund, holder := reHFFundHdr.MatchString(h), reHFHolderHdr.MatchString(h)
+		switch {
+		case fund && !holder && fundCol < 0:
+			fundCol = c
+		case holder && !fund && holderCol < 0:
+			holderCol = c
+		case reHFPctHdr.MatchString(h) && !fund && !holder && pctCol < 0:
+			pctCol = c
+		case reHFSharesHdr.MatchString(h) && !fund && !holder && sharesCol < 0:
+			sharesCol = c
+		default:
+			return nil
+		}
+	}
+	if fundCol < 0 || holderCol < 0 || pctCol < 0 {
+		return nil
+	}
+	var names, funds [][]string
+	var rows []Row
+	var rowName, rowFund []int
+	cur, addressed, fundLine := -1, false, -1
+	for j := marker + 1; j < end; j++ {
+		if strings.Contains(raw[j], "<") {
+			continue
+		}
+		line := stripEntities(raw[j])
+		if strings.TrimSpace(line) == "" {
+			addressed = true
+			continue
+		}
+		h, f, p := markerCell(line, cols, holderCol), markerCell(line, cols, fundCol), markerCell(line, cols, pctCol)
+		if reRuleLine.MatchString(strings.TrimSpace(line)) {
+			addressed = true // a rule closes the holder record, as a blank line does
+			continue
+		}
+		if f != "" {
+			if p == "" && fundLine == j-1 {
+				funds[len(funds)-1] = append(funds[len(funds)-1], f)
+			} else {
+				funds = append(funds, []string{f})
+			}
+			fundLine = j
+		}
+		if h != "" {
+			switch {
+			case isAddressLine(h) || reASCIIStreetNumber.MatchString(h) || reHFOrdinalStreet.MatchString(h) || reHFCityStateZip.MatchString(h):
+				addressed = true
+			case cur < 0 || addressed || (p != "" && holderCol != 0):
+				names = append(names, []string{h})
+				cur, addressed = len(names)-1, false
+			default:
+				names[cur] = append(names[cur], h)
+			}
+		}
+		if p == "" {
+			continue
+		}
+		pct, parsed, _, _ := ParsePercent(p)
+		if !parsed || pct <= 0 || pct > 100 || cur < 0 || len(funds) == 0 {
+			return nil
+		}
+		r := base
+		if sharesCol >= 0 {
+			shares, ok := ParseShares(markerCell(line, cols, sharesCol))
+			if !ok {
+				return nil
+			}
+			r.Shares = &shares
+		}
+		r.Percent, r.fundRegistration = &pct, true
+		r.TableIndex, r.RowIndex, r.TableKind, r.Parser = start, j, "5pct_holders", "text_table"
+		rows = append(rows, r)
+		rowName, rowFund = append(rowName, cur), append(rowFund, len(funds)-1)
+	}
+	if len(rows) < 2 {
+		return nil
+	}
+	for i := range rows {
+		name := norm(strings.Join(names[rowName[i]], " "))
+		if strings.Contains(name, "$") || !hasWords(name, 1) {
+			return nil
+		}
+		rows[i].HolderName, rows[i].ShareClass = name, norm(strings.Join(funds[rowFund[i]], " "))
+	}
+	return rows
 }
 
 var reASCIIMatrixCount = regexp.MustCompile(`^[0-9][0-9,]*(?:\([0-9]+\))?$`)
@@ -997,6 +1242,14 @@ func textFundShareMatrix(body string, base Row) ([]Row, int) {
 // This retry is available only when the legacy filing has no screened holdings.
 var reASCIIPageNumber = regexp.MustCompile(`^[0-9]{1,3}$`)
 var reASCIIGroupCount = regexp.MustCompile(`(?i)\(\s*[0-9]{1,3}\s+(?:persons?|people|individuals?)\s*\)`)
+
+// reHFOrdinalStreet is a street line whose name is an ordinal ("707 2nd Avenue"),
+// which reASCIIStreetNumber misses because the second token opens on a digit.
+var reHFOrdinalStreet = regexp.MustCompile(`(?i)^\d{1,6}\s+\d{1,3}(?:st|nd|rd|th)\s+[a-z]`)
+
+// reHFCityStateZip is a comma-less "HARTFORD CT  06103-2833" city line.
+var reHFCityStateZip = regexp.MustCompile(`^[A-Za-z][A-Za-z .'-]*\s[A-Z]{2}\s+\d{5}(?:-\d{4})?$`)
+
 var reASCIIStreetNumber = regexp.MustCompile(`^\d{1,6}(?:-\d{1,6})?[A-Za-z]?\s+[A-Za-z]`)
 
 func textSeparateClassCounts(body string, base Row) ([]Row, int) {
@@ -1474,11 +1727,30 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 			// after one row. blankRun ends it only on a real run of blank lines,
 			// nonRowRun on a run of prose, sinceRow caps the two together.
 			blankRun, nonRowRun, sinceRow := 0, 0, 0
+			var lone []int // a lone lead-in row set aside; see below
+			hdrAfterLone, loneHdr := false, 0
+			pastTable := false // the scan has crossed a table another anchor took
 			// The block's own column header, normalised, filled in once the first row
 			// is seen. A table that runs over a page break REPRINTS it on the new
 			// page, which is the only thing distinguishing a page break from the end
 			// of the table.
 			var ownHdrSet map[string]bool
+			// One row and then a run of prose: the row was a sentence in the lead-in
+			// ("The following table sets forth, as of March 31, 1995,"), and the
+			// table under this heading may still be below. Set it aside and keep
+			// scanning; the rows found instead are kept only if a column-header line
+			// separates them from it -- the lead-in sits ABOVE the table's header --
+			// so a sole 5% holder followed by its footnotes and another table still
+			// stands.
+			setAside := func() bool {
+				if len(block) != 1 || lone != nil {
+					return false
+				}
+				lone, block, ownHdrSet = block, nil, nil
+				loneHdr = len(header)
+				nonRowRun, sinceRow = 0, 0
+				return true
+			}
 			resume := func() bool {
 				if ownHdrSet == nil {
 					return false
@@ -1495,15 +1767,26 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 					if stackedHeader && len(block) == 0 {
 						break
 					}
+					pastTable = true
 					continue
 				}
 				lt := strings.TrimSpace(clean[j])
-				if lt == "" {
+				// A page break under a lone lead-in row is blank: the lead-in's
+				// table can start on the next page. Under a real table it is not,
+				// so the scan can still cross to the table's continuation.
+				if lt == "" || (len(block) == 1 && lone == nil && pageFooterAt(lines, clean, j)) {
 					blankRun++
 					if len(block) > 0 {
 						sinceRow++
 						if blankRun >= 3 || sinceRow >= maxLinesSinceRow {
 							if resume() {
+								continue
+							}
+							// A lead-in sentence row still followed by prose, then the
+							// blank lines a <TABLE>/<CAPTION> wrapper leaves behind. A
+							// lead-in sits above its table, so never once the scan is
+							// past a table: that lone row is a footnote under it.
+							if nonRowRun >= 2 && !pastTable && setAside() {
 								continue
 							}
 							break
@@ -1514,6 +1797,9 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 				blankRun = 0
 				if reHdrLineCue.MatchString(lt) && len(block) == 0 {
 					header = append(header, clean[j])
+					if lone != nil && columnarHdrLine(lt) {
+						hdrAfterLone = true
+					}
 				}
 				if len(block) == 0 && j-i > 60 {
 					break // the heading's table is not here
@@ -1537,9 +1823,42 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 						if resume() {
 							continue
 						}
+						if setAside() {
+							continue
+						}
 						break
 					}
 				}
+			}
+			// The column header can be read while the lead-in row still stood,
+			// before the run of prose under it set the row aside; it still
+			// separates the two. Only a one-line header: under a stacked
+			// header (grouped classes, a <CAPTION>) the generic row parser
+			// misreads the columns and the layout parsers below take the table.
+			if lone != nil && len(block) > 0 && !hdrAfterLone {
+				hk := -1
+				for k := lone[0] + 1; k < block[0]; k++ {
+					if !consumed[k] && columnarHdrLine(strings.TrimSpace(clean[k])) {
+						if hk >= 0 {
+							hk = -2
+							break
+						}
+						hk = k
+					}
+				}
+				if hk >= 0 && oneLineOwnershipHdr(strings.TrimSpace(clean[hk])) {
+					// The header lines the scan would have kept had the lead-in
+					// row not stood: they carry the class.
+					for k := lone[0] + 1; k < block[0]; k++ {
+						if !consumed[k] && reHdrLineCue.MatchString(strings.TrimSpace(clean[k])) {
+							header = append(header, clean[k])
+						}
+					}
+					hdrAfterLone = true
+				}
+			}
+			if lone != nil && (len(block) == 0 || !hdrAfterLone) {
+				block, header = lone, header[:loneHdr]
 			}
 			block = alignedRows(clean, block, stackedHeader)
 			// A proxy with exactly ONE 5% holder writes a one-row table, and the
@@ -1595,7 +1914,7 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 			case !reOwnCue.MatchString(body):
 				textReason("no_own_cue")
 				continue
-			case reCompCue.MatchString(body):
+			case reCompCue.MatchString(reSCTReference.ReplaceAllString(textCompCueText(clean, header, block, body), " ")):
 				textReason("comp_cue")
 				continue
 			case reOptDetailCue.MatchString(body):
@@ -1618,7 +1937,9 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 			// The class column's last value, forward-filled over the rows that leave
 			// it blank. Local to the block, which is one fund's table.
 			lastColClass := ""
+			holderAt := map[int]string{}
 			percentContinuations := map[int]bool{}
+			priced := 0
 			for _, ln := range block {
 				if percentContinuations[ln] {
 					continue
@@ -1626,6 +1947,13 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 				consumed[ln] = true
 				name, rest, restStart, ok := parseTextRowAtWithZero(clean[ln], stackedHeader)
 				captionClass := textStandaloneClassCaption(lines, ln)
+				// A tail made only of dollar amounts is a price, never a holding or
+				// a percent: "exercise price of between  $.8125-$3.00" in a
+				// footnote under the table.
+				if ok && textDollarOnlyTail(rest) {
+					priced++
+					continue
+				}
 				if !ok || ((stackedHeader || captionClass != "") && strings.Contains(rest, "$")) {
 					continue
 				}
@@ -1648,16 +1976,41 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 				// because the row splits at the first gap before a number:
 				// "Warren E. Buffett     Class A     478,232(2)   35.6".
 				rowClass := ""
-				if m := reTrailClass.FindStringSubmatch(nm); m != nil {
+				// A stub that is wholly a class label ("Class B Common Stock....")
+				// is never split into a holder "Class B" of class "Common Stock".
+				if m := reTrailClass.FindStringSubmatch(nm); m != nil && !reClassLabelLine.MatchString(strings.TrimSpace(reDotLeader.ReplaceAllString(nm, " "))) {
 					rowClass = norm(m[1])
 					nm = strings.TrimSpace(nm[:len(nm)-len(m[0])])
 				}
-				if nm == "" || reClassOnly.MatchString(nm) {
+				labelRow := false
+				if stub := strings.TrimSpace(reDotLeader.ReplaceAllString(nm, " ")); nm == "" || reClassOnly.MatchString(nm) || reClassLabelLine.MatchString(stub) {
 					// a continuation line: the second class of the holder above
-					if rowClass == "" && reClassOnly.MatchString(nm) {
-						rowClass = nm
+					if rowClass == "" && stub != "" {
+						rowClass = stub
+					}
+					// the label wraps: "Class B" / "Common Stock....."
+					if stub != "" && ln > 0 && !strings.HasPrefix(strings.ToLower(stub), "class") {
+						head, _ := StripFootnotes(strings.TrimSpace(clean[ln-1]))
+						if head = strings.TrimSpace(head); reClassOnly.MatchString(head) && strings.HasPrefix(strings.ToLower(head), "class") {
+							rowClass = norm(head + " " + stub)
+						}
 					}
 					nm = lastHolder
+					// A labelled class row takes its holder from the document,
+					// never from whatever row this block happened to see last:
+					// the holder's other rows can sit in another block.
+					if stub != "" {
+						labelRow = true
+						head, sib, ok := holderOverClassLine(clean, ln, 0)
+						switch {
+						case !ok:
+							continue
+						case sib >= 0 && holderAt[sib] != "":
+							nm = holderAt[sib]
+						default:
+							nm = head
+						}
+					}
 				}
 				nm = strings.TrimSpace(reDotLeader.ReplaceAllString(nm, " "))
 				nm = strings.TrimSpace(nm)
@@ -1668,14 +2021,16 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 				// that continuation is the only thing telling two otherwise
 				// identical rows apart. Never on a group row: the group label is
 				// followed by whatever prose closes the table.
-				if tl := tailAt[ln]; tl != "" {
+				if tl := tailAt[ln]; tl != "" && !labelRow {
 					if grp, _ := isGroupRow(nm); !grp {
 						nm = strings.TrimSpace(nm + " " + tl)
 					}
 				}
 				// A group row wraps: "All current executive officers and directors"
 				// / " as a group (17 persons)....  356,679,528  24.7%".
-				if joined, ok := joinWrappedLabel(clean, ln, nm); ok {
+				// A label row's holder is whole from holderOverClassLine.
+				if labelRow {
+				} else if joined, ok := joinWrappedLabel(clean, ln, nm); ok {
 					nm = joined
 				} else if head, ok := headNameAbove(clean, ln, nm); ok {
 					nm = head
@@ -1691,6 +2046,7 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 				noHolder := isAddressLine(nm)
 				if nm != "" && !noHolder && !reClassOnly.MatchString(nm) {
 					lastHolder = nm
+					holderAt[ln] = nm
 				}
 				grp, gn := isGroupRow(nm)
 				// The group label can wrap FORWARD, leaving the person count on a
@@ -1728,6 +2084,15 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 				n := len(cells)
 				if n == 0 {
 					continue
+				}
+				// Under a class-label row the percent of CLASS is set on the line
+				// below, aligned with the holding; a percent on the row itself is
+				// then a further column (aggregate voting power).
+				if labelRow && n == 1 && cells[0].lo >= 0 && ln+1 < len(clean) {
+					if pct, marker, ok := percentBelow(clean[ln+1], restStart+cells[0].lo, restStart+cells[0].hi); ok {
+						cells[0].pct, cells[0].marker = pct, marker
+						consumed[ln+1] = true
+					}
 				}
 				// The class stated over each value column, read off the header lines
 				// by POSITION. Used only when the header really distinguishes the
@@ -1807,6 +2172,13 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 					}
 					rows = append(rows, rw)
 				}
+			}
+			// With its price lines set aside the block can be a one-holder
+			// table, held to the same test as a block of one line. The holder's
+			// row states shares, never money: a loan row keeps its "$".
+			if !sole && len(rows) == 1 && priced > 0 && len(block)-priced == 1 &&
+				!strings.Contains(clean[rows[0].RowIndex], "$") {
+				sole = soleHolderRow(clean, i, t, header, rows[0].RowIndex)
 			}
 			if len(rows) < 2 && !(sole && len(rows) == 1) {
 				textReason("rows_lt_2")
@@ -2025,11 +2397,19 @@ func parseTextRowAtWithZero(l string, allowZero bool) (name, rest string, restSt
 	// row, and four of them outvoted a real table in alignedRows' modal
 	// alignment. Five or more words in the TAIL is prose, not columns; the
 	// widest real tails seen carry two ("Director since", "President and").
-	if len(reTailWord.FindAllString(rest, -1)) >= 5 {
+	// A NATURE OF BENEFICIAL OWNERSHIP column is the exception: the shares cell
+	// is followed directly by "Sole voting and investment power" or "shares
+	// with shared voting power", a column of words that is still a column.
+	if len(reTailWord.FindAllString(rest, -1)) >= 5 && !reNatureColumn.MatchString(rest) {
 		return "", "", 0, false
 	}
 	return name, rest, restStart, true
 }
+
+// A shares cell (footnote markers, "shares", a share-class cell allowed)
+// followed at once by the nature of the holder's power. Prose puts a verb
+// between them: "26,940 shares held with sole investment".
+var reNatureColumn = regexp.MustCompile(`(?i)^\s*(?:-0-|\d[\d,]*)\s*(?:(?:\(\w{1,3}\)|<F\d+>|\*+)\s*)*(?:shares?\b\s*(?:(?:\(\w{1,3}\)|<F\d+>|\*+)\s*)*)?(?:with\s+|common\s+)?(?:sole|shared)\s+(?:voting|dispositive|investment)`)
 
 // A word in a row's numeric tail: three letters or more, so column markers and
 // the odd initial do not count.
@@ -2179,6 +2559,10 @@ func joinWrappedLabel(clean []string, ln int, nm string) (string, bool) {
 		if _, _, ok := parseTextRow(clean[k]); ok {
 			break // a table row of its own, not a wrapped label line
 		}
+		// the wrapped line can end in the title-of-class cell
+		if m := reTrailClass.FindStringSubmatch(p); m != nil && len(p) > len(m[0]) {
+			p = strings.TrimSpace(p[:len(p)-len(m[0])])
+		}
 		pre = append([]string{p}, pre...)
 		cand := strings.TrimSpace(strings.Join(append(append([]string{}, pre...), nm), " "))
 		g, n := isGroupRow(cand)
@@ -2281,6 +2665,137 @@ func isAddressLine(s string) bool {
 	s = strings.TrimSpace(s)
 	return reStreetLine.MatchString(s) || reBoxLine.MatchString(s) || reCityZip.MatchString(s) ||
 		reCityState.MatchString(s) || reCityZipIn.MatchString(s)
+}
+
+// holderOverClassLine resolves the holder of a row whose stub is only a class
+// label, from the document. Between the row and its holder's cell it passes
+// over blank lines (an SGML <S> line cleans to blank), the wrapped head of the
+// label ("Class B" / "Common Stock....") and the previous holding's percent
+// line. A numeric row met there is a sibling holding one class up: its holder
+// is this row's holder, and its line is returned so the caller can reuse the
+// name it already gave that row. Otherwise the cell runs up to a blank, a
+// numeric row, a rule or a line indented right of the label (a section heading
+// centred over the table); the holder is the top line of the cell plus the
+// lines that continue it, up to the first address line.
+// columnarHdrLine reports a column-header line: a header cue on a line laid
+// out in columns (or short enough to be one cell). A justified sentence, such
+// as a footnote under a table, also says "shares" but is not one.
+func columnarHdrLine(lt string) bool {
+	return reHdrLineCue.MatchString(lt) && (reWideGap.MatchString(lt) || len(lt) <= 40)
+}
+
+func holderOverClassLine(clean []string, ln, depth int) (string, int, bool) {
+	if depth > 4 {
+		return "", -1, false
+	}
+	indent := len(clean[ln]) - len(strings.TrimLeft(clean[ln], " "))
+	var cell []string
+	for k, steps := ln-1, 0; k >= 0 && steps < 8; k, steps = k-1, steps+1 {
+		p := strings.TrimRight(clean[k], " ")
+		t := strings.TrimSpace(p)
+		u, _ := StripFootnotes(t)
+		u = strings.TrimSpace(reDotLeader.ReplaceAllString(u, " "))
+		if len(cell) == 0 {
+			if t == "" || reClassOnly.MatchString(u) || reClassLabelLine.MatchString(u) || reContinuationLine.MatchString(t) {
+				continue
+			}
+			if stub, _, ok := parseTextRow(p); ok {
+				stub, _ = StripFootnotes(stub)
+				stub = strings.TrimSpace(reDotLeader.ReplaceAllString(stub, " "))
+				if m := reTrailClass.FindStringSubmatch(stub); m != nil {
+					stub = strings.TrimSpace(stub[:len(stub)-len(m[0])])
+				}
+				if stub == "" || reClassOnly.MatchString(stub) || reClassLabelLine.MatchString(stub) {
+					nm, _, ok := holderOverClassLine(clean, k, depth+1)
+					return nm, k, ok
+				}
+				// "Holder   Common Stock--2,746,642": the stub carries the
+				// holding itself, so it is no clean name to inherit.
+				if reShareLike.MatchString(stub) {
+					return "", k, false
+				}
+				return norm(stub), k, true
+			}
+		}
+		if t == "" || len(p)-len(strings.TrimLeft(p, " ")) > indent || len(t) > 90 || reRuleLine.MatchString(t) ||
+			reContinuationLine.MatchString(t) || reClassOnly.MatchString(u) || reClassLabelLine.MatchString(u) {
+			break
+		}
+		if _, _, ok := parseTextRow(p); ok {
+			break
+		}
+		// The name line can end in the title-of-class cell: "Andre..... Common Stock".
+		g := reDotLeader.ReplaceAllString(t, " ")
+		if m := reTrailClass.FindStringSubmatch(u); m != nil && len(u) > len(m[0]) {
+			u = strings.TrimSpace(u[:len(u)-len(m[0])])
+		}
+		if m := reTrailClass.FindStringSubmatch(g); m != nil && len(g) > len(m[0]) {
+			g = strings.TrimSpace(g[:len(g)-len(m[0])])
+		}
+		// A name cell is one column; a line of several is the column header.
+		if (!hasWords(u, 1) && !reZipOnly.MatchString(u)) || reSkipName.MatchString(u) || reHdrLineCue.MatchString(u) || reWideGap.MatchString(g) {
+			break
+		}
+		cell = append([]string{u}, cell...)
+		if len(cell) == 6 {
+			break
+		}
+	}
+	var name []string
+	for _, c := range cell {
+		if isAddressLine(c) || reNumLedLine.MatchString(c) || reZipOnly.MatchString(c) || reShareLike.MatchString(c) || len(name) == 3 {
+			break
+		}
+		name = append(name, c)
+	}
+	if len(name) == 0 {
+		return "", -1, false
+	}
+	return norm(strings.Join(name, " ")), -1, true
+}
+
+var (
+	// reContinuationLine is a line holding nothing but the previous row's
+	// percent and footnote marks: "*   61.9%", "(73.8%)", "(6)(7)   9.6%".
+	reContinuationLine = regexp.MustCompile(`^(?:\s*(?:\*|\(?[0-9]{0,3}(?:\.[0-9]+)?\s*%\)?|(?:\([0-9a-z]{1,3}\))+))+\s*$`)
+	reZipOnly          = regexp.MustCompile(`^[0-9]{5}(?:-[0-9]{4})?$`)
+	reWideGap          = regexp.MustCompile(`\S\s{3,}\S`)
+)
+
+// percentBelow reads the one percent token of a line made of nothing but
+// percent tokens ("*", "61.9%", "(73.8%)") that overlaps the column span
+// [lo, hi).
+var reFootnoteOnlyTok = regexp.MustCompile(`^(?:\([0-9a-z]{1,3}\))+$`)
+
+var rePctOnlyTok = regexp.MustCompile(`^(?:\*|\(?[0-9]{1,3}(?:\.[0-9]+)?\s*%\)?)$`)
+
+func percentBelow(line string, lo, hi int) (*float64, string, bool) {
+	var pick string
+	hits := 0
+	for _, f := range regexp.MustCompile(`\S+`).FindAllStringIndex(line, -1) {
+		tok := line[f[0]:f[1]]
+		if reFootnoteOnlyTok.MatchString(tok) {
+			continue
+		}
+		if !rePctOnlyTok.MatchString(tok) {
+			return nil, "", false
+		}
+		if f[0] < hi && f[1] > lo {
+			pick = tok
+			hits++
+		}
+	}
+	if hits != 1 {
+		return nil, "", false
+	}
+	if pick == "*" {
+		return nil, "*", true
+	}
+	v, ok, mk, _ := ParsePercent(strings.Trim(pick, "()"))
+	if !ok {
+		return nil, "", false
+	}
+	return &v, mk, true
 }
 
 // headNameAbove walks back from the numeric row at ln over the address and
@@ -2547,6 +3062,19 @@ var (
 // textHeaderRows returns the header lines above a block, top to bottom, split
 // into whitespace-separated column groups with their character spans.
 func textHeaderRows(clean []string, first int) [][]hdrGroup {
+	lines := textHeaderLines(clean, first)
+	var out [][]hdrGroup
+	for i := len(lines) - 1; i >= 0; i-- {
+		if g := splitHdrGroups(clean[lines[i]]); len(g) > 0 {
+			out = append(out, g)
+		}
+	}
+	return out
+}
+
+// textHeaderLines returns the line numbers of the header above a block, bottom
+// to top.
+func textHeaderLines(clean []string, first int) []int {
 	var lines []int
 	blanks := 0
 	for ln := first - 1; ln >= 0 && first-ln <= 12; ln-- {
@@ -2576,13 +3104,57 @@ func textHeaderRows(clean []string, first int) [][]hdrGroup {
 		}
 		lines = append(lines, ln)
 	}
-	var out [][]hdrGroup
-	for i := len(lines) - 1; i >= 0; i-- {
-		if g := splitHdrGroups(clean[lines[i]]); len(g) > 0 {
-			out = append(out, g)
+	return lines
+}
+
+// textProseLine reports a justified sentence: long, and with no column gap of
+// three or more spaces. Justification and a sentence break leave double spaces,
+// so two is not a column gap.
+func textProseLine(l string) bool {
+	// A footnote's marker is set off from its sentence by a wide gap.
+	t := reLeadNoteMarker.ReplaceAllString(strings.TrimSpace(l), "")
+	return len(t) > 40 && !reWideGap.MatchString(t)
+}
+
+var reLeadNoteMarker = regexp.MustCompile(`^(?:\(\w{1,2}\)|\*+)\s+`)
+
+// textCompCueText is the text the compensation screen reads. When the table's
+// own column header reads as ownership, every prose sentence is dropped from
+// it: an ownership table mentions salary or option grants only in a lead-in or
+// footnote sentence ("does not include stock options granted under the ...
+// Plan"). Otherwise the whole body is read, since a remuneration table may name
+// its subject only in the sentence above it.
+func textCompCueText(clean, header []string, block []int, body string) string {
+	var keep []string
+	for _, l := range header {
+		if !textProseLine(l) {
+			keep = append(keep, l)
 		}
 	}
-	return out
+	if len(block) > 0 {
+		hl := textHeaderLines(clean, block[0]) // bottom to top
+		for i := len(hl) - 1; i >= 0; i-- {
+			if !textProseLine(clean[hl[i]]) {
+				keep = append(keep, clean[hl[i]])
+			}
+		}
+	}
+	hdr := strings.Join(keep, " ")
+	if !reOwnCue.MatchString(hdr) {
+		return body
+	}
+	parts := []string{hdr, hdrColumnText(keep)}
+	tabular := false
+	for _, ln := range block {
+		if !textProseLine(clean[ln]) {
+			parts = append(parts, clean[ln])
+			tabular = true
+		}
+	}
+	if !tabular {
+		return body // a block of sentences is no table, whatever stands above it
+	}
+	return strings.Join(parts, " ")
 }
 
 // stubCellCont reports whether line ln is the STUB CELL of the block's table
@@ -3061,3 +3633,44 @@ func textStandaloneClassCaption(lines []string, row int) string {
 	}
 	return ""
 }
+
+var reHdrHolderCue = regexp.MustCompile(`(?i)\bname\b|beneficial\s+owner`)
+var reHdrHoldingCue = regexp.MustCompile(`(?i)\bshares\b|\bamount\b|\bnumber\b`)
+
+// oneLineOwnershipHdr reports a whole ownership header on one line: three or
+// more cells naming the holder column and the holding column. A prose line
+// that mentions shares is not one.
+func oneLineOwnershipHdr(lt string) bool {
+	return len(reWideGap.FindAllStringIndex(lt, -1)) >= 2 && reHdrHolderCue.MatchString(lt) && reHdrHoldingCue.MatchString(lt)
+}
+
+// pageFooterAt reports a bare page number directly above the <PAGE> marker:
+// page-break residue, blank to the table scan rather than a line of prose.
+func pageFooterAt(lines, clean []string, j int) bool {
+	if !reASCIIPageNumber.MatchString(strings.TrimSpace(clean[j])) {
+		return false
+	}
+	for k := j + 1; k < len(lines) && k <= j+2; k++ {
+		if strings.Contains(strings.ToLower(lines[k]), "<page>") {
+			return true
+		}
+		if strings.TrimSpace(lines[k]) != "" {
+			return false
+		}
+	}
+	return false
+}
+
+// textDollarOnlyTail reports a value tail whose every number carries a "$".
+func textDollarOnlyTail(rest string) bool {
+	t := strings.TrimSpace(rest)
+	if !strings.HasPrefix(t, "$") {
+		return false
+	}
+	return !reAnyDigit.MatchString(reDollarAmount.ReplaceAllString(t, " "))
+}
+
+var (
+	reDollarAmount = regexp.MustCompile(`\$\s*[\d.,]+`)
+	reAnyDigit     = regexp.MustCompile(`\d`)
+)

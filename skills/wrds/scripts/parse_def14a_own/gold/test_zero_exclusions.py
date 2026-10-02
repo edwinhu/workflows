@@ -1,7 +1,7 @@
 """X10-X13 use old-row fields only; each conjunction has negative controls."""
 import unittest
 
-from build_regress_set import zero_row_exclusion_flags
+from build_regress_set import lost_exclusion_flags, zero_row_exclusion_flags
 
 
 class ZeroExclusionTests(unittest.TestCase):
@@ -63,6 +63,57 @@ class ZeroExclusionTests(unittest.TestCase):
 
     def test_empty_rows(self):
         self.assertEqual(zero_row_exclusion_flags([]), (0, 0, 0, 0))
+
+
+class LostExclusionTests(unittest.TestCase):
+    """X14-X20 (set (c), 2026-10-01): old-row fields only; each has a real-table control."""
+
+    def row(self, name="Jane Smith", shares="12345", percent="1.2"):
+        return {"holder_name": name, "shares": shares, "percent": percent}
+
+    def flags(self, rows):
+        return dict(zip(["x14", "x15", "x16", "x17", "x18", "x19", "x20"], lost_exclusion_flags(rows)))
+
+    def test_real_ownership_table_fires_nothing(self):
+        rows = [self.row("Jane Smith", "120000", "5.1"), self.row("John Doe", "8000", ""),
+                self.row("All directors and executive officers as a group", "300000", "12.4")]
+        self.assertEqual(lost_exclusion_flags(rows), (0,) * 7)
+        self.assertEqual(lost_exclusion_flags([]), (0,) * 7)
+
+    def test_x14_year_as_shares(self):
+        self.assertEqual(self.flags([self.row("Director since", "1998", ""), self.row("Age", "54", "")])["x14"], 1)
+        self.assertEqual(self.flags([self.row("Jane Smith", "1998", ""), self.row("John Doe", "50000", "")])["x14"], 0)
+
+    def test_x15_percent_only(self):
+        self.assertEqual(self.flags([self.row("of the outstanding shares", "", "5")])["x15"], 1)
+        self.assertEqual(self.flags([self.row(shares="", percent="5")] * 3)["x15"], 0)
+
+    def test_x16_small_int_needs_no_percent_and_positive(self):
+        self.assertEqual(self.flags([self.row("Board met", "7", "")])["x16"], 1)
+        self.assertEqual(self.flags([self.row("Board met", "7", "1")])["x16"], 0)
+        self.assertEqual(self.flags([self.row("Fund A", "0", "")])["x16"], 0)
+
+    def test_x17_no_values(self):
+        self.assertEqual(self.flags([self.row("Vote FOR", "", "")])["x17"], 1)
+        self.assertEqual(self.flags([self.row("Vote FOR", "", ""), self.row(shares="10", percent="")])["x17"], 0)
+
+    def test_x18_every_name_prose_lead(self):
+        self.assertEqual(self.flags([self.row("1 As of March 1, 2005"), self.row("Includes 500 options")])["x18"], 1)
+        self.assertEqual(self.flags([self.row("As of March 1"), self.row("Jane Smith")])["x18"], 0)
+        self.assertEqual(self.flags([self.row("Onan Smith")])["x18"], 0)
+
+    def test_x19_function_word_tail(self):
+        self.assertEqual(self.flags([self.row("shares held of record by")])["x19"], 1)
+        self.assertEqual(self.flags([self.row("shares held of record by"), self.row("Jane Smith")])["x19"], 0)
+
+    def test_x20_titles_and_since_guard(self):
+        rows = [self.row("Chief Executive Officer 2004", "450000", ""), self.row("Jane Smith", "1000", ""),
+                self.row("John Doe", "900", "")]
+        self.assertEqual(self.flags(rows)["x20"], 1)
+        self.assertEqual(self.flags([dict(r, percent="1") for r in rows])["x20"], 0)
+        bios = [self.row("Joseph L. May 67 Attorney in private practice since 1984", "0", ""),
+                self.row("Jane Smith", "100", ""), self.row("John Doe", "200", "")]
+        self.assertEqual(self.flags(bios)["x20"], 0)
 
 
 if __name__ == "__main__":

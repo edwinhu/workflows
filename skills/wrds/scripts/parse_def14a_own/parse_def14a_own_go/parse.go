@@ -19,7 +19,7 @@ var (
 	reSharesNum = regexp.MustCompile(`^-?[0-9][0-9,\. ]*$`)
 	rePctNum    = regexp.MustCompile(`((?:[0-9]+(?:\.[0-9]+)?|\.[0-9]+))\s*%`)
 	rePctBare   = regexp.MustCompile(`^((?:[0-9]{1,3}(?:\.[0-9]+)?|\.[0-9]+))$`)
-	reLessThan  = regexp.MustCompile(`(?i)less\s+than\s+(?:one|1)\s*(?:percent|%)|under\s+1\s*%`)
+	reLessThan  = regexp.MustCompile(`(?i)less\s+than\s+(?:[0-9]+/[0-9]+\s+of\s+)?(?:one|1)\s*(?:percent|%)|under\s+1\s*%`)
 	reStar      = regexp.MustCompile(`^[\*\+#†‡]{1,2}$`)
 	reDotPct    = regexp.MustCompile(`^\.[0-9]+\s*%?$`)
 	// "As Group (15 persons)" — the article is dropped often enough in ASCII
