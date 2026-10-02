@@ -39,7 +39,7 @@ In decide mode the cheapest available chain candidate (by `price.prompt`, null l
 **Rule checks for code.** Jev also scores rules, not routes. `dev` declares `ruleChecks` with
 `--rules constraints/jev/dev`: five rules (MOCK, WEAK, NET, SHELL, LOOP), one extractor each over the
 change's diff. Rules declare a `SUBJECT`, which `rule-check.ts` puts in its preamble; discovery
-is non-recursive, so `ds` still finds exactly its ten. A rule is wired only when it scores its
+is non-recursive, so `ds` still finds only its own rules. A rule is wired only when it scores its
 violating fixture >= 0.85 and its compliant fixture and real clean commits < 0.5. A rule that
 misses keeps its file, marked `uncalibrated` in its header, and is not wired. Calibrated
 2026-10-02: all five gave >= 0.92 on violating fixtures and <= 0.09 on compliant fixtures and on

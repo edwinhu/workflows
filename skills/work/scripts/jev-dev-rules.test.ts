@@ -74,7 +74,7 @@ test("dev discovery finds exactly the five rules, each with a subject; ds discov
   }
   const ds = spawnSync("python3", [join(BASE, "constraints/jev/evidence.py"), "--files", ...changed(d), "--root", d], { encoding: "utf8" });
   const dsOut = JSON.parse(ds.stdout);
-  expect(Object.keys(dsOut)).toEqual(["A1"]);
+  expect(Object.keys(dsOut)).toEqual(["A1", "A4", "DEN", "DQ4", "DQ6", "E7", "M1", "R1", "UNI"]);
   expect(Object.values(dsOut).every((v: any) => v.subject === undefined)).toBe(true);
 });
 

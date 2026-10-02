@@ -1,0 +1,30 @@
+"""DQ6: every row-changing transform shows its row count before AND after. Calibrated 2026-10-02, two runs: vio2 0.93-0.95, sat2 0.02, real 32_agk2019 0.02."""
+from _common import render_json
+from _ds import MAX_ITEMS, is_py, sources, transform_sites
+
+PROPOSITION = ('Verification is not output-first: at least one row-changing transform (filter, join, merge, '
+               'dedupe, dropna, groupby, concat) lacks a Before/After record, meaning the row count or shape '
+               'of its INPUT frame is not shown next to it, or that of its OUTPUT frame is not shown after it. '
+               'In the state, that is a transform site with before_and_after_shown false.')
+
+CRITERIA = {
+    'VIOLATED': 'some row-changing transform lacks either the input-side or the output-side count',
+    'SATISFIED': 'every row-changing transform shows both the input count and the output count',
+    'NOT_APPLICABLE': 'the files perform no row-changing transform of a data frame',
+    'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
+}
+
+
+def evidence(files, plan_lines=None):
+    sites = [s for rel, lines in sources(files) if is_py(rel) for s in transform_sites(rel, lines)]
+    sites.sort(key=lambda s: s['before_and_after_shown'])
+    inventory = {
+        'transform_sites_note': ('a site is an assignment whose method chain changes the row count; a '
+                                 'count line names the frame with .height, len(), .shape or a count/log '
+                                 'helper; input = the source frame within 6 lines before (or after, when '
+                                 'the result gets a new name), output = the assigned frame within 6 lines after'),
+        'transform_sites': sites[:MAX_ITEMS],
+        'n_transform_sites': len(sites),
+        'n_transforms_without_before_and_after': sum(not s['before_and_after_shown'] for s in sites),
+    }
+    return render_json('DQ6', files, inventory, [])
