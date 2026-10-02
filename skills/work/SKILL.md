@@ -59,9 +59,12 @@ the `readOnly` n/a dimensions. `scripts/plan-review.test.ts` guards the computed
 and the absence of the judged layer. Add both to `mechanicalChecks` on a run that edits the spine:
 
 ```bash
-bun test ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/   # absolute path: a bare relative path is
-# read as a NAME FILTER and exits 1 having matched nothing — identical to a real failure
+${CLAUDE_PLUGIN_ROOT}/scripts/test.sh ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/   # absolute path:
+# a bare relative path is read as a NAME FILTER and exits 1 having matched nothing
 ```
+
+`scripts/test.sh` runs test files in parallel with a per-run TMPDIR; with no argument it runs the
+whole suite (~1 min).
 
 ## State
 
