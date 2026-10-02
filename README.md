@@ -247,6 +247,20 @@ Hooks auto-run at specific lifecycle events. The table has one row per command t
 | `overflow-check.ts` | PostToolUse | Bash | Detect Typst content overflow after compilation |
 | `pattern-scan.ts` | SessionEnd | clear/logout/prompt_input_exit/other | Scan session for reusable patterns |
 
+### Bulk-extraction guard (mod)
+
+`hooks/bulk-guard.mjs` is a Claude Code mod (2.1.287+), listed under `"modules"` in `hooks/hooks.json`. It runs in every session that loads the plugin, farm-out children included. It enforces the rule that per-document coding or extraction over many files is ONE `gemini-batch` job on pre-cut excerpts. On `tool.call` it does the following:
+
+| Rule | Tools | Action |
+|---|---|---|
+| Distinct documents read (≥20 KB; `.txt .htm .html .xml .sgml .pdf .nc`, or a path containing filings/archives/edgar/raw/prospect), via Read or a Bash dump (cat, head, tail, `sed -n`, less, pdftotext, strings, python/awk one-liners). Rereads do not count | Read, Bash | note at 5, deny at 10 |
+| `farm.sh` / `farm-team.sh` / `work-dispatch.sh --tasks` with ≥5 rows near-identical to row 0 after masking paths, numbers, CIKs and accessions (similarity ≥0.8) | Bash | deny |
+| A for/while/xargs loop that runs `claude -p`, `codex exec`, `gemini` or `agy -p` per item | Bash | deny |
+| A model API call inside a loop (`/v1/messages`, Anthropic/OpenAI SDK, `generateContent` outside a batch flow). `batches.create`, `batchPredictionJobs` and request-JSONL writing are allowed; an Edit only trips the rule if it introduces the pattern | Bash; Write/Edit of `.py .ts .js .sh` | deny |
+| A Read, Bash or Grep result over 20K tokens (chars/4) | Read, Bash, Grep | full output saved under `$XDG_RUNTIME_DIR/bulk-guard/`; the model sees head 6K + tail 2K |
+
+Every threshold has an env override: `BULK_GUARD_WARN_DOCS`, `_DENY_DOCS`, `_DOC_BYTES`, `_FANOUT_ROWS`, `_SIMILARITY`, `_TRIM_TOKENS`, `_HEAD_TOKENS`, `_TAIL_TOKENS`. `BULK_GUARD_OFF=1` in the user's environment disables the guard, and any command that sets it is denied. Each warn, deny and trim is appended to `$XDG_RUNTIME_DIR/bulk-guard/events.jsonl`, and the prompt band shows `docs read N/10 · trimmed K results`.
+
 ---
 
 ## Session Continuity

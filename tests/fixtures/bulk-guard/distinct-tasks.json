@@ -1,0 +1,38 @@
+[
+  {
+    "label": "amplification",
+    "model": "claude-fable-5-1",
+    "expect": "/home/user/nix/.craft/scrollmeasure/01-amplification.md",
+    "prompt": "Quantify the SCROLL WRITE AMPLIFICATION in /home/user/nix/.craft/scrollmeasure/evidence/browser-trace.txt (strace of terminal-browser during 25 wheel ticks; see evidence/wheel-probe.txt for the scroll positions it produced). For every kitty a=T transmit, parse s= and v= and t=; compute total announced pixel bytes (w*h*4 for f=32). Then compute the THEORETICAL MINIMUM: the viewport width times the total scrolled CSS pixels times 4, plus one full frame. Report the amplification ratio, per-frame bytes, frames per distinct scroll position, and whether any transmit is smaller than the full surface (a damage rect) or all are full-surface. Write /home/user/nix/.craft/scrollmeasure/01-amplification.md. Every claim must name the command that produced it and paste its output. Read-only except for your own report file. Do NOT run build-switch, do NOT edit ~/nix or ~/projects/herdr sources, and do NOT kill the user's aerc or herdr session."
+  },
+  {
+    "label": "damage-support",
+    "model": "claude-fable-5-1",
+    "expect": "/home/user/nix/.craft/scrollmeasure/02-damage-support.md",
+    "prompt": "Determine whether PARTIAL/DAMAGE updates are possible at all on this path. Read /home/user/.local/share/terminal-browser/app/browser/native/pixel.node (a stripped Rust addon: use strings/nm, do not decompile) and the JS under /home/user/.local/share/terminal-browser/app/cli/dist and app/bridge if present, for evidence of damage rectangles, dirty regions, scroll-delta encoding, kitty a=p placement-only updates, or partial transmits. Also check the kitty protocol features the code references (a=p, x=, y=, w=, h=, X=, Y=, c=, r=, z=). State whether the browser CAN send a sub-surface update and what selects it. Write /home/user/nix/.craft/scrollmeasure/02-damage-support.md. Every claim must name the command that produced it and paste its output. Read-only except for your own report file. Do NOT run build-switch, do NOT edit ~/nix or ~/projects/herdr sources, and do NOT kill the user's aerc or herdr session."
+  },
+  {
+    "label": "herdr-consumer",
+    "model": "claude-fable-5-1",
+    "expect": "/home/user/nix/.craft/scrollmeasure/03-herdr-consumer.md",
+    "prompt": "Read /home/user/projects/herdr (checked out at v0.9.1) and explain exactly what its graphics consumer does with each kitty frame it receives from a pane: src/kitty_graphics.rs, src/app/pane_graphics.rs, src/api/server/pane_graphics_stream.rs, src/app/runtime.rs. Answer with file:line cites: does it copy pixels, forward a file reference, re-encode, coalesce, ack-gate, or re-emit the whole placement per render? What is MIN_RENDER_INTERVAL and what does it gate? Does anything drop frames, and where? Identify the single largest per-frame cost and the smallest change that would reduce it. Write /home/user/nix/.craft/scrollmeasure/03-herdr-consumer.md. Every claim must name the command that produced it and paste its output. Read-only except for your own report file. Do NOT run build-switch, do NOT edit ~/nix or ~/projects/herdr sources, and do NOT kill the user's aerc or herdr session."
+  },
+  {
+    "label": "surface-sizing",
+    "model": "claude-fable-5-1",
+    "expect": "/home/user/nix/.craft/scrollmeasure/04-surface-sizing.md",
+    "prompt": "Explain the SURFACE SIZE. A herdr pane about 1259x1030 logical on a 3840x2160@120Hz monitor at scale 2 produced kitty transmits of s=1984,v=1188 in one measurement and s=2016,v=1944 in another (see /home/user/nix/.craft/scrollmeasure/evidence/browser-trace.txt and, for the larger one, the note in /home/user/nix/.claude/skills/aerc-scroll-gif/SKILL.md). Determine what sets it: devicePixelRatio, herdr cell geometry (pane.graphics.info reports cell_width_px 17, cell_height_px 37), the pane rect, or a terminal-browser option. Find every knob that would render a smaller surface and what each costs in sharpness. Write /home/user/nix/.craft/scrollmeasure/04-surface-sizing.md. Every claim must name the command that produced it and paste its output. Read-only except for your own report file. Do NOT run build-switch, do NOT edit ~/nix or ~/projects/herdr sources, and do NOT kill the user's aerc or herdr session."
+  },
+  {
+    "label": "knobs",
+    "model": "claude-fable-5-1",
+    "expect": "/home/user/nix/.craft/scrollmeasure/05-knobs.md",
+    "prompt": "Inventory every runtime knob that could reduce scroll data volume on this path, with evidence for each. Known env vars in the addon: TERMINAL_BROWSER_FRAMES (values File/Shared/Inline), TERMINAL_BROWSER_FRAME_BUDGET_MBPS, TERMINAL_BROWSER_FRAMES, TERMINAL_BROWSER_AUTOPROFILE_MS. Search the addon strings and the JS dist for others, and read /home/user/nix/modules/linux/aerc-html-terminal-browser.nix for what the launcher already passes. For each knob: what it changes, its default, how to set it, and whether it plausibly reduces announced bytes per scroll. Write /home/user/nix/.craft/scrollmeasure/05-knobs.md. Every claim must name the command that produced it and paste its output. Read-only except for your own report file. Do NOT run build-switch, do NOT edit ~/nix or ~/projects/herdr sources, and do NOT kill the user's aerc or herdr session."
+  },
+  {
+    "label": "live-attribution",
+    "model": "claude-fable-5-1",
+    "expect": "/home/user/nix/.craft/scrollmeasure/06-live-attribution.md",
+    "prompt": "You OWN the desktop for this row; no other row touches it. Measure where scroll time and bytes actually go, live. Use /home/user/nix/.claude/skills/aerc-scroll-gif/scripts/check-scroll-bytes.sh as a working template (it splits a herdr pane from HERDR_PANE_ID, straces terminal-browser, injects wheel ticks over CDP with wheel-probe.ts, and computes MB/s). Produce: per-process CPU during a scroll (browser render process, browser daemon, herdr, ghostty) sampled at 200ms; announced MB/s; and the same two numbers with TERMINAL_BROWSER_FRAMES=inline for contrast. Run each configuration TWICE and report both, since single readings misled this investigation repeatedly. Clean up every pane and daemon you start. Write /home/user/nix/.craft/scrollmeasure/06-live-attribution.md. Every claim must name the command that produced it and paste its output. Read-only except for your own report file. Do NOT run build-switch, do NOT edit ~/nix or ~/projects/herdr sources, and do NOT kill the user's aerc or herdr session."
+  }
+]

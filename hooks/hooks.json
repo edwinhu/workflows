@@ -1,4 +1,7 @@
 {
+  "modules": [
+    "./bulk-guard.mjs"
+  ],
   "hooks": {
     "SessionStart": [
       {

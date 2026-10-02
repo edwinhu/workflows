@@ -28,7 +28,7 @@ Read top to bottom; the first row that matches wins.
 | a Typst talk built from a research paper | `/workshop` | `Skill(skill="workshop")` |
 | lecture notes / slides for a course chapter | `/notes`, `/slides` | teaching plugin |
 | substantial work with no domain gate, but worth doing properly | `/work` | `Skill(skill="workflows:work")` |
-| extraction, coding, labeling or classification applied to each of many documents (roughly 10 or more), INCLUDING gold sets, "hand-coding" and annotation | `workflows:gemini-batch` | never an agent fan-out |
+| extraction, coding, labeling or classification applied to each of many documents (roughly 10 or more), INCLUDING gold sets, "hand-coding" and annotation | `workflows:gemini-batch` | never an agent fan-out — the bulk-guard mod denies the 10th distinct document read |
 | a specialist's job with no workflow shape | **farm out to the agent** | see the Iron Law below |
 | a substantive question, or any search for sources | **your own library FIRST** | see the Iron Law below — not `WebSearch` |
 | image, PDF, video, audio — understanding its content | **look-at** | never the `Read` tool |
