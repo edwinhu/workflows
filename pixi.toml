@@ -21,6 +21,7 @@ lxml = ">=5,<7"
 pandas = ">=2,<4"
 polars = ">=1,<2"
 scikit-learn = ">=1.5,<2"
+pytest-xdist = ">=3.8.0,<4"
 
 [pypi-dependencies]
 # conda-forge tops out at sparse_dot_topn 0.3.1 (py311, linux-64 only), and 0.3.1

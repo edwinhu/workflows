@@ -37,7 +37,7 @@ else
   report constraints 2 "typst plugin absent"
 fi
 
-uv run --with pypdf --with pytest python3 -m pytest -q "$HERE/workshop_deck_test.py" >&2
+uv run --with pypdf --with pytest --with pytest-xdist python3 -m pytest -q "$HERE/workshop_deck_test.py" >&2
 report probe-tests $?
 
 exit "$FAILED"

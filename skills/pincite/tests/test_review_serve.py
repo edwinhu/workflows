@@ -16,6 +16,7 @@ import shutil
 import socket
 import subprocess
 import sys
+import tempfile
 import time
 import unittest
 
@@ -43,8 +44,10 @@ def free_port():
 
 class ServerCase(unittest.TestCase):
     def setUp(self):
-        self.root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_review_scratch")
-        shutil.rmtree(self.root, ignore_errors=True)
+        # One private tree per test: the suite runs under pytest-xdist, and a shared
+        # scratch dir (or a shared parent for the traversal probe) races across workers.
+        self.base = tempfile.mkdtemp(prefix="review_serve_")
+        self.root = os.path.join(self.base, "root")
         os.makedirs(os.path.join(self.root, "paper", "references"))
         # Bibliography PDFs really do carry spaces in their filenames.
         with open(os.path.join(self.root, "paper", "references",
@@ -81,7 +84,7 @@ class ServerCase(unittest.TestCase):
                 self.proc.wait(timeout=5)
             except subprocess.TimeoutExpired:
                 self.proc.kill()
-        shutil.rmtree(self.root, ignore_errors=True)
+        shutil.rmtree(self.base, ignore_errors=True)
 
     def raw_post(self, path, body, headers=None):
         """POST with full control of headers — urllib cannot forge Sec-Fetch-Site."""
