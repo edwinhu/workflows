@@ -1,4 +1,5 @@
-import { describe, expect, it, afterEach } from "bun:test";
+import { describe, expect, it, afterEach, beforeEach } from "bun:test";
+import { useTmp } from "../../../tests/helpers/tmp.ts";
 import { join } from "node:path";
 import { resolveModel } from "../../../scripts/lib/gemini-models.ts";
 import {
@@ -38,6 +39,8 @@ import {
   type ManifestEntry,
   type StoreState,
 } from "../gemini";
+
+const mkTmp = useTmp();
 
 // The retry leg must resolve to something OTHER than DEFAULT_MODEL for the retry
 // assertions to mean anything; 'pro' is the role the CLI actually escalates to.
@@ -196,42 +199,38 @@ describe("uploadCitedFiles", () => {
     };
     __setGeminiClientForTesting(mockClient as any);
 
-    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
-    const tmpDir = "/tmp/cite-check-upload-cited-test";
-    try {
-      mkdirSync(join(tmpDir, "pdfs"), { recursive: true });
-      writeFileSync(join(tmpDir, "pdfs/real.pdf"), "fake-pdf");
+    const { mkdirSync, writeFileSync } = await import("node:fs");
+    const tmpDir = mkTmp("cite-check-upload-cited-test-");
+    mkdirSync(join(tmpDir, "pdfs"), { recursive: true });
+    writeFileSync(join(tmpDir, "pdfs/real.pdf"), "fake-pdf");
 
-      const bibMap = new Map<string, BibEntry>([
-        ["HasPdf2024-aa", { bibkey: "HasPdf2024-aa", filePath: join(tmpDir, "pdfs/real.pdf") }],
-        ["NoPdf2024-bb", { bibkey: "NoPdf2024-bb", filePath: join(tmpDir, "pdfs/nonexistent.pdf") }],
-        ["AlreadyCached2020-xx", { bibkey: "AlreadyCached2020-xx", filePath: join(tmpDir, "pdfs/real.pdf") }],
-      ]);
+    const bibMap = new Map<string, BibEntry>([
+      ["HasPdf2024-aa", { bibkey: "HasPdf2024-aa", filePath: join(tmpDir, "pdfs/real.pdf") }],
+      ["NoPdf2024-bb", { bibkey: "NoPdf2024-bb", filePath: join(tmpDir, "pdfs/nonexistent.pdf") }],
+      ["AlreadyCached2020-xx", { bibkey: "AlreadyCached2020-xx", filePath: join(tmpDir, "pdfs/real.pdf") }],
+    ]);
 
-      // Pre-populate cache with one entry
-      const cache = new Map<string, FileRef>([
-        ["AlreadyCached2020-xx", { name: "files/cached", uri: "https://example.com/cached", mimeType: "application/pdf" }],
-      ]);
+    // Pre-populate cache with one entry
+    const cache = new Map<string, FileRef>([
+      ["AlreadyCached2020-xx", { name: "files/cached", uri: "https://example.com/cached", mimeType: "application/pdf" }],
+    ]);
 
-      const result = await uploadCitedFiles(
-        bibMap,
-        ["HasPdf2024-aa", "NoPdf2024-bb", "AlreadyCached2020-xx", "NotInBib2024-cc"],
-        cache,
-      );
+    const result = await uploadCitedFiles(
+      bibMap,
+      ["HasPdf2024-aa", "NoPdf2024-bb", "AlreadyCached2020-xx", "NotInBib2024-cc"],
+      cache,
+    );
 
-      expect(result.uploaded).toBe(1);  // HasPdf2024-aa
-      expect(result.skipped).toBe(1);   // AlreadyCached2020-xx
-      expect(result.missing).toBe(2);   // NoPdf2024-bb (file not found) + NotInBib2024-cc (not in map)
-      expect(uploadCalls.length).toBe(1);
-      expect(uploadCalls[0].config.displayName).toBe("HasPdf2024-aa");
+    expect(result.uploaded).toBe(1);  // HasPdf2024-aa
+    expect(result.skipped).toBe(1);   // AlreadyCached2020-xx
+    expect(result.missing).toBe(2);   // NoPdf2024-bb (file not found) + NotInBib2024-cc (not in map)
+    expect(uploadCalls.length).toBe(1);
+    expect(uploadCalls[0].config.displayName).toBe("HasPdf2024-aa");
 
-      // Cache should now have both entries
-      expect(cache.has("HasPdf2024-aa")).toBe(true);
-      expect(cache.has("AlreadyCached2020-xx")).toBe(true);
-      expect(cache.size).toBe(2);
-    } finally {
-      rmSync(tmpDir, { recursive: true, force: true });
-    }
+    // Cache should now have both entries
+    expect(cache.has("HasPdf2024-aa")).toBe(true);
+    expect(cache.has("AlreadyCached2020-xx")).toBe(true);
+    expect(cache.size).toBe(2);
   });
 
   it("resolves file via cross-directory fallback when primary path fails", async () => {
@@ -252,62 +251,55 @@ describe("uploadCitedFiles", () => {
     };
     __setGeminiClientForTesting(mockClient as any);
 
-    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+    const { mkdirSync, writeFileSync } = await import("node:fs");
     // Simulate: sources.bib in /tmp/project/references/
     //           paperpile.bib in /tmp/paperpile/
     //           PDF at /tmp/paperpile/All Papers/Author.pdf
-    const projectDir = "/tmp/cite-check-crossdir-test/project/references";
-    const paperpileDir = "/tmp/cite-check-crossdir-test/paperpile";
-    try {
-      mkdirSync(join(paperpileDir, "All Papers"), { recursive: true });
-      mkdirSync(projectDir, { recursive: true });
-      writeFileSync(join(paperpileDir, "All Papers/Author.pdf"), "fake-pdf");
+    const base = mkTmp("cite-check-crossdir-test-");
+    const projectDir = join(base, "project", "references");
+    const paperpileDir = join(base, "paperpile");
+    mkdirSync(join(paperpileDir, "All Papers"), { recursive: true });
+    mkdirSync(projectDir, { recursive: true });
+    writeFileSync(join(paperpileDir, "All Papers/Author.pdf"), "fake-pdf");
 
-      // Entry from sources.bib: filePath resolves to project/references/All Papers/Author.pdf (wrong)
-      // fileRelPath is the raw relative path from the bib
-      const bibMap = new Map<string, BibEntry>([
-        ["Author2024-aa", {
-          bibkey: "Author2024-aa",
-          filePath: join(projectDir, "All Papers/Author.pdf"), // wrong dir
-          fileRelPath: "All Papers/Author.pdf",
-        }],
-      ]);
+    // Entry from sources.bib: filePath resolves to project/references/All Papers/Author.pdf (wrong)
+    // fileRelPath is the raw relative path from the bib
+    const bibMap = new Map<string, BibEntry>([
+      ["Author2024-aa", {
+        bibkey: "Author2024-aa",
+        filePath: join(projectDir, "All Papers/Author.pdf"), // wrong dir
+        fileRelPath: "All Papers/Author.pdf",
+      }],
+    ]);
 
-      const cache = new Map<string, FileRef>();
-      const result = await uploadCitedFiles(
-        bibMap,
-        ["Author2024-aa"],
-        cache,
-        { bibDirs: [projectDir, paperpileDir] },
-      );
+    const cache = new Map<string, FileRef>();
+    const result = await uploadCitedFiles(
+      bibMap,
+      ["Author2024-aa"],
+      cache,
+      { bibDirs: [projectDir, paperpileDir] },
+    );
 
-      expect(result.uploaded).toBe(1);
-      expect(result.missing).toBe(0);
-      expect(cache.has("Author2024-aa")).toBe(true);
-      // Should have uploaded from the paperpile dir
-      expect(uploadCalls.length).toBe(1);
-    } finally {
-      rmSync("/tmp/cite-check-crossdir-test", { recursive: true, force: true });
-    }
+    expect(result.uploaded).toBe(1);
+    expect(result.missing).toBe(0);
+    expect(cache.has("Author2024-aa")).toBe(true);
+    // Should have uploaded from the paperpile dir
+    expect(uploadCalls.length).toBe(1);
   });
 });
 
 describe("resolveFileAcrossDirs", () => {
   it("returns primary path when it exists", async () => {
-    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
-    const tmpDir = "/tmp/cite-check-resolve-primary";
-    try {
-      mkdirSync(tmpDir, { recursive: true });
-      writeFileSync(join(tmpDir, "test.pdf"), "fake");
-      const entry: BibEntry = {
-        bibkey: "k",
-        filePath: join(tmpDir, "test.pdf"),
-        fileRelPath: "test.pdf",
-      };
-      expect(resolveFileAcrossDirs(entry, [])).toBe(join(tmpDir, "test.pdf"));
-    } finally {
-      rmSync(tmpDir, { recursive: true, force: true });
-    }
+    const { mkdirSync, writeFileSync } = await import("node:fs");
+    const tmpDir = mkTmp("cite-check-resolve-primary-");
+    mkdirSync(tmpDir, { recursive: true });
+    writeFileSync(join(tmpDir, "test.pdf"), "fake");
+    const entry: BibEntry = {
+      bibkey: "k",
+      filePath: join(tmpDir, "test.pdf"),
+      fileRelPath: "test.pdf",
+    };
+    expect(resolveFileAcrossDirs(entry, [])).toBe(join(tmpDir, "test.pdf"));
   });
 
   it("returns null when no path resolves", () => {
@@ -320,127 +312,103 @@ describe("resolveFileAcrossDirs", () => {
   });
 
   it("falls back to alternative bib dir when primary fails", async () => {
-    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
-    const altDir = "/tmp/cite-check-resolve-fallback";
-    try {
-      mkdirSync(join(altDir, "Papers"), { recursive: true });
-      writeFileSync(join(altDir, "Papers/doc.pdf"), "fake");
+    const { mkdirSync, writeFileSync } = await import("node:fs");
+    const altDir = mkTmp("cite-check-resolve-fallback-");
+    mkdirSync(join(altDir, "Papers"), { recursive: true });
+    writeFileSync(join(altDir, "Papers/doc.pdf"), "fake");
 
-      const entry: BibEntry = {
-        bibkey: "k",
-        filePath: "/wrong/dir/Papers/doc.pdf", // doesn't exist
-        fileRelPath: "Papers/doc.pdf",
-      };
-      expect(resolveFileAcrossDirs(entry, [altDir])).toBe(
-        join(altDir, "Papers/doc.pdf"),
-      );
-    } finally {
-      rmSync(altDir, { recursive: true, force: true });
-    }
+    const entry: BibEntry = {
+      bibkey: "k",
+      filePath: "/wrong/dir/Papers/doc.pdf", // doesn't exist
+      fileRelPath: "Papers/doc.pdf",
+    };
+    expect(resolveFileAcrossDirs(entry, [altDir])).toBe(
+      join(altDir, "Papers/doc.pdf"),
+    );
   });
 
   it("tries alternate paths from semicolon-separated file fields", async () => {
-    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
-    const bibDir = "/tmp/cite-check-resolve-alt-paths";
-    try {
-      mkdirSync(join(bibDir, "Papers"), { recursive: true });
-      // Only the second (alt) path exists on disk
-      writeFileSync(join(bibDir, "Papers/readable-name.pdf"), "fake");
+    const { mkdirSync, writeFileSync } = await import("node:fs");
+    const bibDir = mkTmp("cite-check-resolve-alt-paths-");
+    mkdirSync(join(bibDir, "Papers"), { recursive: true });
+    // Only the second (alt) path exists on disk
+    writeFileSync(join(bibDir, "Papers/readable-name.pdf"), "fake");
 
-      const entry: BibEntry = {
-        bibkey: "k",
-        filePath: join(bibDir, "Papers/1-s2.0-hash.pdf"), // doesn't exist
-        fileRelPath: "Papers/1-s2.0-hash.pdf",
-        fileAltRelPaths: ["Papers/readable-name.pdf"],
-      };
-      expect(resolveFileAcrossDirs(entry, [bibDir])).toBe(
-        join(bibDir, "Papers/readable-name.pdf"),
-      );
-    } finally {
-      rmSync(bibDir, { recursive: true, force: true });
-    }
+    const entry: BibEntry = {
+      bibkey: "k",
+      filePath: join(bibDir, "Papers/1-s2.0-hash.pdf"), // doesn't exist
+      fileRelPath: "Papers/1-s2.0-hash.pdf",
+      fileAltRelPaths: ["Papers/readable-name.pdf"],
+    };
+    expect(resolveFileAcrossDirs(entry, [bibDir])).toBe(
+      join(bibDir, "Papers/readable-name.pdf"),
+    );
   });
 });
 
 describe("parseBibFile stores fileRelPath", () => {
   it("preserves raw relative path alongside resolved absolute path", async () => {
-    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
-    const tmpDir = "/tmp/cite-check-relpath-test";
+    const { mkdirSync, writeFileSync } = await import("node:fs");
+    const tmpDir = mkTmp("cite-check-relpath-test-");
     const bibPath = join(tmpDir, "test.bib");
-    try {
-      mkdirSync(tmpDir, { recursive: true });
-      writeFileSync(bibPath, `
+    mkdirSync(tmpDir, { recursive: true });
+    writeFileSync(bibPath, `
 @article{Hu2024-bm,
   title = {{Custom proxy voting advice}},
   file = {All Papers/H/Hu 2024.pdf},
   year = {2024}
 }
 `);
-      const map = parseBibFile(bibPath);
-      const entry = map.get("Hu2024-bm")!;
-      expect(entry.fileRelPath).toBe("All Papers/H/Hu 2024.pdf");
-      expect(entry.filePath).toBe(join(tmpDir, "All Papers/H/Hu 2024.pdf"));
-    } finally {
-      rmSync(tmpDir, { recursive: true, force: true });
-    }
+    const map = parseBibFile(bibPath);
+    const entry = map.get("Hu2024-bm")!;
+    expect(entry.fileRelPath).toBe("All Papers/H/Hu 2024.pdf");
+    expect(entry.filePath).toBe(join(tmpDir, "All Papers/H/Hu 2024.pdf"));
   });
 
   it("splits semicolon-separated file fields and stores alt paths", async () => {
-    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
-    const tmpDir = "/tmp/cite-check-semicolon-test";
+    const { mkdirSync, writeFileSync } = await import("node:fs");
+    const tmpDir = mkTmp("cite-check-semicolon-test-");
     const bibPath = join(tmpDir, "test.bib");
-    try {
-      mkdirSync(tmpDir, { recursive: true });
-      writeFileSync(bibPath, `
+    mkdirSync(tmpDir, { recursive: true });
+    writeFileSync(bibPath, `
 @article{Brav2022-aa,
   title = {{Retail shareholder participation in the proxy process}},
   file = {All Papers/B/Brav et al. 2022 - 1-s2.0-main.pdf;All Papers/B/Brav et al. 2022 - Retail shareholder.pdf},
   year = {2022}
 }
 `);
-      const map = parseBibFile(bibPath);
-      const entry = map.get("Brav2022-aa")!;
-      // Primary path is the first one
-      expect(entry.fileRelPath).toBe("All Papers/B/Brav et al. 2022 - 1-s2.0-main.pdf");
-      expect(entry.filePath).toBe(join(tmpDir, "All Papers/B/Brav et al. 2022 - 1-s2.0-main.pdf"));
-      // Alt paths stored separately
-      expect(entry.fileAltRelPaths).toEqual([
-        "All Papers/B/Brav et al. 2022 - Retail shareholder.pdf",
-      ]);
-    } finally {
-      rmSync(tmpDir, { recursive: true, force: true });
-    }
+    const map = parseBibFile(bibPath);
+    const entry = map.get("Brav2022-aa")!;
+    // Primary path is the first one
+    expect(entry.fileRelPath).toBe("All Papers/B/Brav et al. 2022 - 1-s2.0-main.pdf");
+    expect(entry.filePath).toBe(join(tmpDir, "All Papers/B/Brav et al. 2022 - 1-s2.0-main.pdf"));
+    // Alt paths stored separately
+    expect(entry.fileAltRelPaths).toEqual([
+      "All Papers/B/Brav et al. 2022 - Retail shareholder.pdf",
+    ]);
   });
 
   it("handles single file field without semicolons (no alt paths)", async () => {
-    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
-    const tmpDir = "/tmp/cite-check-nosemicolon-test";
+    const { mkdirSync, writeFileSync } = await import("node:fs");
+    const tmpDir = mkTmp("cite-check-nosemicolon-test-");
     const bibPath = join(tmpDir, "test.bib");
-    try {
-      mkdirSync(tmpDir, { recursive: true });
-      writeFileSync(bibPath, `
+    mkdirSync(tmpDir, { recursive: true });
+    writeFileSync(bibPath, `
 @article{Hu2024-bm,
   file = {All Papers/H/Hu 2024.pdf},
   year = {2024}
 }
 `);
-      const map = parseBibFile(bibPath);
-      const entry = map.get("Hu2024-bm")!;
-      expect(entry.fileRelPath).toBe("All Papers/H/Hu 2024.pdf");
-      expect(entry.fileAltRelPaths).toBeUndefined();
-    } finally {
-      rmSync(tmpDir, { recursive: true, force: true });
-    }
+    const map = parseBibFile(bibPath);
+    const entry = map.get("Hu2024-bm")!;
+    expect(entry.fileRelPath).toBe("All Papers/H/Hu 2024.pdf");
+    expect(entry.fileAltRelPaths).toBeUndefined();
   });
 });
 
 describe("manifest persistence", () => {
-  const tmpDir = "/tmp/cite-check-manifest-test";
-
-  afterEach(async () => {
-    const { rmSync } = await import("node:fs");
-    try { rmSync(tmpDir, { recursive: true, force: true }); } catch {}
-  });
+  let tmpDir = "";
+  beforeEach(() => { tmpDir = mkTmp("cite-check-manifest-test-"); });
 
   it("loadManifest returns empty object for missing file", () => {
     expect(loadManifest("/tmp/nonexistent-manifest.json")).toEqual({});
@@ -844,14 +812,13 @@ describe("queryCitation", () => {
 
 describe("parseBibFile", () => {
   it("extracts bibkey-to-file mappings from .bib content", async () => {
-    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
-    const tmpDir = "/tmp/cite-check-bib-test";
+    const { mkdirSync, writeFileSync } = await import("node:fs");
+    const tmpDir = mkTmp("cite-check-bib-test-");
     const bibPath = join(tmpDir, "test.bib");
-    try {
-      mkdirSync(tmpDir, { recursive: true });
-      writeFileSync(
-        bibPath,
-        `
+    mkdirSync(tmpDir, { recursive: true });
+    writeFileSync(
+      bibPath,
+      `
 @article{Hu2024-bm,
   author = {Edwin Hu},
   title = {{Custom proxy voting advice}},
@@ -872,39 +839,35 @@ describe("parseBibFile", () => {
   year = {2017}
 }
 `,
-      );
+    );
 
-      const map = parseBibFile(bibPath);
+    const map = parseBibFile(bibPath);
 
-      // Now returns ALL entries (3), not just those with file fields (2)
-      expect(map.size).toBe(3);
-      expect(map.has("Hu2024-bm")).toBe(true);
-      expect(map.has("NoPdf2020-xx")).toBe(true);
-      expect(map.has("Bebchuk2017-mm")).toBe(true);
+    // Now returns ALL entries (3), not just those with file fields (2)
+    expect(map.size).toBe(3);
+    expect(map.has("Hu2024-bm")).toBe(true);
+    expect(map.has("NoPdf2020-xx")).toBe(true);
+    expect(map.has("Bebchuk2017-mm")).toBe(true);
 
-      const hu = map.get("Hu2024-bm")!;
-      expect(hu.filePath).toBe(
-        join(tmpDir, "All Papers/H/Hu et al. 2024 - Custom proxy voting advice.pdf"),
-      );
+    const hu = map.get("Hu2024-bm")!;
+    expect(hu.filePath).toBe(
+      join(tmpDir, "All Papers/H/Hu et al. 2024 - Custom proxy voting advice.pdf"),
+    );
 
-      // Entry without file field should have no filePath but should have title
-      const noPdf = map.get("NoPdf2020-xx")!;
-      expect(noPdf.filePath).toBeUndefined();
-      expect(noPdf.title).toBe("No file field");
-    } finally {
-      rmSync(tmpDir, { recursive: true, force: true });
-    }
+    // Entry without file field should have no filePath but should have title
+    const noPdf = map.get("NoPdf2020-xx")!;
+    expect(noPdf.filePath).toBeUndefined();
+    expect(noPdf.title).toBe("No file field");
   });
 
   it("extracts title field with double braces", async () => {
-    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
-    const tmpDir = "/tmp/cite-check-bib-title-test";
+    const { mkdirSync, writeFileSync } = await import("node:fs");
+    const tmpDir = mkTmp("cite-check-bib-title-test-");
     const bibPath = join(tmpDir, "test.bib");
-    try {
-      mkdirSync(tmpDir, { recursive: true });
-      writeFileSync(
-        bibPath,
-        `
+    mkdirSync(tmpDir, { recursive: true });
+    writeFileSync(
+      bibPath,
+      `
 @article{Hu2024-bm,
   author = {Edwin Hu},
   title = {{Custom proxy voting advice}},
@@ -912,39 +875,32 @@ describe("parseBibFile", () => {
   year = {2024}
 }
 `,
-      );
+    );
 
-      const map = parseBibFile(bibPath);
-      const entry = map.get("Hu2024-bm")!;
-      expect(entry.title).toBe("Custom proxy voting advice");
-    } finally {
-      rmSync(tmpDir, { recursive: true, force: true });
-    }
+    const map = parseBibFile(bibPath);
+    const entry = map.get("Hu2024-bm")!;
+    expect(entry.title).toBe("Custom proxy voting advice");
   });
 
   it("extracts title field with single braces", async () => {
-    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
-    const tmpDir = "/tmp/cite-check-bib-title-single-test";
+    const { mkdirSync, writeFileSync } = await import("node:fs");
+    const tmpDir = mkTmp("cite-check-bib-title-single-test-");
     const bibPath = join(tmpDir, "test.bib");
-    try {
-      mkdirSync(tmpDir, { recursive: true });
-      writeFileSync(
-        bibPath,
-        `
+    mkdirSync(tmpDir, { recursive: true });
+    writeFileSync(
+      bibPath,
+      `
 @article{Smith2020-ab,
   author = {John Smith},
   title = {Single Brace Title},
   year = {2020}
 }
 `,
-      );
+    );
 
-      const map = parseBibFile(bibPath);
-      const entry = map.get("Smith2020-ab")!;
-      expect(entry.title).toBe("Single Brace Title");
-    } finally {
-      rmSync(tmpDir, { recursive: true, force: true });
-    }
+    const map = parseBibFile(bibPath);
+    const entry = map.get("Smith2020-ab")!;
+    expect(entry.title).toBe("Single Brace Title");
   });
 });
 
@@ -993,12 +949,11 @@ describe("extractResponseText", () => {
 
 describe("parseBibFile url field", () => {
   it("extracts url field from bib entries", async () => {
-    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
-    const tmpDir = "/tmp/cite-check-url-parse-test";
+    const { mkdirSync, writeFileSync } = await import("node:fs");
+    const tmpDir = mkTmp("cite-check-url-parse-test-");
     const bibPath = join(tmpDir, "test.bib");
-    try {
-      mkdirSync(tmpDir, { recursive: true });
-      writeFileSync(bibPath, `
+    mkdirSync(tmpDir, { recursive: true });
+    writeFileSync(bibPath, `
 @misc{Daly2026-sc,
   title = {{Remarks at the N.Y.C. Bar}},
   url = {https://www.sec.gov/news/speech/daly-remarks-2026},
@@ -1010,21 +965,17 @@ describe("parseBibFile url field", () => {
   year = {2024}
 }
 `);
-      const map = parseBibFile(bibPath);
-      expect(map.get("Daly2026-sc")!.url).toBe("https://www.sec.gov/news/speech/daly-remarks-2026");
-      expect(map.get("NoUrl2024-aa")!.url).toBeUndefined();
-    } finally {
-      rmSync(tmpDir, { recursive: true, force: true });
-    }
+    const map = parseBibFile(bibPath);
+    expect(map.get("Daly2026-sc")!.url).toBe("https://www.sec.gov/news/speech/daly-remarks-2026");
+    expect(map.get("NoUrl2024-aa")!.url).toBeUndefined();
   });
 
   it("extracts author and year fields", async () => {
-    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
-    const tmpDir = "/tmp/cite-check-author-parse-test";
+    const { mkdirSync, writeFileSync } = await import("node:fs");
+    const tmpDir = mkTmp("cite-check-author-parse-test-");
     const bibPath = join(tmpDir, "test.bib");
-    try {
-      mkdirSync(tmpDir, { recursive: true });
-      writeFileSync(bibPath, `
+    mkdirSync(tmpDir, { recursive: true });
+    writeFileSync(bibPath, `
 @article{Hu2024-bm,
   author = {Hu, Edwin and Smith, John},
   title = {{Custom proxy voting advice}},
@@ -1042,25 +993,18 @@ describe("parseBibFile url field", () => {
   year = {2024}
 }
 `);
-      const map = parseBibFile(bibPath);
-      expect(map.get("Hu2024-bm")!.author).toBe("Hu");
-      expect(map.get("Hu2024-bm")!.year).toBe("2024");
-      expect(map.get("Copland2024-mi")!.author).toBe("Copland");
-      expect(map.get("Copland2024-mi")!.year).toBe("2024"); // from date field
-      expect(map.get("NoAuthor2024-aa")!.author).toBeUndefined();
-    } finally {
-      rmSync(tmpDir, { recursive: true, force: true });
-    }
+    const map = parseBibFile(bibPath);
+    expect(map.get("Hu2024-bm")!.author).toBe("Hu");
+    expect(map.get("Hu2024-bm")!.year).toBe("2024");
+    expect(map.get("Copland2024-mi")!.author).toBe("Copland");
+    expect(map.get("Copland2024-mi")!.year).toBe("2024"); // from date field
+    expect(map.get("NoAuthor2024-aa")!.author).toBeUndefined();
   });
 });
 
 describe("File Search Store CRUD", () => {
-  const tmpDir = "/tmp/cite-check-store-crud-test";
-
-  afterEach(async () => {
-    const { rmSync } = await import("node:fs");
-    try { rmSync(tmpDir, { recursive: true, force: true }); } catch {}
-  });
+  let tmpDir = "";
+  beforeEach(() => { tmpDir = mkTmp("cite-check-store-crud-test-"); });
 
   it("computeSourceHash is deterministic for same inputs", () => {
     const bibMap = new Map<string, BibEntry>([
@@ -1092,52 +1036,42 @@ describe("File Search Store CRUD", () => {
   });
 
   it("computeSourceHash changes when file CONTENT changes at the same path", async () => {
-    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
-    const dir = "/tmp/cite-check-content-hash-test";
-    rmSync(dir, { recursive: true, force: true });
+    const { mkdirSync, writeFileSync } = await import("node:fs");
+    const dir = mkTmp("cite-check-content-hash-test-");
     mkdirSync(dir, { recursive: true });
     const pdfPath = join(dir, "Chinco2024-bt.pdf");
-    try {
-      const bibMap = new Map<string, BibEntry>([
-        ["Chinco2024-bt", { bibkey: "Chinco2024-bt", filePath: pdfPath }],
-      ]);
+    const bibMap = new Map<string, BibEntry>([
+      ["Chinco2024-bt", { bibkey: "Chinco2024-bt", filePath: pdfPath }],
+    ]);
 
-      // Accepted manuscript
-      writeFileSync(pdfPath, "%PDF-1.4 accepted manuscript, 63 pages\n");
-      const hashBefore = computeSourceHash(bibMap, ["Chinco2024-bt"]);
+    // Accepted manuscript
+    writeFileSync(pdfPath, "%PDF-1.4 accepted manuscript, 63 pages\n");
+    const hashBefore = computeSourceHash(bibMap, ["Chinco2024-bt"]);
 
-      // Same bibkey, same path, different document
-      writeFileSync(pdfPath, "%PDF-1.4 published JFE article, 22 pages\n");
-      const hashAfter = computeSourceHash(bibMap, ["Chinco2024-bt"]);
+    // Same bibkey, same path, different document
+    writeFileSync(pdfPath, "%PDF-1.4 published JFE article, 22 pages\n");
+    const hashAfter = computeSourceHash(bibMap, ["Chinco2024-bt"]);
 
-      expect(hashAfter).not.toBe(hashBefore);
-    } finally {
-      rmSync(dir, { recursive: true, force: true });
-    }
+    expect(hashAfter).not.toBe(hashBefore);
   });
 
   it("computeSourceHash is stable across calls for unchanged file content", async () => {
-    const { mkdirSync, writeFileSync, rmSync } = await import("node:fs");
-    const dir = "/tmp/cite-check-content-hash-stable-test";
-    rmSync(dir, { recursive: true, force: true });
+    const { mkdirSync, writeFileSync } = await import("node:fs");
+    const dir = mkTmp("cite-check-content-hash-stable-test-");
     mkdirSync(dir, { recursive: true });
     const pdfPath = join(dir, "a.pdf");
-    try {
-      writeFileSync(pdfPath, "%PDF-1.4 stable bytes\n");
-      const bibMap = new Map<string, BibEntry>([
-        ["Alpha2024-aa", { bibkey: "Alpha2024-aa", filePath: pdfPath }],
-      ]);
+    writeFileSync(pdfPath, "%PDF-1.4 stable bytes\n");
+    const bibMap = new Map<string, BibEntry>([
+      ["Alpha2024-aa", { bibkey: "Alpha2024-aa", filePath: pdfPath }],
+    ]);
 
-      expect(computeSourceHash(bibMap, ["Alpha2024-aa"]))
-        .toBe(computeSourceHash(bibMap, ["Alpha2024-aa"]));
+    expect(computeSourceHash(bibMap, ["Alpha2024-aa"]))
+      .toBe(computeSourceHash(bibMap, ["Alpha2024-aa"]));
 
-      // Rewriting identical bytes (new mtime) must NOT invalidate the store
-      writeFileSync(pdfPath, "%PDF-1.4 stable bytes\n");
-      expect(computeSourceHash(bibMap, ["Alpha2024-aa"]))
-        .toBe(computeSourceHash(bibMap, ["Alpha2024-aa"]));
-    } finally {
-      rmSync(dir, { recursive: true, force: true });
-    }
+    // Rewriting identical bytes (new mtime) must NOT invalidate the store
+    writeFileSync(pdfPath, "%PDF-1.4 stable bytes\n");
+    expect(computeSourceHash(bibMap, ["Alpha2024-aa"]))
+      .toBe(computeSourceHash(bibMap, ["Alpha2024-aa"]));
   });
 
   it("computeSourceHash does not throw for a missing or empty file path", () => {
@@ -1328,12 +1262,8 @@ describe("File Search Store CRUD", () => {
 });
 
 describe("File Search Store Import", () => {
-  const tmpDir = "/tmp/cite-check-store-import-test";
-
-  afterEach(async () => {
-    const { rmSync } = await import("node:fs");
-    try { rmSync(tmpDir, { recursive: true, force: true }); } catch {}
-  });
+  let tmpDir = "";
+  beforeEach(() => { tmpDir = mkTmp("cite-check-store-import-test-"); });
 
   it("uploads files with correct metadata", async () => {
     const { mkdirSync, writeFileSync } = await import("node:fs");
@@ -2430,7 +2360,8 @@ function makeStoreMock(
 }
 
 describe("per-file store invalidation", () => {
-  const tmpDir = "/tmp/cite-check-surgical-test";
+  let tmpDir = "";
+  beforeEach(() => { tmpDir = mkTmp("cite-check-surgical-test-"); });
   let statePath = "";
 
   /** Write three real source files and return the bibMap over them. */
@@ -2462,11 +2393,6 @@ describe("per-file store invalidation", () => {
 
   const seededDocs = (keys: string[]) =>
     keys.map((k) => ({ name: `fileSearchStores/live-1/documents/doc-${k}`, bibkey: k }));
-
-  afterEach(async () => {
-    const { rmSync } = await import("node:fs");
-    try { rmSync(tmpDir, { recursive: true, force: true }); } catch {}
-  });
 
   it("diffKeyHashes classifies unchanged / changed / added / removed", () => {
     const diff = diffKeyHashes(

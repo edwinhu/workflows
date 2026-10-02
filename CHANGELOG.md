@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- **The `jev-rules` skill: turn a written rule into a calibrated Jev rule check.** Triage (script before Jev), the extractor contract, the one-proposition form, twins and real accepted cases (legacy-base pairs), the wiring criterion, and a failure-diagnosis table built from the 2026-10-02 rule sets. `skills/jev-rules/scripts/new-rule.ts <set> <ID>` scaffolds the module in `uncalibrated/`, placeholder twins, the calibration-manifest entry (written in the manifest's existing shape) and a stub test, refusing to overwrite. `--wire` moves the module only after two passing `rule-calibrate --rule` invocations, a third when a score sits within 0.03 of a bar, and refuses on a TODO, a placeholder twin or a cross-rule hit. `rule-calibrate.ts` exports `caseInput` for the stub tests.
+
 ## [6.37.1] - 2026-10-02
 
 ### Changed
