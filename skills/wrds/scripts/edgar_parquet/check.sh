@@ -58,6 +58,6 @@ while read -r rel; do
 done < <(grep -oE '`scripts/[A-Za-z0-9_./-]+\.(sh|py|go|sas)`' "$SKILL" | tr -d '`' | sort -u)
 
 echo "== pytest =="
-uv run --quiet --with pyarrow --with pytest python -m pytest test_edgar_parquet.py -q || fail=1
+uv run --quiet --with pyarrow --with pytest --with pytest-xdist python -m pytest test_edgar_parquet.py -q || fail=1
 
 exit $fail

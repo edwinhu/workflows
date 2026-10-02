@@ -210,7 +210,7 @@ else
       # cannot know a suite needs pypdf, and guessing wrong fails cases for a missing
       # import, which reads as broken contracts rather than a misconfigured runner.
       for pf in "${pysuite[@]}"; do
-        uv run --quiet --with pytest --script "$pf" -m pytest -q "$pf" >&2 &
+        uv run --quiet --with pytest --with pytest-xdist --script "$pf" -m pytest -q "$pf" >&2 &
         pids+=($!)
       done
     fi

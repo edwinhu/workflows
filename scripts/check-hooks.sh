@@ -17,5 +17,5 @@ if [ "${1:-}" = "--report" ]; then
     exec uv run --with pyyaml python3 tests/hook_output_schema_test.py
 fi
 
-exec uv run --with pytest --with pyyaml python3 -m pytest \
+exec uv run --with pytest --with pytest-xdist --with pyyaml python3 -m pytest \
     tests/hook_output_schema_test.py "${@}"
