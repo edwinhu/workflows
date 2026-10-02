@@ -1,0 +1,8 @@
+#!/usr/bin/env bun
+import { readFileSync } from 'fs'
+import { execSync } from 'child_process'
+
+const plan = JSON.parse(readFileSync(process.argv[2], 'utf8'))
+console.log(`# Release notes for ${plan.version}`)
+const log = execSync(`git log --oneline ${plan.fromTag}..${plan.branch} -- ${plan.paths.join(' ')}`, { encoding: 'utf8' })
+for (const line of log.trim().split('\n')) console.log(`- ${line}`)

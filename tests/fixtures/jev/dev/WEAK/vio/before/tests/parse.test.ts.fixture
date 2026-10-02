@@ -1,0 +1,14 @@
+import { expect, test } from 'bun:test'
+import { parseKv } from '../src/parse'
+
+test('parses comma-separated pairs', () => {
+  expect(parseKv('a=1,b=2')).toEqual({ a: '1', b: '2' })
+})
+
+test('rejects a pair without =', () => {
+  expect(() => parseKv('a=1,b')).toThrow('malformed pair: b')
+})
+
+test('trims whitespace around keys and values', () => {
+  expect(parseKv(' a = 1 , b=2 ')).toEqual({ a: '1', b: '2' })
+})
