@@ -226,15 +226,17 @@ test('an oversized state is truncated at 60000 chars', async () => {
 
   const tmpDir = fs.mkdtempSync(join(require('os').tmpdir(), 'rule-check-test-huge-'));
   const hugeString = '# spec curve ' + 'x'.repeat(250) + '\n';
+  // every rule lists every file uncapped, so 300 long paths outgrow 60000 chars in any extractor
+  const name = (i: number) => 'huge' + i + '_' + 'x'.repeat(200) + '.py';
   for (let i = 0; i < 300; i++) {
-    fs.writeFileSync(join(tmpDir, 'huge' + i + '.py'), hugeString.repeat(50));
+    fs.writeFileSync(join(tmpDir, name(i)), hugeString.repeat(50));
   }
   
   spawnSync('git', ['init'], { cwd: tmpDir });
   spawnSync('git', ['add', '.'], { cwd: tmpDir });
   spawnSync('git', ['commit', '-m', 'init'], { cwd: tmpDir, env: { ...process.env, GIT_AUTHOR_NAME: 'test', GIT_AUTHOR_EMAIL: 'test@example.com', GIT_COMMITTER_NAME: 'test', GIT_COMMITTER_EMAIL: 'test@example.com' } });
   for (let i = 0; i < 300; i++) {
-    fs.appendFileSync(join(tmpDir, 'huge' + i + '.py'), '\n# extra');
+    fs.appendFileSync(join(tmpDir, name(i)), '\n# extra');
   }
 
   const res = await runRuleCheck(['--project-dir', tmpDir], server.port);
