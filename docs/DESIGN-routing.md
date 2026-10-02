@@ -54,6 +54,12 @@ to `routing.json`, a log or stdout. **`--propose` is advisory**: it prints sugge
 with a reason each (`--json` too) and writes nothing; the user approves by editing `kinds`. It never
 moves the Claude defaults (judgement → opus; script, review → sonnet); rule in the `route.ts` header.
 
+**Discovery.** `--propose` also asks the proxy catalog, OpenRouter's model list and AA (one request
+each) for a model the proxy serves that no candidate names, of a candidate's owner and family (name
+minus version numbers and effort suffix), with a strictly higher AA index at <= its prompt price, and
+prints `candidate C: model <old> -> <M> (...)`. Reordering alone could never notice gpt-6-luna beside a
+pinned gpt-5.6-luna. A failed source skips discovery on stderr; rule in the `route.ts` header.
+
 ## The outcomes file is a new state file
 
 `~/.local/state/workflows/farm-outcomes.jsonl` (`FARM_OUTCOMES` overrides) gets one `row` line per
