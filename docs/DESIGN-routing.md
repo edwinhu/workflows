@@ -25,7 +25,7 @@ slot. Routing is now code that every `farm.sh --tasks` row goes through.
 ## Jev in shadow
 
 Each table-routed row makes ONE Decisions call (`decisionsCall` from `hooks/work-hold.ts`, the one
-transport), capped at `jev.timeoutSeconds`. It asks a CORRECT/WRONG question per candidate,
+transport), capped at `jev.timeoutSeconds`. It asks a CORRECT/WRONG question per chain candidate,
 `q_<id>`, about a row summary: kind, label, agent, whether it has an `expect`, and the prompt's
 sha256 and length, never the text. In `shadow` mode the scores are recorded and never change the
 pick. Any failure (dead, hung, unparsable) sets `shadow.unavailable` and the row runs anyway.
@@ -33,7 +33,7 @@ pick. Any failure (dead, hung, unparsable) sets `shadow.unavailable` and the row
 **Graduation.** Jev moves from shadow to decide when its holdout AUC is **>= 0.85 on
 verdict-labelled rows**: the score it gave the candidate that ran, against that row's verdict. The
 switch is a reviewed edit of `jev.mode` to `"decide"` in the committed table, never a runtime flag.
-In decide mode the cheapest available candidate (by `price.prompt`, null last) scoring at least
+In decide mode the cheapest available chain candidate (by `price.prompt`, null last) scoring at least
 `jev.threshold` wins (`source: jev`). If none does, the table pick stands.
 
 ## Refresh
@@ -43,6 +43,15 @@ the proxy catalog and the OpenRouter price list once each, never per row, and ne
 or `jev`. It exits 1 naming any kind whose pick went unavailable, and exits 2 with the file
 byte-identical when the proxy is down. An unreachable price list leaves prices unchanged. Run it
 from a repo checkout, never the plugin cache, and review the diff before committing.
+
+**Signals.** It also records `signals` `{usageRank, intelligenceIndex, asOf}` per candidate with an
+`openrouter` slug: one request each to OpenRouter's rankings dataset and the Artificial Analysis
+data API. No match is null; a failed or keyless source leaves its field unchanged, warns on stderr,
+and never fails the refresh. Keys are read at runtime only (`OPENROUTER_API_KEY` /
+`ARTIFICIAL_ANALYSIS_API_KEY`, else `op read` from the `Shared with Agents` vault), never written
+to `routing.json`, a log or stdout. **`--propose` is advisory**: it prints suggested `kinds` changes
+with a reason each (`--json` too) and writes nothing; the user approves by editing `kinds`. It never
+moves the Claude defaults (judgement → opus; script, review → sonnet); rule in the `route.ts` header.
 
 ## The outcomes file is a new state file
 

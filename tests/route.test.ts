@@ -209,7 +209,7 @@ test('ROUTING_TABLE is used when --table is absent', async () => {
 
 // ---------------------------------------------------------------------------------- shadow
 
-test('shadow: one Decisions call, one CORRECT/WRONG choice question per candidate', async () => {
+test('shadow: one Decisions call, one CORRECT/WRONG choice question per candidate in the kind chain', async () => {
   const jev = stubJev(scoresReply({ sonnet: 0.6, opus: 0.7, flash: 0.8, luna: 0.95 }))
   try {
     const d = parseDecision(await decide({ label: 'L', prompt: 'p', kind: 'script' }, FIXTURE,
@@ -217,13 +217,14 @@ test('shadow: one Decisions call, one CORRECT/WRONG choice question per candidat
     expect(jev.bodies).toHaveLength(1)
     const body = jev.bodies[0]
     expect(body.model).toBe('typesafe/jev-1.13')
-    expect(Object.keys(body.questions).sort()).toEqual(CANDIDATES.map(c => `q_${c}`).sort())
+    // script's chain is sonnet then flash: opus and luna are not asked about.
+    expect(Object.keys(body.questions).sort()).toEqual(['q_flash', 'q_sonnet'])
     for (const q of Object.values(body.questions) as any[]) {
       expect(q.type).toBe('choice')
       expect(JSON.stringify(q)).toContain('CORRECT')
       expect(JSON.stringify(q)).toContain('WRONG')
     }
-    expect(d.shadow.scores).toEqual({ sonnet: 0.6, opus: 0.7, flash: 0.8, luna: 0.95 })
+    expect(d.shadow.scores).toEqual({ sonnet: 0.6, flash: 0.8 })
   } finally { jev.stop() }
 }, 30_000)
 
@@ -314,12 +315,24 @@ test('Jev in-process at the dead port: route() still returns the table pick', as
 
 const DECIDE = () => fixtureCopy(t => { t.jev.mode = 'decide' })
 
-test('decide: the cheapest available candidate at or above threshold wins, source jev', async () => {
-  // flash is cheapest of those clearing 0.85; opus scores highest but costs more.
-  const jev = stubJev(scoresReply({ sonnet: 0.9, opus: 0.97, flash: 0.88, luna: 0.1 }))
+test('decide: the cheapest available chain candidate at or above threshold wins, source jev', async () => {
+  // review's chain is sonnet then opus: sonnet is cheaper and clears 0.85; opus scores higher.
+  const table = fixtureCopy(t => { t.jev.mode = 'decide'; t.kinds.review = { pick: 'opus', fallbacks: ['sonnet'] } })
+  const jev = stubJev(scoresReply({ sonnet: 0.88, opus: 0.97 }))
+  try {
+    const d = parseDecision(await decide({ prompt: 'p', kind: 'review' }, table, { WORK_HOLD_DECISIONS_URL: jev.url }))
+    expect(d).toMatchObject({ candidate: 'sonnet', provider: 'claude', model: 'claude-sonnet-5-5', source: 'jev', kind: 'review' })
+  } finally { jev.stop() }
+}, 30_000)
+
+test('decide: a candidate outside the kind chain is never scored or chosen, however cheap and confident', async () => {
+  // flash is the cheapest candidate in the table but not in judgement's chain (opus, sonnet).
+  const jev = stubJev(scoresReply({ sonnet: 0.9, opus: 0.97, flash: 0.99, luna: 0.99 }))
   try {
     const d = parseDecision(await decide({ prompt: 'p', kind: 'judgement' }, DECIDE(), { WORK_HOLD_DECISIONS_URL: jev.url }))
-    expect(d).toMatchObject({ candidate: 'flash', provider: 'gemini', model: 'gemini-3.7-flash-high', source: 'jev', kind: 'judgement' })
+    expect(Object.keys(jev.bodies[0].questions).sort()).toEqual(['q_opus', 'q_sonnet'])
+    expect(Object.keys(d.shadow.scores).sort()).toEqual(['opus', 'sonnet'])
+    expect(d).toMatchObject({ candidate: 'sonnet', source: 'jev', kind: 'judgement' })
   } finally { jev.stop() }
 }, 30_000)
 
