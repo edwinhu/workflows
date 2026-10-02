@@ -1,12 +1,11 @@
 export const meta = {
   name: 'work',
-  description: 'work loop core: sequential plan-bound implementation, blind verification in parallel with mechanical checks and advisory third-party review, then ONE review lens over their results, JS-computed gate',
+  description: 'work loop core: sequential plan-bound implementation, blind verification in parallel with mechanical checks, then ONE review lens over their results, JS-computed gate',
   whenToUse: 'Invoked by the work skill after plan approval; never discovers authority — requires planPath + specHash + tasks as args.',
   phases: [
     { title: 'Implement', detail: 'one agent per task, in dependsOn waves (shared working tree); not opened at all under readOnly' },
     { title: 'Verify', detail: 'per-task blind verifiers when not readOnly, then ONE review lens over a digest of everything the checks reported — diagnose-and-route on red, one open-ended pass on green' },
     { title: 'Mechanical', detail: 'optional whole-deliverable commands; the agent runs them, the JS reads the exit codes' },
-    { title: 'Third-party', detail: 'advisory codex/gemini review — never gates' },
     { title: 'Gate', detail: 'JS arithmetic over raw counts; the task dimensions are n/a under readOnly' },
   ],
 }
@@ -169,7 +168,17 @@ const carriedFindings = [
 // The one exception is the synthesized dead-lens critical: a review that did not happen is not a
 // fresh finding to defer, it is the absence of the adjudication the freeze depends on (gate-laws L4).
 const freezeFindingSet = args.freezeFindingSet === true
-const thirdParty = Array.isArray(args.thirdParty) ? args.thirdParty.filter(m => ['codex', 'gemini'].includes(m)) : []
+// Retired 2026-10-01: a lens on another provider gates, where the advisory runners only duplicated it.
+// Refused on the KEY, not the value, so an empty list cannot carry a stale plan through.
+for (const key of ['thirdParty', 'thirdPartyEffort']) {
+  if (Object.prototype.hasOwnProperty.call(args, key)) {
+    throw new Error(
+      `work: ${key} is gone — the advisory third-party review runners were retired on 2026-10-01. ` +
+      "Set lensProvider ('claude' | 'codex' | 'gemini') in the plan instead: the dispatcher resolves it " +
+      "through route.ts to that provider's review candidate, so the cross-provider review runs as the lens and gates."
+    )
+  }
+}
 // ── the single review lens ───────────────────────────────────────────────────
 // ONE lens, dispatched AFTER the per-task verifiers and the mechanical checks, over a digest of what
 // they reported. Measured 2026-09-29/30: 4–10 parallel lenses plus one refuter per finding were 55%
@@ -330,8 +339,8 @@ const implementerAgentType = args.implementerAgentType || null
 const verifierAgentType = args.verifierAgentType || null
 // Every call site spreads `...agentTypeOpt(X)`, which contributes no key at all when X is absent.
 //
-// Read-only agents by default. Under readOnly EVERY dispatched leg — the lens, the mechanical probes
-// and the third-party runners — defaults to the Explore agent type, which structurally has no Edit
+// Read-only agents by default. Under readOnly EVERY dispatched leg — the lens and the mechanical
+// probes — defaults to the Explore agent type, which structurally has no Edit
 // and no Write tool. A prompt that says "modify nothing" is a request; an agent type is a boundary,
 // and a readOnly run is exactly the case where the tree must not be touched. Precedence: an explicit
 // lens agentType wins over this default.
@@ -339,11 +348,10 @@ const verifierAgentType = args.verifierAgentType || null
 // agentTypeOpt(null) contributes {}, and agent() receives NO agentType key whatsoever,
 // byte-identical to before this change.
 //
-// The mechanical and third-party legs were the gap: they carried no agentType at all, so on a
-// readOnly run they inherited the dispatcher default and were the two legs that COULD write, while
-// the skill built on top of this described readOnly as "nothing can write." Explore is the right
-// type for both because it keeps Bash — a probe that cannot run its command is not a probe — while
-// removing the tools an agent writes with by choice.
+// The mechanical leg was the gap: it carried no agentType at all, so on a readOnly run it inherited
+// the dispatcher default and COULD write, while the skill built on top of this described readOnly as
+// "nothing can write." Explore is the right type because it keeps Bash — a probe that cannot run its
+// command is not a probe — while removing the tools an agent writes with by choice.
 //
 // RESIDUAL, stated because a boundary nobody can see the edge of is not a boundary: Explore keeps
 // Bash, and a `mechanicalChecks` cmd runs VERBATIM. A caller who passes a command that writes still
@@ -369,7 +377,7 @@ const kindModels = routingArg.kindModels && typeof routingArg.kindModels === 'ob
   ? routingArg.kindModels : {}
 const routedModel = (explicit, kind, fallback) =>
   isModel(explicit) ? explicit : (isModel(kindModels[kind]) ? kindModels[kind] : fallback)
-// Probe model. A mechanical/red/third-party/scored/rules probe RUNS A COMMAND and reports {name,
+// Probe model. A mechanical/red/scored/rules probe RUNS A COMMAND and reports {name,
 // exitCode, output}; the JS reads the exit code and no probe asserts a pass. There is no judgement to
 // downgrade, so the session's top tier is spent on process supervision — and probes outnumber
 // every other non-refuter leg. Default sonnet; pass null to inherit the session model.
@@ -390,13 +398,11 @@ const lensLegModel = isModel(lensArg.model) ? lensArg.model
 // Per-leg reasoning effort: null omits the key and inherits the session default. Implementers write
 // the artifact the whole gate then judges, and xhigh is the documented level for long-horizon
 // agentic coding. Verifiers judge ONE task against ONE criterion with the evidence handed to them —
-// bounded, so they sit lower. The scored leg reports COUNT FIELDS and the JS computes the composite;
-// the third-party leg only shells out to an external CLI and parses its output. Neither has a
-// judgement to downgrade.
+// bounded, so they sit lower. The scored leg reports COUNT FIELDS and the JS computes the composite,
+// so it has no judgement to downgrade.
 const implementerEffort = args.implementerEffort === undefined ? 'xhigh' : (args.implementerEffort || null)
 const verifierEffort = args.verifierEffort === undefined ? 'medium' : (args.verifierEffort || null)
 const scoredEffort = args.scoredEffort === undefined ? 'low' : (args.scoredEffort || null)
-const thirdPartyEffort = args.thirdPartyEffort === undefined ? 'low' : (args.thirdPartyEffort || null)
 const optIf = (k, v) => (v ? { [k]: v } : {})
 
 // Fail closed on a dead lens. A lens agent that returns null contributes zero findings and zero
@@ -472,7 +478,6 @@ const fanOut = {
   // judgement there is.
   lens: 1,
   mechanical: mechanicalChecks.length,
-  thirdParty: thirdParty.length,
   // Key omitted entirely when nothing is red-gated, so the sizing error a caller without redCommand
   // sees is byte-identical to before.
   ...(redGatedActive.length ? { redProbes: redGatedActive.length * 2 } : {}),
@@ -795,31 +800,10 @@ const RULE_CHECKS_SCHEMA = {
     stdout: { type: 'string', description: 'the single JSON line the command printed, copied verbatim' },
   },
 }
-const THIRD_PARTY_SCHEMA = {
-  type: 'object',
-  required: ['model', 'status', 'findings'],
-  properties: {
-    model: { type: 'string', enum: ['codex', 'gemini'] },
-    status: { type: 'string', enum: ['reviewed', 'unavailable', 'unparseable'] },
-    findings: {
-      type: 'array',
-      items: {
-        type: 'object',
-        required: ['severity', 'detail'],
-        properties: {
-          severity: { type: 'string', enum: ['critical', 'major', 'minor'] },
-          file: { type: 'string' },
-          detail: { type: 'string' },
-        },
-      },
-    },
-    raw: { type: 'string', description: 'truncated raw CLI output when status is unparseable' },
-  },
-}
 
 // ---------------------------------------------------------------- the lens leg (runs AFTER the checks)
-// ONE lens, dispatched after the per-task verifiers, the mechanical checks and the third-party leg
-// have all reported, over a DIGEST of what they said. The order is the whole design: a reviewer that
+// ONE lens, dispatched after the per-task verifiers and the mechanical checks have all reported,
+// over a DIGEST of what they said. The order is the whole design: a reviewer that
 // runs BESIDE the checks is guessing at what they will find, while one that runs after them can
 // diagnose the failures they actually produced and say which task owns each.
 //
@@ -1056,9 +1040,9 @@ for (const wave of IMPLEMENT_WAVES) {
   })
 }
 
-// ------------------------------------- Verify ∥ Mechanical ∥ Scored ∥ Third-party (barrier, then the lens)
-// The per-task verifiers, the mechanical probes, the scored probes and the third-party runners are
-// independent of each other, so they run as one parallel group. The LENS is NOT in that group: it
+// ------------------------------------- Verify ∥ Mechanical ∥ Scored (barrier, then the lens)
+// The per-task verifiers, the mechanical probes and the scored probes are independent of each other,
+// so they run as one parallel group. The LENS is NOT in that group: it
 // reads their results.
 const verifyLeg = async () => {
   // Under readOnly the per-task verifier fan-out is skipped ENTIRELY — parallel() is not called and
@@ -1209,30 +1193,8 @@ const deadScoredLeg = () => (scoredJobs.length
     }
   : NO_SCORES)
 
-const thirdPartyLeg = async () => {
-  if (thirdParty.length === 0) return []
-  const results = await parallel(thirdParty.map(model => () =>
-    agent(
-      [
-        AUTHORITY,
-        '',
-        `You are the ${model.toUpperCase()} REVIEW RUNNER. Your job is to run an external CLI reviewer over the working-tree changes and parse its result — you do not review the code yourself.`,
-        `Read ${skillRoot}/references/third-party.md and follow the "${model}" section exactly: invocation, diff scoping, timeout, and parse rules.`,
-        '',
-        'Rules:',
-        '- Run the CLI via Bash from the project directory. Modify no files.',
-        '- STATUS BEFORE FINDINGS: if the CLI is missing, unauthenticated, or errors, return status=unavailable with empty findings. If it runs but you cannot extract discrete findings, return status=unparseable with the raw tail in raw. Only a successful, parsed run is status=reviewed.',
-        '- Never invent findings the CLI did not produce. An empty findings list from a clean reviewed run is a valid answer.',
-      ].join('\n'),
-      { label: `third-party:${model}`, phase: 'Third-party', schema: THIRD_PARTY_SCHEMA, ...optIf('model', probeModel),
-        ...optIf('effort', thirdPartyEffort), ...agentTypeOpt(reviewAgentType()) }
-    ).then(r => r || { model, status: 'unavailable', findings: [], raw: 'runner agent died or was skipped' })
-  ))
-  return results.filter(Boolean)
-}
-
 // ── the barrier ──────────────────────────────────────────────────────────────
-// Four independent legs, one parallel group. The lens is NOT among them: it reads their results.
+// Five independent legs, one parallel group. The lens is NOT among them: it reads their results.
 const attemptsLeg = async () => {
   if (attempts.length === 0) return []
   const results = await parallel(attempts.map(a => () =>
@@ -1277,7 +1239,7 @@ const ruleChecksLeg = async () => {
   return r || { name: ruleChecks.name, exitCode: -1, stdout: 'probe agent died or was skipped' }
 }
 
-const [verifyOut, mechanicalOut, scoredOut, thirdPartyOut, attemptsOut, ruleChecksOut] = await parallel([verifyLeg, mechanicalLeg, scoredLeg, thirdPartyLeg, attemptsLeg, ruleChecksLeg])
+const [verifyOut, mechanicalOut, scoredOut, attemptsOut, ruleChecksOut] = await parallel([verifyLeg, mechanicalLeg, scoredLeg, attemptsLeg, ruleChecksLeg])
 const attemptsResult = attemptsOut || attempts.map(a => ({ key: a.key, answer: null }))
 // Fail closed at the leg level: a dead verify leg means nothing judged the tasks, not that they passed.
 const verified = verifyOut || (readOnly
@@ -1285,7 +1247,6 @@ const verified = verifyOut || (readOnly
   : activeTasks.map(t => ({ id: t.id, pass: false, evidence: '', failures: ['verify leg failed'] })))
 // Fail closed once more: if the whole leg died, every declared check is a failure, not a pass.
 const mechanical = mechanicalOut || mechanicalChecks.map(c => ({ name: c.name, exitCode: -1, output: 'mechanical leg failed' }))
-const thirdPartyResults = thirdPartyOut || []
 // Fail closed on the scored leg too. It is NOT joined into `findings` and no conjunct below reads it:
 // a scored value that reached the verdict would make an advisory channel a gate by the back door.
 const scoredResult = scoredOut || deadScoredLeg()
@@ -1483,7 +1444,6 @@ const unroutable = routable.filter(x => {
   return o !== PLAN_OWNER && !taskIds.has(o)
 })
 
-// Third-party results are deliberately absent from this arithmetic: advisory only.
 // Three conjuncts, and every one of them has a selector below:
 //   taskDims + routed owners -> tasksThatFlagged   (re-run the TASK)
 //   mechanicalThatFailed     -> itself             (re-run the CHECK)
@@ -1539,7 +1499,7 @@ log(`gate: ${overallPass ? 'PASS' : 'FAIL'} — ${judged}${redNote}${mechNote}${
 // RETURN CONTRACT (gate-laws L1 — this list, work/SKILL.md's param table, and the keys below must
 // agree; work-result.sh's CONTRACT pins the required subset):
 //   overallPass, verdict, scoreTable, judged, implemented, verified, red?, findings, carried,
-//   routes, dispositions, residue?, thirdParty, mechanical, scores, attempts,
+//   routes, dispositions, residue?, mechanical, scores, attempts,
 //   tasksThatFlagged, mechanicalThatFailed, lensesThatFlagged, planFindings, rulesThatFailed, ruleVerdicts
 return {
   overallPass,
@@ -1608,7 +1568,6 @@ return {
     // 0/0 when mechanicalChecks is absent — the phase was skipped, nothing was checked and nothing passed.
     mechanicalRun: mechanical.length,
     mechanicalPassed: mechanical.filter(r => r.exitCode === 0).length,
-    thirdPartyAdvisoryFindings: thirdPartyResults.reduce((n, r) => n + (r.findings ? r.findings.length : 0), 0),
   },
   judged,
   implemented: allImplemented,
@@ -1637,10 +1596,9 @@ return {
   // the freeze excluded from the verdict: real, reported, and the input to a follow-up run's
   // carriedFindings — never silently dropped.
   ...(freezeFindingSet ? { residue } : {}),
-  thirdParty: thirdPartyResults, // ADVISORY — file as tasks with model attribution, never in the gate
   // [] when mechanicalChecks is absent: the phase was skipped, so there is nothing to re-run.
   mechanical,
-  // ADVISORY, like thirdParty: one entry per (key, item) in dispatch order, each carrying the
+  // ADVISORY: one entry per (key, item) in dispatch order, each carrying the
   // JS-computed component scores and composite, or nulls with a reason. `work` emits no cross-item
   // mean or rank — combining items is the caller's business, and an average over a null item is the
   // vacuous number the null exists to prevent. [] when scoredChecks is absent. NOT a selector: these

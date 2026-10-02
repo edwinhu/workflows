@@ -1,19 +1,19 @@
 {
-  "_comment": "The farm-out routing table, read by scripts/lib/route.ts. kinds and jev are hand-edited and reviewed; candidate availability, price and asOf change ONLY through `bun scripts/lib/route.ts --refresh`, the only sanctioned way to update them, and its diff is reviewed before commit. Models are pinned full ids: an unpinned wrapper slot is wrapper-local and can name another family.",
+  "_comment": "Fixture for tests/route-provider.test.ts and skills/work/scripts/work-dispatch-lens.test.ts. Same schema as scripts/lib/routing.json. The review chain holds two codex candidates, the first (luna) unavailable, so a codex-constrained row must skip it for sol. judgement has no codex candidate at all.",
   "asOf": "2026-10-01",
-  "jev": { "mode": "shadow", "model": "typesafe/jev-1.13", "threshold": 0.85, "timeoutSeconds": 10 },
+  "jev": { "mode": "shadow", "model": "typesafe/jev-1.13", "threshold": 0.85, "timeoutSeconds": 2 },
   "candidates": {
     "sonnet": { "provider": "claude", "model": "claude-sonnet-5-5", "owner": "anthropic", "openrouter": "anthropic/claude-sonnet-5.5", "available": true, "price": { "prompt": 2e-6, "completion": 1e-5 } },
     "opus": { "provider": "claude", "model": "claude-opus-5-5", "owner": "anthropic", "openrouter": "anthropic/claude-opus-5.5", "available": true, "price": { "prompt": 4e-6, "completion": 2e-5 } },
     "flash": { "provider": "gemini", "model": "gemini-3.7-flash-high", "owner": "antigravity", "openrouter": "google/gemini-3.7-flash", "available": true, "price": { "prompt": 7.5e-7, "completion": 3.75e-6 } },
-    "luna": { "provider": "codex", "model": "gpt-5.6-luna", "owner": "openai", "openrouter": null, "available": true, "price": null },
-    "sol": { "provider": "codex", "model": "gpt-6.1-sol", "owner": "openai", "openrouter": "openai/gpt-6.1-sol", "available": true, "price": { "prompt": 2e-6, "completion": 1e-5 } },
+    "luna": { "provider": "codex", "model": "gpt-5.6-luna", "owner": "openai", "openrouter": null, "available": false, "price": null },
+    "sol": { "provider": "codex", "model": "gpt-6.1-sol", "owner": "openai", "openrouter": "openai/gpt-6.1-sol", "available": true, "price": null },
     "flash38": { "provider": "gemini", "model": "gemini-3.8-flash-high", "owner": "antigravity", "openrouter": "google/gemini-3.8-flash", "available": true, "price": { "prompt": 7.5e-7, "completion": 3.75e-6 } }
   },
   "kinds": {
     "script": { "pick": "sonnet", "fallbacks": ["flash"] },
     "judgement": { "pick": "opus", "fallbacks": ["sonnet"] },
-    "review": { "pick": "sonnet", "fallbacks": ["opus", "sol", "flash38"] },
+    "review": { "pick": "sonnet", "fallbacks": ["opus", "luna", "sol", "flash38"] },
     "bulk": { "pick": "flash", "fallbacks": ["sonnet"] }
   }
 }

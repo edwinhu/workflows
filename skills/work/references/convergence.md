@@ -140,18 +140,19 @@ The levers, ranked by yield per token:
    is what the repeat reason prints.
 3. **Model diversity.** Addresses FRAMING lock-in, not execution quality. Worth pulling only once (1)
    and (2) have shown the brief is sound — and `work` already carries two thirds of it:
-   - **Judge side, cross-provider: `thirdParty: ["codex"|"gemini"]`.** Already shipped, and advisory
-     by construction. This is the diversity lever that exists; a second reader that does not share
-     the first's framing is exactly what a repeated failure calls for, and it cannot corrupt the gate.
+   - **Judge side, cross-provider: `lensProvider: "codex"|"gemini"`** (CLARIFY axis 6). The review
+     lens itself runs on that provider's pinned review candidate in `routing.json`, so a reader that
+     does not share the implementers' framing — exactly what a repeated failure calls for — is the
+     one whose findings gate. A plan key: switching it means amending the plan and re-hashing.
    - **Whole spine, cross-provider: `work-dispatch.sh --provider codex|gemini`** (same flag on
      `work-redispatch.sh`, so a stuck round can switch and re-run). It reaches farm.sh's
      `--provider`, which swaps the CLIProxyAPI wrapper. The wrapper remaps the **tier names** —
      `codex-code` exports `ANTHROPIC_DEFAULT_SONNET_MODEL=gpt-5.6-terra`, opus→`gpt-5.6-sol` — so
      every `model: 'sonnet'` already in `workflow.js` follows with no arg change. Implementers,
      verifiers, the lens and the probes all move together.
-   - **Granularity is the whole run, and that is structural.** There is no way to put implementers on
-     one provider and the lens on another: the provider is chosen when the spine is launched, before
-     `workflow.js` runs. Not a gap to fill — a split run would be two gates.
+   - **`--provider`'s granularity is the whole run, and that is structural**: the wrapper is chosen
+     when the spine is launched, before `workflow.js` runs, so the flag cannot split implementers from
+     the lens. `lensProvider` is that split, made in the plan for the one leg that judges.
    - **The provider is never written to `args.json`.** It is a property of the dispatch, not the plan,
      and the point of the lever is to DIFFER between rounds; a sticky value would silently pin round 4
      to whatever broke round 3.

@@ -7,7 +7,8 @@
 #   work-redispatch.sh … --dispatch --no-lint             # skip lint and red probe
 #   work-redispatch.sh … --dispatch --no-red-probe        # keep lint, skip red probe
 #   work-redispatch.sh … --dispatch --provider codex      # whole-round override; without it the
-#                                                         # kind map is re-resolved via route.ts
+#                                                         # kind map is re-resolved via route.ts.
+#                                                         # args.lensProvider is re-resolved either way
 #   WORK_REDISPATCH_DRYRUN=1                              # gates only; write nothing
 #   WORK_FARM=PATH                                        # farm.sh override
 #   WORK_NO_SCOPE=1                                       # plain setsid dispatch
@@ -162,6 +163,12 @@ if plan_args is not None:
     # sync otherwise only ever sets keys, which is why this needs saying once rather than generalising.
     if "reviewLenses" not in plan_args and args.pop("reviewLenses", None) is not None:
         synced.append("-reviewLenses (retired; the plan declares no such key)")
+    # lensProvider dropped from the plan must not keep constraining the review row. And a `lens` the
+    # plan does not declare can only be a --provider round's {model} injection: carried into this
+    # round it would read as an explicit lens.model beside lensProvider, and be refused.
+    for key in ("lensProvider", "lens"):
+        if key not in plan_args and args.pop(key, None) is not None:
+            synced.append(f"-{key} (the plan declares none)")
 
 import os, re
 run_dir = os.path.dirname(os.path.abspath(args_path))
@@ -690,7 +697,8 @@ fi
 
 # The kind map, re-resolved every round on the staged args through work-dispatch.sh's one
 # implementation. The flag form replaces the whole object, so a previous round's kindModels cannot
-# survive into a --provider round. A refusal spends nothing, exactly like the gates around it.
+# survive into a --provider round. lensProvider is resolved, and refused, here too. A refusal spends
+# nothing, exactly like the gates around it.
 if [ "$DISPATCH" = "--dispatch" ]; then
   bash "$SKILL/scripts/work-dispatch.sh" --resolve-routing "$STAGE" "$(basename "$RUN_DIR")" "$PROVIDER" || {
     rr=$?

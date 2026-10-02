@@ -11,13 +11,21 @@
  *   3. routing.json beside this file
  *
  * A row resolves in this order:
- *   provider and/or model   passed through, source 'explicit'; Jev is not consulted
+ *   model (with or without  passed through, source 'explicit'; Jev is not consulted
+ *   a provider)
+ *   kind and provider       provider-constrained: the first AVAILABLE candidate of that provider in
+ *                           the kind's chain (pick, then fallbacks, in order); source 'table'; Jev is
+ *                           not consulted. REFUSED (exit 2, stderr names the kind and the provider)
+ *                           when the chain has candidates of that provider but none is available.
+ *                           A chain with no candidate of that provider, or an unknown kind, falls
+ *                           to the provider rung below.
+ *   provider                passed through with a null model, source 'explicit'; Jev not consulted
  *   kind                    the kind's pick, else its first AVAILABLE fallback; source 'table'
  *   neither, unknown kind,  REFUSED: exit 2, nothing on stdout, stderr names every kind.
  *   or nothing available    A refusal never falls through to a default.
  *
  * Jev (the Decisions API, through hooks/work-hold.ts `decisionsCall` — the one transport) scores
- * every candidate in ONE call per table-routed row, capped at jev.timeoutSeconds. In 'shadow' mode
+ * every candidate in ONE call per kind-only row, capped at jev.timeoutSeconds. In 'shadow' mode
  * the scores are recorded and never change the pick. In 'decide' mode the cheapest available
  * candidate scoring at least jev.threshold wins (source 'jev'); otherwise the table pick stands.
  * Any Jev failure leaves the table pick and sets shadow.unavailable — Jev never blocks a row.
@@ -157,6 +165,12 @@ export function route(row: Row, opts: { table?: Table } = {}): Decision {
   field(r, 'label')
   field(r, 'agent')
   field(r, 'prompt')
+  const label = r.label === undefined ? '' : ` ${JSON.stringify(r.label)}`
+
+  if (provider && !model && kind && own(table.kinds, kind)) {
+    const constrained = providerConstrained(table, kind as Kind, provider, label)
+    if (constrained) return constrained
+  }
 
   if (provider || model) {
     const known = model ? Object.values(table.candidates).find(c => c.model === model) : undefined
@@ -171,7 +185,6 @@ export function route(row: Row, opts: { table?: Table } = {}): Decision {
   }
 
   const kinds = Object.keys(table.kinds)
-  const label = r.label === undefined ? '' : ` ${JSON.stringify(r.label)}`
   if (!kind)
     throw new RouteRefusal(
       `route: row${label} names no kind and no provider/model, so it cannot be routed. ` +
@@ -203,6 +216,34 @@ export function route(row: Row, opts: { table?: Table } = {}): Decision {
   }
   const c = table.candidates[chosen]
   return { provider: c.provider, model: c.model, kind, candidate: chosen, source, shadow }
+}
+
+/**
+ * A kind+provider row: the first available candidate of `provider` in the kind's chain, never
+ * scored by Jev. Undefined when the chain holds no candidate of that provider, so the row passes
+ * through as an explicit provider; a refusal when it holds some but none is available, because
+ * falling back to another provider would silently drop the constraint the row asked for.
+ */
+function providerConstrained(table: Table, kind: Kind, provider: string, label: string): Decision | undefined {
+  const entry = table.kinds[kind]
+  const ofProvider = [entry.pick, ...entry.fallbacks].filter(id => table.candidates[id].provider === provider)
+  if (ofProvider.length === 0) return undefined
+  const id = ofProvider.find(id => table.candidates[id].available)
+  if (!id)
+    throw new RouteRefusal(
+      `route: row${label} asks for kind ${kind} on provider ${provider}, but no ${provider} candidate in ` +
+        `kind ${kind}'s chain is available (tried ${ofProvider.join(', ')}). ` +
+        `Run route.ts --refresh, or name "model" on the row.`,
+    )
+  const c = table.candidates[id]
+  return {
+    provider: c.provider,
+    model: c.model,
+    kind,
+    candidate: id,
+    source: 'table',
+    shadow: { unavailable: `provider-constrained row (${provider} in kind ${kind}'s chain): Jev is not consulted` },
+  }
 }
 
 /** The cheapest available candidate at or above threshold. A null price ranks last; ties keep table order. */
