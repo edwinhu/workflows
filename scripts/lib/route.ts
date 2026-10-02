@@ -56,8 +56,10 @@
  *   asOf               the date of the last refresh in which either source answered.
  * No match is null. A source with no key, or one that fails, leaves that field as it was and says so
  * on stderr; it never fails the refresh. Keys are read at RUNTIME and never written anywhere:
- * $OPENROUTER_API_KEY / $ARTIFICIAL_ANALYSIS_API_KEY, else `op read` of $ROUTE_OPENROUTER_KEY_REF /
- * $ROUTE_AA_KEY_REF (defaults below), with the agenix service-account token loaded when unset.
+ * $OPENROUTER_API_KEY / $ARTIFICIAL_ANALYSIS_API_KEY; for OpenRouter only, then the agenix secret
+ * $ROUTE_OPENROUTER_KEY_FILE (default $XDG_RUNTIME_DIR/agenix/openrouter-api-key); else `op read` of
+ * $ROUTE_OPENROUTER_KEY_REF / $ROUTE_AA_KEY_REF (defaults below), with the agenix service-account
+ * token loaded when unset.
  *
  * --propose reads signals, prices and availability and prints suggested `kinds` changes; the user
  * decides and hand-edits the table. Its rule, per kind, exactly:
@@ -508,12 +510,19 @@ const DEFAULT_OPENROUTER_KEY_REF = 'op://Shared with Agents/OpenRouter/credentia
 const DEFAULT_AA_KEY_REF = 'op://Shared with Agents/Artificial Analysis/credential'
 
 /**
- * An API key, read at runtime and never stored: the env var, else `op read <ref>`. Returns the
- * reason on failure; the reason never carries the key.
+ * An API key, read at runtime and never stored: the env var, else the secret file when one is
+ * given and readable, else `op read <ref>`. Returns the reason on failure; the reason never carries
+ * the key.
  */
-function readKey(envVar: string, refVar: string, defaultRef: string): { key: string } | { missing: string } {
+function readKey(envVar: string, refVar: string, defaultRef: string, file?: string): { key: string } | { missing: string } {
   const direct = process.env[envVar]?.trim()
   if (direct) return { key: direct }
+  if (file) {
+    try {
+      const key = readFileSync(file, 'utf8').trim()
+      if (key) return { key }
+    } catch {}
+  }
   const ref = process.env[refVar] || defaultRef
   const env = { ...process.env }
   if (!env.OP_SERVICE_ACCOUNT_TOKEN && env.XDG_RUNTIME_DIR) {
@@ -597,7 +606,9 @@ function applySignals(
 async function fetchSignals(): Promise<{ ranks: Map<string, number> | null; intelligence: Map<string, number> | null }> {
   const warn = (msg: string) => process.stderr.write(`route --refresh: ${msg}\n`)
   let ranks: Map<string, number> | null = null
-  const orKey = readKey('OPENROUTER_API_KEY', 'ROUTE_OPENROUTER_KEY_REF', DEFAULT_OPENROUTER_KEY_REF)
+  const orFile = process.env.ROUTE_OPENROUTER_KEY_FILE ||
+    (process.env.XDG_RUNTIME_DIR ? join(process.env.XDG_RUNTIME_DIR, 'agenix/openrouter-api-key') : undefined)
+  const orKey = readKey('OPENROUTER_API_KEY', 'ROUTE_OPENROUTER_KEY_REF', DEFAULT_OPENROUTER_KEY_REF, orFile)
   const rankingsUrl = process.env.ROUTE_RANKINGS_URL || DEFAULT_RANKINGS_URL
   if ('missing' in orKey) warn(`usageRank left unchanged: ${orKey.missing}`)
   else {
