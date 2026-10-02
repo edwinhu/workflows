@@ -63,7 +63,10 @@ async function refresh(args: string[], env: Record<string, string>) {
   const { ROUTING_TABLE: _t, ...base } = HERMETIC_ENV
   const p = Bun.spawn(['bun', ROUTE, '--refresh', ...args], {
     // The dead defaults make a refresh that ignores its env fail locally rather than reach the network.
+    // Dummy keys keep the signal sources off `op`; their dead URLs keep them off the network.
     env: { ...base, ROUTE_PROXY_URL: DEAD, ROUTE_PRICES_URL: 'http://127.0.0.1:1/prices',
+      ROUTE_RANKINGS_URL: 'http://127.0.0.1:1/rankings', ROUTE_AA_URL: 'http://127.0.0.1:1/aa',
+      OPENROUTER_API_KEY: 'test-or-key', ARTIFICIAL_ANALYSIS_API_KEY: 'test-aa-key',
       WORK_HOLD_DECISIONS_URL: 'http://127.0.0.1:1/', WORK_HOLD_JUDGE_TOKEN: 'test-token', ...env },
     stdout: 'pipe', stderr: 'pipe',
   })
