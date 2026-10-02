@@ -277,9 +277,12 @@ test("a decision is text-only and returns fast", () => {
 
 // ── REGISTRATION ───────────────────────────────────────────────────────────────────────────────
 
-test("registered in hooks.json as PreToolUse for Bash|Monitor", () => {
-  const cfg = JSON.parse(readFileSync(join(ROOT, "hooks", "hooks.json"), "utf8"));
-  const entry = cfg.hooks.PreToolUse.find((e: { matcher: string }) => e.matcher === "Bash|Monitor");
-  expect(entry).toBeDefined();
-  expect(entry.hooks.some((h: { command: string }) => h.command.includes("pgrep-self-match.ts"))).toBe(true);
+test("registered in the plugin mod as PreToolUse for Bash|Monitor, and no longer spawned by hooks.json", async () => {
+  const { GUARDS } = await import("../hooks/guards/mod.ts");
+  const spec = GUARDS.find((g: { script: string }) => g.script === "pgrep-self-match.ts");
+  expect(spec).toBeDefined();
+  expect(spec.event).toBe("PreToolUse");
+  expect([...spec.tools].sort()).toEqual(["Bash", "Monitor"]);
+  // Exactly one registration: the settings hook and the mod both running would judge every call twice.
+  expect(readFileSync(join(ROOT, "hooks", "hooks.json"), "utf8")).not.toContain("pgrep-self-match.ts");
 });

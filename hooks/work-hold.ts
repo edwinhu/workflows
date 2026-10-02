@@ -38,6 +38,7 @@ import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { join } from 'node:path'
 import { homedir, tmpdir } from 'node:os'
+import { holdStateName } from './guards/hold.ts'
 
 interface State {
   /** The goal check. EMPTY means a check-less, Jev-only hold: the goal is the whole objective. */
@@ -83,7 +84,7 @@ export interface RoundRecord {
 }
 
 export function statePath(session: string): string {
-  return join(process.env.TMPDIR || tmpdir(), `work-hold-${session}.json`)
+  return join(process.env.TMPDIR || tmpdir(), holdStateName(session))
 }
 
 /**
@@ -150,34 +151,9 @@ export function inFlight(s: { run?: string }): boolean {
   }
 }
 
-/**
- * How long an armed hold may go unevaluated before the silence is itself the evidence.
- *
- * A round is one Stop, and a session working under a hold stops far more often than this; ten
- * minutes is longer than any single turn and shorter than the shortest ceiling, so it cannot fire on
- * a hold that was merely armed a moment ago.
- */
-export const UNEVALUATED_AFTER_SECONDS = 600
-
-/**
- * The version-skew diagnosis, as a sentence — or null when the hook is demonstrably running.
- *
- * Read by `--status` and by `cron-delete-guard.ts`, which is the OTHER half of the incident: that
- * guard enforces an armed hold from its own unchanged path, so the two disagree about whether
- * anything is alive. It still denies; it just stops being silent about why the hold is not moving.
- */
-export function unevaluatedNote(
-  s: { startedAt: number; lastEvaluatedAt?: number },
-  nowSeconds: number,
-): string | null {
-  if (typeof s.lastEvaluatedAt === 'number') return null
-  const age = Math.floor((nowSeconds - s.startedAt) / 60)
-  if (age * 60 < UNEVALUATED_AFTER_SECONDS) return null
-  return (
-    `never evaluated since arm ${age}m ago — this session's Stop hook is not running work-hold.ts; ` +
-    `run /reload-plugins`
-  )
-}
+// The unevaluated-hold diagnosis lives in guards/hold.ts so the plugin's mod (cron-delete) can
+// read it without node imports.
+export { UNEVALUATED_AFTER_SECONDS, unevaluatedNote } from './guards/hold.ts'
 
 /**
  * A ceiling reached, as a sentence — or null.
