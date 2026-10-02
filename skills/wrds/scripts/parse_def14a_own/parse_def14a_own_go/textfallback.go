@@ -2107,6 +2107,12 @@ func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, in
 				// glued to the front of the holder's name -- read it off the RAW
 				// half, where the gap between the columns is still there.
 				leadClass := ""
+				// A "Title of Class" cell that names only the par value
+				// ("..0001 par" over "value" / "common" / "stock") ahead of
+				// the name: not part of it.
+				if m := reLeadParCell.FindStringSubmatch(name); m != nil {
+					name = strings.TrimSpace(m[1])
+				}
 				if m := reLeadClassCol.FindStringSubmatch(name); m != nil {
 					leadClass = norm(strings.TrimRight(m[1], ": "))
 					lastColClass = leadClass
@@ -3137,6 +3143,8 @@ func textSeriesLabels(clean []string, series []string) []string {
 // to. Anchored on the trailing noun so a prose sentence cannot match.
 // A share CLASS written in a column of its own at the head of an ASCII row,
 // separated from the holder name by the gap between the columns.
+var reLeadParCell = regexp.MustCompile(`(?i)^[$.]*[0-9][0-9.,]*\s+par(?:\s+value)?\s{2,}(\S.*)$`)
+
 var reLeadClassCol = regexp.MustCompile(`(?i)^((?:[A-Z][\w.&/-]*\s+){0,3}(?:shares|stock|class\s+[a-z0-9]+|series\s+[a-z0-9]+))\s*:\s{2,}(\S.*)$`)
 
 var reTextStickyLabel = regexp.MustCompile(`(?i)^[A-Z0-9][\w.,'&()/ -]{0,58}?\b(?:class|classes|shares|portfolio|fund|series|trust)\s*:?$`)

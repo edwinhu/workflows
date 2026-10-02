@@ -13777,3 +13777,117 @@ func TestASCIIHyphenatedColumnHeaderOwnCue(t *testing.T) {
 		}
 	}
 }
+
+// 0001031833-05-000080: a "Title of Class" column ahead of the name holds a
+// par-value cell ("..0001 par" / "value" / "common" / "stock") on every row.
+const asciiLeadParValueCellLines = `
+
+     The following table provides information as of June 23, 2005 concerning the
+beneficial  ownership  of our common stock by (i) each director, (ii) each named
+executive officer, (iii) each shareholder known by us to be the beneficial owner
+of  more  than  5%  of  our outstanding Common Stock, and (iv) the directors and
+officers  as  a  group.  Except as otherwise indicated, the persons named in the
+table  have sole voting and investing power with respect to all shares of Common
+Stock  owned  by  them.
+
+                                        8
+                                      PAGE
+
+
+<TABLE>
+<CAPTION>
+
+<S>                     <C>                                    <C>                       <C>
+
+Title of                Name and Address of                    Amount and                 Percent of
+Class                   Beneficial Owner                       Nature of                  Class(1)
+                                                               Beneficial
+                                                               Ownership(1)
+- ----------              ----------------------                 ----------------           -----------
+..0001 par               James W. Benson, CEO                       6,699,707(2)                29.53%
+value                   and Chairman
+common                  13855 Stowe Drive
+stock                   Poway, California 92064
+
+..0001 par               Susan C. Benson                            6,699,707(3)                29.53%
+value                   13855 Stowe Drive
+common                  Poway, California 92064
+stock
+
+..0001 par               Richard B. Slansky                           415,544(4)                 1.85%
+value                   President and CFO
+common                  13855 Stowe Drive
+stock                   Poway, California 92064
+
+..0001 par               Frank Macklin                                243,073(5)                 1.10%
+value                   13855 Stowe Drive
+common                  Poway, California 92064
+stock
+
+..0001 par               Randall K. Simpson                           135,866(6)                 0.61%
+value                   13855 Stowe Drive
+common                  Poway, California 92064
+stock
+
+..0001 par               J. Mark Grosvenor                          1,330,376(7)                 6.00%
+value                   13855 Stowe Drive
+common                  Poway, California 92064
+stock
+
+..0001 par               Wesley T. Huntress Jr.                       140,515(8)                 0.63%
+value                   Director
+common                  13855 Stowe Drive
+stock                   Poway, California 92064
+
+..0001 par               Curt Dean Blake                              180,430(9)                 0.81%
+value                   Director
+common                  13855 Stowe Drive
+stock                   Poway, California 92064
+
+..0001 par               General Howell M.                            99,167(10)                 0.45%
+value                   Estes III, Director
+common                  13855 Stowe Drive
+stock                   Poway, California 92064
+
+..0001 par               Robert S. Walker                             85,667(11)                 0.38%
+value                   Director
+common                  13855 Stowe Drive
+stock                   Poway, California 92064
+
+..0001 par               Stuart Schaffer, Director                   218,206(12)                 0.98%
+value                   13855 Stowe Drive
+common                  Poway, California 92064
+stock
+
+..0001 par               Scott McClendon                              72,960(13)                 0.33%
+value                   Director
+common                  13855 Stowe Drive
+stock                   Poway, California 92064
+- ----------              ----------------------                 ----------------           -----------
+..0001 par               Officers and Directors as                11,291,135(14)                34.85%
+value                   a group (11 Persons)
+common
+stock
+- ----------              ----------------------                 ----------------           -----------
+- ----------              ----------------------                 ----------------           -----------
+
+</TABLE>
+`
+
+func TestASCIILeadParValueCellCut(t *testing.T) {
+	rows := ScreenRows(run(t, asciiLeadParValueCellLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{{"J. Mark Grosvenor", 1330376}, {"Frank Macklin", 243073}, {"Scott McClendon", 72960}} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares {
+			t.Errorf("holder %q %v lost: %s", want.name, want.shares, names(rows))
+		}
+	}
+	for _, r := range rows {
+		if strings.Contains(r.HolderName, "par") {
+			t.Errorf("par-value cell in holder name: %q", r.HolderName)
+		}
+	}
+}
