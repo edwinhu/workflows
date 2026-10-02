@@ -1,0 +1,655 @@
+<SEC-DOCUMENT>0001193125-22-229562.txt : 20220825
+<SEC-HEADER>0001193125-22-229562.hdr.sgml : 20220825
+<ACCEPTANCE-DATETIME>20220825104835
+ACCESSION NUMBER:		0001193125-22-229562
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20220630
+FILED AS OF DATE:		20220825
+DATE AS OF CHANGE:		20220825
+EFFECTIVENESS DATE:		20220825
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			CLEARWATER INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0000811161
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-05038
+		FILM NUMBER:		221194214
+
+	BUSINESS ADDRESS:	
+		STREET 1:		2000 WELLS FARGO PLACE
+		STREET 2:		30 EAST 7TH STREET
+		CITY:			ST PAUL
+		STATE:			MN
+		ZIP:			55101-4930
+		BUSINESS PHONE:		6122280935
+
+	MAIL ADDRESS:	
+		STREET 1:		2000 WELLS FARGO PLACE
+		STREET 2:		30 EAST 7TH STREET
+		CITY:			ST PAUL
+		STATE:			MN
+		ZIP:			55101
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000000697
+<SERIES-NAME>Clearwater Core Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002050
+<CLASS-CONTRACT-NAME>Clearwater Core Equity Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>QWVPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000000698
+<SERIES-NAME>Clearwater Select Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002051
+<CLASS-CONTRACT-NAME>Clearwater Select Equity Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>QWVOX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000000699
+<SERIES-NAME>Clearwater Tax-Exempt Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002052
+<CLASS-CONTRACT-NAME>Clearwater Tax-Exempt Bond Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>QWVQX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000024756
+<SERIES-NAME>CLEARWATER INTERNATIONAL FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000073549
+<CLASS-CONTRACT-NAME>CLEARWATER INTERNATIONAL FUND
+<CLASS-CONTRACT-TICKER-SYMBOL>QCVAX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>d372122dnpx.htm
+<DESCRIPTION>CLEARWATER INVESTMENT TRUST
+<TEXT>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:ARIAL; font-size:10pt" ALIGN="center">
+
+
+<TR>
+
+<TD WIDTH="9%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="46%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="13%"></TD>
+
+<TD VALIGN="bottom"></TD>
+<TD WIDTH="11%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="15%"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="bottom"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; border-bottom:1.00pt solid #000000; display:table-cell; font-size:8pt; font-family:ARIAL; "><B>Item</B></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:ARIAL"><B>Proposal</B></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:ARIAL"><B>Proposed&nbsp;by</B></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:ARIAL"><B>Vote</B></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:ARIAL"><B>For/Against<BR>Management</B></P></TD></TR>
+
+
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">1A.</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Election of Director: Sara E. Armbruster</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Enhanced Proposal Category: Elect Director</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">1B.</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Election of Director: Timothy C. E. Brown</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Against</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+</TABLE>
+<TD WIDTH="5%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="5%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="5%"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="bottom"><B>Issuer Name</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Ticker</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Meeting Date</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Primary<BR>Security ID</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Meeting Type</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Shares<BR>Voted</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Proposal<BR>Number</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Proposal Text</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Proponent</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Mgmt Rec</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Voting<BR>Policy Rec</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Vote<BR>Instruction</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>For/Against<BR>Management</B></TD></TR>
+
+
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">LiveRamp Holdings, Inc.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">RAMP</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">08/10/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">53815P108</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">34,071</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1a</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Director John L. Battelle</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">LiveRamp Holdings, Inc.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">RAMP</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">08/10/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">53815P108</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">34,071</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1b</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Director Debora B. Tomlin</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">LiveRamp Holdings, Inc.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">RAMP</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">08/10/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">53815P108</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">34,071</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1c</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Director Omar Tawakol</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">LiveRamp Holdings, Inc.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">RAMP</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">08/10/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">53815P108</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">34,071</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Amend Qualified Employee Stock Purchase Plan</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">LiveRamp Holdings, Inc.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">RAMP</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">08/10/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">53815P108</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">34,071</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">3</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Advisory Vote to Ratify Named Executive Officers&#146; Compensation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">LiveRamp Holdings, Inc.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">RAMP</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">08/10/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">53815P108</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">34,071</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Ratify KPMG LLP as Auditors</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD></TR>
+<TD VALIGN="bottom">Against</TD></TR></TABLE>
+
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL"><B>Clearwater International Fund: Artisan Partners Limited Partnership </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL" ALIGN="center">======================== Clearwater International Fund ========================= </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL">ABB LTD. </P> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:ARIAL; font-size:10pt" ALIGN="center">
+
+
+<TR>
+
+<TD WIDTH="12%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="16%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="13%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="56%"></TD></TR>
+
+
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">Ticker:</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">ABBN</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Security&nbsp;ID:</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">H0010V101</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">Meeting&nbsp;Date:</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">MAR 24, 2022</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Meeting&nbsp;Type:</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Annual</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">Record&nbsp;Date:</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD></TR>
+</TABLE> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:ARIAL; font-size:10pt" ALIGN="center">
+
+
+<TR>
+
+<TD WIDTH="9%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="46%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="13%"></TD>
+
+<TD VALIGN="bottom"></TD>
+<TD WIDTH="11%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="15%"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="bottom">#</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Proposal</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Mgt&nbsp;Rec</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Vote&nbsp;Cast</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Sponsor</TD></TR>
+
+
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">1</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Accept Financial Statements and Statutory Reports</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">2</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Approve Remuneration Report <FONT STYLE="white-space:nowrap">(Non-Binding)</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">3</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Approve Discharge of Board and Senior Management</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">4</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Approve Allocation of Income and Dividends of CHF 0.82 per Share</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">5</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Approve CHF 10.6 Million Reduction in Share Capital as Part of the Share Buyback Program via Cancellation of Repurchased Shares</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">6.1</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Approve Remuneration of Directors in the Amount of CHF 4.4 Million</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">6.2</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Approve Remuneration of Executive Committee in the Amount of CHF 45.9 Million</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">7.1</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reelect Gunnar Brock as Director</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">7.2</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reelect David Constable as Director</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">7.3</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reelect Frederico Curado as Director</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">7.4</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reelect Lars Foerberg as Director</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">7.5</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reelect Jennifer Xin-Zhe Li as Director</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">7.6</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reelect Geraldine Matchett as Director</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">7.7</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reelect David Meline as Director</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">7.8</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reelect Satish Pai as Director</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">7.9</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reelect Jacob Wallenberg as Director</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">7.10</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reelect Peter Voser as Director and Board Chairman</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">8.1</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reappoint David Constable as Member of the Compensation Committee</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">8.2</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reappoint Frederico Curado as Member of the Compensation Committee</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">8.3</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reappoint Jennifer Xin-Zhe Li as Member of the Compensation Committee</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">9</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Designate Zehnder Bolliger&nbsp;&amp; Partner as Independent Proxy</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">10</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Ratify KPMG AG as Auditors</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">11</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Transact Other Business (Voting)</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Against</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+</TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

@@ -1,0 +1,1769 @@
+<SEC-DOCUMENT>0001193125-19-224376.txt : 20190819
+<SEC-HEADER>0001193125-19-224376.hdr.sgml : 20190819
+<ACCEPTANCE-DATETIME>20190819144748
+ACCESSION NUMBER:		0001193125-19-224376
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		2
+CONFORMED PERIOD OF REPORT:	20190630
+FILED AS OF DATE:		20190819
+DATE AS OF CHANGE:		20190819
+EFFECTIVENESS DATE:		20190819
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			LITMAN GREGORY FUNDS TRUST
+		CENTRAL INDEX KEY:			0001020425
+		IRS NUMBER:				931215604
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-07763
+		FILM NUMBER:		191036057
+
+	BUSINESS ADDRESS:	
+		STREET 1:		2020 E. FINANCIAL WAY
+		STREET 2:		SUITE 100
+		CITY:			GLENDORA
+		STATE:			CA
+		ZIP:			91741
+		BUSINESS PHONE:		(925) 254-8999
+
+	MAIL ADDRESS:	
+		STREET 1:		4 ORINDA WAY
+		STREET 2:		SUITE 200 D
+		CITY:			ORINDA
+		STATE:			CA
+		ZIP:			94563
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	MASTERS SELECT FUNDS TRUST
+		DATE OF NAME CHANGE:	19980807
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	MASTERS SELECT INVESTMENT TRUST
+		DATE OF NAME CHANGE:	19961226
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	MASTERS SELECT EQUITY FUND
+		DATE OF NAME CHANGE:	19961213
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001020425
+<SERIES-ID>S000005593
+<SERIES-NAME>Litman Gregory Masters Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015260
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>MSEFX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001020425
+<SERIES-ID>S000005594
+<SERIES-NAME>Litman Gregory Masters International Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015261
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>MSILX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001020425
+<SERIES-ID>S000005596
+<SERIES-NAME>Litman Gregory Masters Smaller Companies Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000015263
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>MSSFX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001020425
+<SERIES-ID>S000033728
+<SERIES-NAME>Litman Gregory Masters Alternative Strategies Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000103965
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>MASFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000103966
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>MASNX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001020425
+<SERIES-ID>S000057610
+<SERIES-NAME>Litman Gregory Masters High Income Alternatives Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000183970
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>MAHIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000183971
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>MAHNX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>d758985dnpx.htm
+<DESCRIPTION>FORM N-PX
+<TEXT>
+<HTML><HEAD>
+<TITLE>Form N-PX</TITLE>
+</HEAD>
+ <BODY BGCOLOR="WHITE">
+
+ <P STYLE="line-height:1.0pt;margin-top:0pt;margin-bottom:0pt;border-bottom:1px solid #000000">&nbsp;</P>
+<P STYLE="line-height:3.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1px solid #000000">&nbsp;</P> <P STYLE="margin-top:4pt; margin-bottom:0pt; font-size:18pt; font-family:Times New Roman" ALIGN="center"><B>UNITED STATES </B></P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:18pt; font-family:Times New Roman" ALIGN="center"><B>SECURITIES AND EXCHANGE COMMISSION </B></P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:12pt; font-family:Times New Roman" ALIGN="center"><B>Washington, DC 20549 </B></P> <P STYLE="font-size:18pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P><center>
+<P STYLE="line-height:6.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1.00pt solid #000000;width:21%">&nbsp;</P></center> <P STYLE="margin-top:18pt; margin-bottom:0pt; font-size:18pt; font-family:Times New Roman" ALIGN="center"><B>FORM N-PX
+</B></P> <P STYLE="font-size:18pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P><center> <P STYLE="line-height:6.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1.00pt solid #000000;width:21%">&nbsp;</P></center>
+<P STYLE="margin-top:18pt; margin-bottom:0pt; font-size:12pt; font-family:Times New Roman" ALIGN="center"><B>ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED </B></P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:12pt; font-family:Times New Roman" ALIGN="center"><B>MANAGEMENT INVESTMENT COMPANY </B></P>
+<P STYLE="margin-top:18pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Investment Company Act file number: <FONT STYLE="white-space:nowrap">811-07763</FONT> </B></P>
+<P STYLE="font-size:18pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P><center> <P STYLE="line-height:6.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1.00pt solid #000000;width:21%">&nbsp;</P></center>
+<P STYLE="margin-top:18pt; margin-bottom:0pt; font-size:24pt; font-family:Times New Roman" ALIGN="center"><B>LITMAN GREGORY FUNDS TRUST </B></P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>(Exact name of registrant as specified in charter) </B></P> <P STYLE="font-size:18pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P><center>
+<P STYLE="line-height:6.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1.00pt solid #000000;width:21%">&nbsp;</P></center> <P STYLE="margin-top:18pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>1676 N.
+California Blvd., Suite 500 </B></P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Walnut Creek, CA 94596 </B></P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>(Address of principal executive offices)(Zip code) </B></P> <P STYLE="font-size:18pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P><center>
+<P STYLE="line-height:6.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1.00pt solid #000000;width:21%">&nbsp;</P></center> <P STYLE="margin-top:18pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Jeremy
+DeGroot </B></P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>1676 N. California Blvd., Suite 500 </B></P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Walnut Creek, CA 94596 </B></P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>(Name and Address of Agent for Service) </B></P> <P STYLE="font-size:18pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P><center>
+<P STYLE="line-height:6.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1.00pt solid #000000;width:21%">&nbsp;</P></center>
+<P STYLE="margin-top:18pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Registrant&#146;s telephone number, including area code: (925) <FONT STYLE="white-space:nowrap">254-8999</FONT> </B></P>
+<P STYLE="margin-top:18pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Date of fiscal year end: December&nbsp;31 </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Date of reporting period: July&nbsp;1, 2018 through June&nbsp;30, 2019 </B></P>
+<P STYLE="font-size:10pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P> <P STYLE="line-height:1.0pt;margin-top:0pt;margin-bottom:0pt;border-bottom:1px solid #000000">&nbsp;</P>
+<P STYLE="line-height:3.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1px solid #000000">&nbsp;</P>
+
+<p Style='page-break-before:always'>
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman"><B>Item&nbsp;1. Proxy Voting Record. </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>PROXY VOTING RECORD </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>FOR PERIOD JULY&nbsp;1, 2018 TO JUNE&nbsp;30, 2019 </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Litman Gregory Masters Alternative Strategies Fund </B></P> <P STYLE="font-size:12pt; margin-top:0pt; margin-bottom:0pt">&nbsp;</P>
+
+<p Style='page-break-before:always'>
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>FOR PERIOD JULY&nbsp;1, 2018 TO JUNE&nbsp;30, 2019 </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Litman Gregory Masters Alternative Strategies Fund </B></P>
+<P STYLE="margin-top:18pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman">DCI, LLC </P> <P STYLE="margin-top:6pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman">The sleeve of the Litman Gregory Masters Alternative
+Strategies Fund that is <FONT STYLE="white-space:nowrap">sub-advised</FONT> by DCI, LLC did not hold any securities with respect to which DCI, LLC was entitled to vote during the period from July&nbsp;1, 2018 through June&nbsp;30, 2019. </P>
+
+<p Style='page-break-before:always'>
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>FOR PERIOD JULY&nbsp;1, 2018 TO JUNE&nbsp;30, 2019 </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Litman Gregory Masters Alternative Strategies Fund </B></P>
+<P STYLE="margin-top:18pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman">DoubleLine Capital LP </P> <P STYLE="margin-top:6pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman">The sleeve of the Litman Gregory Masters
+Alternative Strategies Fund that is <FONT STYLE="white-space:nowrap">sub-advised</FONT> by DoubleLine Capital LP did not hold any securities with respect to which DoubleLine Capital LP was entitled to vote during the period from July&nbsp;1, 2018
+through June&nbsp;30, 2019. </P>
+
+<p Style='page-break-before:always'>
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman">FIRST PACIFIC ADVISORS, LLC </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman">NASPERS LTD. </P> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" ALIGN="center">
+
+
+<TR>
+
+<TD WIDTH="13%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="22%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="14%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="14%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="33%"></TD></TR>
+
+
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">Ticker:</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">NPN</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Security ID:</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">S53435103</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">Meeting Date:</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">AUG 24, 2018</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Meeting Type:</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Annual</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">Record Date:</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">AUG 17, 2018</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD></TR>
+</TABLE> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" ALIGN="center">
+
+
+<TR>
+
+<TD WIDTH="7%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="53%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="11%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="11%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="14%"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="bottom">#</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Proposal</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgt Rec</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Vote Cast</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Sponsor</TD></TR>
+
+
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">1</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Accept Financial Statements and Statutory Reports for the Year Ended 31&nbsp;March 2018</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Approve Dividends for N Ordinary and A Ordinary Shares</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">3</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Reappoint PricewaterhouseCoopers Inc as Auditors of the Company with Brendan Deegan as the Individual Registered Auditor</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">4</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="white-space:nowrap">Re-elect</FONT> Mark Sorour as Director</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">5.1</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="white-space:nowrap">Re-elect</FONT> Craig Enenstein as Director</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">5.2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="white-space:nowrap">Re-elect</FONT> Don Eriksson as Director</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">5.3</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="white-space:nowrap">Re-elect</FONT> Hendrik du Toit as Director</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">5.4</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="white-space:nowrap">Re-elect</FONT> Guijin Liu as Director</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">5.5</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="white-space:nowrap">Re-elect</FONT> Roberto Oliveira de Lima as Director</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">6.1</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="white-space:nowrap">Re-elect</FONT> Don Eriksson as Member of the Audit Committee</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">6.2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="white-space:nowrap">Re-elect</FONT> Ben van der Ross as Member of the Audit Committee</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">6.3</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="white-space:nowrap">Re-elect</FONT> Rachel Jafta as Member of the Audit Committee</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">7</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Approve Remuneration Policy</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">8</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Approve Implementation of the Remuneration Policy</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">9</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Place Authorised but Unissued Shares under Control of Directors</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">10</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Authorise Board to Issue Shares for Cash</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">11</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Authorise Ratification of Approved Resolutions</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">1.1</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Approve Fees of the Board Chairman</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">1.2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Approve Fees of the Board Member</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">1.3</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Approve Fees of the Audit Committee Chairman</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">1.4</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Approve Fees of the Audit Committee Member</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">1.5</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Approve Fees of the Risk Committee Chairman</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">1.6</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Approve Fees of the Risk Committee Member</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">1.7</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Approve Fees of the Human Resources and Remuneration Committee Chairman</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">1.8</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Approve Fees of the Human Resources and Remuneration Committee Member</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">1.9</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Approve Fees of the Nomination Committee Chairman</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">1.10</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Approve Fees of the Nomination Committee Member</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">1.11</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Approve Fees of the Social and Ethics Committee Chairman</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">1.12</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Approve Fees of the Social and Ethics Committee Member</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">1.13</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Approve Fees of the Trustees of Group Share Schemes/Other Personnel Funds</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Approve Financial Assistance in Terms of Section&nbsp;44 of the Companies Act</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">3</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Approve Financial Assistance in Terms of Section&nbsp;45 of the Companies Act</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">4</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Authorise Repurchase of N Ordinary Shares</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">5</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Authorise Repurchase of A Ordinary Shares</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+</TABLE> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P> <P STYLE="line-height:1.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1px solid #000000">&nbsp;</P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman">NAVER CORP. </P> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" ALIGN="center">
+
+
+<TR>
+
+<TD WIDTH="13%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="22%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="14%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="14%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="33%"></TD></TR>
+
+
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">Ticker:</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">035420</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Security ID:</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Y62579100</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">Meeting Date:</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">SEP 07, 2018</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Meeting Type:</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Special</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">Record Date:</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">AUG 10, 2018</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD></TR>
+</TABLE> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" ALIGN="center">
+
+
+<TR>
+
+<TD WIDTH="7%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="53%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="11%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="11%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="14%"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="bottom">#</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Proposal</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgt Rec</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Vote Cast</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Sponsor</TD></TR>
+
+
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">1.1</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Amend Articles of Incorporation (Business Objectives)</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">1.2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Amend Articles of Incorporation (Stock Split)</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Approve <FONT STYLE="white-space:nowrap">Spin-Off</FONT> Agreement</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+</TABLE>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:8pt" ALIGN="center">
+
+
+<TR>
+
+<TD WIDTH="11%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="10%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="3%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="3%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="5%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="4%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="5%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="5%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="6%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="4%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="18%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="7%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="4%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="3%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="5%"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="bottom" NOWRAP> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; border-bottom:1.00pt solid #000000; display:table-cell; font-size:8pt; font-family:Times New Roman; "><B>LOOMIS SAYLES -<BR>Institutional Account Name</B></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Company Name</B></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Ticker</B></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Country</B></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Provider</B></P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Security&nbsp;ID</B></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Meeting</B></P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Type</B></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Meeting</B></P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Date</B></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Record</B></P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Date</B></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Proponent</B></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Proposal<BR>Number</B></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Proposal Text</B></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Management<BR>Recommendation</B></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Vote<BR>Instruction</B></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Voted</B></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Vote&nbsp;Against<BR>Management</B></P></TD></TR>
+
+
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">The Walt Disney Company</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">DIS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">254687106</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Special</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>27-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>29-May-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">1</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Issue Shares in Connection with Acquisition</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">The Walt Disney Company</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">DIS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">254687106</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Special</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>27-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>29-May-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Adjourn Meeting</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">The Williams Companies, Inc.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">WMB</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">969457100</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Special</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>09-Aug-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>09-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">1</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Increase Authorized Common Stock</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">The Williams Companies, Inc.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">WMB</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">969457100</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Special</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>09-Aug-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>09-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Issue Shares in Connection with Acquisition</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">The Williams Companies, Inc.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">WMB</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">969457100</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Special</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>09-Aug-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>09-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">3</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Adjourn Meeting</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Celanese Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">CE</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">150870103</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Special</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>17-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>27-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">1</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Amend Certificate of Incorporation to Eliminate Series B Common Stock and to Redesignate Series A as Common Stock</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Celanese Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">CE</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">150870103</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Special</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>17-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>27-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Adjourn Meeting</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FedEx Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FDX</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">31428X106</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>24-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>30-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">1.1</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Elect Director John A. Edwardson</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FedEx Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FDX</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">31428X106</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>24-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>30-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">1.2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Elect Director Marvin R. Ellison</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FedEx Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FDX</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">31428X106</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>24-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>30-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">1.3</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Elect Director Susan Patricia Griffith</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FedEx Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FDX</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">31428X106</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>24-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>30-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">1.4</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Elect Director John C. (Chris) Inglis</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FedEx Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FDX</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">31428X106</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>24-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>30-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">1.5</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Elect Director Kimberly A. Jabal</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FedEx Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FDX</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">31428X106</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>24-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>30-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">1.6</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Elect Director Shirley Ann Jackson</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FedEx Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FDX</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">31428X106</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>24-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>30-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">1.7</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Elect Director R. Brad Martin</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FedEx Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FDX</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">31428X106</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>24-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>30-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">1.8</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Elect Director Joshua Cooper Ramo</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FedEx Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FDX</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">31428X106</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>24-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>30-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">1.9</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Elect Director Susan C. Schwab</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FedEx Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FDX</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">31428X106</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>24-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>30-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">1.10</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Elect Director Frederick W. Smith</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FedEx Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FDX</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">31428X106</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>24-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>30-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">1.11</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Elect Director David P. Steiner</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FedEx Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FDX</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">31428X106</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>24-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>30-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">1.12</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Elect Director Paul S. Walsh</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FedEx Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FDX</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">31428X106</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>24-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>30-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Advisory Vote to Ratify Named Executive Officers&#146; Compensation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FedEx Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FDX</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">31428X106</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>24-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>30-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">3</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Ratify Ernst &amp; Young LLP as Auditors</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FedEx Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FDX</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">31428X106</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>24-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>30-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Share Holder</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">4</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Report on Lobbying Payments and Policy</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FedEx Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FDX</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">31428X106</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>24-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>30-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Share Holder</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">5</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Provide Right to Act by Written Consent</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FedEx Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">FDX</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">31428X106</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>24-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>30-Jul-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Share Holder</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">6</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Bylaw Amendment Confirmation by Shareholders</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Marathon Petroleum Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">MPC</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">56585A102</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Special</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>24-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>01-Aug-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">1</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Issue Shares in Connection with Merger</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Marathon Petroleum Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">MPC</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">56585A102</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Special</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>24-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>01-Aug-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Increase Authorized Common Stock</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Marathon Petroleum Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">MPC</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">56585A102</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Special</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>24-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>01-Aug-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">3</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Approve Increase in Size of Board</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Marathon Petroleum Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">MPC</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">56585A102</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Special</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>24-Sep-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>01-Aug-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">4</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Adjourn Meeting</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Procter &amp; Gamble Co.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">PG</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">742718109</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>09-Oct-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>10-Aug-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">1a</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Elect Director Francis S. Blake</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Procter &amp; Gamble Co.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">PG</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">742718109</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>09-Oct-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>10-Aug-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">1b</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Elect Director Angela F. Braly</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="top">Litman Gregory Masters Alternative Strategies Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Procter &amp; Gamble Co.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">PG</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">742718109</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>09-Oct-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" NOWRAP>10-Aug-18</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">1c</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Elect Director Amy L. Chang</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">No</TD></TR>
+</TABLE>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" ALIGN="center">
+
+
+<TR>
+
+<TD WIDTH="6%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="60%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="12%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="7%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="11%"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="bottom" NOWRAP STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman"><B>Item</B></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman"><B>Proposal</B></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Proposed</B></P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>by</B></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Vote</B></P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>For/Against</B></P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center"><B>Management</B></P></TD></TR>
+</TABLE> <P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman"><B>DXC TECHNOLOGY COMPANY </B></P> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+</BODY></HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

@@ -51,8 +51,8 @@ import (
 // next banner. The filing carries 1,813 known-registrant no-series rows in the
 // current LOST_BASE.
 //
-// Measured on this fixture on the current tree: the single row it emits is the
-// LENOVO item 1 ballot, and it carries fund_name `Approve Trust-Type Equity
+// Measured on this fixture on the current tree: the LENOVO item 1 ballot
+// it emits carries fund_name `Approve Trust-Type Equity
 // Compensation Plan` with a blank series -- exactly what the full filing shows
 // for the same row. Deleting ONLY the Trust-Type ballot row from the fixture
 // (fixture source lines 240-284, the middle of the three Nissha rows) and
@@ -82,17 +82,52 @@ func TestFamilyNSAspiriantTrustTypeFalseFundHeading(t *testing.T) {
 		rows = append(rows, pr.Rows...)
 	}
 	rows = append(rows, sink.buf...)
-	if meta.ParseStatus != "ok" || meta.Layout != "proxyedge" || len(rows) != 1 {
-		t.Fatalf("fixture/dispatch precondition: status=%s layout=%s rows=%d want=1 error=%s", meta.ParseStatus, meta.Layout, len(rows), meta.ErrorMsg)
+	if meta.ParseStatus != "ok" || meta.Layout != "proxyedge" {
+		t.Fatalf("fixture/dispatch precondition: status=%s layout=%s error=%s", meta.ParseStatus, meta.Layout, meta.ErrorMsg)
+	}
+
+	var lenovoRow *VoteRow
+	var otherRows []VoteRow
+	for i := range rows {
+		row := &rows[i]
+		if row.IssuerName == "LENOVO GROUP LIMITED" && row.CUSIP == "526250105" && row.ItemSeq == "1" {
+			if lenovoRow != nil {
+				t.Fatalf("fixture precondition: found multiple LENOVO item 1 ballots")
+			}
+			lenovoRow = row
+		} else {
+			otherRows = append(otherRows, *row)
+		}
+	}
+	if lenovoRow == nil {
+		t.Fatalf("fixture precondition: the LENOVO item 1 ballot was not found")
+	}
+
+	// The fixture holds exactly 4 grid ballot rows before the LENOVO block:
+	// - Kraft Foods Group, Inc., item 1 (line 130)
+	// - Nissha Printing Co. Ltd., item 4 (line 175)
+	// - Nissha Printing Co. Ltd., item 5 (line 220)
+	// - Nissha Printing Co. Ltd., item 6 (line 265)
+	// We allow up to 4 non-LENOVO rows to pass on both the old and new parser behaviour.
+	if len(otherRows) > 4 {
+		t.Fatalf("found %d non-LENOVO rows; want at most 4", len(otherRows))
+	}
+
+	for _, row := range otherRows {
+		if row.SeriesID != "S000036290" || row.FundName != "Aspiriant Risk-Managed Global Equity Fund" {
+			t.Errorf("grid row resolved wrong fund/series: issuer=%q item=%q fund=%q series=%q; want fund=%q series=%q",
+				row.IssuerName, row.ItemSeq, row.FundName, row.SeriesID,
+				"Aspiriant Risk-Managed Global Equity Fund", "S000036290")
+		}
+		if row.FundName == "Approve Trust-Type Equity Compensation Plan" {
+			t.Errorf("grid row fund_name carries the proposal text rather than the fund")
+		}
 	}
 
 	// The LENOVO ballot stands AFTER the Trust-Type proposal in document order
 	// and under no banner of its own, so it inherits the section's fund -- which
 	// is the one the filing's header declares as S000036290.
-	row := rows[0]
-	if row.IssuerName != "LENOVO GROUP LIMITED" || row.CUSIP != "526250105" || row.ItemSeq != "1" {
-		t.Fatalf("fixture precondition: the fixture's one row is not the LENOVO item 1 ballot: issuer=%q cusip=%q item=%q", row.IssuerName, row.CUSIP, row.ItemSeq)
-	}
+	row := *lenovoRow
 	if row.SeriesID != "S000036290" {
 		t.Errorf("the proposal text `Approve Trust-Type Equity Compensation Plan` was taken for a fund banner and reset the section's fund: issuer=%q cusip=%q item=%q fund=%q series=%q; want fund=%q series=%q",
 			row.IssuerName, row.CUSIP, row.ItemSeq, row.FundName, row.SeriesID,

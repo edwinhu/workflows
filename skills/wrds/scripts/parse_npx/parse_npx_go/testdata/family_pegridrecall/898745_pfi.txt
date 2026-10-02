@@ -1,0 +1,2914 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ Ky0tP8s4HtquX9/emY4nrYQLCN1Kis90wIW6HpPKxwZbULrGD52jTqD5YOzN+lZJ
+ uM0tnoKjnclS5jQPUIJuWQ==
+
+<SEC-DOCUMENT>0000898745-10-000427.txt : 20100824
+<SEC-HEADER>0000898745-10-000427.hdr.sgml : 20100824
+<ACCEPTANCE-DATETIME>20100824085049
+ACCESSION NUMBER:		0000898745-10-000427
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20100630
+FILED AS OF DATE:		20100824
+DATE AS OF CHANGE:		20100824
+EFFECTIVENESS DATE:		20100824
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PRINCIPAL FUNDS INC
+		CENTRAL INDEX KEY:			0000898745
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-07572
+		FILM NUMBER:		101034016
+
+	BUSINESS ADDRESS:	
+		STREET 1:		FORMERLY PRINCIPAL INVESTORS FUND, INC.
+		STREET 2:		PRINCIPAL FINANCIAL GROUP 711 HIGH ST
+		CITY:			DES MOINES
+		STATE:			IA
+		ZIP:			50392
+		BUSINESS PHONE:		515-247-5476
+
+	MAIL ADDRESS:	
+		STREET 1:		FORMERLY PRINCIPAL INVESTORS FUND, INC.
+		STREET 2:		PRINCIPAL FINANCIAL GROUP 711 HIGH ST
+		CITY:			DES MOINES
+		STATE:			IA
+		ZIP:			50392
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PRINCIPAL INVESTORS FUND INC
+		DATE OF NAME CHANGE:	20001012
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PRINCIPAL SPECIAL MARKETS FUND INC
+		DATE OF NAME CHANGE:	19930714
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000007016
+<SERIES-NAME>LargeCap S&P 500 Index Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019167
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>PLPIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019168
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>PLFNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019169
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>PLFMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019170
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>PLFPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019171
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>PLFSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019172
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PLFIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019173
+<CLASS-CONTRACT-NAME>Class J
+<CLASS-CONTRACT-TICKER-SYMBOL>PSPJX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019174
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>PLSAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038779
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>PLICX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000007017
+<SERIES-NAME>LargeCap Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019176
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>PLSVX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019177
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>PCCBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019178
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>PLVNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019179
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>PLVMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019180
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>PLVPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019181
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>PLVSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019182
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PVLIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019183
+<CLASS-CONTRACT-NAME>Class J
+<CLASS-CONTRACT-TICKER-SYMBOL>PVLJX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019184
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>PCACX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038780
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>PLUCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000007075
+<SERIES-NAME>MidCap Blend Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019310
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>PMSBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019311
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>PMBNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019312
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>PMBMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019313
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>PMBPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019314
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>PMBSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019315
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PCBIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019316
+<CLASS-CONTRACT-NAME>Class J
+<CLASS-CONTRACT-TICKER-SYMBOL>PMBJX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019317
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>PEMGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019318
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>PRMBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038781
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>PMBCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000007077
+<SERIES-NAME>LargeCap Growth Fund I
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019326
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>PCRSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019327
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>PPUNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019328
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>PPUMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019329
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>PPUPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019330
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>PPUSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019331
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PLGIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019332
+<CLASS-CONTRACT-NAME>Class J
+<CLASS-CONTRACT-TICKER-SYMBOL>PLGJX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019333
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>PGGAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019334
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>PBAGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038782
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>PLRCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000007078
+<SERIES-NAME>MidCap Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019335
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>PGPPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019336
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>PFPPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019337
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>PHPPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019338
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>PIPPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019339
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>PMSGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019340
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PGWIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019341
+<CLASS-CONTRACT-NAME>Class J
+<CLASS-CONTRACT-TICKER-SYMBOL>PMGJX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000007079
+<SERIES-NAME>MidCap S&P 400 Index Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019342
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>PMSSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019343
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>MPSIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019344
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>PMFNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019345
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>PMFMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019346
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>PMFPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019347
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>PMFSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019348
+<CLASS-CONTRACT-NAME>Class J
+<CLASS-CONTRACT-TICKER-SYMBOL>PMFJX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000007121
+<SERIES-NAME>LargeCap Growth Fund II
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019450
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>PDASX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019451
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>PPTNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019452
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>PPTMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019453
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>PPTPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019454
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>PPTSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019455
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PPIIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019456
+<CLASS-CONTRACT-NAME>Class J
+<CLASS-CONTRACT-TICKER-SYMBOL>PPLJX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019457
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>PLNAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038786
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>PLGRX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000007122
+<SERIES-NAME>LargeCap Value Fund III
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019458
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>PESAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019459
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>PPSNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019460
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>PPSFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019461
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>PPSRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019462
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>PPSSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019463
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PLVIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019464
+<CLASS-CONTRACT-NAME>Class J
+<CLASS-CONTRACT-TICKER-SYMBOL>PLVJX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019465
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>PPVAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019466
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>PLVBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038787
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>PLLCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000007123
+<SERIES-NAME>LargeCap Value Fund I
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019467
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>PABEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019468
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>PABDX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019469
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>PAFBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019470
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>PAGBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019471
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>PVUAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019472
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PVPIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000007125
+<SERIES-NAME>MidCap Growth Fund III
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019479
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>PHASX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019480
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>PPQNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019481
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>PPQMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019482
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>PPQPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019483
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>PPQSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019484
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PPIMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019485
+<CLASS-CONTRACT-NAME>Class J
+<CLASS-CONTRACT-TICKER-SYMBOL>PPQJX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019486
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>PPMGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019487
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>PPGFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038788
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>POWCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000014243
+<SERIES-NAME>MidCap Stock Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038756
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>WMCAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038757
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>WMCBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038758
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>WMCCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038759
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PMKIX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>pfi2010npx-3.htm
+<DESCRIPTION>PFI 2010 N-PX PART 3
+<TEXT>
+
+<HTML>
+<HEAD>
+   <TITLE>pficoverpage-3.htm - Generated by SEC Publisher for SEC Filing</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<TABLE cellSpacing=0 width="100%" border=0>
+<TR>
+     <TD width="100%"></TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=monospace size=2>Principal Funds, Inc. &#150; LargeCap Growth Fund I</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=monospace size=2>Sub-Advisor: Brown Investment Advisory Incorporated</FONT>&nbsp;</TD></TR></TABLE><BR>
+<TABLE cellSpacing=0 width="100%" border=0>
+<TR>
+     <TD width="5%"></TD>
+     <TD width="9%"></TD>
+     <TD width="20%"></TD>
+     <TD width="23%"></TD>
+     <TD width="15%"></TD>
+     <TD width="10%"></TD>
+     <TD width="17%"></TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=2><FONT face=monospace size=2>NETAPP INC</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=7>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=2><FONT face=monospace size=2>Ticker:</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>NTAP</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=monospace size=2>Security ID: 64110D104</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=3><FONT face=monospace size=2>Meeting Date: Oct 14, 2009</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=monospace size=2>Meeting Type: Annual</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=3><FONT face=monospace size=2>Record Date: Aug 17, 2009</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=7>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=monospace size=2>#</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=monospace size=2>Proposal</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>Mgt Rec</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>Vote Cast&nbsp;</FONT>&nbsp;</TD>
+     <TD align=left>Sponsor&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=monospace size=2>1.1</FONT>&nbsp;</TD>
+     <TD align=left colSpan=3><FONT face=monospace size=2>Elect Nominee - DANIEL J. WARMENHOVEN</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>Management</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=monospace size=2>1.2</FONT>&nbsp;</TD>
+     <TD align=left colSpan=3><FONT face=monospace size=2>Elect Nominee - DONALD T. VALENTINE</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>Management</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=monospace size=2>1.3</FONT>&nbsp;</TD>
+     <TD align=left colSpan=3><FONT face=monospace size=2>Elect Nominee - JEFFRY R. ALLEN</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>Management</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=monospace size=2>1.4</FONT>&nbsp;</TD>
+     <TD align=left colSpan=3><FONT face=monospace size=2>Elect Nominee - ALAN L. EARHART</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>Management</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=monospace size=2>1.5</FONT>&nbsp;</TD>
+     <TD align=left colSpan=3><FONT face=monospace size=2>Elect Nominee - THOMAS GEORGENS</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>Management</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=monospace size=2>1.6</FONT>&nbsp;</TD>
+     <TD align=left colSpan=3><FONT face=monospace size=2>Elect Nominee - MARK LESLIE</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>Management</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=monospace size=2>1.7</FONT>&nbsp;</TD>
+     <TD align=left colSpan=3><FONT face=monospace size=2>Elect Nominee - NICHOLAS G. MOORE</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>Management</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=monospace size=2>1.8</FONT>&nbsp;</TD>
+     <TD align=left colSpan=3><FONT face=monospace size=2>Elect Nominee - GEORGE T. SHAHEEN</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>Management</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=monospace size=2>1.9</FONT>&nbsp;</TD>
+     <TD align=left colSpan=3><FONT face=monospace size=2>Elect Nominee - ROBERT T. WALL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>Management</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=monospace size=2>2</FONT>&nbsp;</TD>
+     <TD align=left colSpan=3><FONT face=monospace size=2>Amend 1999 Stock Option Plan</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>Management</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=monospace size=2>3</FONT>&nbsp;</TD>
+     <TD align=left colSpan=3><FONT face=monospace size=2>Amend 1999 Stock Option Plan</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>For</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=monospace size=2>Management</FONT>&nbsp;</TD></TR></TABLE><BR>
+<TABLE cellSpacing=0 width="100%" border=0>
+<TR>
+     <TD width="12%"></TD>
+     <TD width="4%"></TD>
+     <TD width="7%"></TD>
+     <TD width="7%"></TD>
+     <TD width="5%"></TD>
+     <TD width="5%"></TD>
+     <TD width="6%"></TD>
+     <TD width="5%"></TD>
+     <TD width="36%"></TD>
+     <TD width="8%"></TD>
+     <TD width="4%"></TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=3><B><FONT face=sans-serif size=1>Principal Funds, Inc. &#150; LargeCap Value Fund I</FONT></B>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=4><B><FONT face=sans-serif size=1>Sub-Advisor: UBS Global Asset Managemnt (Americas) Inc.</FONT></B>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=11>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=11>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=center>&nbsp;</TD>
+     <TD align=center>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=center><B><FONT face=sans-serif size=1>Company Name</FONT></B>&nbsp;</TD>
+     <TD align=center><B><FONT face=sans-serif size=1>Ticker</FONT></B>&nbsp;</TD>
+     <TD align=center><B><FONT face=sans-serif size=1>Primary Security ID </FONT></B></TD>
+     <TD align=center>&nbsp;<B><FONT face=sans-serif size=1>Meeting Date </FONT></B></TD>
+     <TD align=center>&nbsp;<B><FONT face=sans-serif size=1>Record Date</FONT></B>&nbsp;</TD>
+     <TD align=center><B><FONT face=sans-serif size=1>Meeting Type</FONT></B>&nbsp;</TD>
+     <TD align=center><B><FONT face=sans-serif size=1>Shares Voted</FONT></B>&nbsp;</TD>
+     <TD align=center><B><FONT face=sans-serif size=1>Item Number&nbsp;</FONT></B>&nbsp;</TD>
+     <TD align=center>&nbsp;<FONT face=Arial size=1>Proposal</FONT></TD>
+     <TD align=center>
+<P><B><FONT face=sans-serif size=1><B><FONT face=sans-serif size=1>Management</FONT></B></FONT></B></P>
+<P><B><FONT face=sans-serif size=1>Recommendation</FONT></B>&nbsp;</P>
+</TD>
+     <TD align=center>
+<P><B><FONT face=sans-serif size=1><B><FONT face=sans-serif size=1>Vote</FONT></B></FONT></B></P>
+<P><B><FONT face=sans-serif size=1>Instruction</FONT></B>&nbsp;</P>
+</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Merck &amp; Co., Inc.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>MRK</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>589331107</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>07-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>22-Jun-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Special</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>539,900</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Approve Acquisition</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>FedEx Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>FDX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>31428X106</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>03-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>300,900</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.1</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director James L. Barksdale</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>FedEx Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>FDX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>31428X106</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>03-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>300,900</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Joshua I. Smith</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>FedEx Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>FDX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>31428X106</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>03-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>300,900</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.11</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director David P. Steiner</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>FedEx Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>FDX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>31428X106</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>03-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>300,900</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.12</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Paul S. Walsh</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>FedEx Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>FDX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>31428X106</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>03-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>300,900</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.2</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director John A. Edwardson</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>FedEx Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>FDX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>31428X106</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>03-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>300,900</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.3</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect DirectorJudith L. Estrin</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>FedEx Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>FDX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>31428X106</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>03-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>300,900</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.4</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director J.R. Hyde, III</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>FedEx Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>FDX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>31428X106</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>03-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>300,900</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.5</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Shirley A. Jackson</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>FedEx Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>FDX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>31428X106</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>03-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>300,900</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.6</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Steven R. Loranger</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>FedEx Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>FDX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>31428X106</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>03-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>300,900</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.7</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Gary W. Loveman</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>FedEx Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>FDX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>31428X106</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>03-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>300,900</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.8</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Susan C. Schwab</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>FedEx Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>FDX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>31428X106</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>03-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>300,900</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.9</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Frederick W. Smith</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>FedEx Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>FDX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>31428X106</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>03-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>300,900</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>2</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Ratify Auditors</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>FedEx Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>FDX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>31428X106</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>03-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>300,900</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>3</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Require Independent Board Chairman</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>FedEx Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>FDX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>31428X106</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>03-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>300,900</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>4</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Amend Articles/Bylaws/Charter -- Call Special Meetings</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>FedEx Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>FDX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>31428X106</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>03-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>300,900</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>5</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Advisory Vote to Ratify Named Executive Officers' Compensation</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>FedEx Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>FDX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>31428X106</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>03-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>300,900</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>6</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Adopt Principles for Health Care Reform</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Procter &amp; Gamble Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>PG</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>742718109</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>14-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>207,500</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Kenneth I. Chenault</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Procter &amp; Gamble Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>PG</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>742718109</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>14-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>207,500</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>2</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Scott D. Cook</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Procter &amp; Gamble Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>PG</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>742718109</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>14-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>207,500</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>3</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Rajat K. Gupta</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Procter &amp; Gamble Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>PG</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>742718109</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>14-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>207,500</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>4</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director A.G. Lafley</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Procter &amp; Gamble Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>PG</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>742718109</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>14-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>207,500</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>5</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Charles R. Lee</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Procter &amp; Gamble Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>PG</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>742718109</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>14-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>207,500</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>6</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Lynn M. Martin</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Procter &amp; Gamble Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>PG</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>742718109</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>14-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>207,500</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>7</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Robert A. McDonald</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Procter &amp; Gamble Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>PG</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>742718109</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>14-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>207,500</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>8</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director W. James McNerney, Jr.</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Procter &amp; Gamble Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>PG</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>742718109</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>14-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>207,500</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>9</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Johnathan A. Rodgers</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Procter &amp; Gamble Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>PG</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>742718109</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>14-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>207,500</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Ralph Snyderman</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Procter &amp; Gamble Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>PG</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>742718109</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>14-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>207,500</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>11</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Mary Agnes Wilderotter</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Procter &amp; Gamble Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>PG</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>742718109</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>14-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>207,500</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>12</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Patricia A. Woertz</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Procter &amp; Gamble Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>PG</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>742718109</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>14-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>207,500</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>13</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Ernesto Zedillo</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Procter &amp; Gamble Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>PG</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>742718109</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>14-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>207,500</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>14</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Ratify Auditors</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Procter &amp; Gamble Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>PG</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>742718109</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>14-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>207,500</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>15</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Amend Code of Regulations</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Procter &amp; Gamble Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>PG</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>742718109</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>14-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>207,500</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>16</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Approve Omnibus Stock Plan</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Procter &amp; Gamble Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>PG</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>742718109</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>14-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>207,500</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>17</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Provide for Cumulative Voting</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Procter &amp; Gamble Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>PG</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>742718109</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>14-Aug-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>207,500</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>18</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Advisory Vote to Ratify Named Executive Officers' Compensation</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Seagate Technology</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>STX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G7945J104</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>04-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>1,587,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>2</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Increase Number of Shares Reserved Under Seagate Technology's Employee Stock Purchase Plan in the</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Amount of 10 Million Shares</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Seagate Technology</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>STX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G7945J104</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>04-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>1,587,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>3</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Approve Employee Stock Option Exchange Program</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Seagate Technology</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>STX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G7945J104</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>04-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>1,587,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>4</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Ratify Ernst &amp; Young LLP as Auditors</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Seagate Technology</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>STX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G7945J104</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>04-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>1,587,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>5</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Transact Other Business (Non-Voting)</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>None</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>None</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Seagate Technology</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>STX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G7945J104</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>04-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>1,587,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1a</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Stephen J. Luczo as Director</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Seagate Technology</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>STX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G7945J104</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>04-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>1,587,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1b</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Election Frank J. Biondi, Jr. as Director</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Seagate Technology</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>STX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G7945J104</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>04-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>1,587,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1c</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Election William W. Bradley as Director</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Seagate Technology</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>STX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G7945J104</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>04-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>1,587,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1d</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Election David F. Marquardt as Director</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Seagate Technology</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>STX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G7945J104</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>04-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>1,587,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1e</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Election Lydia M. Marshall as Director</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Seagate Technology</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>STX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G7945J104</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>04-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>1,587,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1f</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Election Albert A. Pimentel as Director</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Seagate Technology</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>STX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G7945J104</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>04-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>1,587,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1g</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Election C.S. Park as Director</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Seagate Technology</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>STX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G7945J104</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>04-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>1,587,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1h</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Election Gregorio Reyes as Director</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Seagate Technology</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>STX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G7945J104</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>04-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>1,587,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1i</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Election John W. Thompson as Director</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Seagate Technology</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>STX</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G7945J104</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>28-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>04-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>1,587,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1j</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Election Edward J. Zander as Director</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Noble Corporation</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>H5833N103</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>29-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>04-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Special</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>124,300</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.1</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Director Gordon T. Hall</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Noble Corporation</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>H5833N103</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>29-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>04-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Special</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>124,300</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.2</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Director Jon A. Marshall</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Noble Corporation</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>H5833N103</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>29-Oct-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>04-Sep-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Special</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>124,300</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>2</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Approval Of The Amendment And Restatement Of The Noble Corporation 1991 Stock Option And Restricted</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Stock Plan effective As Of October 29, 2009</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Burlington Northern Santa Fe Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BNI</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12189T104</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>11-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>18-Dec-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Special</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>13,400</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Approve Merger Agreement</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Burlington Northern Santa Fe Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BNI</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12189T104</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>11-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>18-Dec-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Special</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>13,400</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>2</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Adjourn Meeting</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Bank of America Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BAC</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>060505104</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>23-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>07-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Special</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>955,400</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Increase Authorized Common Stock</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Bank of America Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BAC</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>060505104</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>23-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>07-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Special</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>955,400</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>2</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Adjourn Meeting</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Covidien plc</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>COV</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G2554F105</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>16-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>327,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Accept Financial Statements and Statutory Reports</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Covidien plc</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>COV</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G2554F105</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>16-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>327,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>3</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Approve Deloitte &amp; Touche LLP as Auditors and Authorize Board to Fix Their Remuneration Auditors</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Covidien plc</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>COV</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G2554F105</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>16-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>327,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>4</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Authorize Share Repurchase Program</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Covidien plc</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>COV</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G2554F105</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>16-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>327,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>5</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Authorize Reissuance of Treasury Shares</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Covidien plc</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>COV</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G2554F105</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>16-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>327,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>2a</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Craig Arnold as Director</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Covidien plc</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>COV</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G2554F105</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>16-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>327,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>2b</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Robert H. Brust as Director</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Covidien plc</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>COV</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G2554F105</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>16-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>327,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>2c</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect John M. Connors, Jr. as Director</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Covidien plc</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>COV</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G2554F105</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>16-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>327,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>2d</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Christopher J. Coughlin as Director</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Covidien plc</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>COV</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G2554F105</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>16-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>327,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>2e</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Timothy M. Donahue as Director</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR></TABLE><BR>
+<HR align=center width="100%" noShade SIZE=2>
+<!--$$/page=-->
+<A name="page_2"></A><BR>
+<TABLE cellSpacing=0 width="100%" border=0>
+<TR>
+     <TD width="13%"></TD>
+     <TD width="2%"></TD>
+     <TD width="6%"></TD>
+     <TD width="6%"></TD>
+     <TD width="5%"></TD>
+     <TD width="6%"></TD>
+     <TD width="6%"></TD>
+     <TD width="3%"></TD>
+     <TD width="36%"></TD>
+     <TD width="6%"></TD>
+     <TD width="4%"></TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Covidien plc</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>COV</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G2554F105</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>16-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>327,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>2f</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Kathy J. Herbert as Director</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Covidien plc</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>COV</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G2554F105</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>16-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>327,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>2g</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Randall J. Hogan, III as Director</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Covidien plc</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>COV</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G2554F105</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>16-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>327,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>2h</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Richard J. Meelia as Director</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Covidien plc</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>COV</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G2554F105</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>16-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>327,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>2i</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Dennis H. Reilley as Director</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Covidien plc</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>COV</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G2554F105</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>16-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>327,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>2j</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Tadataka Yamada as Director</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Covidien plc</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>COV</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G2554F105</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>16-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>327,700</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>2k</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Joseph A. Zaccagnino as Director</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Hewlett-Packard Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>HPQ</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>428236103</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>17-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>19-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>193,300</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.1</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Marc L. Andreessen</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Hewlett-Packard Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>HPQ</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>428236103</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>17-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>19-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>193,300</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Lucille S. Salhany</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Hewlett-Packard Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>HPQ</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>428236103</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>17-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>19-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>193,300</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.11</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director G. Kennedy Thompson</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Hewlett-Packard Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>HPQ</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>428236103</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>17-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>19-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>193,300</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.2</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Lawrence T. Babbio, Jr.</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Hewlett-Packard Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>HPQ</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>428236103</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>17-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>19-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>193,300</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.3</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Sari M. Baldauf</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Hewlett-Packard Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>HPQ</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>428236103</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>17-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>19-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>193,300</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.4</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Rajiv L. Gupta</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Hewlett-Packard Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>HPQ</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>428236103</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>17-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>19-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>193,300</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.5</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director John H. Hammergren</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Hewlett-Packard Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>HPQ</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>428236103</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>17-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>19-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>193,300</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.6</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Mark V. Hurd</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Hewlett-Packard Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>HPQ</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>428236103</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>17-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>19-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>193,300</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.7</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Joel Z. Hyatt</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Hewlett-Packard Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>HPQ</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>428236103</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>17-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>19-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>193,300</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.8</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director John R. Joyce</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Hewlett-Packard Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>HPQ</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>428236103</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>17-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>19-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>193,300</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.9</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Robert L. Ryan</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Hewlett-Packard Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>HPQ</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>428236103</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>17-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>19-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>193,300</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>2</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Ratify Auditors</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Hewlett-Packard Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>HPQ</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>428236103</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>17-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>19-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>193,300</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>3</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Amend Omnibus Stock Plan</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Hewlett-Packard Company</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>HPQ</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>428236103</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>17-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>19-Jan-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>193,300</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>4</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Company Request on Advisory Vote on Executive Compensation</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Baker Hughes Incorporated</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BHI</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>057224107</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>31-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>11-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Special</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>275,307</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Approve Issue of Shares in Connection with Acquisition</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Baker Hughes Incorporated</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BHI</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>057224107</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>31-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>11-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Special</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>275,307</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>2</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Amend Omnibus Stock Plan</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Baker Hughes Incorporated</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BHI</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>057224107</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>31-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>11-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Special</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>275,307</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>3</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Amend Omnibus Stock Plan</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Baker Hughes Incorporated</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BHI</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>057224107</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>31-Mar-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>11-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Special</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>275,307</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>4</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Adjourn Meeting</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Bank of New York Mellon Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BK</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>064058100</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>420,178</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.1</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Ruth E. Bruch</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Bank of New York Mellon Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BK</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>064058100</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>420,178</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Mark A. Nordenberg</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Bank of New York Mellon Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BK</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>064058100</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>420,178</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.11</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Catherine A. Rein</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Bank of New York Mellon Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BK</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>064058100</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>420,178</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.12</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director William C. Richardson</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Bank of New York Mellon Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BK</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>064058100</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>420,178</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.13</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Samuel C. Scott III</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Bank of New York Mellon Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BK</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>064058100</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>420,178</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.14</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director John P. Surma</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Bank of New York Mellon Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BK</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>064058100</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>420,178</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.15</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Wesley W. von Schack</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Bank of New York Mellon Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BK</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>064058100</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>420,178</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.2</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Nicholas M. Donofrio</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Bank of New York Mellon Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BK</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>064058100</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>420,178</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.3</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Gerald L. Hassell</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Bank of New York Mellon Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BK</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>064058100</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>420,178</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.4</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Edmund F. Kelly</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Bank of New York Mellon Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BK</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>064058100</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>420,178</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.5</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Robert P. Kelly</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Bank of New York Mellon Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BK</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>064058100</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>420,178</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.6</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Richard J. Kogan</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Bank of New York Mellon Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BK</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>064058100</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>420,178</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.7</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Michael J. Kowalski</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Bank of New York Mellon Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BK</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>064058100</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>420,178</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.8</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director John A. Luke, Jr.</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Bank of New York Mellon Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BK</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>064058100</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>420,178</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1.9</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Robert Mehrabian</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Bank of New York Mellon Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BK</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>064058100</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>420,178</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>2</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Advisory Vote to Ratify Named Executive Officers' Compensation</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Bank of New York Mellon Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BK</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>064058100</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>420,178</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>3</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Ratify Auditors</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Bank of New York Mellon Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BK</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>064058100</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>420,178</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>4</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Provide for Cumulative Voting</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Bank of New York Mellon Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BK</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>064058100</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>420,178</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>5</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Stock Retention/Holding Period</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>The Bank of New York Mellon Corporation</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>BK</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>064058100</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>420,178</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>6</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Submit Severance Agreement (Change-in-Control) to Shareholder Vote</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>1</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Reelect Micky Arison As A Director Of Carnival Corporation And As A Director Of Carnival Plc.</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>2</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Sir Jonathon Band As A Director Of Carnival Corporation And As A Director Of Carnival Plc.</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>3</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Reelect Robert H. Dickinson As A Director Of Carnival Corporation And As A Director Of Carnival Plc.</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=11>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>4</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Reelect Arnold W. Donald As A Director Of Carnival Corporation And As A Director Of Carnival Plc.</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>5</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Reelect Pier Luigi Foschi As A Director Of Carnival Corporation And As A Director Of Carnival Plc.</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>6</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Reelect Howard S. Frank As A Director Of Carnival Corporation And As A Director Of Carnival Plc.</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>7</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Reelect Richard J. Glasier As A Director Of Carnival Corporation And As A Director Of Carnival Plc.</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>8</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Reelect Modesto A. Maidique As A Director Of Carnival Corporation And As A Director Of Carnival Plc.</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=11>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>9</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Reelect Sir John Parker As A Director Of Carnival Corporation And As A Director Of Carnival Plc.</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Reelect Peter G. Ratcliffe As A Director Of Carnival Corporation And As A Director Of Carnival Plc.</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>11</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Reelect Stuart Subotnick As A Director Of Carnival Corporation And As A Director Of Carnival Plc.</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>12</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Reelect Laura Weil As A Director Of Carnival Corporation And As A Director Of Carnival Plc.</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>13</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Reelect Randall J. Weisenburger As A Director Of Carnival Corporation And As A Director Of Carnival Plc.</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=11>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>14</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Reelect Uzi Zucker As A Director Of Carnival Corporation And As A Director Of Carnival Plc.</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>15</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Reappoint The UK Firm Of PricewaterhouseCoopers LLP As Independent Auditors For Carnival Plc And</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Ratify The U.S. Firm Of PricewaterhouseCoopers LLP As The Independent Auditor For Carnival Corporation.</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=11>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>16</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Authorize The Audit Committee Of Carnival Plc To Fix Remuneration Of The Independent Auditors Of</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Plc.</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>17</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Receive The UK Accounts And Reports Of The Directors And Auditors Of Carnival Plc For The Year Ended</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>November 30, 2009</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>18</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Approve The Directors Remuneration Report Of Carnival Plc For The Year Ended November 30, 2009</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=11>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>19</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Authorize Issue of Equity with Pre-emptive Rights</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>20</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Authorize Issue of Equity without Pre-emptive Rights</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>21</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Authorise Shares for Market Purchase</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>22</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Stock Retention/Holding Period</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT face=sans-serif size=1>Carnival Corp.</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>CCL</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>143658300</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>13-Apr-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12-Feb-10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>293,468</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>23</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Transact Other Business (Non-Voting)</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>None</FONT>&nbsp;</TD>
+     <TD align=center><FONT face=sans-serif size=1>None</FONT>&nbsp;</TD></TR></TABLE><BR>
+<TABLE cellSpacing=0 width="110%" border=0>
+<TR>
+     <TD width="100%"></TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><B><FONT face=sans-serif size=4>Principal Funds, Inc. -- LargeCap Value Fund III</FONT></B>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><B><FONT face=sans-serif size=4>Advisor: Principal Management Corporation</FONT></B>&nbsp;</TD></TR></TABLE><BR>
+<HR align=center width="100%" noShade SIZE=2>
+<!--$$/page=-->
+<A name="page_2"></A><BR>
+<TABLE cellSpacing=0 width="110%" border=0>
+<TR>
+     <TD width="7%"></TD>
+     <TD width="19%"></TD>
+     <TD width="16%"></TD>
+     <TD width="10%"></TD>
+     <TD width="8%"></TD>
+     <TD width="8%"></TD>
+     <TD width="12%"></TD>
+     <TD width="13%"></TD>
+     <TD width="7%"></TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=2><B><FONT face=sans-serif size=4>Vote Summary Report</FONT></B>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Report was run from: 7/1/09 to 6/30/10</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=3><FONT face=sans-serif size=1>Institutional Account(s): PFI LARGECAP VALUE FUND III - PMC</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=9>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=2>&nbsp;<B><FONT face=sans-serif size=2>Citigroup Inc.</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Meeting Country</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Primary Security</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Meeting</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Record</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Shares</FONT></B>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=right><B><FONT face=sans-serif size=1>Shares on</FONT></B>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Date</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>ID</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Type</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Date</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Voted</FONT></B>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=right><B><FONT face=sans-serif size=1>Loan *</FONT></B>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>02-Sep-09 USA</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>172967101</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Written</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>29-Jul-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>574,347</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>0</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;<B><FONT face=sans-serif size=1>Ticker: </FONT></B><FONT face=sans-serif size=1>C</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Consent</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=9>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Vote</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>Proponent</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt Rec</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Instruction</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>1</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Increase Authorized Common Stock</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>2</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Approve Reverse Stock Split</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>3</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Amend Certificate of Incorporation to Eliminate Voting Rights of </FONT></TD>
+     <TD align=left>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT face=sans-serif size=1>Mgmt</FONT></TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left colSpan=3><FONT face=sans-serif size=1>Common Stock that Relates to Outstanding Series of Preferred</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Stock</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=2>&nbsp;<B><FONT face=sans-serif size=2>Validus Holdings Ltd</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Meeting Country</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Primary Security</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Meeting</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Record</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Shares</FONT></B>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=right><B><FONT face=sans-serif size=1>Shares on</FONT></B>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Date</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>ID</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Type</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Date</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Voted</FONT></B>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=right><B><FONT face=sans-serif size=1>Loan *</FONT></B>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>04-Sep-09 Bermuda</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>G9319H102</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Special</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>27-Jul-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>4,635</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>0</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=2>&nbsp;<B><FONT face=sans-serif size=1>Ticker: </FONT></B><FONT face=sans-serif size=1>VR</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=9>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Vote</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>Proponent</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt Rec</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Instruction</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>1</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Approve Issuance Shares in Connection with Amalgamation</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Agreement</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>2</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Adjourn Meeting</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=2>&nbsp;<B><FONT face=sans-serif size=2>CA, Inc.</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Meeting Country</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Primary Security</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Meeting</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Record</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Shares</FONT></B>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=right><B><FONT face=sans-serif size=1>Shares on</FONT></B>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Date</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>ID</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Type</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Date</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Voted</FONT></B>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=right><B><FONT face=sans-serif size=1>Loan *</FONT></B>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>14-Sep-09 USA</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>12673P105</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>17-Jul-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>15,722</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>0</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=2>&nbsp;<B><FONT face=sans-serif size=1>Ticker: </FONT></B><FONT face=sans-serif size=1>CA</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=9>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Vote</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>Proponent</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt Rec</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Instruction</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>1</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Elect Director Raymond J. Bromark</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>2</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Gary J. Fernandes</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>3</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Kay Koplovitz</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>4</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Elect Director Christopher B. Lofgren</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>5</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Elect Director William E. McCracken</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>6</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director John A. Swainson</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>7</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Elect Director Laura S. Unger</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>8</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Elect Director Arthur F. Weinbach</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>9</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Elect Director Renato (Ron) Zambonini</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>10</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Ratify Auditors</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>11</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Amend Executive Bonus Program</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>SH</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=2>&nbsp;<B><FONT face=sans-serif size=2>Integrated Device</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Meeting Country</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Primary Security</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Meeting</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Record</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Shares</FONT></B>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=right><B><FONT face=sans-serif size=1>Shares on</FONT></B>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=2>&nbsp;<B><FONT face=sans-serif size=2>Technology, Inc.</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Date</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>ID</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Type</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Date</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Voted</FONT></B>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=right><B><FONT face=sans-serif size=1>Loan *</FONT></B>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>17-Sep-09 USA</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>458118106</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>22-Jul-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>23,093</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>0</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=2>&nbsp;<B><FONT face=sans-serif size=1>Ticker: </FONT></B><FONT face=sans-serif size=1>IDTI</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=7>&nbsp;<I><FONT face=sans-serif size=1>* Shares on loan data only provided for a select group of custodians. Ask your Account Manager if you have any questions.</FONT></I>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR></TABLE><BR>
+</BODY>
+
+</HTML>
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

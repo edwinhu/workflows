@@ -1,0 +1,1145 @@
+<SEC-DOCUMENT>0000897101-16-002855.txt : 20160829
+<SEC-HEADER>0000897101-16-002855.hdr.sgml : 20160829
+<ACCEPTANCE-DATETIME>20160829104837
+ACCESSION NUMBER:		0000897101-16-002855
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20160630
+FILED AS OF DATE:		20160829
+DATE AS OF CHANGE:		20160829
+EFFECTIVENESS DATE:		20160829
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			CLEARWATER INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0000811161
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-05038
+		FILM NUMBER:		161856654
+
+	BUSINESS ADDRESS:	
+		STREET 1:		2000 WELLS FARGO PLACE
+		STREET 2:		30 EAST 7TH STREET
+		CITY:			ST PAUL
+		STATE:			MN
+		ZIP:			55101-4930
+		BUSINESS PHONE:		6122280935
+
+	MAIL ADDRESS:	
+		STREET 1:		2000 WELLS FARGO PLACE
+		STREET 2:		30 EAST 7TH STREET
+		CITY:			ST PAUL
+		STATE:			MN
+		ZIP:			55101
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000000697
+<SERIES-NAME>Clearwater Core Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002050
+<CLASS-CONTRACT-NAME>Clearwater Core Equity Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>QWVPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000000698
+<SERIES-NAME>Clearwater Small Companies Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002051
+<CLASS-CONTRACT-NAME>Clearwater Small Companies Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>QWVOX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000000699
+<SERIES-NAME>Clearwater Tax-Exempt Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002052
+<CLASS-CONTRACT-NAME>Clearwater Tax-Exempt Bond Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>QWVQX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000024756
+<SERIES-NAME>CLEARWATER INTERNATIONAL FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000073549
+<CLASS-CONTRACT-NAME>CLEARWATER INTERNATIONAL FUND
+<CLASS-CONTRACT-TICKER-SYMBOL>QCVAX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>clearwater162650_npx.htm
+<DESCRIPTION>FORM N-PX
+<TEXT>
+<HTML>
+<HEAD>
+     <TITLE></TITLE>
+</HEAD>
+<BODY STYLE="font: 10pt Times New Roman, Times, Serif">
+<P STYLE="margin: 0; font: bold 12pt Arial, Helvetica, Sans-Serif">Clearwater Core Equity Fund: Parametric Portfolio Associates, LLC</P>
+
+<P STYLE="margin: 0; font: bold 12pt Arial, Helvetica, Sans-Serif">&nbsp;</P>
+
+<table border="0" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse; font: 10pt Arial, Helvetica, Sans-Serif">
+<tr>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td colspan="18" style="color: #00007F; font: italic bold 12pt Arial Unicode MS; vertical-align: top; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 12pt; color: Black">Investment
+    Company Report</FONT></td></tr>
+<TR>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="18" STYLE="color: #00007F; font: italic bold 12pt Arial Unicode MS; vertical-align: top; text-align: center">&nbsp;</TD></TR>
+<tr >
+    <TD STYLE="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD COLSPAN="17" STYLE="color: white; font: bold 9pt Arial Unicode MS; vertical-align: top; text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">TIME
+    WARNER CABLE INC</FONT></td>
+    <TD STYLE="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td></tr>
+<tr>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td colspan="4" style="font: bold 9pt Arial Unicode MS; vertical-align: top; text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">Security</FONT></td>
+    <td style="font: 9pt Arial Unicode MS; vertical-align: top; text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">88732J207</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td colspan="4" style="font: bold 9pt Arial Unicode MS; vertical-align: top; text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">Meeting
+    Type</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td colspan="2" style="font: 9pt Arial Unicode MS; vertical-align: top; text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">Annual&nbsp;&nbsp;</FONT></td></tr>
+<tr>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td colspan="4" style="font: bold 9pt Arial Unicode MS; vertical-align: top; text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">Ticker
+    Symbol</FONT></td>
+    <td style="font: 9pt Arial Unicode MS; vertical-align: top; text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">TWC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td colspan="4" style="font: bold 9pt Arial Unicode MS; vertical-align: top; text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">Meeting
+    Date</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="font: 9pt Arial Unicode MS; vertical-align: top; text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">01-Jul-2015</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td></tr>
+<tr>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td colspan="4" style="font: bold 9pt Arial Unicode MS; vertical-align: top; text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">ISIN</FONT></td>
+    <td style="font: 9pt Arial Unicode MS; vertical-align: top; text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">US88732J2078</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td colspan="4" style="font: bold 9pt Arial Unicode MS; vertical-align: top; text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">Agenda</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td colspan="2" style="font: 9pt Arial Unicode MS; vertical-align: top; text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">934229750
+    - Management</FONT></td></tr>
+<tr style="vertical-align: bottom">
+    <TD STYLE="width: 1%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD STYLE="width: 5%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD STYLE="width: 2%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD STYLE="width: 3%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD STYLE="width: 2%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD STYLE="width: 11%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD STYLE="width: 24%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD STYLE="width: 3%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD STYLE="width: 5%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD STYLE="width: 1%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD STYLE="width: 5%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD STYLE="width: 1%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD STYLE="width: 5%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD STYLE="width: 4%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD STYLE="width: 1%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD STYLE="width: 5%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD STYLE="width: 1%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD STYLE="width: 8%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD STYLE="width: 11%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td></tr>
+<tr >
+    <TD STYLE="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD STYLE="color: white; font: bold 9pt Arial Unicode MS; vertical-align: top; text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">Item</FONT></td>
+    <TD COLSPAN="4" STYLE="color: white; font: bold 9pt Arial Unicode MS; vertical-align: top; text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">Proposal</FONT></td>
+    <TD STYLE="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD STYLE="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD COLSPAN="2" STYLE="color: white; font: bold 9pt Arial Unicode MS; vertical-align: top; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">Proposed</FONT><FONT STYLE="color: Black"><br>
+    <FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">by</FONT></FONT></td>
+    <TD STYLE="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD COLSPAN="2" STYLE="color: white; font: bold 9pt Arial Unicode MS; vertical-align: top; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">Vote</FONT></td>
+    <TD STYLE="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD COLSPAN="3" STYLE="color: white; font: bold 9pt Arial Unicode MS; vertical-align: top; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">For/Against</FONT><FONT STYLE="color: Black"><br>
+    <FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></FONT></td>
+    <TD STYLE="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <TD STYLE="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td></tr>
+<tr>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="font: 9pt Arial Unicode MS; vertical-align: top; text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">1A.&nbsp;&nbsp;</FONT></td>
+    <td colspan="6" style="font: 9pt Arial Unicode MS; vertical-align: top; text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">ELECTION
+    OF DIRECTOR: CAROLE BLACK</FONT></td>
+    <td colspan="2" style="font: 9pt Arial Unicode MS; vertical-align: top; text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">Management</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="font: 9pt Arial Unicode MS; vertical-align: top; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">For</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td colspan="2" style="font: 9pt Arial Unicode MS; vertical-align: top; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">For</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td></tr>
+<tr>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="font: 9pt Arial Unicode MS; vertical-align: top; text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">1B.&nbsp;&nbsp;</FONT></td>
+    <td colspan="6" style="font: 9pt Arial Unicode MS; vertical-align: top; text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">ELECTION
+    OF DIRECTOR: THOMAS H. CASTRO</FONT></td>
+    <td colspan="2" style="font: 9pt Arial Unicode MS; vertical-align: top; text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">Management</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="font: 9pt Arial Unicode MS; vertical-align: top; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">For</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td colspan="2" style="font: 9pt Arial Unicode MS; vertical-align: top; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">For</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td>
+    <td style="vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt; color: Black">&nbsp;</FONT></td></tr>
+</table>
+<P STYLE="margin: 0; font: bold 12pt Arial, Helvetica, Sans-Serif">Clearwater Core Equity Fund: AQR Capital Management, LLC</P>
+<P STYLE="margin: 0; font: bold 12pt Arial, Helvetica, Sans-Serif">&nbsp;</P>
+
+
+<P STYLE="margin: 0"></P>
+
+<table border="0" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse; font: 9pt Arial, Helvetica, Sans-Serif">
+<tr style="vertical-align: top">
+    <TD  STYLE="font-weight: bold; text-align: left; width: 6%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Institutional
+    Account Name</FONT></td>
+    <TD  STYLE="font-weight: bold; text-align: left; width: 4%; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Company
+    Name</FONT></td>
+    <TD  STYLE="font-weight: bold; text-align: left; width: 3%; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Ticker</FONT></td>
+    <TD  STYLE="font-weight: bold; text-align: left; width: 4%; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Country</FONT></td>
+    <TD  STYLE="font-weight: bold; text-align: left; width: 5%; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Provider
+    Security ID</FONT></td>
+    <TD STYLE="font-weight: bold; text-align: left; width: 4%; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Meeting
+    ID</FONT></td>
+    <TD  STYLE="font-weight: bold; text-align: left; width: 2%; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Meeting
+    Type</FONT></td>
+    <TD  STYLE="font-weight: bold; text-align: left; width: 4%; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Meeting
+    Date</FONT></td>
+    <TD STYLE="font-weight: bold; text-align: left; width: 3%; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Ballot
+    ID</FONT></td>
+    <TD STYLE="font-weight: bold; text-align: left; width: 2%; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Votable
+    Shares</FONT></td>
+    <TD STYLE="font-weight: bold; text-align: left; width: 2%; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Shares
+    Voted</FONT></td>
+    <TD  STYLE="font-weight: bold; text-align: left; width: 2%; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Proponent</FONT></td>
+    <TD STYLE="font-weight: bold; text-align: left; width: 41%; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Proposal
+    Text</FONT></td>
+    <TD  STYLE="font-weight: bold; text-align: left; width: 1%; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management
+    Recommendation</FONT></td>
+    <TD  STYLE="font-weight: bold; text-align: left; width: 1%; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">ISS
+    Recommendation</FONT></td>
+    <TD  STYLE="font-weight: bold; text-align: left; width: 4%; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Voting
+    Policy Recommendation</FONT></td>
+    <TD  STYLE="font-weight: bold; text-align: left; width: 2%; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Vote
+    Instruction</FONT></td>
+    <TD  STYLE="font-weight: bold; text-align: left; width: 1%; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Voted</FONT></td>
+    <TD  STYLE="font-weight: bold; text-align: left; width: 4%; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Vote
+    Against Management</FONT></td>
+    <TD  STYLE="font-weight: bold; text-align: left; width: 2%; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Vote
+    Against ISS</FONT></td>
+    <TD  STYLE="font-weight: bold; text-align: left; width: 3%; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Vote
+    Against Policy</FONT></td></tr>
+<tr style="vertical-align: top">
+    <TD nowrap STYLE="text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Clearwater Core Equity
+    Fund</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Bed Bath &amp; Beyond
+    Inc.</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">BBBY</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">USA</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">075896100</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">982514</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Annual</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;02-Jul-15</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">57643200</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">1,000</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">1,000</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></td>
+    <TD STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Elect Director Warren
+    Eisenberg</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Yes</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td></tr>
+<tr style="vertical-align: top">
+    <TD nowrap STYLE="text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Clearwater Core Equity
+    Fund</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Bed Bath &amp; Beyond
+    Inc.</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">BBBY</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">USA</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">075896100</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">982514</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Annual</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;02-Jul-15</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">57643200</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">1,000</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">1,000</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></td>
+    <TD STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Elect Director Leonard
+    Feinstein</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Yes</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td></tr>
+<tr style="vertical-align: top">
+    <TD nowrap STYLE="text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Clearwater Core Equity
+    Fund</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Bed Bath &amp; Beyond
+    Inc.</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">BBBY</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">USA</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">075896100</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">982514</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Annual</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;02-Jul-15</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">57643200</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">1,000</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">1,000</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></td>
+    <TD STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Elect Director Steven
+    H. Temares</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Yes</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td></tr>
+<tr style="vertical-align: top">
+    <TD nowrap STYLE="text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Clearwater Core Equity
+    Fund</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Bed Bath &amp; Beyond
+    Inc.</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">BBBY</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">USA</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">075896100</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">982514</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Annual</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;02-Jul-15</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">57643200</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">1,000</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">1,000</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></td>
+    <TD STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Elect Director Dean S.
+    Adler</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Yes</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td></tr>
+<tr style="vertical-align: top">
+    <TD nowrap STYLE="text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Clearwater Core Equity
+    Fund</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Bed Bath &amp; Beyond
+    Inc.</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">BBBY</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">USA</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">075896100</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">982514</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Annual</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;02-Jul-15</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">57643200</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">1,000</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">1,000</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></td>
+    <TD STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Elect Director Stanley
+    F. Barshay</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Yes</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td></tr>
+<tr style="vertical-align: top">
+    <TD nowrap STYLE="text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Clearwater Core Equity
+    Fund</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Bed Bath &amp; Beyond
+    Inc.</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">BBBY</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">USA</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">075896100</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">982514</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Annual</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;02-Jul-15</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">57643200</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">1,000</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">1,000</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></td>
+    <TD STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Elect Director Geraldine
+    T. Elliott</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Yes</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td></tr>
+<tr style="vertical-align: top">
+    <TD nowrap STYLE="text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Clearwater Core Equity
+    Fund</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Bed Bath &amp; Beyond
+    Inc.</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">BBBY</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">USA</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">075896100</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">982514</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Annual</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;02-Jul-15</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">57643200</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">1,000</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">1,000</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></td>
+    <TD STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Elect Director Klaus
+    Eppler</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Yes</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td></tr>
+<tr style="vertical-align: top">
+    <TD nowrap STYLE="text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Clearwater Core Equity
+    Fund</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Bed Bath &amp; Beyond
+    Inc.</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">BBBY</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">USA</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">075896100</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">982514</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Annual</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;02-Jul-15</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">57643200</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">1,000</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">1,000</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></td>
+    <TD STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Elect Director Patrick
+    R. Gaston</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Yes</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td></tr>
+<tr style="vertical-align: top">
+    <TD nowrap STYLE="text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Clearwater Core Equity
+    Fund</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Bed Bath &amp; Beyond
+    Inc.</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">BBBY</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">USA</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">075896100</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">982514</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Annual</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;02-Jul-15</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">57643200</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">1,000</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">1,000</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></td>
+    <TD STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Elect Director Jordan
+    Heller</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Yes</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td></tr>
+<tr style="vertical-align: top">
+    <TD nowrap STYLE="text-align: left"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Clearwater Core Equity
+    Fund</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Bed Bath &amp; Beyond
+    Inc.</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">BBBY</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">USA</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">075896100</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">982514</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Annual</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;02-Jul-15</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">57643200</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">1,000</FONT></td>
+    <TD NOWRAP STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">1,000</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></td>
+    <TD STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Elect Director Victoria
+    A. Morrison</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Yes</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td>
+    <TD nowrap STYLE="text-align: left; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">No</FONT></td></tr>
+</table>
+<P STYLE="margin: 0; font: bold 12pt Arial, Helvetica, Sans-Serif">Clearwater International Fund: Artisan Partners Limited Partnership</P>
+<P STYLE="margin: 0; font: bold 12pt Arial, Helvetica, Sans-Serif">&nbsp;</P>
+
+
+<P STYLE="margin: 0"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></P>
+
+<P STYLE="margin: 0"></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">FORM
+N-Px REPORT</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">ICA
+File Number: 811CWFND&nbsp;</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 186.1pt 0pt 0"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Reporting
+Period: 07/01/2015 - 06/30/2016&nbsp;</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 186.1pt 0pt 0"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Clearwater
+Fund</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 186.1pt 0pt 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; text-align: center; margin-bottom: 0pt"><FONT STYLE="font: 12pt Arial, Helvetica, Sans-Serif">Clearwater
+International Fund</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-indent: 0.5in"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">ABB
+LTD.&nbsp;</FONT></P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Times New Roman, Times, Serif">
+<TR STYLE="vertical-align: top">
+    <TD STYLE="width: 15%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="width: 1%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="width: 15%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="width: 1%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="width: 15%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="width: 1%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="width: 52%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Ticker:</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">ABBN</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Security ID:</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">H0010V101</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Meeting Date:</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">APR 21, 2016&#9;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Meeting Type:</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Annual</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Record Date:</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+</TABLE>
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-indent: 0.5in"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;&nbsp;</FONT></P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Times New Roman, Times, Serif">
+<TR STYLE="vertical-align: top">
+    <TD STYLE="width: 1%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="width: 8%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">#</FONT></TD>
+    <TD STYLE="width: 1%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="width: 50%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Proposal</FONT></TD>
+    <TD STYLE="width: 1%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="width: 12%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Mgt Rec</FONT></TD>
+    <TD STYLE="width: 1%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="width: 12%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Vote Cast</FONT></TD>
+    <TD STYLE="width: 1%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="width: 12%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Sponsor</FONT></TD>
+    <TD STYLE="width: 1%"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">1</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Accept Financial Statements and</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Statutory Reports</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">2</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Approve Remuneration Report</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">3</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Approve Discharge of Board and Senior</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">4</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Approve Allocation of Income</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">5</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Approve CHF 86 Million Reduction in</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Share Capital via Cancellation of</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Repurchased Shares</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">6</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Approve CHF 1.6 Billion Reduction in</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Share Capital via Reduction of Nominal</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Value and Repayment of CHF 0.74 per</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Share</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">7</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Amend Articles to Reflect Changes in</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Capital</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">8.1</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Approve Remuneration of Directors in</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">the Amount of CHF 4.7 Million</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">8.2</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Approve Remuneration of Executive</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Committee in the Amount of CHF 50</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Million</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">9.1</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Reelect Matti Alahuhta as Director</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">9.2</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Reelect David Constable as Director</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">9.3</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Elect Frederico Fleury Curado as</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Against</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Director</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">9.4</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Elect Robyn Denholm as Director</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">9.5</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Reelect Louis Hughes as Director</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">9.6</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Elect David Meline as Director</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">9.7</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Elect Satish Pai as Director</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">9.8</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Reelect Michel de Rosen as Director</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">9.9</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Reelect Jacob Wallenberg as Director</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">9.10</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Reelect Ying Yeh as Director</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">9.11</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Reelect Peter Voser as Director and</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Board Chairman</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">10.1</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Appoint David Constable as Member of</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">the Compensation Committee</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">10.2</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Appoint Frederico Fleury Curado as</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Against</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Member of the Compensation Committee</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">10.3</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Appoint Michel de Rosen as Member of</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">the Compensation Committee</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">10.4</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Appoint Ying Yeh as Member of the</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Compensation Committee</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">11</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Designate Hans Zehnder as Independent</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Proxy</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">12</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Ratify Ernst &amp; Young as Auditors</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">13</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Transact Other Business (Voting)</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Against</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">Management</FONT></TD>
+    <TD><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 8pt">&nbsp;</FONT></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
