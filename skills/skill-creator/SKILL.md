@@ -92,7 +92,7 @@ no loader reads. `bin/plugin-audit` runs it, so a finding fails the audit rather
 `bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --project-dir <repo> --rules ${CLAUDE_PLUGIN_ROOT}/constraints/jev/authoring`.
 Exit 2 names each rule at p >= 0.85 — A-DESC process summary in a description, A-FLAG intention-targeted
 red flag, A-SOFT softened Iron Law, A-GATE judgement gate, A-STATE new state file or `.planning/` noun
-with nothing retired. Fix every one it names; exit 1 means Jev was unavailable, never a pass.
+with nothing retired, A-PAD narrated history that is not a fact row. Fix every one it names; exit 1 means Jev was unavailable, never a pass.
 
 Adding or editing a skill's `lens`, or adding a checker script? Run `bun ${CLAUDE_PLUGIN_ROOT}/skills/plugin-creator/scripts/pc-probe.ts --target <plugin-dir>` afterwards — it judges the single lens prompt and computes whether a new engine is a second one in its domain, and whether the old one still works.
 

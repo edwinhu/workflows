@@ -311,7 +311,6 @@
     },
     "authoring": {
       "rulesDir": "constraints/jev/authoring",
-      "uncalibratedDir": "constraints/jev/authoring/uncalibrated",
       "layout": "diff",
       "rules": {
         "A-DESC": [
