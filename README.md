@@ -2,6 +2,8 @@
 
 A curated collection of development, data science, writing, workshop, legal, and research workflows for **Claude Code**.
 
+**Requires Claude Code 2.1.287 or later.** The tool-call guards and bulk-guard run only as a mod, and mods load from 2.1.287. The plugin manifest has no field for a minimum Claude Code version, so on an older version the SessionStart hook prints a warning that the guards are inactive.
+
 ## Quick Start
 
 ```bash
