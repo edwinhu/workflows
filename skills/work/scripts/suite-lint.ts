@@ -91,6 +91,13 @@ export type ConfigKeyUse = {
   text: string
 }
 
+/** A declared test: its title and the lines its body spans, both ends inclusive. */
+export type TestScope = {
+  title: string
+  startLine: number
+  endLine: number
+}
+
 export type Extracted = {
   path: string
   dialect: string
@@ -98,7 +105,16 @@ export type Extracted = {
   literals: Literal[]
   calls: CallSite[]
   configKeys: ConfigKeyUse[]
+  tests: TestScope[]
 }
+
+/**
+ * A finding plus the title of the innermost test declaration enclosing its line — `test`/`it`/
+ * `describe` in JS, `def test_*`/`class Test*` in Python — absent at file scope. A finding's line
+ * moves whenever anything above it is edited; the title moves only when that test is renamed, so it
+ * is the handle a document citing findings can survive ordinary edits with.
+ */
+export type SuiteFinding = Finding & { test?: string }
 
 /**
  * Optional context. When `artifactPaths` is supplied, R3 only speaks about artifacts the task
@@ -834,6 +850,7 @@ const extractJs = (path: string, source: string): Extracted => {
   const litByStart = new Map(literals.map(l => [l.start, l] as const))
 
   const calls: CallSite[] = []
+  const tests: TestScope[] = []
   const CALL_RE = /([A-Za-z_$][A-Za-z0-9_$.]*)\s*\(/g
   let m: RegExpExecArray | null
   while ((m = CALL_RE.exec(masked))) {
@@ -845,6 +862,9 @@ const extractJs = (path: string, source: string): Extracted => {
     const close = matchParen(masked, open)
     if (close < 0) continue
     const args = splitArgs(masked, open + 1, close).map(span => classifyArg(source, span, litByStart, lineOf))
+    if (TEST_DECL_FNS.has(name) && args[0]?.kind === 'string') {
+      tests.push({ title: args[0].value, startLine: lineOf(m.index), endLine: lineOf(close) })
+    }
     calls.push({
       callee,
       name,
@@ -857,7 +877,7 @@ const extractJs = (path: string, source: string): Extracted => {
 
   assignRoles(calls, literals)
 
-  return { path, dialect: 'js', source, literals, calls, configKeys: configKeysFrom(source, literals, masked, lineOf) }
+  return { path, dialect: 'js', source, literals, calls, configKeys: configKeysFrom(source, literals, masked, lineOf), tests }
 }
 
 // ---------------------------------------------------------------- source scanning (Python)
@@ -973,6 +993,35 @@ const isPyRegexCall = (call: CallSite): boolean =>
 /** `assertNotIn`, `assertNotRegex` and `assertFalse` are the Python spelling of the `.not.` chain. */
 const isPyNegated = (callee: string): boolean => /(?:^|\.)assert(?:Not[A-Z]|False)/.test(callee)
 
+/**
+ * `def test_*` and `class Test*` blocks, each running to the last non-blank line before the next
+ * line indented no deeper than its header. Read from `masked`, so a docstring or comment that
+ * mentions `def test_` is not a declaration and a dedented line inside a string ends nothing.
+ */
+const pyTestScopes = (masked: string, literals: Literal[], lineOf: (o: number) => number): TestScope[] => {
+  const lines = masked.split('\n')
+  const insideString = new Set<number>()
+  for (const l of literals) {
+    for (let n = lineOf(l.start) + 1; n <= lineOf(l.end - 1); n++) insideString.add(n)
+  }
+  const indentOf = (l: string) => l.length - l.trimStart().length
+  const scopes: TestScope[] = []
+  for (let i = 0; i < lines.length; i++) {
+    const m = /^(\s*)(?:async\s+)?(?:def\s+(test\w*)|class\s+(Test\w*))\b/.exec(lines[i])
+    if (!m) continue
+    const indent = m[1].length
+    let end = i
+    for (let j = i + 1; j < lines.length; j++) {
+      if (lines[j].replaceAll(MASK, '').trim() === '') continue
+      // A line inside a multi-line string continues the block, whatever its indent.
+      if (!insideString.has(j + 1) && indentOf(lines[j]) <= indent) break
+      end = j
+    }
+    scopes.push({ title: m[2] ?? m[3], startLine: i + 1, endLine: end + 1 })
+  }
+  return scopes
+}
+
 const extractPy = (path: string, source: string): Extracted => {
   const { masked, literals } = scanPy(source)
   const lineOf = lineIndexer(source)
@@ -1026,7 +1075,10 @@ const extractPy = (path: string, source: string): Extracted => {
 
   assignRoles(calls, literals)
 
-  return { path, dialect: 'python', source, literals, calls, configKeys: configKeysFrom(source, literals, masked, lineOf) }
+  return {
+    path, dialect: 'python', source, literals, calls,
+    configKeys: configKeysFrom(source, literals, masked, lineOf), tests: pyTestScopes(masked, literals, lineOf),
+  }
 }
 
 // ---------------------------------------------------------------- dialect routing
@@ -1055,10 +1107,20 @@ export function extract(path: string, source: string): Extracted {
 
 // ---------------------------------------------------------------- the rules
 
-const at = (e: Extracted, line: number): string => `${e.path}:${line}`
+/**
+ * Where a finding sits: `path:line`, plus the innermost enclosing test's title when there is one.
+ * Innermost is the scope with the latest start among those containing the line.
+ */
+const at = (e: Extracted, line: number): { where: string; test?: string } => {
+  let inner: TestScope | undefined
+  for (const t of e.tests) {
+    if (t.startLine <= line && line <= t.endLine && (!inner || t.startLine >= inner.startLine)) inner = t
+  }
+  return inner ? { where: `${e.path}:${line}`, test: inner.title } : { where: `${e.path}:${line}` }
+}
 
-const r1 = (e: Extracted): Finding[] => {
-  const findings: Finding[] = []
+const r1 = (e: Extracted): SuiteFinding[] => {
+  const findings: SuiteFinding[] = []
   const failureLiterals = e.literals.filter(
     l => l.kind === 'string' && l.role === 'plain' && l.value.length >= 4 && FAILURE_VOCAB.test(l.value),
   )
@@ -1106,7 +1168,7 @@ const r1 = (e: Extracted): Finding[] => {
         findings.push({
           rule: 'positive-match-failure-vocabulary',
           severity: 'major',
-          where: at(e, call.line),
+          ...at(e, call.line),
           message: `\`${call.name}\` asserts a positive match, but its pattern also matches a failure-vocabulary literal in this file, so the failure branch passes the test.`,
           evidence: `${shown} matches ${JSON.stringify(lit.value)} (line ${lit.line})`,
         })
@@ -1117,8 +1179,8 @@ const r1 = (e: Extracted): Finding[] => {
   return findings
 }
 
-const r2 = (e: Extracted): Finding[] => {
-  const findings: Finding[] = []
+const r2 = (e: Extracted): SuiteFinding[] => {
+  const findings: SuiteFinding[] = []
   const groups = new Map<string, CallSite[]>()
   for (const call of e.calls) {
     if (isAssertionCallee(call.name) || TEST_DECL_FNS.has(call.name)) continue
@@ -1136,7 +1198,7 @@ const r2 = (e: Extracted): Finding[] => {
     findings.push({
       rule: 'single-distinct-literal',
       severity: 'major',
-      where: at(e, calls[0].line),
+      ...at(e, calls[0].line),
       message: `\`${name}\` is called ${calls.length} times and every literal argument in this file is the same value, so no input here distinguishes the behaviours the tests claim differ.`,
       evidence: `${name}(${only}) — ${calls.length} calls, 1 distinct literal, lines ${calls.map(c => c.line).join(', ')}`,
     })
@@ -1144,8 +1206,8 @@ const r2 = (e: Extracted): Finding[] => {
   return findings
 }
 
-const r3 = (e: Extracted, ctx: LintContext = {}): Finding[] => {
-  const findings: Finding[] = []
+const r3 = (e: Extracted, ctx: LintContext = {}): SuiteFinding[] => {
+  const findings: SuiteFinding[] = []
   const seen = new Set<string>()
   for (const call of e.calls) {
     if (!EXISTENCE_FNS.has(call.name)) continue
@@ -1161,7 +1223,7 @@ const r3 = (e: Extracted, ctx: LintContext = {}): Finding[] => {
       findings.push({
         rule: 'existence-only-artifact',
         severity: 'major',
-        where: at(e, call.line),
+        ...at(e, call.line),
         message: `The only assertion about this artifact is that it exists, which \`touch\` satisfies — nothing here reads its content.`,
         evidence: `${call.name}(${JSON.stringify(arg.value)}) is the only reference to ${arg.value} in this file`,
       })
@@ -1170,8 +1232,8 @@ const r3 = (e: Extracted, ctx: LintContext = {}): Finding[] => {
   return findings
 }
 
-const r4 = (e: Extracted): Finding[] => {
-  const findings: Finding[] = []
+const r4 = (e: Extracted): SuiteFinding[] => {
+  const findings: SuiteFinding[] = []
   const byKey = new Map<string, ConfigKeyUse[]>()
   for (const use of e.configKeys) {
     const list = byKey.get(use.key)
@@ -1184,7 +1246,7 @@ const r4 = (e: Extracted): Finding[] => {
     findings.push({
       rule: 'injected-key-never-varied',
       severity: 'major',
-      where: at(e, use.line),
+      ...at(e, use.line),
       message: `\`${key}\` is injected in exactly one literal across this suite, so no test varies the configuration it injects and the key could be ignored entirely without failing anything.`,
       evidence: `${use.text} — the only occurrence of ${key} (line ${use.line})`,
     })
@@ -1192,7 +1254,7 @@ const r4 = (e: Extracted): Finding[] => {
   return findings
 }
 
-export const RULES: readonly { id: RuleId; check(e: Extracted, ctx?: LintContext): Finding[] }[] = [
+export const RULES: readonly { id: RuleId; check(e: Extracted, ctx?: LintContext): SuiteFinding[] }[] = [
   { id: 'positive-match-failure-vocabulary', check: e => r1(e) },
   { id: 'single-distinct-literal', check: e => r2(e) },
   { id: 'existence-only-artifact', check: (e, ctx) => r3(e, ctx) },
@@ -1205,9 +1267,9 @@ export const RULES: readonly { id: RuleId; check(e: Extracted, ctx?: LintContext
  * Lints one source. Findings come back in rule order, then line order, so two runs over one tree
  * print the same bytes.
  */
-export function lintSource(path: string, source: string, ctx: LintContext = {}): Finding[] {
+export function lintSource(path: string, source: string, ctx: LintContext = {}): SuiteFinding[] {
   const extracted = extract(path, source)
-  const findings: Finding[] = []
+  const findings: SuiteFinding[] = []
   for (const rule of RULES) {
     const own = rule.check(extracted, ctx)
     own.sort((a, b) => Number(a.where.split(':').pop()) - Number(b.where.split(':').pop()))
@@ -1240,7 +1302,7 @@ export type CorpusSummary = {
   /** every rule id present, zero included */
   counts: Record<RuleId, number>
   /** sorted by file, then line, then rule; `where` paths are ROOT-RELATIVE */
-  findings: Finding[]
+  findings: SuiteFinding[]
 }
 
 /** Sorted `readdir`, so the walk order is the same on every filesystem and in every run. */
@@ -1289,12 +1351,12 @@ const fileOf = (where: string): string => where.slice(0, where.lastIndexOf(':'))
  */
 export function lintCorpus(root: string, ctx: LintContext = {}): CorpusSummary {
   const counts = Object.fromEntries(RULE_IDS.map(id => [id, 0])) as Record<RuleId, number>
-  const findings: Finding[] = []
+  const findings: SuiteFinding[] = []
   const unparseableFiles: string[] = []
   let filesLinted = 0
 
   for (const rel of suiteFilesUnder(root)) {
-    let own: Finding[]
+    let own: SuiteFinding[]
     try {
       own = lintSource(rel, readFileSync(nodeJoin(root, rel), 'utf8'), ctx)
     } catch {
