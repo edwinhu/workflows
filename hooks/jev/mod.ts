@@ -2,7 +2,9 @@
 // WIRED Jev rules and add one line of context per rule at p(VIOLATED) >= 0.85. Advisory only.
 //
 //   rule set   hooks/jev/rules.ts ruleSetFor: skill/agent/command files, manifests and .planning/
-//              -> authoring, a talk's slides/notes .typ (or any .typ under a `workflow: workshop`
+//              -> authoring, lecture notes -> notes and a lecture deck -> slides (both from the
+//              teaching plugin, $TEACHING_PLUGIN_ROOT or ~/.claude/skills/teaching; writing when it
+//              is absent), a talk's slides/notes .typ (or any .typ under a `workflow: workshop`
 //              cursor) -> typst, other prose -> writing, tests and shell -> dev, .py under a
 //              `workflow: ds` ACTIVE_WORKFLOW.md -> ds; anything else is left alone
 //   scoring    ONE $.process.run of skills/work/scripts/rule-check.ts --batch: the set's own
@@ -18,7 +20,7 @@
 // with context added or not; it never denies. Any failure adds nothing and goes to the debug log.
 import type { EngineInterface, On, ToolCallResult } from 'claude-code'
 import {
-  RULE_DIRS, ancestors, changedFromInput, contextLines, enabled, merge, rangesFromDiff, ruleSetFor,
+  RULE_DIRS, TEACHING_SETS, ancestors, changedFromInput, contextLines, enabled, merge, rangesFromDiff, ruleSetFor,
   workflowOf, dirname, type Range, type RuleSet, type Verdict,
 } from './rules.ts'
 
@@ -65,6 +67,31 @@ async function workflowAt($: $, dir: string): Promise<string | null> {
   return null
 }
 
+/** The teaching plugin's root when its lecture rules are there to run, else null. */
+async function teachingRoot($: $): Promise<string | null> {
+  const root = (await $.env.get('TEACHING_PLUGIN_ROOT')) || `${(await $.env.get('HOME')) || ''}/.claude/skills/teaching`
+  try {
+    await $.fs.read(`${root}/constraints/jev/_lecture.py`)
+    return root
+  } catch {
+    return null
+  }
+}
+
+/** The set and the rules directory an edit is scored against. */
+interface Target {
+  set: RuleSet
+  dir: string
+}
+
+async function targetFor($: $, set: RuleSet): Promise<Target> {
+  if (!TEACHING_SETS.has(set)) return { set, dir: `${$.plugin.root}/${RULE_DIRS[set]}` }
+  const root = await teachingRoot($)
+  if (root) return { set, dir: `${root}/${RULE_DIRS[set]}` }
+  log($, `no teaching plugin with constraints/jev: lecture ${set} scored as writing`)
+  return { set: 'writing', dir: `${$.plugin.root}/${RULE_DIRS.writing}` }
+}
+
 async function changedLines($: $, tool: string, input: Record<string, unknown>, file: string): Promise<Range[]> {
   let text = ''
   try {
@@ -78,11 +105,10 @@ async function changedLines($: $, tool: string, input: Record<string, unknown>, 
 }
 
 /** The context lines for one evaluation; [] when nothing reaches the bar or anything failed. */
-async function evaluate($: $, set: RuleSet, file: string, ranges: Range[], cwd: string): Promise<string[]> {
-  const root = $.plugin.root
+async function evaluate($: $, { set, dir }: Target, file: string, ranges: Range[], cwd: string): Promise<string[]> {
   const argv = [
-    'bun', `${root}/skills/work/scripts/rule-check.ts`, '--batch',
-    '--rules', `${root}/${RULE_DIRS[set]}`, '--files', file,
+    'bun', `${$.plugin.root}/skills/work/scripts/rule-check.ts`, '--batch',
+    '--rules', dir, '--files', file,
     '--changed-lines', '-', '--max-time', JEV_MAX_SECONDS,
   ]
   const started = await $.clock.now()
@@ -107,7 +133,7 @@ async function evaluate($: $, set: RuleSet, file: string, ranges: Range[], cwd: 
 }
 
 /** Deferred to the window's end: its lines wait in `deferred` for the next tool result. */
-function defer($: $, file: string, st: FileState, set: RuleSet, cwd: string, now: number) {
+function defer($: $, file: string, st: FileState, target: Target, cwd: string, now: number) {
   st.timer?.cancel()
   st.timer = $.clock.after(Math.max(0, st.lastStart + WINDOW_MS - now), () => {
     st.timer = undefined
@@ -116,7 +142,7 @@ function defer($: $, file: string, st: FileState, set: RuleSet, cwd: string, now
       const ranges = st.pending
       st.pending = []
       st.lastStart = await $.clock.now()
-      const lines = await evaluate($, set, file, ranges, cwd)
+      const lines = await evaluate($, target, file, ranges, cwd)
       if (st.gen !== gen) {
         st.pending = merge(st.pending, ranges)
         return
@@ -136,6 +162,7 @@ async function afterEdit($: $, e: Record<string, unknown>, result: ToolCallResul
   const file = absolute(cwd, raw)
   const set = await ruleSetFor(file, d => workflowAt($, d))
   if (!set) return result
+  const target = await targetFor($, set)
 
   const tool = String(e.tool)
   const ranges = await changedLines($, tool, e, file)
@@ -149,13 +176,13 @@ async function afterEdit($: $, e: Record<string, unknown>, result: ToolCallResul
   deferred.delete(file)
 
   if (now - st.lastStart < WINDOW_MS) {
-    defer($, file, st, set, cwd, now)
+    defer($, file, st, target, cwd, now)
     return result
   }
   st.lastStart = now
   const want = st.pending
   st.pending = []
-  const lines = await evaluate($, set, file, want, cwd)
+  const lines = await evaluate($, target, file, want, cwd)
   if (st.gen !== gen) {
     // A newer edit to this file arrived while this one was scored: its evaluation covers these lines.
     st.pending = merge(st.pending, want)

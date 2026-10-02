@@ -5,11 +5,13 @@
 // >= violatingAtLeast and every compliant case < compliantBelow, on every run. Each violating case is also
 // scored by every other rule of its set: a score > crossFlagAbove there is a cross-rule hit.
 // Exit 0: every wired rule passed. Exit 1: a wired rule failed. Exit 2: Jev unavailable (never a pass).
-// Nothing is written to the repo; --json prints to stdout. Manifest paths are repo-relative or absolute.
+// Nothing is written to the repo; --json prints to stdout. Manifest paths are absolute, or relative to the
+// manifest's `root` (itself relative to the manifest file) when it has one, else to this repo: a plugin
+// that ships its own rule set (teaching's constraints/jev) keeps its calibration set in its own tree.
 import { spawnSync } from 'child_process';
 import { cpSync, existsSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
-import { join, relative, resolve } from 'path';
+import { dirname, join, relative, resolve } from 'path';
 import { changedFiles, changedRanges, collectEvidence, scoreRule } from './rule-check.ts';
 import { decisionsCall } from '../../../hooks/work-hold.ts';
 
@@ -21,10 +23,10 @@ type Kind = 'violating' | 'compliant';
 // base: a repo-relative dir committed as the before tree; the case dir is then the working tree on top of it
 interface CaseSpec { kind: Kind; path: string; source?: string; base?: string }
 interface SetSpec { rulesDir: string; uncalibratedDir?: string; layout: 'files' | 'diff'; rules: Record<string, CaseSpec[]> }
-interface Manifest { criterion: { violatingAtLeast: number; compliantBelow: number; crossFlagAbove: number }; sets: Record<string, SetSpec> }
+interface Manifest { root?: string; criterion: { violatingAtLeast: number; compliantBelow: number; crossFlagAbove: number }; sets: Record<string, SetSpec> }
 
 function usage(code: number): never {
-  console.error('usage: bun skills/work/scripts/rule-calibrate.ts [--set ds|dev|writing|authoring|typst|all] [--rule ID] [--runs 2] [--json] [--manifest PATH]');
+  console.error('usage: bun skills/work/scripts/rule-calibrate.ts [--set <name>|all] [--rule ID] [--runs 2] [--json] [--manifest PATH]');
   process.exit(code);
 }
 
@@ -106,6 +108,7 @@ async function main() {
   }
   if (!(runs >= 1)) usage(1);
   const manifest: Manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+  const ROOT = manifest.root === undefined ? BASE : resolve(dirname(resolve(manifestPath)), manifest.root);
   const { violatingAtLeast, compliantBelow, crossFlagAbove } = manifest.criterion;
   const setNames = setName === 'all' ? Object.keys(manifest.sets) : [setName];
   for (const s of setNames) if (!manifest.sets[s]) { console.error(`unknown set: ${s}`); process.exit(1); }
@@ -134,15 +137,15 @@ async function main() {
   let jobN = 0;
   for (const s of setNames) {
     const spec = manifest.sets[s];
-    const dirs: [string, boolean][] = [[resolve(BASE, spec.rulesDir), true]];
-    if (spec.uncalibratedDir) dirs.push([resolve(BASE, spec.uncalibratedDir), false]);
+    const dirs: [string, boolean][] = [[resolve(ROOT, spec.rulesDir), true]];
+    if (spec.uncalibratedDir) dirs.push([resolve(ROOT, spec.uncalibratedDir), false]);
     const setRules = new Map<string, boolean>();
     // evidence per case dir, collected once over both the wired and the uncalibrated rules directory
     const evCache = new Map<string, Record<string, any>>();
     const evidenceFor = (c: CaseSpec) => {
       const casePath = c.path;
       if (!evCache.has(casePath)) {
-        const input = caseInput(spec.layout, resolve(BASE, casePath), temps, c.base && resolve(BASE, c.base));
+        const input = caseInput(spec.layout, resolve(ROOT, casePath), temps, c.base && resolve(ROOT, c.base));
         const ev: Record<string, any> = {};
         for (const [dir, wired] of dirs) {
           const got = collectEvidence({ ...input, rulesDir: dir });
