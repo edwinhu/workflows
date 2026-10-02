@@ -20,13 +20,16 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 
 import * as CcProbe from './pc-probe.ts'
+import { useTmp } from '../../../tests/helpers/tmp.ts'
+
+const mkTmp = useTmp()
 
 const probe: any = CcProbe
 
 const SELF_DIR = import.meta.dir
 
 function fixture(files: Record<string, string>): string {
-  const dir = mkdtempSync(join(tmpdir(), 'pc-probe-test-'))
+  const dir = mkTmp('pc-probe-test-')
   for (const [rel, content] of Object.entries(files)) {
     const full = join(dir, rel)
     mkdirSync(dirname(full), { recursive: true })
@@ -755,7 +758,7 @@ describe('I9 — a checker must be reachable', () => {
   })
 
   test('the directories a runner enumerates are derived, not keyed on the name constraints/', () => {
-    const d = mkdtempSync(join(tmpdir(), 'pc-probe-enum-'))
+    const d = mkTmp('pc-probe-enum-')
     try {
       mkdirSync(join(d, 'rules'), { recursive: true })
       mkdirSync(join(d, 'skills', 'ds', 'rules'), { recursive: true })
@@ -1082,7 +1085,7 @@ describe('the documented exit-code contract', () => {
 // that reads APPLIES_TO. Keying I3 on APPLIES_TO alone reported all 36 of typst's checkers as
 // uncalled while run-constraints.py was importing and running every one of them.
 test('a glob-and-dispatch-on-check runner registers contract modules', () => {
-  const d = mkdtempSync(join(tmpdir(), 'pc-probe-glob-'))
+  const d = mkTmp('pc-probe-glob-')
   try {
     mkdirSync(join(d, 'constraints'), { recursive: true })
     writeFileSync(join(d, 'constraints', 'run-constraints.py'),
@@ -1095,7 +1098,7 @@ test('a glob-and-dispatch-on-check runner registers contract modules', () => {
 })
 
 test('with NO runner at all, a contract module is still reported uncalled', () => {
-  const d = mkdtempSync(join(tmpdir(), 'pc-probe-norunner-'))
+  const d = mkTmp('pc-probe-norunner-')
   try {
     mkdirSync(join(d, 'constraints'), { recursive: true })
     writeFileSync(join(d, 'constraints', 'spacing.py'),
@@ -1124,7 +1127,7 @@ test('a heading or a path is shared vocabulary, not a claim', () => {
 // here is that TWO fences of one skill each yield their own lens and neither is adjudicated against
 // the other.
 test('each work-args fence of a skill yields its own lens, and neither rules on the other', () => {
-  const d = mkdtempSync(join(tmpdir(), 'pc-probe-fanout-'))
+  const d = mkTmp('pc-probe-fanout-')
   try {
     const fence = (ref: string) =>
       '```js\nWorkflow({\n  lens: { agentType: "Explore", refs: ["' + ref +

@@ -16,9 +16,9 @@
  *
  * Verify: bash scripts/grind-notify-hermetic-check.sh
  */
-import { mkdtempSync, writeFileSync, chmodSync, rmSync } from 'node:fs'
-import { tmpdir } from 'node:os'
+import { existsSync, writeFileSync, chmodSync } from 'node:fs'
 import { join } from 'node:path'
+import { tmpDir } from '../../../tests/helpers/tmp.ts'
 
 const {
   CLAUDE_CODE_SESSION_ID: _sid,
@@ -28,17 +28,17 @@ const {
 
 let shimDir: string | null = null
 
-/** A directory of silent no-ops named for every notifier grind.sh may reach for. */
+/** A directory of silent no-ops named for every notifier grind.sh may reach for. Removed by the
+ *  importing test file's useTmp() sweep, so the cache is re-checked: the next file gets a new one. */
 function shims(): string {
-  if (shimDir) return shimDir
-  const dir = mkdtempSync(join(tmpdir(), 'grind-test-shims-'))
+  if (shimDir && existsSync(shimDir)) return shimDir
+  const dir = tmpDir('grind-test-shims-')
   for (const name of ['agent-msg', 'herdr']) {
     const p = join(dir, name)
     writeFileSync(p, '#!/usr/bin/env bash\nexit 0\n')
     chmodSync(p, 0o755)
   }
   shimDir = dir
-  process.on('exit', () => rmSync(dir, { recursive: true, force: true }))
   return dir
 }
 
@@ -47,6 +47,9 @@ export function grindEnv(extra: Record<string, string> = {}): Record<string, str
   return {
     ...(REST as Record<string, string>),
     PATH: `${shims()}:${process.env.PATH ?? ''}`,
+    // grind.sh appends farm-events rows and mktemps its round logs under $TMPDIR; the shim dir is
+    // swept, the caller's TMPDIR is not. A test that reads those events pins its own TMPDIR.
+    TMPDIR: shims(),
     ...extra,
   }
 }

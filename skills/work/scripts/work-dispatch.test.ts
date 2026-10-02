@@ -19,6 +19,9 @@ import { execFileSync } from 'node:child_process'
 import { mkdtempSync, mkdirSync, readdirSync, rmSync, writeFileSync, readFileSync, existsSync, chmodSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { useTmp } from '../../../tests/helpers/tmp.ts'
+
+const mkTmp = useTmp()
 
 // Tests in this file drive work-dispatch.sh as a real bash subprocess. Bun's 5s per-test default
 // is a budget for that subprocess plus whatever else the machine is doing, so under parallel load
@@ -46,7 +49,7 @@ function script(dir: string, name: string, body: string) {
  * is the probe one it asks for.
  */
 function fixture(opts: { redCommand: string; extraArgs?: Record<string, unknown>; tasks?: unknown[] } ) {
-  const dir = mkdtempSync(join(tmpdir(), 'work-dispatch-'))
+  const dir = mkTmp('work-dispatch-')
   scratch.push(dir)
   mkdirSync(join(dir, 'src'), { recursive: true })
   const plan = join(dir, 'plan.md')
@@ -433,7 +436,7 @@ describe('the dispatched plan is archived, so a run carries the plan it was appr
   test('--run-dir puts the archive with the run it belongs to, not in the tree the run may not write', () => {
     const f = fixture({ redCommand: 'bash scripts/check.sh' })
     script(f.dir, 'check.sh', 'echo "1 failed"\nexit 1')
-    const elsewhere = mkdtempSync(join(tmpdir(), 'work-runs-'))
+    const elsewhere = mkTmp('work-runs-')
     scratch.push(elsewhere)
     expect(dispatch(f, '--run-dir', elsewhere).code).toBe(0)
     expect(archives(join(elsewhere, 'probe-run'))).toHaveLength(1)
@@ -515,7 +518,7 @@ describe('redDisposition breaks the red deadlock and is echoed, never validated'
 describe('--spec-hash hashes the authored spec, not the bytes around it', () => {
   /** A plan carrying an arbitrary dispatch block plus prose, written to its own temp dir. */
   function planWith(block: unknown, prose = 'Some rationale.\n', indent: number | string = 2) {
-    const dir = mkdtempSync(join(tmpdir(), 'work-spechash-'))
+    const dir = mkTmp('work-spechash-')
     scratch.push(dir)
     const p = join(dir, 'plan.md')
     writeFileSync(p, `# Plan\n\n${prose}\n<!-- work:dispatch\n${JSON.stringify(block, null, indent as any)}\n-->\n`)
@@ -567,7 +570,7 @@ describe('--spec-hash hashes the authored spec, not the bytes around it', () => 
   })
 
   test('a plan with no work:dispatch block fails loudly rather than printing a hash', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'work-spechash-'))
+    const dir = mkTmp('work-spechash-')
     scratch.push(dir)
     const p = join(dir, 'plan.md')
     writeFileSync(p, '# Plan with prose only\n')
@@ -578,7 +581,7 @@ describe('--spec-hash hashes the authored spec, not the bytes around it', () => 
   })
 
   test('a block that is not valid JSON fails loudly rather than printing a hash', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'work-spechash-'))
+    const dir = mkTmp('work-spechash-')
     scratch.push(dir)
     const p = join(dir, 'plan.md')
     writeFileSync(p, '# Plan\n\n<!-- work:dispatch\n{ "runId": "x", oops\n-->\n')
@@ -634,7 +637,7 @@ describe('dispatch injects specHash, and planHash is gone', () => {
  */
 describe('--covers separates the run\'s own output from what no task may write', () => {
   function planWith(tasks: unknown[], extra: Record<string, unknown> = {}) {
-    const dir = mkdtempSync(join(tmpdir(), 'work-covers-'))
+    const dir = mkTmp('work-covers-')
     scratch.push(dir)
     const p = join(dir, 'plan.md')
     const block = { runId: 'covers-run', args: { projectDir: dir, goal: 'g', tasks, ...extra } }
@@ -719,7 +722,7 @@ describe('--covers separates the run\'s own output from what no task may write',
   })
 
   test('--scaffold: an unparseable plan is undecidable, so the guard fails closed there too', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'work-scaffold-'))
+    const dir = mkTmp('work-scaffold-')
     scratch.push(dir)
     const p = join(dir, 'plan.md')
     writeFileSync(p, '# Plan\n\nno dispatch block\n')
@@ -727,7 +730,7 @@ describe('--covers separates the run\'s own output from what no task may write',
   })
 
   test('an unparseable or blockless plan is undecidable, so the guard fails closed', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'work-covers-'))
+    const dir = mkTmp('work-covers-')
     scratch.push(dir)
     const bad = join(dir, 'bad.md')
     writeFileSync(bad, '# Plan\n\n<!-- work:dispatch\n{not json,\n-->\n')

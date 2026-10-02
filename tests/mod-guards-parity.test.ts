@@ -21,11 +21,14 @@
 import { describe, expect, test } from 'bun:test'
 import { spawnSync } from 'node:child_process'
 import {
-  existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, truncateSync, utimesSync, writeFileSync,
+  existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, truncateSync, utimesSync, writeFileSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, relative } from 'node:path'
 import { GUARDS, registerGuards, TOOLS, type GuardSpec } from '../hooks/guards/mod.ts'
+import { useTmp } from './helpers/tmp.ts'
+
+const mkTmp = useTmp()
 
 const REPO = join(import.meta.dir, '..')
 const BASE = process.env.PARITY_BASE ?? '3f97c10f'
@@ -38,7 +41,7 @@ interface Rec {
 }
 
 // ── record ─────────────────────────────────────────────────────────────────────────────────────
-const tape = join(mkdtempSync(join(P, 'parity-tape-')), 'tape.jsonl')
+const tape = join(mkTmp('parity-tape-', P), 'tape.jsonl')
 const recEnv = { ...process.env, GUARD_PARITY_RECORD: tape }
 const sources: [string, string[]][] = [
   ['bun', ['scripts/hook-golden.ts', 'image-read-guard', 'suggest-compact', 'atomic-constraint-guard', 'typst-convention-guard', 'validate-skill-paths', '--quiet']],
@@ -76,7 +79,7 @@ function unreachable(r: Rec): string | null {
 }
 
 // ── replay ─────────────────────────────────────────────────────────────────────────────────────
-const SANDBOX = mkdtempSync(join(P, 'parity-sb-'))
+const SANDBOX = mkTmp('parity-sb-', P)
 const rebase = (s: string): string => s.replaceAll(P + '/', SANDBOX + '/')
 const unbase = (s: string): string => s.replaceAll(SANDBOX + '/', '<P>/')
 
@@ -227,7 +230,7 @@ async function runHandler(r: Rec): Promise<Outcome & { keys: string[] }> {
 // The pre-port scripts, from git, when this checkout has the commit.
 let baseRoot: string | null = null
 {
-  const dir = mkdtempSync(join(P, 'parity-base-'))
+  const dir = mkTmp('parity-base-', P)
   const tar = spawnSync('bash', ['-c', `git -C "${REPO}" archive ${BASE} hooks | tar -x -C "${dir}"`], { timeout: 300_000, encoding: 'utf8' })
   if (tar.status === 0 && existsSync(join(dir, 'hooks', 'read-guard.ts'))) baseRoot = dir
 }

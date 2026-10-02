@@ -15,6 +15,8 @@ against it, and a suite that wipes it makes those demonstrations unreproducible.
 """
 from __future__ import annotations
 
+import atexit
+import os
 import shutil
 import pathlib
 import hashlib
@@ -336,6 +338,8 @@ def fixture_plan(project: Path) -> Path:
 # other checks are demonstrated against is a writer on a pass declared read-only, even when
 # the bytes it writes are identical.
 _CLEAN_COPY = pathlib.Path(tempfile.mkdtemp(prefix="wr-clean-")) / "clean"
+if os.environ.get("KEEP_TMP") != "1":
+    atexit.register(shutil.rmtree, _CLEAN_COPY.parent, True)
 shutil.copytree(FIXTURE, _CLEAN_COPY)
 plan = fixture_plan(_CLEAN_COPY)
 plan_hash = hashlib.sha256(plan.read_bytes()).hexdigest()
