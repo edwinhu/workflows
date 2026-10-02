@@ -905,12 +905,12 @@ declares, and flagging it would fire on every audit block. Marker: `task-coverag
 | rule | fires on | severity | marker |
 |---|---|---|---|
 | P14 shell-only agent leg | a scoredChecks, attempt or lens prompt, or a code `agent(` call, told to run a command as written AND report its exit code | major | `shell-leg` |
-| P15 duplicate grading | against the wired rules of the fence's `ruleChecks --rules` dirs: a scoredChecks penalty count named for a rule, or a lens sentence that does not defer and names the rule id or its name word in capitals | major, parked | `duplicate-grading` |
+| P15 duplicate grading | against the wired rules of the fence's `ruleChecks --rules` dirs: a scoredChecks penalty count named for a rule, or a lens sentence that does not defer and names the rule id or its name word in capitals | major | `duplicate-grading` |
 | P16 missing ruleChecks | a fence whose `tasks[].writablePaths` map through `ruleSetOf` (`hooks/jev/rules.ts`) to a set with wired rules, carrying no `ruleChecks` | major | `rule-checks` |
 | P17 serial row loop | a task `work`, attempt or farm-row prompt looping over plural independent items with no dependency named | minor, advisory | `serial-loop` |
 | P18 fixed shared temp path | a worktree add/remove or recursive delete at a literal temp path with no per-run part, on the line or through one assignment | major | `fixed-temp` |
 
-Advisory and parked rules print as `[advisory <severity>]` in both modes and never move the exit code. P15 stays parked while its baseline is non-zero: 15 findings on 2026-10-02, in ds and teaching notes, two gates `tests/gate-vacuity.test.ts` requires green.
+Advisory rules print as `[advisory <severity>]` in both modes and never move the exit code. P15 gates since its 2026-10-02 baseline (15 findings, ds lens and teaching notes scoredChecks) was cleared.
 
 ### Declared exemptions
 
