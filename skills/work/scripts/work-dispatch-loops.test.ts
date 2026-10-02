@@ -16,6 +16,9 @@ import { execFileSync } from 'node:child_process'
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync, chmodSync, existsSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { useTmp } from '../../../tests/helpers/tmp.ts'
+
+const mkTmp = useTmp()
 
 // Tests in this file drive work-dispatch.sh as a real bash subprocess. Bun's 5s per-test default
 // is a budget for that subprocess plus whatever else the machine is doing, so under parallel load
@@ -99,7 +102,7 @@ bun ${JSON.stringify(agents)} "$a" "$out"`)
 
 /** A lint-clean plan whose one task carries a genuinely-red gate, so no probe tier refuses. */
 function fixture(extraArgs: Record<string, unknown> = {}) {
-  const dir = mkdtempSync(join(tmpdir(), 'work-loops-'))
+  const dir = mkTmp('work-loops-')
   scratch.push(dir)
   mkdirSync(join(dir, 'src'), { recursive: true })
   script(dir, 'check.sh', 'echo "1 failed, 0 passed"\nexit 1')
@@ -133,7 +136,7 @@ function dispatch(f: { dir: string; plan: string }, env: Record<string, string>,
       encoding: 'utf8',
       timeout: 120_000,
       cwd: f.dir,
-      env: { ...process.env, CLAUDE_CODE_SESSION_ID: '', WORK_LOOP_POLL: '1', WORK_NO_SCOPE: '1', ...env },
+      env: { ...process.env, TMPDIR: f.dir, CLAUDE_CODE_SESSION_ID: '', WORK_LOOP_POLL: '1', WORK_NO_SCOPE: '1', ...env },
     })
     return { code: 0, out }
   } catch (e: any) {
@@ -237,7 +240,7 @@ describe('--loops N > 0 hands the driver off DETACHED instead of printing', () =
     ], { timeout: 130_000,
       encoding: 'utf8',
       cwd: f.dir,
-      env: { ...process.env, CLAUDE_CODE_SESSION_ID: '', WORK_LOOP_POLL: '1', WORK_NO_SCOPE: '1',
+      env: { ...process.env, TMPDIR: f.dir, CLAUDE_CODE_SESSION_ID: '', WORK_LOOP_POLL: '1', WORK_NO_SCOPE: '1',
              WORK_ROUND: stubFarm(f.dir, true, 4), WORK_FARM: '/bin/false' },
     }).trim()
 

@@ -162,6 +162,9 @@ import { homedir, tmpdir } from 'node:os'
 import { dirname, join, sep } from 'node:path'
 
 import * as WcProbe from './wc-probe.ts'
+import { useTmp } from '../../../tests/helpers/tmp.ts'
+
+const mkTmp = useTmp()
 
 // Tests in this file drive work-dispatch.sh as a real bash subprocess. Bun's 5s per-test default
 // is a budget for that subprocess plus whatever else the machine is doing, so under parallel load
@@ -178,7 +181,7 @@ const SELF_DIR = import.meta.dir
 const SKILL_DIR = dirname(SELF_DIR)
 
 function fixture(files: Record<string, string>): string {
-  const dir = mkdtempSync(join(tmpdir(), 'wc-probe-test-'))
+  const dir = mkTmp('wc-probe-test-')
   for (const [rel, content] of Object.entries(files)) {
     const full = join(dir, rel)
     mkdirSync(dirname(full), { recursive: true })
@@ -1461,7 +1464,7 @@ describe('V6 — findKeyValueSpan agrees with objectTopLevelKeys about key vs va
 
 describe('V7 — the coverage floor', () => {
   test('a target with no source files is a CRITICAL, not CLEAN', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'wc-empty-'))
+    const dir = mkTmp('wc-empty-')
     const result = probe.runProbe(dir)
     expect(result.filesEligible).toBe(0)
     expect(result.findings.some((f: any) => f.rule.startsWith('P0') && f.severity === 'critical')).toBe(true)
@@ -1483,7 +1486,7 @@ describe('V7 — the coverage floor', () => {
 describe('V7 — symlinks are followed, and dangling ones are reported', () => {
   test('a skill delivered entirely by symlink is scanned, not silently skipped', () => {
     const real = fixture({ 'SKILL.md': skillMd('sym', 'broken: ${CLAUDE_SKILL_DIR}/nope.md'), 'references/a.md': 'x\n' })
-    const link = mkdtempSync(join(tmpdir(), 'wc-link-'))
+    const link = mkTmp('wc-link-')
     symlinkSync(join(real, 'SKILL.md'), join(link, 'SKILL.md'))
     symlinkSync(join(real, 'references'), join(link, 'references'))
     const result = probe.runProbe(link)

@@ -107,15 +107,16 @@ A pipe table follows the heading. Its header row is exactly these seven columns,
 | `Takeaway` | The one sentence the slide argues | structural; content judged by `FID`/`CONV` |
 | `Bullets` | The body points, as a single cell | structural; content judged by `FID`/`CONV` |
 | `Inventory` | The F/T/R/A IDs this slide draws on — at least one per row | `INV` — set-equality against the slide's own emitted `#inv(...)` IDs, both directions |
-| `Visual` | The figure or diagram, or the literal `none` for a text-only slide | structural; judged by `VIS` |
+| `Visual` | The figure or diagram, or the literal `none` for a text-only slide | `VSL` -- `none` iff the built slide has no visual element; content judged by `VIS` |
 | `Notes` | What the speaker notes for this slide must cover | structural; judged by `CONV` |
 
 **Every cell is required and non-empty.** A slide with no visual writes `none`; it does not leave the
 cell blank.
 
 `Slide` feeds `SPEC`/`NOTE` and `Inventory` feeds `INV` — the latter as a set compared against the
-built slide's own emission, so this cell's content is gated, not merely its presence. The other four
-columns are gated **structurally** — present, non-empty, in position — because their content is a
+built slide's own emission, so this cell's content is gated, not merely its presence. `Visual` feeds
+`VSL` on one decidable bit only: `none`, or a visual the slide must build. The other three columns
+are gated **structurally** — present, non-empty, in position — because their content is a
 judgement, and a computed check must not pretend to settle one.
 
 ### Malformed — each clause is a `SPEC` FAIL

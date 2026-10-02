@@ -1,0 +1,23 @@
+---
+name: csv-audit
+description: "Use when the user asks to 'audit this CSV', 'check the export', 'why does the file have blank rows', or hands over a delimited export to vet before it is loaded. NEGATIVE ROUTING: building or merging a dataset is /ds."
+---
+
+# CSV Audit
+
+Reads one delimited export and reports what would break a load.
+
+## Step 1: Inventory
+
+Run `bun ${CLAUDE_SKILL_DIR}/scripts/inventory.ts <file>` and read its column table.
+
+## Step 2: Report
+
+List each defect with its row number.
+
+## Background
+
+This skill was originally written in March, after we spent a long afternoon on a vendor export that
+would not load. At first the team tried a few different approaches, and over time the design evolved
+into the two steps below. Previously the skill also had a third step, which some people liked, but it
+was removed in a later cleanup. The current shape has worked well for everyone so far.

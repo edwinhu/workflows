@@ -12,6 +12,9 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { useTmp } from "../../../tests/helpers/tmp.ts";
+
+const mkTmp = useTmp();
 
 const CHECK = path.join(import.meta.dir, "check.sh");
 const CHECK_ADDENDUM = path.join(import.meta.dir, "check-addendum.py");
@@ -165,7 +168,7 @@ function readingBlock(title: string, body: string) {
 }
 
 beforeAll(() => {
-  ROOT = fs.mkdtempSync(path.join(os.tmpdir(), "elide-check-"));
+  ROOT = mkTmp("elide-check-");
   const src = fs.readFileSync(SRC_TYP, "utf8");
   sections = src.split("#pagebreak()\n");
   expect(sections.length).toBe(5); // preamble + four readings

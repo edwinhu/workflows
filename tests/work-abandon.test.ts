@@ -14,6 +14,9 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
+import { useTmp } from './helpers/tmp.ts'
+
+const mkTmp = useTmp()
 
 const ABANDON = join(import.meta.dir, '..', 'skills', 'work', 'scripts', 'work-abandon.sh')
 const RESULT = join(import.meta.dir, '..', 'skills', 'work', 'scripts', 'work-result.sh')
@@ -21,8 +24,8 @@ const GUARD = join(import.meta.dir, '..', 'hooks', 'cron-delete-guard.ts')
 
 /** A run dir with args.json, optionally a result.json, inside a private TMPDIR. */
 function fixture(opts: { result?: string; armed?: boolean } = {}) {
-  const tmp = mkdtempSync(join(tmpdir(), 'abandon-'))
-  const cwd = mkdtempSync(join(tmpdir(), 'abandon-cwd-'))
+  const tmp = mkTmp('abandon-')
+  const cwd = mkTmp('abandon-cwd-')
   const run = join(cwd, '.work', 'r1')
   mkdirSync(run, { recursive: true })
   writeFileSync(join(run, 'args.json'),
@@ -84,7 +87,7 @@ describe('usage — it refuses rather than guessing', () => {
 
   test('a run dir with no args.json exits 2', () => {
     const f = fixture()
-    const bare = mkdtempSync(join(tmpdir(), 'abandon-bare-'))
+    const bare = mkTmp('abandon-bare-')
     const r = spawnSync('bash', [ABANDON, bare, '--why', 'x'], { timeout: 120_000,
       encoding: 'utf8', env: { ...HERMETIC_ENV, TMPDIR: f.tmp },
     })
