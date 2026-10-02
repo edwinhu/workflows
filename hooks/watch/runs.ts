@@ -7,6 +7,9 @@
 // `DONE <label> <status> ...`, values percent-encoded by enc(). The directory's session key IS the
 // ownership marker; the filename is the pid that lives for the whole run.
 
+/** A run that finishes later than this after its start is history, not news: the watcher does not wake for it. */
+export const WAKE_HORIZON_MS = 24 * 3600_000
+
 export type Run = {
   id: string
   file: string
