@@ -11,6 +11,10 @@ different things.
 When adding a reading, match whatever mark the addendum already uses. If the addendum is
 already inconsistent, fix it rather than adding a third.
 
+`check-marks.py` (check.sh's `marks` leg) FAILS an addendum that spells its bracketed elision
+mark two ways, and a retained `#super[N]` footnote left at its original number or without its
+body in the `*[Retained footnote]*` block.
+
 ## Bracket conventions
 
 - `[ ]` marks **editorial insertion or alteration** — nothing else.

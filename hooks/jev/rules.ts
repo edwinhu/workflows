@@ -1,7 +1,7 @@
 // The per-edit Jev mod's pure half: which rule set a file belongs to, which lines an edit changed,
 // and the one line a violation becomes. No `$` and no Node, so bun tests and the mod kit share it.
 
-export type RuleSet = 'writing' | 'dev' | 'ds' | 'authoring' | 'typst' | 'notes' | 'slides' | 'exams'
+export type RuleSet = 'writing' | 'dev' | 'ds' | 'authoring' | 'typst' | 'notes' | 'slides' | 'elide' | 'exams'
 
 /** Each set's rules directory under its plugin's root: this plugin's, or the teaching plugin's for
  *  TEACHING_SETS. Only the directory itself is globbed by evidence.py, so its `uncalibrated/`
@@ -14,6 +14,7 @@ export const RULE_DIRS: Record<RuleSet, string> = {
   typst: 'constraints/jev/typst',
   notes: 'constraints/jev/notes',
   slides: 'constraints/jev/slides',
+  elide: 'constraints/jev/elide',
   exams: 'constraints/jev/exams',
 }
 
@@ -25,6 +26,13 @@ export const TEACHING_PROBE: Partial<Record<RuleSet, string>> = {
   notes: 'constraints/jev/_lecture.py',
   slides: 'constraints/jev/_lecture.py',
   exams: 'constraints/jev/exams/_exam.py',
+}
+
+/** Register sets, scored ON TOP of `writing` for prose whose nearest ACTIVE_WORKFLOW.md carries
+ *  `style: legal` or `style: econ` (writing_receipt.py writes it from the plan's Domain:). */
+export const REGISTER_DIRS: Record<string, string> = {
+  legal: 'constraints/jev/legal',
+  econ: 'constraints/jev/econ',
 }
 
 export const BLOCK_AT = 0.85
@@ -39,6 +47,8 @@ const DECK = /(^|\/)(slides|notes)[^/]*\.typ$|(^|\/)presentation\/[^/]*\.typ$/i
 // teaching's course layout: lecture notes are notes/NN-topic.typ, a lecture's deck slides/<chapter>/NN.typ
 const LECTURE_NOTES = /(^|\/)notes\/\d{2}-[^/]*\.typ$/
 const LECTURE_DECK = /(^|\/)slides\/[^/]+\/\d{2}\.typ$/
+// a casebook reading cut from an opinion: elide-case writes these, and its rules are about the cut
+const ADDENDUM = /(^|\/)addenda\/[^/]+\.typ$/i
 const SHELL = /\.(sh|bash)$/i
 // constraints/jev/dev/_dev.py TEST_PATH, so the mod and the dev rules agree on what a test is.
 const TEST_PATH = /(^|\/)(tests?|__tests__|spec)\/|[._-](test|spec)\.[A-Za-z]+$|(^|\/)test_[^/]*\.py$|_test\.(go|py)$/
@@ -48,13 +58,24 @@ export function workflowOf(text: string): string | null {
   return /^workflow:\s*([\w-]+)/m.exec(text)?.[1] ?? null
 }
 
+/** `style:` from an ACTIVE_WORKFLOW.md's text: the writing run's register. */
+export function styleOf(text: string): string | null {
+  return /^style:\s*([\w-]+)/m.exec(text)?.[1] ?? null
+}
+
+/** The register set scored on top of `set`: legal or econ for writing under that style, else none. */
+export function registerDir(set: RuleSet, style: string | null): string | null {
+  return (set === 'writing' && style && REGISTER_DIRS[style]) || null
+}
+
 /**
  * The rule set for `path`, or null for none. An exam question file (teaching's `.planning/` set root
  * or an assembled `exams/*.typ`, rubrics aside) is exams, ahead of every other rule. A SKILL.md, agent or command .md, CLAUDE.md/AGENTS.md,
  * plugin.json, marketplace.json, hooks.json or a .planning/ file is authoring, ahead of the .md rule.
  * Lecture notes are notes and a lecture's deck is slides (the teaching rules: notes are spoken, and the
  * writing rules would flag the signposts they need). A talk's .typ deck or notes (by name, by a
- * presentation/ directory, or under a `workflow: workshop` cursor) is typst. Other prose (.md .typ .tex)
+ * presentation/ directory, or under a `workflow: workshop` cursor) is typst. A .typ under addenda/ is
+ * elide (an excerpt cut from an opinion). Other prose (.md .typ .tex)
  * is writing; a test file or a
  * shell script is dev; any other .py is ds when the nearest `.planning/ACTIVE_WORKFLOW.md` above it
  * (the workflow cursor; `workflowAt` walks up and answers its `workflow:`) says `ds`. A test file
@@ -65,6 +86,7 @@ export async function ruleSetFor(path: string, workflowAt: (dir: string) => Prom
   if (AUTHORING.test(path)) return 'authoring'
   if (LECTURE_NOTES.test(path)) return 'notes'
   if (LECTURE_DECK.test(path)) return 'slides'
+  if (ADDENDUM.test(path)) return 'elide'
   if (DECK.test(path)) return 'typst'
   if (/\.typ$/i.test(path)) return (await workflowAt(dirname(path))) === 'workshop' ? 'typst' : 'writing'
   if (PROSE.test(path)) return 'writing'

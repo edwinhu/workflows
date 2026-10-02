@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# The single mechanical verdict for an addendum. Five legs, none short-circuiting:
+# The single mechanical verdict for an addendum. Six legs, none short-circuiting:
 #   plan      — the plan records both interview answers (and any non-court readings)
 #   compile   — typst builds the addendum
 #   quotes    — check-quotes.py once per reading, captions DERIVED from the .typ
@@ -11,6 +11,8 @@
 #                 check-stranded-headings.py  a heading at a page foot, its text overleaf
 #               The first three are canonical, in the typst plugin, in one copy. Only the
 #               fourth is this skill's own.
+#   marks     — check-marks.py: one elision mark per addendum, and every retained footnote
+#               renumbered 1..k per reading with each #super[N] marker paired to a body
 # Every leg runs; the exit code is 0 only when all of them passed.
 #
 # Usage: check.sh --addendum <typ> [--pdf <pdf>] [--docs <dir>]
@@ -159,6 +161,7 @@ fail_plan=0
 fail_compile=0
 fail_quotes=0
 fail_addendum=0
+fail_marks=0
 
 # Captions the PLAN declares to be non-court text. Empty file when there is no plan, which
 # is why an unresolvable reading still fails in that case.
@@ -841,10 +844,23 @@ else
   fi
 fi
 
+# ---------------------------------------------------------------- leg: marks
+# Decided from the .typ alone, so it needs no PDF and no source: a mixed elision mark, or a
+# retained footnote left at its original number or without its pair, is a FAIL naming the line.
+echo "--- leg marks"
+python3 "$SCRIPTS_DIR/check-marks.py" "$ADDENDUM"
+case $? in
+  0) echo "LEG marks: PASS — one elision mark; retained footnotes renumbered and paired" ;;
+  1) fail_marks=1
+     echo "LEG marks: FAIL — mixed elision marks, or a footnote marker not renumbered or not paired" ;;
+  *) fail_marks=1
+     echo "LEG marks: FAIL — check-marks.py could not run; a check that did not run is not a pass" ;;
+esac
+
 # ---------------------------------------------------------------- verdict
 echo "--- verdict"
 v() { [[ $1 -eq 0 ]] && echo PASS || echo FAIL; }
-if [[ $((fail_plan + fail_compile + fail_quotes + fail_addendum + fail_widows)) -eq 0 ]]; then
+if [[ $((fail_plan + fail_compile + fail_quotes + fail_addendum + fail_widows + fail_marks)) -eq 0 ]]; then
   waived=""
   [[ $NO_PLAN -eq 1 ]] && waived="plan, which --no-plan waived"
   if [[ $NO_TARGET -eq 1 && $plan_targets -eq 0 ]]; then
@@ -863,5 +879,5 @@ if [[ $((fail_plan + fail_compile + fail_quotes + fail_addendum + fail_widows)) 
   exit 0
 fi
 strays_verdict=$([[ $NO_WIDOWS -eq 1 && $WIDOWS -eq 0 ]] && echo NOT-CHECKED || v $fail_widows)
-echo "FAIL: plan=$([[ $NO_PLAN -eq 1 && -z "$PLAN" ]] && echo NOT-CHECKED || v $fail_plan) compile=$(v $fail_compile) quotes=$(v $fail_quotes) addendum=$(v $fail_addendum) strays=$strays_verdict"
+echo "FAIL: plan=$([[ $NO_PLAN -eq 1 && -z "$PLAN" ]] && echo NOT-CHECKED || v $fail_plan) compile=$(v $fail_compile) quotes=$(v $fail_quotes) addendum=$(v $fail_addendum) strays=$strays_verdict marks=$(v $fail_marks)"
 exit 1

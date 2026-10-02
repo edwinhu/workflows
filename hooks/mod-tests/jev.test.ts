@@ -87,6 +87,22 @@ test('an Edit reports the lines its new string occupies; a .py under a ds workfl
   expect(argv[argv.indexOf('--rules') + 1]!.endsWith('/constraints/jev')).toBe(true)
 })
 
+test('prose under a `style: legal` writing run scores the legal set on top of writing; `style: general` adds none', async ($, on) => {
+  const w = world(on, {
+    tree: {
+      '/home/u/p/.planning/ACTIVE_WORKFLOW.md': '---\nworkflow: writing\nstyle: legal\n---\n',
+      '/home/u/q/.planning/ACTIVE_WORKFLOW.md': '---\nworkflow: writing\nstyle: general\n---\n',
+    },
+    verdicts: [{ rule: 'L-ID', p: 0.95, statement: 'An "Id." short form has no single antecedent authority' }],
+  })
+  const r = await $.tool.call(write('drafts/part-ii.md', 'Text.[^1]\n\n[^1]: Id.\n'))
+  expect(jevLines(r)).toEqual(['Jev L-ID: drafts/part-ii.md:1-3 — An "Id." short form has no single antecedent authority (p=0.95)'])
+  const rules = (argv: readonly string[]) => argv.flatMap((a, i) => (a === '--rules' ? [argv[i + 1]!.replace(/.*\/constraints\//, '')] : []))
+  expect(rules(w.runs[0]!.argv)).toEqual(['jev/writing', 'jev/legal'])
+  await $.tool.call(write('/home/u/q/drafts/memo.md', 'Text.\n'))
+  expect(rules(w.runs[1]!.argv)).toEqual(['jev/writing'])
+})
+
 test("a lecture's notes and deck use the teaching plugin's notes and slides rules", async ($, on) => {
   const lecture = '/home/u/.claude/skills/teaching/constraints/jev/_lecture.py'
   const w = world(on, { tree: { [lecture]: '' }, verdicts: [{ rule: 'N-HOLLOW', p: 0.9, statement: 'At least one candidate bullet is HOLLOW' }] })

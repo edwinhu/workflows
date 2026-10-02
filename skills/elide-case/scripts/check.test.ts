@@ -183,6 +183,7 @@ describe("check.sh", () => {
       quotes: "PASS",
       addendum: "PASS",
       strays: "PASS",
+      marks: "PASS",
     });
     expect(out).toContain("reading 2/2");
     expect(code).toBe(0);
@@ -199,6 +200,7 @@ describe("check.sh", () => {
     expect(Object.keys(seen).sort()).toEqual([
       "addendum",
       "compile",
+      "marks",
       "plan",
       "quotes",
       "strays",
@@ -1038,9 +1040,59 @@ ${scopeSection([
       quotes: "PASS",
       addendum: "PASS",
       strays: "PASS",
+      marks: "PASS",
     });
     expect(code).toBe(0);
   }, 300_000);
+
+  describe("the marks leg decides elision marks and footnote numbering from the .typ", () => {
+    const CHECK_MARKS = path.join(import.meta.dir, "check-marks.py");
+    const marks = (typ: string) => spawnSync("python3", [CHECK_MARKS, typ], { encoding: "utf8" });
+    const variant = (name: string, edit: (s: string) => string) => {
+      const typ = fixture(name, [3], "", { calibrate: false });
+      const before = fs.readFileSync(typ, "utf8");
+      const after = edit(before);
+      expect(after).not.toBe(before);
+      fs.writeFileSync(typ, after);
+      return typ;
+    };
+
+    test("one mark and a paired footnote 1 pass", () => {
+      const r = marks(fixture("marks-good", [3], "", { calibrate: false }));
+      expect(r.stdout).toContain("footnotes [SECURITIES AND EXCHANGE COMMISSION v. MUTUAL BENEFITS CORP.]: PASS");
+      expect(r.status).toBe(0);
+    });
+
+    test("a second elision spelling FAILS naming both", () => {
+      const r = marks(variant("marks-mixed", s => s.replace("[. . .]", "[...]")));
+      expect(r.stdout).toMatch(/elision: FAIL — 2 elision marks.*'\[\.\.\.\]' x1/);
+      expect(r.status).toBe(1);
+    });
+
+    test("a retained footnote left at its original number FAILS", () => {
+      const r = marks(variant("marks-unrenumbered", s => s.replace("#super[1]", "#super[16]").replace(/^1\. As Judge Wald/m, "16. As Judge Wald")));
+      expect(r.stdout).toContain("markers run [16], not 1..1");
+      expect(r.status).toBe(1);
+    });
+
+    test("a marker with no body FAILS as an orphan, and a body with no marker FAILS", () => {
+      const orphan = marks(variant("marks-orphan", s => s.replace("#super[1]", "#super[1] and more.#super[2]")));
+      expect(orphan.stdout).toContain("marker 2 at line");
+      expect(orphan.stdout).toContain("an orphan marker");
+      expect(orphan.status).toBe(1);
+      const unmarked = marks(variant("marks-unmarked", s => s.replace("#super[1]", "")));
+      expect(unmarked.stdout).toContain("footnote body 1 at line");
+      expect(unmarked.status).toBe(1);
+    });
+
+    test("check.sh carries the marks leg into the verdict", () => {
+      const typ = variant("marks-leg", s => s.replace("[. . .]", "[...]"));
+      const { code, out } = run(["--addendum", typ, "--target", "1-12", "--no-strays"]);
+      expect(legs(out).marks).toBe("FAIL");
+      expect(out).toContain("marks=FAIL");
+      expect(code).not.toBe(0);
+    }, 300_000);
+  });
 
   test("the same fixture invocation WITHOUT a plan flag is refused", () => {
     const fixtureTyp = path.join(import.meta.dir, "..", "fixtures", "mini-addendum.typ");
