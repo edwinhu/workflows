@@ -74,6 +74,23 @@
  *              intelligenceIndex descending (null last, ties keep table order), unavailable ones
  *              after them in table order.
  * Exit 0 always ('no change proposed' when nothing differs); exit 2 when the table cannot be read.
+ *
+ * --propose also runs DISCOVERY, advisory like the rest: one request each to the proxy catalog
+ * ($ROUTE_PROXY_URL), the OpenRouter models list ($ROUTE_PRICES_URL) and AA ($ROUTE_AA_URL, key as
+ * --refresh). Its rule, per candidate C with an `openrouter` slug, exactly:
+ *   consider   every proxy model M owned_by C's owner that NO candidate names as its model. Its
+ *              OpenRouter id is the OpenRouter entry (non-`:variant` preferred) whose slugKey equals
+ *              slugKey(<C's slug prefix>/<M minus a trailing effort suffix -none|-minimal|-low|
+ *              -medium|-high|-xhigh|-max>); its index is the AA entry with that same slugKey.
+ *   qualify    M's family (slugKey with the all-digit tokens dropped, e.g. openai/gpt luna) equals
+ *              C's, M's AA index is strictly greater than C's, and M's OpenRouter price.prompt is <=
+ *              C's. C's index and price are the fresh AA/OpenRouter values for C's slug, else the
+ *              table's.
+ *   propose    'candidate C: model <old> -> <M> (index a -> b, price p -> q)'. Several qualifying:
+ *              highest index, then lower price, then M sharing C's model's effort suffix, then
+ *              catalog order.
+ * A source that fails (or no AA key) is reported on stderr and discovery is skipped; the proxy is
+ * asked first, so a dead proxy costs no key lookup. --json prints {proposals, discoveries}.
  */
 import { createHash } from 'node:crypto'
 import { readFileSync, realpathSync, renameSync, rmSync, writeFileSync } from 'node:fs'
@@ -603,6 +620,12 @@ function applySignals(
   }
 }
 
+function readAaKey(): { key: string } | { missing: string } {
+  const aaFile = process.env.ROUTE_AA_KEY_FILE ||
+    (process.env.XDG_RUNTIME_DIR ? join(process.env.XDG_RUNTIME_DIR, 'agenix/artificial-analysis-api-key') : undefined)
+  return readKey('ARTIFICIAL_ANALYSIS_API_KEY', 'ROUTE_AA_KEY_REF', DEFAULT_AA_KEY_REF, aaFile)
+}
+
 /** One request per source. Never throws: a source that cannot answer is null, with the reason on stderr. */
 async function fetchSignals(): Promise<{ ranks: Map<string, number> | null; intelligence: Map<string, number> | null }> {
   const warn = (msg: string) => process.stderr.write(`route --refresh: ${msg}\n`)
@@ -622,9 +645,7 @@ async function fetchSignals(): Promise<{ ranks: Map<string, number> | null; inte
     }
   }
   let intelligence: Map<string, number> | null = null
-  const aaFile = process.env.ROUTE_AA_KEY_FILE ||
-    (process.env.XDG_RUNTIME_DIR ? join(process.env.XDG_RUNTIME_DIR, 'agenix/artificial-analysis-api-key') : undefined)
-  const aaKey = readKey('ARTIFICIAL_ANALYSIS_API_KEY', 'ROUTE_AA_KEY_REF', DEFAULT_AA_KEY_REF, aaFile)
+  const aaKey = readAaKey()
   const aaUrl = process.env.ROUTE_AA_URL || DEFAULT_AA_URL
   if ('missing' in aaKey) warn(`intelligenceIndex left unchanged: ${aaKey.missing}`)
   else {
@@ -769,7 +790,103 @@ export function propose(table: Table): Proposal[] {
   return out
 }
 
-function proposeCli(tableArg: string | undefined, json: boolean): number {
+export interface Discovery {
+  candidate: string
+  from: string
+  to: string
+  openrouter: string
+  index: { from: number; to: number }
+  price: { from: number; to: number }
+}
+
+const EFFORT_SUFFIX = /-(none|minimal|low|medium|high|xhigh|max)$/
+
+/** slugKey with the all-digit (version) tokens dropped: `openai/gpt-5.6-luna` -> `openai/gpt luna`. */
+export function familyKey(slug: string): string {
+  const k = slugKey(slug)
+  const cut = k.indexOf('/')
+  return `${k.slice(0, cut)}/${k.slice(cut + 1).split(' ').filter(t => !/^\d+$/.test(t)).join(' ')}`
+}
+
+/** The discovery rule in the header. Pure: never writes the table. */
+export function discover(
+  table: Table,
+  catalog: CatalogEntry[],
+  prices: Map<string, PriceEntry['pricing']>,
+  intelligence: Map<string, number>,
+): Discovery[] {
+  const byKey = new Map<string, { id: string; prompt: number }>()
+  for (const [id, p] of prices) {
+    const k = slugKey(id)
+    const had = byKey.get(k)
+    if (!had || (had.id.includes(':') && !id.includes(':'))) byKey.set(k, { id, prompt: p.prompt })
+  }
+  const named = new Set(Object.values(table.candidates).map(c => c.model))
+  const out: Discovery[] = []
+  for (const [cid, c] of Object.entries(table.candidates)) {
+    if (!c.openrouter) continue
+    const ck = slugKey(c.openrouter)
+    const ci = intelligence.get(ck) ?? c.signals?.intelligenceIndex ?? null
+    const cp = byKey.get(ck)?.prompt ?? c.price?.prompt
+    if (ci === null || cp === undefined) continue
+    const prefix = c.openrouter.slice(0, c.openrouter.indexOf('/'))
+    const fam = familyKey(c.openrouter)
+    const effort = c.model.match(EFFORT_SUFFIX)?.[0] ?? ''
+    const hits = catalog
+      .map((m, order) => {
+        if (m.owned_by !== c.owner || named.has(m.id)) return null
+        const k = slugKey(`${prefix}/${m.id.replace(EFFORT_SUFFIX, '')}`)
+        const or = byKey.get(k)
+        const mi = intelligence.get(k)
+        if (!or || mi === undefined || familyKey(or.id) !== fam || !(mi > ci) || or.prompt > cp) return null
+        const sameEffort = (m.id.match(EFFORT_SUFFIX)?.[0] ?? '') === effort ? 0 : 1
+        return { m, or, mi, sameEffort, order }
+      })
+      .filter(h => h !== null)
+      .sort((a, b) => b.mi - a.mi || a.or.prompt - b.or.prompt || a.sameEffort - b.sameEffort || a.order - b.order)
+    if (!hits.length) continue
+    const h = hits[0]
+    out.push({
+      candidate: cid, from: c.model, to: h.m.id, openrouter: h.or.id,
+      index: { from: ci, to: h.mi }, price: { from: cp, to: h.or.prompt },
+    })
+  }
+  return out
+}
+
+/** The three sources, one request each. Null (with the reason on stderr) when any cannot answer. */
+async function discoverySources(): Promise<
+  [CatalogEntry[], Map<string, PriceEntry['pricing']>, Map<string, number>] | null
+> {
+  const skip = (why: string) => {
+    process.stderr.write(`route --propose: discovery skipped: ${why}\n`)
+    return null
+  }
+  const proxyUrl = process.env.ROUTE_PROXY_URL || DEFAULT_PROXY_URL
+  let catalog: CatalogEntry[]
+  try {
+    catalog = toCatalog(await fetchListing(proxyUrl, 10_000, { Authorization: `Bearer ${PROXY_TOKEN}` }))
+  } catch (e) {
+    return skip(`proxy catalog ${proxyUrl} unreachable (${(e as Error).message})`)
+  }
+  const pricesUrl = process.env.ROUTE_PRICES_URL || DEFAULT_PRICES_URL
+  let prices: Map<string, PriceEntry['pricing']>
+  try {
+    prices = toPrices(await fetchListing(pricesUrl, 30_000))
+  } catch (e) {
+    return skip(`OpenRouter models ${pricesUrl} unreachable (${(e as Error).message})`)
+  }
+  const aaKey = readAaKey()
+  if ('missing' in aaKey) return skip(`Artificial Analysis: ${aaKey.missing}`)
+  const aaUrl = process.env.ROUTE_AA_URL || DEFAULT_AA_URL
+  try {
+    return [catalog, prices, toIntelligence(await fetchListing(aaUrl, 30_000, { 'x-api-key': aaKey.key }))]
+  } catch (e) {
+    return skip(`Artificial Analysis ${aaUrl} failed (${(e as Error).message})`)
+  }
+}
+
+async function proposeCli(tableArg: string | undefined, json: boolean): Promise<number> {
   const path = tablePath(tableArg)
   let table: Table
   try {
@@ -778,17 +895,27 @@ function proposeCli(tableArg: string | undefined, json: boolean): number {
     return refuse(`route --propose: ${(e as Error).message}`)
   }
   const proposals = propose(table)
+  const sources = await discoverySources()
+  const discoveries = sources ? discover(table, ...sources) : []
   if (json) {
-    process.stdout.write(`${JSON.stringify({ proposals })}\n`)
+    process.stdout.write(`${JSON.stringify({ proposals, discoveries })}\n`)
     return 0
   }
-  if (!proposals.length) {
+  if (!proposals.length && !discoveries.length) {
     process.stdout.write('route --propose: no change proposed\n')
     return 0
   }
   const chain = (e: { pick: string; fallbacks: string[] }) => `${e.pick} [${e.fallbacks.join(', ')}]`
   for (const p of proposals) process.stdout.write(`kind ${p.kind}: ${chain(p.from)} -> ${chain(p.to)} — ${p.reason}\n`)
-  process.stdout.write(`route --propose: advisory only; ${path} not written. Accept by editing its kinds by hand.\n`)
+  for (const d of discoveries)
+    process.stdout.write(
+      `candidate ${d.candidate}: model ${d.from} -> ${d.to} (index ${d.index.from} -> ${d.index.to}, ` +
+        `price ${d.price.from} -> ${d.price.to}); openrouter ${d.openrouter}\n`,
+    )
+  process.stdout.write(
+    `route --propose: advisory only; ${path} not written. Accept by editing its kinds (or a discovered ` +
+      'candidate\'s model and openrouter) by hand.\n',
+  )
   return 0
 }
 
