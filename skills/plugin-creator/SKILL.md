@@ -13,7 +13,7 @@ description: "This skill should be used when the user asks to 'create a plugin',
 
 This skill wraps the built-in `plugin-dev:create-plugin` with enforcement pattern awareness from the superpowers framework. It adds an enforcement audit layer that the built-in version lacks.
 
-**`hooks/validate-skill-paths.ts` is registered** on `PostToolUse Edit|Write` and reports any `${CLAUDE_SKILL_DIR}` / `${CLAUDE_PLUGIN_ROOT}` reference that resolves to a missing file. `hooks/plugin-validate.ts` is **not registered** — its only finding on this repo is a constant symlink warning identical for 91 of 92 firing files. Run manifest validation by hand: `claude plugin validate <plugin-dir>`.
+**`hooks/guards/skill-paths.ts` runs** after every Edit/Write (in-process, in the plugin's mod) and reports any `${CLAUDE_SKILL_DIR}` / `${CLAUDE_PLUGIN_ROOT}` reference that resolves to a missing file. `hooks/plugin-validate.ts` is **not registered** — its only finding on this repo is a constant symlink warning identical for 91 of 92 firing files. Run manifest validation by hand: `claude plugin validate <plugin-dir>`.
 
 ## Process
 

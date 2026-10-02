@@ -8,6 +8,8 @@
 
 ### Changed
 
+- **The plugin's tool-call guards run in-process as a mod.** `image-read-guard`, `read-guard`, `suggest-compact`, `pgrep-self-match`, `cron-delete-guard` (both halves), `atomic-constraint-guard`, `typst-convention-guard` and `validate-skill-paths` now run on `tool.call` in `hooks/guards/mod.ts` instead of spawning `bun` per call from `hooks.json`: about 300 ms of process spawns per tool call become about 1 ms. Each guard's logic moved once into a node-free module under `hooks/guards/`, which both the mod and the settings-hook scripts import. A guard can only deny or add context, never approve (no `tool.check`); a crashed pre-call gate denies, as `denyOnCrash` did. `tests/mod-guards-parity.test.ts` replays every input the existing suites feed these scripts into the script, the mod handler and the pre-port script, and requires the same deny, context and files. `find-slide-page-inject`, `lint-check`, `writing-prose-check`, `cite-fidelity-lint`, `overflow-check` and `pr-url-logger` stay settings hooks: they spawn external tools or are async side effects.
+
 - **The farm-events stream carries a start time and the work loop.** `START` lines from `farm.sh` and `work-round.sh` end in `t=<epoch seconds>`; `work-loop.sh` files `START work-loop out=<run>/loop.exit` and a `DONE work-loop rc=<exit>` from its EXIT trap, so a killed detached loop reads as `GONE`.
 - **Tests no longer write the real `farm-outcomes.jsonl` or the caller's event stream.** `hermeticEnv` and the farm-events tests pin `FARM_OUTCOMES` to their sandbox; `farm-runner.test.ts` pins `TMPDIR` and the session id.
 

@@ -237,15 +237,30 @@ Hooks auto-run at specific lifecycle events. The table has one row per command t
 |--------|-------|---------|---------|
 | `session-start.ts` | SessionStart | startup/resume/clear/compact | Inject using-skills meta-skill; report an unfinished work run |
 | `session-end.ts` | Stop | * | Update LEARNINGS.md timestamp |
-| `suggest-compact.ts` | PreToolUse | Edit/Write | Suggest compaction when context is large |
-| `image-read-guard.ts` | PreToolUse | Read | Redirect to look-at for media files |
 | `lint-check.ts` | PostToolUse | Edit/Write | Lint after file changes (ESLint, ruff, lintr) |
-| `atomic-constraint-guard.ts` | PostToolUse | Edit/Write | Validate atomic constraint file structure |
 | `writing-prose-check.ts` | PostToolUse | Edit/Write | Check edited prose for writing-quality violations |
 | `cite-fidelity-lint.ts` | PostToolUse | Edit/Write | Check edited writing for citation-ledger fidelity |
 | `pr-url-logger.ts` | PostToolUse | Bash | Log PR URLs and GitHub Actions status |
 | `overflow-check.ts` | PostToolUse | Bash | Detect Typst content overflow after compilation |
 | `pattern-scan.ts` | SessionEnd | clear/logout/prompt_input_exit/other | Scan session for reusable patterns |
+
+### Tool-call guards (mod)
+
+The per-call guards run in-process on `tool.call` in the plugin's mod (`hooks/guards/mod.ts`), not as
+spawned settings hooks. Each can only deny or add context, never approve. The scripts of the same
+name under `hooks/` stay as their settings-hook entry points (skills wire some in frontmatter) and
+share the code; `tests/mod-guards-parity.test.ts` holds the two to identical answers.
+
+| Guard | Before / after | Tools | Purpose |
+|-------|----------------|-------|---------|
+| `image-read-guard` | before | Read | Redirect to look-at for media files |
+| `read-guard` | before | Read, Bash | Deny unbounded dumps of large files |
+| `suggest-compact` | before | Edit, Write | Suggest compaction at edit-count checkpoints |
+| `pgrep-self-match` | before | Bash, Monitor | Deny self-matching `pgrep/pkill -f` and path-less `rg` |
+| `cron-delete-guard` | before / after | CronDelete / CronCreate | Keep an in-flight work run's heartbeat; record new ids |
+| `atomic-constraint-guard` | after | Edit, Write | Validate atomic constraint file structure |
+| `typst-convention-guard` | after | Edit, Write | Typst convention violations |
+| `validate-skill-paths` | after | Edit, Write | `${CLAUDE_*}` references to missing files |
 
 ### Bulk-extraction guard (mod)
 

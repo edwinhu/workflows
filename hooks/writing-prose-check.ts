@@ -30,6 +30,7 @@ import { context, readPayload } from "./_gate_common";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { authenticatedWritingPlan } from "./lib/writing-plan-context.ts";
 import { join, dirname } from "node:path";
+import { isTypDeckWith, pyName, pyParts, pySuffix } from "./guards/deck.ts";
 
 const PLUGIN_ROOT = dirname(import.meta.dir);
 const CHECK_ALL = join(PLUGIN_ROOT, "constraints", "run-constraints.py");
@@ -61,31 +62,14 @@ export const PROSE_ENGINE_PREFIXES = [
   "skills/writing/constraints/writing-no-bold-lead",
 ];
 
-const _DECK_MARKERS = ["touying", "polylux", "#slide("];
-const _DECK_DIR_RE = /^(slides|presentation)/i;
-
 // ---------------------------------------------------------------------------
 // pathlib.Path semantics, only as far as this hook uses them.
 // ---------------------------------------------------------------------------
-function pyParts(p: string): string[] {
-  const parts: string[] = [];
-  if (p.startsWith("/")) parts.push("/");
-  for (const seg of p.split("/")) {
-    if (seg === "" || seg === ".") continue;
-    parts.push(seg);
-  }
-  return parts;
-}
 function pyStr(p: string): string {
   const parts = pyParts(p);
   if (!parts.length) return ".";
   if (parts[0] === "/") return "/" + parts.slice(1).join("/");
   return parts.join("/");
-}
-function pyName(p: string): string {
-  const parts = pyParts(p);
-  const last = parts[parts.length - 1];
-  return last === undefined || last === "/" ? "" : last;
 }
 function pyParent(p: string): string {
   const parts = pyParts(p);
@@ -94,12 +78,6 @@ function pyParent(p: string): string {
   const rest = parts.slice(0, -1);
   if (rest[0] === "/") return "/" + rest.slice(1).join("/");
   return rest.join("/");
-}
-function pySuffix(p: string): string {
-  const name = pyName(p);
-  if (name === "" || name === "." || name === "..") return "";
-  const i = name.lastIndexOf(".");
-  return i > 0 ? name.slice(i) : "";
 }
 
 function reEscape(s: string): string {
@@ -149,23 +127,13 @@ export function profileFor(path: string): "full" | "deck" {
 }
 
 export function isTypDeck(path: string): boolean {
-  // ONLY A `.typ` CAN BE A DECK. The call site below already guarantees the suffix, so this is
-  // not a behaviour change there — it makes the predicate TOTAL, so it means the same thing as
-  // `is_deck` in scripts/prose-audit.py, which is called on every path and must check. Caught by
-  // the cross-language agreement test the first time it ran: a `.md` containing `#slide(` came
-  // back `true` here and `false` there.
-  if (pySuffix(path).toLowerCase() !== ".typ") return false;
-  const parts = pyParts(path);
-  for (const part of parts.slice(0, -1)) {
-    if (_DECK_DIR_RE.test(part)) return true;
-  }
-  let text: string;
-  try {
-    text = readFileSync(path).toString("utf8"); // errors="ignore"-ish
-  } catch {
-    return false;
-  }
-  return _DECK_MARKERS.some((marker) => text.includes(marker));
+  return isTypDeckWith(path, () => {
+    try {
+      return readFileSync(path).toString("utf8"); // errors="ignore"-ish
+    } catch {
+      return null;
+    }
+  });
 }
 
 export function editRanges(toolName: string, toolInput: Record<string, unknown>, path: string): Range[] {

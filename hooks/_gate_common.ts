@@ -19,6 +19,7 @@
  */
 
 import { createHash } from "node:crypto";
+import { crashDeny } from "./guards/core.ts";
 
 /** Serialize exactly as Python's `json.dumps` does by default: `", "` / `": "`, ensure_ascii. */
 export function pyJson(value: unknown): string {
@@ -113,24 +114,16 @@ let preToolUseGate = false;
 export function denyOnCrash(gate: string): void {
   preToolUseGate = true;
   const denyFromError = (kind: string, error: unknown): void => {
-    let detail: string;
-    try {
-      detail = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
-    } catch {
-      detail = "an unrepresentable value was thrown";
-    }
     try {
       // Deliberately NOT `deny()`: keep the emission inline so a future change to deny's shape
-      // cannot make the crash path print something the schema rejects.
+      // cannot make the crash path print something the schema rejects. The reason text is shared
+      // with the plugin mod's crash deny (guards/core.ts), which never throws.
       console.log(
         pyJson({
           hookSpecificOutput: {
             hookEventName: "PreToolUse",
             permissionDecision: "deny",
-            permissionDecisionReason:
-              `${gate}: this gate crashed (${kind}: ${detail}) and could not decide. A gate that cannot ` +
-              `resolve identity or policy denies; a non-zero exit would have been treated as non-blocking ` +
-              `and silently permitted this call. Re-run after fixing the underlying fault.`,
+            permissionDecisionReason: crashDeny(gate, kind, error),
           },
         }),
       );
