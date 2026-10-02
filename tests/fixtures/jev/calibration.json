@@ -253,8 +253,10 @@
         "T-TAKEAWAY": [
           { "kind": "violating", "path": "tests/fixtures/jev/typst/T-TAKEAWAY/vio" },
           { "kind": "compliant", "path": "tests/fixtures/jev/typst/T-TAKEAWAY/sat" },
-          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-charter-deck", "source": "~/areas/colloquium slides/01-charter-competition.typ @ede4dcc, lines 1-210; presented deck (Class 1, PDFs rendered)" },
-          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-tornetta-short-deck", "source": "~/areas/colloquium slides/04-tornetta-short/01.typ @f222fbd, lines 1-215; presented deck, subtitles rewritten by the user in bb47e8a" }
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-legacy-takeaway-charter/ok", "base": "tests/fixtures/jev/real/T-charter-deck", "source": "~/areas/colloquium slides/01-charter-competition.typ @ede4dcc, lines 1-210 (the T-charter-deck excerpt), accepted legacy deck that breaks the written rule: label subtitles (\"Where we are starting, and why.\"); the new span adds a takeaway subtitle" },
+          { "kind": "violating", "path": "tests/fixtures/jev/real/T-legacy-takeaway-charter/bad", "base": "tests/fixtures/jev/real/T-charter-deck", "source": "~/areas/colloquium slides/01-charter-competition.typ @ede4dcc, lines 1-210 (the T-charter-deck excerpt), accepted legacy deck that breaks the written rule: label subtitles (\"Where we are starting, and why.\"); same legacy base, the new span adds a label subtitle" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-legacy-takeaway-tornetta/ok", "base": "tests/fixtures/jev/real/T-tornetta-short-deck", "source": "~/areas/colloquium slides/04-tornetta-short/01.typ @f222fbd, lines 1-215 (the T-tornetta-short-deck excerpt), accepted legacy deck that breaks the written rule: label subtitles (\"Mathematical control, effective control, four indicia.\"); the new span adds a takeaway subtitle" },
+          { "kind": "violating", "path": "tests/fixtures/jev/real/T-legacy-takeaway-tornetta/bad", "base": "tests/fixtures/jev/real/T-tornetta-short-deck", "source": "~/areas/colloquium slides/04-tornetta-short/01.typ @f222fbd, lines 1-215 (the T-tornetta-short-deck excerpt), accepted legacy deck that breaks the written rule: label subtitles (\"Mathematical control, effective control, four indicia.\"); same legacy base, the new span adds a label subtitle" }
         ],
         "T-ECHO": [
           { "kind": "violating", "path": "tests/fixtures/jev/typst/T-ECHO/vio" },
@@ -265,21 +267,29 @@
         "T-STORY": [
           { "kind": "violating", "path": "tests/fixtures/jev/typst/T-STORY/vio" },
           { "kind": "compliant", "path": "tests/fixtures/jev/typst/T-STORY/sat" },
-          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-charter-deck", "source": "~/areas/colloquium slides/01-charter-competition.typ @ede4dcc, lines 1-210; presented deck (Class 1, PDFs rendered)" },
-          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-tornetta-short-deck", "source": "~/areas/colloquium slides/04-tornetta-short/01.typ @f222fbd, lines 1-215; presented deck, subtitles rewritten by the user in bb47e8a" }
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-tornetta-short-deck", "source": "~/areas/colloquium slides/04-tornetta-short/01.typ @f222fbd, lines 1-215; presented deck, subtitles rewritten by the user in bb47e8a" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-legacy-story-charter/ok", "base": "tests/fixtures/jev/real/T-charter-deck", "source": "~/areas/colloquium slides/01-charter-competition.typ @ede4dcc, lines 1-210 (the T-charter-deck excerpt), accepted legacy deck whose storytelling comment at 71 names the relation, not the picture (scored at the bar, 0.45-0.54); the new span adds a comment naming mechanism and insight" },
+          { "kind": "violating", "path": "tests/fixtures/jev/real/T-legacy-story-charter/bad", "base": "tests/fixtures/jev/real/T-charter-deck", "source": "~/areas/colloquium slides/01-charter-competition.typ @ede4dcc, lines 1-210 (the T-charter-deck excerpt), accepted legacy deck whose storytelling comment at 71 names the relation, not the picture (scored at the bar, 0.45-0.54); same legacy base, the new span adds a label-only storytelling comment" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-legacy-story-tornetta/ok", "base": "tests/fixtures/jev/real/T-tornetta-short-deck", "source": "~/areas/colloquium slides/04-tornetta-short/01.typ @f222fbd, lines 1-215 (the T-tornetta-short-deck excerpt), accepted deck as legacy base; the new span adds a comment naming mechanism and insight" },
+          { "kind": "violating", "path": "tests/fixtures/jev/real/T-legacy-story-tornetta/bad", "base": "tests/fixtures/jev/real/T-tornetta-short-deck", "source": "~/areas/colloquium slides/04-tornetta-short/01.typ @f222fbd, lines 1-215 (the T-tornetta-short-deck excerpt), accepted deck as legacy base; same legacy base, the new span adds a label-only storytelling comment" }
         ],
         "T-CALLOUT": [
           { "kind": "violating", "path": "tests/fixtures/jev/typst/T-CALLOUT/vio" },
           { "kind": "compliant", "path": "tests/fixtures/jev/typst/T-CALLOUT/sat" },
           { "kind": "compliant", "path": "tests/fixtures/jev/real/T-charter-callouts", "source": "~/areas/colloquium slides/01-charter-competition.typ @ede4dcc, lines 270-380 (four question callouts); presented deck" },
-          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-tornetta-short-deck", "source": "~/areas/colloquium slides/04-tornetta-short/01.typ @f222fbd, lines 1-215 (callout at 135 quotes the opinion); presented deck" },
-          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-landscape-callout", "source": "~/areas/colloquium slides/99-landscape/01.typ @48abe72, lines 262-300 (callout at 282 quotes Clark); accepted deck" }
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-legacy-callout-tornetta/ok", "base": "tests/fixtures/jev/real/T-tornetta-short-deck", "source": "~/areas/colloquium slides/04-tornetta-short/01.typ @f222fbd, lines 1-215 (the T-tornetta-short-deck excerpt), accepted legacy deck that breaks the written rule: callout at 135 quotes the opinion; the new span adds a question callout" },
+          { "kind": "violating", "path": "tests/fixtures/jev/real/T-legacy-callout-tornetta/bad", "base": "tests/fixtures/jev/real/T-tornetta-short-deck", "source": "~/areas/colloquium slides/04-tornetta-short/01.typ @f222fbd, lines 1-215 (the T-tornetta-short-deck excerpt), accepted legacy deck that breaks the written rule: callout at 135 quotes the opinion; same legacy base, the new span adds a callout quoting the opinion" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-legacy-callout-landscape/ok", "base": "tests/fixtures/jev/real/T-landscape-callout", "source": "~/areas/colloquium slides/99-landscape/01.typ @48abe72, lines 262-300 (the T-landscape-callout excerpt), accepted legacy deck that breaks the written rule: callout at 21 quotes Clark; the new span adds a caution callout" },
+          { "kind": "violating", "path": "tests/fixtures/jev/real/T-legacy-callout-landscape/bad", "base": "tests/fixtures/jev/real/T-landscape-callout", "source": "~/areas/colloquium slides/99-landscape/01.typ @48abe72, lines 262-300 (the T-landscape-callout excerpt), accepted legacy deck that breaks the written rule: callout at 21 quotes Clark; same legacy base, the new span adds a callout quoting Clark" }
         ],
         "T-NARRATE": [
           { "kind": "violating", "path": "tests/fixtures/jev/typst/T-NARRATE/vio" },
           { "kind": "compliant", "path": "tests/fixtures/jev/typst/T-NARRATE/sat" },
-          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-charter-notes", "source": "~/areas/colloquium notes/01-charter-competition.typ @48abe72, lines 1-220; presented teleprompter notes" },
-          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-texas-notes", "source": "~/areas/colloquium notes/03-texas.typ @48abe72, lines 1-183; presented teleprompter notes" }
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-texas-notes", "source": "~/areas/colloquium notes/03-texas.typ @48abe72, lines 1-183; presented teleprompter notes" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-legacy-narrate-charter/ok", "base": "tests/fixtures/jev/real/T-charter-notes", "source": "~/areas/colloquium notes/01-charter-competition.typ @48abe72, lines 1-220 (the T-charter-notes excerpt), accepted legacy notes that break the written rule: \"I have linked it on the slide\" (164), \"Here is the question the slide asks\" (170); the new span adds a bullet stating the content" },
+          { "kind": "violating", "path": "tests/fixtures/jev/real/T-legacy-narrate-charter/bad", "base": "tests/fixtures/jev/real/T-charter-notes", "source": "~/areas/colloquium notes/01-charter-competition.typ @48abe72, lines 1-220 (the T-charter-notes excerpt), accepted legacy notes that break the written rule: \"I have linked it on the slide\" (164), \"Here is the question the slide asks\" (170); same legacy base, the new span adds a bullet narrating \"the table on this slide\"" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-legacy-narrate-texas/ok", "base": "tests/fixtures/jev/real/T-texas-notes", "source": "~/areas/colloquium notes/03-texas.typ @48abe72, lines 1-183 (the T-texas-notes excerpt), accepted notes as legacy base; the new span adds a bullet stating the content" },
+          { "kind": "violating", "path": "tests/fixtures/jev/real/T-legacy-narrate-texas/bad", "base": "tests/fixtures/jev/real/T-texas-notes", "source": "~/areas/colloquium notes/03-texas.typ @48abe72, lines 1-183 (the T-texas-notes excerpt), accepted notes as legacy base; same legacy base, the new span adds an \"as you can see on the slide\" bullet" }
         ],
         "T-HOLLOW": [
           { "kind": "violating", "path": "tests/fixtures/jev/typst/T-HOLLOW/vio" },
@@ -291,8 +301,11 @@
         "T-TRANSITION": [
           { "kind": "violating", "path": "tests/fixtures/jev/typst/T-TRANSITION/vio" },
           { "kind": "compliant", "path": "tests/fixtures/jev/typst/T-TRANSITION/sat" },
-          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-charter-notes", "source": "~/areas/colloquium notes/01-charter-competition.typ @48abe72, lines 1-220; presented teleprompter notes" },
-          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-texas-notes", "source": "~/areas/colloquium notes/03-texas.typ @48abe72, lines 1-183; presented teleprompter notes" }
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-texas-notes", "source": "~/areas/colloquium notes/03-texas.typ @48abe72, lines 1-183; presented teleprompter notes" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-legacy-transition-charter/ok", "base": "tests/fixtures/jev/real/T-charter-notes", "source": "~/areas/colloquium notes/01-charter-competition.typ @48abe72, lines 1-220 (the T-charter-notes excerpt), accepted legacy notes that break the written rule: section 62 opens on _Weinberger_ with no turn; the new span adds the same section opening with a turn" },
+          { "kind": "violating", "path": "tests/fixtures/jev/real/T-legacy-transition-charter/bad", "base": "tests/fixtures/jev/real/T-charter-notes", "source": "~/areas/colloquium notes/01-charter-competition.typ @48abe72, lines 1-220 (the T-charter-notes excerpt), accepted legacy notes that break the written rule: section 62 opens on _Weinberger_ with no turn; same legacy base, the new span adds a section opening cold on the statute" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/T-legacy-transition-texas/ok", "base": "tests/fixtures/jev/real/T-texas-notes", "source": "~/areas/colloquium notes/03-texas.typ @48abe72, lines 1-183 (the T-texas-notes excerpt), accepted notes as legacy base; the new span adds the same section opening with a turn" },
+          { "kind": "violating", "path": "tests/fixtures/jev/real/T-legacy-transition-texas/bad", "base": "tests/fixtures/jev/real/T-texas-notes", "source": "~/areas/colloquium notes/03-texas.typ @48abe72, lines 1-183 (the T-texas-notes excerpt), accepted notes as legacy base; same legacy base, the new span adds a section opening cold on the statute" }
         ]
       }
     },
