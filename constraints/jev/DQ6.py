@@ -1,6 +1,6 @@
-"""DQ6: every row-changing transform shows its row count before AND after. Calibrated 2026-10-02, two runs: vio2 0.93-0.95, sat2 0.02, real 32_agk2019 0.02."""
+"""DQ6: every row-changing transform shows its row count before AND after. Calibrated 2026-10-02, two runs: vio2 0.93-0.95, sat2 0.02, real 32_agk2019 0.02; diff-scoped 2026-10-02: four legacy-base pairs, new unlogged hunk 0.98-0.99, new logged hunk <=0.01."""
 from _common import render_json
-from _ds import MAX_ITEMS, is_py, sources, transform_sites
+from _ds import MAX_ITEMS, in_scope, is_py, sources, transform_sites
 
 PROPOSITION = ('Verification is not output-first: at least one row-changing transform (filter, join, merge, '
                'dedupe, dropna, groupby, concat) lacks a Before/After record, meaning the row count or shape '
@@ -15,8 +15,10 @@ CRITERIA = {
 }
 
 
-def evidence(files, plan_lines=None):
+def evidence(files, plan_lines=None, changed=None):
     sites = [s for rel, lines in sources(files) if is_py(rel) for s in transform_sites(rel, lines)]
+    sites, skipped = in_scope(sites, changed)
+    sites = [{k: v for k, v in s.items() if k != 'end_line'} for s in sites]
     sites.sort(key=lambda s: s['before_and_after_shown'])
     inventory = {
         'transform_sites_note': ('a site is an assignment whose method chain changes the row count; a '
@@ -27,4 +29,10 @@ def evidence(files, plan_lines=None):
         'n_transform_sites': len(sites),
         'n_transforms_without_before_and_after': sum(not s['before_and_after_shown'] for s in sites),
     }
+    if changed is not None:
+        inventory['n_transforms_considered'] = len(sites)
+        inventory['n_transforms_skipped_unchanged'] = skipped
+        inventory['diff_scope_note'] = ('only transforms on lines the round added or changed are listed; '
+                                        'unchanged ones are out of scope, counted in n_transforms_skipped_unchanged '
+                                        'and never a violation')
     return render_json('DQ6', files, inventory, [])
