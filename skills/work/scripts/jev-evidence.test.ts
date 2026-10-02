@@ -55,17 +55,29 @@ test("every rule's criteria carry the four options", async () => {
     }
 });
 
-test("A1 VIO twin shows no robustness check beyond the spec curve; SAT shows one", async () => {
-    const what = "ANY additional robustness check beyond the spec curve";
-    const sat = (await getEvidence("A1", "sat")).A1.state.searches.find((s: any) => s.what === what);
-    const vio = (await getEvidence("A1", "vio")).A1.state.searches.find((s: any) => s.what === what);
-    expect(sat.matches.length).toBeGreaterThan(0);
-    expect(vio.matches.length).toBe(0);
+test("A1 old twins are comment-only and read N/A: no estimator, so no specification curve site", async () => {
+    for (const twin of ["vio", "sat"] as const) {
+        const st = (await getEvidence("A1", twin)).A1.state;
+        expect(st.n_estimation_sites).toBe(0);
+        expect(st.n_specification_curve_sites).toBe(0);
+    }
+});
+
+test("A1 counts winsorizing and subsamples as specification choices, and a placebo loop as a check, not a curve", async () => {
+    const vio = await state2("A1", "vio2");
+    expect(vio.n_specification_curve_sites).toBe(1);
+    expect(vio.n_robustness_check_sites).toBe(0);
+    const sat = await state2("A1", "sat2");
+    expect(sat.n_estimation_sites).toBe(2);
+    expect(sat.n_specification_curve_sites).toBe(1);
+    expect(sat.estimations_inside_a_robustness_loop.length).toBe(1);
+    expect(sat.robustness_check_kinds).toEqual(["placebo", "resampling_inference"]);
 });
 
 // The count each extractor reports for its defect: [field, on vio2, on sat2]. The stub Jev below
 // reads the same field, so a block means the defect reached the state.
 const DEFECT: Record<string, [string, number, number]> = {
+    A1: ["n_specification_curve_sites_without_robustness_check", 1, 0],
     A4: ["n_main_result_tables_without_figure", 1, 0],
     DEN: ["n_rates_without_base", 2, 0],
     DQ4: ["n_transforms_without_output_count", 5, 0],
