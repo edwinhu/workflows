@@ -142,6 +142,50 @@
           { "kind": "compliant", "path": "tests/fixtures/jev/real/W-third-party-review", "source": "workflows docs/DESIGN-third-party-review.md @d04c8e30, lines 43-57; accepted prose" }
         ]
       }
+    },
+    "authoring": {
+      "rulesDir": "constraints/jev/authoring",
+      "uncalibratedDir": "constraints/jev/authoring/uncalibrated",
+      "layout": "diff",
+      "rules": {
+        "A-DESC": [
+          { "kind": "violating", "path": "tests/fixtures/jev/authoring/A-DESC/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/authoring/A-DESC/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/AUTH-desc-b4343fb2", "source": "workflows commit b4343fb2 (trigger-first descriptions), the frontmatter of skills/ds and skills/plugin-creator SKILL.md before/after; accepted change" }
+        ],
+        "A-PAD": [
+          { "kind": "violating", "path": "tests/fixtures/jev/authoring/A-PAD/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/authoring/A-PAD/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/AUTH-bang-30635500", "source": "workflows commit 30635500, skills/skill-creator/SKILL.md frontmatter plus lines 20-40 (before) and 20-45 (after); accepted change" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/AUTH-sentinel-retire-a4c2f936", "source": "workflows commit a4c2f936 (retire the clarify sentinels), skills/ds/SKILL.md frontmatter top plus every hunk with 8 lines of context; accepted change" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/AUTH-statefiles-claudemd", "source": "workflows .claude/CLAUDE.md @0efa89be, the State Files section (lines 50-133) added onto a one-line file; accepted doctrine" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/AUTH-wc-ranks-redflags", "source": "workflows skills/workflow-creator/SKILL.md @0efa89be, frontmatter plus lines 91-130 and 914-938 added onto the frontmatter; accepted skill" }
+        ],
+        "A-FLAG": [
+          { "kind": "violating", "path": "tests/fixtures/jev/authoring/A-FLAG/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/authoring/A-FLAG/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/AUTH-statefiles-claudemd", "source": "workflows .claude/CLAUDE.md @0efa89be, the State Files section (lines 50-133) added onto a one-line file; accepted doctrine" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/AUTH-wc-ranks-redflags", "source": "workflows skills/workflow-creator/SKILL.md @0efa89be, frontmatter plus lines 91-130 and 914-938 added onto the frontmatter; accepted skill" }
+        ],
+        "A-SOFT": [
+          { "kind": "violating", "path": "tests/fixtures/jev/authoring/A-SOFT/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/authoring/A-SOFT/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/AUTH-statefiles-claudemd", "source": "workflows .claude/CLAUDE.md @0efa89be, the State Files section (lines 50-133) added onto a one-line file; accepted doctrine" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/AUTH-sentinel-retire-a4c2f936", "source": "workflows commit a4c2f936 (retire the clarify sentinels), skills/ds/SKILL.md frontmatter top plus every hunk with 8 lines of context; accepted change" }
+        ],
+        "A-GATE": [
+          { "kind": "violating", "path": "tests/fixtures/jev/authoring/A-GATE/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/authoring/A-GATE/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/AUTH-statefiles-claudemd", "source": "workflows .claude/CLAUDE.md @0efa89be, the State Files section (lines 50-133) added onto a one-line file; accepted doctrine" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/AUTH-wc-ranks-redflags", "source": "workflows skills/workflow-creator/SKILL.md @0efa89be, frontmatter plus lines 91-130 and 914-938 added onto the frontmatter; accepted skill" }
+        ],
+        "A-STATE": [
+          { "kind": "violating", "path": "tests/fixtures/jev/authoring/A-STATE/vio" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/authoring/A-STATE/sat" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/AUTH-sentinel-retire-a4c2f936", "source": "workflows commit a4c2f936 (retire the clarify sentinels), skills/ds/SKILL.md frontmatter top plus every hunk with 8 lines of context; accepted change" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/AUTH-statefiles-claudemd", "source": "workflows .claude/CLAUDE.md @0efa89be, the State Files section (lines 50-133) added onto a one-line file; accepted doctrine" }
+        ]
+      }
     }
   }
 }

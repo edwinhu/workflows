@@ -28,6 +28,21 @@ test('prose is writing, tests and shell scripts are dev, .py is ds only under a 
   expect(await ruleSetFor('/p/data.json', none)).toBeNull()
 })
 
+test('skill, agent and command files, CLAUDE.md, manifests and .planning/ are authoring, ahead of prose', async () => {
+  expect(await ruleSetFor('/p/skills/csv-audit/SKILL.md', none)).toBe('authoring')
+  expect(await ruleSetFor('/p/agents/reviewer.md', none)).toBe('authoring')
+  expect(await ruleSetFor('/home/u/.claude/agents/guard.md', ds)).toBe('authoring')
+  expect(await ruleSetFor('/p/commands/ship.md', none)).toBe('authoring')
+  expect(await ruleSetFor('/p/.claude/CLAUDE.md', none)).toBe('authoring')
+  expect(await ruleSetFor('/p/.claude-plugin/plugin.json', none)).toBe('authoring')
+  expect(await ruleSetFor('/p/hooks/hooks.json', none)).toBe('authoring')
+  expect(await ruleSetFor('/p/.planning/SPEC.md', none)).toBe('authoring')
+  // a reference or a README beside a skill is still prose
+  expect(await ruleSetFor('/p/skills/csv-audit/references/notes.md', none)).toBe('writing')
+  expect(await ruleSetFor('/p/README.md', none)).toBe('writing')
+  expect(await ruleSetFor('/p/package.json', none)).toBeNull()
+})
+
 test('the workflow walk asks each directory up to $HOME, nearest first', async () => {
   expect(ancestors('/home/u/p/src', '/home/u')).toEqual(['/home/u/p/src', '/home/u/p', '/home/u'])
   expect(ancestors('/opt/x', '/home/u')).toEqual(['/opt/x', '/opt', '/'])
