@@ -531,7 +531,7 @@ export function buildVersionSection(version: string): string {
         `## ⚠ WORKFLOWS GUARDS INACTIVE — Claude Code ${have.join(".")} < ${MIN_CLAUDE_CODE}`,
         "",
         `The workflows plugin requires Claude Code >= ${MIN_CLAUDE_CODE}. Its tool-call guards ` +
-          "(image-read-guard, read-guard, suggest-compact, pgrep-self-match, cron-delete-guard, " +
+          "(image-read-guard, read-guard, suggest-compact, pgrep-self-match, bun-parallel-guard, cron-delete-guard, " +
           "atomic-constraint-guard, typst-convention-guard, validate-skill-paths) and bulk-guard " +
           "run only as a mod, and this version does not load mods: none of them is enforcing. " +
           "Tell the user to update Claude Code.",
