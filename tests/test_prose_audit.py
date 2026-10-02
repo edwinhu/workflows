@@ -16,7 +16,10 @@ Run:  uv run --with lxml,pyyaml,pytest python3 -m pytest tests/test_prose_audit.
 """
 from __future__ import annotations
 
+import atexit
 import importlib.util
+import os
+import shutil
 import json
 import subprocess
 import sys
@@ -46,6 +49,8 @@ _DOCX_BUILDER = importlib.util.spec_from_file_location("build_docx", FIXTURES / 
 _BUILD = importlib.util.module_from_spec(_DOCX_BUILDER)
 _DOCX_BUILDER.loader.exec_module(_BUILD)
 _DOCX = Path(tempfile.mkdtemp(prefix="prose-audit-fixture-")) / "manuscript.docx"
+if os.environ.get("KEEP_TMP") != "1":
+    atexit.register(shutil.rmtree, _DOCX.parent, True)
 _BUILD.build(_DOCX)
 
 

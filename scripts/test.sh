@@ -14,7 +14,11 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 run_tmp=$(mktemp -d "${TEST_TMP_BASE:-/tmp}/workflows-test.XXXXXX")
-trap 'rm -rf "$run_tmp"' EXIT
+if [ "${KEEP_TMP:-}" = 1 ]; then
+  echo "test.sh: KEEP_TMP=1 — fixtures kept in $run_tmp, leak guard off" >&2
+else
+  trap 'rm -rf "$run_tmp"' EXIT
+fi
 export TMPDIR="$run_tmp" FARM_OUTCOMES="$run_tmp/farm-outcomes.jsonl"
 
 # A wall-clock cap, because a hang never fails on its own: once in nine runs a worker spun at 100%
@@ -22,4 +26,24 @@ export TMPDIR="$run_tmp" FARM_OUTCOMES="$run_tmp/farm-outcomes.jsonl"
 # timeout signals its whole process group, so the workers go too. Exit 124 = the cap fired.
 cap=()
 command -v timeout >/dev/null && cap=(timeout -k 10 "${TEST_WALL:-600}")
-${cap[@]+"${cap[@]}"} bun test --parallel${TEST_JOBS:+=$TEST_JOBS} "$@"
+rc=0
+${cap[@]+"${cap[@]}"} bun test --parallel${TEST_JOBS:+=$TEST_JOBS} "$@" || rc=$?
+
+# THE LEAK GUARD. A fixture that outlives its test lands in whatever TMPDIR the caller has, and
+# outside this script that is the user's: ~/.tmp held ~125K fixture dirs from one week of bare
+# `bun test` and gate-harness runs (counted 2026-10-02). Every test must sweep what it makes
+# (tests/helpers/tmp.ts), so the run's own TMPDIR must be empty here. Allowed, because neither is a
+# fixture: farm-outcomes.jsonl (this script's FARM_OUTCOMES) and uv-*.lock (uv's interpreter locks,
+# which `uv run` in the python suites keeps on purpose).
+if [ "${KEEP_TMP:-}" != 1 ]; then
+  leaks=$(find "$run_tmp" -mindepth 1 -maxdepth 1 ! -name farm-outcomes.jsonl ! -name 'uv-*.lock' -printf '%f\n' | sort)
+  if [ -n "$leaks" ]; then
+    echo "test.sh: LEAK GUARD FAILED — $(wc -l <<<"$leaks") entries left in the run's TMPDIR:" >&2
+    head -40 <<<"$leaks" | sed 's/^/  /' >&2
+    echo "Create fixture dirs with useTmp() from tests/helpers/tmp.ts; KEEP_TMP=1 keeps them to inspect." >&2
+    [ "$rc" = 0 ] && rc=1
+  else
+    echo "test.sh: leak guard ok — the run's TMPDIR is empty" >&2
+  fi
+fi
+exit "$rc"

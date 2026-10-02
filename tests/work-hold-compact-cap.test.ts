@@ -5,12 +5,11 @@ import { tmpdir } from "node:os";
 
 import { capProvenance, globalArg, restoreLocal, writeLocalCap } from "../hooks/work-hold.ts";
 import { HERMETIC_ENV } from "./helpers/hermetic-env";
+import { useTmp } from "./helpers/tmp.ts";
 
 const REPO = join(import.meta.dir, "..");
 
-function tmp(prefix: string): string {
-  return mkdtempSync(join(tmpdir(), prefix));
-}
+const tmp = useTmp();
 
 // ------------------------------------------------------------------ unit: the local settings file
 

@@ -4,6 +4,9 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { hermeticEnv } from './helpers/hermetic-env'
+import { useTmp } from './helpers/tmp.ts'
+
+const mkTmp = useTmp()
 
 const HOOK = join(import.meta.dir, '..', 'hooks', 'cron-delete-guard.ts')
 
@@ -23,7 +26,7 @@ function mkRun(
 }
 
 function newCwd() {
-  return mkdtempSync(join(tmpdir(), 'cronguard-'))
+  return mkTmp('cronguard-')
 }
 
 /**
@@ -34,7 +37,7 @@ function guard(cwd: string, id: string, env: Record<string, string> = {}) {
   const r = spawnSync('bun', [HOOK], { timeout: 120_000,
     input: JSON.stringify({ hook_event_name: 'PreToolUse', tool_name: 'CronDelete', cwd, tool_input: { id } }),
     encoding: 'utf8',
-    env: hermeticEnv(mkdtempSync(join(tmpdir(), 'cronguard-tmp-')), env),
+    env: hermeticEnv(mkTmp('cronguard-tmp-'), env),
   })
   const decision = r.stdout.trim() ? JSON.parse(r.stdout).hookSpecificOutput.permissionDecision : 'allow'
   return { ...r, decision, reason: r.stdout.trim() ? JSON.parse(r.stdout).hookSpecificOutput.permissionDecisionReason : '' }
@@ -46,7 +49,7 @@ function record(cwd: string, prompt: string, response: unknown) {
       hook_event_name: 'PostToolUse', tool_name: 'CronCreate', cwd,
       tool_input: { prompt, cron: '*/7 * * * *' }, tool_response: response,
     }),
-    encoding: 'utf8', env: hermeticEnv(mkdtempSync(join(tmpdir(), 'cronguard-tmp-'))),
+    encoding: 'utf8', env: hermeticEnv(mkTmp('cronguard-tmp-')),
   })
 }
 
@@ -157,7 +160,7 @@ describe('record mode', () => {
 
 /** record + guard sharing one TMPDIR and one session, which is how a real session uses them. */
 function grindPair(cwd: string, id: string, prompt: string) {
-  const dir = mkdtempSync(join(tmpdir(), 'grindcron-'))
+  const dir = mkTmp('grindcron-')
   const sid = 'grind-session'
   const rec = spawnSync('bun', [HOOK, '--record'], { timeout: 120_000,
     input: JSON.stringify({
@@ -237,7 +240,7 @@ describe('a grind heartbeat is claimed by no run, and deletes anyway', () => {
   test('marking does not reach the ARMED-hold deny', () => {
     const cwd = newCwd()
     mkRun(cwd, 'run-a', { finished: true })
-    const dir = mkdtempSync(join(tmpdir(), 'grindcron-'))
+    const dir = mkTmp('grindcron-')
     const sid = 'gate-session'
     writeFileSync(join(dir, `work-hold-${sid}.json`), JSON.stringify({
       check: 'false', goal: 'g', startedAt: 1, ceilingMinutes: 720, maxRounds: 8, rounds: 0,
@@ -275,7 +278,7 @@ describe('a grind heartbeat is claimed by no run, and deletes anyway', () => {
  * where a test asks for it.
  */
 function holdLedger(entries: [string, string][], opts: { armed?: boolean; unevaluated?: boolean } = {}) {
-  const dir = mkdtempSync(join(tmpdir(), 'holdgate-'))
+  const dir = mkTmp('holdgate-')
   const sid = 'gate-session'
   if (entries.length)
     writeFileSync(join(dir, `work-hold-${sid}.releases.log`),

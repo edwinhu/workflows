@@ -203,6 +203,10 @@ const args = {
       cmd: `bash ${CLAUDE_PLUGIN_ROOT}/skills/workflow-creator/scripts/check.sh --target ${auditDir}${agentFile ? ` --agent ${agentFile}` : ''}` },
   ],
 
+  // The authoring judgement rules (constraints/jev/authoring), scored by Jev over the changed lines;
+  // each is wired only after rule-calibrate passed it.
+  ruleChecks: { name: "jev-authoring-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --project-dir <projectDir> --plan <planPath> --rules ${CLAUDE_PLUGIN_ROOT}/constraints/jev/authoring" },
+
   // The Phase 4 lens verbatim, minus scope fidelity. Omitting `lens` selects work's generic default,
   // not this domain checklist. Keep shared prompt items and refs in sync across both fences.
   lens: {
@@ -357,6 +361,10 @@ const args = {
     { name: "wc-check",
       cmd: `bash ${CLAUDE_PLUGIN_ROOT}/skills/workflow-creator/scripts/check.sh --target ${genDir}${agentFile ? ` --agent ${agentFile}` : ''}` },
   ],
+
+  // The authoring judgement rules (constraints/jev/authoring), scored by Jev over the changed lines;
+  // each is wired only after rule-calibrate passed it.
+  ruleChecks: { name: "jev-authoring-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --project-dir <projectDir> --plan <planPath> --rules ${CLAUDE_PLUGIN_ROOT}/constraints/jev/authoring" },
 
   // One lens after verification and mechanical checks: gate integrity, spine fidelity and scope.
   // Audit-only uses the same checklist minus scope, which has no changes to judge.

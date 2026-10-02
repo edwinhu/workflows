@@ -3,6 +3,9 @@ import { chmodSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from '
 import { dirname, join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
+import { useTmp } from './helpers/tmp.ts'
+
+const mkTmp = useTmp()
 
 /**
  * End to end: Stop payload -> hook -> Jev -> decision, plus every path that must NOT reach Jev.
@@ -77,7 +80,7 @@ function childEnv(dir: string, extra: Record<string, string> = {}): Record<strin
 }
 
 function fixture(turns: Array<{ uuid: string; text: string }> = [{ uuid: 'turn-1', text: 'build the parser and run the suite' }]) {
-  const dir = mkdtempSync(join(tmpdir(), 'earlystop-'))
+  const dir = mkTmp('earlystop-')
   const path = join(dir, 'transcript.jsonl')
   writeTranscript(path, turns)
   return { dir, transcript: path }

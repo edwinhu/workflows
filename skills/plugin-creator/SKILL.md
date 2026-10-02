@@ -91,11 +91,16 @@ Then score the draft using the appropriate template:
 
 Score against all 12 patterns from the checklist. Focus especially on:
 
-1. **Iron Laws** — Does each skill have absolute constraints for high-drift actions?
+Run the authoring judgement rules over the change first —
+`bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --project-dir <repo> --rules ${CLAUDE_PLUGIN_ROOT}/constraints/jev/authoring`
+(exit 2 names each rule at p >= 0.85; exit 1 is Jev unavailable, never a pass). It decides the
+quality clauses below, so score only presence by hand.
+
+1. **Iron Laws** — Does each skill have absolute constraints for high-drift actions? (soft wording: A-SOFT)
 2. **Fact Rows** (supersedes Rationalization Tables, v5.36.0) — Does each skill state its incident-learned, non-derivable knowledge (numbers, thresholds, named incidents, tool quirks) as declarative bullets with drive-framed consequences? Legacy excuse/reality tables count as present but convert on next touch; never author new ones.
-3. **Red Flags + STOP** — Are there pattern interrupts for observable wrong actions?
-4. **Trigger-Only Descriptions** — Does each skill description contain ONLY trigger phrases, no process summary?
-5. **Gate Functions** — Does every phase transition have a verifiable exit condition?
+3. **Red Flags + STOP** — Are there pattern interrupts for the high-drift wrong actions? (action vs intention: A-FLAG)
+4. **Trigger-Only Descriptions** — A-DESC
+5. **Gate Functions** — Does every phase transition have an exit condition? (decidable vs judgement: A-GATE)
 
 #### For Plugin Hooks
 
