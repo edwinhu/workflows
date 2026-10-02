@@ -1,3 +1,6 @@
+"""UNCALIBRATED -- not wired. Calibration 2026-10-02: margin +0.36: violating 1.00, but the compliant fixture scored 0.60-0.63 and both E7 fixtures (no rate at all) 0.92. The extractor drops its own base_stated_within_2_lines flag, so Jev guesses whether a base is stated.
+Kept here, below the glob rule-check.ts reads, until the question or the extractor earns it back.
+"""
 import re
 from _common import _search, _read, _hits, render_json
 

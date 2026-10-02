@@ -1,3 +1,6 @@
+"""UNCALIBRATED -- not wired. Calibration 2026-10-02: margin +0.43 but violating only 0.61. The extractor drops its writes_a_declared_path / writes_a_literal_scratch_path flags.
+Kept here, below the glob rule-check.ts reads, until the question or the extractor earns it back.
+"""
 import re
 from _common import _search, _hits, render_json
 

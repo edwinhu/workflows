@@ -82,7 +82,8 @@ if (!existsSync(evidenceScript)) {
   argsList.push('--rules-dir', rulesDir);
 }
 
-const evidenceRes = spawnSync('python3', [evidenceScript, ...argsList], { encoding: 'utf8' });
+// a large diff yields megabytes of evidence; the default buffer would fail it silently
+const evidenceRes = spawnSync('python3', [evidenceScript, ...argsList], { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 });
 if (evidenceRes.status !== 0) {
   console.error("evidence.py failed:", evidenceRes.stderr);
   process.exit(1);

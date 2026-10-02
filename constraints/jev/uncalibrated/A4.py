@@ -1,3 +1,6 @@
+"""UNCALIBRATED -- not wired. Calibration 2026-10-02: margin +0.02: violating 0.15, compliant 0.11. The extractor drops its figure_reference_within_6_lines flag, so "See fig. 1." and "See above." look alike.
+Kept here, below the glob rule-check.ts reads, until the question or the extractor earns it back.
+"""
 import re
 from _common import _search, _read, _hits, _tables_in_md, render_json
 

@@ -1,3 +1,6 @@
+"""UNCALIBRATED -- not wired. Calibration 2026-10-02: margin +0.10: violating 0.45, compliant 0.28-0.35, and up to 0.57 on other rules' fixtures.
+Kept here, below the glob rule-check.ts reads, until the question or the extractor earns it back.
+"""
 import re
 from _common import _search, render_json
 

@@ -1,3 +1,6 @@
+"""UNCALIBRATED -- not wired. Calibration 2026-10-02: margin -0.15 (inverted): violating 0.27, compliant 0.34. The state is a bag of regex hits with no fact a flow summary would change.
+Kept here, below the glob rule-check.ts reads, until the question or the extractor earns it back.
+"""
 import re
 from _common import _search, render_json
 

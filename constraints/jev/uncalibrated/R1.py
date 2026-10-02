@@ -1,3 +1,6 @@
+"""UNCALIBRATED -- not wired. Calibration 2026-10-02: margin +0.68 but violating only 0.81, and 0.73-0.86 on every other rule's fixtures, files that read no data at all.
+Kept here, below the glob rule-check.ts reads, until the question or the extractor earns it back.
+"""
 import re
 from _common import _search, render_json
 
