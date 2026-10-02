@@ -124,6 +124,17 @@ SET (c) LOST, 2026-10-01. A second diff: old n_rows > 0 in `panel` (092b6fb9) an
  for (a)/(b) keys and 0/na for (c)-only keys. Gated as regress_lost_recovered.
  Audit: r2000/scratch/lost_audit.tsv; report r2000/scratch/lost_set_setup.md.
 
+SET (d) LOST, 2026-10-01. A third diff: old n_rows > 0 in `panel_a449b66c` and 0 in
+ `panel_7ac69e96` (--lost-d-old-panel / --lost-d-new-panel); old rows from the
+ a449b66c panel. Existing X1-X4, X10-X13, X14 and X16-X20 re-applied unchanged.
+ X15 is computed (lost_d_x15_not_applied) but NOT applied: on (d) it fires on two
+ audited real tables whose old row put the shares into the name, and its only
+ cause-2 hits are also X1 hits. Plus (d)-only X21-X23 in LOST_D_RULES (old-row
+ fields only). Columns cand_lost_d .. lost_d_old_n_percent_parsed are appended; all
+ earlier columns are byte-identical for earlier keys and 0/na for (d)-only keys.
+ Gated as regress_lost_d_recovered. Audit: r2000/scratch/lost_d_audit.tsv; report
+ r2000/scratch/lost_set_d_setup.md.
+
 SCOPE, not exclusion, for (b). Of the group-row candidates that survive X1/X2,
 the GATED set is the filings whose lost group rows include at least one carrying a
 PARSED PERCENT; the rest are reported as a DIAGNOSTIC with their own denominator.
@@ -301,6 +312,62 @@ def lost_columns(key, cand_c, lost_rows, lost_old, counts):
     return [1, int(not excluded), x1_x4, x10_x13, *lost, m["n_rows"], m["n_percent_parsed"]]
 
 
+# Set (d) only (2026-10-01): old = panel_a449b66c, new = panel_7ac69e96.
+LOST_D_RULES = {
+    "X21_term_of_office_name": "no old percent; >= 2 old rows; every old holder_name contains Until <year>, Since <year>, or Class I/II/III/IV (a trustee term-of-office cell read into the name)",
+    "X22_holding_verb_name": "no old percent; <= 2 old rows; every old holder_name contains the word owns, owned, holds, receives, received, pays or paid (a prose sentence read as a holder)",
+    "X23_none_cell_name": "no old row carries both shares and a percent; every old holder_name ends in the word None (a dollar-range / 'None' cell read into the name)",
+}
+LOST_D_TERM = r"\b(until (19|20)\d\d|since (19|20)\d\d|class (i{1,3}|iv)\b)"
+LOST_D_VERB = r"\b(owns|owned|holds|receives|received|pays|paid)\b"
+
+
+def lost_d_exclusion_flags(old_rows):
+    """X21-X23 predicates for set (d); membership/recovery flags are deliberately not inputs."""
+    n = len(old_rows)
+    if n == 0:
+        return (0, 0, 0)
+    names = [" ".join((r["holder_name"] or "").split()) for r in old_rows]
+    no_pct = all(r["percent"] == "" for r in old_rows)
+    x21 = int(no_pct and n >= 2 and all(re.search(LOST_D_TERM, nm, re.I) for nm in names))
+    x22 = int(no_pct and n <= 2 and all(re.search(LOST_D_VERB, nm, re.I) for nm in names))
+    x23 = int(not any(r["shares"] != "" and r["percent"] != "" for r in old_rows)
+              and all(re.search(r"\bnone$", nm, re.I) for nm in names))
+    return (x21, x22, x23)
+
+
+LOST_D_HEADER = ["cand_lost_d", "in_set_lost_d", "lost_d_excl_x1_x4", "lost_d_excl_x10_x13",
+                 "lost_d_excl_x14_x20_less_x15", "lost_d_x15_not_applied",
+                 "excl_x21_term_of_office_name", "excl_x22_holding_verb_name",
+                 "excl_x23_none_cell_name", "lost_d_old_n_rows", "lost_d_old_n_percent_parsed"]
+
+
+def lost_d_columns(key, cand_d, d_rows, d_old, counts):
+    """The set-(d) tail of one gold_regress.tsv row."""
+    if key not in cand_d:
+        return [0] * 9 + ["na", "na"]
+    rs = d_rows[key]
+    x1_x4 = int(any(base_exclusion_flags(rs)))
+    x10_x13 = int(any(zero_row_exclusion_flags(rs)))
+    lost = lost_exclusion_flags(rs)          # (x14, x15, x16, x17, x18, x19, x20)
+    x15 = lost[1]
+    x14_x20 = int(any(lost[:1] + lost[2:]))
+    new = lost_d_exclusion_flags(rs)
+    excluded = x1_x4 or x10_x13 or x14_x20 or any(new)
+    counts["lost_d_candidates"] += 1
+    counts["lost_d_excl_x1_x4"] += x1_x4
+    counts["lost_d_excl_x10_x13"] += x10_x13
+    counts["lost_d_excl_x14_x20_less_x15"] += x14_x20
+    counts["lost_d_x15_not_applied"] += x15
+    for name, flag in zip(sorted(LOST_D_RULES), new):
+        counts["lost_d_excl_" + name.split("_")[0].lower()] += flag
+    counts["lost_d_excl_any"] += int(bool(excluded))
+    counts["set_lost_d"] += int(not excluded)
+    m = d_old[key]
+    return [1, int(not excluded), x1_x4, x10_x13, x14_x20, x15, *new,
+            m["n_rows"], m["n_percent_parsed"]]
+
+
 def read_candidate_rows(task):
     """Filter within each shard worker; only candidate rows cross process boundaries."""
     path, keys = task
@@ -435,6 +502,10 @@ def main():
                     help="set (c) old panel (parser 092b6fb9)")
     ap.add_argument("--lost-new-panel", default="/data/def14a_own/panel_a449b66c",
                     help="set (c) new panel (parser a449b66c)")
+    ap.add_argument("--lost-d-old-panel", default="/data/def14a_own/panel_a449b66c",
+                    help="set (d) old panel (parser a449b66c)")
+    ap.add_argument("--lost-d-new-panel", default="/data/def14a_own/panel_7ac69e96",
+                    help="set (d) new panel (parser 7ac69e96)")
     args = ap.parse_args()
     roots = args.source_root or ["/data/def14a_own/work/regsamp18", "/data/def14a_own/work/regsamp"]
     g = args.gold_dir
@@ -482,6 +553,26 @@ def main():
               len(missing_c), len(src_diff)))
     if missing_c or src_diff:
         sys.exit("ERROR: set-(c) keys missing from, or disagreeing with, the (a)/(b) manifest")
+
+    # ---- set (d), 2026-10-01: a THIRD panel diff, a449b66c -> 7ac69e96 ---------
+    d_old = read_manifests(args.lost_d_old_panel)
+    d_new = read_manifests(args.lost_d_new_panel)
+    d_both = set(d_old) & set(d_new)
+    print("[join] lost-d old=%d new=%d matched=%d old_only=%d new_only=%d" % (
+        len(d_old), len(d_new), len(d_both),
+        len(set(d_old) - set(d_new)), len(set(d_new) - set(d_old))))
+    if len(d_both) != len(d_old) or len(d_both) != len(d_new):
+        sys.exit("ERROR: the set-(d) panels do not cover the same filings")
+    cand_d = {k for k in d_both
+              if int(d_old[k]["n_rows"]) > 0 and int(d_new[k]["n_rows"]) == 0}
+    missing_d = cand_d - set(old)
+    src_diff_d = [k for k in cand_d if k in old and old[k]["source_file"] != d_old[k]["source_file"]]
+    print("[set] candidates: (d) lost %d ; also (a) %d ; also (b) %d ; also (c) %d ; "
+          "new keys %d ; not in the (a)/(b) old manifest %d ; source_file disagreements %d" % (
+              len(cand_d), len(cand_d & cand_a), len(cand_d & cand_b), len(cand_d & cand_c),
+              len(cand_d - cands - cand_c), len(missing_d), len(src_diff_d)))
+    if missing_d or src_diff_d:
+        sys.exit("ERROR: set-(d) keys missing from, or disagreeing with, the (a)/(b) manifest")
 
     # ---- the OLD rows of the candidate filings, for X1..X4 and for the report ----
     # N-1A DOLLAR-RANGE ENDPOINTS, quoted from the 0.761 floor: the $1-$10,000 /
@@ -559,6 +650,24 @@ def main():
     for key in lost_rows:
         lost_rows[key].sort(key=lambda r: (int(r["table_index"]), int(r["row_index"])))
 
+    d_rows = defaultdict(list)
+    d_paths = sorted(glob.glob(os.path.join(args.lost_d_old_panel, "rows_*.tsv.gz")))
+    if not d_paths:
+        sys.exit("ERROR: no old row shards under " + args.lost_d_old_panel)
+    n_d_scanned = 0
+    with ProcessPoolExecutor(max_workers=min(8, len(d_paths))) as pool:
+        for scanned, selected in pool.map(read_candidate_rows, [(p, cand_d) for p in d_paths], chunksize=1):
+            n_d_scanned += scanned
+            for key, r in selected:
+                d_rows[key].append(r)
+    n_d_rows = sum(len(v) for v in d_rows.values())
+    print("[transform] lost-d old rows %d -> set-(d) rows %d -> filing aggregates %d" % (
+        n_d_scanned, n_d_rows, len(d_rows)))
+    if set(d_rows) != cand_d or any(len(d_rows[k]) != int(d_old[k]["n_rows"]) for k in cand_d):
+        sys.exit("ERROR: set-(d) old-row coverage/counts disagree with manifests")
+    for key in d_rows:
+        d_rows[key].sort(key=lambda r: (int(r["table_index"]), int(r["row_index"])))
+
     tasks = []
     for key in sorted(cand_b):
         groups = group_rows[key]
@@ -579,14 +688,15 @@ def main():
     print("[source] guarded group classification: %d tasks -> %d matched sources (100%%)" % (len(tasks), len(evidence)))
 
     rows, counts = [], defaultdict(int)
-    for key in sorted(cands | cand_c):
+    for key in sorted(cands | cand_c | cand_d):
         cik, acc = key
         if key not in cands:
-            # A set-(c)-only key: the (a)/(b) columns say "not a candidate", and the
+            # A set-(c)/(d)-only key: the (a)/(b) columns say "not a candidate", and the
             # e4e78a95 old-row statistics, which were never read for it, say so.
             m = old[key]
             rows.append([acc, cik, m["filing_date"], m["source_file"], m["form"]]
-                        + [0] * 16 + ["na"] * 10 + lost_columns(key, cand_c, lost_rows, lost_old, counts))
+                        + [0] * 16 + ["na"] * 10 + lost_columns(key, cand_c, lost_rows, lost_old, counts)
+                        + lost_d_columns(key, cand_d, d_rows, d_old, counts))
             continue
         s = stat[key]
         vals = val_count[key]
@@ -616,7 +726,8 @@ def main():
                      m["n_rows"], m["n_percent_parsed"], s["grp"], s["grp_pct"],
                      s["rows"], max_same,
                      s["pct"], s["endpoint"], len(tables[key]), n_rep_rows]
-                    + lost_columns(key, cand_c, lost_rows, lost_old, counts))
+                    + lost_columns(key, cand_c, lost_rows, lost_old, counts)
+                    + lost_d_columns(key, cand_d, d_rows, d_old, counts))
         if base_exclusion_flags(old_rows[key]) != (x1, x2, x3, x4):
             sys.exit("ERROR: base_exclusion_flags disagrees with the inline X1-X4 for %s" % (key,))
         counts["candidates"] += 1
@@ -667,7 +778,7 @@ def main():
               "old_group_rows_with_percent", "old_rows_counted", "old_max_identical_value",
               # the X3/X4 inputs, so every exclusion can be re-checked from this file
               "old_rows_with_percent", "old_rows_range_endpoint_shares",
-              "old_distinct_table_index", "old_rows_name_repeated_3plus"] + LOST_HEADER
+              "old_distinct_table_index", "old_rows_name_repeated_3plus"] + LOST_HEADER + LOST_D_HEADER
     out_path = os.path.join(g, "gold_regress.tsv")
     rows.sort(key=lambda r: (r[0], int(r[1])))
     with open(out_path, "w") as fh:
@@ -778,6 +889,20 @@ def main():
             "gated_metric": "regress_lost_recovered = |{in_set_lost: >= 1 parsed row now}| / |in_set_lost|",
             "audit": "/home/eh/projects/r2000/scratch/lost_audit.tsv; report /home/eh/projects/r2000/scratch/lost_set_setup.md",
             "old_rows": n_lost_rows,
+        },
+        "lost_d_set": {
+            "added": "2026-10-01",
+            "definition": "set (d): old n_rows > 0 AND new n_rows == 0, old = lost_d_old_panel, new = lost_d_new_panel",
+            "lost_d_old_panel": args.lost_d_old_panel,
+            "lost_d_new_panel": args.lost_d_new_panel,
+            "lost_d_old_panel_parser_commit": "a449b66c",
+            "lost_d_new_panel_parser_commit": "7ac69e96",
+            "exclusion": "X1-X4, X10-X13, X14 and X16-X20 re-applied unchanged to the set-(d) old rows, plus the set-(d)-only X21-X23; old-row fields only",
+            "x15_not_applied": "X15 is recorded in lost_d_x15_not_applied but does not exclude: on set (d) it fires on 2 audited real tables (0000927356-96-000892, 0000950146-97-000298) whose old row put the shares into the name; its 2 cause-2 hits are also X1 hits",
+            "exclusion_rules": LOST_D_RULES,
+            "gated_metric": "regress_lost_d_recovered = |{in_set_lost_d: >= 1 parsed row now}| / |in_set_lost_d|",
+            "audit": "/home/eh/projects/r2000/scratch/lost_d_audit.tsv; report /home/eh/projects/r2000/scratch/lost_set_d_setup.md",
+            "old_rows": n_d_rows,
         },
         "zero_row_exclusion_scope": "X10-X13: set (a) candidates only; old-row fields only; no percent means empty field, not numerical zero; name labels normalize whitespace/case; set (b) gated and diagnostic unchanged; thresholds unchanged; all candidates still submitted and excluded filings reported diagnostic",
         "group_exclusion_rules": GROUP_RULES,

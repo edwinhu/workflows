@@ -1,6 +1,6 @@
 {
   "_about": "Pass thresholds for the parse_def14a_own grind. Locked in lock.sha256; the grind may not edit this file. Each value is argued from a measured baseline in GRIND_PLAN.md — the 2026-09-28 setup baseline for the first round, and the 2026-09-29 dev/holdout pair for the precision round.",
-  "_gating": "EXACTLY the keys under `minimums` (floors, value >= threshold) plus the keys under `maximums` (ceilings, value <= threshold) gate check.sh — ELEVEN of them since 2026-10-01, when the LOST-set round added `regress_lost_recovered` to `minimums` at 0.95 (set (c), see the last `_history` entry) and left every other threshold byte-for-byte unchanged. TEN from the 2026-09-29 REGRESSION round, which added `regress_zero_row_recovered` and `regress_group_row_recovered` to `minimums` at 0.95 and left every other threshold byte-for-byte unchanged. Before that, EIGHT since 2026-09-29, when the duplicate-row round added `sample_yield_worst_year_margin` to `minimums` and a duplicate-rate pair to `maximums`. That pair was redefined later the same day (see the last `_history` entry): it is now `sample_dup_excess_identical_row_rate` / `_max_year`, at the same 0.01 / 0.02, and the `sample_dup_excess_same_table_rate` / `_max_year` it replaced are DIAGNOSTIC. Before the duplicate round: FIVE gates, all floors. Everything under `diagnostics` is computed and printed with its denominator every round and NEVER affects the exit code. That includes the two FactSet aggregate metrics (the FactSet gold is defined by a proxy window over all FactSet stakes and mixes 13F / Form 4 positions — only 21 of 2,647 linked firm-years carry a PXY marker — so a 1 pp band would reward chasing gold noise) and the two ISS share-agreement metrics plus the ISS precision proxy (see `_iss_diagnostics`). The loop must not optimise any of them.",
+  "_gating": "EXACTLY the keys under `minimums` (floors, value >= threshold) plus the keys under `maximums` (ceilings, value <= threshold) gate check.sh — TWELVE of them since 2026-10-01, when the LOST-D round added `regress_lost_d_recovered` to `minimums` at 0.95 (set (d), see the last `_history` entry) and left every other threshold byte-for-byte unchanged. ELEVEN earlier on 2026-10-01, when the LOST-set round added `regress_lost_recovered` to `minimums` at 0.95 (set (c), see the last `_history` entry) and left every other threshold byte-for-byte unchanged. TEN from the 2026-09-29 REGRESSION round, which added `regress_zero_row_recovered` and `regress_group_row_recovered` to `minimums` at 0.95 and left every other threshold byte-for-byte unchanged. Before that, EIGHT since 2026-09-29, when the duplicate-row round added `sample_yield_worst_year_margin` to `minimums` and a duplicate-rate pair to `maximums`. That pair was redefined later the same day (see the last `_history` entry): it is now `sample_dup_excess_identical_row_rate` / `_max_year`, at the same 0.01 / 0.02, and the `sample_dup_excess_same_table_rate` / `_max_year` it replaced are DIAGNOSTIC. Before the duplicate round: FIVE gates, all floors. Everything under `diagnostics` is computed and printed with its denominator every round and NEVER affects the exit code. That includes the two FactSet aggregate metrics (the FactSet gold is defined by a proxy window over all FactSet stakes and mixes 13F / Form 4 positions — only 21 of 2,647 linked firm-years carry a PXY marker — so a 1 pp band would reward chasing gold noise) and the two ISS share-agreement metrics plus the ISS precision proxy (see `_iss_diagnostics`). The loop must not optimise any of them.",
   "_history": [
     {
       "date": "2026-09-28",
@@ -188,6 +188,23 @@
       "denominators": "207912 old and new manifests, 207912 matched; old rows 3156227 -> 2402 rows of 328 lost filings. Audit causes: 175 real regression, 142 old rows wrong, 11 other. Exclusion union 142 (cause-1 false exclusions 0); in_set_lost 186.",
       "ceiling": "recoverable in the gated 186 = 175 cause-1 + 10 cause-2/3 marked recoverable = 185; ceiling 185/186 = 0.9946 >= 0.95, so the floor is 0.95. Without exclusions it would be 295/328 = 0.8994.",
       "baseline": "0.0 by construction at a449b66c (the parser that lost them)"
+    },
+    {
+      "date": "2026-10-01",
+      "round": "SET-(d) LOST_D set added (operator, outside the grind loop); one new gated floor, every other threshold unchanged",
+      "change": "gold_regress.tsv carries set (d): filings with old `panel_a449b66c` (parser a449b66c) n_rows > 0 and `panel_7ac69e96` n_rows == 0. Columns cand_lost_d, in_set_lost_d, lost_d_excl_x1_x4, lost_d_excl_x10_x13, lost_d_excl_x14_x20_less_x15, lost_d_x15_not_applied, excl_x21_term_of_office_name, excl_x22_holding_verb_name, excl_x23_none_cell_name, lost_d_old_n_rows, lost_d_old_n_percent_parsed. New gated floor regress_lost_d_recovered = |{in_set_lost_d: >= 1 parsed row now}| / |in_set_lost_d|. Sets (a)/(b)/(c) membership and columns and every other threshold unchanged (first 44 columns of the 2219 pre-(d) rows byte-identical to the previous gold_regress.tsv).",
+      "rules": {
+        "X1-X4,X10-X13,X14,X16-X20": "re-applied unchanged to the OLD (a449b66c) rows of each set-(d) filing",
+        "X15_not_applied": "computed into lost_d_x15_not_applied, excludes nothing: on set (d) it fires on 2 audited cause-1 real tables (0000927356-96-000892 cik 797568, 0000950146-97-000298 cik 24741), violating zero false exclusions; its 2 cause-2 hits are also X1 hits",
+        "X21_term_of_office_name": "no old percent; >= 2 old rows; every old holder_name contains Until <year>, Since <year>, or Class I/II/III/IV",
+        "X22_holding_verb_name": "no old percent; <= 2 old rows; every old holder_name contains owns, owned, holds, receives, received, pays or paid",
+        "X23_none_cell_name": "no old row carries both shares and a percent; every old holder_name ends in the word None",
+        "field_semantics": "old rows only; never new-parser output, never audit labels"
+      },
+      "evidence": "/home/eh/projects/r2000/scratch/lost_d_audit.tsv (per-filing document-level audit of all 52), /home/eh/projects/r2000/scratch/lost_set_d_setup.md",
+      "denominators": "207912 old and new manifests, 207912 matched; a449b66c rows 3602133 -> 123 rows of 52 lost filings (50 new keys, 2 already set-(a) candidates). Audit causes: 19 real regression, 33 old rows wrong. Exclusion union 32 (X1-X4 3, X14/X16-X20 2, X21 24, X22 2, X23 1; cause-1 false exclusions 0); in_set_lost_d 20. Out of sample on set (c): X21 0, X22 1 (cause-2), X23 0.",
+      "ceiling": "recoverable in the gated 20 = 19 cause-1 + 1 cause-2 class_column_name recoverable = 20; ceiling 20/20 = 1.0 >= 0.95, so the floor is 0.95. Without exclusions it would be 22/52 = 0.4231.",
+      "baseline": "0.0 by construction at 7ac69e96 (the parser that lost them)"
     }
   ],
   "_baseline_2026_09_28_dev": {
@@ -208,7 +225,8 @@
     "sample_yield_worst_year_margin": 0.0,
     "regress_zero_row_recovered": 0.95,
     "regress_group_row_recovered": 0.95,
-    "regress_lost_recovered": 0.95
+    "regress_lost_recovered": 0.95,
+    "regress_lost_d_recovered": 0.95
   },
   "maximums": {
     "sample_dup_excess_identical_row_rate": 0.01,
@@ -269,7 +287,8 @@
     "regress_x7_group_grant_zero_group_row_recovered",
     "regress_x8_group_share_class_name_group_row_recovered",
     "regress_x9_group_position_name_prose_group_row_recovered",
-    "regress_lost_excluded_emitting_rows_rate"
+    "regress_lost_excluded_emitting_rows_rate",
+    "regress_lost_d_excluded_emitting_rows_rate"
   ],
   "_iss_diagnostics": "Added 2026-09-29 with the ISS directors gold set (gold_iss.tsv.gz, 2002-2024). THREE of the four ISS metrics remain DIAGNOSTIC under `diagnostics` — iss_share_agreement_1pct, iss_share_agreement_5pct, iss_individual_precision_proxy — and nothing about them can change check.sh's exit code. The fourth, iss_director_recall, was ADOPTED as a gate later the same day (GRIND_PLAN.md section 8 item 1, ADOPTED 2026-09-29) and sits under `minimums` at the PERMANENT floor 0.82 since the ISS round closed on 2026-09-29 (step 2 of the two-step; it was 0.90 as a round target while the round ran). See the two 2026-09-29 `ISS director-recall round` entries in `_history`."
 }

@@ -401,9 +401,10 @@ rows) is pulled by running `pull_def14a_index.py` with `--start 2002-01-01 --end
 2025-12-31` into a scratch dir and renaming. The original index is left alone so
 gold sets (a) and (b) stay reproducible.
 
-**ELEVEN metrics gate as of 2026-10-01** (the eight below plus
+**TWELVE metrics gate as of 2026-10-01** (the eight below plus
 `regress_zero_row_recovered`, `regress_group_row_recovered` and, since 2026-10-01,
-`regress_lost_recovered` over the lost set (c), all floors at 0.95 —
+`regress_lost_recovered` over the lost set (c) and `regress_lost_d_recovered` over
+the lost set (d), all floors at 0.95 —
 see the regression-ruler section). `minimums` are floors, `maximums` are
 ceilings, and score.py reads both from the locked thresholds file. The duplicate-row
 round (`GRIND_PLAN.md` §9) added a fourth ruler — `gold/sample_full.tsv`, a fixed
@@ -521,6 +522,14 @@ and `textMoneyBlock` must not be weakened. Both gates read **0.0000 at HEAD by
 construction** when the set was cut — the panel is the parser at HEAD.
 
 `gold_regress.tsv` joins `lock.sha256`, which now covers **10** files.
+
+**Set (d), 2026-10-01** (columns `cand_lost_d` / `in_set_lost_d`, same file): `panel_a449b66c`
+n_rows > 0 and `panel_7ac69e96` n_rows == 0, 52 filings. X1-X4, X10-X13, X14 and X16-X20
+re-apply unchanged; X15 is recorded (`lost_d_x15_not_applied`) but excludes nothing,
+because on (d) it hits 2 audited real tables. X21-X23 (`LOST_D_RULES`) are new and use old
+rows only. Gated 20 (ceiling 20/20), `regress_lost_d_recovered` >= 0.95; the 32 excluded
+are reported as `regress_lost_d_excluded_emitting_rows_rate`. Audit:
+`/home/eh/projects/r2000/scratch/lost_d_audit.tsv`.
 
 ### Wall time per shard — diagnostic, never gated (2026-09-29)
 

@@ -1,7 +1,7 @@
 """X10-X13 use old-row fields only; each conjunction has negative controls."""
 import unittest
 
-from build_regress_set import lost_exclusion_flags, zero_row_exclusion_flags
+from build_regress_set import lost_d_exclusion_flags, lost_exclusion_flags, zero_row_exclusion_flags
 
 
 class ZeroExclusionTests(unittest.TestCase):
@@ -114,6 +114,42 @@ class LostExclusionTests(unittest.TestCase):
         bios = [self.row("Joseph L. May 67 Attorney in private practice since 1984", "0", ""),
                 self.row("Jane Smith", "100", ""), self.row("John Doe", "200", "")]
         self.assertEqual(self.flags(bios)["x20"], 0)
+
+
+class LostDExclusionTests(unittest.TestCase):
+    """X21-X23 (set (d), 2026-10-01): old-row fields only; fixtures are set-(d) old-row shapes."""
+
+    def row(self, name="Jane Smith", shares="12345", percent=""):
+        return {"holder_name": name, "shares": shares, "percent": percent}
+
+    def test_real_ownership_table_fires_nothing(self):
+        rows = [self.row("Jane Smith", "120000", "5.1"), self.row("John Doe", "8000", ""),
+                self.row("All directors and executive officers as a group", "300000", "12.4")]
+        self.assertEqual(lost_d_exclusion_flags(rows), (0, 0, 0))
+        self.assertEqual(lost_d_exclusion_flags([]), (0, 0, 0))
+
+    def test_x21_term_of_office(self):
+        rows = [self.row("James B. Hawkes Vice Until 2004.", "196"),
+                self.row("Samuel L. Hayes, III Class II Until 2004. Jacob H. Schiff Professor", "196")]
+        self.assertEqual(lost_d_exclusion_flags(rows)[0], 1)
+        self.assertEqual(lost_d_exclusion_flags(rows[:1])[0], 0)
+        self.assertEqual(lost_d_exclusion_flags([dict(rows[0], percent="1"), rows[1]])[0], 0)
+        self.assertEqual(lost_d_exclusion_flags([rows[0], self.row("Jane Smith", "500")])[0], 0)
+        self.assertEqual(lost_d_exclusion_flags([self.row("Classic Fund Trust"), self.row("Class Ivy LLC")])[0], 0)
+
+    def test_x22_holding_verb(self):
+        self.assertEqual(lost_d_exclusion_flags([self.row("W&MLLP receives", "96000")])[1], 1)
+        self.assertEqual(lost_d_exclusion_flags([self.row("Scott D. Malkin owns of record and beneficially", "33334")])[1], 1)
+        self.assertEqual(lost_d_exclusion_flags([self.row("W&MLLP receives", "96000", "2.1")])[1], 0)
+        self.assertEqual(lost_d_exclusion_flags([self.row("W&MLLP receives")] * 3)[1], 0)
+        self.assertEqual(lost_d_exclusion_flags([self.row("Holdsworth Partners")])[1], 0)
+
+    def test_x23_none_cell(self):
+        rows = [self.row("Millard Handley Pryor, None", "100000"), self.row("John Kelley Springer None", "", "1")]
+        self.assertEqual(lost_d_exclusion_flags(rows)[2], 1)
+        self.assertEqual(lost_d_exclusion_flags([self.row("Millard Pryor, None", "100000", "1")])[2], 0)
+        self.assertEqual(lost_d_exclusion_flags([rows[0], self.row("Jane Smith", "500")])[2], 0)
+        self.assertEqual(lost_d_exclusion_flags([self.row("Nonesuch Holdings", "500")])[2], 0)
 
 
 if __name__ == "__main__":

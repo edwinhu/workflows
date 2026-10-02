@@ -15,14 +15,15 @@ The loop ends when this exits 0, and nothing else ends it:
 bash /home/eh/projects/workflows/skills/wrds/scripts/parse_def14a_own/check.sh
 ```
 
-**Exactly ELEVEN metrics gate** — the keys under `minimums` (floors) plus the keys
+**Exactly TWELVE metrics gate** — the keys under `minimums` (floors) plus the keys
 under `maximums` (ceilings) in `thresholds.json`:
 
 | gated metric | kind | threshold |
 |---|---|---:|
-| `regress_lost_recovered` | floor | **≥ 0.95** — THIS round's target |
-| `regress_zero_row_recovered` | floor | ≥ 0.95 — passing at a449b66c, guard |
-| `regress_group_row_recovered` | floor | ≥ 0.95 — passing at a449b66c, guard |
+| `regress_lost_d_recovered` | floor | **≥ 0.95** — THIS round's target |
+| `regress_lost_recovered` | floor | ≥ 0.95 — passing at 7ac69e96 (0.9516), guard |
+| `regress_zero_row_recovered` | floor | ≥ 0.95 — passing at 7ac69e96 (0.9511), guard |
+| `regress_group_row_recovered` | floor | ≥ 0.95 — passing at 7ac69e96 (0.9870), guard |
 | `sample_dup_excess_identical_row_rate` | ceiling | ≤ 0.01 |
 | `sample_dup_excess_identical_row_rate_max_year` | ceiling | ≤ 0.02 |
 | `sample_yield_worst_year_margin` | floor | ≥ 0.0 — the per-year no-regression guard |
@@ -32,9 +33,23 @@ under `maximums` (ceilings) in `thresholds.json`:
 | `group_row_detection_rate` | floor | 0.80 |
 | `iss_director_recall` | floor | 0.82 |
 
-## THIS ROUND IS THE LOST-SET ROUND (2026-10-01)
+## THIS ROUND IS THE LOST-D ROUND (2026-10-01)
 
-**`regress_lost_recovered` is the only gate short** (0 / 186 at a449b66c; the
+**`regress_lost_d_recovered` is the only gate short** (0 / 20 at 7ac69e96; the
+other eleven pass). Set (d) = filings with ≥ 1 row in `panel_a449b66c` and 0 rows
+in `panel_7ac69e96`: 52 filings, columns `cand_lost_d` / `in_set_lost_d` in
+`gold/gold_regress.tsv`. 32 are excluded by old-row-only clauses (X1-X4, X10-X13,
+X14, X16-X20 re-applied; X15 NOT applied on (d); X21-X23 new, `LOST_D_RULES`); the
+gated 20 are 19 real ownership tables plus 1 genuine table whose old names were a
+class column, ceiling 20/20. A rise in `regress_lost_d_excluded_emitting_rows_rate`
+is junk coming back, not recovery. Audit: `/home/eh/projects/r2000/scratch/lost_d_audit.tsv`
+(filter `cause == 1`); report `/home/eh/projects/r2000/scratch/lost_set_d_setup.md`.
+`regress_lost_recovered` (0.9516) and `regress_zero_row_recovered` (0.9511) clear
+0.95 with zero filings to spare (177 and 603 are the minimum passing counts): losing one filing from either fails it.
+
+## THE LOST-SET ROUND (2026-10-01) — PASSING AT 7ac69e96, GUARD ONLY
+
+**`regress_lost_recovered` was the only gate short** (0 / 186 at a449b66c; the
 other ten pass). Set (c) = filings with ≥ 1 row in `panel` (parser 092b6fb9) and
 0 rows in `panel_a449b66c`: 328 filings, columns `cand_lost` / `in_set_lost` in
 `gold/gold_regress.tsv`. 142 are excluded by old-row-only clauses (X1-X4,

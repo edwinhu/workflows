@@ -15,10 +15,11 @@
 #             the regression set (score.py refuses to compute a gated rate over a
 #             partial denominator), 3 the hash lock does not verify.
 #
-# ELEVEN metrics gate as of 2026-10-01 — the keys under `minimums` (floors) plus
+# TWELVE metrics gate as of 2026-10-01 — the keys under `minimums` (floors) plus
 # the keys under `maximums` (ceilings) in thresholds.json: the five older floors,
 # `sample_yield_worst_year_margin`, the two identical-row duplicate ceilings, and
-# `regress_zero_row_recovered` / `regress_group_row_recovered` / `regress_lost_recovered`.
+# `regress_zero_row_recovered` / `regress_group_row_recovered` / `regress_lost_recovered` /
+# `regress_lost_d_recovered`.
 # This script never names them; score.py reads the gated set from the locked
 # thresholds file.
 
