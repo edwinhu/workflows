@@ -69,6 +69,12 @@ const EXCLUSIONS: Record<string, string> = {
   "scripts/hook-golden.ts":
     "ZERO ARGS IS THE INVOCATION: the golden harness replays this repo's own hooks from " +
     "tests/golden/. It finds its own inputs and spawns every hook, so the sweep does not run it.",
+  "scripts/grind-notify-hermetic-check.sh":
+    "ZERO ARGS IS THE INVOCATION: runs this repo's own grind/early-stop suites (located from " +
+    "BASH_SOURCE) and checks they notify nobody. It takes minutes, so the sweep does not run it.",
+  "scripts/mod-test.sh":
+    "ZERO ARGS IS THE INVOCATION: stages this repo's own hooks module (located from BASH_SOURCE) " +
+    "into a temp plugin and runs `claude plugin test` on it. tests/farm-watch-runs.test.ts drives it.",
   "scripts/scan-public-privacy.ts":
     "ZERO ARGS IS THE INVOCATION: with no argv[2] it resolves the plugin root from " +
     "import.meta.dir and scans this repo -- it defaults to a real corpus, not to the caller's cwd.",
