@@ -1,0 +1,56 @@
+// --- excerpt ---
+ *   usageRank          1 = most tokens summed over OpenRouter's rankings dataset window
+ *                      ($ROUTE_RANKINGS_URL, default GET /api/v1/datasets/rankings-daily: last 30
+ *                      days, top 50 per day). A permaslug's `:variant` and trailing date suffix are
+ *                      folded into its base slug before summing; the `other` row is never ranked.
+ *   intelligenceIndex  evaluations.artificial_analysis_intelligence_index from Artificial Analysis
+ *                      ($ROUTE_AA_URL, default GET /api/v2/data/llms/models). Matched when the AA
+ *                      creator slug equals the slug's prefix and the AA model slug has the same
+ *                      tokens (lowercase, split on - . _ /) as the slug's model part, in any order;
+ *                      the highest index wins when several AA entries match.
+ *   asOf               the date of the last refresh in which either source answered.
+ * No match is null. A source with no key, or one that fails, leaves that field as it was and says so
+ * on stderr; it never fails the refresh. Keys are read at RUNTIME and never written anywhere:
+ * $OPENROUTER_API_KEY / $ARTIFICIAL_ANALYSIS_API_KEY; then the agenix secret $ROUTE_OPENROUTER_KEY_FILE
+ * / $ROUTE_AA_KEY_FILE (defaults $XDG_RUNTIME_DIR/agenix/openrouter-api-key and
+ * $XDG_RUNTIME_DIR/agenix/artificial-analysis-api-key); else `op read` of
+ * $ROUTE_OPENROUTER_KEY_REF / $ROUTE_AA_KEY_REF (defaults below), with the agenix service-account
+ * token loaded when unset.
+ *
+ * --propose reads signals, prices and availability and prints suggested `kinds` changes; the user
+ * decides and hand-edits the table. Its rule, per kind, exactly:
+ *   pick       PROTECTED when it is the user's Claude default for the kind (judgement:
+ *              claude-opus-5-5; script and review: claude-sonnet-5-5) — never proposed away.
+ *              Otherwise replaced by the AVAILABLE candidate of the SAME provider whose
+ *              intelligenceIndex is strictly higher than the pick's and whose price.prompt is <=
+ *              the pick's (both indexes and both prices known); highest index wins, then the lower
+ *              price, then table order. A replaced pick becomes a fallback.
+ *   fallbacks  the same members (never added, never dropped), available ones ordered by
+// --- excerpt ---
+  const rankingsUrl = process.env.ROUTE_RANKINGS_URL || DEFAULT_RANKINGS_URL
+  if ('missing' in orKey) warn(`usageRank left unchanged: ${orKey.missing}`)
+  else {
+    try {
+      const body = await fetchBody(rankingsUrl, 30_000, { Authorization: `Bearer ${orKey.key}` })
+      ranks = toUsageRanks(body.data)
+      process.stdout.write(`Source: OpenRouter (openrouter.ai/rankings), as of ${body.meta?.as_of ?? 'unknown'}.\n`)
+    } catch (e) {
+      warn(`usageRank left unchanged: rankings ${rankingsUrl} failed (${(e as Error).message})`)
+    }
+  }
+  let intelligence: Map<string, number> | null = null
+  const aaFile = process.env.ROUTE_AA_KEY_FILE ||
+    (process.env.XDG_RUNTIME_DIR ? join(process.env.XDG_RUNTIME_DIR, 'agenix/artificial-analysis-api-key') : undefined)
+  const aaKey = readKey('ARTIFICIAL_ANALYSIS_API_KEY', 'ROUTE_AA_KEY_REF', DEFAULT_AA_KEY_REF, aaFile)
+  const aaUrl = process.env.ROUTE_AA_URL || DEFAULT_AA_URL
+  if ('missing' in aaKey) warn(`intelligenceIndex left unchanged: ${aaKey.missing}`)
+  else {
+    try {
+      intelligence = toIntelligence(await fetchListing(aaUrl, 30_000, { 'x-api-key': aaKey.key }))
+      process.stdout.write('Source: Artificial Analysis (https://artificialanalysis.ai/).\n')
+    } catch (e) {
+      warn(`intelligenceIndex left unchanged: ${aaUrl} failed (${(e as Error).message})`)
+    }
+  }
+  return { ranks, intelligence }
+}

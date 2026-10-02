@@ -1,0 +1,27 @@
+<!-- --- excerpt --- -->
+## Refresh
+
+`route.ts --refresh` is the only sanctioned writer of `available`, `price` and `asOf`. It fetches
+the proxy catalog and the OpenRouter price list once each, never per row, and never touches `kinds`
+or `jev`. It exits 1 naming any kind whose pick went unavailable, and exits 2 with the file
+byte-identical when the proxy is down. An unreachable price list leaves prices unchanged. Run it
+from a repo checkout, never the plugin cache, and review the diff before committing.
+
+**Signals.** It also records `signals` `{usageRank, intelligenceIndex, asOf}` per candidate with an
+`openrouter` slug: one request each to OpenRouter's rankings dataset and the Artificial Analysis
+data API. No match is null; a failed or keyless source leaves its field unchanged, warns on stderr,
+and never fails the refresh. Keys are read at runtime only (`OPENROUTER_API_KEY` /
+`ARTIFICIAL_ANALYSIS_API_KEY`; then the agenix secret `$XDG_RUNTIME_DIR/agenix/openrouter-api-key` /
+`$XDG_RUNTIME_DIR/agenix/artificial-analysis-api-key`; else `op read` from the `Shared with Agents` vault), never written
+to `routing.json`, a log or stdout. **`--propose` is advisory**: it prints suggested `kinds` changes
+with a reason each (`--json` too) and writes nothing; the user approves by editing `kinds`. It never
+moves the Claude defaults (judgement → opus; script, review → sonnet); rule in the `route.ts` header.
+
+## The outcomes file is a new state file
+
+`~/.local/state/workflows/farm-outcomes.jsonl` (`FARM_OUTCOMES` overrides) gets one `row` line per
+finished row (`rowId`, route, shadow scores, prompt sha256 and length, exit, ok, missing, toolCalls)
+and one `verdict` line per `farm.sh --verdict <rowId> correct|wrong "<why>"`. Appends are single
+writes, and no line holds prompt text. The boundary is load-bearing:
+
+- **It is the labelled dataset**: the holdout that decides graduation is built from these lines.

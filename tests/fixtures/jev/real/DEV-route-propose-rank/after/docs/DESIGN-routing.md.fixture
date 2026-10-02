@@ -1,0 +1,38 @@
+<!-- --- excerpt --- -->
+from a repo checkout, never the plugin cache, and review the diff before committing.
+
+**Signals.** It also records `signals` `{usageRank, intelligenceIndex, asOf}` per candidate with an
+`openrouter` slug: one request each to OpenRouter's rankings dataset and the Artificial Analysis
+data API. No match is null; a failed or keyless source leaves its field unchanged, warns on stderr,
+and never fails the refresh. Keys are read at runtime only (`OPENROUTER_API_KEY` /
+`ARTIFICIAL_ANALYSIS_API_KEY`; then the agenix secret `$XDG_RUNTIME_DIR/agenix/openrouter-api-key` /
+`$XDG_RUNTIME_DIR/agenix/artificial-analysis-api-key`; else `op read` from the `Shared with Agents` vault), never written
+to `routing.json`, a log or stdout. **`--propose` is advisory**: it prints suggested `kinds` changes
+with a reason each (`--json` too) and writes nothing; the user approves by editing `kinds`. It never
+moves the Claude defaults (judgement → opus; script, review → sonnet); rule in the `route.ts` header.
+
+**Rank order** (user decision 2026-10-02: the AA ranking comes before popularity). Every ordering
+among eligible candidates, in the pick/fallback rule and in Discovery, is: (1) `intelligenceIndex`
+descending, null last; (2) `usageRank` ascending (1 = most used), null last; (3) `price.prompt`
+ascending, null last; (4) table order (Discovery: the model sharing the candidate's effort suffix,
+then catalog order). Price is a filter, not only a tiebreak: a replacement pick or discovered model
+must cost <= the current one, but among those that do, a more-used model beats a cheaper one on an
+index tie.
+
+**Discovery.** `--propose` also asks the proxy catalog, OpenRouter's model list and AA (one request
+each) for a model the proxy serves that no candidate names, of a candidate's owner and family (name
+minus version numbers and effort suffix), with a strictly higher AA index at <= its prompt price (several: rank order, `usageRank` from one
+more request to the rankings dataset; that source alone failing leaves usage null and discovery
+running), and prints `candidate C: model <old> -> <M> (...)`. Reordering alone could never notice gpt-6-luna beside a
+pinned gpt-5.6-luna. A failed source skips discovery on stderr; rule in the `route.ts` header.
+
+## The outcomes file is a new state file
+
+`~/.local/state/workflows/farm-outcomes.jsonl` (`FARM_OUTCOMES` overrides) gets one `row` line per
+finished row (`rowId`, route, shadow scores, prompt sha256 and length, exit, ok, missing, toolCalls)
+and one `verdict` line per `farm.sh --verdict <rowId> correct|wrong "<why>"`. Appends are single
+writes, and no line holds prompt text. The boundary is load-bearing:
+
+- **It is the labelled dataset**: the holdout that decides graduation is built from these lines.
+- **It spans projects and sessions**, so it cannot live in any one project's `episode.json`, and it
+  lives outside every repo, never in `.planning/`.
