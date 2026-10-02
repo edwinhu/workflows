@@ -1528,7 +1528,8 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
 // citation believed it did. Silence is the whole bug, which is why only a test finds it.
 //
 // A file is legitimate if ANY of:
-//   1. hooks/hooks.json names it in a `command`;
+//   1. hooks/hooks.json names it in a `command`, or the plugin mod runs it in-process (its name is a
+//      `script` in hooks/guards/mod.ts's GUARDS);
 //   2. it is a LIBRARY — leading underscore, or under hooks/lib/, or its header declares no hook
 //      event (nothing imports it as a gate, so nothing should register it);
 //   3. it is on UNREGISTERED_BY_DECISION below — a hook deliberately left unwired.
@@ -1548,6 +1549,8 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
   }
 
   const hooksJson = readFileSync(join(ROOT, 'hooks', 'hooks.json'), 'utf8')
+  const { GUARDS } = await import(join(ROOT, 'hooks', 'guards', 'mod.ts'))
+  const registries = hooksJson + '\n' + GUARDS.map(g => g.script).join('\n')
 
   /** Hook files that exist but nothing invokes. Exported shape: [name, reason]. */
   const unwiredHooks = (dir, registryText, allow) => {
@@ -1567,7 +1570,7 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
   }
 
   const HOOK_DIR = join(ROOT, 'hooks')
-  const unwired = unwiredHooks(HOOK_DIR, hooksJson, UNREGISTERED_BY_DECISION)
+  const unwired = unwiredHooks(HOOK_DIR, registries, UNREGISTERED_BY_DECISION)
   ok('every hook file is registered in hooks.json, a library, or explicitly quarantined',
      unwired.length === 0,
      `unwired: ${unwired.join(', ')}`)
@@ -1621,18 +1624,20 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
 // until someone happens to edit that file. This is the tree-wide converse, so the same finding
 // lands as a CI failure.
 //
-// It imports the hook's OWN checker rather than restating the resolution rules. A second
+// It imports the hook's OWN checker (guards/skill-paths.ts) rather than restating the resolution rules. A second
 // implementation could disagree with the hook about what "broken" means, and the disagreement
-// would be the bug. `import.meta.main` in the hook keeps main() from running on import.
+// would be the bug.
 {
   const { extractAndCheck, findPluginRoot } =
-    await import(join(ROOT, 'hooks', 'validate-skill-paths.ts'))
+    await import(join(ROOT, 'hooks', 'guards', 'skill-paths.ts'))
+  const { nodeIO } = await import(join(ROOT, 'hooks', 'guards', 'node-io.ts'))
+  const io = nodeIO()
 
   /** Broken ${CLAUDE_SKILL_DIR}/${CLAUDE_PLUGIN_ROOT} refs in one file. Shape: ['L<n>: <ref>']. */
-  const brokenPathRefs = (abs) => {
-    const root = findPluginRoot(abs)
+  const brokenPathRefs = async (abs) => {
+    const root = await findPluginRoot(io, abs)
     if (root === null) return []
-    return extractAndCheck(abs, readFileSync(abs, 'utf8'), root)
+    return (await extractAndCheck(io, abs, readFileSync(abs, 'utf8'), root))
       .filter(([, , resolved]) => resolved !== 'FENCED_BANG_BACKTICK')
       .map(([line, raw, resolved]) => `L${line}: ${raw} -> ${resolved}`)
   }
@@ -1648,7 +1653,7 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
     let isFile
     try { isFile = statSync(abs).isFile() } catch { isFile = false }
     if (!isFile) continue
-    for (const ref of brokenPathRefs(abs)) brokenRefs.push(`${f}: ${ref}`)
+    for (const ref of await brokenPathRefs(abs)) brokenRefs.push(`${f}: ${ref}`)
   }
   ok('no tracked .md points a ${CLAUDE_SKILL_DIR}/${CLAUDE_PLUGIN_ROOT} reference at a missing file',
      brokenRefs.length === 0, brokenRefs.join('; '))
@@ -1659,11 +1664,12 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
   const fixture = join(ROOT, 'references', 'zz-ghost-skill-path.md')
   writeFileSync(fixture, 'See `${CLAUDE_PLUGIN_ROOT}/skills/zz-ghost/references/nope.md` for details.\n')
   try {
+    const ghost = await brokenPathRefs(fixture)
     ok('the scan catches a reference to a file that does not exist (not vacuous)',
-       brokenPathRefs(fixture).length === 1, brokenPathRefs(fixture).join('; '))
+       ghost.length === 1, ghost.join('; '))
     writeFileSync(fixture, 'See `${CLAUDE_PLUGIN_ROOT}/hooks/validate-skill-paths.ts` for details.\n')
     ok('the scan clears that same fixture once the reference resolves',
-       brokenPathRefs(fixture).length === 0)
+       (await brokenPathRefs(fixture)).length === 0)
   } finally {
     unlinkSync(fixture)
   }
