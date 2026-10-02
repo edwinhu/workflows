@@ -605,6 +605,37 @@ var reASCIIParenAgeOnly = regexp.MustCompile(`(?i)^\(\s*age\s+[0-9]{1,3}\s*\)$`)
 var reASCIIRecordFundClass = regexp.MustCompile(`(?i)^class\s+[a-z]\s+shares$`)
 var reASCIIRecordFundHolding = regexp.MustCompile(`^([0-9]{1,3}(?:,[0-9]{3})+|[0-9]+)\s+\(([0-9]+(?:\.[0-9]+)?%)\)$`)
 
+var reDittoMark = regexp.MustCompile(`^(?:"|''|\x{201d}|do\.?|ditto)$`)
+
+func captionHasCols(headers []string) bool {
+	share, pct := false, false
+	for col, h := range headers {
+		if col == 0 {
+			continue
+		}
+		share = share || reASCIICaptionShares.MatchString(norm(strings.ReplaceAll(h, "%", "")))
+		pct = pct || reASCIICaptionPercent.MatchString(norm(h))
+	}
+	return share && pct
+}
+
+func captionHeadersByCentre(lines []string, spans []int) []string {
+	out := make([]string, len(spans))
+	for _, l := range lines {
+		if reRuleLine.MatchString(strings.TrimSpace(l)) {
+			continue
+		}
+		for _, g := range splitHdrGroups(l) {
+			mid, col := (g.lo+g.hi)/2, 0
+			for col+1 < len(spans) && spans[col+1] <= mid {
+				col++
+			}
+			out[col] += " " + g.text
+		}
+	}
+	return out
+}
+
 func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 	raw := strings.Split(stripEntities(body), "\n")
 	clean := make([]string, len(raw))
@@ -665,6 +696,15 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 			}
 			for col := range headers {
 				headers[col] += " " + cell(clean[j], col)
+			}
+		}
+		// <C> markers placed over the DATA can split a caption phrase between two
+		// columns ("AMOUNT | AND NATURE OF"); when the cut headers name no share or
+		// no percent column, re-read them by the column holding each header
+		// group's centre.
+		if !captionHasCols(headers) {
+			if alt := captionHeadersByCentre(clean[start+1:marker], spans); captionHasCols(alt) {
+				headers = alt
 			}
 		}
 		shareCol, pctCol, nameCol, classCol := -1, -1, -1, -1
@@ -788,12 +828,21 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 		}
 		var rows []Row
 		fundClass := ""
+		// A class column states the class once and repeats it by ditto marks.
+		lastClass, classSinceRow := "", false
 		var groupHead []string
 		pendingName := ""
 		money := false
 		for j := marker + 1; j < end; j++ {
 			nm := cell(clean[j], nameCol)
 			count := cell(clean[j], shareCol)
+			if classCol >= 0 {
+				if lc, _ := StripFootnotes(cell(clean[j], classCol)); reDittoMark.MatchString(lc) {
+					classSinceRow = lastClass != ""
+				} else if reClassVal.MatchString(lc) {
+					lastClass, classSinceRow = lc, true
+				}
+			}
 			pctText := ""
 			if !countOnly {
 				pctText = cell(clean[j], pctCol)
@@ -909,7 +958,7 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 						break
 					}
 					tail := cell(clean[k], nameCol)
-					if tail == "" {
+					if tail == "" || reRuleLine.MatchString(tail) {
 						continue
 					}
 					joined := norm(nm + " " + tail)
@@ -925,9 +974,13 @@ func textCaptionOwnershipCounts(body string, base Row) ([]Row, int) {
 			}
 			if classCol >= 0 {
 				rowClass, _ = StripFootnotes(reDotLeader.ReplaceAllString(cell(clean[j], classCol), " "))
+				if (rowClass == "" || reDittoMark.MatchString(rowClass)) && classSinceRow {
+					rowClass = lastClass
+				}
 				if !reClassVal.MatchString(rowClass) {
 					continue
 				}
+				classSinceRow = false
 			}
 			grp, gn := isGroupRow(nm)
 			r := base
