@@ -446,3 +446,115 @@ test('registered in hooks.json under Stop, after work-hold.ts, with a 20 s timeo
   expect(iHold).toBeGreaterThanOrEqual(0)
   expect(iEarly).toBeGreaterThan(iHold)
 })
+
+// ------------------------------------------------- owned runs the watcher will wake the session for
+
+/** A fake `claude` binary: the hook reads the version from `$CLAUDE_CODE_EXECPATH --version`. */
+function fakeClaude(dir: string, version: string): string {
+  const bin = join(dir, `claude-${version}`)
+  mkdirSync(bin, { recursive: true })
+  const exe = join(bin, 'claude')
+  writeFileSync(exe, `#!/bin/sh\necho '${version} (Claude Code)'\n`)
+  chmodSync(exe, 0o755)
+  return exe
+}
+
+/** One farm.sh-shaped event file for `pid` under `<dir>/farm-events/<session>`. */
+function farmEvents(dir: string, session: string, pid: number, lines: string[]): void {
+  const d = join(dir, 'farm-events', session)
+  mkdirSync(d, { recursive: true })
+  writeFileSync(join(d, `${pid}.ndjson`), lines.join('\n') + '\n')
+}
+
+const START = (label: string) => `farm: START ${label} t=${Math.floor(Date.now() / 1000)} cwd=/x`
+
+/** A pid that has exited: the child is reaped by spawnSync before it returns. */
+function deadPid(): number {
+  return Bun.spawnSync(['true'], { timeout: 5000 }).pid
+}
+
+function interactiveEnv(dir: string, port: number, extra: Record<string, string> = {}) {
+  return childEnv(dir, {
+    ...decisionsAt(port),
+    CLAUDE_CODE_ENTRYPOINT: 'cli',
+    CLAUDE_CODE_EXECPATH: fakeClaude(dir, '2.1.287'),
+    ...extra,
+  })
+}
+
+test('a LIVE owned run in an interactive session on 2.1.287+ ALLOWS: the watcher wakes it', async () => {
+  const port = 18909
+  const srv = stubDecisions(port, 0.99)
+  await settle()
+  const { dir, transcript } = fixture()
+  // The test runner's own pid: alive for as long as the hook runs.
+  farmEvents(dir, 'es-live', process.pid, [START('alpha')])
+  const r = runHook(interactiveEnv(dir, port), stopPayload('es-live', transcript))
+  srv.kill()
+  expect(r.out).toBe('')
+  expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).toContain('owned runs live, the watcher wakes the session: alpha')
+}, 30000)
+
+test('a FINISHED owned run (DONE line) leaves the judge in charge: it BLOCKS', async () => {
+  const port = 18910
+  const srv = stubDecisions(port, 0.99)
+  await settle()
+  const { dir, transcript } = fixture()
+  farmEvents(dir, 'es-done', process.pid, [START('alpha'), 'farm: DONE alpha ok rc=0'])
+  const r = runHook(interactiveEnv(dir, port), stopPayload('es-done', transcript))
+  srv.kill()
+  expect(r.out).toContain('"decision":"block"')
+}, 30000)
+
+test('a GONE owned run (no DONE, pid dead) leaves the judge in charge: it BLOCKS', async () => {
+  const port = 18911
+  const srv = stubDecisions(port, 0.99)
+  await settle()
+  const { dir, transcript } = fixture()
+  farmEvents(dir, 'es-gone', deadPid(), [START('alpha')])
+  const r = runHook(interactiveEnv(dir, port), stopPayload('es-gone', transcript))
+  srv.kill()
+  expect(r.out).toContain('"decision":"block"')
+}, 30000)
+
+test("ANOTHER session's live run does not count: it BLOCKS", async () => {
+  const port = 18912
+  const srv = stubDecisions(port, 0.99)
+  await settle()
+  const { dir, transcript } = fixture()
+  farmEvents(dir, 'some-other-session', process.pid, [START('theirs')])
+  const r = runHook(interactiveEnv(dir, port), stopPayload('es-mine', transcript))
+  srv.kill()
+  expect(r.out).toContain('"decision":"block"')
+}, 30000)
+
+test('HEADLESS (entrypoint sdk-cli) with a live owned run: no watcher, so it BLOCKS', async () => {
+  const port = 18913
+  const srv = stubDecisions(port, 0.99)
+  await settle()
+  const { dir, transcript } = fixture()
+  farmEvents(dir, 'es-headless', process.pid, [START('alpha')])
+  const r = runHook(interactiveEnv(dir, port, { CLAUDE_CODE_ENTRYPOINT: 'sdk-cli' }), stopPayload('es-headless', transcript))
+  srv.kill()
+  expect(r.out).toContain('"decision":"block"')
+}, 30000)
+
+test('below 2.1.287, or with no readable version, mods do not load: it BLOCKS', async () => {
+  const port = 18914
+  const srv = stubDecisions(port, 0.99)
+  await settle()
+  const old = fixture()
+  farmEvents(old.dir, 'es-old', process.pid, [START('alpha')])
+  const rOld = runHook(
+    interactiveEnv(old.dir, port, { CLAUDE_CODE_EXECPATH: fakeClaude(old.dir, '2.1.286') }),
+    stopPayload('es-old', old.transcript),
+  )
+  const none = fixture()
+  farmEvents(none.dir, 'es-nover', process.pid, [START('alpha')])
+  const envNone = interactiveEnv(none.dir, port)
+  delete envNone.CLAUDE_CODE_EXECPATH
+  const rNone = runHook(envNone, stopPayload('es-nover', none.transcript))
+  srv.kill()
+  expect(rOld.out).toContain('"decision":"block"')
+  expect(rNone.out).toContain('"decision":"block"')
+}, 30000)

@@ -519,31 +519,34 @@ function versionParts(v: string): number[] | null {
   return m ? m.slice(1).map(Number) : null;
 }
 
-/** "" unless `version` parses and is below MIN_CLAUDE_CODE; an unreadable version says nothing. */
-export function buildVersionSection(version: string): string {
+/** Is `version` below MIN_CLAUDE_CODE? null when it does not parse. */
+export function belowMinClaudeCode(version: string): boolean | null {
   const have = versionParts(version);
   const need = versionParts(MIN_CLAUDE_CODE)!;
-  if (!have) return "";
+  if (!have) return null;
   for (let i = 0; i < 3; i++) {
-    if (have[i] > need[i]) return "";
-    if (have[i] < need[i]) {
-      return [
-        `## ⚠ WORKFLOWS GUARDS INACTIVE — Claude Code ${have.join(".")} < ${MIN_CLAUDE_CODE}`,
-        "",
-        `The workflows plugin requires Claude Code >= ${MIN_CLAUDE_CODE}. Its tool-call guards ` +
-          "(image-read-guard, read-guard, suggest-compact, pgrep-self-match, bun-parallel-guard, cron-delete-guard, " +
-          "atomic-constraint-guard, typst-convention-guard, validate-skill-paths) and bulk-guard " +
-          "run only as a mod, and this version does not load mods: none of them is enforcing. " +
-          "Tell the user to update Claude Code.",
-        "",
-      ].join("\n");
-    }
+    if (have[i] !== need[i]) return have[i] < need[i];
   }
-  return "";
+  return false;
+}
+
+/** "" unless `version` parses and is below MIN_CLAUDE_CODE; an unreadable version says nothing. */
+export function buildVersionSection(version: string): string {
+  if (belowMinClaudeCode(version) !== true) return "";
+  return [
+    `## ⚠ WORKFLOWS GUARDS INACTIVE — Claude Code ${versionParts(version)!.join(".")} < ${MIN_CLAUDE_CODE}`,
+    "",
+    `The workflows plugin requires Claude Code >= ${MIN_CLAUDE_CODE}. Its tool-call guards ` +
+      "(image-read-guard, read-guard, suggest-compact, pgrep-self-match, bun-parallel-guard, cron-delete-guard, " +
+      "atomic-constraint-guard, typst-convention-guard, validate-skill-paths) and bulk-guard " +
+      "run only as a mod, and this version does not load mods: none of them is enforcing. " +
+      "Tell the user to update Claude Code.",
+    "",
+  ].join("\n");
 }
 
 /** The running binary's version, from the path the harness exports; "" when it cannot tell. */
-function runningClaudeVersion(): string {
+export function runningClaudeVersion(): string {
   const exe = process.env.CLAUDE_CODE_EXECPATH;
   if (!exe) return "";
   try {
