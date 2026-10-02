@@ -68,11 +68,14 @@
  *              claude-opus-5-5; script and review: claude-sonnet-5-5) — never proposed away.
  *              Otherwise replaced by the AVAILABLE candidate of the SAME provider whose
  *              intelligenceIndex is strictly higher than the pick's and whose price.prompt is <=
- *              the pick's (both indexes and both prices known); highest index wins, then the lower
- *              price, then table order. A replaced pick becomes a fallback.
- *   fallbacks  the same members (never added, never dropped), available ones ordered by
- *              intelligenceIndex descending (null last, ties keep table order), unavailable ones
- *              after them in table order.
+ *              the pick's (both indexes and both prices known). Price is a FILTER only; among the
+ *              eligible the order is RANK ORDER below. A replaced pick becomes a fallback.
+ *   fallbacks  the same members (never added, never dropped), available ones in RANK ORDER,
+ *              unavailable ones after them in table order.
+ *   RANK ORDER (decided 2026-10-02: the AA ranking comes before popularity), applied to every
+ *              ordering among eligible candidates here and in DISCOVERY: (1) intelligenceIndex
+ *              descending, null last; (2) signals.usageRank ascending (1 = most used), null last;
+ *              (3) price.prompt ascending, null last; (4) table order.
  * Exit 0 always ('no change proposed' when nothing differs); exit 2 when the table cannot be read.
  *
  * --propose also runs DISCOVERY, advisory like the rest: one request each to the proxy catalog
@@ -84,13 +87,16 @@
  *              -medium|-high|-xhigh|-max>); its index is the AA entry with that same slugKey.
  *   qualify    M's family (slugKey with the all-digit tokens dropped, e.g. openai/gpt luna) equals
  *              C's, M's AA index is strictly greater than C's, and M's OpenRouter price.prompt is <=
- *              C's. C's index and price are the fresh AA/OpenRouter values for C's slug, else the
- *              table's.
+ *              C's (price is a filter only). C's index and price are the fresh AA/OpenRouter values
+ *              for C's slug, else the table's.
  *   propose    'candidate C: model <old> -> <M> (index a -> b, price p -> q)'. Several qualifying:
- *              highest index, then lower price, then M sharing C's model's effort suffix, then
- *              catalog order.
+ *              RANK ORDER, where M's usageRank is its rank in OpenRouter's rankings dataset (the
+ *              same slugKey match as --refresh; one more request), and step (4) is M sharing C's
+ *              model's effort suffix, then catalog order.
  * A source that fails (or no AA key) is reported on stderr and discovery is skipped; the proxy is
- * asked first, so a dead proxy costs no key lookup. --json prints {proposals, discoveries}.
+ * asked first, so a dead proxy costs no key lookup. The rankings source alone failing (or keyless)
+ * is warned on stderr and leaves every usageRank null; discovery still runs. --json prints
+ * {proposals, discoveries}.
  */
 import { createHash } from 'node:crypto'
 import { readFileSync, realpathSync, renameSync, rmSync, writeFileSync } from 'node:fs'
@@ -626,24 +632,30 @@ function readAaKey(): { key: string } | { missing: string } {
   return readKey('ARTIFICIAL_ANALYSIS_API_KEY', 'ROUTE_AA_KEY_REF', DEFAULT_AA_KEY_REF, aaFile)
 }
 
-/** One request per source. Never throws: a source that cannot answer is null, with the reason on stderr. */
-async function fetchSignals(): Promise<{ ranks: Map<string, number> | null; intelligence: Map<string, number> | null }> {
-  const warn = (msg: string) => process.stderr.write(`route --refresh: ${msg}\n`)
-  let ranks: Map<string, number> | null = null
+/** One request to OpenRouter's rankings dataset. Null when keyless or failed, the reason going to `warn`. */
+async function fetchRanks(warn: (msg: string) => void): Promise<{ ranks: Map<string, number>; asOf: string } | null> {
   const orFile = process.env.ROUTE_OPENROUTER_KEY_FILE ||
     (process.env.XDG_RUNTIME_DIR ? join(process.env.XDG_RUNTIME_DIR, 'agenix/openrouter-api-key') : undefined)
   const orKey = readKey('OPENROUTER_API_KEY', 'ROUTE_OPENROUTER_KEY_REF', DEFAULT_OPENROUTER_KEY_REF, orFile)
   const rankingsUrl = process.env.ROUTE_RANKINGS_URL || DEFAULT_RANKINGS_URL
-  if ('missing' in orKey) warn(`usageRank left unchanged: ${orKey.missing}`)
-  else {
-    try {
-      const body = await fetchBody(rankingsUrl, 30_000, { Authorization: `Bearer ${orKey.key}` })
-      ranks = toUsageRanks(body.data)
-      process.stdout.write(`Source: OpenRouter (openrouter.ai/rankings), as of ${body.meta?.as_of ?? 'unknown'}.\n`)
-    } catch (e) {
-      warn(`usageRank left unchanged: rankings ${rankingsUrl} failed (${(e as Error).message})`)
-    }
+  if ('missing' in orKey) {
+    warn(`usageRank left unchanged: ${orKey.missing}`)
+    return null
   }
+  try {
+    const body = await fetchBody(rankingsUrl, 30_000, { Authorization: `Bearer ${orKey.key}` })
+    return { ranks: toUsageRanks(body.data), asOf: body.meta?.as_of ?? 'unknown' }
+  } catch (e) {
+    warn(`usageRank left unchanged: rankings ${rankingsUrl} failed (${(e as Error).message})`)
+    return null
+  }
+}
+
+/** One request per source. Never throws: a source that cannot answer is null, with the reason on stderr. */
+async function fetchSignals(): Promise<{ ranks: Map<string, number> | null; intelligence: Map<string, number> | null }> {
+  const warn = (msg: string) => process.stderr.write(`route --refresh: ${msg}\n`)
+  const ranks = await fetchRanks(warn)
+  if (ranks) process.stdout.write(`Source: OpenRouter (openrouter.ai/rankings), as of ${ranks.asOf}.\n`)
   let intelligence: Map<string, number> | null = null
   const aaKey = readAaKey()
   const aaUrl = process.env.ROUTE_AA_URL || DEFAULT_AA_URL
@@ -656,7 +668,7 @@ async function fetchSignals(): Promise<{ ranks: Map<string, number> | null; inte
       warn(`intelligenceIndex left unchanged: ${aaUrl} failed (${(e as Error).message})`)
     }
   }
-  return { ranks, intelligence }
+  return { ranks: ranks?.ranks ?? null, intelligence }
 }
 
 /** Replace the file in one rename, so a reader never sees half a table. A symlinked path keeps its link. */
@@ -748,10 +760,26 @@ export interface Proposal {
   reason: string
 }
 
+interface RankKey {
+  index: number | null
+  usage: number | null
+  price: number | null
+}
+
+/** RANK ORDER steps (1)-(3) from the header; 0 on a tie, so a stable sort keeps the caller's order for step (4). */
+function rankCmp(a: RankKey, b: RankKey): number {
+  const nullLast = (x: number | null, y: number | null, sign: 1 | -1) =>
+    x === y ? 0 : x === null ? 1 : y === null ? -1 : sign * (x - y)
+  return nullLast(a.index, b.index, -1) || nullLast(a.usage, b.usage, 1) || nullLast(a.price, b.price, 1)
+}
+
 /** The rule in the header, applied to every kind. Pure: never writes the table. */
 export function propose(table: Table): Proposal[] {
   const cand = (id: string) => table.candidates[id]
   const idx = (id: string) => cand(id).signals?.intelligenceIndex ?? null
+  const rank = (id: string): RankKey => ({
+    index: idx(id), usage: cand(id).signals?.usageRank ?? null, price: cand(id).price?.prompt ?? null,
+  })
   const fmt = (v: number | null) => (v === null ? 'null' : String(v))
   const out: Proposal[] = []
   for (const [kind, entry] of Object.entries(table.kinds)) {
@@ -768,7 +796,7 @@ export function propose(table: Table): Proposal[] {
           const ci = idx(id)
           return id !== pick && c.available && c.provider === pc.provider && ci !== null && ci > pi && !!c.price && c.price.prompt <= pp
         })
-        .sort((a, b) => idx(b)! - idx(a)! || cand(a).price!.prompt - cand(b).price!.prompt)
+        .sort((a, b) => rankCmp(rank(a), rank(b)))
       if (better.length) {
         newPick = better[0]
         reasons.push(
@@ -780,11 +808,11 @@ export function propose(table: Table): Proposal[] {
     const members = [...fallbacks.filter(id => id !== newPick), ...(newPick !== pick ? [pick] : [])]
     const avail = members
       .filter(id => cand(id).available)
-      .sort((a, b) => (idx(b) ?? Number.NEGATIVE_INFINITY) - (idx(a) ?? Number.NEGATIVE_INFINITY))
+      .sort((a, b) => rankCmp(rank(a), rank(b)))
     const newFallbacks = [...avail, ...members.filter(id => !cand(id).available)]
     if (newPick === pick && JSON.stringify(newFallbacks) === JSON.stringify(fallbacks)) continue
     if (JSON.stringify(newFallbacks) !== JSON.stringify(fallbacks))
-      reasons.push(`fallbacks by intelligenceIndex among available: ${avail.map(id => `${id} ${fmt(idx(id))}`).join(', ')}`)
+      reasons.push(`fallbacks by index, usage, price among available: ${avail.map(id => `${id} ${fmt(idx(id))}`).join(', ')}`)
     out.push({ kind, from: { pick, fallbacks }, to: { pick: newPick, fallbacks: newFallbacks }, reason: reasons.join('; ') })
   }
   return out
@@ -814,6 +842,7 @@ export function discover(
   catalog: CatalogEntry[],
   prices: Map<string, PriceEntry['pricing']>,
   intelligence: Map<string, number>,
+  usage: Map<string, number> = new Map(),
 ): Discovery[] {
   const byKey = new Map<string, { id: string; prompt: number }>()
   for (const [id, p] of prices) {
@@ -840,10 +869,14 @@ export function discover(
         const mi = intelligence.get(k)
         if (!or || mi === undefined || familyKey(or.id) !== fam || !(mi > ci) || or.prompt > cp) return null
         const sameEffort = (m.id.match(EFFORT_SUFFIX)?.[0] ?? '') === effort ? 0 : 1
-        return { m, or, mi, sameEffort, order }
+        return { m, or, mi, usage: usage.get(k) ?? null, sameEffort, order }
       })
       .filter(h => h !== null)
-      .sort((a, b) => b.mi - a.mi || a.or.prompt - b.or.prompt || a.sameEffort - b.sameEffort || a.order - b.order)
+      .sort(
+        (a, b) =>
+          rankCmp({ index: a.mi, usage: a.usage, price: a.or.prompt }, { index: b.mi, usage: b.usage, price: b.or.prompt }) ||
+          a.sameEffort - b.sameEffort || a.order - b.order,
+      )
     if (!hits.length) continue
     const h = hits[0]
     out.push({
@@ -856,7 +889,7 @@ export function discover(
 
 /** The three sources, one request each. Null (with the reason on stderr) when any cannot answer. */
 async function discoverySources(): Promise<
-  [CatalogEntry[], Map<string, PriceEntry['pricing']>, Map<string, number>] | null
+  [CatalogEntry[], Map<string, PriceEntry['pricing']>, Map<string, number>, Map<string, number>] | null
 > {
   const skip = (why: string) => {
     process.stderr.write(`route --propose: discovery skipped: ${why}\n`)
@@ -880,7 +913,9 @@ async function discoverySources(): Promise<
   if ('missing' in aaKey) return skip(`Artificial Analysis: ${aaKey.missing}`)
   const aaUrl = process.env.ROUTE_AA_URL || DEFAULT_AA_URL
   try {
-    return [catalog, prices, toIntelligence(await fetchListing(aaUrl, 30_000, { 'x-api-key': aaKey.key }))]
+    const intelligence = toIntelligence(await fetchListing(aaUrl, 30_000, { 'x-api-key': aaKey.key }))
+    const usage = (await fetchRanks(msg => process.stderr.write(`route --propose: ${msg}\n`)))?.ranks ?? new Map<string, number>()
+    return [catalog, prices, intelligence, usage]
   } catch (e) {
     return skip(`Artificial Analysis ${aaUrl} failed (${(e as Error).message})`)
   }
