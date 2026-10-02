@@ -13,7 +13,10 @@ Run: uv run python3 tests/test_law_review_footnote_symbols.py
 """
 from __future__ import annotations
 
+import atexit
+import os
 import re
+import shutil
 import sys
 import tempfile
 from pathlib import Path
@@ -34,7 +37,9 @@ def ok(name, cond, extra=""):
 
 
 def proj(aw_body: str) -> Path:
-    d = Path(tempfile.mkdtemp())
+    d = Path(tempfile.mkdtemp(prefix="lr-footnote-"))
+    if os.environ.get("KEEP_TMP") != "1":
+        atexit.register(shutil.rmtree, d, True)
     (d / ".planning").mkdir()
     (d / ".planning" / "ACTIVE_WORKFLOW.md").write_text(aw_body)
     return d
