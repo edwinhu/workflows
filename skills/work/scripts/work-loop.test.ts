@@ -284,7 +284,7 @@ describe('a continuation round actually runs', () => {
   function continuationFixture() {
     const f = runDir({})
     const specHash = execFileSync('bash', [join(import.meta.dir, 'work-dispatch.sh'), '--spec-hash', f.plan],
-      { encoding: 'utf8' }).trim()
+      { timeout: 240_000, encoding: 'utf8' }).trim()
     const argsPath = join(f.R, 'args.json')
     const args = JSON.parse(readFileSync(argsPath, 'utf8'))
     writeFileSync(argsPath, JSON.stringify({ ...args, specHash, maxRounds: 3 }, null, 2))

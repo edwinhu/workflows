@@ -36,7 +36,7 @@ const STAGE = join(HERE, 'work-stage.mjs')
 const temps: string[] = []
 const tmp = () => { const d = mkdtempSync(join(tmpdir(), 'work-round-')); temps.push(d); return d }
 afterAll(() => { for (const d of temps) rmSync(d, { recursive: true, force: true }) })
-const sh = (cmd: string, cwd: string) => spawnSync('bash', ['-c', cmd], { cwd, encoding: 'utf8' })
+const sh = (cmd: string, cwd: string) => spawnSync('bash', ['-c', cmd], { timeout: 120_000, cwd, encoding: 'utf8' })
 const json = (p: string) => JSON.parse(readFileSync(p, 'utf8'))
 const sha = (p: string) => new Bun.CryptoHasher('sha256').update(readFileSync(p)).digest('hex')
 
@@ -57,7 +57,7 @@ function checks(args: any, checkPlan: any) {
   const a = join(dir, 'args.json'), raw = join(dir, 'raw.json'), out = join(dir, 'checks.json')
   writeFileSync(a, JSON.stringify(args))
   writeFileSync(raw, JSON.stringify({ stage: 'agents', agents: {}, checkPlan: { red: [], acceptance: [], mechanical: [], ...checkPlan } }))
-  const r = spawnSync('bash', [CHECKS, a, raw, out], { encoding: 'utf8', env: { ...process.env, WORK_CHECK_TIMEOUT: '5' } })
+  const r = spawnSync('bash', [CHECKS, a, raw, out], { timeout: 120_000, encoding: 'utf8', env: { ...process.env, WORK_CHECK_TIMEOUT: '5' } })
   return { code: r.status, out: (r.stdout || '') + (r.stderr || ''), checks: existsSync(out) ? json(out) : null }
 }
 
@@ -216,8 +216,8 @@ function round(args: any, lensReply: any = { routes: [], findings: [], carried: 
   const result = join(runDir, 'result.json')
   const env = { ...process.env, WORK_FARM: farm, CAPTURE: cap, LENS_REPLY: JSON.stringify(lensReply),
     TMPDIR: cap, FARM_OUTCOMES: join(cap, 'farm-outcomes.jsonl') }
-  const r = spawnSync('bash', [ROUND, argsPath, result, args.projectDir, 'claude'], { encoding: 'utf8', env })
-  const verdict = existsSync(result) ? spawnSync(RESULT_SH, [result], { encoding: 'utf8' }) : null
+  const r = spawnSync('bash', [ROUND, argsPath, result, args.projectDir, 'claude'], { timeout: 120_000, encoding: 'utf8', env })
+  const verdict = existsSync(result) ? spawnSync(RESULT_SH, [result], { timeout: 120_000, encoding: 'utf8' }) : null
   return {
     code: r.status, out: (r.stdout || '') + (r.stderr || ''), cap, runDir,
     result: existsSync(result) ? json(result) : null,

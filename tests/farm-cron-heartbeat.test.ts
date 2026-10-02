@@ -26,7 +26,7 @@ function run(args: string[], env: Record<string, string> = {}) {
   const tasks = join(tmp, 'tasks.json')
   writeFileSync(tasks, JSON.stringify([{ label: 'r', prompt: 'p' }]))
   const res = spawnSync('bash', [FARM, ...args.map((a) =>
-    a === '@wf' ? wf : a === '@out' ? outFile : a === '@tasks' ? tasks : a === '@cwd' ? tmp : a)], {
+    a === '@wf' ? wf : a === '@out' ? outFile : a === '@tasks' ? tasks : a === '@cwd' ? tmp : a)], { timeout: 120_000,
     encoding: 'utf8',
     env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, TMPDIR: tmp, FARM_OUT_CHILD: '1', CLAUDE_CODE_SESSION_ID: '', ...env },
   })

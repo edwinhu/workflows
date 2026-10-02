@@ -123,7 +123,7 @@ const write = (dir, name, body) => { const p = join(dir, name); writeFileSync(p,
     'm=importlib.util.module_from_spec(spec); spec.loader.exec_module(m)\n' +
     'from pathlib import Path\n' +
     'print(json.dumps([m.is_deck(Path(p)) for p in sys.argv[2:]]))',
-    join(import.meta.dir, '..', 'scripts', 'prose-audit.py'), ...cases])
+    join(import.meta.dir, '..', 'scripts', 'prose-audit.py'), ...cases], { timeout: 120_000 })
   const pyOut = JSON.parse(new TextDecoder().decode(py.stdout).trim())
   const tsOut = cases.map((p) => isTypDeck(p))
   ok('Python is_deck and TypeScript isTypDeck agree on every case',
@@ -152,7 +152,7 @@ const write = (dir, name, body) => { const p = join(dir, name); writeFileSync(p,
 // additionalContext a model would actually receive.
 const HOOK = join(import.meta.dir, '..', 'hooks', 'writing-prose-check.ts')
 function runHook(payload, cwd) {
-  const p = Bun.spawnSync(['bun', HOOK], {
+  const p = Bun.spawnSync(['bun', HOOK], { timeout: 120_000,
     cwd,
     stdin: new TextEncoder().encode(JSON.stringify(payload)),
     stdout: 'pipe',
@@ -196,7 +196,7 @@ const DECK_BODY =
   // deck predicate to decide CANDIDACY (`!isTypDeck(abs)`) rather than to select a profile, so a
   // deck it did recognise was dropped and one it did not was handed to `full`.
   const d = tmp()
-  const p = Bun.spawnSync(['git', 'init', '-q', '.'], { cwd: d, stdout: 'pipe', stderr: 'pipe' })
+  const p = Bun.spawnSync(['git', 'init', '-q', '.'], { timeout: 120_000, cwd: d, stdout: 'pipe', stderr: 'pipe' })
   ok('git init for the Bash-branch fixture succeeded', p.exitCode === 0)
   mkdirSync(join(d, 'slides'), { recursive: true })
   write(join(d, 'slides'), 'lecture.typ', DECK_BODY)

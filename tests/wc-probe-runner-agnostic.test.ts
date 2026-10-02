@@ -17,7 +17,7 @@ function probeOn(body: string) {
   // --target, not a bare positional: wc-probe's CLI takes no positional argument, and the
   // round-1 version of this test passing one is why an undeclared positional was added to
   // parseArgs at all. The test caused the scope creep it was then used to justify.
-  const res = spawnSync('bun', [PROBE, '--target', skill], { encoding: 'utf8' })
+  const res = spawnSync('bun', [PROBE, '--target', skill], { timeout: 120_000, encoding: 'utf8' })
   rmSync(dir, { recursive: true, force: true })
   return (res.stdout || '') + (res.stderr || '')
 }

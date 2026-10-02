@@ -31,7 +31,7 @@ function newCwd() {
  * ledger can reach the hook and decide the case before the .work scan does.
  */
 function guard(cwd: string, id: string, env: Record<string, string> = {}) {
-  const r = spawnSync('bun', [HOOK], {
+  const r = spawnSync('bun', [HOOK], { timeout: 120_000,
     input: JSON.stringify({ hook_event_name: 'PreToolUse', tool_name: 'CronDelete', cwd, tool_input: { id } }),
     encoding: 'utf8',
     env: hermeticEnv(mkdtempSync(join(tmpdir(), 'cronguard-tmp-')), env),
@@ -41,7 +41,7 @@ function guard(cwd: string, id: string, env: Record<string, string> = {}) {
 }
 
 function record(cwd: string, prompt: string, response: unknown) {
-  return spawnSync('bun', [HOOK, '--record'], {
+  return spawnSync('bun', [HOOK, '--record'], { timeout: 120_000,
     input: JSON.stringify({
       hook_event_name: 'PostToolUse', tool_name: 'CronCreate', cwd,
       tool_input: { prompt, cron: '*/7 * * * *' }, tool_response: response,
@@ -159,14 +159,14 @@ describe('record mode', () => {
 function grindPair(cwd: string, id: string, prompt: string) {
   const dir = mkdtempSync(join(tmpdir(), 'grindcron-'))
   const sid = 'grind-session'
-  const rec = spawnSync('bun', [HOOK, '--record'], {
+  const rec = spawnSync('bun', [HOOK, '--record'], { timeout: 120_000,
     input: JSON.stringify({
       hook_event_name: 'PostToolUse', tool_name: 'CronCreate', cwd, session_id: sid,
       tool_input: { prompt, cron: '7 * * * *' }, tool_response: { id },
     }),
     encoding: 'utf8', env: hermeticEnv(dir),
   })
-  const g = spawnSync('bun', [HOOK], {
+  const g = spawnSync('bun', [HOOK], { timeout: 120_000,
     input: JSON.stringify({
       hook_event_name: 'PreToolUse', tool_name: 'CronDelete', cwd, session_id: sid, tool_input: { id },
     }),
@@ -242,14 +242,14 @@ describe('a grind heartbeat is claimed by no run, and deletes anyway', () => {
     writeFileSync(join(dir, `work-hold-${sid}.json`), JSON.stringify({
       check: 'false', goal: 'g', startedAt: 1, ceilingMinutes: 720, maxRounds: 8, rounds: 0,
     }))
-    spawnSync('bun', [HOOK, '--record'], {
+    spawnSync('bun', [HOOK, '--record'], { timeout: 120_000,
       input: JSON.stringify({
         hook_event_name: 'PostToolUse', tool_name: 'CronCreate', cwd, session_id: sid,
         tool_input: { prompt: 'and? (grind run.jsonl)' }, tool_response: { id: '9f0c1a22' },
       }),
       encoding: 'utf8', env: hermeticEnv(dir),
     })
-    const g = spawnSync('bun', [HOOK], {
+    const g = spawnSync('bun', [HOOK], { timeout: 120_000,
       input: JSON.stringify({
         hook_event_name: 'PreToolUse', tool_name: 'CronDelete', cwd, session_id: sid, tool_input: { id: '9f0c1a22' },
       }),
@@ -290,7 +290,7 @@ function holdLedger(entries: [string, string][], opts: { armed?: boolean; uneval
 }
 
 function guardIn(cwd: string, id: string, h: { dir: string; sid: string }, env: Record<string, string> = {}) {
-  const r = spawnSync('bun', [HOOK], {
+  const r = spawnSync('bun', [HOOK], { timeout: 120_000,
     input: JSON.stringify({
       hook_event_name: 'PreToolUse', tool_name: 'CronDelete', cwd,
       session_id: h.sid, tool_input: { id },
@@ -381,7 +381,7 @@ describe('the hold gate: CronDelete waits on an ARMED hold, and on nothing else'
     const h = holdLedger([['passed-unjudged', 'false']], { armed: true })
     // Same ledger, same TMPDIR, same everything — only the payload's session_id differs.
     expect(guardIn(quietCwd(), '541afe58', h).decision).toBe('deny')
-    const r = spawnSync('bun', [HOOK], {
+    const r = spawnSync('bun', [HOOK], { timeout: 120_000,
       input: JSON.stringify({
         hook_event_name: 'PreToolUse', tool_name: 'CronDelete', cwd: quietCwd(), tool_input: { id: '541afe58' },
       }),

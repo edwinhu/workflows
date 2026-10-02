@@ -17,6 +17,7 @@ import { spawn, spawnSync } from "node:child_process";
 
 const ROOT = dirname(import.meta.dir);
 const CHECK = join(ROOT, "skills/workflow-creator/scripts/check.sh");
+const WC_PROBE = join(ROOT, "skills/workflow-creator/scripts/wc-probe.ts");
 const AUDIT = "/home/eh/projects/plugin-utils/bin/workflow-audit";
 
 // THE GATE-VACUITY CONTRACT. `workflow-audit` reports "workflows failing their own gate: 0 of 10".
@@ -76,7 +77,7 @@ const AUDIT = "/home/eh/projects/plugin-utils/bin/workflow-audit";
 // here red for the minutes it held them. A dirty neighbour is not a failing gate.
 function auditSource(): string {
   const r = spawnSync("git", ["-C", dirname(dirname(AUDIT)), "show", `HEAD:bin/${basename(AUDIT)}`],
-                      { encoding: "utf8" });
+                      { timeout: 30_000, encoding: "utf8" });
   if (r.status === 0 && r.stdout.trim()) return r.stdout;
   // Fail CLOSED and say which: an unreadable population is could-not-run, never an empty one.
   throw new Error(
@@ -87,12 +88,14 @@ function auditTargets(): string[] {
   const src = auditSource();
   const m = /^LIST=(?:"([\s\S]*?)")$/m.exec(src);
   if (!m) throw new Error(`${AUDIT}: could not find the LIST= assignment this test reads its population from`);
-  const wf = /^WF=(\S+)$/m.exec(src);
-  if (!wf) throw new Error(`${AUDIT}: could not find the WF= assignment`);
+  // `$WF` is the tree under test, not the audit's literal: that literal is the MAIN checkout, so a
+  // worktree run gated main's working copy and passed or failed on whatever happened to sit there.
+  // Measured 2026-10-02: `work` was red on main and green in every worktree, and reverting the fix
+  // in a worktree did not turn it red again.
   return m[1]
     .split(/\s+/)
     .filter(Boolean)
-    .map((t) => t.replace(/\$WF|\$\{WF\}/g, wf[1]));
+    .map((t) => t.replace(/\$WF|\$\{WF\}/g, ROOT));
 }
 
 const TARGETS = auditTargets();
@@ -190,11 +193,27 @@ interface GateRun {
 }
 
 // Async, and every gate run a workflow needs is launched at once: check.sh runs the TARGET's own
-// scripts/ suite as its probe-tests leg, so a serial sweep pays for `work`'s 23 test files three
+// scripts/ suite as its probe-tests leg, so a serial sweep pays for `work`'s 33 test files three
 // times over and the whole file took ~9 minutes. The three runs touch three disjoint scaffolds.
+//
+// CHECK_SHARDS is check.sh's own scheduling knob (verdict unchanged, see its probe-tests leg; it caps
+// the count at the file count). Its default of 4 held `work`'s gate at 52 s against a 21 s floor, its
+// longest file; one shard per file brought this whole file from 31 s to 26 s.
+const GATE_ENV = { ...process.env, CHECK_SHARDS: process.env.CHECK_SHARDS ?? "64" };
+
 async function runGate(target: string): Promise<GateRun> {
+  return runCmd("bash", [CHECK, "--target", target]);
+}
+
+/** The wc-probe leg ALONE, spelled exactly as check.sh spells it, reported as a one-leg gate. */
+async function runWcProbeLeg(target: string): Promise<GateRun> {
+  const r = await runCmd("bun", [WC_PROBE, "--target", target]);
+  return { ...r, leg: (name: string) => (name === "wc-probe" ? r.code : null) };
+}
+
+async function runCmd(cmd: string, args: string[]): Promise<GateRun> {
   const r = await new Promise<{ status: number; stdout: string; stderr: string }>((res, rej) => {
-    const p = spawn("bash", [CHECK, "--target", target], { timeout: 600_000 });
+    const p = spawn(cmd, args, { timeout: 600_000, env: GATE_ENV });
     let stdout = "";
     let stderr = "";
     p.stdout.on("data", (d: string | Uint8Array) => (stdout += d));
@@ -257,8 +276,14 @@ const POOL = 4;
 
 interface TargetRuns { base: GateRun; real: GateRun | null; injected: GateRun[]; tmp: string }
 
+// For a LEG_ONLY target the injected runs are asserted on the wc-probe leg alone: check.sh's overall
+// exit is already non-zero at baseline there, so its other five legs -- `work`'s 33-file suite above
+// all, ~60% of this file's CPU -- were run twice per target to produce a number no assertion read.
+// They run the leg command directly instead. The base run stays a full check.sh, which is what
+// proves check.sh itself reaches wc-probe over the target and prints its leg line.
 async function runTarget(target: string): Promise<TargetRuns> {
   const name = basename(target);
+  const runInjected = LEG_ONLY.has(name) ? runWcProbeLeg : runGate;
   const tmp = mkdtempSync(join(tmpdir(), `gate-vacuity-${name}-`));
   const [base, real, ...injected] = await Promise.all([
     runGate(scaffold(target, join(tmp, "base"))),
@@ -268,7 +293,7 @@ async function runTarget(target: string): Promise<TargetRuns> {
     ...INJECTIONS.map(({ inject }, i) => {
       const fixture = scaffold(target, join(tmp, `inj${i}`));
       inject(fixture);
-      return runGate(fixture);
+      return runInjected(fixture);
     }),
   ]);
   return { base, real, injected, tmp };
@@ -310,7 +335,10 @@ for (const target of TARGETS) {
       const { base, real, injected } = runs!;
 
       // -- control: the unperturbed copy passes the leg and reports neither rule --
-      expect(base.leg("wc-probe"), `${name}: the wc-probe leg printed no line at all`).toBe(0);
+      expect(
+        base.leg("wc-probe"),
+        `${name}: the unperturbed copy does not pass its wc-probe leg (null = the leg printed no line)`,
+      ).toBe(0);
       for (const { rule } of INJECTIONS) {
         expect(base.findingRules, `${name}: the unperturbed copy already reports ${rule}`).not.toContain(rule);
       }

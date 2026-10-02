@@ -87,7 +87,7 @@ function tree() {
 }
 
 const cli = (root: string, ...extra: string[]) =>
-  execFileSync('bun', [SCRIPT, '--corpus', root, ...extra], { encoding: 'utf8' })
+  execFileSync('bun', [SCRIPT, '--corpus', root, ...extra], { timeout: 120_000, encoding: 'utf8' })
 
 describe('corpus mode reports per-rule counts over a whole tree', () => {
   test('every rule that has a defect in the tree is counted, and a rule with none reports zero', async () => {

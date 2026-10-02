@@ -41,7 +41,7 @@ function runHook(version: string): { systemMessage?: string; hookSpecificOutput:
   const stub = join(TMP, `claude-${version}`);
   writeFileSync(stub, `#!/bin/sh\necho "${version} (Claude Code)"\n`);
   chmodSync(stub, 0o755);
-  const r = Bun.spawnSync(["bun", HOOK], {
+  const r = Bun.spawnSync(["bun", HOOK], { timeout: 120_000,
     cwd: TMP,
     stdin: new TextEncoder().encode(JSON.stringify({ session_id: "t", hook_event_name: "SessionStart" })),
     env: { ...process.env, CLAUDE_CODE_EXECPATH: stub },

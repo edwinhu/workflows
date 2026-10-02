@@ -10,7 +10,7 @@ test('farm.ts no longer exists', () => {
 })
 
 test('no skill names farm.ts as a runnable path', () => {
-  const res = spawnSync('rg', ['-n', '--no-heading', 'farm\\.ts', 'skills/'], { cwd: ROOT, encoding: 'utf8' })
+  const res = spawnSync('rg', ['-n', '--no-heading', 'farm\\.ts', 'skills/'], { timeout: 120_000, cwd: ROOT, encoding: 'utf8' })
   const hits = (res.stdout || '').trim().split('\n').filter(Boolean)
   expect(hits).toEqual([])
 })

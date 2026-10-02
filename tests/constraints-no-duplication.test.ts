@@ -11,7 +11,7 @@ import { execFileSync } from "node:child_process"
 
 function typstRoot(): string {
   try {
-    const r = execFileSync("typst-plugin-root", [], { encoding: "utf8" }).trim()
+    const r = execFileSync("typst-plugin-root", [], { timeout: 120_000, encoding: "utf8" }).trim()
     if (r) return r
   } catch { /* absent: fall through */ }
   return resolve(process.env.HOME!, ".claude/skills/typst")

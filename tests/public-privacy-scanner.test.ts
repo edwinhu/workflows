@@ -341,7 +341,7 @@ describe("public privacy scanner", () => {
       expect(findings.some((finding) => finding.path === reviewed)).toBe(false);
 
       // The CLI completes with findings (exit 1), not the exit-2 error path, and logs the skip.
-      const cli = Bun.spawnSync(["bun", join(import.meta.dir, "../scripts/scan-public-privacy.ts"), root], { stdout: "pipe", stderr: "pipe" });
+      const cli = Bun.spawnSync(["bun", join(import.meta.dir, "../scripts/scan-public-privacy.ts"), root], { timeout: 120_000, stdout: "pipe", stderr: "pipe" });
       expect(cli.stderr.toString()).not.toMatch(/public privacy scan error/);
       expect(cli.stderr.toString()).toMatch(new RegExp(`skipped ${reviewed} \\(worktree\\)`));
       expect(cli.exitCode).toBe(1);
@@ -381,7 +381,7 @@ describe("public privacy scanner", () => {
       expect(findings.some((finding) => finding.path === artefact)).toBe(false);
 
       // The CLI reports the text finding (exit 1), not the exit-2 error path, and logs the skip.
-      const cli = Bun.spawnSync(["bun", join(import.meta.dir, "../scripts/scan-public-privacy.ts"), root], { stdout: "pipe", stderr: "pipe" });
+      const cli = Bun.spawnSync(["bun", join(import.meta.dir, "../scripts/scan-public-privacy.ts"), root], { timeout: 120_000, stdout: "pipe", stderr: "pipe" });
       expect(cli.stderr.toString()).not.toMatch(/public privacy scan error/);
       expect(cli.stderr.toString()).toContain(`public privacy scan skipped ${artefact} (worktree): untracked binary — not publishable until staged`);
       expect(cli.exitCode).toBe(1);
@@ -526,10 +526,10 @@ describe("public privacy scanner", () => {
       await writeFile(join(root, "policy/public-privacy.json"), JSON.stringify(basePolicy()));
       await Bun.$`git -C ${root} add policy/public-privacy.json`;
       await Bun.$`git -C ${root} -c user.name=test -c user.email=test@example.com commit -qm baseline`;
-      const python = Bun.spawnSync(["python3", "-c", "import os,sys; os.open(os.fsencode(sys.argv[1])+b'/bad-\\xff.txt', os.O_CREAT|os.O_WRONLY, 0o600)", root]);
+      const python = Bun.spawnSync(["python3", "-c", "import os,sys; os.open(os.fsencode(sys.argv[1])+b'/bad-\\xff.txt', os.O_CREAT|os.O_WRONLY, 0o600)", root], { timeout: 120_000 });
       expect(python.exitCode).toBe(0);
 
-      const cli = Bun.spawnSync(["bun", join(import.meta.dir, "../scripts/scan-public-privacy.ts"), root], { stdout: "pipe", stderr: "pipe" });
+      const cli = Bun.spawnSync(["bun", join(import.meta.dir, "../scripts/scan-public-privacy.ts"), root], { timeout: 120_000, stdout: "pipe", stderr: "pipe" });
       expect(cli.exitCode).toBe(2);
       expect(cli.stderr.toString()).toMatch(/not a valid UTF-8 Git pathname/i);
     } finally { await rm(root, { recursive: true, force: true }); }

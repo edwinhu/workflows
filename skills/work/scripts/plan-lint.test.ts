@@ -462,7 +462,7 @@ afterAll(() => dirs.forEach(d => rmSync(d, { recursive: true, force: true })))
 
 function dispatch(f: { dir: string; plan: string }) {
   try {
-    const stdout = execFileSync('bash', [DISPATCH, '--provider', 'claude', f.plan], {
+    const stdout = execFileSync('bash', [DISPATCH, '--provider', 'claude', f.plan], { timeout: 120_000,
       encoding: 'utf8', cwd: f.dir, env: { ...process.env, WORK_DISPATCH_DRYRUN: '1' },
     })
     return { code: 0, out: stdout }
@@ -575,7 +575,7 @@ test('--json carries the graph so a consumer need not recompute it', () => {
   }))
   let out = ''
   try {
-    out = execFileSync('bun', [LINT, a, '--json'], { encoding: 'utf8' })
+    out = execFileSync('bun', [LINT, a, '--json'], { timeout: 120_000, encoding: 'utf8' })
   } catch (e: any) { out = e.stdout ?? '' }
   const j = JSON.parse(out)
   expect(j.graph.waves).toEqual([['T1'], ['T2']])

@@ -257,7 +257,7 @@ test("arming caps the session locally and every release puts it back", () => {
 
   const arm = Bun.spawnSync(
     ["bash", join(REPO, "skills/work/scripts/work-hold.sh"), `test -f ${flag}`, "--rounds", "8"],
-    { env: env(dir, session, herdr, user, project), stdout: "pipe", stderr: "pipe" },
+    { timeout: 120_000, env: env(dir, session, herdr, user, project), stdout: "pipe", stderr: "pipe" },
   );
   const armOut = arm.stdout.toString() + arm.stderr.toString();
   expect(armOut).toContain("ARMED");
@@ -273,7 +273,7 @@ test("arming caps the session locally and every release puts it back", () => {
 
   // Now make the check pass and run the REAL Stop hook.
   writeFileSync(flag, "");
-  const stop = Bun.spawnSync(["bun", join(REPO, "hooks/work-hold.ts")], {
+  const stop = Bun.spawnSync(["bun", join(REPO, "hooks/work-hold.ts")], { timeout: 120_000,
     stdin: Buffer.from(JSON.stringify({ session_id: session, transcript_path: join(dir, "none.jsonl") })),
     env: env(dir, session, herdr, user, project),
     stdout: "pipe",
@@ -300,7 +300,7 @@ test("the expired release restores the window too", () => {
 
   const arm = Bun.spawnSync(
     ["bash", join(REPO, "skills/work/scripts/work-hold.sh"), `test -f ${flag}`, "--rounds", "1"],
-    { env: env(dir, session, herdr, user, project), stdout: "pipe", stderr: "pipe" },
+    { timeout: 120_000, env: env(dir, session, herdr, user, project), stdout: "pipe", stderr: "pipe" },
   );
   expect(arm.stdout.toString()).toContain("capped at 250000");
   // A global key already set is what /autocompact is sent, so its own write is a no-op.
@@ -311,7 +311,7 @@ test("the expired release restores the window too", () => {
   const s = JSON.parse(readFileSync(state, "utf8"));
   s.rounds = 1;
   writeFileSync(state, JSON.stringify(s));
-  const stop = Bun.spawnSync(["bun", join(REPO, "hooks/work-hold.ts")], {
+  const stop = Bun.spawnSync(["bun", join(REPO, "hooks/work-hold.ts")], { timeout: 120_000,
     stdin: Buffer.from(JSON.stringify({ session_id: session })),
     env: env(dir, session, herdr, user, project),
     stdout: "pipe",
@@ -338,7 +338,7 @@ test("RE-ARMING does not turn the hold's own cap into the user's setting", () =>
   const armOnce = () =>
     Bun.spawnSync(
       ["bash", join(REPO, "skills/work/scripts/work-hold.sh"), `test -f ${flag}`, "--rounds", "8"],
-      { env: e, stdout: "pipe", stderr: "pipe" },
+      { timeout: 120_000, env: e, stdout: "pipe", stderr: "pipe" },
     );
 
   expect(armOnce().stdout.toString()).toContain("capped at 250000");
@@ -351,7 +351,7 @@ test("RE-ARMING does not turn the hold's own cap into the user's setting", () =>
   expect(state.compact.prior).toBeNull();
 
   writeFileSync(flag, "");
-  Bun.spawnSync(["bun", join(REPO, "hooks/work-hold.ts")], {
+  Bun.spawnSync(["bun", join(REPO, "hooks/work-hold.ts")], { timeout: 120_000,
     stdin: Buffer.from(JSON.stringify({ session_id: session })),
     env: e, stdout: "pipe", stderr: "pipe",
   });
@@ -381,7 +381,7 @@ function armAndRelease(session: string, bridge: string, agentMsgFails: boolean) 
 
   const arm = Bun.spawnSync(
     ["bash", join(REPO, "skills/work/scripts/work-hold.sh"), `test -f ${flag}`, "--rounds", "8"],
-    { env: e, stdout: "pipe", stderr: "pipe" },
+    { timeout: 120_000, env: e, stdout: "pipe", stderr: "pipe" },
   );
   const armOut = arm.stdout.toString() + arm.stderr.toString();
   const armLog = readFileSync(applied, "utf8").trim().split("\n");
@@ -389,7 +389,7 @@ function armAndRelease(session: string, bridge: string, agentMsgFails: boolean) 
   const state = JSON.parse(readFileSync(join(dir, `work-hold-${session}.json`), "utf8"));
 
   writeFileSync(flag, "");
-  const stop = Bun.spawnSync(["bun", join(REPO, "hooks/work-hold.ts")], {
+  const stop = Bun.spawnSync(["bun", join(REPO, "hooks/work-hold.ts")], { timeout: 120_000,
     stdin: Buffer.from(JSON.stringify({ session_id: session })),
     env: e,
     stdout: "pipe",
@@ -438,7 +438,7 @@ test("no transport at all skips the cap and writes no local file", () => {
   writeFileSync(user, "{}\n");
   const arm = Bun.spawnSync(
     ["bash", join(REPO, "skills/work/scripts/work-hold.sh"), "exit 1", "--rounds", "8"],
-    {
+    { timeout: 120_000,
       env: { ...env(dir, session, "/nonexistent-herdr", user, project) },
       stdout: "pipe",
       stderr: "pipe",

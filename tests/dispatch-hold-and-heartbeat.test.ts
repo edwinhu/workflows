@@ -97,7 +97,7 @@ describe('the self-send transport is gone, not merely unused', () => {
    * exists is a dangling reference, and that is what this asserts against.
    */
   test('no tracked file names it, save the CHANGELOG that records its removal', () => {
-    const tracked = execFileSync('git', ['-C', REPO, 'ls-files'], { encoding: 'utf8' })
+    const tracked = execFileSync('git', ['-C', REPO, 'ls-files'], { timeout: 180_000, encoding: 'utf8' })
       .split('\n').filter(Boolean)
     const offenders = tracked.filter(rel =>
       rel !== 'CHANGELOG.md' && rel !== 'tests/dispatch-hold-and-heartbeat.test.ts'
@@ -157,7 +157,7 @@ describe('half one: the HOLD is armed by the dispatch, in this session', () => {
 
   test('the ceilings are the plan maxRounds and compose-goal.sh --minutes', () => {
     const minutes = execFileSync('bash', [join(SKILL, 'scripts/compose-goal.sh'), '--minutes'],
-      { encoding: 'utf8' }).trim()
+      { timeout: 180_000, encoding: 'utf8' }).trim()
     const s = holdState(r)
     expect(s.maxRounds).toBe(4)
     expect(s.ceilingMinutes).toBe(Number(minutes))

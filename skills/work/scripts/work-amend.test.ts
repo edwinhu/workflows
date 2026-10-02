@@ -151,7 +151,7 @@ describe('application, with --apply', () => {
     writeFileSync(f.argsPath, JSON.stringify(block.args, null, 2))
     let lintOut = ''
     try {
-      lintOut = execFileSync('bun', [`${import.meta.dir}/plan-lint.ts`, f.argsPath, '--json'], { encoding: 'utf8' })
+      lintOut = execFileSync('bun', [`${import.meta.dir}/plan-lint.ts`, f.argsPath, '--json'], { timeout: 120_000, encoding: 'utf8' })
     } catch (e: any) { lintOut = e.stdout ?? '' }
     const findings = JSON.parse(lintOut).findings as { rule: string; severity: string }[]
     expect(findings.filter(x => x.rule === 'work-accretion')).toEqual([])

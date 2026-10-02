@@ -29,7 +29,7 @@ socketserver.TCPServer(("127.0.0.1", ${port}), H).serve_forever()
 }
 
 function runHook(env: Record<string, string>, payload: unknown) {
-  const p = Bun.spawnSync(["bun", "hooks/work-hold.ts"], {
+  const p = Bun.spawnSync(["bun", "hooks/work-hold.ts"], { timeout: 120_000,
     stdin: Buffer.from(JSON.stringify(payload)),
     // Jev is tried BEFORE the chat judge, and it reads the agenix key out of XDG_RUNTIME_DIR --
     // which process.env carries in. Without these two the suite silently made real billed calls
@@ -259,7 +259,7 @@ test("the round record travels to the judge too", async () => {
 // ------------------------------------------------- the SessionStart briefing after a compaction
 
 function runBrief(dir: string, session: string) {
-  const p = Bun.spawnSync(["bun", "hooks/work-hold.ts", "--brief"], {
+  const p = Bun.spawnSync(["bun", "hooks/work-hold.ts", "--brief"], { timeout: 120_000,
     stdin: Buffer.from(JSON.stringify({ session_id: session, source: "compact" })),
     env: { ...process.env, TMPDIR: dir },
     stdout: "pipe",

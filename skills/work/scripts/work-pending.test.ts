@@ -56,7 +56,7 @@ function setPlansDirectory(root: string, value: string, file = 'settings.json') 
 }
 
 function specHash(root: string, plansDir = '.claude/plans'): string {
-  return execFileSync('bash', [DISPATCH, '--spec-hash', join(root, plansDir, 'p.md'), '--provider', 'claude'], {
+  return execFileSync('bash', [DISPATCH, '--spec-hash', join(root, plansDir, 'p.md'), '--provider', 'claude'], { timeout: 120_000,
     encoding: 'utf8',
   }).trim()
 }
@@ -77,7 +77,7 @@ function recordDispatch(dir: string, runId: string, hash: string, root = '.work'
  * these cases — the script reads three settings tiers now, and one of them is `$HOME`.
  */
 function pending(root: string): string {
-  const r = Bun.spawnSync(['bash', PENDING, root], { env: { ...process.env, HOME: EMPTY_HOME } })
+  const r = Bun.spawnSync(['bash', PENDING, root], { timeout: 120_000, env: { ...process.env, HOME: EMPTY_HOME } })
   return new TextDecoder().decode(r.stdout).split('\t')[0].trim()
 }
 
