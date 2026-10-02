@@ -7,8 +7,9 @@
  * Precedence, highest first:
  *   1. an explicit model in args — implementerModel, verifierModel, probeModel, lens.model;
  *   2. args.routing.kindModels — the implementer takes kindModels[task.kind ?? 'judgement'], the
- *      verifier and every probe (red, mechanical, third-party) take kindModels.script, and the lens
- *      takes kindModels.review;
+ *      verifier and the remaining agent probe (rules) take kindModels.script, and the lens
+ *      takes kindModels.review. The red and mechanical probes are no longer agents: the dispatcher
+ *      and work-checks.sh run them as commands, so no model reaches them;
  *   3. today's defaults — probe sonnet, verifier sonnet, implementer inherit, lens sonnet. Those are
  *      already pinned by workflow.test.ts ("the lens defaults to sonnet…") and are not restated here.
  *
@@ -30,12 +31,12 @@ const routing = (kindModels: Record<string, string> = KIND_MODELS) => ({
   kindModels, source: 'table', decisions: {},
 })
 
-/** One run that dispatches every routed leg: implement, verify, red before/after, mechanical, third-party, lens. */
+/** One run that dispatches every routed leg: implement, verify, rules, lens — and scripts red + mechanical. */
 const allLegs = (over: any = {}, taskOver: any = {}) => ({
   ...baseArgs,
   tasks: [task({ redCommand: 'bash scripts/check.sh', ...taskOver })],
   mechanicalChecks: [{ name: 'tests', cmd: 'bun test' }],
-  thirdParty: ['codex'],
+  ruleChecks: { name: 'rules', cmd: 'x', blockAt: 0.85 },
   lens: { prompt: 'raise MAJOR when the work is wrong', refs: [] },
   routing: routing(),
   ...over,
@@ -48,7 +49,10 @@ const dispatchOpts = async (args: any) => {
   return opts
 }
 
-const PROBES = ['red:before:T1', 'red:after:T1', 'mechanical:tests', 'third-party:codex']
+// Commands run by a script: they reach the reply stub flagged `scripted`, never through agent().
+const SCRIPTED = ['red:before:T1', 'red:after:T1', 'mechanical:tests']
+// The probe legs that are still agents read the same model setting.
+const PROBES = ['rules:rules']
 
 describe('kindModels routes each leg when no explicit model is given', () => {
   test('the implementer of a kind-less task takes kindModels.judgement', async () => {
@@ -68,11 +72,14 @@ describe('kindModels routes each leg when no explicit model is given', () => {
     expect(opts.get('verify:T1')?.model).toBe('script-model')
   })
 
-  test('every probe — red before/after, mechanical, third-party — takes kindModels.script', async () => {
+  test('every agent probe takes kindModels.script; red before/after and mechanical are scripts with no model', async () => {
     const opts = await dispatchOpts(allLegs())
     for (const label of PROBES) {
       expect(opts.has(label)).toBe(true)
       expect({ label, model: opts.get(label)?.model }).toEqual({ label, model: 'script-model' })
+    }
+    for (const label of SCRIPTED) {
+      expect({ label, scripted: opts.get(label)?.scripted, model: opts.get(label)?.model }).toEqual({ label, scripted: true, model: undefined })
     }
   })
 

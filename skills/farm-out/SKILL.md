@@ -165,7 +165,7 @@ each row to `scripts/lib/route.ts`, which picks the provider and a pinned model 
 
 `--provider` is the legacy whole-run override: that wrapper for every row, route.ts never consulted.
 
-Jev scores every candidate in **shadow**: one Decisions call per routed row, logged, never changing
+Jev scores the kind's chain in **shadow**: one Decisions call per routed row, logged, never changing
 the pick and never blocking a row. Each row prints `farm: ROW <label> <rowId>` on stderr and appends
 one line to `~/.local/state/workflows/farm-outcomes.jsonl` (`FARM_OUTCOMES` overrides). Once you have
 verified a result, label it: `farm.sh --verdict <rowId> correct|wrong "<why>"`. Those verdicts are
@@ -173,7 +173,9 @@ the holdout Jev must clear before it may decide.
 
 `bun scripts/lib/route.ts --refresh`, run from a checkout of this repo and never the plugin cache,
 updates availability (proxy catalog) and prices (OpenRouter) and never touches `kinds` or `jev`.
-Review its `routing.json` diff before committing. Design: `docs/DESIGN-routing.md`.
+Review its `routing.json` diff before committing. `route.ts --propose` reads the refreshed signals
+and prints suggested `kinds` changes with reasons, writing nothing: you approve by editing `kinds`.
+Design: `docs/DESIGN-routing.md`.
 
 ## Red flags
 

@@ -5,11 +5,13 @@
 #   work-redispatch.sh … --dispatch                      # dispatch detached
 #   work-redispatch.sh … --dispatch --full                # re-run every task
 #   work-redispatch.sh … --dispatch --no-lint             # skip lint and red probe
-#   work-redispatch.sh … --dispatch --no-red-probe        # keep lint, skip red probe
+#   work-redispatch.sh … --dispatch --no-red-probe        # keep lint, record red before-run, refuse nothing
 #   work-redispatch.sh … --dispatch --provider codex      # whole-round override; without it the
-#                                                         # kind map is re-resolved via route.ts
+#                                                         # kind map is re-resolved via route.ts.
+#                                                         # args.lensProvider is re-resolved either way
 #   WORK_REDISPATCH_DRYRUN=1                              # gates only; write nothing
 #   WORK_FARM=PATH                                        # farm.sh override
+#   WORK_ROUND=PATH                                       # work-round.sh override (ARGS RESULT CWD HOST)
 #   WORK_NO_SCOPE=1                                       # plain setsid dispatch
 #   WORK_SYSTEMD_RUN=PATH                                 # scope probe override
 #
@@ -162,6 +164,12 @@ if plan_args is not None:
     # sync otherwise only ever sets keys, which is why this needs saying once rather than generalising.
     if "reviewLenses" not in plan_args and args.pop("reviewLenses", None) is not None:
         synced.append("-reviewLenses (retired; the plan declares no such key)")
+    # lensProvider dropped from the plan must not keep constraining the review row. And a `lens` the
+    # plan does not declare can only be a --provider round's {model} injection: carried into this
+    # round it would read as an explicit lens.model beside lensProvider, and be refused.
+    for key in ("lensProvider", "lens"):
+        if key not in plan_args and args.pop(key, None) is not None:
+            synced.append(f"-{key} (the plan declares none)")
 
 import os, re
 run_dir = os.path.dirname(os.path.abspath(args_path))
@@ -690,7 +698,8 @@ fi
 
 # The kind map, re-resolved every round on the staged args through work-dispatch.sh's one
 # implementation. The flag form replaces the whole object, so a previous round's kindModels cannot
-# survive into a --provider round. A refusal spends nothing, exactly like the gates around it.
+# survive into a --provider round. lensProvider is resolved, and refused, here too. A refusal spends
+# nothing, exactly like the gates around it.
 if [ "$DISPATCH" = "--dispatch" ]; then
   bash "$SKILL/scripts/work-dispatch.sh" --resolve-routing "$STAGE" "$(basename "$RUN_DIR")" "$PROVIDER" || {
     rr=$?
@@ -702,8 +711,10 @@ fi
 
 # TIER 2, on the staged args and still before anything is committed: the same probe work-dispatch.sh
 # runs, invoked as its subcommand so there is one implementation of the classification.
-if [ "$DISPATCH" = "--dispatch" ] && [ "$REDPROBE" = 1 ]; then
-  bash "$SKILL/scripts/work-dispatch.sh" --red-probe "$STAGE" || {
+# --no-red-probe still records the before-run (mode `record`) and refuses nothing.
+if [ "$DISPATCH" = "--dispatch" ]; then
+  if [ "$REDPROBE" = 1 ]; then rpmode=gate; else rpmode=record; fi
+  bash "$SKILL/scripts/work-dispatch.sh" --red-probe "$STAGE" "$rpmode" || {
     rp=$?
     rm -f "$STAGE"
     printf '\nNothing was spent: args.json is unchanged, the counters above were NOT written, result.json is unrotated.\n' >&2
@@ -787,9 +798,9 @@ fi
 HOST=${PROVIDER:-claude}
 
 # One argument vector, so the two dispatch paths cannot drift apart.
-farm_cmd=(bash "$FARM" --provider "$HOST"
-    --workflow "$SKILL/workflow.js"
-    --args "$ARGS_ABS" --out "$RESULT" --cwd "$(pwd)")
+# work-round.sh runs the whole round: the workflow's agents, the checks, the digest, the ONE lens row.
+farm_cmd=(env WORK_FARM="$FARM" bash "${WORK_ROUND:-$SKILL/scripts/work-round.sh}"
+    "$ARGS_ABS" "$RESULT" "$(pwd)" "$HOST")
 
 if [ "$scope" = transient ]; then
   setsid nohup "$SYSTEMD_RUN" --user --scope --collect --quiet --unit "$scope_unit" \

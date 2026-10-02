@@ -71,8 +71,8 @@ the venue decides the length, and the length decides the section count.
 (observable success criteria) is answered by the four mechanical checks below — `GRAMMAR`, `CITE`,
 `CLAIM` and `PROSE-HARD`, defined in
 [`references/writing-checks.md`](${CLAUDE_SKILL_DIR}/references/writing-checks.md)
-— whose command strings become `mechanicalChecks` verbatim; `work` axis 6 (third-party review) is
-answered **not opted in**, so no `thirdParty` key is passed.
+— whose command strings become `mechanicalChecks` verbatim; `work` axis 6 (which provider runs the
+review lens) is answered **routed**, so no `lensProvider` key is passed.
 
 Then gather sources — **through the librarian, never from recall**. Dispatch the
 `librarian` agent for each source area the plan will rely on, and have it leave real files

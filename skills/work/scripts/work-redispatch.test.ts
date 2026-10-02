@@ -878,14 +878,16 @@ describe('M1/M2/M3 — the loop no longer dead-ends', () => {
     expect(existsSync(join(f.dir, 'reprobed-T1'))).toBe(true)
   })
 
-  test('without a carried proven red the same FULL re-run is REFUSED as red-not-red', () => {
+  // red-not-red is recorded in args.redBefore for the gate to score, no longer refused at dispatch.
+  test('without a carried proven red the same FULL re-run records T1 as red-not-red', () => {
     const f = selFixture()
     // No `red` records at all: the previous verdict settles nothing to carry.
     selResult(f.dir, ['T5'], { noRedFor: ['T1', 'T2', 'T3', 'T4', 'T5'] })
     redScript(f.dir, 'red1.sh', 'echo "1 passed"\nexit 0')
     const r = redispatch(f.plan, f.args, '--full')
-    expect(r.code).toBe(3)
+    expect(r.code).toBe(0)
     expect(r.out).toMatch(/red-not-red/)
+    expect(readArgs(f.args).redBefore.T1.exitCode).toBe(0)
   })
 
   test('a SCOPED re-run also carries the proven red of a re-run task', () => {
@@ -1126,13 +1128,17 @@ describe('the dispatch-time redCommand probe on the re-dispatch path', () => {
     expect(r.out).toMatch(/T5/)
   })
 
-  test('a selected task whose redCommand already exits 0 is refused as red-not-red', () => {
+  test('a selected task whose redCommand already exits 0 is reported and recorded as red-not-red', () => {
     const f = selFixture()
     selResult(f.dir, ['T5'])
     redScript(f.dir, 'red5.sh', 'echo "3 passed"\nexit 0')
     const r = redispatch(f.plan, f.args)
-    expect(r.code).toBe(3)
+    expect(r.code).toBe(0)
     expect(r.out).toMatch(/red-not-red/)
+    const a = readArgs(f.args)
+    expect(a.redBefore.T5.exitCode).toBe(0)
+    expect(Object.keys(a.redBefore)).toEqual(['T5'])          // carried tasks are not probed
+    expect(Object.keys(a.redSuiteHashes).length).toBeGreaterThan(0)
   })
 
   test('a CARRIED task with a broken redCommand does not refuse — it is not being re-run', () => {
@@ -1145,7 +1151,7 @@ describe('the dispatch-time redCommand probe on the re-dispatch path', () => {
   test('a probe refusal spends nothing: rounds, args.json and result.json are untouched', () => {
     const f = selFixture()
     selResult(f.dir, ['T5'])
-    redScript(f.dir, 'red5.sh', 'echo "3 passed"\nexit 0')
+    rmSync(join(f.dir, 'scripts', 'red5.sh'))   // could-not-run: the refusal that survives at dispatch
     const argsBefore = readFileSync(f.args, 'utf8')
     const resultBefore = readFileSync(f.result, 'utf8')
 

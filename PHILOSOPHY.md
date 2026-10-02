@@ -53,7 +53,7 @@ The RL framing is most useful for: identifying reward hacking, designing action 
 Break work into phases with single responsibilities. Each phase answers ONE question. Phases are sequential: you can't design before exploring, can't implement before designing.
 
 The shape no longer varies by domain, and that is the v6 lesson. Every workflow runs one loop —
-CLARIFY → PLAN → GOAL → dispatch (IMPLEMENT, then VERIFY ∥ MECHANICAL ∥ third-party, then LENS) → HUMAN REVIEW
+CLARIFY → PLAN → GOAL → dispatch (IMPLEMENT, then VERIFY ∥ MECHANICAL, then LENS) → HUMAN REVIEW
 — and a domain contributes only its *checks*: `mechanicalChecks` commands, one review `lens`, and a
 `redCommand` per task. Five domains once spelled that loop out as 63 skills that drifted against each
 other; the phases are now beats inside one program, so there is nothing to keep in sync.

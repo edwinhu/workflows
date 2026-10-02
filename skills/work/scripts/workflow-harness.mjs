@@ -21,21 +21,36 @@ function load(path) {
 }
 
 /**
- * Run workflow.js under stubs.
- * @param args      the args object the workflow receives
- * @param agentReply (label, prompt, opts) => result | null   — null models a dead/skipped agent
+ * Run a whole work ROUND under stubs: the AGENTS stage, then the commands work-checks.sh would run,
+ * then the DIGEST stage, the ONE lens row work-stage.mjs would farm out, and the GATE stage.
+ * @param args      the args object the workflow receives (args.round set => one stage, as given)
+ * @param agentReply (label, prompt, opts) => result | null   — null models a dead/skipped agent, and
+ *                   for a scripted command (red:before/red:after/acceptance/mechanical) a command
+ *                   that could not run (exit -1)
  * @param overrides  replace a hook wholesale, e.g. {pipeline: () => Promise.reject(...)}. The
  *                   default stubs swallow a per-ITEM throw, so a LEG-level rejection — what a real
  *                   dispatcher does on budget exhaustion — is only reachable by replacing the hook.
- * @returns {{result, dispatched: string[], logs: string[], prompts: Map<string,string>}}
+ *                   `checks` is merged over the simulated work-checks.sh output (e.g. {suite: …}).
+ * @returns {{result, dispatched, workflowDispatched, scripted, order, logs, prompts, optsMap, stages}}
+ *   dispatched         every MODEL agent the round cost: workflow.js's agents plus the farmed lens
+ *   workflowDispatched only what workflow.js itself dispatched through agent()
+ *   scripted           every command a script ran, labelled red:before:<id>, red:after:<id>,
+ *                      acceptance:<id>, mechanical:<name>
+ *   order              agents and scripted commands interleaved, in the order the round ran them
  */
 export async function run(args, agentReply, path = WORKFLOW, overrides = {}) {
   const dispatched = []
+  const workflowDispatched = []
+  const scripted = []
+  const order = []
   const logs = []
   const prompts = new Map()
   const optsMap = new Map()
+  const stages = []
   const agent = async (prompt, opts) => {
     dispatched.push(opts.label)
+    order.push(opts.label)
+    workflowDispatched.push(opts.label)
     prompts.set(opts.label, prompt)
     optsMap.set(opts.label, opts)
     return agentReply(opts.label, prompt, opts)
@@ -57,16 +72,65 @@ export async function run(args, agentReply, path = WORKFLOW, overrides = {}) {
     return out
   }
   const log = m => logs.push(m)
-  const hooks = { agent, phase, parallel, pipeline, log, ...overrides }
-  const result = await load(path)(args, hooks.agent, hooks.phase, hooks.parallel, hooks.pipeline, hooks.log)
-  return { result, dispatched, logs, prompts, optsMap }
+  const { checks: checksOverride, ...hookOverrides } = overrides
+  const hooks = { agent, phase, parallel, pipeline, log, ...hookOverrides }
+  const fn = load(path)
+  const exec = a => fn(a, hooks.agent, hooks.phase, hooks.parallel, hooks.pipeline, hooks.log)
+  const out = extra => ({ dispatched, workflowDispatched, scripted, order, logs, prompts, optsMap, stages, ...extra })
+
+  if (args.round) return out({ result: await exec(args) })
+  // A scripted command: the reply's exitCode, or -1 for a command that could not run.
+  const command = async (label, cmd) => {
+    scripted.push(label)
+    order.push(label)
+    prompts.set(label, cmd)
+    let r = null
+    try { r = await agentReply(label, cmd, { label, scripted: true }) } catch { r = null }
+    return r && Number.isInteger(r.exitCode) ? { exitCode: r.exitCode, output: String(r.output ?? '') }
+      : { exitCode: -1, output: `could not run: ${cmd}` }
+  }
+  // work-dispatch.sh: the PLAN stage (sizing + which tasks need a probe), then the before-probe,
+  // unless the test supplies the recorded map itself — all before any agent is launched.
+  const planStage = await exec({ ...args, round: { plan: true } })
+  stages.push('plan')
+  let redBefore = args.redBefore
+  if (redBefore === undefined) {
+    redBefore = {}
+    for (const { id, command: c } of planStage.checkPlan.red) redBefore[id] = await command(`red:before:${id}`, c)
+  }
+  const agentsStage = await exec({ ...args, redBefore })
+  stages.push('agents')
+  if (!agentsStage || agentsStage.stage !== 'agents') return out({ result: agentsStage })
+  const plan = agentsStage.checkPlan
+  const checks = {
+    red: [], acceptance: [], mechanical: [], suite: { checked: 0, changed: [] },
+  }
+  for (const { id, command: c } of plan.red) checks.red.push({ id, command: c, ...(await command(`red:after:${id}`, c)) })
+  for (const { id, command: c } of plan.acceptance) checks.acceptance.push({ id, command: c, ...(await command(`acceptance:${id}`, c)) })
+  for (const { name, cmd } of plan.mechanical) checks.mechanical.push({ name, cmd, ...(await command(`mechanical:${name}`, cmd)) })
+  Object.assign(checks, checksOverride || {})
+
+  const staged = { ...args, redBefore }
+  const digestStage = await exec({ ...staged, round: { agents: agentsStage.agents, checks } })
+  stages.push('digest')
+  if (!digestStage || digestStage.stage !== 'digest') return out({ result: digestStage, checks, redBefore })
+  const spec = digestStage.lens
+  dispatched.push(spec.label)
+  order.push(spec.label)
+  prompts.set(spec.label, spec.prompt)
+  optsMap.set(spec.label, spec)
+  let lens = null
+  try { lens = await agentReply(spec.label, spec.prompt, spec) } catch { lens = null }
+  const result = await exec({ ...staged, round: { agents: agentsStage.agents, checks, lens } })
+  stages.push('gate')
+  return out({ result, checks, redBefore, fanOut: agentsStage.fanOut, checkPlan: plan, digestStage })
 }
 
 /** Throws-or-not, without losing what got dispatched first. */
 export async function runCatching(args, agentReply, path = WORKFLOW) {
   const dispatched = []
   try {
-    const r = await run(args, (l, p, o) => { dispatched.push(l); return agentReply(l, p, o) }, path)
+    const r = await run(args, (l, p, o) => { if (!(o && o.scripted)) dispatched.push(l); return agentReply(l, p, o) }, path)
     return { threw: false, error: null, ...r }
   } catch (error) {
     return { threw: true, error, result: null, dispatched, logs: [] }
@@ -80,11 +144,12 @@ export const task = (over = {}) => ({ id: 'T1', name: 'n', work: 'w', acceptance
 /**
  * Default replies: everything succeeds. Override per label to model failure or death.
  * @param over  {label-prefix or exact label: result|null}, plus `red: {before, after}` exit codes.
+ *              `accept` maps a task id to its acceptanceCmd result ({exitCode, output} or null).
  *              `lens` is ONE value, not a map — there is one lens and its label is exactly `lens`.
  *              Pass null for a dead lens, or a LENS_SCHEMA object ({routes?, findings?, carried?,
  *              dispositions?}) for a lens that reported. Default: a lens that ran and found nothing.
  */
-export function replies({ red = {}, impl = {}, verify = {}, lens, mech = {}, attempt = {}, rules = {} } = {}) {
+export function replies({ red = {}, impl = {}, verify = {}, lens, mech = {}, accept = {}, attempt = {}, rules = {} } = {}) {
   return (label, _prompt, _opts) => {
     const [kind, rest] = [label.split(':')[0], label.split(':').slice(1).join(':')]
     if (kind === 'implement') return impl[rest] !== undefined ? impl[rest] : { id: rest, done: true, changedFiles: ['x'], evidence: 'e' }
@@ -93,6 +158,7 @@ export function replies({ red = {}, impl = {}, verify = {}, lens, mech = {}, att
     if (label === 'lens') return lens !== undefined ? lens : { routes: [], findings: [], carried: [], dispositions: [] }
     if (kind === 'attempt') return attempt[rest] !== undefined ? attempt[rest] : { key: rest, answer: 'default answer' }
     if (kind === 'mechanical' || kind === 'mech') return mech[rest] !== undefined ? mech[rest] : { name: rest, exitCode: 0, output: '' }
+    if (kind === 'acceptance') return accept[rest] !== undefined ? accept[rest] : { exitCode: 0, output: 'ok' }
     if (kind === 'rules') return rules[rest] !== undefined ? rules[rest] : { name: rest, exitCode: 0, stdout: '{"verdicts":[],"unavailable":[]}' }
     if (kind === 'red') {
       // Labels are red:before:<id> / red:after:<id>. Default to the HEALTHY pair (fails before,

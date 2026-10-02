@@ -23,7 +23,7 @@ set -euo pipefail
 # ../workflow.js; a key that drifts out of that return silently reads as "missing" here.
 #
 # The gate return also carries `judged` (string), `implemented`, `verified`, `carried`, `dispositions`,
-# `thirdParty`, `mechanical`, `scores` (arrays), and — conditionally — `red` and `residue`. Only the keys
+# `mechanical`, `scores` (arrays), and — conditionally — `red` and `residue`. Only the keys
 # below are required: the rest are either advisory or emitted by one mode. OPTIONAL names the ones whose
 # type is still checked WHEN PRESENT, so a mode-specific key cannot arrive malformed.
 #

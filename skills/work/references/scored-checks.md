@@ -235,4 +235,5 @@ signal is the substrate: deterministic checks (`mechanicalChecks`) and categoric
 `critical|major` findings from the one review lens. Score the run to read it; gate it on something
 that can be wrong in only one direction.
 
-`work`'s precedent for the shape is `thirdParty`: advisory, reported, never in the gate arithmetic.
+`work` has used the shape before, in an advisory review leg since retired: reported beside the
+verdict, never in the gate arithmetic.

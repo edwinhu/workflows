@@ -171,12 +171,30 @@ describe('the redCommand probe runs at dispatch, not a round later', () => {
     expect(r.out).toMatch(/pytest/)
   })
 
-  test('exit 0 is refused as red-not-red — an already-green probe proves nothing and costs a whole round', () => {
+  test('exit 1 is recorded in args.redBefore, and every file a redCommand names is hashed into redSuiteHashes', () => {
+    const f = fixture({ redCommand: 'bash scripts/check.sh' })
+    script(f.dir, 'check.sh', 'echo "1 failed"\nexit 1')
+    const r = dispatch(f)
+    expect(r.code).toBe(0)
+    expect(r.out).toMatch(/red-suite: 1 file\(s\) hashed; redBefore recorded for 1 task\(s\)/)
+    const a = JSON.parse(readFileSync(f.argsPath, 'utf8'))
+    expect(a.redBefore).toEqual({ T1: { exitCode: 1, output: '1 failed' } })
+    const sha = new Bun.CryptoHasher('sha256').update(readFileSync(join(f.dir, 'scripts/check.sh'))).digest('hex')
+    expect(a.redSuiteHashes).toEqual({ 'scripts/check.sh': sha })
+  })
+
+  // red-not-red moved from a dispatch refusal to the gate: the before-run is RECORDED in
+  // args.redBefore and scored red-not-red by the gate, so the round launches but cannot pass red.
+  test('exit 0 is reported as red-not-red and recorded in args.redBefore — the gate scores it', () => {
     const f = fixture({ redCommand: 'bash scripts/green.sh' })
     script(f.dir, 'green.sh', 'echo "3 passed"\nexit 0')
     const r = dispatch(f)
-    expect(r.code).toBe(3)
+    expect(r.code).toBe(0)
     expect(r.out).toMatch(/red-not-red/)
+    expect(r.out).toMatch(/REPORTED, not refused/)
+    const a = JSON.parse(readFileSync(f.argsPath, 'utf8'))
+    expect(a.redBefore.T1.exitCode).toBe(0)
+    expect(a.redBefore.T1.output).toMatch(/3 passed/)
   })
 
   test('a non-zero exit with no test output at all is could-not-run — silence is not evidence of a failing test', () => {
@@ -324,7 +342,8 @@ describe('a probe refusal is atomic — the run is left exactly as it was', () =
     const argsBefore = readFileSync(f.argsPath, 'utf8')
     const resultBefore = readFileSync(join(f.runDir, 'result.json'), 'utf8')
 
-    script(f.dir, 'check.sh', 'echo "3 passed"\nexit 0')   // the gate has gone green: red-not-red
+    // could-not-run is the refusal that survives at dispatch (red-not-red is now recorded, not refused)
+    script(f.dir, 'check.sh', 'exit 1')   // non-zero with no test output: could-not-run
     expect(dispatch(f).code).toBe(3)
 
     expect(readFileSync(f.argsPath, 'utf8')).toBe(argsBefore)
@@ -737,8 +756,9 @@ describe('the fan-out sizing print counts one lens and no refuters', () => {
     expect(r.out).toMatch(/lens=1\b/)
     expect(r.out).not.toMatch(/lenses=/)
     expect(r.out).not.toMatch(/\bprior=/)
-    // 2 (implementer+verifier) + 2 (red probes) + 1 lens + 1 mechanical check = 6.
-    expect(r.out).toMatch(/fan-out floor 6 vs maxAgents 50/)
+    // 2 (implementer+verifier) + 1 lens = 3; red probes and the mechanical check are scripted.
+    expect(r.out).toMatch(/fan-out floor 3 vs maxAgents 50/)
+    expect(r.out).toMatch(/scripted \(no agent\): red-before=1 acceptanceCmd=0 mech=1/)
   })
 
   test('carried findings are reported but add nothing to the floor', () => {
@@ -754,7 +774,7 @@ describe('the fan-out sizing print counts one lens and no refuters', () => {
     const r = dispatch(f)
     expect(r.code).toBe(0)
     expect(r.out).toMatch(/carried=3\b/)
-    expect(r.out).toMatch(/fan-out floor 6 vs maxAgents 50/)
+    expect(r.out).toMatch(/fan-out floor 3 vs maxAgents 50/)
   })
 
   test('the fan-out print counts attempts', () => {
@@ -773,7 +793,7 @@ describe('the fan-out sizing print counts one lens and no refuters', () => {
     if (r.code !== 0) console.log(r.out)
     expect(r.code).toBe(0)
     expect(r.out).toMatch(/attempts=3\b/)
-    expect(r.out).toMatch(/fan-out floor 9 vs maxAgents 50/)
+    expect(r.out).toMatch(/fan-out floor 6 vs maxAgents 50/)
   })
 
   test('the fan-out print counts ruleChecks', () => {
@@ -788,7 +808,7 @@ describe('the fan-out sizing print counts one lens and no refuters', () => {
     if (r.code !== 0) console.log(r.out)
     expect(r.code).toBe(0)
     expect(r.out).toMatch(/rule=1\b/)
-    expect(r.out).toMatch(/fan-out floor 7 vs maxAgents 50/)
+    expect(r.out).toMatch(/fan-out floor 4 vs maxAgents 50/)
   })
 
   // M1. A task carrying a PROVEN red pair is not re-probed by workflow.js, so it must not be counted
@@ -802,8 +822,8 @@ describe('the fan-out sizing print counts one lens and no refuters', () => {
     const r = dispatch(f)
     expect(r.code).toBe(0)
     expect(r.out).toMatch(/red: 1 gated/)      // still red-GATED
-    expect(r.out).toMatch(/red=0\b/)           // but no probe is charged for
-    expect(r.out).toMatch(/fan-out floor 4 vs maxAgents 50/)
+    expect(r.out).toMatch(/red-before=0\b/)    // but no probe is run
+    expect(r.out).toMatch(/fan-out floor 3 vs maxAgents 50/)
   })
 })
 
@@ -826,7 +846,7 @@ describe('the red probe skips a task carrying a proven red adjudication', () => 
     expect(r.code).toBe(0)
     expect(existsSync(join(f.dir, 'probe-ran'))).toBe(false)
     expect(r.out).toMatch(/no active task needs a probe/)
-    expect(r.out).toMatch(/fan-out floor 2 vs maxAgents 50/)
+    expect(r.out).toMatch(/fan-out floor 1 vs maxAgents 50/)
   })
 
   test('a PASSING redCommand with a carried red-green is skipped, not refused', () => {
@@ -852,21 +872,21 @@ describe('the red probe skips a task carrying a proven red adjudication', () => 
     expect(existsSync(join(f.dir, 'probe-ran'))).toBe(true)
     expect(r.out).toMatch(/red-probe T1: red \(exit 1\)/)
     expect(r.out).not.toMatch(/red-probe T1: carried/)
-    expect(r.out).toMatch(/red=1\b/)
-    expect(r.out).toMatch(/fan-out floor 6 vs maxAgents 50/)
+    expect(r.out).toMatch(/red-before=1\b/)
+    expect(r.out).toMatch(/fan-out floor 3 vs maxAgents 50/)
   })
 
-  test('a stale red proof cannot bypass refusal of a currently passing command', () => {
+  test('a stale red proof cannot bypass the before-run of a currently passing command', () => {
     const f = fixture({
       redCommand: 'bash scripts/check.sh',
       extraArgs: { priorResults: { red: [{ id: 'T1', command: 'bash scripts/old.sh', verdict: 'red-green' }] } },
     })
     script(f.dir, 'check.sh', 'echo probed > probe-ran\necho "1 passed"\nexit 0')
     const r = dispatch(f)
-    expect(r.code).toBe(3)
+    expect(r.code).toBe(0)
     expect(existsSync(join(f.dir, 'probe-ran'))).toBe(true)
     expect(r.out).toMatch(/red-not-red/)
-    expect(existsSync(f.argsPath)).toBe(false)
+    expect(JSON.parse(readFileSync(f.argsPath, 'utf8')).redBefore.T1.exitCode).toBe(0)
   })
 
   test('a legacy carried red proof with no command does not skip the probe', () => {
@@ -879,15 +899,16 @@ describe('the red probe skips a task carrying a proven red adjudication', () => 
     expect(r.code).toBe(0)
     expect(existsSync(join(f.dir, 'probe-ran'))).toBe(true)
     expect(r.out).toMatch(/red-probe T1: red \(exit 1\)/)
-    expect(r.out).toMatch(/red=1\b/)
+    expect(r.out).toMatch(/red-before=1\b/)
   })
 
-  test('the same fixture WITHOUT the carried adjudication is refused as red-not-red', () => {
+  test('the same fixture WITHOUT the carried adjudication is recorded as red-not-red', () => {
     const f = fixture({ redCommand: 'bash scripts/check.sh' })
     script(f.dir, 'check.sh', 'echo "1 passed"\nexit 0')
     const r = dispatch(f)
-    expect(r.code).toBe(3)
+    expect(r.code).toBe(0)
     expect(r.out).toMatch(/red-not-red/)
+    expect(JSON.parse(readFileSync(f.argsPath, 'utf8')).redBefore.T1.exitCode).toBe(0)
   })
 
   // Only a PROVEN pair skips. A carried failure verdict is not evidence of anything.
@@ -898,8 +919,9 @@ describe('the red probe skips a task carrying a proven red adjudication', () => 
     })
     script(f.dir, 'check.sh', 'echo "1 passed"\nexit 0')
     const r = dispatch(f)
-    expect(r.code).toBe(3)
+    expect(r.code).toBe(0)
     expect(r.out).toMatch(/red-not-red/)
+    expect(JSON.parse(readFileSync(f.argsPath, 'utf8')).redBefore.T1.exitCode).toBe(0)
   })
 
   test('every gated task carrying a proven pair leaves nothing to probe, and the message says so', () => {
