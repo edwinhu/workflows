@@ -13607,3 +13607,83 @@ func TestASCIICaptionMarkerSplitHeaderDittoClass(t *testing.T) {
 		t.Errorf("group row lost or garbled: %s", names(rows))
 	}
 }
+
+// 0000950152-02-005247 (cik 1101752): untagged class-first tables, the name
+// above the "Common Stock  <street>  count  pct" line, rules between holders.
+const asciiUntaggedClassAddressLines = `
+                          SECURITY OWNERSHIP OF CERTAIN
+                        BENEFICIAL OWNERS AND MANAGEMENT
+
+
+CERTAIN BENEFICIAL OWNERS
+
+The Company Common Stock is the only outstanding class of equity security of the
+Company. Ownership as of June 14, 2002 of AuGRID Common Stock (to the Company's
+knowledge), by beneficial holders of more than five percent of the Company
+Common Stock, is as follows:
+
+  ----------------------------------------------------------------------------
+  TITLE OF CLASS     NAME AND ADDRESS OF      AMOUNT AND NATURE OF    PERCENT
+                      BENEFICIAL OWNER          BENEFICIAL OWNER      OF CLASS
+  ----------------------------------------------------------------------------
+                    M. J. Shaheed
+  Common Stock      2275 East 55th Street          26,907,250          41.80%
+                    Cleveland, Ohio 44103
+  ----------------------------------------------------------------------------
+
+
+MANAGEMENT
+
+The following table sets forth, as of June 14, 2002, the ownership of AuGRID
+Common Stock by each of the Company's directors and executive officers, and by
+all directors and executive officers, as a group. Each director and executive
+officers has full voting and investment power with respect to his shares, and no
+shares listed in the table below are subject to any vesting requirement. There
+are no shares of any other class of capital stock outstanding, and no options or
+other rights to acquire such shares have been granted.
+
+- --------------------------------------------------------------------------------
+TITLE OF CLASS        NAME AND ADDRESS OF         AMOUNT AND NATURE OF  PERCENT
+                       BENEFICIAL OWNER             BENEFICIAL OWNER    OF CLASS
+- --------------------------------------------------------------------------------
+                M. J. Shaheed
+Common Stock    2275 East 55th Street                  26,907,250        41.80%
+                Cleveland, Ohio 44103
+- --------------------------------------------------------------------------------
+                Mary F. Sloat-Horoszko
+Common Stock    2275 East 55th Street                   2,000,000         3.11%
+                Cleveland, Ohio 44103
+- --------------------------------------------------------------------------------
+                Earle B. Higgins
+Common Stock    26161 Danvers Drive                       250,000        0.39%
+                Farmington Hills, Michigan 48334
+- --------------------------------------------------------------------------------
+                Essa Mashni
+Common Stock    175 Marsala Court                         322,000        0.50%
+                Canton, Michigan 48187
+- --------------------------------------------------------------------------------
+                Cecil Weatherspoon
+Common Stock    3407 Milan Road                           250,000        0.39%
+                Sandusky, Ohio 44870
+- --------------------------------------------------------------------------------
+Common Stock    All Directors and Executive
+                Officers, as a group (5 persons)       29,729,250       46.19%
+`
+
+func TestASCIIUntaggedClassAddressRows(t *testing.T) {
+	rows := ScreenRows(run(t, asciiUntaggedClassAddressLines))
+	for _, want := range []struct {
+		name   string
+		shares float64
+	}{{"M. J. Shaheed", 26907250}, {"Mary F. Sloat-Horoszko", 2000000}, {"Essa Mashni", 322000}} {
+		r := find(rows, want.name, "")
+		if r == nil || r.Shares == nil || *r.Shares != want.shares {
+			t.Errorf("holder %q %v lost: %s", want.name, want.shares, names(rows))
+		}
+	}
+	for _, r := range rows {
+		if strings.Contains(r.HolderName, "Street") || strings.Contains(r.HolderName, "Ohio") || strings.Contains(r.HolderName, "Road") {
+			t.Errorf("address emitted as a holder: %q", r.HolderName)
+		}
+	}
+}

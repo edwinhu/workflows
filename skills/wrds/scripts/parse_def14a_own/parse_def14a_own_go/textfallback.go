@@ -1651,11 +1651,72 @@ func textNomineeShareCounts(body string, base Row) ([]Row, int) {
 func textClassAddressRows(body string) (string, bool) {
 	lines := strings.Split(body, "\n")
 	changed := false
+	// rewrite moves each name onto its value line in lines[from:end]. A
+	// negative nameStart takes the name column from the value line itself
+	// (an untagged table has no <C> marker to place it).
+	rewrite := func(from, end, nameStart, valueStart int) {
+		for j := from; j < end; j++ {
+			g := splitHdrGroups(lines[j])
+			ns := nameStart
+			if ns < 0 && len(g) >= 4 {
+				ns = g[1].lo
+			}
+			if len(g) < 4 || g[1].lo != ns ||
+				!reASCIIAddressClass.MatchString(strings.TrimSpace(g[0].text)) {
+				continue
+			}
+			value, percent := g[len(g)-2], g[len(g)-1]
+			if value.lo < valueStart-2 || !reASCIIStreetCell.MatchString(strings.TrimSpace(lines[j][ns:value.lo])) {
+				continue
+			}
+			prev := lines[j-1]
+			nm := strings.TrimSpace(prev)
+			if len(prev)-len(strings.TrimLeft(prev, " ")) != ns || len(nm) > 70 ||
+				!(hasWords(nm, 2) || reInitialsSurname.MatchString(nm)) || reShareLike.MatchString(nm) || reSkipName.MatchString(nm) ||
+				reHdrLineCue.MatchString(nm) || isAddressLine(nm) || reRuleLine.MatchString(nm) {
+				continue
+			}
+			if _, ok := ParseShares(value.text); !ok {
+				continue
+			}
+			if _, ok, marker, _ := ParsePercent(percent.text); !ok && marker == "" {
+				continue
+			}
+			_, notes := StripFootnotes(value.text + " " + percent.text)
+			if len(notes) > 0 {
+				nm += " (" + strings.Join(notes, ") (") + ")"
+			}
+			prefix := strings.TrimSpace(g[0].text) + ":  " + nm
+			if len(prefix)+2 > value.lo {
+				continue
+			}
+			lines[j] = prefix + strings.Repeat(" ", value.lo-len(prefix)) + lines[j][value.lo:]
+			lines[j-1] = ""
+			changed = true
+		}
+	}
+	classAddressHdr := func(l string) []hdrGroup {
+		g := splitHdrGroups(l)
+		if len(g) == 4 && strings.EqualFold(strings.TrimSpace(g[0].text), "Title of Class") &&
+			strings.Contains(strings.ToLower(g[1].text), "name and address") {
+			return g
+		}
+		return nil
+	}
+	hdrOK := func(header []string) bool {
+		hdr := hdrColumnText(header)
+		return reClassAddrAmountHdr.MatchString(hdr) && reHdrPctCue.MatchString(strings.Join(header, " ")) &&
+			!reCompCue.MatchString(hdr) && !reOptDetailCue.MatchString(hdr)
+	}
 	start := -1
+	inTable := make([]bool, len(lines))
 	for end, line := range lines {
 		low := strings.ToLower(line)
 		if strings.Contains(low, "<table") {
 			start = end
+		}
+		if start >= 0 {
+			inTable[end] = true
 		}
 		if start < 0 || !strings.Contains(low, "</table") {
 			continue
@@ -1679,60 +1740,49 @@ func textClassAddressRows(body string) (string, bool) {
 				continue
 			}
 			header = append(header, clean)
-			g := splitHdrGroups(clean)
-			if len(g) == 4 && strings.EqualFold(strings.TrimSpace(g[0].text), "Title of Class") &&
-				strings.Contains(strings.ToLower(g[1].text), "name and address") {
+			if g := classAddressHdr(clean); g != nil {
 				nameStart, valueStart = g[1].lo, g[2].lo
 			}
 		}
-		hdr := hdrColumnText(header)
-		if mark < 0 || nameStart < 0 || !reTextBeneficialHeader.MatchString(hdr) ||
-			!reHdrPctCue.MatchString(strings.Join(header, " ")) || reCompCue.MatchString(hdr) || reOptDetailCue.MatchString(hdr) {
-			start = -1
-			continue
-		}
-		for j := mark + 2; j < end; j++ {
-			g := splitHdrGroups(lines[j])
-			if len(g) < 4 || g[1].lo != nameStart ||
-				!reASCIIAddressClass.MatchString(strings.TrimSpace(g[0].text)) {
-				continue
-			}
-			value, percent := g[len(g)-2], g[len(g)-1]
-			if value.lo < valueStart-2 || !reASCIIStreetCell.MatchString(strings.TrimSpace(lines[j][nameStart:value.lo])) {
-				continue
-			}
-			prev := lines[j-1]
-			nm := strings.TrimSpace(prev)
-			if len(prev)-len(strings.TrimLeft(prev, " ")) != nameStart || len(nm) > 70 ||
-				!hasWords(nm, 2) || reShareLike.MatchString(nm) || reSkipName.MatchString(nm) ||
-				reHdrLineCue.MatchString(nm) || isAddressLine(nm) || reRuleLine.MatchString(nm) {
-				continue
-			}
-			if _, ok := ParseShares(value.text); !ok {
-				continue
-			}
-			if _, ok, marker, _ := ParsePercent(percent.text); !ok && marker == "" {
-				continue
-			}
-			_, notes := StripFootnotes(value.text + " " + percent.text)
-			if len(notes) > 0 {
-				nm += " (" + strings.Join(notes, ") (") + ")"
-			}
-			prefix := strings.TrimSpace(g[0].text) + ":  " + nm
-			if len(prefix)+2 > value.lo {
-				continue
-			}
-			lines[j] = prefix + strings.Repeat(" ", value.lo-len(prefix)) + lines[j][value.lo:]
-			lines[j-1] = ""
-			changed = true
+		if mark >= 0 && nameStart >= 0 && hdrOK(header) {
+			rewrite(mark+2, end, nameStart, valueStart)
 		}
 		start = -1
+	}
+	// The same layout drawn without SGML tags: the header lines run to a rule,
+	// the table to the first double blank line.
+	for h := 0; h < len(lines); h++ {
+		g := classAddressHdr(lines[h])
+		if g == nil || inTable[h] {
+			continue
+		}
+		header := []string{lines[h]}
+		mark := h + 1
+		for ; mark < len(lines) && mark <= h+4 && !reRuleLine.MatchString(strings.TrimSpace(lines[mark])); mark++ {
+			header = append(header, lines[mark])
+		}
+		if mark >= len(lines) || mark > h+4 || !hdrOK(header) {
+			continue
+		}
+		end := mark + 1
+		for end+1 < len(lines) && !(strings.TrimSpace(lines[end]) == "" && strings.TrimSpace(lines[end+1]) == "") && !inTable[end] {
+			end++
+		}
+		rewrite(mark+1, end, -1, g[2].lo)
+		h = end
 	}
 	return strings.Join(lines, "\n"), changed
 }
 
+// The class/address layout labels its count column "Amount and Nature of
+// Beneficial Owner" as often as "... Ownership".
+var reClassAddrAmountHdr = regexp.MustCompile(`(?i)\bamount\s+and\s+nature\s+of\s+beneficial\s+owner(?:ship)?\b`)
+
+// A person named by initials and a surname ("M. J. Shaheed").
+var reInitialsSurname = regexp.MustCompile(`^(?:[A-Z]\.\s*){1,3}[A-Z][a-z]+(?:[-'][A-Z]?[a-z]+)?$`)
+
 var reASCIIAddressClass = regexp.MustCompile(`(?i)^(?:common\s+(?:shares|stock)|ordinary\s+shares|class\s+[a-z0-9]+(?:\s+common\s+stock)?)$`)
-var reASCIIStreetCell = regexp.MustCompile(`(?i)^(?:suite\s+\d|\d+[a-z]?(?:-\d+)?\s+\S.*\b(?:street|st|avenue|ave|road|rd|drive|dr|broadway)\b)`)
+var reASCIIStreetCell = regexp.MustCompile(`(?i)^(?:suite\s+\d|\d+[a-z]?(?:-\d+)?\s+\S.*\b(?:street|st|avenue|ave|road|rd|drive|dr|broadway|court|ct|lane|ln|boulevard|blvd|place|pl|parkway|pkwy|way|plaza|circle|highway)\b)`)
 
 func extractText(body string, base Row, slashParenRecovery bool) ([]Row, int, int) {
 	body = stripEntities(body)
@@ -3083,7 +3133,7 @@ func textSeriesLabels(clean []string, series []string) []string {
 // to. Anchored on the trailing noun so a prose sentence cannot match.
 // A share CLASS written in a column of its own at the head of an ASCII row,
 // separated from the holder name by the gap between the columns.
-var reLeadClassCol = regexp.MustCompile(`(?i)^((?:[A-Z][\w.&/-]*\s+){0,3}(?:shares|class\s+[a-z0-9]+|series\s+[a-z0-9]+))\s*:\s{2,}(\S.*)$`)
+var reLeadClassCol = regexp.MustCompile(`(?i)^((?:[A-Z][\w.&/-]*\s+){0,3}(?:shares|stock|class\s+[a-z0-9]+|series\s+[a-z0-9]+))\s*:\s{2,}(\S.*)$`)
 
 var reTextStickyLabel = regexp.MustCompile(`(?i)^[A-Z0-9][\w.,'&()/ -]{0,58}?\b(?:class|classes|shares|portfolio|fund|series|trust)\s*:?$`)
 var reTextStickyProse = regexp.MustCompile(`(?i)\b(?:was|were|is|are|be)\s+(?:deemed|known)\b`)
