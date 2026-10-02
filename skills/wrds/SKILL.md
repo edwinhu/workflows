@@ -232,6 +232,7 @@ See **`references/sas-etl.md`** for complete patterns:
 | Capital IQ | `ciq` (views), `ciq_pplintel`, `ciq_common` | `wrds_professional` (board/professional panel), `ciqcompanyrel` (company-to-company), `wrds_compensation`. **Account-split: `ciq_pplintel` and `boardex_na` are on opposite WRDS accounts; `ciq_transactions` is denied on both.** See `references/capiq.md` |
 | BoardEx | `boardex_na` (**`edwin_hu` only**) | `na_wrds_org_composition` (directors **+ senior managers** — filter `seniority`), `na_wrds_company_names`, `na_dir_profile_details` (`usualname` = nickname). History starts **1999**, ~20k mostly-large companies. See `references/boardex.md` |
 | WRDS People Link | `wrdsapps_plink_exec_ciq`, `_exec_boardex`, `_exec_trinsider`, `_trinsider_ciq` | pairwise PERSON id links (execid ↔ directorid ↔ CIQ personid ↔ TR personid). `plink_boardex_ciq` denied unless the account holds both. See `references/people-linking.md` |
+| Audit Analytics activism | `audit_corp_legal` (**`edwin_hu` only**) | `feed31_shareholder_activism` — one row per SC 13D/13D-A: subject CIK, filer, accession, stake, purpose keys. Query it before parsing 13D covers. No proxy-fight/settlement fields. See `references/audit-analytics.md` |
 | IBES | `tr_ibes` | `det_epsus`, `statsum_epsus` |
 | Form D / Reg D | `wrdssec` | `wrds_vc_formd` (parsed, 2000–2020); index: `wrdssec_all.forms` (all CIKs) or `wrds_forms` (filer only) — default to `forms`, see `references/wrds-forms-tables.md` |
 | SEC EDGAR | `wrdssec_all` | `forms` (raw index, all CIKs per filing — default), `wrds_forms` (filer-only view), `wciklink_cusip` |
@@ -355,6 +356,7 @@ Detailed query patterns and table documentation:
 - **`references/pitchbook.md`** - PitchBook: schema architecture, dealsize/fundsize in USD millions, dealdate outliers, CIK crosswalk, fund performance (wrds_fund_returns), PE/VC/fund formation patterns
 - **`references/proxy-advisors.md`** - Proxy-advisor customer identification: 485BPOS/485APOS body scan for ISS/Glass Lewis/Egan-Jones name variants; CRSP MFDB lift to mgmt_cd × year; validates against chongshu published CSV
 - **`references/linkage.md`** - Cross-dataset linkage map: which identifiers are spines, the load-bearing link tables (CCM, wciklink, dswslink, MFDB), a "how do I join X to Y" table, and which vendor ids never cross
+- **`references/audit-analytics.md`** - Audit Analytics feed31 shareholder activism: filing-level 13D/13D-A with subject CIK, filer, accession and purpose keys (`edwin_hu` only); campaign construction, what it lacks vs SharkRepellent, CUSIP link caveat
 - **`references/blockholders.md`** - 13D/13G blockholder panel: Volkova replication, position %, the four mutually-exclusive holder flags
 - **`references/execucomp.md`** - ExecuComp: CEO anncomp, legacy codirfin vs current directorcomp, firm-year aggregation
 - **`references/iss-directors.md`** - ISS Directors: risk.directors + risk.rmdirectors, type harmonization, 1996 gender backfill, S&P 1500 filter
