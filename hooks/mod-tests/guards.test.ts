@@ -46,6 +46,13 @@ test('a self-matching pkill is denied; a bracketed one runs', async ($, on) => {
   expect(await $.tool.call({ tool: 'Bash', command: "pkill -f '[m]yjob'" })).toEqual({ result: 'ran' })
 })
 
+test('a serial multi-file bun test is denied; a parallel one and a single file run', async ($, on) => {
+  world(on, {})
+  expect((await $.tool.call({ tool: 'Bash', command: 'cd /w && bun test ./tests' })).deny).toContain('bun test --parallel')
+  expect(await $.tool.call({ tool: 'Bash', command: 'bun test --parallel ./tests' })).toEqual({ result: 'ran' })
+  expect(await $.tool.call({ tool: 'Bash', command: 'bun test ./tests/a.test.ts' })).toEqual({ result: 'ran' })
+})
+
 test('a headless farm child is guarded too (FARM_OUT_CHILD=1)', async ($, on) => {
   world(on, {}, { FARM_OUT_CHILD: '1' })
   expect((await $.tool.call({ tool: 'Monitor', command: 'rg foo' })).deny).toContain('has no path argument')
