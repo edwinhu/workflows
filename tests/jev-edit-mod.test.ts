@@ -64,7 +64,17 @@ test("a lecture's notes are notes and its deck is slides; other .typ in a course
   expect(await ruleSetFor('/c/secreg/notes/_reg-s.typ', none)).toBe('writing')
   expect(await ruleSetFor('/c/secreg/slides/05-10b5.typ', none)).toBe('writing')
   expect(await ruleSetFor('/c/secreg/addenda/01.typ', none)).toBe('writing')
-  expect([...TEACHING_SETS].sort()).toEqual(['notes', 'slides'])
+  expect([...TEACHING_SETS].sort()).toEqual(['exams', 'notes', 'slides'])
+})
+
+test("an exam question file is exams, ahead of authoring's .planning/; a rubric is not", async () => {
+  expect(await ruleSetFor('/c/secreg/.planning/mc/01.typ', none)).toBe('exams')
+  expect(await ruleSetFor('/c/secreg/.planning/practice-1/issue-spotter.typ', none)).toBe('exams')
+  expect(await ruleSetFor('/c/secreg/.planning/policy.typ', ds)).toBe('exams')
+  expect(await ruleSetFor('/c/secreg/exams/2026-spring-final.typ', none)).toBe('exams')
+  expect(await ruleSetFor('/c/secreg/exams/2026-spring-final-rubric.typ', none)).toBe('writing')
+  expect(await ruleSetFor('/c/secreg/.planning/issues.md', none)).toBe('authoring')
+  expect(await ruleSetFor('/c/secreg/mc/01.typ', none)).toBe('writing')
 })
 
 test('the workflow walk asks each directory up to $HOME, nearest first', async () => {
