@@ -47,6 +47,11 @@ else
   report cite-claim "$rc" "${#SECTIONS[@]} section(s)"
 fi
 
+# The style rules a regex settles (Ship diction, ALL-CAPS emphasis, register crossing). The
+# judged register rules are rule-check.ts's, over constraints/jev/writing.
+uv run python3 "$HERE/writing_style_check.py" --project "$PROJ" --style "$STYLE" >&2
+report style $?
+
 uv run python3 "$HERE/writing_prose_gate.py" --project "$PROJ" --style "$STYLE" >&2
 report prose $?
 
