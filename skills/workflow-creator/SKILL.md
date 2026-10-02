@@ -166,9 +166,9 @@ A vendored `<domain>-constraints` skill is the same error made eagerly. It looks
 
 **Audit-only is a `readOnly` work run, not a second lifecycle.** `work` grew `readOnly` on
 2026-08-07: under it no Implement phase is opened, no implementer and no per-task verifier is
-dispatched, `tasks[]` may be empty, and **every dispatched leg defaults to `Explore`** — the lens,
-the mechanical probes and the third-party runners alike. `Explore` has no Edit and no
-Write, so no agent on a `readOnly` run can write *of its own volition*.
+dispatched, `tasks[]` may be empty, and **every dispatched leg defaults to `Explore`** — the lens
+and the mechanical probes alike. `Explore` has no Edit and no Write, so no agent on a `readOnly` run
+can write *of its own volition*.
 
 **The residual is `Bash`, which `Explore` keeps**, and the exceptions are an OPEN list, not a closed
 one: a `mechanicalChecks` `cmd` runs verbatim; any reference `work` tells a leg to follow can instruct
@@ -283,7 +283,8 @@ domain form, and the rest follow the list unspecialized:
 Plus `work`'s remaining axes, taken as `work` states them:
 
 - **Observable success criteria** (`work` 4) — each becomes a `mechanicalChecks` entry.
-- **Third-party review opt-in** (`work` 6) — the only moment it can be opted into.
+- **Lens provider** (`work` 6) — routed by default; naming claude, codex or gemini passes it as
+  `lensProvider`.
 - **Agent team for discovery** (`work` 7) — **read-only runs only, default yes.** This applies
   directly here, because audit-only *is* a `readOnly` work run: ask the agent team axis on that
   branch and skip it on **new** and **improve**, where the run writes and `work`'s ban holds. A team
@@ -376,7 +377,7 @@ const args = {
 
   verifierAgentType: "Explore",
 
-  thirdParty: ["codex"],   // ONLY if the plan carries the opt-in line; else omit
+  lensProvider: "codex",   // ONLY if CLARIFY axis 6 named a provider; else omit (routed)
 }
 ```
 

@@ -110,10 +110,14 @@ test('a dead probe is red-unproven and FAILS — never a silent pass (gate-laws:
 })
 
 test('the RED probe runs BEFORE the implementer — the order is the guarantee', async () => {
-  const { dispatched } = await run({ ...baseArgs, tasks: [task({ redCommand: 'pytest x' })] },
+  // `before` is the dispatcher's probe, `after` is work-checks.sh's: both bracket the implementer.
+  const { order, scripted, workflowDispatched } = await run({ ...baseArgs, tasks: [task({ redCommand: 'pytest x' })] },
     replies({ red: { before: 1, after: 0 } }))
-  expect(dispatched.indexOf('red:before:T1')).toBeLessThan(dispatched.indexOf('implement:T1'))
-  expect(dispatched.indexOf('implement:T1')).toBeLessThan(dispatched.indexOf('red:after:T1'))
+  expect(order.indexOf('red:before:T1')).toBeGreaterThan(-1)
+  expect(order.indexOf('red:before:T1')).toBeLessThan(order.indexOf('implement:T1'))
+  expect(order.indexOf('implement:T1')).toBeLessThan(order.indexOf('red:after:T1'))
+  expect(scripted).toEqual(['red:before:T1', 'red:after:T1'])
+  expect(workflowDispatched.filter(l => l.startsWith('red:'))).toEqual([])
 })
 
 test('no redCommand dispatches no probes and emits no red keys — existing callers unchanged', async () => {
@@ -315,17 +319,21 @@ test('maxAgents throws before dispatching, and the message breaks down the count
   expect(r.error.message).toMatch(/maxAgents|floor|exceed/i)
 })
 
-test('a red-gated task costs 2 more against the ceiling than a plain one', async () => {
+test('a red-gated task costs NO agent against the ceiling — its two probes are scripted commands', async () => {
   const plain = [task({ id: 'T1' })]
   const gated = [task({ id: 'T1', redCommand: 'pytest x' })]
-  // Find the smallest ceiling each shape fits under, and assert the gated one needs exactly 2 more.
+  // Find the smallest ceiling each shape fits under: the probes moved to the shell, so they are equal,
+  // and the gated shape still runs both probes — as commands, not agents.
   const fits = async (tasks: any, n: number) =>
     !(await runCatching({ ...baseArgs, tasks, maxAgents: n }, replies({ red: { before: 1, after: 0 } }))).threw
   let plainMin = 0, gatedMin = 0
   for (let n = 1; n <= 40 && !plainMin; n++) if (await fits(plain, n)) plainMin = n
   for (let n = 1; n <= 40 && !gatedMin; n++) if (await fits(gated, n)) gatedMin = n
   expect(plainMin).toBeGreaterThan(0)
-  expect(gatedMin - plainMin).toBe(2)
+  expect(gatedMin).toBe(plainMin)
+  const r = await run({ ...baseArgs, tasks: gated, maxAgents: gatedMin }, replies({ red: { before: 1, after: 0 } }))
+  expect(r.scripted).toEqual(['red:before:T1', 'red:after:T1'])
+  expect(r.fanOut).not.toHaveProperty('redProbes')
 })
 
 // ---------------------------------------------------------------- authority plumbing
@@ -1034,11 +1042,11 @@ const dispatchOpts = async (args: any, reply: any = replies()) => {
   await run(args, (label: string, prompt: string, o: any) => { opts.set(label, o); return reply(label, prompt, o) })
   return opts
 }
-// One run that dispatches all four dialable legs: implement, verify, scored and third-party.
+// One run that dispatches all three dialable legs: implement, verify and scored.
 const allLegs = (over: any = {}) => ({
-  ...baseArgs, tasks: one, thirdParty: ['codex'], scoredChecks: [scoredCheck()], ...over,
+  ...baseArgs, tasks: one, scoredChecks: [scoredCheck()], ...over,
 })
-const DIALED = ['implement:T1', 'verify:T1', 'scored:slides:L1', 'third-party:codex']
+const DIALED = ['implement:T1', 'verify:T1', 'scored:slides:L1']
 
 test('each dialable leg carries its default effort when the arg is absent', async () => {
   const opts = await dispatchOpts(allLegs(), scoredReplies())
@@ -1046,12 +1054,11 @@ test('each dialable leg carries its default effort when the arg is absent', asyn
   expect(opts.get('implement:T1').effort).toBe('xhigh')
   expect(opts.get('verify:T1').effort).toBe('medium')
   expect(opts.get('scored:slides:L1').effort).toBe('low')
-  expect(opts.get('third-party:codex').effort).toBe('low')
 })
 
 test('null on a dial omits the effort key entirely — the leg inherits the session default', async () => {
   const opts = await dispatchOpts(allLegs({
-    implementerEffort: null, verifierEffort: null, scoredEffort: null, thirdPartyEffort: null,
+    implementerEffort: null, verifierEffort: null, scoredEffort: null,
   }), scoredReplies())
   // `in`, not `=== undefined`: an explicit `effort: undefined` is still a key the dispatcher reads.
   for (const label of DIALED) expect('effort' in opts.get(label)).toBe(false)
@@ -1059,23 +1066,22 @@ test('null on a dial omits the effort key entirely — the leg inherits the sess
 
 test('an explicit effort overrides the default on every dial', async () => {
   const opts = await dispatchOpts(allLegs({
-    implementerEffort: 'low', verifierEffort: 'xhigh', scoredEffort: 'high', thirdPartyEffort: 'medium',
+    implementerEffort: 'low', verifierEffort: 'xhigh', scoredEffort: 'high',
   }), scoredReplies())
   expect(opts.get('implement:T1').effort).toBe('low')
   expect(opts.get('verify:T1').effort).toBe('xhigh')
   expect(opts.get('scored:slides:L1').effort).toBe('high')
-  expect(opts.get('third-party:codex').effort).toBe('medium')
 })
 
-test('the red and mechanical probes stay pinned at low — no dial reaches them', async () => {
+test('the red and mechanical probes are scripted commands — no model, no effort, no dial reaches them', async () => {
   const opts = await dispatchOpts({
     ...baseArgs, tasks: [task({ redCommand: 'pytest x' })],
     mechanicalChecks: [{ name: 'tests', cmd: 'bun test' }],
-    implementerEffort: 'xhigh', verifierEffort: 'xhigh', scoredEffort: 'xhigh', thirdPartyEffort: 'xhigh',
+    implementerEffort: 'xhigh', verifierEffort: 'xhigh', scoredEffort: 'xhigh',
   })
-  expect(opts.get('red:before:T1').effort).toBe('low')
-  expect(opts.get('red:after:T1').effort).toBe('low')
-  expect(opts.get('mechanical:tests').effort).toBe('low')
+  for (const label of ['red:before:T1', 'red:after:T1', 'mechanical:tests']) {
+    expect(opts.get(label)).toEqual({ label, scripted: true })
+  }
 })
 
 // ---------------------------------------------------------------- the lens's model and effort
@@ -1339,14 +1345,17 @@ test('the lens refs are named with a read-in-full instruction, and absent refs a
 
 // ---------------------------------------------------------------- (2) the lens runs AFTER the checks
 
-test('lens runs after mechanical: completion barrier over parallel verify, mechanical, scored and thirdParty legs', async () => {
-  const checks = ['verify:T1', 'mechanical:lint', 'scored:slides:L1', 'scored:slides:L2', 'third-party:codex']
+test('lens runs after mechanical: completion barrier over parallel verify and scored legs, then the scripted checks', async () => {
+  // verify and scored are agents and run together inside the workflow; mechanical is work-checks.sh,
+  // which runs once the agents stage has returned. The lens is the farm row after all of them.
+  const agentChecks = ['verify:T1', 'scored:slides:L1', 'scored:slides:L2']
+  const checks = [...agentChecks, 'mechanical:lint']
   const events: string[] = []
   const completed = new Set<string>()
   const reply = scoredReplies()
-  const { dispatched } = await run(
+  const { order } = await run(
     { ...baseArgs, tasks: one, mechanicalChecks: [{ name: 'lint', cmd: 'x' }],
-      scoredChecks: [scoredCheck()], thirdParty: ['codex'] },
+      scoredChecks: [scoredCheck()] },
     async (label: string, prompt: string, opts: any) => {
       events.push(`start:${label}`)
       if (checks.includes(label)) {
@@ -1358,13 +1367,16 @@ test('lens runs after mechanical: completion barrier over parallel verify, mecha
       return reply(label, prompt, opts)
     })
   const firstEnd = events.findIndex(e => e.startsWith('end:'))
-  for (const label of checks) {
+  for (const label of agentChecks) {
     // Starting the lens last is not enough: the independent checks must start together AND finish first.
     expect(events.indexOf(`start:${label}`)).toBeLessThan(firstEnd)
-    expect(events.indexOf(`end:${label}`)).toBeLessThan(events.indexOf('start:lens'))
-    expect(dispatched.indexOf(label)).toBeGreaterThan(dispatched.indexOf('implement:T1'))
   }
-  expect(dispatched.indexOf('lens')).toBe(dispatched.length - 1)
+  for (const label of checks) {
+    expect(events.indexOf(`end:${label}`)).toBeLessThan(events.indexOf('start:lens'))
+    expect(order.indexOf(label)).toBeGreaterThan(order.indexOf('implement:T1'))
+  }
+  for (const label of agentChecks) expect(events.indexOf(`end:${label}`)).toBeLessThan(events.indexOf('start:mechanical:lint'))
+  expect(order.indexOf('lens')).toBe(order.length - 1)
 })
 
 test('the digest carries the flagged tasks, the verifier failures and the red outcomes', async () => {
@@ -1627,7 +1639,7 @@ test('onlyTasks [] is a zero-implementer round: no implementer, no verifier, but
   // M2's second half: a failure the lens routed to the PLAN is fixed by amending the plan, not by a
   // task — so the next round has to be able to re-run the checks over a tree nobody touched.
   const two = [task({ id: 'T1', writablePaths: ['a'] }), task({ id: 'T2', writablePaths: ['b'] })]
-  const { dispatched, result } = await run(
+  const { dispatched, scripted, result } = await run(
     {
       ...baseArgs, tasks: two, onlyTasks: [],
       mechanicalChecks: [{ name: 'suite', cmd: 'bun test' }],
@@ -1636,7 +1648,7 @@ test('onlyTasks [] is a zero-implementer round: no implementer, no verifier, but
     replies())
   expect(dispatched.filter(l => l.startsWith('implement:'))).toEqual([])
   expect(dispatched.filter(l => l.startsWith('verify:'))).toEqual([])
-  expect(dispatched).toContain('mechanical:suite')
+  expect(scripted).toContain('mechanical:suite')
   expect(dispatched).toContain('lens')
   // The carried records are what make the task dimensions clean — not an empty set (gate-laws L2a).
   expect(result.scoreTable.tasksJudgedThisRun).toBe(0)
@@ -1687,10 +1699,11 @@ test('carried proven red is not re-probed on a FULL re-run, and does not re-read
     red: [{ id: 'T2', command: 'pytest T2', verdict: 'red-green', beforeExit: 1, afterExit: 0, beforeOutput: 'o', afterOutput: 'o' }],
   }
   // No onlyTasks: a FULL re-run, where the ordinary carry-forward would drop T2's adjudication.
-  const { dispatched, result } = await run({ ...baseArgs, tasks, priorResults },
+  const { dispatched, scripted, result } = await run({ ...baseArgs, tasks, priorResults },
     replies({ red: { before: 1, after: 0 } }))
   expect(dispatched.filter(l => l.includes(':T2'))).toEqual(['implement:T2', 'verify:T2'])
-  expect(dispatched).toContain('red:before:T1')
+  expect(scripted.filter(l => l.includes(':T2'))).toEqual([])
+  expect(scripted).toContain('red:before:T1')
   // The carried verdict survives, so redMissing does not flag T2.
   expect(result.red.find((r: any) => r.id === 'T2').verdict).toBe('red-green')
   expect(result.scoreTable.redCarried).toBe(1)
@@ -1701,14 +1714,14 @@ test('carried proven red is not re-probed on a FULL re-run, and does not re-read
 
 test('an UNPROVEN carried red IS re-probed — only a proven pair is evidence', async () => {
   for (const verdict of ['red-not-red', 'green-not-green', 'red-unproven']) {
-    const { dispatched } = await run(
+    const { scripted } = await run(
       { ...baseArgs, tasks: [redTask('T1', ['a'])], priorResults: { ...carriedAll(['T1']), red: [{ id: 'T1', verdict }] } },
       replies({ red: { before: 1, after: 0 } }))
-    expect(dispatched, `${verdict} must be re-probed`).toContain('red:before:T1')
+    expect(scripted, `${verdict} must be re-probed`).toContain('red:before:T1')
   }
 })
 
-test('a carried proven red costs nothing against maxAgents — the probes are not dispatched', async () => {
+test('a carried proven red is not probed at all — and probing never cost an agent', async () => {
   const tasks = [redTask('T1', ['a'])]
   const fits = async (priorResults: any, n: number) =>
     !(await runCatching({ ...baseArgs, tasks, priorResults, maxAgents: n }, replies({ red: { before: 1, after: 0 } }))).threw
@@ -1717,7 +1730,11 @@ test('a carried proven red costs nothing against maxAgents — the probes are no
   for (let n = 1; n <= 40 && !probedMin; n++) if (await fits(carriedAll(['T1']), n)) probedMin = n
   for (let n = 1; n <= 40 && !provenMin; n++) if (await fits(proven, n)) provenMin = n
   expect(probedMin).toBeGreaterThan(0)
-  expect(probedMin - provenMin).toBe(2)
+  expect(probedMin).toBe(provenMin)
+  const probed = await run({ ...baseArgs, tasks, priorResults: carriedAll(['T1']) }, replies({ red: { before: 1, after: 0 } }))
+  const skipped = await run({ ...baseArgs, tasks, priorResults: proven }, replies({ red: { before: 1, after: 0 } }))
+  expect(probed.scripted).toEqual(['red:before:T1', 'red:after:T1'])
+  expect(skipped.scripted).toEqual([])
 })
 
 // ---------------------------------------------------------------- (11) red proof belongs to the current command
@@ -1730,14 +1747,15 @@ const oldRedProof = {
 test('carried red for a changed redCommand is re-probed', async () => {
   for (const before of [1, 0]) {
     const command = 'pytest T1-amended'
-    const { dispatched, prompts, result } = await run({
+    const { scripted, order, prompts, result } = await run({
       ...baseArgs, tasks: [{ ...redTask('T1', ['a']), redCommand: command }],
       priorResults: { ...carriedAll(['T1']), red: [oldRedProof] },
     }, replies({ red: { before, after: 0 } }))
-    expect(dispatched.filter(l => l.startsWith('red:'))).toEqual(['red:before:T1', 'red:after:T1'])
-    expect(dispatched.indexOf('red:before:T1')).toBeLessThan(dispatched.indexOf('implement:T1'))
-    expect(dispatched.indexOf('implement:T1')).toBeLessThan(dispatched.indexOf('red:after:T1'))
-    for (const label of ['red:before:T1', 'red:after:T1']) expect(prompts.get(label)).toContain(`\n${command}\n`)
+    expect(scripted.filter(l => l.startsWith('red:'))).toEqual(['red:before:T1', 'red:after:T1'])
+    expect(order.indexOf('red:before:T1')).toBeLessThan(order.indexOf('implement:T1'))
+    expect(order.indexOf('implement:T1')).toBeLessThan(order.indexOf('red:after:T1'))
+    // A scripted command's "prompt" is the command line itself — the amended one, never the carried one.
+    for (const label of ['red:before:T1', 'red:after:T1']) expect(prompts.get(label)).toBe(command)
     expect(result.red).toHaveLength(1)
     expect(result.red[0]).toMatchObject({ command, beforeExit: before, afterExit: 0,
       verdict: before === 0 ? 'red-not-red' : 'red-green' })
@@ -1750,12 +1768,12 @@ test('carried red for a changed redCommand is re-probed', async () => {
 
 test('carried red with no command or a non-identical command is re-probed', async () => {
   for (const command of [undefined, 'pytest T1 ']) {
-    const { dispatched, result } = await run({
+    const { scripted, result } = await run({
       ...baseArgs, tasks: [redTask('T1', ['a'])],
       priorResults: { ...carriedAll(['T1']), red: [{ ...oldRedProof, command }] },
     }, replies({ red: { before: 0, after: 0 } }))
-    expect(dispatched).toContain('red:before:T1')
-    expect(dispatched).toContain('red:after:T1')
+    expect(scripted).toContain('red:before:T1')
+    expect(scripted).toContain('red:after:T1')
     expect(result.red).toMatchObject([{ command: 'pytest T1', verdict: 'red-not-red' }])
     expect(result.scoreTable.redCarried).toBe(0)
     expect(result.overallPass).toBe(false)
@@ -1779,14 +1797,16 @@ test('stale red proof for an inactive task is dropped and flags it as unproven',
   }
 })
 
-test('stale red proof cannot reduce fan-out for a changed redCommand', async () => {
-  const r = await runCatching({
-    ...baseArgs, tasks: [task({ redCommand: 'pytest new' })], maxAgents: 3,
-    priorResults: { ...carriedAll(['T1']), red: [oldRedProof] },
-  }, replies())
-  expect(r.threw).toBe(true)
-  expect(String(r.error)).toContain('"redProbes":2')
-  expect(r.dispatched).toEqual([])
+test('stale red proof cannot skip the probe plan for a changed redCommand', async () => {
+  // Probes cost no agent now, so the hazard moved from fan-out to the PLAN: a stale proof must not
+  // drop the task from the red probes work-dispatch.sh runs before launch.
+  const args = { ...baseArgs, tasks: [task({ redCommand: 'pytest new' })], priorResults: { ...carriedAll(['T1']), red: [oldRedProof] } }
+  const { result: plan } = await run({ ...args, round: { plan: true } }, replies())
+  expect(plan.stage).toBe('plan')
+  expect(plan.checkPlan.red).toEqual([{ id: 'T1', command: 'pytest new' }])
+  const { scripted, result } = await run(args, replies({ red: { before: 1, after: 0 } }))
+  expect(scripted).toEqual(['red:before:T1', 'red:after:T1'])
+  expect(result.scoreTable.redCarried).toBe(0)
 })
 
 test('red proof is not carried for a task whose redCommand was removed', async () => {
@@ -1861,13 +1881,8 @@ test('mechanical digest stamps the declared check name rather than the probe cla
   expect(prompts.get('lens')).not.toContain('invented-name')
 })
 
-test('mechanical probe preserves the last 60 lines rather than truncating evidence to 2000 characters', async () => {
-  const opts = await dispatchOpts({ ...baseArgs, tasks: one, mechanicalChecks: [{ name: 'suite', cmd: 'bun test' }] })
-  expect(opts.get('mechanical:suite').schema.properties.output.description).toContain('last 60 lines')
-  const { prompts } = await run({ ...baseArgs, tasks: one, mechanicalChecks: [{ name: 'suite', cmd: 'bun test' }] }, replies())
-  expect(prompts.get('mechanical:suite')).toContain('last 60 lines')
-  expect(prompts.get('mechanical:suite')).not.toContain('2000 characters')
-})
+// 'mechanical output preserves the last 60 lines rather than 2000 characters' moved with the leg:
+// work-checks.sh tails every command's output, asserted in work-checks.test.ts.
 
 test('zero-implementer round keeps carried task failures and missing red adjudications in the gate', async () => {
   const priorResults = carriedAll(['T1'])

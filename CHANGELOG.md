@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+## [6.35.0] - 2026-10-02
+
+### Changed
+
+- **A plan's `lensProvider` (`claude` | `codex` | `gemini`) replaces the third-party runners.** The review lens row goes to `route.ts` constrained to that provider, so the lens runs the provider's pinned review candidate (codex `gpt-6.1-sol`, gemini `gemini-3.8-flash-high`); under `--provider` the decision lands in `args.lens.model`. `workflow.js` refuses `thirdParty` and `thirdPartyEffort`, and the advisory runners, their return key, their score field and `skills/work/references/third-party.md` are gone.
+
+- **`work`'s checks run in the shell, not as agents: a 4-task round drops from 16 agents to 5.** Red probes, acceptance commands, mechanical checks and a red-suite hash check run in `work-dispatch.sh` before the round and `work-checks.sh` after it; `work-stage.mjs` builds a digest the single lens reads as one routed review row. `workflow.js` runs the implementers, plus a verifier only for non-command acceptance. `work-result.sh` keeps its gate semantics.
+
+### Added
+
+- **`route.ts` records usage and quality signals, proposes `kinds` changes, and Jev scores only the chain.** `--refresh` writes `signals` `{usageRank, intelligenceIndex, asOf}` per candidate from OpenRouter's rankings dataset and the Artificial Analysis data API; keys are read at runtime only (env, then for OpenRouter the agenix secret `$XDG_RUNTIME_DIR/agenix/openrouter-api-key`, then `op read`) and never written. `--propose` (`--json` too) prints advisory `kinds` changes and never writes the table; the Claude defaults (judgement → opus; script, review → sonnet) are never proposed away. Jev now scores only the kind's pick and fallbacks.
+
 ## [6.30.0] - 2026-09-29
 
 ### Changed

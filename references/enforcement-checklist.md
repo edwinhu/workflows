@@ -150,7 +150,7 @@ usually the *block* branch, which only a real payload reaches.
 ```
 
 **Example** (`skills/work`):
-> CLARIFY → PLAN → GOAL → `workflow.js` (IMPLEMENT, then VERIFY ∥ MECHANICAL ∥ third-party) → JS gate → HUMAN REVIEW, with FAIL routing back into a re-dispatch scoped to `tasksThatFlagged`
+> CLARIFY → PLAN → GOAL → `workflow.js` (IMPLEMENT, then VERIFY ∥ MECHANICAL) → JS gate → HUMAN REVIEW, with FAIL routing back into a re-dispatch scoped to `tasksThatFlagged`
 
 **Key insight:** The flowchart IS the spec. If the text and diagram disagree, the diagram wins.
 
