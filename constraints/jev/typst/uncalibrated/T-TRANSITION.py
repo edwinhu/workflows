@@ -1,4 +1,4 @@
-"""UNCALIBRATED -- not wired. Calibration 2026-10-02, two runs each of two rounds: run 1 vio 0.75/0.78, real 0.60-0.65; with the rule's own GOOD examples (bare signposts) in the question vio 0.97/0.98 and Texas notes 0.20/0.35, but the accepted charter notes stayed at 0.74/0.76 ("Start with Weinberger v. UOP ..."). Diff-scoped recalibration 2026-10-02 (charter notes as legacy base), two two-run rounds: vio 0.97-0.98, sat <= 0.03, Texas notes 0.26-0.45, new cold sections 0.89-0.97, new charter section opening with a turn 0.14-0.19, but a new Texas section opening "Standing is the first gate. The second is the books-and-records demand ..." scored 0.94/0.91, 0.93/0.91.
+"""UNCALIBRATED -- not wired. Calibration 2026-10-02, two runs each of two rounds: run 1 vio 0.75/0.78, real 0.60-0.65; with the rule's own GOOD examples (bare signposts) in the question vio 0.97/0.98 and Texas notes 0.20/0.35, but the accepted charter notes stayed at 0.74/0.76 ("Start with Weinberger v. UOP ..."). Diff-scoped recalibration 2026-10-02 (charter notes as legacy base), two two-run rounds: vio 0.97-0.98, sat <= 0.03, Texas notes 0.26-0.45, new cold sections 0.89-0.97, new charter section opening with a turn 0.14-0.19, but a new Texas section opening "Standing is the first gate. The second is the books-and-records demand ..." scored 0.94/0.91, 0.93/0.91. Narrowed state 2026-10-02 (with diff info only the added section opening and the previous section's last bullet), two two-run rounds: that Texas section 0.91/0.88, 0.88/0.85; everything else passes.
 Kept here, below the glob rule-check.ts reads, until the question or the extractor earns it back.
 """
 import os
@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) 
 import re
 
 from _common import _read, render_json
-from _typst import DELIVERABLE, MAX_ITEMS, SUBJECT, clip, in_changed, kind_note, scope_note, sections, typ_files
+from _typst import DELIVERABLE, MAX_ITEMS, SUBJECT, added_state, clip, in_changed, kind_note, scope_note, sections, typ_files
 
 PROPOSITION = ('A speaker-notes section opens cold: at least one listed `==` section launches straight into '
                'its content -- "Several studies have examined ...", "Section 21D(f) fundamentally changed ..." '
@@ -52,6 +52,9 @@ def evidence(files, plan_lines=None, changed=None):
                     skipped += 1
             if s['bullets']:
                 prev = s
+    if changed is not None:
+        return added_state('T-TRANSITION', files, 'added_sections',
+                           [{k: v for k, v in o.items() if k != 'previous_section'} for o in out])
     inventory = {
         **kind_note(files, 'notes'),
         'sections_after_the_first': out[:MAX_ITEMS],

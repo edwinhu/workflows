@@ -1,4 +1,4 @@
-"""UNCALIBRATED -- not wired. Calibration 2026-10-02, two runs each of two rounds: run 1 vio 0.55/0.58 (a carve-out in the question); with it removed vio 0.91/0.93, but the accepted charter notes scored 0.90 -- they say "I have linked it on the slide" and "Here is the question the slide asks" (notes 01-charter-competition.typ:164, :170) -- and Texas notes 0.52/0.59. Diff-scoped recalibration 2026-10-02 (charter notes as legacy base), two two-run rounds: vio 0.91, sat <= 0.02, new narrating bullets 0.85-0.95, but compliant text with a subject-matter cue still scores high: whole Texas notes 0.56/0.55, 0.56/0.58 ("as shown in Reed v. Rook"), a new charter bullet ending "written into the code rather than shown case by case" 0.61/0.61, 0.62/0.58.
+"""UNCALIBRATED -- not wired. Calibration 2026-10-02, two runs each of two rounds: run 1 vio 0.55/0.58 (a carve-out in the question); with it removed vio 0.91/0.93, but the accepted charter notes scored 0.90 -- they say "I have linked it on the slide" and "Here is the question the slide asks" (notes 01-charter-competition.typ:164, :170) -- and Texas notes 0.52/0.59. Diff-scoped recalibration 2026-10-02 (charter notes as legacy base), two two-run rounds: vio 0.91, sat <= 0.02, new narrating bullets 0.85-0.95, but compliant text with a subject-matter cue still scores high: whole Texas notes 0.56/0.55, 0.56/0.58 ("as shown in Reed v. Rook"), a new charter bullet ending "written into the code rather than shown case by case" 0.61/0.61, 0.62/0.58. Narrowed state 2026-10-02 (with diff info only the added bullet), two two-run rounds: the charter "shown case by case" bullet dropped to 0.04/0.03, 0.04/0.05 and every diff case passes, but whole Texas notes, which carry no diff info and keep the full inventory, score 0.59/0.61, 0.58/0.54.
 Kept here, below the glob rule-check.ts reads, until the question or the extractor earns it back.
 """
 import os
@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) 
 import re
 
 from _common import _read, render_json
-from _typst import DELIVERABLE, MAX_ITEMS, SUBJECT, bullets, in_changed, kind_note, scope_note, typ_files
+from _typst import DELIVERABLE, MAX_ITEMS, SUBJECT, added_state, bullets, in_changed, kind_note, scope_note, typ_files
 
 PROPOSITION = ('A speaker-notes bullet narrates the presentation: at least one bullet meta-references the '
                'visual on screen -- "the slide shows ...", "the diagram on this slide illustrates ...", "as '
@@ -51,6 +51,9 @@ def evidence(files, plan_lines=None, changed=None):
                 continue
             cands.append({'file': rel, 'line': n, 'bullet': t, 'visual_cues': cues,
                           'next_bullet': bl[k + 1][2][:200] if k + 1 < len(bl) else None})
+    if changed is not None:
+        return added_state('T-NARRATE', files, 'added_bullets',
+                           [{'file': c['file'], 'line': c['line'], 'bullet': c['bullet']} for c in cands])
     inventory = {
         **kind_note(files, 'notes'),
         'bullets_mentioning_a_visual': cands[:MAX_ITEMS],
