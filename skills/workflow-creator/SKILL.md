@@ -156,6 +156,27 @@ A vendored `<domain>-constraints` skill is the same error made eagerly. It looks
 
 - Measured 2026-09-01: `workshop-constraints` and `ds-constraints` carried byte-identical copies of 19 canonical modules — 15 typst, 4 DS — preloaded into four agents. No test in the repo could see them, because duplication across files is invisible to a per-file check. `tests/constraints-no-duplication.test.ts` now fails on any file under `skills/` reproducing a canonical body; it found 17 offenders the day it was written.
 
+## Round shape
+
+**A round is shell checks, then ONE lens that reads a script-built digest at the top of its prompt and never re-runs a settled check.** An exit code is read by the shell (`work-checks.sh`), never transcribed by an agent; P14 refuses the agent leg.
+
+**Rule compliance is a calibrated Jev rule in `ruleChecks`, gating the changed lines only.** A rule is wired only after `rule-calibrate` passes it against real accepted material; a parked rule (`uncalibrated/`) never gates, and no lens or scoredChecks item re-grades a wired one (P15, P16).
+
+**A written rule that accepted practice breaks is the user's call, and the ruling is recorded in the rule.** Never settle it by loosening the rule or by flagging the practice.
+
+**N independent items are N rows; fix a slow suite before fanning out rows that run it; mint every temp path per run** (P17, P18).
+
+| fact | backs |
+|---|---|
+| 523d42cd: a 4-task round fell from 16 agents to 5 once checks ran in the shell and one lens read the `work-stage.mjs` digest | one lens, shell checks |
+| 213223f6 unwired 9 ds rules that did not separate (A1 stayed); 8 came back only after two live runs at violating >= 0.93, compliant < 0.5 (e9c530ea) | calibrated rules only |
+| 615d9baf: accepted decks breaking T-CALLOUT became legacy calibration bases, and the rule gates only changed lines | changed lines only |
+| EX-SENTINEL failed `rule-calibrate` and waits in teaching's `uncalibrated/` (97eb24d), gating nothing | parked rules never gate |
+| be1722a2: L-SUPRA allows agency releases and bars bills per the user's 2026-10-02 rulings, written into its PROPOSITION | the user's call, recorded |
+| A 9-rule recalibration handed to one row took 45+ min serially | one row per item |
+| f65da574: the full suite took 661-881 s serially and 63-67 s under `bun test --parallel` | fast tests before fan-out |
+| 2026-10-02: a fixed `/tmp` baseline-worktree name let one row's cleanup delete a sibling row's checkout | a temp path per run |
+
 ## Branch first
 
 | The user wants | Branch | What runs |
@@ -879,6 +900,18 @@ out of a prompt, which is not an enumeration.
 A fence whose `tasks[]` is empty or absent is skipped entirely — that is what a `readOnly` charter
 declares, and flagging it would fire on every audit block. Marker: `task-coverage`.
 
+### P14-P18 round-shape rules
+
+| rule | fires on | severity | marker |
+|---|---|---|---|
+| P14 shell-only agent leg | a scoredChecks, attempt or lens prompt, or a code `agent(` call, told to run a command as written AND report its exit code | major | `shell-leg` |
+| P15 duplicate grading | against the wired rules of the fence's `ruleChecks --rules` dirs: a scoredChecks penalty count named for a rule, or a lens sentence that does not defer and names the rule id or its name word in capitals | major, parked | `duplicate-grading` |
+| P16 missing ruleChecks | a fence whose `tasks[].writablePaths` map through `ruleSetOf` (`hooks/jev/rules.ts`) to a set with wired rules, carrying no `ruleChecks` | major | `rule-checks` |
+| P17 serial row loop | a task `work`, attempt or farm-row prompt looping over plural independent items with no dependency named | minor, advisory | `serial-loop` |
+| P18 fixed shared temp path | a worktree add/remove or recursive delete at a literal temp path with no per-run part, on the line or through one assignment | major | `fixed-temp` |
+
+Advisory and parked rules print as `[advisory <severity>]` in both modes and never move the exit code. P15 stays parked while its baseline is non-zero: 15 findings on 2026-10-02, in ds and teaching notes, two gates `tests/gate-vacuity.test.ts` requires green.
+
 ### Declared exemptions
 
 A check may be suppressed only by a marker that is the **whole trimmed line**, optionally behind a
@@ -890,7 +923,8 @@ A check may be suppressed only by a marker that is the **whole trimmed line**, o
 | `<!-- wc-probe: ignore-<rule>:start -->` … `:end` | that region (unclosed runs to EOF) |
 
 `<rule>` is one of **`all`, `hooks`, `paths`, `returns`, `workflow-refs`, `refs`, `entry-point`,
-`dispatch`, `task-coverage`** — the rules that are actually honoured.
+`dispatch`, `task-coverage`, `shell-leg`, `duplicate-grading`, `rule-checks`, `serial-loop`,
+`fixed-temp`** — the rules that are actually honoured.
 Any other name is a `P9 exemption vocabulary` finding rather than a silent
 no-op: a marker that reads as a suppression and is not one hides a failing check twice over.
 Markers are parsed **once, from the raw file**, and threaded into every predicate, so what suppresses
@@ -936,7 +970,7 @@ run, alongside `SKILL.md`'s `lens-set-differs prompt` declaration, which is not 
 | Probe run came back CLEAN | trust it | check the coverage line — `0 of 0` is now a critical, but so is a subtree behind a dangling symlink |
 | Task or lens has no domain rules | omit `refs` | `refs: []` — absent is refused, empty is a statement |
 | A documented return shape drifts from the script | assume P5 caught it because the suite is green | P5 compares a SKILL.md's shape against the **script its `scriptPath` names** — check the `crossFileTargets` note to see which file the verdict was actually about |
-| A check needs suppressing | invent a rule name for the marker | only `all`/`hooks`/`paths`/`returns`/`workflow-refs`/`refs`/`entry-point`/`dispatch`/`task-coverage` are honoured; anything else is a `P9` finding, not a suppression. P11 has no `ignore-` form at all — declare the intended difference with `lens-set-differs <field>` |
+| A check needs suppressing | invent a rule name for the marker | only `all`/`hooks`/`paths`/`returns`/`workflow-refs`/`refs`/`entry-point`/`dispatch`/`task-coverage`/`shell-leg`/`duplicate-grading`/`rule-checks`/`serial-loop`/`fixed-temp` are honoured; anything else is a `P9` finding, not a suppression. P11 has no `ignore-` form at all — declare the intended difference with `lens-set-differs <field>` |
 | A skill dispatches `work` with its own hand-rolled runner line | copy the invocation into the SKILL.md | that skips the gates `work-dispatch.sh` owns on the way in, and P12 refuses it |
 | Gate says PASS and the probe was skipped | read `mechanicalRun: 0` as clean | nothing was checked; re-run with the checks present |
 | FAIL with an empty `tasksThatFlagged` | conclude there is nothing to fix | read `mechanicalThatFailed`, `lensesThatFlagged` **and** `planFindings` too — the selector has four channels and only one of them owns tasks. A blocking lens finding the lens could route to no task lands in `planFindings` and is fixed by amending the plan. Only when all four are empty does an empty selector on a failing run mean re-run everything |
