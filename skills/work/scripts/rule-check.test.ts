@@ -399,3 +399,92 @@ test('the other ds rules see the same state with or without diff info', async ()
     fs.rmSync(d, { recursive: true, force: true });
   }
 });
+
+// --batch: the per-edit Jev mod's path (hooks/jev/mod.ts). One Decisions call per run, one question
+// per WIRED rule of the set, the rule's one-line statement in each verdict.
+async function runBatch(args: string[], port: number, stdin?: string) {
+  const p = Bun.spawn(['bun', 'run', join(import.meta.dir, 'rule-check.ts'), '--batch', ...args], {
+    env: { ...process.env, WORK_HOLD_DECISIONS_URL: `http://localhost:${port}/`, WORK_HOLD_JUDGE_TOKEN: TEST_TOKEN },
+    stdin: stdin === undefined ? 'ignore' : new TextEncoder().encode(stdin),
+    stdout: 'pipe', stderr: 'pipe',
+  });
+  const [stdout, exitCode] = await Promise.all([new Response(p.stdout).text(), p.exited]);
+  return { stdout, exitCode };
+}
+
+const WRITING_DIR = join(import.meta.dir, '../../../constraints/jev/writing');
+
+test('--batch: ONE Decisions call carrying every wired writing rule, none of uncalibrated/', async () => {
+  const d = fs.mkdtempSync(join(require('os').tmpdir(), 'rule-check-batch-'));
+  try {
+    const md = join(d, 'note.md');
+    fs.writeFileSync(md, 'It may perhaps possibly be the case that the rate rose.\n');
+    const bodies: any[] = [];
+    const server = Bun.serve({
+      port: 0,
+      async fetch(req) {
+        const body = await req.json();
+        bodies.push(body);
+        const answers = Object.fromEntries(Object.keys(body.questions).map((k, i) => [k, { probabilities: { VIOLATED: i === 0 ? 0.2 : 0.93 } }]));
+        return Response.json({ answers });
+      }
+    });
+    const res = await runBatch(['--rules', WRITING_DIR, '--files', md], server.port);
+    server.stop(true);
+
+    expect(bodies.length).toBe(1);
+    const rules = Object.values(bodies[0].questions).map((q: any) => /\(rule (\S+)\)/.exec(q.instructions)![1]).sort();
+    const wired = fs.readdirSync(WRITING_DIR).filter(f => /^[^_].*\.py$/.test(f) && f !== 'evidence.py').map(f => f.slice(0, -3)).sort();
+    expect(rules).toEqual(wired);
+    for (const u of fs.readdirSync(join(WRITING_DIR, 'uncalibrated'))) {
+      expect(bodies[0].state).not.toContain(`RULE ${u.replace(/\.py$/, '')} STATE`);
+      expect(rules).not.toContain(u.replace(/\.py$/, ''));
+    }
+    for (const r of rules) expect(bodies[0].state).toContain(`=== RULE ${r} STATE ===`);
+    expect(res.exitCode).toBe(2);
+    const out = JSON.parse(res.stdout);
+    const hedge = out.verdicts.find((v: any) => v.rule === 'W-HEDGE');
+    expect(hedge.statement).toBe('The prose hedges more than its evidence warrants');
+  } finally {
+    fs.rmSync(d, { recursive: true, force: true });
+  }
+});
+
+test('--batch: a failed call makes every rule unavailable after ONE attempt, exit 1', async () => {
+  let n = 0;
+  const server = Bun.serve({ port: 0, async fetch(req) { await req.text(); n++; return new Response(''); } });
+  const res = await runBatch(['--rules', WRITING_DIR, '--files', join(import.meta.dir, '../SKILL.md')], server.port);
+  server.stop(true);
+  expect(n).toBe(1);
+  expect(res.exitCode).toBe(1);
+  const out = JSON.parse(res.stdout);
+  expect(out.verdicts).toEqual([]);
+  expect(out.unavailable.length).toBe(3);
+});
+
+test('--batch --changed-lines -: the changed map comes on stdin and scopes DQ4/DQ6', async () => {
+  const { d, git } = repo('rule-check-batch-stdin-');
+  try {
+    fs.writeFileSync(join(d, 'legacy.py'), LEGACY);
+    git('add', '.');
+    git('commit', '-qm', 'base');
+    let state = '';
+    const server = Bun.serve({
+      port: 0,
+      async fetch(req) {
+        const body = await req.json();
+        state = body.state;
+        return Response.json({ answers: Object.fromEntries(Object.keys(body.questions).map(k => [k, { probabilities: { VIOLATED: 0.1 } }])) });
+      }
+    });
+    const file = join(d, 'legacy.py');
+    const res = await runBatch(['--files', file, '--changed-lines', '-'], server.port, JSON.stringify({ [file]: [[5, 5]] }));
+    server.stop(true);
+    expect(res.exitCode).toBe(0);
+    const section = state.slice(state.indexOf('=== RULE DQ4 STATE ===')).split('\n=== RULE ')[0];
+    const dq4 = JSON.parse(section.slice(section.indexOf('\n') + 1));
+    expect(dq4.transform_sites.map((x: any) => x.line)).toEqual([5]);
+  } finally {
+    fs.rmSync(d, { recursive: true, force: true });
+  }
+});

@@ -195,6 +195,7 @@ while [ $# -gt 0 ]; do case $1 in
   --provider) prov=$2; shift 2;; --args) a=$2; shift 2;; --out) out=$2; shift 2;;
   --tasks) rows=$2; shift 2;; --workflow) shift 2;; *) shift;; esac; done
 echo "$([ -n "\${rows:-}" ] && echo tasks || echo workflow) --provider $prov" >> "$CAPTURE/calls"
+echo "\${JEV_EDIT_MOD-unset}" >> "$CAPTURE/jev"
 if [ -n "\${rows:-}" ]; then
   cp "$rows" "$CAPTURE/rows.json"
   printf '%s' "$LENS_REPLY" > "$(jq -r '.[0].expect[0]' "$rows")"
@@ -214,7 +215,8 @@ function round(args: any, lensReply: any = { routes: [], findings: [], carried: 
   const argsPath = join(runDir, 'args.json')
   writeFileSync(argsPath, JSON.stringify(args))
   const result = join(runDir, 'result.json')
-  const env = { ...process.env, WORK_FARM: farm, CAPTURE: cap, LENS_REPLY: JSON.stringify(lensReply),
+  const { JEV_EDIT_MOD: _, ...inherited } = process.env
+  const env = { ...inherited, WORK_FARM: farm, CAPTURE: cap, LENS_REPLY: JSON.stringify(lensReply),
     TMPDIR: cap, FARM_OUTCOMES: join(cap, 'farm-outcomes.jsonl') }
   const r = spawnSync('bash', [ROUND, argsPath, result, args.projectDir, 'claude'], { encoding: 'utf8', env })
   const verdict = existsSync(result) ? spawnSync(RESULT_SH, [result], { encoding: 'utf8' }) : null
@@ -223,6 +225,7 @@ function round(args: any, lensReply: any = { routes: [], findings: [], carried: 
     result: existsSync(result) ? json(result) : null,
     rows: existsSync(join(cap, 'rows.json')) ? json(join(cap, 'rows.json')) : null,
     calls: existsSync(join(cap, 'calls')) ? readFileSync(join(cap, 'calls'), 'utf8').trim().split('\n') : [],
+    jev: existsSync(join(cap, 'jev')) ? readFileSync(join(cap, 'jev'), 'utf8').trim().split('\n') : [],
     agents: existsSync(join(cap, 'agents.log')) ? readFileSync(join(cap, 'agents.log'), 'utf8').trim().split('\n') : [],
     verdict,
   }
@@ -257,6 +260,13 @@ describe('work-round.sh: the lens is ONE farm row of kind review', () => {
     expect(row.prompt.indexOf('raise MAJOR when the work is wrong')).toBeGreaterThan(iSettled)
     // farm.sh is called exactly twice: the AGENTS workflow on the host, the lens row on its own provider
     expect(r.calls).toEqual(['workflow --provider claude', 'tasks --provider codex'])
+  })
+
+  test('the AGENTS stage runs with JEV_EDIT_MOD=1 (implementers get the per-edit Jev mod); the lens row does not', () => {
+    const dir = repo({ 'scripts/red.sh': 'echo "1 passed"; exit 0', 'src/a.ts': 'a' })
+    const r = round(roundArgs(dir))
+    expect(r.code).toBe(0)
+    expect(r.jev).toEqual(['1', 'unset'])
   })
 
   test('MODE is RED when a check failed', () => {
