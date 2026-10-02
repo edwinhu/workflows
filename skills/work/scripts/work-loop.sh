@@ -70,6 +70,19 @@ case "$PROVIDER" in ''|claude|codex|gemini) ;;
 esac
 
 RESULT="$RUN_DIR/result.json"
+
+# The loop files itself in the session's farm-events stream, keyed on its own pid, so the watcher mod
+# (hooks/register.ts) can tell a loop that exited from one that was killed: loop.exit is written by
+# the detaching wrapper only when the loop returns, and nothing else records the loop's pid. Its
+# out= is loop.exit, never result.json, so farm-alive.sh never reads the loop as the round's runner.
+enc() { local s=${1-}; s=${s//%/%25}; s=${s// /%20}; s=${s//$'\t'/%09}; s=${s//=/%3D}; printf '%s' "$s"; }
+EVENT_DIR="${TMPDIR:-/tmp}/farm-events${CLAUDE_CODE_SESSION_ID:+/$CLAUDE_CODE_SESSION_ID}"
+mkdir -p "$EVENT_DIR" 2>/dev/null || true
+LOOP_EVENTS="$EVENT_DIR/$$.ndjson"
+printf 'farm: START work-loop cwd=%s out=%s expect=1 t=%s\n' \
+  "$(enc "$PWD")" "$(enc "$(realpath -m -- "$RUN_DIR/loop.exit")")" "$(date +%s)" >>"$LOOP_EVENTS" 2>/dev/null || true
+trap 'printf "farm: DONE work-loop rc=%s\n" "$?" >>"$LOOP_EVENTS" 2>/dev/null || true' EXIT
+
 # Round 1's log. Rounds 2..N get theirs from work-redispatch.sh, which writes run-<HHMMSS>.log.
 LOG="$RUN_DIR/run.log"
 

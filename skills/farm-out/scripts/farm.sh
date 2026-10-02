@@ -201,7 +201,7 @@ verify() {
 }
 
 # ---------------------------------------------------------------- the event stream
-# Read by farm-alive.sh (work's liveness check) and farm-monitor.sh. Keyed on $$ -- the shell
+# Read by farm-alive.sh (work's liveness check) and the watcher mod (hooks/register.ts). Keyed on $$ -- the shell
 # that lives for the whole dispatch -- because those readers take the pid from the FILENAME and
 # kill -0 it; a per-row subshell pid is dead the instant its row ends and every finished row
 # would report GONE.
@@ -328,7 +328,7 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
     done
   fi
 
-  emit "START $(enc "$label") cwd=$(enc "$CWD") out=$(enc "${OUT:-}") expect=${#real_expects[@]}"
+  emit "START $(enc "$label") cwd=$(enc "$CWD") out=$(enc "${OUT:-}") expect=${#real_expects[@]} t=$(date +%s)"
   for _e in "${real_expects[@]:-}"; do [ -n "$_e" ] && claim "$label" "$_e"; done
   [ -n "${OUT:-}" ] && claim "$label" "$OUT"
 
@@ -548,13 +548,13 @@ for r in json.load(open(sys.argv[1], encoding="utf-8")):
 else
   # ------------------------------------------------------ the hourly heartbeat (--workflow only)
   #
-  # THE WAKE is the `farm-runs` plugin monitor: it watches every run this session launches and
-  # wakes the session on DONE and on a run that dies. THE CRON IS THE BACKSTOP, on by default
-  # (--no-cron opts out): a cron survives --resume/--continue and a monitor that died or was never
-  # armed. Same shape, interval knob and minute-7 offset as work-dispatch.sh, because it is one
+  # THE WAKE is the watcher mod (hooks/register.ts): it reads every run this session launches from
+  # the farm-events stream and wakes the session on DONE and on a run that dies. THE CRON IS THE
+  # BACKSTOP, on by default (--no-cron opts out): a cron fires in a resumed session even when no
+  # session was running as the run finished. Same shape, interval knob and minute-7 offset as work-dispatch.sh, because it is one
   # heartbeat -- two env vars that can disagree about one cadence is a bug generator.
   #
-  # --tasks prints nothing: a row is a STEP, the monitor already reports it, and an hourly clock
+  # --tasks prints nothing: a row is a STEP, the watcher mod already reports it, and an hourly clock
   # per row is a wake for nothing.
   #
   # PRINTED BEFORE THE RUN. --workflow has no foreground phase -- run_one blocks for the whole
@@ -581,8 +581,8 @@ else
 
 ======================================================================
 REQUIRED, THIS TURN: ARM THE HEARTBEAT POLL WITH THE CronCreate TOOL.
-The farm-runs monitor is the primary wake; this cron is the backstop --
-it survives --resume/--continue and a monitor that died or never armed.
+The watcher mod (/farm) is the primary wake; this cron is the backstop --
+it fires even when no session was running as the run finished.
 CronCreate is a model tool -- no shell, including this one, can call it.
 Call it now, before your next action, with exactly:
 
@@ -596,7 +596,7 @@ in one line rather than proceeding as though the poll were armed.
 ======================================================================
 CRONMSG
   else
-    echo "wake: --no-cron, so the farm-runs monitor is the ONLY wake -- it watches this run and wakes this session when it finishes or dies. It does not survive --resume/--continue; drop --no-cron for the hourly backstop."
+    echo "wake: --no-cron, so the watcher mod is the ONLY wake -- it watches this run and wakes this session when it finishes or dies (/farm lists it). Nothing wakes a session that is not running; drop --no-cron for the hourly backstop."
   fi
 
   # The child calls the Workflow tool; we never run the script ourselves. The long

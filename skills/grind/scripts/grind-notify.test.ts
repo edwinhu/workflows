@@ -57,7 +57,7 @@ function notifier(dir: string): { path: string; out: string } {
  * Every loop started here writes its START/ITER/DONE events to "$TMPDIR/farm-events/<session>", so
  * `d` -- this test's own scratch directory -- is forced in as TMPDIR on BOTH paths. Inheriting the
  * caller's TMPDIR and session id put throwaway rows into the running session's own event stream,
- * where its farm-runs monitor read them as real dispatches.
+ * where its watcher mod read them as real dispatches.
  *
  * With no env the child also gets grindEnv(): no session identity, no reachable notifier. The tests
  * that ASSERT the default notifier pass their own stubPath env instead, which must not be merged

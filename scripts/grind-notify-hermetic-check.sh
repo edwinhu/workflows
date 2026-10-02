@@ -12,7 +12,7 @@
 #   2. EVENTS. farm.sh (EVENT_DIR) and grind.sh (events_start) both write START/ITER/DONE rows to
 #      "$TMPDIR/farm-events/$CLAUDE_CODE_SESSION_ID/$$.ndjson". A test that passes the caller's own
 #      TMPDIR *and* session id makes its throwaway loop indistinguishable from a real dispatch, and
-#      the session's farm-runs monitor streams it as a real notification. Detected here by running
+#      the session's watcher mod wakes on it as a real run. Detected here by running
 #      with the caller's REAL TMPDIR and a sentinel session id, then asserting that nothing appeared
 #      -- and nothing grew -- under <real TMPDIR>/farm-events/<sentinel>.
 #

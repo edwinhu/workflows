@@ -21,7 +21,7 @@ function runFarm(root: string, env: Record<string, string | undefined>) {
   writeFileSync(tasks, JSON.stringify([{ label: 'r', prompt: 'p' }]))
   return spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', root], {
     encoding: 'utf8',
-    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, TMPDIR: root, FARM_OUT_CHILD: '1', ...env },
+    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, TMPDIR: root, FARM_OUTCOMES: `${root}/farm-outcomes.jsonl`, FARM_OUT_CHILD: '1', ...env },
   })
 }
 
@@ -71,14 +71,23 @@ test('with no session id the path is the bare farm-events directory', () => {
   expect(inBare).toBeGreaterThan(0)
 })
 
-test('all three consumers spell the directory identically', () => {
+test('every shell writer and reader spells the directory identically', () => {
   const EXPR = 'farm-events${CLAUDE_CODE_SESSION_ID:+/$CLAUDE_CODE_SESSION_ID}'
   for (const p of [
     join(import.meta.dir, '..', 'skills', 'farm-out', 'scripts', 'farm.sh'),
-    join(import.meta.dir, '..', 'skills', 'farm-out', 'scripts', 'farm-monitor.sh'),
+    join(import.meta.dir, '..', 'skills', 'work', 'scripts', 'work-round.sh'),
+    join(import.meta.dir, '..', 'skills', 'work', 'scripts', 'work-loop.sh'),
     ALIVE,
   ]) {
     // A writer that moves without both readers makes every liveness check silently report dead.
     expect({ p, scoped: readFileSync(p, 'utf8').includes(EXPR) }).toEqual({ p, scoped: true })
   }
+})
+
+test('the watcher mod reads the same directory, keyed on the session id', () => {
+  // The mod cannot use the shell expansion; it joins TMPDIR, farm-events and $.session.id().
+  const mod = readFileSync(join(import.meta.dir, '..', 'hooks', 'register.ts'), 'utf8')
+  expect(mod).toContain('/farm-events/${s}')
+  expect(mod).toContain('$.session.id()')
+  expect(mod).toContain("$.env.get('TMPDIR')")
 })

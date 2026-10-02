@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Phase 3 + Phase 4, mechanically: hash the plan, dispatch workflow.js detached, and arm the HOLD on
 # this session — the goal check when the plan states one, Jev alone on the goal when it does not.
-# The primary wake is the farm-runs plugin monitor; an hourly CronCreate backstop is printed by
-# default (--no-cron opts out), because a cron survives --resume/--continue and a dead watcher.
+# The primary wake is the watcher mod (hooks/register.ts); an hourly CronCreate backstop is printed
+# by default (--no-cron opts out), because a cron fires even when no session was running.
 #
 # Everything it needs is in the plan's `<!-- work:dispatch … -->` block, so a session that has
 # lost its context — the clear on plan approval, /clear, a restart — can run this and be correct
@@ -21,8 +21,8 @@
 #                                      row when the plan sets args.lensProvider. Without it the
 #                                      claude wrapper hosts the run and each step takes its model
 #                                      from args.routing.kindModels, resolved through route.ts
-#   work-dispatch.sh --no-cron        do NOT print the CronCreate call; the farm-runs plugin monitor
-#                                      becomes the only wake (and it dies with the session)
+#   work-dispatch.sh --no-cron        do NOT print the CronCreate call; the watcher mod becomes
+#                                      the only wake (and it runs only while a session does)
 #   work-dispatch.sh --cron           accepted no-op alias — the cron is the default
 #   work-dispatch.sh --loops N        after dispatching, run the continuation loop (work-loop.sh)
 #                                      DETACHED instead of printing it: this script returns at once,
@@ -1055,15 +1055,16 @@ echo "args:  $out"
 
 # Phase 3: the WAKE and the HOLD.
 #
-# THE WAKE is the `farm-runs` plugin monitor (monitors/monitors.json -> farm-out/scripts/farm-monitor.sh).
-# It runs for the whole session, shares $TMPDIR/farm-events/$CLAUDE_CODE_SESSION_ID with the farm.sh
-# this script launches, and reports milestones, the verdict, and a run that dies without one. So the
+# THE WAKE is the watcher mod (hooks/register.ts). Its timer restarts with every session start and
+# reload, it reads $TMPDIR/farm-events/$CLAUDE_CODE_SESSION_ID — where work-round.sh, work-loop.sh and
+# the farm.sh they launch file themselves — and wakes the session once on the loop's exit (or the
+# round's verdict when no loop runs) and on a run that dies without one. So the
 # session is woken by the RUN rather than by a clock, and a cron on top of that is a wake for nothing:
 # AGK 2026-09-27, 14 ticks inside one round, each re-entering a 113 KB plan and a 276 KB run dir.
 #
 # THE CRON IS THE BACKSTOP, AND IT IS ON BY DEFAULT (--no-cron opts out): a cron survives
-# --resume/--continue and a watcher that died or was never armed; the monitor does not. The tick is a
-# few words, and a tick mid-round is allowed through uncounted by the hold, so hourly is cheap.
+# --resume/--continue and fires even when no session was running as the run finished; the mod
+# cannot. The tick is a few words, and a tick mid-round is allowed through uncounted by the hold, so hourly is cheap.
 cron_minutes=${WORK_LOOP_INTERVAL_MINUTES:-60}
 case "$cron_minutes" in ''|*[!0-9]*|0) cron_minutes=60 ;; esac
 # Minute 7 rather than 0 or 30: every fleet-wide "hourly" lands on the same instant otherwise.
@@ -1085,15 +1086,15 @@ cron_prompt="and? (work run $runid)"
 print_cron_instruction() {
   if [ "$cron" != 1 ]; then
     echo
-    echo "wake: --no-cron, so the farm-runs monitor is the ONLY wake — it watches this run and wakes this session on its milestones, its verdict, and on a run that dies without one. It does not survive --resume/--continue; drop --no-cron for the hourly backstop."
+    echo "wake: --no-cron, so the watcher mod is the ONLY wake — it watches this run and wakes this session on its verdict and on a run that dies without one (/farm lists it). Nothing wakes a session that is not running; drop --no-cron for the hourly backstop."
     return 0
   fi
   cat <<CRONMSG
 
 ======================================================================
 REQUIRED, THIS TURN: ARM THE HEARTBEAT POLL WITH THE CronCreate TOOL.
-The farm-runs monitor is the primary wake; this cron is the backstop —
-it survives --resume/--continue and a monitor that died or never armed.
+The watcher mod (/farm) is the primary wake; this cron is the backstop —
+it fires even when no session was running as the run finished.
 CronCreate is a model tool — no shell, including this one, can call it.
 Call it now, before your next action, with exactly:
 
