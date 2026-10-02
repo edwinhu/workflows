@@ -1,6 +1,7 @@
 import argparse
 import glob
 import importlib
+import inspect
 import json
 import os
 import sys
@@ -12,6 +13,8 @@ def main(my_dir=None):
     parser.add_argument('--plan')
     parser.add_argument('--root')
     parser.add_argument('--rules-dir', help='directory of rule modules; default: this one')
+    parser.add_argument('--changed-lines',
+                        help="JSON {path: [[lo, hi], ...]} of the round's added or changed lines")
     args = parser.parse_args()
 
     root_dir = args.root
@@ -34,6 +37,14 @@ def main(my_dir=None):
         else:
             label = os.path.basename(abs_f)
         files.append((label, f))
+
+    # label -> changed ranges, for the files the diff covers; a file it does not cover has no diff info
+    changed = None
+    if args.changed_lines:
+        with open(args.changed_lines, 'r', encoding='utf-8') as f:
+            by_path = {os.path.realpath(k): v for k, v in json.load(f).items()}
+        changed = {label: by_path[os.path.realpath(f)] for label, f in files
+                   if os.path.realpath(f) in by_path}
 
     plan_lines = None
     if args.plan:
@@ -60,7 +71,11 @@ def main(my_dir=None):
         mod_name = name[:-3]
         mod = importlib.import_module(mod_name)
         
-        state = mod.evidence(files, plan_lines)
+        # only a rule that takes `changed` is diff-scoped; every other rule sees exactly what it did before
+        if changed is not None and 'changed' in inspect.signature(mod.evidence).parameters:
+            state = mod.evidence(files, plan_lines, changed=changed)
+        else:
+            state = mod.evidence(files, plan_lines)
         out[mod_name] = {
             'state': state,
             'proposition': mod.PROPOSITION,
