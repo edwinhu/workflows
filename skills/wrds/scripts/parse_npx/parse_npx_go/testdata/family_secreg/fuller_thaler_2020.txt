@@ -1,0 +1,965 @@
+<SEC-DOCUMENT>0001398344-20-017796.txt : 20200831
+<SEC-HEADER>0001398344-20-017796.hdr.sgml : 20200831
+<ACCEPTANCE-DATETIME>20200831163722
+ACCESSION NUMBER:		0001398344-20-017796
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20200630
+FILED AS OF DATE:		20200831
+DATE AS OF CHANGE:		20200831
+EFFECTIVENESS DATE:		20200831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Capitol Series Trust
+		CENTRAL INDEX KEY:			0001587551
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			OH
+		FISCAL YEAR END:			0831
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22895
+		FILM NUMBER:		201151947
+
+	BUSINESS ADDRESS:	
+		STREET 1:		225 PICTORIA DRIVE
+		STREET 2:		SUITE 450
+		CITY:			CINCINNATI
+		STATE:			OH
+		ZIP:			45246
+		BUSINESS PHONE:		5135873447
+
+	MAIL ADDRESS:	
+		STREET 1:		225 PICTORIA DRIVE
+		STREET 2:		SUITE 450
+		CITY:			CINCINNATI
+		STATE:			OH
+		ZIP:			45246
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001587551
+<SERIES-ID>S000043365
+<SERIES-NAME>Meritage Growth Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000134269
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>MPGIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000134270
+<CLASS-CONTRACT-NAME>Investor Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>MPGEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001587551
+<SERIES-ID>S000043366
+<SERIES-NAME>Meritage Value Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000134271
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>MVEBX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001587551
+<SERIES-ID>S000043367
+<SERIES-NAME>Meritage Yield-Focus Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000134273
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>MPYIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000134274
+<CLASS-CONTRACT-NAME>Investor Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>MPYEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001587551
+<SERIES-ID>S000051163
+<SERIES-NAME>Fuller & Thaler Behavioral Small-Cap Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000161065
+<CLASS-CONTRACT-NAME>Investor Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FTHNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000161066
+<CLASS-CONTRACT-NAME>R6 Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FTHFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000161067
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FTHSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000206943
+<CLASS-CONTRACT-NAME>C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FTYCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000206944
+<CLASS-CONTRACT-NAME>A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FTHAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001587551
+<SERIES-ID>S000051554
+<SERIES-NAME>Preserver Alternative Opportunities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000162236
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>PAOIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001587551
+<SERIES-ID>S000053121
+<SERIES-NAME>Canterbury Portfolio Thermostat Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000167184
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CAPTX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000167185
+<CLASS-CONTRACT-NAME>Investor Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>CAPPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001587551
+<SERIES-ID>S000055966
+<SERIES-NAME>Hedeker Strategic Appreciation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000176257
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>SAFFX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001587551
+<SERIES-ID>S000060086
+<SERIES-NAME>Fuller & Thaler Behavioral Small-Cap Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000196714
+<CLASS-CONTRACT-NAME>Investor Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FTXNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000196715
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FTXSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000196716
+<CLASS-CONTRACT-NAME>R6 Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FTXFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000206945
+<CLASS-CONTRACT-NAME>A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FTXAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000206946
+<CLASS-CONTRACT-NAME>C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FTXCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001587551
+<SERIES-ID>S000060087
+<SERIES-NAME>Fuller & Thaler Behavioral Mid-Cap Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000196717
+<CLASS-CONTRACT-NAME>Investor Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FTVNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000196718
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FTVSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000196719
+<CLASS-CONTRACT-NAME>R6 Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FTVZX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000206947
+<CLASS-CONTRACT-NAME>A Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001587551
+<SERIES-ID>S000063664
+<SERIES-NAME>Reynders, McVeigh Core Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000206278
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ESGEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001587551
+<SERIES-ID>S000063921
+<SERIES-NAME>Alta Quality Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000206903
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>AQLGX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001587551
+<SERIES-ID>S000063934
+<SERIES-NAME>Fuller & Thaler Behavioral Micro-Cap Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000206931
+<CLASS-CONTRACT-NAME>A Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000206932
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FTMSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000206933
+<CLASS-CONTRACT-NAME>Investor Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000206934
+<CLASS-CONTRACT-NAME>R6 Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001587551
+<SERIES-ID>S000063935
+<SERIES-NAME>Fuller & Thaler Behavioral Small-Mid Core Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000206935
+<CLASS-CONTRACT-NAME>Investor Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000206936
+<CLASS-CONTRACT-NAME>R6 Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000206937
+<CLASS-CONTRACT-NAME>A Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000206938
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FTSIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001587551
+<SERIES-ID>S000063936
+<SERIES-NAME>Fuller & Thaler Behavioral Unconstrained Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000206939
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FTZIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000206940
+<CLASS-CONTRACT-NAME>Investor Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000206941
+<CLASS-CONTRACT-NAME>R6 Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FTZFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000206942
+<CLASS-CONTRACT-NAME>A Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001587551
+<SERIES-ID>S000065242
+<SERIES-NAME>Guardian Dividend Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000211210
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>DIVGX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001587551
+<SERIES-ID>S000066610
+<SERIES-NAME>Cornerstone Capital Access Impact Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000214797
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>CCIIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001587551
+<SERIES-ID>S000067477
+<SERIES-NAME>Guardian Fundamental Global Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000216962
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>GFGEX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>fp0056876_npx.htm
+<TEXT>
+<HTML>
+<HEAD>
+     <TITLE></TITLE>
+</HEAD>
+<BODY STYLE="font: 11pt Times New Roman, Times, Serif">
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; text-align: center; margin-top: 0; margin-bottom: 0"></P>
+
+<!-- Field: Rule-Page --><DIV STYLE="margin: 3pt auto; width: 100%"><DIV STYLE="font-size: 1pt; border-top: Black 1pt solid; border-bottom: Black 1pt solid">&nbsp;</DIV></DIV><!-- Field: /Rule-Page -->
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; text-align: center; margin-top: 0; margin-bottom: 0">&nbsp;</P>
+
+<P STYLE="font: 18pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center"><B>UNITED STATES</B></P>
+
+<P STYLE="font: 18pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center"><B>SECURITIES AND EXCHANGE COMMISSION</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center"><B>Washington, DC 20549</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; text-align: center; margin-top: 0; margin-bottom: 0">&nbsp;</P>
+
+<P STYLE="font: 18pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center"><B>FORM N-PX</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; text-align: center; margin-top: 0; margin-bottom: 0">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center"><B>ANNUAL REPORT OF PROXY VOTING
+RECORD OF REGISTERED MANAGEMENT</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center"><B>INVESTMENT COMPANY</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; text-align: left; margin-top: 0; margin-bottom: 0">Investment Company Act file number: 811-22895</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; text-align: center; margin-top: 0; margin-bottom: 0">&nbsp;</P>
+
+<P STYLE="font: 24pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center"><B>CAPITOL SERIES TRUST</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center"><B>(Exact name of Registrant as
+Specified in Charter)</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center"><B>225 Pictoria Drive, Suite 450</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center"><B>Cincinnati, OH 45246</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center"><B>(Address of Principal Executive
+Offices)</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center"><B>Matthew J. Miller</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center"><B>President and Chief Executive Officer</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center"><B>Capitol Series Trust</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center"><B>225 Pictoria Drive Suite 450</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center"><B>Cincinnati, OH 45246</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; text-align: center"><B>(Name and address of agent for
+service)</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0 0 0 208.85pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; text-align: left; margin-top: 0; margin-right: 0; margin-bottom: 0">Registrant&rsquo;s telephone number, including area code:
+1-513-587-3400</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-right: 0; margin-bottom: 0">&nbsp;</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="width: 100%; font: 11pt Times New Roman, Times, Serif; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+    <TD STYLE="width: 2in"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Date of fiscal year end:</FONT></TD>
+    <TD STYLE="width: 0.75in"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">1/31</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">(Reynders, McVeigh Core Equity Fund)</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">4/30</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">(Canterbury Portfolio Thermostat Fund and Guardian Dividend Growth Fund)</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">8/31</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">(Cornerstone Capital Access Impact Fund, Hedeker Strategic Appreciation Fund, Meritage Growth Equity Fund, Meritage Value Equity Fund, Meritage Yield-Focus Equity Fund, and Preserver Alternative Opportunities Fund)</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">9/30</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">(Alta Quality Growth Fund, Guardian Fundamental Global Equity Fund, Fuller &amp; Thaler Behavioral Small-Cap Equity Fund, Fuller &amp; Thaler Behavioral Small-Cap Growth Fund, Fuller &amp; Thaler Behavioral Mid-Cap Value Fund, Fuller &amp; Thaler Behavioral Unconstrained Equity Fund, Fuller &amp; Thaler Behavioral Micro-Cap Equity Fund and Fuller &amp; Thaler Behavioral Small-Mid Core Equity Fund)</FONT></TD></TR>
+</TABLE>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-right: 0; margin-bottom: 0">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-right: 0; margin-bottom: 0">Reporting Period: 7/1/19 &ndash; 6/30/20</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-right: 0; margin-bottom: 0">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-right: 0; margin-bottom: 0">Form N-PX is to be used by a registered management investment
+company, other than a small business investment company</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-right: 0; margin-bottom: 0">registered on Form N-5 (Secs. 239.24 and 274.5 of this
+chapter), to file reports with the Commission, not later than August 31 of each year, containing the registrant&rsquo;s proxy voting
+record for the most recent twelve-month period ended June 30, pursuant to section 30 of the Investment Company Act of 1940 and
+rule 30b1-4 thereunder (17 CFR 270.30b1-4). The Commission may use the information provided on Form N-PX in its regulatory, disclosure
+review, inspection, and policymaking roles.</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-right: 0; margin-bottom: 0">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0; margin-right: 0; margin-bottom: 0">A
+registrant is required to disclose the information specified by Form N-PX, and the Commission will make this information public.
+A registrant is not required to respond to the collection of information contained in Form N-PX unless the Form displays a currently
+valid Office of Management and Budget (&ldquo;OMB&rdquo;) control number. Please direct comments concerning the accuracy of the
+information collection burden estimate and any suggestions for reducing the burden to the Secretary, Securities and Exchange Commission,
+450 Fifth Street, NW, Washington, DC 20549-0609. The OMB has reviewed this collection of information under the clearance requirements
+of 44 U.S.C. Sec. 3507.</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; color: #231F20"><B>&nbsp;</B></P>
+
+<!-- Field: Rule-Page --><DIV STYLE="margin: 3pt auto; width: 100%"><DIV STYLE="font-size: 1pt; border-top: Black 1pt solid; border-bottom: Black 1pt solid">&nbsp;</DIV></DIV><!-- Field: /Rule-Page -->
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; color: #231F20"><B>&nbsp;</B></P>
+
+<!-- Field: Page; Sequence: 1 -->
+    <DIV STYLE="margin-bottom: 6pt"><P STYLE="margin: 0pt; font: 9pt Times New Roman, Times, Serif">&nbsp;</P></DIV>
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<!-- Field: Page; Sequence: 9 -->
+    <DIV STYLE="margin-bottom: 6pt"><P STYLE="margin: 0pt; font: 9pt Times New Roman, Times, Serif">&nbsp;</P></DIV>
+    <DIV STYLE="page-break-before: always; margin-top: 6pt"><P STYLE="margin: 0pt">&nbsp;</P></DIV>
+    <!-- Field: /Page -->
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B></B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0"><B>Hedeker Strategic Appreciation Fund</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0"><B>Proxy Voting Record</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0"><B>July 1, 2019 &ndash; June 30, 2020</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">The Hedeker Strategic Appreciation Fund held no securities entitled
+to vote at a meeting of shareholders during the reporting period.</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0"><B>&nbsp;</B></P>
+
+<!-- Field: Page; Sequence: 10 -->
+    <DIV STYLE="margin-bottom: 6pt"><P STYLE="margin: 0pt; font: 9pt Times New Roman, Times, Serif">&nbsp;</P></DIV>
+    <DIV STYLE="page-break-before: always; margin-top: 6pt"><P STYLE="margin: 0pt">&nbsp;</P></DIV>
+    <!-- Field: /Page -->
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0"><B></B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0"><B>Meritage Growth Equity Fund</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0"><B>Proxy Voting Record</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0"><B>July 1, 2019 &ndash; June 30, 2020</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0"><B>&nbsp;</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">Provided herewith are the proxy voting records of the Meritage Growth
+Equity Fund for the reporting period (July 1, 2019 through June 30, 2020). In addition, the Meritage Growth Equity Fund liquidated
+all shares on August 27, 2020.</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>&nbsp;</B></P>
+
+
+<TABLE CELLSPACING="0" CELLPADDING="4" STYLE="font: 11pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top">
+    <TD COLSPAN="6" STYLE="font: 11pt Times New Roman, Times, Serif; text-align: center"><P STYLE="margin-top: 0; margin-bottom: 0"><FONT STYLE="font: 11pt Times New Roman, Times, Serif; color: #00007F"><B><I>Investment Company Report</I></B></FONT></P>
+                                                                                <P STYLE="margin-top: 0; margin-bottom: 0"><FONT STYLE="font: 11pt Times New Roman, Times, Serif; color: #00007F"><B><I>&nbsp;</I></B></FONT></P></TD></TR>
+<TR STYLE="font: 11pt Times New Roman, Times, Serif; background-color: #004F75">
+    <TD COLSPAN="6" STYLE="border-top: black 1pt solid; border-bottom: black 1pt solid; font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif; color: white"><B>CYBERARK
+    SOFTWARE LTD</B></FONT></TD>
+    </TR>
+<TR STYLE="font: 11pt Times New Roman, Times, Serif">
+    <TD COLSPAN="2" STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Security</B></FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">M2682V108</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: bottom"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Meeting
+    Type</B></FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Annual&nbsp;&nbsp;</FONT></TD></TR>
+<TR STYLE="font: 11pt Times New Roman, Times, Serif">
+    <TD COLSPAN="2" NOWRAP STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Ticker
+    Symbol&nbsp;&nbsp;</B></FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">CYBR</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: bottom"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Meeting
+    Date</B></FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">11-Jul-2019</FONT></TD>
+    </TR>
+<TR STYLE="font: 11pt Times New Roman, Times, Serif">
+    <TD COLSPAN="2" STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>ISIN</B></FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">IL0011334468</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: bottom"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Agenda</B></FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">935041525
+    - Management</FONT></TD></TR>
+<TR STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: bottom; background-color: #004F75">
+    <TD STYLE="border-top: black 1pt solid; font: 11pt Times New Roman, Times, Serif; width: 8%; padding-top: 0pt; padding-bottom: 0pt"><FONT STYLE="font: 1pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="border-top: black 1pt solid; font: 11pt Times New Roman, Times, Serif; width: 4%; padding-top: 0pt; padding-bottom: 0pt"><FONT STYLE="font: 1pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="border-top: black 1pt solid; font: 11pt Times New Roman, Times, Serif; width: 52%; padding-top: 0pt; padding-bottom: 0pt"><FONT STYLE="font: 1pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="border-top: black 1pt solid; font: 11pt Times New Roman, Times, Serif; width: 12%; padding-top: 0pt; padding-bottom: 0pt"><FONT STYLE="font: 1pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="border-top: black 1pt solid; font: 11pt Times New Roman, Times, Serif; width: 12%; padding-top: 0pt; padding-bottom: 0pt"><FONT STYLE="font: 1pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    <TD STYLE="border-top: black 1pt solid; font: 11pt Times New Roman, Times, Serif; width: 12%; padding-top: 0pt; padding-bottom: 0pt"><FONT STYLE="font: 1pt Times New Roman, Times, Serif">&nbsp;</FONT></TD>
+    </TR>
+<TR STYLE="font: 11pt Times New Roman, Times, Serif; background-color: #004F75">
+    <TD STYLE="border-bottom: black 1pt solid; font: 11pt Times New Roman, Times, Serif; text-align: left; vertical-align: bottom"><FONT STYLE="font: 11pt Times New Roman, Times, Serif; color: white"><B>Item</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="border-bottom: black 1pt solid; text-align: left; font: 11pt Times New Roman, Times, Serif; vertical-align: bottom"><FONT STYLE="font: 11pt Times New Roman, Times, Serif; color: white"><B>Proposal</B></FONT></TD>
+    <TD STYLE="border-bottom: black 1pt solid; font: 11pt Times New Roman, Times, Serif; vertical-align: bottom; text-align: center"><FONT STYLE="font: 11pt Times New Roman, Times, Serif; color: white"><B>Proposed</B></FONT><FONT STYLE="font: 11pt Times New Roman, Times, Serif">
+    <FONT STYLE="color: white"><B>by</B></FONT></FONT></TD>
+    <TD STYLE="border-bottom: black 1pt solid; font: 11pt Times New Roman, Times, Serif; vertical-align: bottom; text-align: center"><FONT STYLE="font: 11pt Times New Roman, Times, Serif; color: white"><B>Vote</B></FONT></TD>
+    <TD STYLE="border-bottom: black 1pt solid; font: 11pt Times New Roman, Times, Serif; vertical-align: bottom; text-align: center"><FONT STYLE="font: 11pt Times New Roman, Times, Serif; color: white"><B>For/Against</B></FONT><BR><FONT STYLE="font: 11pt Times New Roman, Times, Serif">
+    <FONT STYLE="color: white"><B>Management</B></FONT></FONT></TD>
+    </TR>
+<TR STYLE="font: 11pt Times New Roman, Times, Serif">
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">1a.&nbsp;&nbsp;</FONT></TD>
+    <TD COLSPAN="2" STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">To
+    re-elect of Gadi Tirosh for a term of approximately
+    three years as a Class II director of the Company, until
+    the Company's annual general meeting of shareholders
+    to be held in 2022 and until his respective successor is
+    duly elected and qualified.</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top; text-align: center"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top; text-align: center"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    </TR>
+<TR STYLE="font: 11pt Times New Roman, Times, Serif">
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">1b.&nbsp;&nbsp;</FONT></TD>
+    <TD COLSPAN="2" STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">To
+    re-elect of Amnon Shoshani for a term of
+    approximately three years as a Class II director of the
+    Company, until the Company's annual general meeting of
+    shareholders to be held in 2022 and until his respective
+    successor is duly elected and qualified.</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top; text-align: center"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top; text-align: center"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    </TR>
+<TR STYLE="font: 11pt Times New Roman, Times, Serif">
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">2.&nbsp;&nbsp;&nbsp;</FONT></TD>
+    <TD COLSPAN="2" STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">To
+    amend the compensation of the Company's non-executive directors to provide for fixed annual director
+    fees and predetermined values of initial and recurring
+    annual equity grants of restricted share units (RSUs).</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top; text-align: center"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top; text-align: center"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    </TR>
+<TR STYLE="font: 11pt Times New Roman, Times, Serif">
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">3.&nbsp;&nbsp;&nbsp;</FONT></TD>
+    <TD COLSPAN="2" STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">To
+    approve a compensation policy for the Company's
+    executives and directors, in accordance with the
+    requirements of the Companies Law.</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top; text-align: center"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top; text-align: center"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    </TR>
+<TR STYLE="font: 11pt Times New Roman, Times, Serif">
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">3a.&nbsp;&nbsp;</FONT></TD>
+    <TD COLSPAN="2" STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Are
+    you a controlling shareholder of the Company or do
+    you have a personal interest in the approval of Proposal
+    3, as such terms are defined in the Proxy Statement? If
+    your interest arises solely from the fact that you hold
+    shares in the Company, you would not be deemed to
+    have a personal interest, and should mark &quot;No.&quot; (Please
+    note: If you mark &quot;Yes&quot; or leave this question blank, your
+    shares will not be voted for Proposal 3). Mark &quot;For&quot; = Yes
+    or &quot;Against&quot; = No.</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top; text-align: center"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Against</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top; text-align: center"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Against</FONT></TD>
+    </TR>
+<TR STYLE="font: 11pt Times New Roman, Times, Serif">
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">4.&nbsp;&nbsp;&nbsp;</FONT></TD>
+    <TD COLSPAN="2" STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">To
+    approve, in accordance with the requirements of the
+    Companies Law, a grant for 2019 of options to purchase
+    ordinary shares of the Company, RSUs and performance
+    share units (PSUs), to the Company's Chairman of the
+    Board and Chief Executive Officer, Ehud (Udi) Mokady.</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top; text-align: center"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top; text-align: center"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    </TR>
+<TR STYLE="font: 11pt Times New Roman, Times, Serif">
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">5.&nbsp;&nbsp;&nbsp;</FONT></TD>
+    <TD COLSPAN="2" STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">To
+    authorize, in accordance with the requirements of the
+    Companies Law, the Company's Chairman of the Board
+    and Chief Executive Officer, Ehud (Udi) Mokady, to
+    continue serving as the Chairman of the Board and the
+    Chief Executive Officer, for the maximum period
+    permitted under the Companies Law.</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top; text-align: center"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top; text-align: center"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    </TR>
+<TR STYLE="font: 11pt Times New Roman, Times, Serif">
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">5a.&nbsp;&nbsp;</FONT></TD>
+    <TD COLSPAN="2" STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Are
+    you a controlling shareholder of the Company or do
+    you have a personal interest in the approval of Proposal
+    5, as such terms are defined in the Proxy Statement? If
+    your interest arises solely from the fact that you hold
+    shares in the Company, you would not be deemed to
+    have a personal interest, and should mark &quot;No.&quot; (Please
+    note: If you mark &quot;Yes&quot; or leave this question blank, your
+    shares will not be voted for Proposal 5). Mark &quot;For&quot; = Yes
+    or &quot;Against&quot; = No.</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top; text-align: center"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Against</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top; text-align: center"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Against</FONT></TD>
+    </TR>
+<TR STYLE="font: 11pt Times New Roman, Times, Serif">
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">6.&nbsp;&nbsp;&nbsp;</FONT></TD>
+    <TD COLSPAN="2" STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">To
+    approve the re-appointment of Kost Forer Gabbay &amp;
+    Kasierer, registered public accounting firm, a member
+    firm of Ernst &amp; Young Global, as the Company's
+    independent registered public accounting firm for the year
+    ending December 31, 2019 and until the Company's 2020
+    annual general meeting of shareholders, and to authorize
+    the Board to fix such accounting firm's annual
+    compensation.</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Management</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top; text-align: center"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="font: 11pt Times New Roman, Times, Serif; vertical-align: top; text-align: center"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    </TR>
+</TABLE>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B></B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0"><B>&nbsp;</B></P>
+
+<!-- Field: Page; Sequence: 16 -->
+    <DIV STYLE="margin-bottom: 6pt"><P STYLE="margin: 0pt; font: 9pt Times New Roman, Times, Serif">&nbsp;</P></DIV>
+    <DIV STYLE="page-break-before: always; margin-top: 6pt"><P STYLE="margin: 0pt">&nbsp;</P></DIV>
+    <!-- Field: /Page -->
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0"><B></B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0"><B>Fuller &amp; Thaler Behavioral Small-Cap Equity Fund</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0"><B>Proxy Voting Record</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0"><B>July 1, 2019 &ndash; June 30, 2020</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+
+
+
+
+<TABLE CELLSPACING="0" CELLPADDING="4" STYLE="font: 11pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="3" STYLE="border-bottom: Black 1pt solid"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Advanced
+    Drainage Systems, Inc.</B></FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="width: 25%"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Meeting Date: </B>07/23/2019</FONT></TD>
+    <TD STYLE="width: 25%"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Country: </B>USA</FONT></TD>
+    <TD STYLE="width: 50%"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Primary Security ID: </B>00790R104</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-bottom: Black 1pt solid"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Record
+    Date: </B>05/31/2019</FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Meeting
+    Type: </B>Annual</FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Ticker:
+    </B>WMS</FONT></TD></TR>
+</TABLE>
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0pt 0"></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0pt 0"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">&nbsp;</FONT></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0pt 0"></P>
+
+<!-- Field: Rule-Page --><DIV ALIGN="LEFT" STYLE="margin-top: 3pt; margin-bottom: 3pt"><DIV STYLE="border-top: Black 1pt solid; font-size: 1pt; width: 100%"></DIV></DIV><!-- Field: /Rule-Page -->
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0pt 0"></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0pt 0"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">&nbsp;</FONT></P>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<TABLE CELLSPACING="0" CELLPADDING="4" STYLE="width: 100%; border-collapse: collapse; font-size: 11pt">
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-bottom: Black 1pt solid; width: 6%; text-align: left; vertical-align: bottom"><P STYLE="margin-top: 0; margin-bottom: 0"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Proposal</B></FONT></P>
+        <P STYLE="margin-top: 0; margin-bottom: 0"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Number</B></FONT></P></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; width: 35%; text-align: left; vertical-align: bottom"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Proposal
+    Text</B></FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; width: 14%; text-align: left; vertical-align: bottom"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Proponent</B></FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; width: 16%; text-align: left; vertical-align: bottom"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Mgmt
+    Rec</B></FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; width: 10%; text-align: left; vertical-align: bottom"><P STYLE="margin-top: 0; margin-bottom: 0"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Voting</B></FONT></P>
+        <P STYLE="margin-top: 0; margin-bottom: 0"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">&nbsp;<B>Policy
+        Rec</B></FONT></P></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; width: 19%; text-align: left; vertical-align: bottom"><P STYLE="margin-top: 0; margin-bottom: 0"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Vote</B></FONT></P>
+        <P STYLE="margin-top: 0; margin-bottom: 0"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">&nbsp;<B>Instruction</B></FONT></P></TD></TR>
+<TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">1a</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Elect
+    Director Ross M. Jones</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Mgmt</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Against</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Against</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom; background-color: White">
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">1b</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Elect
+    Director C. Robert Kidder</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Mgmt</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Against</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Against</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">1c</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Elect
+    Director Manuel J. Perez de la Mesa</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Mgmt</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom; background-color: White">
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">2</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Ratify
+    Deloitte &amp; Touche LLP as Auditors</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Mgmt</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">3</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Advisory
+    Vote to Ratify Named Executive Officers' Compensation</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Mgmt</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD></TR>
+</TABLE>
+
+
+
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0pt 0"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">&nbsp;</FONT></P>
+
+
+
+
+
+<TABLE CELLSPACING="0" CELLPADDING="4" STYLE="font: 11pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="3" STYLE="border-bottom: Black 1pt solid"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>CRA
+    International, Inc.</B></FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="width: 25%"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Meeting Date: </B>07/10/2019</FONT></TD>
+    <TD STYLE="width: 25%"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Country: </B>USA</FONT></TD>
+    <TD STYLE="width: 50%"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Primary Security ID: </B>12618T105</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-bottom: Black 1pt solid"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Record
+    Date: </B>05/16/2019</FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Meeting
+    Type: </B>Annual</FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Ticker:
+    </B>CRAI</FONT></TD></TR>
+</TABLE>
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0pt 0"></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0pt 0"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">&nbsp;</FONT></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0pt 0"></P>
+
+<!-- Field: Rule-Page --><DIV ALIGN="LEFT" STYLE="margin-top: 3pt; margin-bottom: 3pt"><DIV STYLE="border-top: Black 1pt solid; font-size: 1pt; width: 100%"></DIV></DIV><!-- Field: /Rule-Page -->
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0pt 0"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">&nbsp;</FONT></P>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<TABLE CELLSPACING="0" CELLPADDING="4" STYLE="width: 100%; border-collapse: collapse; font-size: 11pt">
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-bottom: Black 1pt solid; width: 6%; text-align: left; vertical-align: bottom"><P STYLE="margin-top: 0; margin-bottom: 0"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Proposal</B></FONT></P>
+        <P STYLE="margin-top: 0; margin-bottom: 0"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Number</B></FONT></P></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; width: 35%; text-align: left; vertical-align: bottom"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Proposal
+    Text</B></FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; width: 14%; text-align: left; vertical-align: bottom"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Proponent</B></FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; width: 16%; text-align: left; vertical-align: bottom"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Mgmt
+    Rec</B></FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; width: 10%; text-align: left; vertical-align: bottom"><P STYLE="margin-top: 0; margin-bottom: 0"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Voting</B></FONT></P>
+        <P STYLE="margin-top: 0; margin-bottom: 0"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Policy
+        Rec</B></FONT></P></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; width: 19%; text-align: left; vertical-align: bottom"><P STYLE="margin-top: 0; margin-bottom: 0"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Vote</B></FONT></P>
+        <P STYLE="margin-top: 0; margin-bottom: 0"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Instruction</B></FONT></P></TD></TR>
+<TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">1.1</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Elect
+    Director Paul Maleh</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Mgmt</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Withhold</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Withhold</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom; background-color: White">
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">1.2</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Elect
+    Director Thomas Avery</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Mgmt</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Withhold</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Withhold</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">2</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Advisory
+    Vote to Ratify Named Executive Officers' Compensation</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Mgmt</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD></TR>
+<TR STYLE="vertical-align: bottom; background-color: White">
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">3</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Ratify
+    Ernst &amp; Young LLP as Auditors</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Mgmt</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD></TR>
+</TABLE>
+
+
+
+
+
+
+
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<!-- Field: Page; Sequence: 17 -->
+    <DIV STYLE="margin-bottom: 6pt"><P STYLE="margin: 0pt; font: 9pt Times New Roman, Times, Serif">&nbsp;</P></DIV>
+    <DIV STYLE="page-break-before: always; margin-top: 6pt"><P STYLE="margin: 0pt">&nbsp;</P></DIV>
+    <!-- Field: /Page -->
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0"><B>Fuller &amp; Thaler Behavioral Small-Cap Growth Fund</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0"><B>Proxy Voting Record</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0"><B>July 1, 2019 &ndash; June 30, 2020</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 11.5pt Tahoma, Helvetica, Sans-Serif; margin: 0"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>PlayAGS,
+Inc.</B></FONT></P>
+
+<P STYLE="font: 11.5pt Tahoma, Helvetica, Sans-Serif; margin: 0"></P>
+
+<!-- Field: Rule-Page --><DIV ALIGN="LEFT" STYLE="margin-top: 3pt; margin-bottom: 3pt"><DIV STYLE="border-top: Black 1pt solid; font-size: 1pt; width: 100%">&nbsp;</DIV></DIV><!-- Field: /Rule-Page -->
+
+<P STYLE="font: 11.5pt Tahoma, Helvetica, Sans-Serif; margin: 0"></P>
+
+<TABLE CELLSPACING="0" CELLPADDING="4" STYLE="font: 11pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+    <TD STYLE="width: 29%"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Meeting Date: </B>09/10/2019</FONT></TD>
+    <TD STYLE="width: 31%"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Country: </B>USA</FONT></TD>
+    <TD STYLE="width: 40%"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Primary Security ID: </B>72814N104</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="border-bottom: Black 1pt solid"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Record Date: </B>07/18/2019</FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Meeting Type: </B>Annual</FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Ticker: </B>AGS</FONT></TD></TR>
+</TABLE>
+<P STYLE="margin-top: 0; margin-bottom: 0">&nbsp;</P>
+
+<P STYLE="margin-top: 0; margin-bottom: 0"></P>
+
+<!-- Field: Rule-Page --><DIV ALIGN="LEFT" STYLE="margin-top: 3pt; margin-bottom: 3pt"><DIV STYLE="border-top: Black 1pt solid; font-size: 1pt; width: 100%">&nbsp;</DIV></DIV><!-- Field: /Rule-Page -->
+
+<P STYLE="margin-top: 0; margin-bottom: 0">&nbsp;</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="4" STYLE="font: 11pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+    <TD STYLE="border-bottom: Black 1pt solid; width: 9%; text-align: left; vertical-align: bottom"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Proposal<BR>Number</B></FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; width: 30%; text-align: left; vertical-align: bottom"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Proposal Text</B></FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; width: 14%; text-align: left; vertical-align: bottom"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Proponent</B></FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; width: 11%; text-align: left; vertical-align: bottom"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Mgmt Rec</B></FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; width: 14%; text-align: left; vertical-align: bottom"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Voting<BR>Policy Rec</B></FONT></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; width: 22%; text-align: left; vertical-align: bottom"><FONT STYLE="font: 11pt Times New Roman, Times, Serif"><B>Vote<BR>Instruction</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font: 11pt Times New Roman, Times, Serif">1</FONT></TD>
+    <TD><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Elect Director Adam Chibib</FONT></TD>
+    <TD><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Mgmt</FONT></TD>
+    <TD><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Withhold</FONT></TD>
+    <TD><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Withhold</FONT></TD></TR>
+<TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font: 11pt Times New Roman, Times, Serif">2</FONT></TD>
+    <TD><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Advisory Vote to Ratify Named Executive Officers'
+    Compensation</FONT></TD>
+    <TD><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Mgmt</FONT></TD>
+    <TD><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Against</FONT></TD>
+    <TD><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Against</FONT></TD></TR>
+<TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font: 11pt Times New Roman, Times, Serif">3</FONT></TD>
+    <TD><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Ratify PricewaterhouseCoopers LLP as Auditors</FONT></TD>
+    <TD><FONT STYLE="font: 11pt Times New Roman, Times, Serif">Mgmt</FONT></TD>
+    <TD><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD>
+    <TD><FONT STYLE="font: 11pt Times New Roman, Times, Serif">For</FONT></TD></TR>
+</TABLE>
+    <TD>&nbsp;</TD></TR>
+</TABLE>
+
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

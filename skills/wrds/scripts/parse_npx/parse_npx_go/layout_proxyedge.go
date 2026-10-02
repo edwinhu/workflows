@@ -1,6 +1,10 @@
 package main
 
-import "strings"
+import (
+	"bytes"
+	"strconv"
+	"strings"
+)
 
 // proxyedge reads the Broadridge ProxyEdge ballot-detail export as rendered by
 // Vintage Filings' EDGARizerAgent (144 filings, 372 MB, every one recorded as
@@ -526,7 +530,7 @@ func matchProxyEdge(head string) bool {
 		// CLAIMS a document for this layout it would be one common English
 		// word standing alone, so the colon-less spelling is read only after
 		// the match, not to make it.
-		if !identity && strings.HasSuffix(lines[i], ":") {
+		if !identity && strings.HasSuffix(lines[i], ":") && strings.Join(strings.Fields(lines[i]), " ") == lines[i] {
 			if _, ok := peIdentityLabel(lines[i]); ok {
 				identity = true
 			}
@@ -1120,7 +1124,7 @@ func peBrokenOffMidWord(s string) bool {
 // more than one way of telling that. Any other bare cell is still no label, so
 // a heading standing above ordinary prose is still not an issuer.
 func peIdentityLabel(line string) (string, bool) {
-	name := strings.ToUpper(strings.TrimSuffix(line, ":"))
+	name := peLabelKey(line)
 	switch name {
 	case "TICKER", "TICKER SYMBOL", "SECURITY", "SECURITY ID",
 		"SECURITY ID ON BALLOT", "ISIN", "MEETING DATE", "MEETING TYPE":
@@ -1144,8 +1148,8 @@ func peGridLabel(cell string) (string, bool) {
 	if name, ok := peIdentityLabel(cell); ok {
 		return name, true
 	}
-	switch name := strings.ToUpper(cell); name {
-	case "SHARES VOTED", "SHARES", "RECORD DATE", "MEETING STATUS":
+	switch name := peLabelKey(cell); name {
+	case "SHARES VOTED", "SHARES", "RECORD DATE", "MEETING STATUS", "MEETING DATE/TYPE":
 		return name, true
 	}
 	return "", false
@@ -1185,8 +1189,9 @@ type peGridIdentity struct {
 // above and colon-less, every value not a label, all inside ONE table, and among
 // them a `Security` bearing an id-shaped value AND a `Meeting Date` bearing a
 // readable date. A block that pairs no id with no date is not this grid.
-func peLabelledCellGrid(lines []string, run, tbl []int, start int) (peGridIdentity, int, bool) {
+func peLabelledCellGrid(lines []string, run, tbl []int, start int, dayFirst bool) (peGridIdentity, int, bool) {
 	var id peGridIdentity
+	idSeen := false
 	pairs, last := 0, start-1
 	for pos := start; pos < len(lines); {
 		if run[pos] != pos || tbl[pos] != tbl[start] {
@@ -1211,6 +1216,9 @@ func peLabelledCellGrid(lines []string, run, tbl []int, start int) (peGridIdenti
 		case "TICKER", "TICKER SYMBOL":
 			id.ticker = value
 		case "SECURITY", "SECURITY ID", "SECURITY ID ON BALLOT":
+			// A CUSIP printed with its leading zero dropped (`53015103`) is
+			// still the ballot's id, but not one this layout may store.
+			idSeen = idSeen || peSecurityID(value)
 			if pvTextCUSIP(value) || isinToken(value) {
 				id.cusip = value
 			}
@@ -1219,14 +1227,21 @@ func peLabelledCellGrid(lines []string, run, tbl []int, start int) (peGridIdenti
 				id.isin = value
 			}
 		case "MEETING DATE":
-			id.mtgDate = htmlDate(value)
+			id.mtgDate = peDate(value, dayFirst)
 		case "MEETING TYPE":
 			id.mtgType = value
+		case "MEETING DATE/TYPE":
+			// One label over two value cells: `Meeting Date/Type | 08/07/2008 |
+			// AGM` (Lincoln Variable Insurance Products Trust 2009).
+			id.mtgDate = peDate(value, dayFirst)
+			if k := valueEnd + 1; k < len(lines) && run[k] == k && tbl[k] == tbl[start] && peMeetingTypeWord(lines[k]) {
+				id.mtgType, valueEnd = lines[k], k
+			}
 		}
 		pairs++
 		last, pos = valueEnd, valueEnd+1
 	}
-	if pairs < 2 || id.cusip == "" || id.mtgDate == "" {
+	if pairs < 2 || id.cusip == "" && !idSeen || id.mtgDate == "" {
 		return peGridIdentity{}, start - 1, false
 	}
 	return id, last, true
@@ -1265,10 +1280,315 @@ func peFieldLabel(name string) bool {
 	switch name {
 	case "TICKER", "TICKER SYMBOL", "SECURITY", "SECURITY ID",
 		"SECURITY ID ON BALLOT", "ISIN", "MEETING DATE", "MEETING TYPE",
-		"FUND NAME", "PORTFOLIO NAME", "REGISTRANT":
+		"FUND NAME", "PORTFOLIO NAME", "REGISTRANT",
+		// Read only so that their values are consumed: the ISS Vote Summary
+		// Report's identity table (Ivy Funds 2015) prints `Record Date:` and
+		// `Country:` beside the meeting date, and an unconsumed value standing
+		// above the next label is what the issuer scan takes for a heading --
+		// the record date became the issuer and wiped the meeting date.
+		"PRIMARY SECURITY ID", "RECORD DATE", "COUNTRY", "AGENDA NUMBER":
 		return true
 	}
 	return false
+}
+
+// peLabelKey is a label's name as the vocabularies here spell it: upper case,
+// the colon off, and inner whitespace folded to one space -- Clearwater
+// Investment Trust 2010-2011 prints `Meeting  Type` and `Ticker  Symbol`, and an
+// unread label leaves its value to be taken for the next issuer heading.
+func peLabelKey(s string) string {
+	return strings.ToUpper(strings.Join(strings.Fields(strings.TrimSuffix(strings.TrimSpace(s), ":")), " "))
+}
+
+// peInlineLabel splits a cell printing a field label and its value together,
+// `Meeting Date:  08-May-2008` (the Broadridge sections of Lincoln Variable
+// Insurance Products Trust 2008). Only the identity fields and the inert ones
+// are read this way; a fund banner keeps its own readers.
+func peInlineLabel(cell string) (string, string, bool) {
+	head, value, found := strings.Cut(cell, ":")
+	value = strings.TrimSpace(value)
+	if !found || value == "" {
+		return "", "", false
+	}
+	switch name := peLabelKey(head); name {
+	case "TICKER", "TICKER SYMBOL", "SECURITY", "SECURITY ID", "SECURITY ID ON BALLOT", "ISIN",
+		"MEETING DATE", "MEETING TYPE", "PRIMARY SECURITY ID", "RECORD DATE", "COUNTRY", "AGENDA NUMBER":
+		return name, value, true
+	}
+	return "", "", false
+}
+
+// peDate reads a meeting date, day first when the section says so. A slash
+// date whose first field cannot be a month is day first on its face
+// (`24/06/08 AGM`); an ambiguous one is read day first only under a reporting
+// period printed day first (`01/07/2008 to 30/06/2009`), never guessed.
+func peDate(s string, dayFirst bool) string {
+	f := strings.Fields(s)
+	if len(f) == 2 && peMeetingTypeWord(f[1]) {
+		f = f[:1]
+		s = f[0]
+	}
+	if len(f) > 0 {
+		if p := strings.Split(f[0], "/"); len(p) == 3 {
+			a, errA := strconv.Atoi(p[0])
+			b, errB := strconv.Atoi(p[1])
+			if errA == nil && errB == nil && b >= 1 && b <= 12 && (a > 12 || dayFirst) {
+				f[0] = p[1] + "/" + p[0] + "/" + p[2]
+				s = strings.Join(f, " ")
+			}
+		}
+	}
+	return htmlDate(s)
+}
+
+// peMeetingTypeWord is htmlMeetingTypeWord plus the ISS codes this vendor's
+// identity grids print beside the date: a mixed, a special general, an
+// ordinary general and a court meeting.
+func peMeetingTypeWord(w string) bool {
+	switch strings.ToUpper(strings.TrimSpace(w)) {
+	case "MIX", "SGM", "OGM", "CRT":
+		return true
+	}
+	return htmlMeetingTypeWord(w)
+}
+
+// pePeriodOrder reads the field order of a reporting-period line, `01/07/2008
+// to 30/06/2009` or `07/01/08 to 06/30/09`. It decides only when one of the two
+// dates has a field that cannot be a month.
+func pePeriodOrder(line string) (dayFirst, ok bool) {
+	if !strings.Contains(line, " to ") && !strings.Contains(line, " - ") {
+		return false, false
+	}
+	var dates [][]int
+	for _, tok := range strings.Fields(line) {
+		p := strings.Split(strings.Trim(tok, ",;"), "/")
+		if len(p) != 3 {
+			continue
+		}
+		a, errA := strconv.Atoi(p[0])
+		b, errB := strconv.Atoi(p[1])
+		if errA != nil || errB != nil {
+			continue
+		}
+		dates = append(dates, []int{a, b})
+	}
+	if len(dates) != 2 {
+		return false, false
+	}
+	for _, d := range dates {
+		if d[0] > 12 && d[1] <= 12 {
+			return true, true
+		}
+		if d[1] > 12 && d[0] <= 12 {
+			return false, true
+		}
+	}
+	return false, false
+}
+
+// peShortHeaderAt returns the last line of the ISS `Vote Summary Report (Short)`
+// column band opening at i -- `Mtg Date/Type | Company/Ballot Issues | Security
+// | Mgmt Rec | Vote Cast | Record Date | Prpnent | Shares Voted`, its labels
+// hard-wrapped across cells -- or -1, and whether the band carries the Shares
+// Voted column. Read cell by cell it is a run of bare words, and `Ballot
+// Issues` standing above `Security` was taken for an issuer. The band is
+// anchored on its `Company/Ballot Issues` column: the vendor misprints the
+// first one (`Date/Typert`, `Mfg Date/Type`), and that cell names nothing.
+func peShortHeaderAt(lines []string, run, tbl []int, i int) (int, bool) {
+	cell, end := peCellAt(lines, run, i)
+	key := strings.ReplaceAll(peLabelKey(cell), "/ ", "/")
+	if key == "COMPANY/" && end+1 < len(lines) && tbl[end+1] == tbl[i] && peLabelKey(lines[end+1]) == "BALLOT ISSUES" {
+		key, end = "COMPANY/BALLOT ISSUES", end+1
+	}
+	// The band printed in two rows: `Mtg Date | Company | Security/ | ...` over
+	// `/Type | /Ballot Issues | Proponent | ...` (2007), or `Mtg | Company/ |
+	// Mgmt | ...` over `Date/Type | Ballot Issues | Security | ...` (2008).
+	if end+1 < len(lines) && tbl[end+1] == tbl[i] {
+		next := peLabelKey(lines[end+1])
+		if key == "MTG DATE" && next == "COMPANY" || key == "MTG" && (next == "COMPANY/" || next == "DATE/TYPE") {
+			key, end = "COMPANY/BALLOT ISSUES", end+1
+		}
+	}
+	if key != "COMPANY/BALLOT ISSUES" {
+		return -1, false
+	}
+	shares := false
+	for end+1 < len(lines) && tbl[end+1] == tbl[i] && run[end+1] == end+1 {
+		next, nextEnd := peCellAt(lines, run, end+1)
+		word := strings.ReplaceAll(peLabelKey(next), "/ ", "/")
+		if !peShortHeaderWord[word] {
+			break
+		}
+		if word == "SHARES" || word == "SHARES VOTED" {
+			shares = true
+		}
+		end = nextEnd
+	}
+	return end, shares
+}
+
+var peShortHeaderWord = map[string]bool{
+	"COMPANY/": true, "BALLOT ISSUES": true, "COMPANY/BALLOT ISSUES": true,
+	"SECURITY": true, "SECURITY/": true, "PROPONENT": true, "SECURITY/PROPONENT": true,
+	"MGMT": true, "REC": true, "MGMT REC": true, "ISS": true, "ISS REC": true,
+	"VOTE": true, "CAST": true, "VOTE CAST": true, "RECORD": true, "DATE": true,
+	"RECORD DATE": true, "PRPNENT": true, "SHARES": true, "VOTED": true, "SHARES VOTED": true,
+	"/TYPE": true, "/BALLOT ISSUES": true, "MTG": true, "DATE/TYPE": true, "MTG DATE/TYPE": true,
+	"COMPANY": true,
+}
+
+// peShortMeetingRow reads the meeting row of the Short report's grid: `02/12/09
+// - A | ACCENTURE LTD *ACN* | G1150G111 | 12/15/08 | 47,400`, or `05/13/09 AGM |
+// Acadia Realty Trust | 4239109 | 66,956`. The first cell is the meeting date
+// with its type, the second the issuer with its ticker in asterisks, the third
+// the security id; a record date and the shares voted may follow and are
+// consumed, so neither is read as an item. The count is consumed only under a
+// band that prints the Shares Voted column: without one the cell after the
+// record date is the first item's number.
+func peShortMeetingRow(lines []string, run, tbl []int, i int, dayFirst, shares bool) (htmlContext, string, int, bool) {
+	var ctx htmlContext
+	first, end := peCellAt(lines, run, i)
+	f := strings.Fields(first)
+	if len(f) == 3 && (f[1] == "-" || f[1] == "\u2013") {
+		f = []string{f[0], f[2]}
+	}
+	if len(f) != 2 || !strings.Contains(f[0], "/") || len(f[1]) > 8 ||
+		strings.IndexFunc(f[1], func(r rune) bool { return !isASCIILetter(byte(r)) || r > 127 }) >= 0 {
+		return ctx, "", i, false
+	}
+	if ctx.MeetingDate = peDate(f[0], dayFirst); ctx.MeetingDate == "" {
+		return ctx, "", i, false
+	}
+	// `05/14/08 – Special` over `Meeting`: the type word wrapped its noun.
+	if k := end + 1; k < len(lines) && run[k] == k && tbl[k] == tbl[i] && strings.EqualFold(lines[k], "Meeting") {
+		end = k
+	}
+	cells := make([]string, 0, 4)
+	ends := make([]int, 0, 4)
+	for k := end + 1; len(cells) < 4 && k < len(lines) && run[k] == k && tbl[k] == tbl[i]; {
+		cell, cellEnd := peCellAt(lines, run, k)
+		cells, ends = append(cells, cell), append(ends, cellEnd)
+		k = cellEnd + 1
+	}
+	if len(cells) < 2 {
+		return ctx, "", i, false
+	}
+	name, id := strings.Join(strings.Fields(cells[0]), " "), cells[1]
+	_, isLabel := peGridLabel(name)
+	_, isCount := peCount(name)
+	if name == "" || isLabel || isCount || peItemNumber(name) || strings.HasSuffix(name, ":") ||
+		len(strings.Fields(name)) > 16 || htmlDate(name) != "" || !peSecurityID(id) {
+		return ctx, "", i, false
+	}
+	if k := strings.LastIndex(name, " *"); k > 0 && strings.HasSuffix(name, "*") {
+		ctx.Ticker = strings.Trim(name[k+2:], "*")
+		name = strings.TrimSpace(name[:k])
+	}
+	ctx.Issuer = name
+	if pvTextCUSIP(id) {
+		ctx.CUSIP = id
+	} else if isinToken(id) {
+		ctx.ISIN = id
+	}
+	end = ends[1]
+	rest := 2
+	if rest < len(cells) && peDate(cells[rest], dayFirst) != "" {
+		end, rest = ends[rest], rest+1
+	}
+	if shares && rest < len(cells) {
+		// A fund of funds votes fractional shares: `218,840.78`.
+		whole, frac, _ := strings.Cut(cells[rest], ".")
+		if _, ok := peCount(whole); ok && (frac == "" || peDigits(frac)) {
+			end = ends[rest]
+		}
+	}
+	return ctx, f[1], end, true
+}
+
+// peSecurityID reports a security identifier cell: a CUSIP, an ISIN, or a
+// seven-character SEDOL, each alphanumeric and carrying a digit.
+func peSecurityID(s string) bool {
+	if len(s) < 6 || len(s) > 12 {
+		return false
+	}
+	digit := false
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		switch {
+		case c >= '0' && c <= '9':
+			digit = true
+		case c >= 'A' && c <= 'Z', c >= 'a' && c <= 'z':
+		default:
+			return false
+		}
+	}
+	return digit
+}
+
+// peStackedCellLabels lists the labels a stacked identity CELL may carry, one
+// per line of the cell, with the values in the next cell line for line.
+var peStackedCellLabels = map[string]bool{
+	"SECURITY": true, "SECURITY ID": true, "TICKER": true, "TICKER SYMBOL": true,
+	"ISIN": true, "CUSIP": true, "MEETING TYPE": true, "MEETING DATE": true, "AGENDA": true,
+	"RECORD DATE": true,
+}
+
+// peStackedCellIdentity reads the identity block Clearwater Investment Trust
+// 2010-2011 prints as label cells over value cells, several fields to a cell
+// one per line: `Security ID / Ticker Symbol / ISIN` above `151290889 / CX /
+// US1512908898`, then `Meeting Type / Meeting Date / Agenda` above `Special /
+// 25-Mar-11 / 933378487`. Each pair must line up line for line, inside one
+// table, and the block must yield a security id and a meeting date.
+func peStackedCellIdentity(lines []string, run, tbl []int, start int, dayFirst bool) (htmlContext, int, bool) {
+	var ctx htmlContext
+	last := start - 1
+	for pos := start; pos < len(lines) && run[pos] == pos && tbl[pos] == tbl[start]; {
+		_, labelEnd := peCellAt(lines, run, pos)
+		if labelEnd == pos {
+			break
+		}
+		labels := lines[pos : labelEnd+1]
+		ok := true
+		for _, l := range labels {
+			if !peStackedCellLabels[peLabelKey(l)] {
+				ok = false
+				break
+			}
+		}
+		vpos := labelEnd + 1
+		if !ok || vpos >= len(lines) || run[vpos] != vpos || tbl[vpos] != tbl[start] {
+			break
+		}
+		_, valueEnd := peCellAt(lines, run, vpos)
+		values := lines[vpos : valueEnd+1]
+		if len(values) != len(labels) {
+			break
+		}
+		for k, l := range labels {
+			v := strings.TrimSpace(values[k])
+			switch peLabelKey(l) {
+			case "SECURITY", "SECURITY ID", "CUSIP":
+				if pvTextCUSIP(v) {
+					ctx.CUSIP = v
+				} else if isinToken(v) {
+					ctx.ISIN = v
+				}
+			case "TICKER", "TICKER SYMBOL":
+				ctx.Ticker = v
+			case "ISIN":
+				if isinToken(v) {
+					ctx.ISIN = v
+				}
+			case "MEETING DATE":
+				ctx.MeetingDate = peDate(v, dayFirst)
+			}
+		}
+		last, pos = valueEnd, valueEnd+1
+	}
+	if ctx.MeetingDate == "" || ctx.CUSIP == "" && ctx.ISIN == "" {
+		return htmlContext{}, start - 1, false
+	}
+	return ctx, last, true
 }
 
 // parseProxyEdge reads the raw markup rather than the stripped text: this is a
@@ -1283,7 +1603,11 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 	issFormerKeys(seriesIx, meta.FormerNames)
 	dict := cikDict.exactFallback(meta)
 	grids, gridHeaders := peColumnGrids(raw)
+	for table, events := range peWideExport(raw) {
+		grids[table] = events
+	}
 	contexts := peStackedContexts(raw, lines, tbl)
+	opens := peIdentityOpens(lines, run, tbl)
 	for i, line := range lines {
 		if opener, ok := gridHeaders[tbl[i]]; ok && htmlFlat(line) == opener {
 			for j := i; j < len(lines) && tbl[j] == tbl[i]; j++ {
@@ -1313,6 +1637,13 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		// which an alias band hands back to when it leaves its ballot.
 		plainLabels []string
 		plainBand   = -1
+		// dayFirst is the field order the open section's reporting period
+		// prints its slash dates in (pePeriodOrder).
+		dayFirst bool
+		// shortShares is whether the open ISS Short band prints Shares Voted.
+		shortShares = true
+		// fundLine is the line the title block's banner was last read from.
+		fundLine = -1
 	)
 
 	setFund := func(name string) {
@@ -1345,6 +1676,25 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 			}
 		}
 		return false
+	}
+	// applyInline sets the identity field an inline label names (peInlineLabel).
+	applyInline := func(name, value string) {
+		switch name {
+		case "TICKER", "TICKER SYMBOL":
+			ticker = value
+		case "SECURITY", "SECURITY ID", "SECURITY ID ON BALLOT":
+			cusip = value
+		case "ISIN":
+			isin = value
+		case "PRIMARY SECURITY ID":
+			if cusip == "" {
+				cusip = value
+			}
+		case "MEETING DATE":
+			mtgDate = peDate(value, dayFirst)
+		case "MEETING TYPE":
+			mtgType = value
+		}
 	}
 	typeDropFund := func(line string) bool {
 		if d := peTypeDropDeclaredFund(seriesIx, line); d != nil {
@@ -1434,6 +1784,60 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 			continue
 		}
 		line := lines[i]
+		if df, ok := pePeriodOrder(line); ok {
+			dayFirst = df
+		}
+		// The ISS report's title block names the section's fund on the line
+		// under the reporting period, with or without a fund word (`Lincoln
+		// Financial Group Small Cap Index`). Missed, the section keeps the fund
+		// before it -- and that fund's series id.
+		if i+2 < len(lines) && strings.HasPrefix(peLabelKey(line), "VOTE SUMMARY REPORT") &&
+			pePeriodLine(lines[i+1]) && whole[i+2] && peReportBanner(lines[i+2]) {
+			if df, ok := pePeriodOrder(lines[i+1]); ok {
+				dayFirst = df
+			}
+			// `Lincoln Global Asset Allocation Fund- 00846400`: the account
+			// number's dash lost its leading space, which the resolver needs.
+			name := lines[i+2]
+			if k := strings.LastIndex(name, "- "); k > 0 && name[k-1] != ' ' && peDigits(strings.TrimSpace(name[k+2:])) {
+				name = name[:k] + " " + name[k:]
+			}
+			if fund == "" || normalizeSeriesName(name) != normalizeSeriesName(fund) {
+				setFund(name)
+			}
+			i += 2
+			fundLine = i
+			continue
+		}
+		// The ISS Short report's column band names no field this reader uses,
+		// and the identity stands: the band is reprinted at every page break,
+		// inside a meeting as often as between two.
+		if end, shares := peShortHeaderAt(lines, run, tbl, i); end >= 0 {
+			shortShares = shares
+			i = end
+			continue
+		}
+		if run[i] == i {
+			if c, kind, end, ok := peShortMeetingRow(lines, run, tbl, i, dayFirst, shortShares); ok {
+				issuer, ticker, cusip, isin, mtgDate, mtgType = c.Issuer, c.Ticker, c.CUSIP, c.ISIN, c.MeetingDate, kind
+				i = end
+				continue
+			}
+			// A heading over label cells stacked against value cells, with or
+			// without an `Issuer` label cell before it (peStackedCellIdentity).
+			heading, headingEnd := peCellAt(lines, run, i)
+			if peLabelKey(heading) == "ISSUER" && headingEnd+1 < len(lines) && tbl[headingEnd+1] == tbl[i] {
+				heading, headingEnd = peCellAt(lines, run, headingEnd+1)
+			}
+			if !summary[i] && !wrapped[i] && peGridIssuerHeading(heading) && headingEnd+1 < len(lines) {
+				if c, end, ok := peStackedCellIdentity(lines, run, tbl, headingEnd+1, dayFirst); ok {
+					issuer, ticker, cusip, isin, mtgDate = strings.Join(strings.Fields(heading), " "), c.Ticker, c.CUSIP, c.ISIN, c.MeetingDate
+					mtgType = ""
+					i = end
+					continue
+				}
+			}
+		}
 		// The ISS-style aliases open a band only under a meeting already read:
 		// the same labels head this vendor's identity and summary tables.
 		if h := peHeaderAt(lines, i); h != nil && (mtgDate != "" || !peAliasBand(h.labels)) {
@@ -1451,6 +1855,25 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		// ballot carries a security id and no ticker. The label and the value
 		// are each read whole, since this vendor hard-wraps either of them
 		// across source lines (`Meeting` / `Type:`).
+		// A cell of inline labels only, one per line: `Ticker:  BULTEN` /
+		// `Security ID:  W3390E106` (Clearwater Investment Trust 2016).
+		if run[i] == i && cellEnd > i {
+			all := true
+			for _, l := range lines[i : cellEnd+1] {
+				if _, _, ok := peInlineLabel(l); !ok {
+					all = false
+					break
+				}
+			}
+			if all {
+				for _, l := range lines[i : cellEnd+1] {
+					name, value, _ := peInlineLabel(l)
+					applyInline(name, value)
+				}
+				i = cellEnd
+				continue
+			}
+		}
 		labelText, labelEnd := line, i
 		if !strings.HasSuffix(line, ":") && run[i] == i && cellEnd > i {
 			if _, ok := peIdentityLabel(cell); ok {
@@ -1463,17 +1886,20 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		// consuming the next cell hides whatever the vendor printed there
 		// (peFieldLabel).
 		label, isLabel := "", false
+		inlineValue, inline := "", false
 		if strings.HasSuffix(labelText, ":") {
-			if name := strings.ToUpper(strings.TrimSuffix(labelText, ":")); peFieldLabel(name) {
+			if name := peLabelKey(labelText); peFieldLabel(name) {
 				label, isLabel = name, true
 			}
 		} else if name, ok := peIdentityLabel(labelText); ok && run[i] == i {
 			label, isLabel = name, true
+		} else if name, value, ok := peInlineLabel(line); ok && run[i] == i && cellEnd == i {
+			label, isLabel, inlineValue, inline = name, true, value, true
 		}
 		if isLabel {
 			i = labelEnd
-			value := ""
-			if i+1 < len(lines) && peHeaderAt(lines, i+1) == nil {
+			value := inlineValue
+			if !inline && i+1 < len(lines) && peHeaderAt(lines, i+1) == nil {
 				next, nextEnd := peCellAt(lines, run, i+1)
 				// A label's value is never another label. With the colon gone
 				// that test cannot be the colon's absence: this block leaves a
@@ -1495,9 +1921,13 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 			case "ISIN":
 				isin = value
 			case "MEETING DATE":
-				mtgDate = htmlDate(value)
+				mtgDate = peDate(value, dayFirst)
 			case "MEETING TYPE":
 				mtgType = value
+			case "PRIMARY SECURITY ID":
+				if cusip == "" {
+					cusip = value
+				}
 			case "FUND NAME", "PORTFOLIO NAME":
 				// The same section banner the bare-heading scan below reads,
 				// printed instead as a label cell and a value cell
@@ -1523,6 +1953,22 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		}
 		if labels != nil && run[i] == i {
 			if row, rowEnd, ok := peVoteRow(lines, run, i, labels); ok {
+				// A row the vendor printed short reads its missing cells out of
+				// the next meeting's identity, which then never opens: the
+				// meeting's own type code or a band label became its issuer.
+				// The row is read again stopping at that identity, and kept only
+				// when every column it reads stands before it -- then the cells
+				// it ran on into fill columns it never reads (Ensemble Fund 2021:
+				// a band one column wider than its rows). Otherwise it is dropped
+				// and the meeting read.
+				if k := peFirstOpen(opens, i+1, rowEnd); k >= 0 {
+					short, shortEnd, shortOK := peBoundedVoteRow(lines, run, i, k, labels)
+					if !shortOK {
+						i = k - 1
+						continue
+					}
+					row, rowEnd = short, shortEnd
+				}
 				// A new issuer heading clears the meeting; an alias band read
 				// past it has left its ballot for a table it cannot identify,
 				// so the row is read again under the band before it.
@@ -1594,9 +2040,27 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		// cell is not a heading, and the reset below must never fire on one.
 		if run[i] == i && cellEnd+1 < len(lines) {
 			next, _ := peCellAt(lines, run, cellEnd+1)
-			if _, ok := peIdentityLabel(next); ok {
-				issuer = cell
+			_, isIdentity := peIdentityLabel(next)
+			if inlineName, _, inlineOK := peInlineLabel(next); inlineOK && inlineName != "COUNTRY" && inlineName != "RECORD DATE" {
+				// Never a value: a share count stands above `Ticker: GIS`, and
+				// a labelled cell (`CUSIP: 00651F108`) above `Ticker: ADPT`.
+				// Nor a heading the inline-cell reader below already reads with
+				// its labels wrapped (`Meeting` / `Date: 07/15/2019`), nor a
+				// declared fund's banner standing over its own `TICKER: ALABX`.
+				_, isCount := peCount(cell)
+				_, _, inlineCtx := peInlineCellContext(lines, run, tbl, cellEnd+1)
+				isIdentity = isIdentity || !isCount && !peItemNumber(cell) && !strings.Contains(line, ":") &&
+					!inlineCtx && icrResolveFundShared(seriesIx, cell) == ""
+			}
+			// An issuer is never a bare date: a value whose own label the
+			// vendor printed beside it, not above it, stands there too.
+			if isIdentity && htmlDate(cell) == "" {
+				name, fields := peSplitInlineHeading(lines[i : cellEnd+1])
+				issuer = name
 				ticker, cusip, isin, mtgDate, mtgType = "", "", "", "", ""
+				for _, f := range fields {
+					applyInline(f[0], f[1])
+				}
 				i = cellEnd
 				continue
 			}
@@ -1608,7 +2072,7 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		// share count inside it from being taken for the next issuer heading
 		// (peLabelledCellGrid).
 		if run[i] == i && cellEnd+1 < len(lines) && !summary[i] && !wrapped[i] && peGridIssuerHeading(cell) {
-			if id, gridEnd, ok := peLabelledCellGrid(lines, run, tbl, cellEnd+1); ok {
+			if id, gridEnd, ok := peLabelledCellGrid(lines, run, tbl, cellEnd+1, dayFirst); ok {
 				issuer = cell
 				ticker, cusip, isin = id.ticker, id.cusip, id.isin
 				mtgDate, mtgType = id.mtgDate, id.mtgType
@@ -1656,7 +2120,11 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		// whose own Meeting Date and sponsor-code columns stand on either side of
 		// it: that row names itself and no band or item number is there to say so
 		// (peBallotRowCell).
-		if whole[i] && !summary[i] && !wrapped[i] && !peItemCell(lines, tbl, i-1, i, labels) &&
+		// A banner directly under the title block's own is the section's
+		// second heading line, not a cell of a ballot row: the title banner
+		// `..., a series of Met Investors Series Trust` ends mid-word only by
+		// its shape.
+		if whole[i] && !summary[i] && !wrapped[i] && (fundLine == i-1 || !peItemCell(lines, tbl, i-1, i, labels)) &&
 			!peBandCell(tbl, band, i, labels) && !peBallotRowCell(lines, run, tbl, i, i) &&
 			peFundName(line) {
 			setFund(line)
@@ -2199,4 +2667,328 @@ func peVoteRow(lines []string, run []int, i int, labels []string) (VoteRow, int,
 		row.SharesVoted = votedShares
 	}
 	return row, pos - 1, true
+}
+
+// The wide export's column names, by role. A second vendor prints the same
+// chunked shape as `Name | Ticker | Security ID | ... | Meeting Date` beside
+// `Ballot Item Number | MorS | Category | Item Desc | ... | Vote Cast` (Lincoln
+// Variable Insurance Products Trust 2008).
+// peWideGap is how far apart two tables of one chunk run may stand: the
+// vendor sets a one-row layout table between every pair.
+const peWideGap = 2
+
+var (
+	peWideIssuer = []string{"ISSUER NAME", "NAME", "COMPANY NAME"}
+	peWideItem   = []string{"PROPOSAL NUMBER", "BALLOT ITEM NUMBER"}
+	peWideDesc   = []string{"PROPOSAL DESCRIPTION", "ITEM DESC"}
+	peWideVote   = []string{"VOTE DECISION", "VOTE CAST"}
+)
+
+// peWideExport reads the Glass Lewis export a vendor printed too wide for the
+// page and so cut into COLUMN CHUNKS, each its own run of tables opening on
+// `Country of Origin`: one chunk carries the meeting (`Issuer Name | Meeting
+// Date | ... | ISIN | CUSIP`), a later one the proposal (`Proposal Number |
+// Proposal Description | ... | Vote Decision`), and a third only statuses
+// (Ivy Funds 2015's Real Estate Securities section). Row k of the proposal
+// chunk is row k of the meeting chunk; nothing else links them. Read cell by
+// cell the chunks' own labels were taken for issuer headings (`Meeting` /
+// `Date` above `Ticker`).
+//
+// A run is joined only when its two chunks hold the same number of rows, so
+// the pairing is the vendor's own and never a guess. Every table of a joined
+// run is returned: the proposal tables with their rows, the others empty, so
+// that the line reader reads none of their cells.
+func peWideExport(raw []byte) map[int][]peGridEvent {
+	if !bytes.Contains(raw, []byte("eeting")) {
+		return nil
+	}
+	marks := peTableMarks(raw)
+	body := htmlTableBody(raw)
+	base := len(raw) - len(body)
+	feed := &htmlRowFeed{src: body}
+	out := make(map[int][]peGridEvent)
+	type chunk struct {
+		table  int
+		tables []int
+		kind   string
+		cols   map[string]int
+		rows   [][]string
+		arity  int
+	}
+	var chunks []*chunk
+	var cur *chunk
+	ordinal := 0
+	for {
+		row, ok := feed.next()
+		if !ok {
+			break
+		}
+		for ordinal < len(marks) && marks[ordinal] < base+row.off {
+			ordinal++
+		}
+		if htmlFilledCells(row.cells) == 0 {
+			continue
+		}
+		if cur != nil && cur.table == ordinal {
+			cur.rows = append(cur.rows, row.cells)
+			continue
+		}
+		cols := make(map[string]int)
+		for j, cell := range row.cells {
+			if text := peLabelKey(htmlFlat(cell)); text != "" {
+				if _, seen := cols[text]; !seen {
+					cols[text] = j
+				}
+			}
+		}
+		first := ""
+		for _, cell := range row.cells {
+			if first = peLabelKey(htmlFlat(cell)); first != "" {
+				break
+			}
+		}
+		has := func(names ...string) bool {
+			for _, name := range names {
+				if _, ok := cols[name]; ok {
+					return true
+				}
+			}
+			return false
+		}
+		kind := ""
+		switch {
+		case has(peWideItem...) && has(peWideDesc...) && has(peWideVote...):
+			kind = "proposal"
+		case has(peWideIssuer...) && has("MEETING DATE") && !has(peWideItem...) && !has("PROPOSAL TEXT"):
+			// An identity table that also numbers proposals is a whole grid,
+			// not one chunk of one.
+			kind = "meeting"
+		case first == "COUNTRY OF ORIGIN":
+			kind = "other"
+		default:
+			// The chunk carried over a page break prints no header again: a
+			// table opening on a row of the chunk's own width continues it.
+			if cur != nil && ordinal-cur.table <= peWideGap && len(row.cells) == cur.arity && !peWideHeaderRow(cols) {
+				cur.table = ordinal
+				cur.tables = append(cur.tables, ordinal)
+				cur.rows = append(cur.rows, row.cells)
+				continue
+			}
+			cur = nil
+			continue
+		}
+		cur = &chunk{table: ordinal, tables: []int{ordinal}, kind: kind, cols: cols, arity: len(row.cells)}
+		chunks = append(chunks, cur)
+	}
+	at := func(c *chunk, cells []string, names ...string) string {
+		for _, name := range names {
+			if j, ok := c.cols[name]; ok && j < len(cells) {
+				return htmlFlat(cells[j])
+			}
+		}
+		return ""
+	}
+	joined := false
+	flush := func(run []*chunk) {
+		var ids []htmlContext
+		var props [][]string
+		var propChunks []*chunk
+		for _, c := range run {
+			for _, cells := range c.rows {
+				if len(cells) != c.arity {
+					return
+				}
+			}
+			switch c.kind {
+			case "meeting":
+				for _, cells := range c.rows {
+					ctx := htmlContext{Issuer: at(c, cells, peWideIssuer...), MeetingDate: htmlDate(at(c, cells, "MEETING DATE")),
+						Ticker: at(c, cells, "TICKER")}
+					if v := at(c, cells, "CUSIP", "SECURITY ID"); pvTextCUSIP(v) {
+						ctx.CUSIP = v
+					}
+					if v := at(c, cells, "ISIN"); isinToken(v) {
+						ctx.ISIN = v
+					}
+					ids = append(ids, ctx)
+				}
+			case "proposal":
+				propChunks = append(propChunks, c)
+				props = append(props, c.rows...)
+			}
+		}
+		if len(ids) == 0 || len(ids) != len(props) {
+			return
+		}
+		k := 0
+		for _, c := range run {
+			for _, t := range c.tables {
+				out[t] = []peGridEvent{}
+			}
+		}
+		for _, c := range propChunks {
+			events := []peGridEvent{}
+			for _, cells := range c.rows {
+				id := ids[k]
+				k++
+				// A agenda caption (`Special Business`) holds a row of both
+				// chunks and carries no vote.
+				vote := at(c, cells, peWideVote...)
+				if vote == "" {
+					continue
+				}
+				events = append(events, peGridEvent{row: VoteRow{
+					IssuerName: id.Issuer, MeetingDate: id.MeetingDate, Ticker: id.Ticker, CUSIP: id.CUSIP, ISIN: id.ISIN,
+					ItemSeq: at(c, cells, peWideItem...), VoteDescription: at(c, cells, peWideDesc...),
+					ManagementRecommendation: at(c, cells, "MANAGEMENT RECOMMENDATION", "MGT REC VOTE"), HowVoted: vote,
+				}})
+			}
+			// The line reader replays a table's events where it meets the
+			// table, so the whole chunk's rows go to its first.
+			out[c.tables[0]] = events
+		}
+		joined = true
+	}
+	var run []*chunk
+	sawProposal := false
+	for _, c := range chunks {
+		// A run is one contiguous stretch of chunks: a meeting chunk after the
+		// proposals, or after a gap, opens the next.
+		if c.kind == "meeting" && len(run) > 0 &&
+			(sawProposal || c.tables[0]-run[len(run)-1].table > peWideGap) {
+			flush(run)
+			run, sawProposal = nil, false
+		}
+		if c.kind == "proposal" {
+			sawProposal = true
+		}
+		run = append(run, c)
+	}
+	flush(run)
+	if joined {
+		for _, c := range chunks {
+			if c.kind != "other" {
+				continue
+			}
+			for _, t := range c.tables {
+				if _, ok := out[t]; !ok {
+					out[t] = []peGridEvent{}
+				}
+			}
+		}
+	}
+	return out
+}
+
+// peIdentityOpens marks the lines that open a meeting's identity in the shapes
+// read positionally -- the ISS Short report's meeting row and the labelled-cell
+// grid -- so that no ballot row is read across one (peFirstOpen).
+func peIdentityOpens(lines []string, run, tbl []int) []bool {
+	opens := make([]bool, len(lines))
+	for j := range lines {
+		if run[j] != j {
+			continue
+		}
+		if _, _, _, ok := peShortMeetingRow(lines, run, tbl, j, false, true); ok {
+			opens[j] = true
+			continue
+		}
+		if cell, end := peCellAt(lines, run, j); end+1 < len(lines) && peGridIssuerHeading(cell) {
+			if _, _, ok := peLabelledCellGrid(lines, run, tbl, end+1, false); ok {
+				opens[j] = true
+			}
+		}
+	}
+	return opens
+}
+
+// peFirstOpen returns the first line in [from, to] that opens an identity, or -1.
+func peFirstOpen(opens []bool, from, to int) int {
+	for k := from; k <= to && k < len(opens); k++ {
+		if opens[k] {
+			return k
+		}
+	}
+	return -1
+}
+
+// peBoundedVoteRow reads the ballot row at i from the cells before line k only,
+// against the band's leading labels, and fails unless every label it cannot
+// reach is one no row field is read from.
+func peBoundedVoteRow(lines []string, run []int, i, k int, labels []string) (VoteRow, int, bool) {
+	n := 0
+	for pos := i; pos < k && n < len(labels); n++ {
+		_, end := peCellAt(lines[:k], run[:k], pos)
+		pos = end + 1
+	}
+	if n == 0 || n >= len(labels) {
+		return VoteRow{}, i, false
+	}
+	for _, label := range labels[n:] {
+		switch peVocabulary[strings.ToUpper(label)] {
+		case peItem, peDesc, peVote, peDisposition, peMgmtRec, peBy:
+			return VoteRow{}, i, false
+		}
+	}
+	return peVoteRow(lines[:k], run[:k], i, labels[:n])
+}
+
+// peWideHeaderRow reports a row naming any wide-export column, which a
+// continuation table's first row never does.
+func peWideHeaderRow(cols map[string]int) bool {
+	for _, group := range [][]string{peWideIssuer, peWideItem, peWideDesc, peWideVote, {"MEETING DATE", "COUNTRY OF ORIGIN"}} {
+		for _, name := range group {
+			if _, ok := cols[name]; ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// pePeriodLine reports a reporting-period line: `Jul 01, 2008 - Jun 30, 2009`,
+// `07/01/08 to 06/30/09`.
+func pePeriodLine(s string) bool {
+	// `July 01, 2006 - April 30, 2007 (termination of operations)`.
+	if k := strings.Index(s, " ("); k > 0 && strings.HasSuffix(s, ")") {
+		s = s[:k]
+	}
+	if !strings.Contains(s, " to ") && !strings.Contains(s, " - ") || len(strings.Fields(s)) > 8 || strings.Contains(s, ":") {
+		return false
+	}
+	return strings.IndexFunc(s, func(r rune) bool { return r >= '0' && r <= '9' }) >= 0
+}
+
+// peReportBanner reports a line that may stand as the title block's fund: a
+// short name, not a sentence, a label or a sort note. A comma is allowed only
+// before the registrant clause, `..., a series of Met Investors Series Trust`.
+func peReportBanner(s string) bool {
+	if k := strings.Index(s, ", a series of "); k > 0 {
+		s = s[:k]
+	}
+	n := len(strings.Fields(s))
+	return n >= 2 && n <= 12 && !strings.ContainsAny(s, ":,") && !strings.HasSuffix(s, ".") && htmlDate(s) == ""
+}
+
+// peSplitInlineHeading parts an issuer heading cell that carries the meeting's
+// inline labels on its own later lines -- `BULTEN` / `AB` / `Meeting Date:  APR
+// 26, 2016` / `Meeting Type:  ANNUAL` -- into the name and those fields.
+func peSplitInlineHeading(cell []string) (string, [][2]string) {
+	k := 0
+	for k < len(cell) {
+		if _, _, ok := peInlineLabel(cell[k]); ok {
+			break
+		}
+		k++
+	}
+	if k == 0 || k == len(cell) {
+		return strings.Join(cell, " "), nil
+	}
+	var fields [][2]string
+	for _, l := range cell[k:] {
+		if name, value, ok := peInlineLabel(l); ok {
+			fields = append(fields, [2]string{name, value})
+		}
+	}
+	return strings.Join(cell[:k], " "), fields
 }
