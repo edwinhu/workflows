@@ -4,6 +4,7 @@
 
 ### Changed
 
+- **A guard denies a multi-file `bun test` without `--parallel`.** `hooks/guards/bun-test.ts`, run in the guards mod on Bash (`bun-parallel-guard`): `bun test` over several paths, a directory or name filter, a glob or the whole repo, with no `--parallel`, is denied with the remedy (`bun test --parallel ...` or `scripts/test.sh`, TMPDIR outside `~/.tmp`). A single file, `--help`, `--parallel`, `scripts/test.sh` and harnesses that run bun internally pass, and a target the text cannot settle (a variable, a substitution, a quoted glob, `xargs`) is allowed. bun 1.4.0 has no bunfig or environment default for `--parallel` (`[test] parallel = true` is silently ignored), so the flag is the only switch. A serial run took 661-881 s from `~/.tmp` vs 63 s parallel.
 - **Jev `A-PAD` exempts fact rows and is wired.** A line, list item or table row carrying a number, threshold, measurement, date or named incident that backs a rule the file states is a fact row, never padding; narrated history with no number or incident, and restated rationale, still are. The extractor reads list items one at a time and reports `fact_row` and `backs_rule` per passage. Moved out of `constraints/jev/authoring/uncalibrated/` after two consecutive `rule-calibrate --set authoring --runs 2` passes (the accepted State Files doctrine now 0.21-0.31, the violating twin 0.98).
 
 ## [6.37.0] - 2026-10-02

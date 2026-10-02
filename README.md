@@ -259,6 +259,7 @@ share the code; `tests/mod-guards-parity.test.ts` holds the two to identical ans
 | `read-guard` | before | Read, Bash | Deny unbounded dumps of large files |
 | `suggest-compact` | before | Edit, Write | Suggest compaction at edit-count checkpoints |
 | `pgrep-self-match` | before | Bash, Monitor | Deny self-matching `pgrep/pkill -f` and path-less `rg` |
+| `bun-parallel-guard` | before | Bash | Deny a multi-file `bun test` without `--parallel` |
 | `cron-delete-guard` | before / after | CronDelete / CronCreate | Keep an in-flight work run's heartbeat; record new ids |
 | `atomic-constraint-guard` | after | Edit, Write | Validate atomic constraint file structure |
 | `typst-convention-guard` | after | Edit, Write | Typst convention violations |
