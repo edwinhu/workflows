@@ -1,6 +1,9 @@
-import { describe, expect, it, afterEach } from "bun:test";
+import { describe, expect, it, beforeEach } from "bun:test";
+import { useTmp } from "../../../tests/helpers/tmp.ts";
 import { join } from "node:path";
-import { mkdirSync, writeFileSync, readFileSync, rmSync, statSync } from "node:fs";
+import { mkdirSync, writeFileSync, readFileSync, statSync } from "node:fs";
+
+const mkTmp = useTmp();
 
 /**
  * Tests for materialize-sources.ts bug fixes.
@@ -8,11 +11,8 @@ import { mkdirSync, writeFileSync, readFileSync, rmSync, statSync } from "node:f
  */
 
 describe("Fix 1: PDF overwrites stale .md file paths in sources.bib", () => {
-  const tmpDir = "/tmp/cite-check-fix1-test";
-
-  afterEach(() => {
-    try { rmSync(tmpDir, { recursive: true, force: true }); } catch {}
-  });
+  let tmpDir = "";
+  beforeEach(() => { tmpDir = mkTmp("cite-check-fix1-test-"); });
 
   it("detects .md file field that should be overridden to .pdf", () => {
     mkdirSync(tmpDir, { recursive: true });
@@ -91,11 +91,8 @@ describe("Fix 1: PDF overwrites stale .md file paths in sources.bib", () => {
 });
 
 describe("Fix 2: Stub detection for cached .md files", () => {
-  const tmpDir = "/tmp/cite-check-fix2-test";
-
-  afterEach(() => {
-    try { rmSync(tmpDir, { recursive: true, force: true }); } catch {}
-  });
+  let tmpDir = "";
+  beforeEach(() => { tmpDir = mkTmp("cite-check-fix2-test-"); });
 
   it("file > 500 bytes is treated as cached (real content)", () => {
     mkdirSync(tmpDir, { recursive: true });

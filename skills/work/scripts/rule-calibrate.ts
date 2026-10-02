@@ -49,7 +49,7 @@ function listFiles(dir: string): string[] {
 // The extractor input for one case: files layout hands the case dir over as is, diff layout replays
 // before/ as a commit and after/ as the working tree, as jev-dev-rules.test.ts does. A case with a base
 // is replayed the same way, base as before/ and the case dir as after/, in either layout.
-function caseInput(layout: string, caseDir: string, temps: string[], baseDir?: string): { files: string[]; plan?: string; root: string; changed: Record<string, number[][]> | null } {
+export function caseInput(layout: string, caseDir: string, temps: string[], baseDir?: string): { files: string[]; plan?: string; root: string; changed: Record<string, number[][]> | null } {
   if (layout === 'files' && !baseDir) {
     const all = listFiles(caseDir);
     const plan = all.find(f => relative(caseDir, f) === 'plan.md');

@@ -61,6 +61,13 @@ redact contacts and secrets (the repo is public), and list it under its rule wit
 (repo, path, commit, lines). The note lives in the manifest because every file in a case dir
 reaches the extractor.
 
+**Scaffolding and wiring a rule.** The `jev-rules` skill carries the method. Its
+`scripts/new-rule.ts <set> <ID>` writes a new rule's source: the module in `uncalibrated/`, identical
+placeholder twins, the manifest entry (in the manifest's existing shape) and a stub test under
+`tests/jev-rules/`. `--wire` moves the module only after two passing `rule-calibrate --rule`
+invocations, a third when a score sits within 0.03 of a bar. It adds no state file: everything it
+writes is committed source, and its only scratch is rule-calibrate's temp dirs.
+
 ## Refresh
 
 `route.ts --refresh` is the only sanctioned writer of `available`, `price` and `asOf`. It fetches
