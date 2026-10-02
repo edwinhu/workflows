@@ -20,7 +20,7 @@ function evidence(rulesDir: string | null, rule: string, kase: "sat" | "vio") {
   const root = join(FIX, rule, kase);
   const args = [EVIDENCE, "--files", join(root, "test.md"), "--root", root];
   if (rulesDir) args.push("--rules-dir", rulesDir);
-  const r = spawnSync("python3", args, { encoding: "utf8" });
+  const r = spawnSync("python3", args, { timeout: 120_000, encoding: "utf8" });
   expect(r.status).toBe(0);
   return JSON.parse(r.stdout);
 }

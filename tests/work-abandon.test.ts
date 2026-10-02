@@ -40,7 +40,7 @@ function fixture(opts: { result?: string; armed?: boolean } = {}) {
 }
 
 const abandon = (f: ReturnType<typeof fixture>, args: string[], session = f.sid) =>
-  spawnSync('bash', [ABANDON, f.run, ...args], {
+  spawnSync('bash', [ABANDON, f.run, ...args], { timeout: 120_000,
     encoding: 'utf8',
     env: { ...HERMETIC_ENV, TMPDIR: f.tmp, CLAUDE_CODE_SESSION_ID: session, WORK_HOLD_COMPACT_WINDOW: '0' },
   })
@@ -85,7 +85,7 @@ describe('usage — it refuses rather than guessing', () => {
   test('a run dir with no args.json exits 2', () => {
     const f = fixture()
     const bare = mkdtempSync(join(tmpdir(), 'abandon-bare-'))
-    const r = spawnSync('bash', [ABANDON, bare, '--why', 'x'], {
+    const r = spawnSync('bash', [ABANDON, bare, '--why', 'x'], { timeout: 120_000,
       encoding: 'utf8', env: { ...HERMETIC_ENV, TMPDIR: f.tmp },
     })
     expect(r.status).toBe(2)
@@ -93,7 +93,7 @@ describe('usage — it refuses rather than guessing', () => {
   })
 
   test('no arguments at all exits 2', () => {
-    const r = spawnSync('bash', [ABANDON], { encoding: 'utf8', env: HERMETIC_ENV })
+    const r = spawnSync('bash', [ABANDON], { timeout: 120_000, encoding: 'utf8', env: HERMETIC_ENV })
     expect(r.status).toBe(2)
     expect(r.stderr).toContain('usage')
   })
@@ -126,7 +126,7 @@ describe('the hold it releases', () => {
 describe('the gates downstream agree', () => {
   /** cron-delete-guard.ts on this run's heartbeat id, in the fixture's own TMPDIR and cwd. */
   const guard = (f: ReturnType<typeof fixture>) => {
-    const r = spawnSync('bun', [GUARD], {
+    const r = spawnSync('bun', [GUARD], { timeout: 120_000,
       input: JSON.stringify({
         hook_event_name: 'PreToolUse', tool_name: 'CronDelete', cwd: f.cwd,
         session_id: f.sid, tool_input: { id: '541afe58' },
@@ -150,7 +150,7 @@ describe('work-result.sh reads an abandoned run as a FAIL, not a refusal', () =>
   test('exit 1 with a line saying abandoned — never exit 2', () => {
     const f = fixture()
     expect(abandon(f, ['--why', 'the user changed direction']).status).toBe(0)
-    const r = spawnSync('bash', [RESULT, join(f.run, 'result.json')], {
+    const r = spawnSync('bash', [RESULT, join(f.run, 'result.json')], { timeout: 120_000,
       encoding: 'utf8', env: HERMETIC_ENV,
     })
     expect(r.status).toBe(1)

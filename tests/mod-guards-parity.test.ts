@@ -228,7 +228,7 @@ async function runHandler(r: Rec): Promise<Outcome & { keys: string[] }> {
 let baseRoot: string | null = null
 {
   const dir = mkdtempSync(join(P, 'parity-base-'))
-  const tar = spawnSync('bash', ['-c', `git -C "${REPO}" archive ${BASE} hooks | tar -x -C "${dir}"`], { encoding: 'utf8' })
+  const tar = spawnSync('bash', ['-c', `git -C "${REPO}" archive ${BASE} hooks | tar -x -C "${dir}"`], { timeout: 300_000, encoding: 'utf8' })
   if (tar.status === 0 && existsSync(join(dir, 'hooks', 'read-guard.ts'))) baseRoot = dir
 }
 

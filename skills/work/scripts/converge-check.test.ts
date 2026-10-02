@@ -65,7 +65,7 @@ function mkRun(rounds: Round[], tasks: unknown[] = [{ id: 'T1', name: 'n', work:
 }
 
 function run(dir: string, ...flags: string[]) {
-  const r = spawnSync('bun', [SCRIPT, dir, ...flags], { encoding: 'utf8' })
+  const r = spawnSync('bun', [SCRIPT, dir, ...flags], { timeout: 120_000, encoding: 'utf8' })
   expect(typeof r.status, `converge-check.ts did not execute: ${r.error?.message ?? 'no exit status'}`).toBe('number')
   return { code: r.status as number, stdout: r.stdout || '', stderr: r.stderr || '' }
 }

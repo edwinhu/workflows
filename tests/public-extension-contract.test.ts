@@ -139,8 +139,8 @@ describe("public extension contract integration", () => {
       // Each probe runs in its own subprocess: the failure mode under test is EXITING, and an
       // in-process import would take this runner down with it rather than failing an assertion.
       const probe = isWorkflowScript
-        ? Bun.spawnSync(["node", "--check", absolute], { stdout: "pipe", stderr: "pipe" })
-        : Bun.spawnSync(["bun", "-e", `await import(${JSON.stringify(absolute)}); process.stdout.write("OK");`], { stdout: "pipe", stderr: "pipe" });
+        ? Bun.spawnSync(["node", "--check", absolute], { timeout: 120_000, stdout: "pipe", stderr: "pipe" })
+        : Bun.spawnSync(["bun", "-e", `await import(${JSON.stringify(absolute)}); process.stdout.write("OK");`], { timeout: 120_000, stdout: "pipe", stderr: "pipe" });
       if (isWorkflowScript) scripts += 1; else modules += 1;
       expect(`${capability.name}: exit ${probe.exitCode}`).toBe(`${capability.name}: exit 0`);
       if (!isWorkflowScript) {
@@ -155,7 +155,7 @@ describe("public extension contract integration", () => {
   test("publishes a PATH broker for the exact installed dependency root", () => {
     const broker = join(ROOT, "bin/workflows-capability-root");
     expect(existsSync(broker)).toBe(true);
-    const result = Bun.spawnSync([broker], { stdout: "pipe", stderr: "pipe" });
+    const result = Bun.spawnSync([broker], { timeout: 120_000, stdout: "pipe", stderr: "pipe" });
     expect(result.exitCode).toBe(0);
     expect(result.stderr.toString()).toBe("");
     expect(result.stdout.toString().trim()).toBe(ROOT);

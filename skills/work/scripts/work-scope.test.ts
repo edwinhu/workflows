@@ -120,7 +120,7 @@ function awaitResult(path: string, ms = 30_000): boolean {
   const deadline = Date.now() + ms
   while (Date.now() < deadline) {
     if (existsSync(path)) return true
-    execFileSync('sleep', ['0.2'])
+    execFileSync('sleep', ['0.2'], { timeout: 180_000 })
   }
   return existsSync(path)
 }

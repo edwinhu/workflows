@@ -24,7 +24,7 @@ import json, sys
 comments = [{"content": c} for c in json.loads(sys.argv[1])]
 print(rv.verdict(comments, ${reviewed}, changes_requested=${changesRequested ? 'True' : 'False'}))
 `
-  return execFileSync('python3', ['-c', py, JSON.stringify(comments)], { encoding: 'utf8' }).trim()
+  return execFileSync('python3', ['-c', py, JSON.stringify(comments)], { timeout: 120_000, encoding: 'utf8' }).trim()
 }
 
 describe('review gate verdicts', () => {

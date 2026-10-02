@@ -106,7 +106,7 @@ function runRaw(body: string, opts: RunOpts = {}) {
 }
 
 function runOn(file: string) {
-  const r = spawnSync(SCRIPT, [file], { encoding: 'utf8' })
+  const r = spawnSync(SCRIPT, [file], { timeout: 120_000, encoding: 'utf8' })
   // No numeric status means the binary never ran (script absent / not executable).
   // Asserted here rather than returned as a synthetic non-zero code: "did not run"
   // would otherwise satisfy every `code !== 0` refusal test, and the suite would pass
@@ -389,7 +389,7 @@ describe('work-result.sh refuses unreadable input', () => {
   })
 
   test('no argument at all exits non-zero', () => {
-    const r = spawnSync(SCRIPT, [], { encoding: 'utf8' })
+    const r = spawnSync(SCRIPT, [], { timeout: 120_000, encoding: 'utf8' })
     expect(typeof r.status).toBe('number')
     expect(r.status).not.toBe(0)
   })

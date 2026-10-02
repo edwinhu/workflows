@@ -43,7 +43,7 @@ function harness(env: Record<string, string> = {}) {
     },
     process: {
       run: async (argv: string[], opts: { stdin?: string } = {}) => {
-        const r = Bun.spawnSync(argv, { stdin: opts.stdin ? new TextEncoder().encode(opts.stdin) : undefined });
+        const r = Bun.spawnSync(argv, { timeout: 120_000, stdin: opts.stdin ? new TextEncoder().encode(opts.stdin) : undefined });
         return { exitCode: r.exitCode, stdout: r.stdout.toString(), stderr: r.stderr.toString() };
       },
     },

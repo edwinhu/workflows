@@ -1,0 +1,10 @@
+{
+  "workflow": "writing",
+  "plan_file": "writing-fixture-plan.md",
+  "plan_hash": "4d62f89c677d8622691503d5a7568f09ba56c6ba07a82efbe8a8597bc471fd81",
+  "approved_session_id": "craft-plan-approval-0001",
+  "approved_at": "2026-08-10T12:00:00.000Z",
+  "status": "APPROVED",
+  "reviewer_session_id": "craft-plan-lens-review-0001",
+  "reviewed_at": "2026-08-10T12:05:00.000Z"
+}

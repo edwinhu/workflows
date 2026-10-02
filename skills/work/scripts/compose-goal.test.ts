@@ -56,7 +56,7 @@ function compose(
   try {
     return {
       code: 0,
-      out: execFileSync('bash', argv, {
+      out: execFileSync('bash', argv, { timeout: 120_000,
         encoding: 'utf8',
         env: { ...process.env, ...(args.env ?? {}) },
       }).trim(),
@@ -108,7 +108,7 @@ describe('compose-goal.sh', () => {
 
   test('requires all four arguments', () => {
     try {
-      execFileSync('bash', [SCRIPT, '/p/plan.md'], { encoding: 'utf8' })
+      execFileSync('bash', [SCRIPT, '/p/plan.md'], { timeout: 120_000, encoding: 'utf8' })
       throw new Error('should have failed')
     } catch (e: any) {
       expect(e.status).not.toBe(0)

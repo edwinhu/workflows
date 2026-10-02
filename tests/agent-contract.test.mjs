@@ -562,10 +562,10 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
 
   // The last commit whose tree still carried the pre-split register.
   const show = rev => spawnSync('git', ['show', `${rev}:skills/writing-register/SKILL.md`],
-                                { cwd: ROOT, encoding: 'utf8' })
+                                { timeout: 120_000, cwd: ROOT, encoding: 'utf8' })
   let baseline = null
   const log = spawnSync('git', ['log', '--format=%H', '--', 'skills/writing-register/SKILL.md'],
-                        { cwd: ROOT, encoding: 'utf8' })
+                        { timeout: 120_000, cwd: ROOT, encoding: 'utf8' })
   for (const rev of ['HEAD', ...(log.stdout || '').split('\n').filter(Boolean)]) {
     const r = show(rev)
     if (r.status === 0 && r.stdout.length > 0) { baseline = r.stdout; break }
@@ -716,7 +716,7 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
   ok('scripts/set-output-style.ts no longer exists',
      !existsSync(join(ROOT, 'scripts', 'set-output-style.ts')))
   const r = spawnSync('git', ['grep', '-l', '-e', 'set-output-style', '-e', 'output-styles'],
-                      { cwd: ROOT, encoding: 'utf8' })
+                      { timeout: 120_000, cwd: ROOT, encoding: 'utf8' })
   const hits = (r.stdout || '').split('\n').map(s => s.trim()).filter(Boolean)
     // This file names both paths in its own assertions, so it always self-matches once tracked.
     .filter(f => f !== 'CHANGELOG.md' && !f.startsWith('scratch/') && !f.startsWith('.planning/')
@@ -837,7 +837,7 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
 // ── references/registers/ is gone, and nothing still points at it ────────────
 {
   ok('references/registers/ no longer exists', !existsSync(join(ROOT, 'references', 'registers')))
-  const r = spawnSync('git', ['grep', '-l', '--', 'references/registers'], { cwd: ROOT, encoding: 'utf8' })
+  const r = spawnSync('git', ['grep', '-l', '--', 'references/registers'], { timeout: 120_000, cwd: ROOT, encoding: 'utf8' })
   const hits = (r.stdout || '').split('\n').map(s => s.trim()).filter(Boolean)
     // This file names the path in its own assertion, so it always self-matches once tracked.
     .filter(f => f !== 'CHANGELOG.md' && !f.startsWith('scratch/') && !f.startsWith('.planning/')
@@ -927,7 +927,7 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
   // A project that uses the plugin, with every preload resolving.
   const clean = mkdtempSync(join(tmpdir(), 'setup-clean-'))
   writeFileSync(join(clean, '.claude-workflows.json'), '{"farmOutOnly": true}\n')
-  spawnSync('mkdir', ['-p', join(clean, '.claude')])
+  spawnSync('mkdir', ['-p', join(clean, '.claude')], { timeout: 120_000 })
   writeFileSync(join(clean, '.claude', 'settings.json'), '{"plansDirectory": "./.planning"}\n')
   const cleanOut = buildSetupSection(clean, ROOT)
   ok('the detector is SILENT on a healthy project', cleanOut === '', JSON.stringify(cleanOut))
@@ -944,16 +944,16 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
 
   // An ABSENT .claude-workflows.json is the normal state for a project that never opted in.
   const nogov = mkdtempSync(join(tmpdir(), 'setup-nogov-'))
-  spawnSync('mkdir', ['-p', join(nogov, '.planning')])
+  spawnSync('mkdir', ['-p', join(nogov, '.planning')], { timeout: 120_000 })
   ok('an absent .claude-workflows.json is NOT reported', buildSetupSection(nogov, ROOT) === '',
      JSON.stringify(buildSetupSection(nogov, ROOT)))
 
   // A DANGLING PRELOAD in a fixture plugin root — the failure that survived a major version, and
   // the ONLY finding this detector still emits.
   const fakePlugin = mkdtempSync(join(tmpdir(), 'setup-plugin-'))
-  spawnSync('mkdir', ['-p', join(fakePlugin, 'agents')])
-  spawnSync('mkdir', ['-p', join(fakePlugin, 'user-agents')])
-  spawnSync('mkdir', ['-p', join(fakePlugin, 'skills', 'real-skill')])
+  spawnSync('mkdir', ['-p', join(fakePlugin, 'agents')], { timeout: 120_000 })
+  spawnSync('mkdir', ['-p', join(fakePlugin, 'user-agents')], { timeout: 120_000 })
+  spawnSync('mkdir', ['-p', join(fakePlugin, 'skills', 'real-skill')], { timeout: 120_000 })
   writeFileSync(join(fakePlugin, 'skills', 'real-skill', 'SKILL.md'), '---\nname: real-skill\n---\n')
   writeFileSync(join(fakePlugin, 'user-agents', 'zz-fixture.md'),
     '---\nname: zz-fixture\nskills:\n  - real-skill\n  - ghost-skill\n---\nbody\n')
@@ -1457,7 +1457,7 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
 // Exclusions are historical surfaces: CHANGELOG.md, scratch/, .planning/, docs/ (design records
 // that state retirements), and tests/ + scripts/ (synthetic fixture paths like `hooks/x.ts`).
 {
-  const tracked = (spawnSync('git', ['ls-files'], { cwd: ROOT, encoding: 'utf8' }).stdout || '')
+  const tracked = (spawnSync('git', ['ls-files'], { timeout: 120_000, cwd: ROOT, encoding: 'utf8' }).stdout || '')
     .split('\n').map(s => s.trim()).filter(Boolean)
   const IN_SCOPE = f =>
     f !== 'CHANGELOG.md' &&
@@ -1589,7 +1589,7 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
     ok(`quarantined hook ${n} is genuinely absent from hooks.json`, !hooksJson.includes(n))
     ok(`quarantined hook ${n} records why it is unwired`, reason.length > 40)
     // ...and no skill may describe it as live. Every citing skill must say it is not registered.
-    const citing = spawnSync('git', ['grep', '-l', n, '--', 'skills/'], { cwd: ROOT, encoding: 'utf8' })
+    const citing = spawnSync('git', ['grep', '-l', n, '--', 'skills/'], { timeout: 120_000, cwd: ROOT, encoding: 'utf8' })
       .stdout.split('\n').map(s => s.trim()).filter(Boolean)
     for (const f of citing) {
       ok(`${f} cites ${n} and states plainly that it is not registered`,
@@ -1642,7 +1642,7 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
       .map(([line, raw, resolved]) => `L${line}: ${raw} -> ${resolved}`)
   }
 
-  const mdFiles = (spawnSync('git', ['ls-files', '*.md'], { cwd: ROOT, encoding: 'utf8' }).stdout || '')
+  const mdFiles = (spawnSync('git', ['ls-files', '*.md'], { timeout: 120_000, cwd: ROOT, encoding: 'utf8' }).stdout || '')
     .split('\n').map(s => s.trim()).filter(Boolean)
   ok('the skill-path scan actually has files to scan', mdFiles.length > 300, `${mdFiles.length}`)
 

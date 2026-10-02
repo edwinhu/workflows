@@ -20,7 +20,7 @@ const ROOT = new URL('..', import.meta.url).pathname
 
 function check() {
   try {
-    return { out: execFileSync(`${ROOT}scripts/bump-version.sh`, ['--check'], { encoding: 'utf8', cwd: ROOT }), status: 0 }
+    return { out: execFileSync(`${ROOT}scripts/bump-version.sh`, ['--check'], { timeout: 120_000, encoding: 'utf8', cwd: ROOT }), status: 0 }
   } catch (error) {
     return { out: `${error.stdout || ''}${error.stderr || ''}`, status: error.status ?? 1 }
   }

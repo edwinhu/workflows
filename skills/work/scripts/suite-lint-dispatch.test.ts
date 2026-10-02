@@ -72,7 +72,7 @@ function fixture(opts: { redCommand?: string; suites?: Record<string, string> } 
 
 function dispatch(f: { dir: string; plan: string }, ...extra: string[]) {
   try {
-    const stdout = execFileSync('bash', [SCRIPT, '--provider', 'claude', ...extra, f.plan], {
+    const stdout = execFileSync('bash', [SCRIPT, '--provider', 'claude', ...extra, f.plan], { timeout: 120_000,
       encoding: 'utf8', cwd: f.dir, env: { ...process.env, WORK_DISPATCH_DRYRUN: '1' },
     })
     return { code: 0, out: stdout }
@@ -203,7 +203,7 @@ describe('the tier is BOUNDED and leaves nothing behind', () => {
     expect(before).toEqual([])
     const r = (() => {
       try {
-        return { code: 0, out: execFileSync('bash', [SCRIPT, '--provider', 'claude', f.plan], {
+        return { code: 0, out: execFileSync('bash', [SCRIPT, '--provider', 'claude', f.plan], { timeout: 120_000,
           encoding: 'utf8', cwd: f.dir, env: { ...process.env, WORK_DISPATCH_DRYRUN: '1', TMPDIR: tmp },
         }) }
       } catch (e: any) { return { code: e.status ?? -1, out: (e.stdout ?? '') + (e.stderr ?? '') } }
@@ -222,7 +222,7 @@ describe('the tier is BOUNDED and leaves nothing behind', () => {
     chmodSync(tmp, 0o500)
     const r = (() => {
       try {
-        return { code: 0, out: execFileSync('bash', [SCRIPT, '--provider', 'claude', f.plan], {
+        return { code: 0, out: execFileSync('bash', [SCRIPT, '--provider', 'claude', f.plan], { timeout: 120_000,
           encoding: 'utf8', cwd: f.dir, env: { ...process.env, WORK_DISPATCH_DRYRUN: '1', TMPDIR: tmp },
         }) }
       } catch (e: any) { return { code: e.status ?? -1, out: (e.stdout ?? '') + (e.stderr ?? '') } }
@@ -282,7 +282,7 @@ describe('the tier inherits the corpus contract, rather than re-implementing the
     const m = /(\d+) suite\(s\) linted, (\d+) finding\(s\), (\d+) unparseable/.exec(r.out)
     expect(m).not.toBeNull()
     const corpus = execFileSync('bun', [join(import.meta.dir, 'suite-lint.ts'), '--corpus', f.dir],
-      { encoding: 'utf8' })
+      { timeout: 120_000, encoding: 'utf8' })
     const summary = JSON.parse(corpus.slice(corpus.indexOf('{'), corpus.lastIndexOf('}') + 1))
     expect(`linted ${m![1]}`).toBe(`linted ${summary.filesLinted}`)
     expect(`unparseable ${m![3]}`).toBe(`unparseable ${summary.unparseable}`)
@@ -305,7 +305,7 @@ describe('the tier inherits the corpus contract, rather than re-implementing the
     const printed = (r.out.match(/existence-only-artifact|injected-key-never-varied/g) ?? []).length
     const corpus = execFileSync('bun', [
       join(import.meta.dir, 'suite-lint.ts'), '--corpus', f.dir,
-    ], { encoding: 'utf8' })
+    ], { timeout: 120_000, encoding: 'utf8' })
     const summary = JSON.parse(corpus.slice(corpus.indexOf('{'), corpus.lastIndexOf('}') + 1))
     const expected = summary.counts['existence-only-artifact'] + summary.counts['injected-key-never-varied']
     expect(`tier ${printed}`).toBe(`tier ${expected}`)

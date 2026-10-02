@@ -58,7 +58,7 @@ const mod = () => import('./suite-lint.ts')
  * `git` must fail the suite loudly.
  */
 function trackedFiles(): Set<string> {
-  const out = execFileSync('git', ['-C', REPO, 'ls-files', '-z'], { encoding: 'utf8', maxBuffer: 64 << 20 })
+  const out = execFileSync('git', ['-C', REPO, 'ls-files', '-z'], { timeout: 120_000, encoding: 'utf8', maxBuffer: 64 << 20 })
   return new Set(out.split('\0').filter(Boolean))
 }
 

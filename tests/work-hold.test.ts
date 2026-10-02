@@ -69,7 +69,7 @@ function run(payload: object, st?: object) {
   const dir = mkdtempSync(join(tmpdir(), 'work-hold-'))
   const sid = 'test-session'
   if (st) writeFileSync(join(dir, `work-hold-${sid}.json`), JSON.stringify(st))
-  const r = spawnSync('bun', [HOOK], {
+  const r = spawnSync('bun', [HOOK], { timeout: 120_000,
     input: JSON.stringify({ session_id: sid, ...payload }),
     encoding: 'utf8', env: { ...HERMETIC_ENV, TMPDIR: dir },
   })
@@ -114,7 +114,7 @@ describe('the hook', () => {
   test('an unreadable state file releases rather than holds on unreadable terms', () => {
     const dir = mkdtempSync(join(tmpdir(), 'work-hold-'))
     writeFileSync(join(dir, 'work-hold-test-session.json'), '{not json')
-    const r = spawnSync('bun', [HOOK], {
+    const r = spawnSync('bun', [HOOK], { timeout: 120_000,
       input: JSON.stringify({ session_id: 'test-session' }),
       encoding: 'utf8', env: { ...HERMETIC_ENV, TMPDIR: dir },
     })
@@ -134,7 +134,7 @@ describe('the hook', () => {
     writeFileSync(join(dir, 'work-hold-test-session.releases.log'),
       `2026-09-25T00:00:00\tarmed\t${JSON.stringify(armedState)}\n` +
       `2026-09-25T00:00:01\tcapped\t${JSON.stringify({ path: '/x', window: 250000, prior: null, created: true })}\n`)
-    const r = spawnSync('bun', [HOOK], {
+    const r = spawnSync('bun', [HOOK], { timeout: 120_000,
       input: JSON.stringify({ session_id: 'test-session' }),
       encoding: 'utf8', env: { ...HERMETIC_ENV, TMPDIR: dir },
     })
@@ -176,7 +176,7 @@ describe('lastEvaluatedAt — the hook proving it ran', () => {
     writeFileSync(path, JSON.stringify({
       check: 'exit 1', run: runDir, startedAt: now(), ceilingMinutes: 720, maxRounds: 8, rounds: 0,
     }))
-    const r = spawnSync('bun', [HOOK], {
+    const r = spawnSync('bun', [HOOK], { timeout: 120_000,
       input: JSON.stringify({ session_id: 'test-session' }),
       encoding: 'utf8', env: { ...HERMETIC_ENV, TMPDIR: dir },
     })
@@ -192,7 +192,7 @@ describe('lastEvaluatedAt — the hook proving it ran', () => {
     const armed = { check: 'exit 1', startedAt: 1, ceilingMinutes: 720, maxRounds: 8, rounds: 0 }
     writeFileSync(join(dir, 'work-hold-test-session.releases.log'),
       `2026-09-28T00:00:00\tarmed\t${JSON.stringify(armed)}\n`)
-    const r = spawnSync('bun', [HOOK], {
+    const r = spawnSync('bun', [HOOK], { timeout: 120_000,
       input: JSON.stringify({ session_id: 'test-session' }),
       encoding: 'utf8', env: { ...HERMETIC_ENV, TMPDIR: dir },
     })
@@ -272,7 +272,7 @@ describe('--brief — where the clauses and the path DO belong', () => {
       ceilingMinutes: 720, maxRounds: 8, rounds: 3,
       authority: 'AUTHORITY CLAUSE', continuation: 'CONTINUATION CLAUSE',
     }))
-    const r = spawnSync('bun', [HOOK, '--brief'], {
+    const r = spawnSync('bun', [HOOK, '--brief'], { timeout: 120_000,
       input: JSON.stringify({ session_id: 'test-session' }),
       encoding: 'utf8', env: { ...HERMETIC_ENV, TMPDIR: dir },
     })
@@ -293,7 +293,7 @@ describe('--brief — where the clauses and the path DO belong', () => {
       ceilingMinutes: 720, maxRounds: 20, rounds: 12,
       history: Array.from({ length: 12 }, (_, i) => ({ round: i + 1, at: 1_700_000_000, exit: 1 })),
     }))
-    const r = spawnSync('bun', [HOOK, '--brief'], {
+    const r = spawnSync('bun', [HOOK, '--brief'], { timeout: 120_000,
       input: JSON.stringify({ session_id: 'test-session' }),
       encoding: 'utf8', env: { ...HERMETIC_ENV, TMPDIR: dir },
     })
@@ -344,7 +344,7 @@ describe('work-hold.sh no longer takes --background', () => {
   const arm = (args: string[]) => {
     const dir = mkdtempSync(join(tmpdir(), 'work-hold-'))
     const sid = `arm-${Math.random().toString(36).slice(2)}`
-    const r = spawnSync('bash', [ARM, 'exit 1', ...args], {
+    const r = spawnSync('bash', [ARM, 'exit 1', ...args], { timeout: 120_000,
       encoding: 'utf8',
       env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: sid, WORK_HOLD_COMPACT_WINDOW: '0' },
     })
@@ -558,7 +558,7 @@ describe('work-hold.sh --status', () => {
     ].join('\n') + '\n'
     writeFileSync(join(dir, 'work-hold-status-test.releases.log'), ledger)
 
-    const r = spawnSync('bash', [ARM, '--status'], {
+    const r = spawnSync('bash', [ARM, '--status'], { timeout: 120_000,
       encoding: 'utf8',
       env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: 'status-test' },
     })
@@ -585,7 +585,7 @@ describe('work-hold.sh --status', () => {
 
   test('says so plainly when nothing is armed', () => {
     const dir = mkdtempSync(join(tmpdir(), 'holdstatus-'))
-    const r = spawnSync('bash', [ARM, '--status'], {
+    const r = spawnSync('bash', [ARM, '--status'], { timeout: 120_000,
       encoding: 'utf8',
       env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: 'status-none' },
     })
@@ -599,7 +599,7 @@ describe('work-hold.sh --status', () => {
       check: 'bun test x', startedAt: Math.floor(Date.now() / 1000) - 45 * 60,
       ceilingMinutes: 720, maxRounds: 8, rounds: 0, ...extra,
     }))
-    return spawnSync('bash', [ARM, '--status'], {
+    return spawnSync('bash', [ARM, '--status'], { timeout: 120_000,
       encoding: 'utf8',
       env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: 'status-skew' },
     })
@@ -627,7 +627,7 @@ describe('work-hold.sh --status', () => {
       check: 'bun test x', startedAt: Math.floor(Date.now() / 1000),
       ceilingMinutes: 720, maxRounds: 8, rounds: 0,
     }))
-    const r = spawnSync('bash', [ARM, '--status'], {
+    const r = spawnSync('bash', [ARM, '--status'], { timeout: 120_000,
       encoding: 'utf8',
       env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: 'status-fresh' },
     })
@@ -667,7 +667,7 @@ describe('work-hold.sh --disarm', () => {
     const argv = pty
       ? ['script', ['-qec', `bash ${ARM} --disarm`, '/dev/null']]
       : ['bash', [ARM, '--disarm']]
-    return spawnSync(argv[0] as string, argv[1] as string[], { encoding: 'utf8', env, input: pty ? 'y\n' : undefined })
+    return spawnSync(argv[0] as string, argv[1] as string[], { timeout: 120_000, encoding: 'utf8', env, input: pty ? 'y\n' : undefined })
   }
 
   test('with NO tty it releases, and records the permission-prompt verb', () => {
@@ -695,7 +695,7 @@ describe('work-hold.sh --disarm', () => {
     const h = armed()
     const env = { ...HERMETIC_ENV, TMPDIR: h.dir, CLAUDE_CODE_SESSION_ID: h.sid, WORK_HOLD_COMPACT_WINDOW: '0' }
     const r = spawnSync('script', ['-qec', `bash ${ARM} --disarm`, '/dev/null'],
-      { encoding: 'utf8', env, input: 'n\n' })
+      { timeout: 120_000, encoding: 'utf8', env, input: 'n\n' })
     expect(r.stdout).toContain('still armed')
     expect(existsSync(h.path)).toBe(true)
     expect(readFileSync(h.ledger, 'utf8')).toContain('\tdeclined\t')
@@ -704,7 +704,7 @@ describe('work-hold.sh --disarm', () => {
   test('an unarmed session says so rather than releasing nothing', () => {
     const dir = mkdtempSync(join(tmpdir(), 'holddisarm-'))
     const r = spawnSync('bash', [ARM, '--disarm'],
-      { encoding: 'utf8', env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: 'none' } })
+      { timeout: 120_000, encoding: 'utf8', env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: 'none' } })
     expect(r.status).toBe(0)
     expect(r.stdout.trim()).toBe('hold: not armed')
   })
@@ -715,7 +715,7 @@ describe('work-hold.sh --disarm', () => {
   test('the new verb is a SANCTIONED release: the hook does not restore the hold after it', () => {
     const h = armed()
     expect(disarm(h).status).toBe(0)
-    const r = spawnSync('bun', [HOOKPATH], {
+    const r = spawnSync('bun', [HOOKPATH], { timeout: 120_000,
       input: JSON.stringify({ session_id: h.sid }),
       encoding: 'utf8', env: { ...HERMETIC_ENV, TMPDIR: h.dir },
     })
@@ -731,7 +731,7 @@ describe('work-hold.sh --disarm', () => {
     const h = armed()
     appendFileSync(h.ledger, `2026-09-28T00:00:01\tsome-verb-from-the-future\t${'x'}\n`)
     rmSync(h.path)
-    const r = spawnSync('bun', [HOOKPATH], {
+    const r = spawnSync('bun', [HOOKPATH], { timeout: 120_000,
       input: JSON.stringify({ session_id: h.sid }),
       encoding: 'utf8', env: { ...HERMETIC_ENV, TMPDIR: h.dir },
     })
@@ -757,7 +757,7 @@ describe('work-hold.sh warns on a LONG hold and hands over the grind command', (
     // A check that RUNS and exits 1 — arming refuses anything else, so the warning is never reached.
     mkdirSync(join(dir, 'scripts'), { recursive: true })
     writeFileSync(join(dir, 'scripts', 'measure.sh'), '#!/usr/bin/env bash\nexit 1\n', { mode: 0o755 })
-    const r = spawnSync('bash', [ARM, 'bash scripts/measure.sh --rate-below 0.01', ...extra], {
+    const r = spawnSync('bash', [ARM, 'bash scripts/measure.sh --rate-below 0.01', ...extra], { timeout: 120_000,
       encoding: 'utf8',
       cwd: dir,
       env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: sid, WORK_HOLD_COMPACT_WINDOW: '0' },
@@ -832,7 +832,7 @@ describe('work-hold.sh and the auto-compact cap', () => {
       CLAUDE_CODE_BRIDGE_SESSION_ID: '', WORK_HOLD_AGENT_MSG: '/nonexistent-agent-msg',
       CLAUDE_CODE_AUTO_COMPACT_WINDOW: '', ...extra,
     }
-    const r = spawnSync('bash', [ARM, 'exit 1', '--minutes', '720'], { encoding: 'utf8', env })
+    const r = spawnSync('bash', [ARM, 'exit 1', '--minutes', '720'], { timeout: 120_000, encoding: 'utf8', env })
     return { ...r, dir }
   }
 
@@ -887,7 +887,7 @@ function passRun(sid: string, st: object, env: Record<string, string> = {}) {
   }))
   const transcript = join(dir, 't.jsonl')
   writeFileSync(transcript, JSON.stringify({ message: { content: 'some work happened' } }) + '\n')
-  const r = spawnSync('bun', [HOOK], {
+  const r = spawnSync('bun', [HOOK], { timeout: 120_000,
     input: JSON.stringify({ session_id: sid, transcript_path: transcript }),
     encoding: 'utf8',
     env: {
@@ -1023,7 +1023,7 @@ describe('the hook allows a stop while the watched run is IN FLIGHT', () => {
     const r = runDir(dir)
     const st = { check: 'exit 1', startedAt: now, ceilingMinutes: 720, maxRounds: 8, rounds: 0, run: r }
     writeFileSync(join(dir, 'work-hold-inflight.json'), JSON.stringify(st))
-    const out = spawnSync('bun', [HOOK], {
+    const out = spawnSync('bun', [HOOK], { timeout: 120_000,
       input: JSON.stringify({ session_id: 'inflight' }), encoding: 'utf8',
       env: { ...HERMETIC_ENV, TMPDIR: dir },
     })
@@ -1039,7 +1039,7 @@ describe('the hook allows a stop while the watched run is IN FLIGHT', () => {
     writeFileSync(join(dir, 'work-hold-expflight.json'), JSON.stringify({
       check: 'exit 1', startedAt: now - 3600, ceilingMinutes: 10, maxRounds: 8, rounds: 0, run: r,
     }))
-    const out = spawnSync('bun', [HOOK], {
+    const out = spawnSync('bun', [HOOK], { timeout: 120_000,
       input: JSON.stringify({ session_id: 'expflight' }), encoding: 'utf8',
       env: { ...HERMETIC_ENV, TMPDIR: dir },
     })
@@ -1055,7 +1055,7 @@ describe('the hook allows a stop while the watched run is IN FLIGHT', () => {
     writeFileSync(join(dir, 'work-hold-landed.json'), JSON.stringify({
       check: 'exit 1', startedAt: now, ceilingMinutes: 720, maxRounds: 8, rounds: 0, run: r,
     }))
-    const out = spawnSync('bun', [HOOK], {
+    const out = spawnSync('bun', [HOOK], { timeout: 120_000,
       input: JSON.stringify({ session_id: 'landed' }), encoding: 'utf8',
       env: { ...HERMETIC_ENV, TMPDIR: dir },
     })
@@ -1138,7 +1138,7 @@ describe('--brief names the run and whether it is in flight', () => {
     writeFileSync(join(dir, 'work-hold-b.json'), JSON.stringify({
       check: 'false', startedAt: now, ceilingMinutes: 720, maxRounds: 8, rounds: 0, ...st,
     }))
-    return spawnSync('bun', [HOOK, '--brief'], {
+    return spawnSync('bun', [HOOK, '--brief'], { timeout: 120_000,
       input: JSON.stringify({ session_id: 'b' }), encoding: 'utf8',
       env: { ...HERMETIC_ENV, TMPDIR: dir },
     }).stdout
@@ -1189,7 +1189,7 @@ describe('the ledger readers handle the new verbs', () => {
     writeFileSync(join(dir, 'work-hold-aband.releases.log'),
       `2026-09-27T00:00:00\tarmed\t{"check":"false","startedAt":1,"ceilingMinutes":720,"maxRounds":8,"rounds":0}\n` +
       `2026-09-27T00:00:01\t${ABANDONED}\tthe user walked away\n`)
-    const r = spawnSync('bun', [HOOK], {
+    const r = spawnSync('bun', [HOOK], { timeout: 120_000,
       input: JSON.stringify({ session_id: 'aband' }), encoding: 'utf8',
       env: { ...HERMETIC_ENV, TMPDIR: dir },
     })
@@ -1205,7 +1205,7 @@ describe('the ledger readers handle the new verbs', () => {
     writeFileSync(join(dir, 'work-hold-gone.releases.log'),
       `2026-09-26T00:00:00\tarmed\t{"check":"false","startedAt":1,"ceilingMinutes":720,"maxRounds":8,"rounds":0}\n` +
       `2026-09-26T00:00:01\t${PASSED_GOAL_MET}\tfalse\n`)
-    const r = spawnSync('bun', [HOOK], {
+    const r = spawnSync('bun', [HOOK], { timeout: 120_000,
       input: JSON.stringify({ session_id: 'gone' }), encoding: 'utf8',
       env: { ...HERMETIC_ENV, TMPDIR: dir },
     })
@@ -1270,7 +1270,7 @@ describe('the redispatch sentence, for a hold armed with --run', () => {
       ceilingMinutes: 720, maxRounds: 8, rounds: 3,
       authority: 'AUTHORITY CLAUSE', continuation: 'CONTINUATION CLAUSE',
     }))
-    const r = spawnSync('bun', [HOOK, '--brief'], {
+    const r = spawnSync('bun', [HOOK, '--brief'], { timeout: 120_000,
       input: JSON.stringify({ session_id: 'test-session' }),
       encoding: 'utf8', env: { ...HERMETIC_ENV, TMPDIR: dir },
     })
@@ -1294,7 +1294,7 @@ describe('work-hold.sh composes the continuation clause per mode', () => {
   const arm = (argv: string[]) => {
     const dir = mkdtempSync(join(tmpdir(), 'holdcont-'))
     const sid = `cont-${Math.random().toString(36).slice(2)}`
-    const r = spawnSync('bash', [ARM, ...argv], {
+    const r = spawnSync('bash', [ARM, ...argv], { timeout: 120_000,
       encoding: 'utf8', cwd: dir,
       env: { ...HERMETIC_ENV, TMPDIR: dir, CLAUDE_CODE_SESSION_ID: sid, WORK_HOLD_COMPACT_WINDOW: '0' },
     })

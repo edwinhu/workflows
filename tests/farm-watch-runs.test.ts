@@ -41,7 +41,7 @@ describe('parseEvents over what farm.sh writes', () => {
       { label: 'beta', prompt: 'p', expect: 'b.md' },
     ]))
     const before = Math.floor(Date.now() / 1000)
-    spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', cwd], {
+    spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', cwd], { timeout: 130_000,
       encoding: 'utf8', cwd: root,
       env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1',
         TMPDIR: root, CLAUDE_CODE_SESSION_ID: SID, FARM_OUTCOMES: join(root, 'farm-outcomes.jsonl') },
@@ -71,7 +71,7 @@ describe('work-loop.sh files itself in the stream', () => {
     writeFileSync(join(run, 'args.json'), '{}')
     writeFileSync(join(run, 'plan.md'), '# plan')
     // farm-alive.sh finds no live dispatch, so round 1 reports the dispatch dead: exit 1.
-    const r = spawnSync('bash', [LOOP, '--run-dir', run, '--plan', join(run, 'plan.md'), '--loops', '1'], {
+    const r = spawnSync('bash', [LOOP, '--run-dir', run, '--plan', join(run, 'plan.md'), '--loops', '1'], { timeout: 130_000,
       encoding: 'utf8', env: { ...process.env, TMPDIR: root, CLAUDE_CODE_SESSION_ID: SID, WORK_LOOP_SETTLE: '0' },
     })
     const runs = readDir(join(root, 'farm-events', SID))
@@ -120,7 +120,7 @@ describe('classify: ownership of nested rows, GONE, and the status line', () => 
 })
 
 test('the mod kit tests pass (scripts/mod-test.sh -> claude plugin test)', () => {
-  if (spawnSync('bash', ['-c', 'command -v claude']).status !== 0) return
+  if (spawnSync('bash', ['-c', 'command -v claude'], { timeout: 130_000 }).status !== 0) return
   const r = spawnSync('bash', [join(REPO, 'scripts', 'mod-test.sh')], { encoding: 'utf8', timeout: 120_000 })
   // 8 watcher + 7 guards (hooks/mod-tests/guards.test.ts)
   expect(r.stdout + r.stderr).toMatch(/\b15 pass\b/)

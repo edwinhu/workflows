@@ -48,7 +48,7 @@ describe("self-reporting harnesses can fail the gate", () => {
 
   for (const file of harnesses) {
     test(`${file} exits 0`, () => {
-      const r = Bun.spawnSync(["bun", join(TESTS_DIR, file)], {
+      const r = Bun.spawnSync(["bun", join(TESTS_DIR, file)], { timeout: 300_000,
         cwd: REPO,
         stdout: "pipe",
         stderr: "pipe",

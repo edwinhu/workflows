@@ -105,7 +105,7 @@ function runHook(
   env: Record<string, string>,
   payload: Record<string, unknown>,
 ): { out: string; err: string; code: number | null } {
-  const p = Bun.spawnSync(['bun', HOOK], {
+  const p = Bun.spawnSync(['bun', HOOK], { timeout: 120_000,
     cwd: ROOT,
     stdin: Buffer.from(JSON.stringify(payload)),
     env,

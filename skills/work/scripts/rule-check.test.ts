@@ -131,7 +131,7 @@ test('project-dir mode reads changed and untracked files', async () => {
 
   const projectDir = fs.mkdtempSync(join(require('os').tmpdir(), 'rule-check-test-projdir-'));
   try {
-    const git = (...a: string[]) => spawnSync('git', a, { cwd: projectDir });
+    const git = (...a: string[]) => spawnSync('git', a, { timeout: 120_000, cwd: projectDir });
     git('init', '-q');
     git('config', 'user.email', 'test@example.com');
     git('config', 'user.name', 'test');
@@ -173,9 +173,9 @@ test('the state carries the C8 preamble and project-relative paths', async () =>
   fs.mkdirSync(join(tmpDir, 'data', 'output'));
   fs.writeFileSync(join(tmpDir, 'data', 'output', 'x.csv'), 'a,b,c\n1,2,3');
   
-  spawnSync('git', ['init'], { cwd: tmpDir });
-  spawnSync('git', ['add', '.'], { cwd: tmpDir });
-  spawnSync('git', ['commit', '-m', 'init'], { cwd: tmpDir, env: { ...process.env, GIT_AUTHOR_NAME: 'test', GIT_AUTHOR_EMAIL: 'test@example.com', GIT_COMMITTER_NAME: 'test', GIT_COMMITTER_EMAIL: 'test@example.com' } });
+  spawnSync('git', ['init'], { timeout: 120_000, cwd: tmpDir });
+  spawnSync('git', ['add', '.'], { timeout: 120_000, cwd: tmpDir });
+  spawnSync('git', ['commit', '-m', 'init'], { timeout: 120_000, cwd: tmpDir, env: { ...process.env, GIT_AUTHOR_NAME: 'test', GIT_AUTHOR_EMAIL: 'test@example.com', GIT_COMMITTER_NAME: 'test', GIT_COMMITTER_EMAIL: 'test@example.com' } });
   fs.appendFileSync(join(tmpDir, 'data', 'output', 'x.csv'), '4,5,6');
 
   const res = await runRuleCheck(['--project-dir', tmpDir], server.port);
@@ -232,9 +232,9 @@ test('an oversized state is truncated at 60000 chars', async () => {
     fs.writeFileSync(join(tmpDir, name(i)), hugeString.repeat(50));
   }
   
-  spawnSync('git', ['init'], { cwd: tmpDir });
-  spawnSync('git', ['add', '.'], { cwd: tmpDir });
-  spawnSync('git', ['commit', '-m', 'init'], { cwd: tmpDir, env: { ...process.env, GIT_AUTHOR_NAME: 'test', GIT_AUTHOR_EMAIL: 'test@example.com', GIT_COMMITTER_NAME: 'test', GIT_COMMITTER_EMAIL: 'test@example.com' } });
+  spawnSync('git', ['init'], { timeout: 120_000, cwd: tmpDir });
+  spawnSync('git', ['add', '.'], { timeout: 120_000, cwd: tmpDir });
+  spawnSync('git', ['commit', '-m', 'init'], { timeout: 120_000, cwd: tmpDir, env: { ...process.env, GIT_AUTHOR_NAME: 'test', GIT_AUTHOR_EMAIL: 'test@example.com', GIT_COMMITTER_NAME: 'test', GIT_COMMITTER_EMAIL: 'test@example.com' } });
   for (let i = 0; i < 300; i++) {
     fs.appendFileSync(join(tmpDir, name(i)), '\n# extra');
   }
@@ -264,7 +264,7 @@ const LEGACY = [
 
 function repo(prefix: string) {
   const d = fs.mkdtempSync(join(require('os').tmpdir(), prefix));
-  const git = (...a: string[]) => spawnSync('git', ['-C', d, ...a], { encoding: 'utf8' });
+  const git = (...a: string[]) => spawnSync('git', ['-C', d, ...a], { timeout: 120_000, encoding: 'utf8' });
   git('init', '-q');
   git('config', 'user.email', 'test@example.com');
   git('config', 'user.name', 'test');

@@ -69,7 +69,7 @@ function fixture(opts: { redCommand: string; extraArgs?: Record<string, unknown>
 /** Dispatch, stopped short of the goal self-send and the farm-out. The probe still runs. */
 function dispatch(f: { dir: string; plan: string }, ...extra: string[]) {
   try {
-    const stdout = execFileSync('bash', [SCRIPT, '--provider', 'claude', ...extra, f.plan], {
+    const stdout = execFileSync('bash', [SCRIPT, '--provider', 'claude', ...extra, f.plan], { timeout: 120_000,
       encoding: 'utf8', cwd: f.dir, env: { ...process.env, WORK_DISPATCH_DRYRUN: '1' },
     })
     return { code: 0, out: stdout }
@@ -83,7 +83,7 @@ describe('argument parsing', () => {
     const f = fixture({ redCommand: 'bash scripts/check.sh' })
     script(f.dir, 'check.sh', 'echo "1 failed, 0 passed"\nexit 1')
     try {
-      execFileSync('bash', [SCRIPT, f.plan, '--provider', 'gemini'], {
+      execFileSync('bash', [SCRIPT, f.plan, '--provider', 'gemini'], { timeout: 120_000,
         encoding: 'utf8', cwd: f.dir, env: { ...process.env, WORK_DISPATCH_DRYRUN: '1' },
       })
       throw new Error('should have failed')
@@ -110,7 +110,7 @@ describe('the goal names the round budget work actually enforces', () => {
    * the goal is otherwise sent as the last act of a real dispatch, where a test cannot observe it.
    */
   function goalOf(f: { dir: string; plan: string }, env: Record<string, string> = {}) {
-    return execFileSync('bash', [SCRIPT, '--provider', 'claude', f.plan], {
+    return execFileSync('bash', [SCRIPT, '--provider', 'claude', f.plan], { timeout: 120_000,
       // BOTH seams, deliberately. WORK_GOAL_PRINT is what this test exercises; WORK_DISPATCH_DRYRUN
       // is the backstop. Observed 2026-08-27: while WORK_GOAL_PRINT was still RED, these three
       // tests fell through to a FULL dispatch — a real farm-out against a /tmp fixture, agents paid
@@ -523,7 +523,7 @@ describe('--spec-hash hashes the authored spec, not the bytes around it', () => 
   }
   function specHash(plan: string) {
     try {
-      return { code: 0, out: execFileSync('bash', [SCRIPT, '--spec-hash', plan], { encoding: 'utf8' }) }
+      return { code: 0, out: execFileSync('bash', [SCRIPT, '--spec-hash', plan], { timeout: 120_000, encoding: 'utf8' }) }
     } catch (e: any) {
       return { code: e.status ?? -1, out: (e.stdout ?? '') + (e.stderr ?? '') }
     }
@@ -597,7 +597,7 @@ describe('dispatch injects specHash, and planHash is gone', () => {
     const a = JSON.parse(readFileSync(f.argsPath, 'utf8'))
     expect(a.planHash).toBeUndefined()
     expect(a.specHash).toMatch(/^[0-9a-f]{64}$/)
-    expect(a.specHash).toBe(execFileSync('bash', [SCRIPT, '--spec-hash', f.plan], { encoding: 'utf8' }).trim())
+    expect(a.specHash).toBe(execFileSync('bash', [SCRIPT, '--spec-hash', f.plan], { timeout: 120_000, encoding: 'utf8' }).trim())
     expect(a.planPath).toBe(f.plan)
   })
 
@@ -644,14 +644,14 @@ describe('--covers separates the run\'s own output from what no task may write',
   /** 0 covered, 1 outside every writable set, 2 undecidable. */
   function covers(plan: string, path: string): number {
     try {
-      execFileSync('bash', [SCRIPT, '--covers', plan, path], { encoding: 'utf8' })
+      execFileSync('bash', [SCRIPT, '--covers', plan, path], { timeout: 120_000, encoding: 'utf8' })
       return 0
     } catch (e: any) { return e.status ?? -1 }
   }
   /** 0 declared pre-dispatch scaffolding, 1 not, 2 undecidable. */
   function scaffold(plan: string, path: string): number {
     try {
-      execFileSync('bash', [SCRIPT, '--scaffold', plan, path], { encoding: 'utf8' })
+      execFileSync('bash', [SCRIPT, '--scaffold', plan, path], { timeout: 120_000, encoding: 'utf8' })
       return 0
     } catch (e: any) { return e.status ?? -1 }
   }

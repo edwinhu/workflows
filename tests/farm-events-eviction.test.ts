@@ -25,7 +25,7 @@ test('a run evicts stale event files for pids that are long gone', () => {
   spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', tmp],
     // CLAUDE_CODE_SESSION_ID pinned empty: the event dir is keyed by it, and `bun test` itself
     // runs inside a session, so an ambient value moves the dir out from under this fixture.
-    { encoding: 'utf8', env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, TMPDIR: tmp, FARM_OUTCOMES: `${tmp}/farm-outcomes.jsonl`, FARM_OUT_CHILD: '1', CLAUDE_CODE_SESSION_ID: '' } })
+    { timeout: 120_000, encoding: 'utf8', env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, TMPDIR: tmp, FARM_OUTCOMES: `${tmp}/farm-outcomes.jsonl`, FARM_OUT_CHILD: '1', CLAUDE_CODE_SESSION_ID: '' } })
   const left = readdirSync(evd).length
   rmSync(tmp, { recursive: true, force: true })
   expect(left).toBeLessThan(41)   // the 40 stale ones must not all survive alongside the new one

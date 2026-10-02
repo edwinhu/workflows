@@ -155,7 +155,7 @@ test("every shipped constraint reaches a loader-calling skill or exact aggregate
 describe("could-not-run is exit 2, never 1 and never 0", () => {
   const LOADER = join(import.meta.dir, "..", "scripts", "load-constraints.ts");
   const run = (args: string[]) =>
-    Bun.spawnSync(["bun", LOADER, ...args], { stdout: "pipe", stderr: "pipe" });
+    Bun.spawnSync(["bun", LOADER, ...args], { timeout: 120_000, stdout: "pipe", stderr: "pipe" });
 
   test("a corpus directory that does not exist is exit 2", () => {
     const r = run(["ds", "--dir", "/nonexistent-corpus-xyz"]);

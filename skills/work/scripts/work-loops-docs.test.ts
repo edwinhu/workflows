@@ -79,7 +79,7 @@ describe('SKILL.md carries the rule, and only the rule', () => {
   })
 
   test('SKILL.md grew by fewer than 25 lines — it is re-read into context on every invocation', () => {
-    const head = execFileSync('git', ['show', 'HEAD:skills/work/SKILL.md'], { encoding: 'utf8', cwd: REPO })
+    const head = execFileSync('git', ['show', 'HEAD:skills/work/SKILL.md'], { timeout: 120_000, encoding: 'utf8', cwd: REPO })
     const now = readFileSync(SKILL_MD, 'utf8')
     const growth = now.split('\n').length - head.split('\n').length
     expect(growth).toBeLessThan(25)

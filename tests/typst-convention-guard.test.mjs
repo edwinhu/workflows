@@ -33,7 +33,7 @@ function check(content, name = 'deck.typ') {
   const path = join(dir, name)
   mkdirSync(dirname(path), { recursive: true })
   writeFileSync(path, content)
-  const result = Bun.spawnSync(['bun', HOOK], {
+  const result = Bun.spawnSync(['bun', HOOK], { timeout: 120_000,
     stdin: Buffer.from(JSON.stringify({ tool_name: 'Write', tool_input: { file_path: path } })),
     stdout: 'pipe', stderr: 'pipe',
   })

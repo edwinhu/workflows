@@ -157,7 +157,7 @@ function loopExit(runDir: string, timeoutMs = 120_000): string {
       const v = readFileSync(p, 'utf8').trim()
       if (v !== '') return v
     }
-    execFileSync('sleep', ['0.2'])
+    execFileSync('sleep', ['0.2'], { timeout: 130_000 })
   }
   throw new Error(`loop.exit never appeared under ${runDir}`)
 }
@@ -234,7 +234,7 @@ describe('--loops N > 0 hands the driver off DETACHED instead of printing', () =
     const pgid = execFileSync('bash', ['-c',
       `setsid bash -c 'bash "$0" --provider claude --loops 1 "$1" > "$2" 2>&1' "$1" "$2" "$3" & echo $!`,
       '_', SCRIPT, f.plan, log,
-    ], {
+    ], { timeout: 130_000,
       encoding: 'utf8',
       cwd: f.dir,
       env: { ...process.env, CLAUDE_CODE_SESSION_ID: '', WORK_LOOP_POLL: '1', WORK_NO_SCOPE: '1',
@@ -244,11 +244,11 @@ describe('--loops N > 0 hands the driver off DETACHED instead of printing', () =
     const deadline = Date.now() + 120_000
     while (Date.now() < deadline) {
       if (existsSync(log) && DETACHED.test(readFileSync(log, 'utf8'))) break
-      execFileSync('sleep', ['0.2'])
+      execFileSync('sleep', ['0.2'], { timeout: 130_000 })
     }
     expect(readFileSync(log, 'utf8')).toMatch(DETACHED)
 
-    execFileSync('bash', ['-c', `kill -KILL -${pgid} 2>/dev/null; :`])
+    execFileSync('bash', ['-c', `kill -KILL -${pgid} 2>/dev/null; :`], { timeout: 130_000 })
     expect(loopExit(f.runDir)).toBe('0')
     expect(existsSync(join(f.runDir, 'result.json'))).toBe(true)
   }, 130_000)

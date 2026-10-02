@@ -17,7 +17,7 @@ interface Result {
 
 function runRaw(stdin: string): Result {
   const t0 = Date.now();
-  const r = spawnSync("bun", [HOOK], { input: stdin, encoding: "utf8" });
+  const r = spawnSync("bun", [HOOK], { timeout: 120_000, input: stdin, encoding: "utf8" });
   const ms = Date.now() - t0;
   const stdout = r.stdout ?? "";
   let decision: string | null = null;

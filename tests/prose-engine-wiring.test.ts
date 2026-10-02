@@ -76,7 +76,7 @@ describe("writing-no-bold-lead resolves the engine it delegates to", () => {
       "import importlib.util,sys;" +
       `spec=importlib.util.spec_from_file_location("nbl", ${JSON.stringify(MODULE)});` +
       "m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);print(m.PROSE_AUDIT)",
-    ]);
+    ], { timeout: 120_000 });
     const resolved = proc.stdout.toString().trim();
     expect(proc.exitCode, proc.stderr.toString()).toBe(0);
     expect(resolved).toBe(join(REPO, "scripts", "prose-audit.py"));
@@ -95,7 +95,7 @@ describe("writing-no-bold-lead resolves the engine it delegates to", () => {
       "d=tempfile.mkdtemp();dr=pathlib.Path(d)/'drafts';dr.mkdir();" +
       "(dr/'a.md').write_text('**Bold lead.** Body text follows here.\\n');" +
       "\ntry:\n m.check({'cwd': d})\nexcept Exception as e:\n print('RAISED'); sys.exit(0)\nprint('SILENT'); sys.exit(1)",
-    ]);
+    ], { timeout: 120_000 });
     expect(proc.stdout.toString().trim(), proc.stderr.toString()).toBe("RAISED");
   });
 });

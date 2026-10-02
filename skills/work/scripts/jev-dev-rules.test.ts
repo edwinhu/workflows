@@ -26,7 +26,7 @@ function stripSuffix(dir: string) {
 function repo(rule: string, twin: "vio" | "sat"): string {
   const d = mkdtempSync(join(tmpdir(), `jev-dev-${rule}-${twin}-`));
   made.push(d);
-  const git = (...a: string[]) => spawnSync("git", ["-C", d, ...a], { encoding: "utf8" });
+  const git = (...a: string[]) => spawnSync("git", ["-C", d, ...a], { timeout: 120_000, encoding: "utf8" });
   git("init", "-q");
   git("config", "user.email", "t@t");
   git("config", "user.name", "t");
@@ -41,13 +41,13 @@ function repo(rule: string, twin: "vio" | "sat"): string {
 }
 
 function changed(d: string): string[] {
-  const run = (...a: string[]) => spawnSync("git", ["-C", d, ...a], { encoding: "utf8" }).stdout.trim();
+  const run = (...a: string[]) => spawnSync("git", ["-C", d, ...a], { timeout: 120_000, encoding: "utf8" }).stdout.trim();
   return [run("diff", "--name-only", "HEAD"), run("ls-files", "--others", "--exclude-standard")]
     .join("\n").split("\n").filter(Boolean).map(f => join(d, f));
 }
 
 function evidence(d: string): Record<string, any> {
-  const r = spawnSync("python3", [join(RULES_DIR, "evidence.py"), "--files", ...changed(d), "--root", d], { encoding: "utf8" });
+  const r = spawnSync("python3", [join(RULES_DIR, "evidence.py"), "--files", ...changed(d), "--root", d], { timeout: 120_000, encoding: "utf8" });
   expect(r.status).toBe(0);
   return JSON.parse(r.stdout);
 }
@@ -72,7 +72,7 @@ test("dev discovery finds exactly the five rules, each with a subject; ds discov
     expect(Object.keys(out[r].criteria).sort()).toEqual(["INSUFFICIENT_EVIDENCE", "NOT_APPLICABLE", "SATISFIED", "VIOLATED"]);
     expect(JSON.stringify(out[r].state).length).toBeLessThan(60000);
   }
-  const ds = spawnSync("python3", [join(BASE, "constraints/jev/evidence.py"), "--files", ...changed(d), "--root", d], { encoding: "utf8" });
+  const ds = spawnSync("python3", [join(BASE, "constraints/jev/evidence.py"), "--files", ...changed(d), "--root", d], { timeout: 120_000, encoding: "utf8" });
   const dsOut = JSON.parse(ds.stdout);
   expect(Object.keys(dsOut)).toEqual(["A1", "A4", "DEN", "DQ4", "DQ6", "E7", "M1", "R1", "UNI"]);
   expect(Object.values(dsOut).every((v: any) => v.subject === undefined)).toBe(true);

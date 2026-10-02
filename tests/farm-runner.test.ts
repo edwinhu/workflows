@@ -20,7 +20,7 @@ function runFarm(expectPath: string, opts: { writeRelative?: string } = {}) {
   chmodSync(stub, 0o755)
   const tasks = join(root, 'tasks.json')
   writeFileSync(tasks, JSON.stringify([{ label: 'r', prompt: 'p', expect: expectPath }]))
-  const res = spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', agentCwd], {
+  const res = spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', agentCwd], { timeout: 120_000,
     encoding: 'utf8',
     cwd: root,                                   // deliberately NOT agentCwd
     env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1', FARM_OUTCOMES: join(root, 'farm-outcomes.jsonl'),
@@ -57,7 +57,7 @@ function runRow(row: Record<string, unknown>) {
   chmodSync(stub, 0o755)
   const tasks = join(root, 'tasks.json')
   writeFileSync(tasks, JSON.stringify([row]))
-  const res = spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', agentCwd], {
+  const res = spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', agentCwd], { timeout: 120_000,
     encoding: 'utf8',
     cwd: root,
     env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1', FARM_OUTCOMES: join(root, 'farm-outcomes.jsonl'),
@@ -107,7 +107,7 @@ function runFanout(rows: Record<string, unknown>[], spend: number | null = 0, en
     if (spend !== null) writeFileSync(join(events, 'spend.ndjson'), JSON.stringify({ tokensW: spend }) + '\n')
     const tasks = join(root, 'tasks.json')
     writeFileSync(tasks, JSON.stringify(rows))
-    return spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', agentCwd], {
+    return spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', agentCwd], { timeout: 120_000,
       encoding: 'utf8', cwd: root,
       env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, TMPDIR: root,
         CLAUDE_CODE_SESSION_ID: 'estimate-test', FARM_OUT_CHILD: '1', FARM_OUTCOMES: join(root, 'farm-outcomes.jsonl'),

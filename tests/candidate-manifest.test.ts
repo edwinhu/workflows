@@ -14,7 +14,7 @@ const roots: string[] = [];
 const sha256 = (bytes: Uint8Array) => createHash("sha256").update(bytes).digest("hex");
 
 function git(root: string, ...args: string[]): string {
-  const result = Bun.spawnSync(["git", ...args], { cwd: root, stdout: "pipe", stderr: "pipe" });
+  const result = Bun.spawnSync(["git", ...args], { timeout: 120_000, cwd: root, stdout: "pipe", stderr: "pipe" });
   if (result.exitCode !== 0) throw new Error(result.stderr.toString());
   return result.stdout.toString().trim();
 }

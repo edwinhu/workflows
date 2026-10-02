@@ -19,7 +19,7 @@ function runFarm(root: string, env: Record<string, string | undefined>) {
   chmodSync(join(bin, 'claude-code'), 0o755)
   const tasks = join(root, 't.json')
   writeFileSync(tasks, JSON.stringify([{ label: 'r', prompt: 'p' }]))
-  return spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', root], {
+  return spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', root], { timeout: 120_000,
     encoding: 'utf8',
     env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, TMPDIR: root, FARM_OUTCOMES: `${root}/farm-outcomes.jsonl`, FARM_OUT_CHILD: '1', ...env },
   })
@@ -53,7 +53,7 @@ test('a live run belonging to a different session is not seen', async () => {
   // regression is only visible when the other session's file sits where the old code looked.
   writeFileSync(join(root, 'farm-events', `${child.pid}.ndjson`), `farm: START workflow cwd=/x out=${out} expect=1\n`)
 
-  const status = spawnSync('bash', [ALIVE, out], {
+  const status = spawnSync('bash', [ALIVE, out], { timeout: 120_000,
     encoding: 'utf8',
     env: { ...process.env, TMPDIR: root, CLAUDE_CODE_SESSION_ID: SID },
   }).status
