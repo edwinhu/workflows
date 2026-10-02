@@ -3,7 +3,7 @@
  *
  * The ending notification only fires when the loop reaches an ending. A loop killed hard — reboot,
  * OOM, kill -9 — reaches none and writes no terminal journal record either, so nothing says so and
- * the operator discovers it by asking. The watcher mod (hooks/register.ts) watches for exactly that shape:
+ * the operator discovers it by asking. The watcher mod (hooks/watch/watcher.ts) watches for exactly that shape:
  * a file in $TMPDIR/farm-events/<session>/ whose pid is gone with no DONE line. So the loop files
  * itself there, in farm.sh's protocol rather than a second one of its own.
  *

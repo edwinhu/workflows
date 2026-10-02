@@ -14,7 +14,7 @@
 # never reported as a CRITICAL. No raw.json means the agents never returned: no RESULT is written,
 # exactly as a dead farm run left none before.
 #
-# Liveness: farm-alive.sh and the watcher mod (hooks/register.ts) key on $TMPDIR/farm-events/<session>/<pid>.ndjson.
+# Liveness: farm-alive.sh and the watcher mod (hooks/watch/watcher.ts) key on $TMPDIR/farm-events/<session>/<pid>.ndjson.
 # The farm.sh children each write their own; this script writes one claiming RESULT, so the run is
 # alive between children and a death with no DONE is reported. WORK_FARM overrides farm.sh.
 set -uo pipefail

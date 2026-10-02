@@ -190,7 +190,7 @@ describe('half one: the HOLD is armed by the dispatch, in this session', () => {
 })
 
 /**
- * HALF TWO: THE WAKE. The watcher mod (hooks/register.ts) watches the run and is the PRIMARY wake —
+ * HALF TWO: THE WAKE. The watcher mod (hooks/watch/watcher.ts) watches the run and is the PRIMARY wake —
  * but it runs only while a session does, and on 2026-09-27 a session restarted a loop at 23:14
  * with no watcher re-armed. A cron survives `--resume`/`--continue` and a watcher that never armed, so
  * the hourly heartbeat is the BACKSTOP and is on by DEFAULT; `--no-cron` opts out.

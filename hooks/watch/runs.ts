@@ -1,4 +1,4 @@
-// Pure state for the watcher mod (hooks/register.ts): parse the farm-events stream, classify each
+// Pure state for the watcher mod (hooks/watch/watcher.ts): parse the farm-events stream, classify each
 // run, and render the status line, the /farm table and the wake text. No `$`, no I/O, so plain
 // `bun test` covers it (tests/farm-watch-runs.test.ts) as well as the mod kit.
 //

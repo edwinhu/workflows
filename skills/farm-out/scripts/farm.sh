@@ -201,7 +201,7 @@ verify() {
 }
 
 # ---------------------------------------------------------------- the event stream
-# Read by farm-alive.sh (work's liveness check) and the watcher mod (hooks/register.ts). Keyed on $$ -- the shell
+# Read by farm-alive.sh (work's liveness check) and the watcher mod (hooks/watch/watcher.ts). Keyed on $$ -- the shell
 # that lives for the whole dispatch -- because those readers take the pid from the FILENAME and
 # kill -0 it; a per-row subshell pid is dead the instant its row ends and every finished row
 # would report GONE.
@@ -548,7 +548,7 @@ for r in json.load(open(sys.argv[1], encoding="utf-8")):
 else
   # ------------------------------------------------------ the hourly heartbeat (--workflow only)
   #
-  # THE WAKE is the watcher mod (hooks/register.ts): it reads every run this session launches from
+  # THE WAKE is the watcher mod (hooks/watch/watcher.ts): it reads every run this session launches from
   # the farm-events stream and wakes the session on DONE and on a run that dies. THE CRON IS THE
   # BACKSTOP, on by default (--no-cron opts out): a cron fires in a resumed session even when no
   # session was running as the run finished. Same shape, interval knob and minute-7 offset as work-dispatch.sh, because it is one

@@ -4,7 +4,7 @@
 
 ### Added
 
-- **A watcher mod replaces the `farm-runs` plugin monitor.** `hooks/register.ts` (wired as `modules` in `hooks/hooks.json`, beside the settings hooks) reads this session's `$TMPDIR/farm-events/<session>/` on a 15 s timer that restarts with every session start and reload, which the monitor never did: a finished run once woke nobody for hours. It keeps one status line while farm runs, work rounds or grind loops run (`farm: 2 running (ds-rules 43m, …) · work <run> round 2/3 2/5 checks 6m`), wakes the session ONCE per run on `DONE` or `GONE` through `$.prompt.submit` (remembered in `$.store`, so a reload never re-wakes), and adds `/farm`, an immediate table of label, state, elapsed, artifact and report. Headless sessions and farm children (`FARM_OUT_CHILD=1`) register nothing. Kit tests: `scripts/mod-test.sh`.
+- **A watcher mod replaces the `farm-runs` plugin monitor.** `hooks/watch/watcher.ts` (registered from `hooks/register.ts`, now the plugin's one hooks module, which composes it with bulk-guard: `modules` takes a single path per plugin) reads this session's `$TMPDIR/farm-events/<session>/` on a 15 s timer that restarts with every session start and reload, which the monitor never did: a finished run once woke nobody for hours. It keeps one status line while farm runs, work rounds or grind loops run (`farm: 2 running (ds-rules 43m, …) · work <run> round 2/3 2/5 checks 6m`), wakes the session ONCE per run on `DONE` or `GONE` through `$.prompt.submit` (remembered in `$.store`, so a reload never re-wakes), and adds `/farm`, an immediate table of label, state, elapsed, artifact and report. Headless sessions and farm children (`FARM_OUT_CHILD=1`) register nothing. Kit tests: `scripts/mod-test.sh`.
 
 ### Changed
 

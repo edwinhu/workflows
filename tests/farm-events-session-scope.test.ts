@@ -86,7 +86,7 @@ test('every shell writer and reader spells the directory identically', () => {
 
 test('the watcher mod reads the same directory, keyed on the session id', () => {
   // The mod cannot use the shell expansion; it joins TMPDIR, farm-events and $.session.id().
-  const mod = readFileSync(join(import.meta.dir, '..', 'hooks', 'register.ts'), 'utf8')
+  const mod = readFileSync(join(import.meta.dir, '..', 'hooks', 'watch', 'watcher.ts'), 'utf8')
   expect(mod).toContain('/farm-events/${s}')
   expect(mod).toContain('$.session.id()')
   expect(mod).toContain("$.env.get('TMPDIR')")

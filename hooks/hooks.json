@@ -1,5 +1,5 @@
 {
-  "description": "Settings hooks, plus the watcher mod (register.ts) for this session's farm and work runs",
+  "description": "Settings hooks, plus the plugin's mods",
   "modules": [
     "./register.ts"
   ],

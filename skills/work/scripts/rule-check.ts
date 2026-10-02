@@ -1,7 +1,8 @@
 #!/usr/bin/env bun
 import { spawnSync } from 'child_process';
-import { existsSync } from 'fs';
-import { join, basename, dirname } from 'path';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'fs';
+import { tmpdir } from 'os';
+import { join, basename, dirname, resolve } from 'path';
 import { decisionsCall } from '../../../hooks/work-hold.ts';
 
 export const defaultRulesDir = join(__dirname, '../../../constraints/jev');
@@ -30,8 +31,42 @@ export function changedFiles(projectDir: string): string[] {
   return allFiles.map(f => join(projectDir, f));
 }
 
+// Changed line ranges per changed or untracked file (absolute path -> [lo, hi] pairs, inclusive), from
+// `git diff -U0 HEAD`; an untracked file is all of its lines. A pure deletion after line c is the point
+// [c + 0.5, c + 0.5], so it hits only a statement that spans both c and c + 1. Null when git cannot diff.
+export function changedRanges(projectDir: string): Record<string, number[][]> | null {
+  const git = (...a: string[]) => spawnSync('git', ['-C', projectDir, '-c', 'core.quotepath=off', ...a], { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 });
+  const top = git('rev-parse', '--show-toplevel');
+  const diff = git('diff', '--no-color', '--no-ext-diff', '-U0', 'HEAD');
+  if (top.status !== 0 || diff.status !== 0) return null;
+  const root = top.stdout.trim();
+  const out: Record<string, number[][]> = {};
+  let cur: number[][] | null = null;
+  for (const ln of diff.stdout.split('\n')) {
+    if (ln.startsWith('+++ ')) {
+      cur = ln === '+++ /dev/null' ? null : (out[resolve(root, ln.slice(6))] = []);
+      continue;
+    }
+    const m = /^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/.exec(ln);
+    if (m && cur) {
+      const start = parseInt(m[1], 10);
+      const n = m[2] === undefined ? 1 : parseInt(m[2], 10);
+      cur.push(n === 0 ? [start + 0.5, start + 0.5] : [start, start + n - 1]);
+    }
+  }
+  const untracked = git('ls-files', '--others', '--exclude-standard', '--full-name');
+  for (const f of untracked.stdout.split('\n').filter(Boolean)) {
+    const abs = resolve(root, f);
+    let n = 1;
+    try { n = Math.max(1, readFileSync(abs, 'utf8').split('\n').length); } catch { /* unreadable: evidence skips it */ }
+    out[abs] = [[1, n]];
+  }
+  return out;
+}
+
 // Every rule's {state, proposition, criteria, ...} from the rules directory's extractor; throws on failure.
-export function collectEvidence(opts: { files: string[]; plan?: string; root?: string; rulesDir?: string }): Record<string, any> {
+// `changed` (from changedRanges) scopes the rules that take it to the lines the round added or changed.
+export function collectEvidence(opts: { files: string[]; plan?: string; root?: string; rulesDir?: string; changed?: Record<string, number[][]> | null }): Record<string, any> {
   const rulesDir = opts.rulesDir || defaultRulesDir;
   const argsList = ['--files', ...opts.files];
   if (opts.plan) {
@@ -49,7 +84,14 @@ export function collectEvidence(opts: { files: string[]; plan?: string; root?: s
   }
 
   // a large diff yields megabytes of evidence; the default buffer would fail it silently
+  let changedDir = '';
+  if (opts.changed) {
+    changedDir = mkdtempSync(join(tmpdir(), 'rule-check-changed-'));
+    writeFileSync(join(changedDir, 'changed.json'), JSON.stringify(opts.changed));
+    argsList.push('--changed-lines', join(changedDir, 'changed.json'));
+  }
   const evidenceRes = spawnSync('python3', [evidenceScript, ...argsList], { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 });
+  if (changedDir) rmSync(changedDir, { recursive: true, force: true });
   if (evidenceRes.status !== 0) {
     throw new Error(`evidence.py failed: ${evidenceRes.stderr}`);
   }
@@ -121,6 +163,7 @@ export function scoreRule(ruleName: string, data: any, projectName: string): { p
 // Score every rule in rulesDir (or only the named ones) on these files; verdicts sorted by p descending.
 export function checkRules(opts: {
   files: string[]; plan?: string; root?: string; rulesDir?: string; projectName: string; blockAt: number; only?: string[];
+  changed?: Record<string, number[][]> | null;
 }): { verdicts: Verdict[]; unavailable: Unavailable[] } {
   const evidenceData = collectEvidence(opts);
   const verdicts: Verdict[] = [];
@@ -169,9 +212,11 @@ function main() {
     }
   }
 
+  let changed: Record<string, number[][]> | null = null;
   if (projectDir) {
     try {
       files = files.concat(changedFiles(projectDir));
+      changed = changedRanges(projectDir);
     } catch (e) {
       console.error("Failed to list files from git:", e);
       process.exit(1);
@@ -197,7 +242,7 @@ function main() {
 
   let result!: ReturnType<typeof checkRules>;
   try {
-    result = checkRules({ files, plan: plan || undefined, root: projectDir || undefined, rulesDir, projectName, blockAt });
+    result = checkRules({ files, plan: plan || undefined, root: projectDir || undefined, rulesDir, projectName, blockAt, changed });
   } catch (e: any) {
     console.error(e.message);
     process.exit(1);
