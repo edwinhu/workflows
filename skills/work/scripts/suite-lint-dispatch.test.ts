@@ -19,6 +19,9 @@ import { execFileSync } from 'node:child_process'
 import { chmodSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
+import { useTmp } from '../../../tests/helpers/tmp.ts'
+
+const mkTmp = useTmp()
 
 // Tests in this file drive work-dispatch.sh as a real bash subprocess. Bun's 5s per-test default
 // is a budget for that subprocess plus whatever else the machine is doing, so under parallel load
@@ -44,7 +47,7 @@ function script(dir: string, name: string, body: string) {
 
 /** A lint-CLEAN plan over a fixture repo, so the only thing a test can observe is tier 3. */
 function fixture(opts: { redCommand?: string; suites?: Record<string, string> } = {}) {
-  const dir = mkdtempSync(join(tmpdir(), 'suite-lint-dispatch-'))
+  const dir = mkTmp('suite-lint-dispatch-')
   scratch.push(dir)
   mkdirSync(join(dir, 'src'), { recursive: true })
   script(dir, 'check.sh', 'echo "1 failed, 0 passed"\nexit 1')
@@ -197,7 +200,7 @@ describe('the tier is BOUNDED and leaves nothing behind', () => {
 
   test('the tier leaves no temp residue in TMPDIR', () => {
     const f = fixture({ suites: { 'report.test.ts': EXISTENCE_ONLY } })
-    const tmp = mkdtempSync(join(tmpdir(), 'suite-lint-tmp-'))
+    const tmp = mkTmp('suite-lint-tmp-')
     scratch.push(tmp)
     const before = readdirSync(tmp)
     expect(before).toEqual([])
@@ -217,7 +220,7 @@ describe('the tier is BOUNDED and leaves nothing behind', () => {
 
   test('a temp path that cannot be created is REPORTED, not silently walked past', () => {
     const f = fixture({ suites: { 'report.test.ts': EXISTENCE_ONLY } })
-    const tmp = mkdtempSync(join(tmpdir(), 'suite-lint-ro-'))
+    const tmp = mkTmp('suite-lint-ro-')
     scratch.push(tmp)
     chmodSync(tmp, 0o500)
     const r = (() => {

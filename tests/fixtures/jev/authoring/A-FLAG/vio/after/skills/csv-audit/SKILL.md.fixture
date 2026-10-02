@@ -1,0 +1,24 @@
+---
+name: csv-audit
+description: "Use when the user asks to 'audit this CSV', 'check the export', 'why does the file have blank rows', or hands over a delimited export to vet before it is loaded. NEGATIVE ROUTING: building or merging a dataset is /ds."
+---
+
+# CSV Audit
+
+Reads one delimited export and reports what would break a load.
+
+## Step 1: Inventory
+
+Run `bun ${CLAUDE_SKILL_DIR}/scripts/inventory.ts <file>` and read its column table.
+
+## Step 2: Report
+
+List each defect with its row number.
+
+## Red Flags - STOP
+
+| Trigger | Do instead |
+|---|---|
+| If you catch yourself thinking the blank rows are probably harmless | stop and count them |
+| You feel tempted to skip the encoding check because the file looks fine | run it anyway |
+| You find yourself wanting to fix the CSV instead of reporting it | report only |

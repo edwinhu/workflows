@@ -88,6 +88,12 @@ every rule this file states that a string can settle — the TOC bang on every s
 aborts a load, a path the prose cannot resolve from the skill's own base directory, and a constraint key
 no loader reads. `bin/plugin-audit` runs it, so a finding fails the audit rather than waiting for a reader.
 
+**Then the judgement rules over what you changed:**
+`bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --project-dir <repo> --rules ${CLAUDE_PLUGIN_ROOT}/constraints/jev/authoring`.
+Exit 2 names each rule at p >= 0.85 — A-DESC process summary in a description, A-FLAG intention-targeted
+red flag, A-SOFT softened Iron Law, A-GATE judgement gate, A-STATE new state file or `.planning/` noun
+with nothing retired. Fix every one it names; exit 1 means Jev was unavailable, never a pass.
+
 Adding or editing a skill's `lens`, or adding a checker script? Run `bun ${CLAUDE_PLUGIN_ROOT}/skills/plugin-creator/scripts/pc-probe.ts --target <plugin-dir>` afterwards — it judges the single lens prompt and computes whether a new engine is a second one in its domain, and whether the old one still works.
 
 #### `${CLAUDE_SKILL_DIR}` — Script Path References
@@ -222,15 +228,15 @@ Then score the draft using the process below.
 
 Score against all 12 patterns. Use the scoring template from the checklist. Focus on:
 
-1. **Iron Laws** — Does the skill have absolute constraints for high-drift actions? Are they wrapped in `<EXTREMELY-IMPORTANT>` tags with strong framing? If they use soft language ("try to", "should", "consider"), they will be ignored — rewrite with action-masking language.
+1. **Iron Laws** — Does the skill have absolute constraints for high-drift actions? Are they wrapped in `<EXTREMELY-IMPORTANT>` tags? Soft wording inside one is A-SOFT's to decide.
 
 2. **Fact Rows** (supersedes Rationalization Tables, v5.36.0) — Does the skill state its incident-learned knowledge as declarative facts? Each row must be *non-derivable* (a number, threshold, named incident, or tool quirk from observed failures — not a restatement of the rule), with the consequence framed as a property of the action (counterproductive / unhelpful / dishonest / incompetent). Legacy excuse/reality tables in existing skills count as present but should convert on next touch; never author new ones.
 
-3. **Red Flags + STOP** — Are there pattern interrupts for observable wrong actions? Must target actions ("About to X"), not intentions ("Thinking about X").
+3. **Red Flags + STOP** — Are there pattern interrupts for the high-drift wrong actions? Whether each targets an action rather than an intention is A-FLAG's.
 
-4. **Gate Functions** — Does every phase transition have a verifiable exit condition? "Quality is sufficient" is not a gate. "File X contains string Y" is a gate.
+4. **Gate Functions** — Does every phase transition have an exit condition? Whether a gate is decidable or a judgement is A-GATE's.
 
-5. **Trigger-Only Descriptions** — Does the description contain ONLY trigger phrases? If it contains a process summary, the agent will follow the short description instead of reading the body. This is the single most common skill design mistake.
+5. **Trigger-Only Descriptions** — decided by A-DESC on every changed description; not scored by hand.
 
 6. **Drive-Aligned Framing** — Do Iron Laws and fact rows carry helpfulness-first consequences? "Skipping X is NOT HELPFUL — [concrete user harm]" is stronger than "incorrect" or "premature" because it targets the model's strongest drive. Embed in the law or fact row itself — standalone "Your Drive | Why You Skip" tables are deprecated (they restate one consequence five times).
 
@@ -254,14 +260,14 @@ Score against patterns 2, 3, 5, and 10:
 
 - **Fact Rows** — What are the tool's non-derivable gotchas? (e.g., "the API validates format, not correctness — an empty response returns 200"; rate limits; auth quirks)
 - **Red Flags + STOP** — What wrong actions can the agent take? (e.g., calling a destructive API without confirmation)
-- **Trigger-Only Descriptions** — Keep description to triggers only
+- **Trigger-Only Descriptions** — A-DESC
 - **Staged Review Loops** — For multi-step tool interactions, add review after each step
 
 #### For Knowledge Skills (Low Enforcement)
 
 Score against pattern 5 only:
 
-- **Trigger-Only Descriptions** — This is the most important pattern for knowledge skills. If the description summarizes the knowledge, the agent reads the summary instead of the full body.
+- **Trigger-Only Descriptions** — the most important pattern for knowledge skills; A-DESC decides it.
 
 ### Step 4: Reconcile Tensions
 

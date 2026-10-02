@@ -3,6 +3,9 @@ import { chmodSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from '
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
+import { useTmp } from './helpers/tmp.ts'
+
+const mkTmp = useTmp()
 
 /**
  * The spec for the signals `route.ts --refresh` records (usageRank from OpenRouter's rankings
@@ -47,7 +50,7 @@ const AA = {
 function tableCopy(edit: (t: any) => void = () => {}): string {
   const t = JSON.parse(readFileSync(FIXTURE, 'utf8'))
   edit(t)
-  const p = join(mkdtempSync(join(tmpdir(), 'route-signals-')), 'table.json')
+  const p = join(mkTmp('route-signals-'), 'table.json')
   writeFileSync(p, JSON.stringify(t, null, 2) + '\n')
   return p
 }
@@ -82,7 +85,7 @@ function stubAll(opts: { aaStatus?: number; rankingsStatus?: number } = {}) {
 
 /** An `op` on PATH that logs its argv and token, and answers `op read` per ref (or fails). */
 function stubOp(answers: Record<string, string> | 'fail') {
-  const dir = mkdtempSync(join(tmpdir(), 'route-op-'))
+  const dir = mkTmp('route-op-')
   const log = join(dir, 'op.log')
   const xdg = join(dir, 'xdg')
   mkdirSync(join(xdg, 'agenix'), { recursive: true })

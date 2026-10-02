@@ -1,0 +1,91 @@
+---
+name: workflow-creator
+description: 'Design, repair, or audit a multi-phase workflow. Use when the user says "create a workflow", "design a workflow", "scaffold a new workflow", "add a phase to this workflow", "improve/repair/redesign this workflow", "migrate this workflow", "audit this workflow", "why doesn''t my workflow''s gate work", "check this workflow''s gate", "the gate passes when it shouldn''t", or "/workflow-creator". Covers all three — fresh creation, corrective improvement, and read-only audit. Use proactively when a workflow''s gate looks vacuous or wc-probe reports CLEAN over nothing, even if the user never says "workflow". NEGATIVE ROUTING: a plain SKILL.md with no phases, no work dispatch and no computed gate goes to skill-creator, not here — this skill owns the artifacts that pass parameters to `work`''s workflow.js and are judged by wc-probe; plugin manifests, hooks wiring and multi-component scaffolding go to plugin-creator.'
+argument-hint: 'the workflow to create, improve, or audit'
+allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Monitor]
+hooks:
+  PostToolUse:
+    # Not widened to Bash — a Bash payload carries `command`, not the `file_path` this hook reads,
+    # so the matcher alone would fire and validate nothing; the gate re-derives every check here.
+    #
+    # SKILL-SCOPED ON PURPOSE — do not "fix" this to agent scope. A skill hook reaches the main
+    # session's writes only (hook-reach.md Cell A, re-measured 2.1.257 2026-09-17), and
+    # farmOutOnly denies the main thread everything BUT `*.md` (main-thread-guard.sh fo_exempt,
+    # measured). SKILL.md and agent `.md` — this checker's primary targets — are exactly the class
+    # still written here, so the reach farmOutOnly removes is the reach this hook never needed.
+    # Its `.ts`/`hooks.json` rows do lose the main thread; P2 there is carried by the plugin-wide
+    # hooks/guards/skill-paths.ts (the plugin mod) and by wc-probe at gate time, so no rule is left unenforced.
+    - matcher: "Write|Edit"
+      hooks:
+        - type: command
+          command: "bun ${CLAUDE_PLUGIN_ROOT}/skills/workflow-creator/scripts/validate-skill-write.ts"
+---
+
+# workflow-creator
+
+## Constraints, and the two ranks
+
+A workflow is the **set of constraints** its output must satisfy, plus the machinery that decides
+them. Constraints have two ranks, and **mechanical is first-best**: a command with an exit code —
+deterministic, re-runnable, identical for every agent and every iteration. A **lens** is
+second-best: a subagent's reading scored by `work`'s JS, the fallback for a constraint that is
+genuinely judgement.
+
+**The conversion duty.** Every lens checklist item stands under one question — *why is this not a command?*
+An item that flags the same shape twice is a lint rule nobody has written yet: write the rule, gate it
+through the entry point, remove the item. The former `path-resolution` dimension is now P1/P2/P4/P6.
+
+**ONE mechanical entry point.** All of a workflow's mechanical checks are reachable from a single
+command whose exit code is the whole mechanical verdict —
+[`scripts/check.sh`](${CLAUDE_SKILL_DIR}/scripts/check.sh) here, one leg per check, none
+short-circuiting. A list of N commands drops one silently and nothing reports a check it never knew
+about; and work re-runs a claimed mechanical pass in a shell (`work-result.sh`), which is
+affordable for one command and not for N. **P10** refuses a second `mechanicalChecks` entry; a
+genuine exception is declared with `<!-- wc-probe: ignore-entry-point -->`.
+
+**And it reaches its constraints by ONE name.** A plugin shipping a constraint corpus exposes
+`scripts/load-constraints <scope>[,<scope>] [--index|--full]` — index by default, because the prose
+for one scope is 38,524 bytes against 1,386 and a load-time bang pays that on every invocation.
+Calling the implementation file (`load-constraints.py`, `load-constraints.ts`) or an older name
+couples every caller to a language choice; `wc-probe`'s P13 refuses those. Cross-plugin, the corpus
+is reached through `bin/` on PATH (`typst-rules`), never through a hand-rolled `$HOME` resolver.
+
+**A generated workflow declares its own check entry point.** `check.sh` gates workflow *artifacts* —
+probe, parity, node-check, probe suite — and is not a generated workflow's domain gate. A workflow
+whose domain has a toolchain (build, test, lint, render) ships one entry point of its own, collects
+those legs behind it, and names *that* in its `mechanicalChecks`. The law binds the workflow being
+generated, not only its generator.
+
+**THREE SHAPES, ONE DISCOVERY MECHANISM EACH. There is no fourth.**
+
+| the thing is | it is a | found by |
+|---|---|---|
+| a mechanical rule | **SCRIPT** in `constraints/` | the check runner, globbing that directory |
+| knowledge | **REFERENCE** `.md` | `skill-toc`, emitted by a bang at load |
+| a procedure | **SKILL** | named in an agent's `skills:`, or invoked |
+
+## Red flags
+
+| Situation | Wrong move | Right move |
+|---|---|---|
+| User asks what is wrong with a workflow | hand-dispatch a review as a bare `Agent` call to skip the plan-mode ceremony | audit-only is the work loop with `readOnly: true` and `tasks: []` — same spine, same carried-finding adjudication, same computed gate. A charter plan is the price, and `work` says pay it |
+| Audit turned up fixes | fix them inside the audit | that is an **improve** run with its own plan and its own gate |
+| The lens keeps flagging the same shape, or a checklist item is decidable | tune the prompt and keep the item | that shape is a lint rule nobody has written yet — write the rule, make it a leg of the entry point, delete the item from the lens prompt. `path-resolution` was deleted this way; it is P1/P2/P4/P6. The lens is what is left when no exit code can decide it |
+| Another deterministic check is needed | add a second `mechanicalChecks` entry beside the first | add a **leg to `check.sh`** — the entry point's exit code is the whole mechanical verdict, a check declared beside it is one nothing reports when it is dropped, and P10 refuses the second entry unless `<!-- wc-probe: ignore-entry-point -->` says why |
+| Generated workflow needs a lifecycle | write a second spine inside the skill | supply parameters to an existing spine; a skill that re-derives a lifecycle is the finding `spine-fidelity` looks for |
+| Referencing a domain workflow | by its `meta.name` | `{scriptPath: "<absolute path>"}` — a bare name resolves only through `.claude/workflows/` |
+| Dispatching `work` (or any workflow script) | the built-in `Workflow` tool | the guard at `~/.claude/hooks/main-thread-guard.sh` denies `Workflow` unconditionally, so the call never runs — go through `farm.sh --workflow … --args … --out …` and validate the result file with `work-result.sh`. Same guard denies `Agent` for non-allowlisted subagent types; `Explore` and `Plan` stay allowlisted |
+| Write-time guard needed on an implementer | reach for a `hooks:` guard before asking whether a `tools:` allowlist states the same restriction; or declare it in the generated SKILL.md frontmatter, in an agent file under `<skill>/agents/`, or in a PLUGIN-shipped agent's frontmatter | the SKILL.md hook was observed not to reach dispatched agents; `<skill>/agents/` is not a discovery location so nothing registers there; and `hooks:` is IGNORED for plugin-shipped agents, which registers an agent whose guard never fires — put it in an agent's frontmatter under `.claude/agents/` or `~/.claude/agents/` and thread it via `implementerAgentType`, or, inside a plugin, in that plugin's `hooks/hooks.json`. An allowlist PREVENTS the write and a hook only reacts to it, so a restriction expressible as `tools:` should never be a hook — a hook needs reach to work, an allowlist needs none |
+| Guard is in the agent's frontmatter, so the implementer will read what it prints | assume it prints and is read | a **blocking** guard (`exit 2` + stderr) is measured to reach the implementer verbatim; advisory output while exiting 0 is not — make the guard block, or have a `mechanicalCheck` re-derive the finding at gate time |
+| Hook command needs the skill directory | `CLAUDE_SKILL_DIR` in `hooks:` | it does not substitute there — absolute path. **P1 now refuses it**, because the hook silently never fires |
+| Probe run came back CLEAN | trust it | check the coverage line — `0 of 0` is now a critical, but so is a subtree behind a dangling symlink |
+| Task or lens has no domain rules | omit `refs` | `refs: []` — absent is refused, empty is a statement |
+| A documented return shape drifts from the script | assume P5 caught it because the suite is green | P5 compares a SKILL.md's shape against the **script its `scriptPath` names** — check the `crossFileTargets` note to see which file the verdict was actually about |
+| A check needs suppressing | invent a rule name for the marker | only `all`/`hooks`/`paths`/`returns`/`workflow-refs`/`refs`/`entry-point`/`dispatch`/`task-coverage` are honoured; anything else is a `P9` finding, not a suppression. P11 has no `ignore-` form at all — declare the intended difference with `lens-set-differs <field>` |
+| A skill dispatches `work` with its own hand-rolled runner line | copy the invocation into the SKILL.md | that skips the gates `work-dispatch.sh` owns on the way in, and P12 refuses it |
+| Gate says PASS and the probe was skipped | read `mechanicalRun: 0` as clean | nothing was checked; re-run with the checks present |
+| FAIL with an empty `tasksThatFlagged` | conclude there is nothing to fix | read `mechanicalThatFailed`, `lensesThatFlagged` **and** `planFindings` too — the selector has four channels and only one of them owns tasks. A blocking lens finding the lens could route to no task lands in `planFindings` and is fixed by amending the plan. Only when all four are empty does an empty selector on a failing run mean re-run everything |
+| A generated gate field is filled in by the agent that did the work | ship it | pair it with a deterministic JS check or a separate low-effort probe — self-report is not a gate |
+| The workflow needs something `work` doesn't obviously do | write a `workflow.js` for it | **ask which work parameter is missing and generalize `work`.** That urge produced `mechanicalChecks`, `refs`, `authorityExtra` and the `agentType` overrides — each now available to every workflow. A `.js` only after that answers "none", justified in the plan |
+| A domain `.js` **was** justified, and `node --check` passes on it | call it tested | it is a syntax check; smoke it with bogus args and confirm it reaches its **own** arg-validation error |
+| Whole-artifact failure in the generated gate | let it flip `overallPass` with no selector | give it its own selector channel and make the fix loop consume **every** channel the gate returns — `work`'s own returns four, so a generated gate that adds one has five |

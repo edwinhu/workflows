@@ -19,6 +19,9 @@ import { mkdtempSync, mkdirSync, chmodSync, readdirSync, rmSync, writeFileSync, 
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { run as runWorkflow, replies } from './workflow-harness.mjs'
+import { useTmp } from '../../../tests/helpers/tmp.ts'
+
+const mkTmp = useTmp()
 
 // Tests in this file drive work-dispatch.sh as a real bash subprocess. Bun's 5s per-test default
 // is a budget for that subprocess plus whatever else the machine is doing, so under parallel load
@@ -43,7 +46,7 @@ function redScript(dir: string, name: string, body: string) {
 
 /** A plan whose dispatch block carries `work`/`redCommand` values, plus the args.json built earlier. */
 function fixture(opts: { planWork: string; planRed: string; argsWork: string; argsRed: string; extra?: Record<string, unknown> }) {
-  const dir = mkdtempSync(join(tmpdir(), 'work-redispatch-'))
+  const dir = mkTmp('work-redispatch-')
   scratch.push(dir)
   const plan = join(dir, 'plan.md')
   const args = join(dir, 'args.json')
@@ -214,7 +217,7 @@ describe('the round counter — a field in args.json, not a file beside it', () 
  * `uncountable` empties both channels, which plan-lint refuses to read at all (exit 2, no JSON).
  */
 function gateFixture(opts: { dirty?: boolean; uncountable?: boolean } = {}) {
-  const dir = mkdtempSync(join(tmpdir(), 'work-redispatch-gate-'))
+  const dir = mkTmp('work-redispatch-gate-')
   scratch.push(dir)
   const plan = join(dir, 'plan.md')
   const args = join(dir, 'args.json')
@@ -251,8 +254,13 @@ function gateFixture(opts: { dirty?: boolean; uncountable?: boolean } = {}) {
  * committed everything and only skipped the farm-out. That flag is now a true dry run (nothing
  * written), so observing the commit path means dispatching for real against a farm that does nothing.
  */
+// Every child also gets this dir as TMPDIR: a dispatch appends farm-events rows under $TMPDIR,
+// which would otherwise outlive the test in the caller's TMPDIR (or join the caller's own session
+// stream, keyed by the inherited session id).
+const CHILD_TMP = mkTmp('work-redispatch-tmp-')
+
 const FARM_STUB = (() => {
-  const dir = mkdtempSync(join(tmpdir(), 'work-redispatch-farm-'))
+  const dir = mkTmp('work-redispatch-farm-')
   scratch.push(dir)
   const p = join(dir, 'farm-stub.sh')
   writeFileSync(p, '#!/usr/bin/env bash\nexit 0\n')
@@ -260,8 +268,17 @@ const FARM_STUB = (() => {
   return p
 })()
 
+/** The round itself is stubbed too: it runs DETACHED and outlives the test, so a real one writes
+ *  into fixture dirs after they are swept. Nothing here observes the round, only the commit path. */
+const ROUND_STUB = (() => {
+  const p = join(CHILD_TMP, 'round-stub.sh')
+  writeFileSync(p, '#!/usr/bin/env bash\nexit 0\n')
+  chmodSync(p, 0o755)
+  return p
+})()
+
 function redispatch(plan: string, args: string, ...extra: string[]) {
-  const env = { ...process.env, WORK_FARM: FARM_STUB, WORK_NO_SCOPE: '1' }
+  const env = { ...process.env, TMPDIR: CHILD_TMP, WORK_FARM: FARM_STUB, WORK_ROUND: ROUND_STUB, WORK_NO_SCOPE: '1' }
   try {
     const stdout = execFileSync('bash', [SCRIPT, plan, args, '--provider', 'claude', '--dispatch', ...extra], { timeout: 120_000, encoding: 'utf8', env })
     return { code: 0, out: stdout }
@@ -274,7 +291,7 @@ function redispatch(plan: string, args: string, ...extra: string[]) {
 function dryRun(plan: string, args: string, ...extra: string[]) {
   try {
     const stdout = execFileSync('bash', [SCRIPT, plan, args, '--provider', 'claude', '--dispatch', ...extra], { timeout: 120_000,
-      encoding: 'utf8', env: { ...process.env, WORK_REDISPATCH_DRYRUN: '1' },
+      encoding: 'utf8', env: { ...process.env, TMPDIR: CHILD_TMP, WORK_REDISPATCH_DRYRUN: '1' },
     })
     return { code: 0, out: stdout }
   } catch (e: any) {
@@ -450,7 +467,7 @@ describe('a re-dispatched plan is archived beside args.json, like a first dispat
  * which tasks the selection picks.
  */
 function selFixture(opts: { extra?: Record<string, unknown>; paths?: Record<string, string[]> } = {}) {
-  const dir = mkdtempSync(join(tmpdir(), 'work-redispatch-sel-'))
+  const dir = mkTmp('work-redispatch-sel-')
   scratch.push(dir)
   const plan = join(dir, 'plan.md')
   const args = join(dir, 'args.json')
