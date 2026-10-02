@@ -206,13 +206,12 @@ lens's under the tic table.
 `Domain: legal` and `Domain: econ` add a second `--rules` directory, scored on top of the writing
 set. Legal (`constraints/jev/legal`): `L-ID` (an Id. whose antecedent is not one source), `L-FNARG`
 (a footnote carrying a step the body needs), `L-DIGEST` (precedent digested case by case with no
-synthesis). Econ (`constraints/jev/econ`): `E-WEFIND` (a body finding with no table, figure or
+synthesis), `L-SUPRA` (supra for an authority rule 4.2 bars: a case, a statute even through an
+institutional author, a bill; an agency release cited by its title may take supra). Econ (`constraints/jev/econ`): `E-WEFIND` (a body finding with no table, figure or
 exhibit in reach), `E-CITEFORM` (a paper cited in law review or numbered form, or a parenthetical
 cite used as a noun), `E-CAUSAL` (causal language on a correlational result), `E-MAGNITUDE` (an
 estimate by sign or significance alone, or with no precision). Their extractors read footnotes
-(Markdown, Typst, LaTeX) and score only changed lines when the round has a diff. `L-SUPRA` (supra
-for a case or statute) waits in `constraints/jev/legal/uncalibrated/`: a submitted manuscript's
-`119th Congress, supra note 3` (a bill) scored 0.49–0.64 against the < 0.5 bar.
+(Markdown, Typst, LaTeX) and score only changed lines when the round has a diff.
 
 ---
 

@@ -263,12 +263,15 @@ KINDS = [
     ('case', re.compile(r"\b[A-Z][\w.'&-]*(?:\s+[\w.'&-]+){0,6}\s+v\.\s+[A-Z]|\bIn re\b|\b\d+\s+(?:U\.S\.|S\. ?Ct\.|"
                         r"F\.(?:\s?Supp\.)?(?:\s?\d[dh])?|A\.(?:\d[dh])?|N\.E\.|N\.W\.|S\.E\.|S\.W\.|So\.|P\.(?:\d[dh])?|"
                         r"Cal\. Rptr\.|N\.Y\.S\.|WL)\s+\d")),
-    ('statute', re.compile(r'\bU\.S\.C\.|\bStat\.\s+\d|\bCode Ann\.|\b(?:Act|Code) (?:of \d{4} )?§|\btit\.\s+\d+,?\s+§')),
+    ('statute', re.compile(r'\bU\.S\.C\.|\bStat\.\s+\d|\bCode Ann\.|\b(?:Act|Code) (?:of \d{4} )?§|\btit\.\s+\d+,?\s+§|'
+                           r'\b(?:Corporation|Business) (?:Law|Code)\b,? (?:Section|§)\s*\d')),
     ('constitution', re.compile(r'\bConst\.\s')),
     ('regulation', re.compile(r'\bC\.F\.R\.|\bReg\.\s+[A-Z]-?\d')),
     ('restatement or model code', re.compile(r'\bRestatement\b|\bModel (?:Bus\. Corp\. )?(?:Act|Code)\b|\bU\.C\.C\.')),
-    ('agency release or rulemaking', re.compile(r'\bRelease No\.|\bRel\. No\.|\bFed\. Reg\.')),
-    ('hearing or legislative material', re.compile(r'\bHearings?\b|\bH\.R\.|\bS\. \d+\b|\bCong\.|\bCong\. Rec\.|\bRep\. No\.')),
+    ('release', re.compile(r'\bRelease No\.|\bRel\. No\.|\bFed\. Reg\.')),
+    ('hearing', re.compile(r'\bHearings?\b')),
+    ('bill or other legislative material', re.compile(r'\bH\.R\. \d|(?<![\w.])S\. \d+\b|\bCong\.|\b\d+(?:st|nd|rd|th) Congress\b|'
+                                                      r'\bRep\. No\.')),
     ('periodical article', re.compile(r'\b\d+\s+(?:[A-Z][\w.&\']*\s){1,6}\d+(?:,\s*\d+)?(?:[-–]+\d+)?\s*\(\d{4}\)|L\. ?Rev\.|\bJ\.\s')),
     ('court filing', re.compile(r'\bComplaint\b|\bBrief\b|\bMotion\b|\bPetition\b')),
     ('web or news source', re.compile(r'https?://|perma\.cc|\b(?:Jan|Feb|Mar|Apr|May|June|July|Aug|Sept|Oct|Nov|Dec)\.? \d{1,2}, \d{4}')),
