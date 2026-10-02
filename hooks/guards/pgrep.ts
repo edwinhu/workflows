@@ -68,7 +68,7 @@ const VALUE_LONG = new Set([
   "--euid", "--uid", "--ns", "--nslist", "--signal", "--pidfile",
 ]);
 
-interface Word {
+export interface Word {
   text: string;
   /** True when every character came from inside quotes -- `echo "pgrep -f x"` must not count. */
   quoted: boolean;
@@ -82,7 +82,7 @@ interface Word {
  * `while pgrep -f worker.py; do ...` is a segment whose command word is pgrep. Splitting on `$(`
  * and backtick is what makes `kill $(pgrep -f x)` read as a kill segment plus a pgrep segment.
  */
-function segments(command: string): { words: Word[]; piped: boolean }[] {
+export function segments(command: string): { words: Word[]; piped: boolean }[] {
   const out: { words: Word[]; piped: boolean }[] = [];
   let words: Word[] = [];
   let cur = "";
@@ -159,7 +159,7 @@ function segments(command: string): { words: Word[]; piped: boolean }[] {
 const PREFIXES = new Set(["while", "until", "if", "elif", "then", "do", "done", "!", "sudo", "time", "command", "exec", "nohup", "env"]);
 
 /** Strip leading keywords and `VAR=value` assignments; return the index of the command word. */
-function commandWordIndex(words: Word[]): number {
+export function commandWordIndex(words: Word[]): number {
   let i = 0;
   while (i < words.length) {
     const w = words[i].text;
