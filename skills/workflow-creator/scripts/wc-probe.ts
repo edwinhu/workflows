@@ -18,6 +18,7 @@
 import { existsSync, readdirSync, readFileSync, realpathSync, statSync } from 'node:fs'
 import { basename, dirname, join, resolve, sep } from 'node:path'
 import { homedir } from 'node:os'
+import { RULE_DIRS, TEACHING_SETS, ruleSetOf } from '../../../hooks/jev/rules.ts'
 
 // ---------------------------------------------------------------- types
 
@@ -353,6 +354,11 @@ export const KNOWN_EXEMPTION_RULES: readonly string[] = [
   'entry-point',
   'dispatch',
   'task-coverage',
+  'shell-leg',
+  'duplicate-grading',
+  'rule-checks',
+  'serial-loop',
+  'fixed-temp',
 ]
 
 /**
@@ -2942,6 +2948,13 @@ export interface WorkArgsFence {
   ruleChecks: { line: number, name: string | null, cmd: string | null, blockAt: number | null } | null
   /** Instance ids this fence enumerates, deduplicated, each with the arrays that named it. */
   instanceIds: InstanceId[]
+  /** The agent legs and work rows P14-P17 read. Each `prompt`/`work` is the FIRST string literal of
+   *  the value, the same reading `lens.prompt` gets. */
+  taskRows: { taskId: string | null, line: number, brief: string | null, paths: string[] }[]
+  scored: { key: string | null, line: number, prompt: string | null, countKeys: string[] }[]
+  attemptLegs: { key: string | null, line: number, prompt: string | null }[]
+  /** 1-based file line of the `lens` value, or null when the fence declares none. */
+  lensLine: number | null
 }
 
 /** The `lens` fields P11 compares across two fences of one file. */
@@ -3108,6 +3121,43 @@ export function workArgsFences(text: string): WorkArgsFence[] {
           }
         }
       }
+      const firstLit = (o: ObjectLiteral, key: string): string | null => {
+        const sp = findKeyValueSpan(body, masked, o, key)
+        return sp ? (stringLiteralsIn(body, sp.start, sp.end)[0] ?? null) : null
+      }
+      const taskRows: WorkArgsFence['taskRows'] = []
+      if (tasksSpan) {
+        for (const o of directElements(literals, tasksSpan, 'work')) {
+          const wp = findKeyValueSpan(body, masked, o, 'writablePaths')
+          taskRows.push({
+            taskId: firstLit(o, 'id'),
+            line: fileLine(o.start),
+            brief: firstLit(o, 'work'),
+            paths: wp ? stringLiteralsIn(body, wp.start, wp.end) : [],
+          })
+        }
+      }
+      const scored: WorkArgsFence['scored'] = []
+      if (scoredSpan) {
+        for (const o of directElements(literals, scoredSpan, 'prompt')) {
+          const countKeys: string[] = []
+          const comps = findKeyValueSpan(body, masked, o, 'components')
+          if (comps) {
+            for (const c of directElements(literals, comps, 'penalties')) {
+              const ps = findKeyValueSpan(body, masked, c, 'penalties')
+              const pen = ps ? literals.find(l => l.start === ps.start) : undefined
+              if (pen) countKeys.push(...pen.keys)
+            }
+          }
+          scored.push({ key: firstLit(o, 'key'), line: fileLine(o.start), prompt: firstLit(o, 'prompt'), countKeys })
+        }
+      }
+      const attemptLegs: WorkArgsFence['attemptLegs'] = []
+      if (attemptsSpan) {
+        for (const o of directElements(literals, attemptsSpan, 'prompt')) {
+          attemptLegs.push({ key: firstLit(o, 'key'), line: fileLine(o.start), prompt: firstLit(o, 'prompt') })
+        }
+      }
       const pdSpan = findKeyValueSpan(body, masked, obj, 'projectDir')
       const pd = pdSpan ? stringLiteralsIn(body, pdSpan.start, pdSpan.end)[0] : undefined
       out.push({
@@ -3120,6 +3170,10 @@ export function workArgsFences(text: string): WorkArgsFence[] {
         taskIds,
         ruleChecks,
         instanceIds: [...seen].map(([id, sources]) => ({ id, sources: [...sources].sort() })),
+        taskRows,
+        scored,
+        attemptLegs,
+        lensLine: lensSpan ? fileLine(lensSpan.start) : null,
       })
     }
   }
@@ -3433,6 +3487,349 @@ export function checkTaskRowCoverage(file: string, text: string, exemptions: rea
   return findings
 }
 
+// ---------------------------------------------------------------- P14-P18
+
+/**
+ * P14-P18 encode the 2026-10-02 round-shape lessons. Each is decidable and conservative: a false
+ * positive costs the probe its trust, so every predicate names a literal shape, never a theme.
+ *
+ * ADVISORY_RULES report in `ProbeResult.advisories` and never move the exit code. P17 is advisory by
+ * design. P15 is PARKED there: its 2026-10-02 baseline is 15 findings in two audited gates (ds,
+ * teaching notes) that gate-vacuity requires to pass, and a parked rule never gates. Move it out
+ * when that baseline is zero.
+ */
+export const ADVISORY_RULES: ReadonlySet<string> = new Set([
+  'P15 duplicate grading',
+  'P17 serial row loop',
+])
+
+/** The repository root this probe ships in: where `constraints/jev` and `hooks/jev/rules.ts` live. */
+const WORKFLOWS_ROOT = resolve(import.meta.dir, '..', '..', '..')
+
+// A prompt that runs a command as written and reports what it exited with is a shell step in an agent's clothes.
+const RUNS_COMMAND = /\b(?:run|execute)\b[^\n.]{0,80}?\b(?:verbatim|exactly as (?:written|given))\b|\b(?:run|execute)\s+(?:this|the following)\s+(?:command|cmd|check)\b/i
+const REPORTS_EXIT = /\b(?:report|return|record|give)\b[^\n.]{0,80}?\b(?:exit ?code|exitCode|exit status)\b|\bexitCode\s*=/i
+
+/** P14's text predicate: the prompt's ask is to run a command and report its exit code. */
+export function isShellOnlyPrompt(prompt: string): boolean {
+  return RUNS_COMMAND.test(prompt) && REPORTS_EXIT.test(prompt)
+}
+
+/** Every `agent(` call in a code file: its 1-based line and the string literals of its arguments. */
+export function agentCalls(src: string): { line: number, text: string }[] {
+  const masked = maskLiterals(src)
+  const out: { line: number, text: string }[] = []
+  for (const m of masked.matchAll(/(?<![\w$.])agent\s*\(/g)) {
+    const open = m.index! + m[0].length - 1
+    let depth = 0
+    let end = -1
+    for (let i = open; i < masked.length; i++) {
+      if (masked[i] === '(') depth++
+      else if (masked[i] === ')' && --depth === 0) {
+        end = i
+        break
+      }
+    }
+    if (end === -1) continue
+    out.push({ line: lineOf(src, m.index!), text: stringLiteralsIn(src, open, end + 1).join('\n') })
+  }
+  return out
+}
+
+/**
+ * P14 shell-only agent leg — an agent whose whole job is to run a command and report its exit code.
+ *
+ * A model transcribing an exit code is slower than the shell, costs an agent, and is self-report
+ * where the shell is evidence: work moved mechanicalChecks, red probes, acceptance and ruleChecks into
+ * work-checks.sh (523d42cd, 0f41d3c6) for exactly this. Read in a work-args fence (scoredChecks,
+ * attempts, lens prompts) and in a code file's `agent(` calls. Task rows are implementers and are
+ * never read: running a suite is part of their job, not all of it.
+ */
+export function checkShellOnlyAgentLegs(file: string, text: string, exemptions: readonly Exemption[]): Finding[] {
+  const legs: { line: number, label: string, prompt: string }[] = []
+  if (MARKDOWN_EXT_RE.test(file)) {
+    for (const f of workArgsFences(text)) {
+      for (const s of f.scored) if (s.prompt) legs.push({ line: s.line, label: `scoredChecks "${s.key ?? '?'}"`, prompt: s.prompt })
+      for (const a of f.attemptLegs) if (a.prompt) legs.push({ line: a.line, label: `attempt "${a.key ?? '?'}"`, prompt: a.prompt })
+      if (f.lens.prompt && f.lensLine) legs.push({ line: f.lensLine, label: 'the lens', prompt: f.lens.prompt })
+    }
+  } else if (LEXABLE_EXT_RE.test(file)) {
+    for (const c of agentCalls(text)) legs.push({ line: c.line, label: 'an agent() call', prompt: c.text })
+  }
+  return legs
+    .filter(l => isShellOnlyPrompt(l.prompt) && !isExemptAt(exemptions, 'shell-leg', l.line))
+    .map(l => ({
+      rule: 'P14 shell-only agent leg',
+      severity: 'major' as const,
+      file,
+      line: l.line,
+      detail: `${l.label} is told to run a command as written and report its exit code — a shell step dispatched as an agent`,
+      remedy: 'make it a mechanicalChecks entry (a leg of the one entry point) or a ruleChecks command: work-checks.sh runs it in the shell and the JS reads the exit code. Declare a genuine exception with <!-- wc-probe: ignore-shell-leg -->',
+    }))
+}
+
+/** A wired Jev rule: a rule file directly in the set's directory (evidence.py's own glob). */
+export interface WiredRule {
+  id: string
+  /** The id's name word (`N-HOLLOW` -> `hollow`) when the rule's PROPOSITION uses it, else null. */
+  keyword: string | null
+}
+
+/** The wired rules of one rules directory, or null when it does not exist. */
+export function wiredRules(dir: string): WiredRule[] | null {
+  let names: string[]
+  try {
+    names = readdirSync(dir)
+  } catch {
+    return null
+  }
+  const out: WiredRule[] = []
+  for (const n of names.sort()) {
+    if (!n.endsWith('.py') || n.startsWith('_') || n === 'evidence.py') continue
+    const id = n.slice(0, -3)
+    const src = readTextOrNull(join(dir, n)) ?? ''
+    const at = src.search(/^PROPOSITION\s*=/m)
+    const tail = at === -1 ? '' : src.slice(at)
+    // the assignment runs until the next line that starts in column 0
+    const stop = tail.search(/\n\S/)
+    const prop = [...(stop === -1 ? tail : tail.slice(0, stop)).matchAll(/'((?:\\.|[^'\\])*)'|"((?:\\.|[^"\\])*)"/g)]
+      .map(m => m[1] ?? m[2]).join(' ').toLowerCase()
+    const word = id.includes('-') ? id.slice(id.indexOf('-') + 1).toLowerCase() : ''
+    // Five letters at least, and the rule's own statement must use the word: `KEY`, `GAP` or `ID`
+    // name a rule without saying what a prompt about keys or gaps is grading.
+    const keyword = word.length >= 5 && prop.includes(word.slice(0, 5)) ? word : null
+    out.push({ id, keyword })
+  }
+  return out
+}
+
+/** The rules directories a `ruleChecks.cmd` scores: each `--rules`, else rule-check's default. */
+export function ruleDirsOf(cmd: string, pluginRoot: string | null): { dirs: string[], unresolved: string[] } {
+  const dirs: string[] = []
+  const unresolved: string[] = []
+  const toks = cmd.split(/\s+/)
+  for (let i = 0; i < toks.length; i++) {
+    if (toks[i] !== '--rules' || !toks[i + 1] || toks[i + 1].startsWith('<')) continue
+    let d = toks[i + 1].replace(/^["']|["']$/g, '')
+    if (d.includes('${CLAUDE_PLUGIN_ROOT}')) {
+      if (!pluginRoot) {
+        unresolved.push(d)
+        continue
+      }
+      d = d.split('${CLAUDE_PLUGIN_ROOT}').join(pluginRoot)
+    }
+    if (d.startsWith('~/')) d = join(homedir(), d.slice(2))
+    if (/\$|</.test(d)) unresolved.push(d)
+    else dirs.push(d)
+  }
+  if (dirs.length === 0 && unresolved.length === 0) dirs.push(join(WORKFLOWS_ROOT, 'constraints', 'jev'))
+  return { dirs, unresolved }
+}
+
+// A sentence that hands a rule to Jev ("NOT findings here: the Jev rules decide them") defers, never grades.
+const DEFERS = /\b(?:not|never|no longer|jev|ruleChecks|rulesThatFailed|re-grade|re-judge)\b/i
+
+/** Sentences of a prompt as written in source: a literal `\n` separates checklist items too. */
+function sentencesOf(prompt: string): string[] {
+  return prompt.split(/\\n|\n|(?<=[.;!?])\s+/).filter(s => s.trim())
+}
+
+/**
+ * P15 duplicate grading — an agent grades a rule a calibrated Jev rule already scores.
+ *
+ * Read per fence that carries `ruleChecks`, against the WIRED rules of the directories its command
+ * scores. A scoredChecks entry duplicates a rule when its prompt names the rule id, or a penalty count
+ * key IS the rule's name word (`hollow` for N-HOLLOW). A lens prompt duplicates it when a sentence that
+ * does not defer names the id or writes the name word in capitals (`HOLLOW`, `HOLLOWS`). Two graders
+ * of one rule disagree, and the uncalibrated one can block where the calibrated one cleared.
+ */
+export function checkDuplicateGrading(
+  file: string,
+  text: string,
+  ctx: SkillContext,
+  exemptions: readonly Exemption[],
+  unresolved: UnresolvedRef[],
+): Finding[] {
+  const findings: Finding[] = []
+  const pluginRoot = ctx.pluginRoot ?? findPluginRootOrNull(dirname(file))
+  for (const f of workArgsFences(text)) {
+    if (!f.ruleChecks?.cmd || isExemptAt(exemptions, 'duplicate-grading', f.fenceLine)) continue
+    const { dirs, unresolved: un } = ruleDirsOf(f.ruleChecks.cmd, pluginRoot)
+    for (const d of un) {
+      unresolved.push({ rule: 'P15 duplicate grading', file, line: f.ruleChecks.line, token: d, reason: 'the --rules directory is not resolvable here' })
+    }
+    const rules: WiredRule[] = []
+    for (const d of dirs) {
+      const r = wiredRules(d)
+      if (r === null) unresolved.push({ rule: 'P15 duplicate grading', file, line: f.ruleChecks.line, token: d, reason: 'the --rules directory does not exist' })
+      else rules.push(...r)
+    }
+    const idIn = (s: string, id: string) => new RegExp(`(?<![\\w-])${id.replace(/[-]/g, '\\-')}(?![\\w-])`).test(s)
+    const report = (line: number, leg: string, rule: WiredRule, how: string) => findings.push({
+      rule: 'P15 duplicate grading',
+      severity: 'major',
+      file,
+      line,
+      detail: `${leg} grades ${rule.id}, which the fence's ruleChecks already scores as a wired Jev rule (${how})`,
+      remedy: `drop ${rule.id}'s dimension from ${leg} and let rulesThatFailed carry it, or say in the prompt that the Jev rule decides it. Declare a genuine exception with <!-- wc-probe: ignore-duplicate-grading -->`,
+    })
+    for (const s of f.scored) {
+      const live = (s.prompt ? sentencesOf(s.prompt) : []).filter(x => !DEFERS.test(x)).join(' ')
+      for (const r of rules) {
+        if (idIn(live, r.id)) report(s.line, `scoredChecks "${s.key ?? '?'}"`, r, `its prompt names ${r.id}`)
+        else if (r.keyword && s.countKeys.some(k => k.toLowerCase() === r.keyword || k.toLowerCase() === `${r.keyword}s`)) {
+          report(s.line, `scoredChecks "${s.key ?? '?'}"`, r, `penalty count "${s.countKeys.find(k => k.toLowerCase().startsWith(r.keyword!))}"`)
+        }
+      }
+    }
+    if (f.lens.prompt && f.lensLine) {
+      const live = sentencesOf(f.lens.prompt).filter(x => !DEFERS.test(x))
+      for (const r of rules) {
+        const hit = live.find(x => idIn(x, r.id) || (r.keyword !== null && new RegExp(`\\b${r.keyword.toUpperCase()}(?:S|ED|NESS)?\\b`).test(x)))
+        if (hit) report(f.lensLine, 'the lens', r, `"${hit.trim().slice(0, 120)}"`)
+      }
+    }
+  }
+  return findings
+}
+
+/** A concrete path standing for a writablePaths entry: globs and placeholders become one name. */
+function samplePath(p: string): string {
+  return p.replace(/\*\*/g, 'x').replace(/\*/g, 'x')
+}
+
+/**
+ * P16 missing ruleChecks — the deliverable has calibrated Jev rules and the fence scores none.
+ *
+ * The deliverable is the fence's `tasks[].writablePaths`, mapped through hooks/jev/rules.ts
+ * `ruleSetOf` (the per-edit mod's own table) with the skill's name as the workflow cursor. A set
+ * whose directory holds a wired rule makes an absent `ruleChecks` a gap: the rules exist, are
+ * calibrated, and this run never asks them. A readOnly charter (`tasks: []`) declares no deliverable
+ * and is skipped.
+ */
+export function checkMissingRuleChecks(file: string, text: string, ctx: SkillContext, exemptions: readonly Exemption[]): Finding[] {
+  const findings: Finding[] = []
+  const pluginRoot = ctx.pluginRoot ?? findPluginRootOrNull(dirname(file))
+  const workflow = ctx.skillDir ? basename(ctx.skillDir) : null
+  for (const f of workArgsFences(text)) {
+    if (f.ruleChecks || f.taskRows.length === 0 || isExemptAt(exemptions, 'rule-checks', f.fenceLine)) continue
+    const sets = new Map<string, { dir: string, ids: string[], path: string }>()
+    for (const t of f.taskRows) {
+      for (const p of t.paths) {
+        if (/[<{$]/.test(p)) continue
+        const set = ruleSetOf(samplePath(p), workflow)
+        if (!set || sets.has(set)) continue
+        const roots = TEACHING_SETS.has(set) ? [pluginRoot] : [WORKFLOWS_ROOT]
+        for (const root of roots) {
+          if (!root) continue
+          const ids = (wiredRules(join(root, RULE_DIRS[set])) ?? []).map(r => r.id)
+          if (ids.length) sets.set(set, { dir: join(root, RULE_DIRS[set]), ids, path: p })
+        }
+      }
+    }
+    for (const [set, { dir, ids, path }] of sets) {
+      findings.push({
+        rule: 'P16 missing ruleChecks',
+        severity: 'major',
+        file,
+        line: f.fenceLine,
+        detail: `the fence writes ${path} (Jev rule set "${set}", ${ids.length} wired: ${ids.join(', ')}) and carries no ruleChecks, so no calibrated rule judges the round's changed lines`,
+        remedy: `add ruleChecks: { name, cmd: "bun \${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --project-dir <projectDir> --plan <planPath> --rules ${dir}" }, or declare the exception with <!-- wc-probe: ignore-rule-checks -->`,
+      })
+    }
+  }
+  return findings
+}
+
+const SERIAL = /\b(?:for each|for every|each of (?:the|these|all)|loop (?:over|through)|iterate (?:over|through)|one by one)\b[^.;\n]{0,40}?\b(?:rules|files|items|lectures|chapters|sections|readings|documents|cases|tests|skills|workflows|modules|questions|filings|decks|papers|sources|targets|commits)\b/i
+const DEPENDS = /\b(?:in order|sequential(?:ly)?|after the previous|depends? on|builds? on|carry|accumulat\w*|running total|then use)\b/i
+
+/**
+ * P17 serial row loop (ADVISORY) — one row is handed N independent items to work through in turn.
+ *
+ * Read from task rows' `work`, attempt prompts and farm rows (a code-fenced object with a `prompt`
+ * beside `kind`, `cwd`, `agent` or `provider`). The lens is never read: judging a whole deliverable
+ * criterion by criterion is its job. A sentence naming a dependency between the items is skipped.
+ */
+export function checkSerialRowLoop(file: string, text: string, exemptions: readonly Exemption[]): Finding[] {
+  const rows: { line: number, label: string, prompt: string }[] = []
+  for (const f of workArgsFences(text)) {
+    for (const t of f.taskRows) if (t.brief) rows.push({ line: t.line, label: `task "${t.taskId ?? '?'}"`, prompt: t.brief })
+    for (const a of f.attemptLegs) if (a.prompt) rows.push({ line: a.line, label: `attempt "${a.key ?? '?'}"`, prompt: a.prompt })
+  }
+  for (const block of fencedBlocks(text)) {
+    const masked = maskLiterals(block.body)
+    for (const o of findObjectLiterals(block.body)) {
+      if (!o.keys.includes('prompt') || !o.keys.some(k => ['kind', 'cwd', 'agent', 'provider'].includes(k))) continue
+      const sp = findKeyValueSpan(block.body, masked, o, 'prompt')
+      const p = sp ? stringLiteralsIn(block.body, sp.start, sp.end)[0] : undefined
+      if (p) rows.push({ line: block.line + lineOf(block.body, o.start), label: 'a farm row', prompt: p })
+    }
+  }
+  const out: Finding[] = []
+  for (const r of rows) {
+    if (isExemptAt(exemptions, 'serial-loop', r.line)) continue
+    const hit = sentencesOf(r.prompt).find(s => SERIAL.test(s) && !DEPENDS.test(s))
+    if (!hit) continue
+    out.push({
+      rule: 'P17 serial row loop',
+      severity: 'minor',
+      file,
+      line: r.line,
+      detail: `${r.label} loops over independent items in one row: "${hit.trim().slice(0, 120)}"`,
+      remedy: 'fan out one row per item — N independent items are N parallel rows (a 9-rule recalibration took 45+ min serially). Declare a real dependency in the prompt, or <!-- wc-probe: ignore-serial-loop -->',
+    })
+  }
+  return out
+}
+
+// A /tmp path spelled out in full: no `$`, no `{`, no XXXX template, no mktemp on the line.
+const FIXED_TMP = /(?<![\w$}/.-])\/tmp\/[A-Za-z0-9._-]+(?![\w$.{-])/g
+const DESTROYS = /\bgit\b[^\n]*\bworktree\s+(?:add|remove)\b|\brm\s+-[A-Za-z]*[rR][A-Za-z]*\b|\brmSync\s*\(|\bshutil\.rmtree\b|\brm\s+--recursive\b/
+
+/**
+ * P18 fixed shared temp path — a worktree or recursive delete at a /tmp name every run shares.
+ *
+ * Two runs of the same script meet at the same path, and the second one's `rm -rf` or `worktree
+ * remove` deletes the first one's checkout: on 2026-10-02 a fixed baseline worktree name deleted a
+ * sibling row's checkout mid-run. Read line by line in every file, and through one assignment
+ * (`WT=/tmp/x` or `const WT = '/tmp/x'`) to a destructive line naming that variable.
+ */
+export function checkFixedTempPath(file: string, text: string, exemptions: readonly Exemption[]): Finding[] {
+  const lines = text.split('\n')
+  // name -> [fixed path, line it was assigned on]; a variable is followed only BELOW its assignment
+  const fixedVars = new Map<string, [string, number]>()
+  const out: Finding[] = []
+  lines.forEach((l, i) => {
+    const m = /(?:^|[\s;])(?:export\s+|const\s+|let\s+|var\s+|local\s+)?([A-Za-z_]\w*)\s*=\s*["']?(\/tmp\/[A-Za-z0-9._-]+)["']?\s*(?:[;#,)]|$)/.exec(l)
+    if (m && !/mktemp|mkdtemp/.test(l)) fixedVars.set(m[1], [m[2], i])
+    else {
+      const re = /(?:^|[\s;])(?:export\s+|const\s+|let\s+|var\s+|local\s+)?([A-Za-z_]\w*)\s*=(?!=)/.exec(l)
+      if (re) fixedVars.delete(re[1])
+    }
+    if (!DESTROYS.test(l) || /mktemp|mkdtemp/.test(l) || isExemptAt(exemptions, 'fixed-temp', i + 1)) return
+    let path = [...l.matchAll(FIXED_TMP)].map(x => x[0])[0]
+    if (!path) {
+      for (const [v, [p, at]] of fixedVars) {
+        if (at < i && new RegExp(`\\$\\{?${v}\\b|(?<![\\w$.])${v}(?![\\w])`).test(l)) {
+          path = `${p} (via ${v})`
+          break
+        }
+      }
+    }
+    if (!path) return
+    out.push({
+      rule: 'P18 fixed shared temp path',
+      severity: 'major',
+      file,
+      line: i + 1,
+      detail: `a worktree add/remove or recursive delete at the fixed path ${path}: a concurrent run of the same script meets it and deletes the other's tree`,
+      remedy: 'mint the path per run with mktemp -d (or mkdtempSync), keep the name, and remove only the path this run created. Declare a genuine exception with <!-- wc-probe: ignore-fixed-temp -->',
+    })
+  })
+  return out
+}
+
 // ---------------------------------------------------------------- driver
 
 /**
@@ -3482,6 +3879,8 @@ export interface ProbeResult {
   skillMdRead: boolean
   /** Back-compat: files carrying a whole-file P2 exemption. */
   pathCheckExempt: string[]
+  /** Findings of an ADVISORY_RULES rule: printed in both modes, never counted by the exit code. */
+  advisories: Finding[]
 }
 
 /**
@@ -3782,6 +4181,7 @@ export function runProbe(
     // while the write-time hook ran it unconditionally. A guard script naming a path that does not
     // resolve was gate-CLEAN.
     findings.push(...checkPathResolution(file, text, ctx, fileExemptions, unresolvedRefs))
+    findings.push(...checkFixedTempPath(file, text, fileExemptions))
 
     // Dispatch through the SHARED classifier, so the gate and the write-time hook cannot disagree
     // about which rules a file is subject to.
@@ -3810,12 +4210,17 @@ export function runProbe(
       findings.push(...checkDispatchRouting(file, text, fileExemptions))
       findings.push(...checkTaskRowCoverage(file, text, fileExemptions))
       findings.push(...checkRuleChecks(file, text))
+      findings.push(...checkShellOnlyAgentLegs(file, text, fileExemptions))
+      findings.push(...checkDuplicateGrading(file, text, ctx, fileExemptions, unresolvedRefs))
+      findings.push(...checkMissingRuleChecks(file, text, ctx, fileExemptions))
+      findings.push(...checkSerialRowLoop(file, text, fileExemptions))
       // P6/P7 judge what the call CONTAINS, so they read the code view.
       const code = maskNonFenced(text)
       findings.push(...checkBareWorkflowRefs(file, code, fileExemptions))
       findings.push(...checkRefsDeclaration(file, code, root, fileExemptions, ctx, unresolvedRefs))
     } else {
       findings.push(...checkReturnShapeDrift(file, text, { exemptions: fileExemptions, ctx }))
+      findings.push(...checkShellOnlyAgentLegs(file, text, fileExemptions))
       findings.push(...checkBareWorkflowRefs(file, text, fileExemptions))
       findings.push(...checkRefsDeclaration(file, text, root, fileExemptions, ctx, unresolvedRefs))
     }
@@ -3847,7 +4252,8 @@ export function runProbe(
     expect,
     agentsIncluded: includedAgents,
     skillMdRead: eligible.some(f => basename(f) === 'SKILL.md'),
-    findings: deduped,
+    findings: deduped.filter(f => !ADVISORY_RULES.has(f.rule)),
+    advisories: deduped.filter(f => ADVISORY_RULES.has(f.rule)),
     filesEligible: eligible.length,
     filesScanned: scanned,
     filesSkipped,
@@ -3940,6 +4346,7 @@ export function parseArgs(argv: string[]): {
 function tailLine(result: ProbeResult): string {
   const n = result.unresolvedRefs.length + result.exemptions.length
   const bits = [`${result.findings.length} finding(s)`]
+  if (result.advisories?.length) bits.push(`${result.advisories.length} advisory`)
   if (result.unresolvedRefs.length) bits.push(`${result.unresolvedRefs.length} NOT CHECKED`)
   if (result.exemptions.length) bits.push(`${result.exemptions.length} suppressed`)
   if (result.filesExcluded?.length) bits.push(`${result.filesExcluded.length} file(s) not scanned`)
@@ -3989,9 +4396,19 @@ export function formatText(result: ProbeResult): string {
     (result.filesExcluded.length > 0
       ? `, ${result.filesExcluded.length} present-but-excluded file(s) NOT scanned (named below)`
       : '')
+  // Advisories print in BOTH branches, like the notes: a CLEAN that hides them reads as nothing found.
+  const advisoryLines = (result.advisories ?? []).flatMap(f => [
+    '',
+    `[advisory ${f.severity}] ${f.rule}`,
+    `  file:   ${f.file}${f.line ? `:${f.line}` : ''}`,
+    `  detail: ${f.detail}`,
+    `  remedy: ${f.remedy}`,
+  ])
   if (result.findings.length === 0) {
     lines.push(`wc-probe: CLEAN — ${coverage} under ${result.target}`)
     lines.push(...notesFor(result))
+    lines.push(...advisoryLines)
+    if (advisoryLines.length) lines.push('')
     lines.push(tailLine(result))
     return lines.join('\n')
   }
@@ -4004,6 +4421,7 @@ export function formatText(result: ProbeResult): string {
     lines.push(`  detail: ${f.detail}`)
     lines.push(`  remedy: ${f.remedy}`)
   }
+  lines.push(...advisoryLines)
   lines.push('')
   lines.push(tailLine(result))
   return lines.join('\n')

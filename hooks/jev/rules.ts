@@ -82,16 +82,24 @@ export function registerDir(set: RuleSet, style: string | null): string | null {
  * inside a ds project is still dev: the dev rules are the ones written about tests.
  */
 export async function ruleSetFor(path: string, workflowAt: (dir: string) => Promise<string | null>): Promise<RuleSet | null> {
+  const set = ruleSetOf(path, null)
+  // only a generic .typ (writing) or an unclaimed .py turns on the workflow cursor
+  if (!/\.(typ|py)$/i.test(path) || (set !== null && set !== 'writing')) return set
+  return ruleSetOf(path, await workflowAt(dirname(path)))
+}
+
+/** ruleSetFor with the workflow cursor already known (null for none): the synchronous table wc-probe reads. */
+export function ruleSetOf(path: string, workflow: string | null): RuleSet | null {
   if (EXAM.test(path)) return 'exams'
   if (AUTHORING.test(path)) return 'authoring'
   if (LECTURE_NOTES.test(path)) return 'notes'
   if (LECTURE_DECK.test(path)) return 'slides'
   if (ADDENDUM.test(path)) return 'elide'
   if (DECK.test(path)) return 'typst'
-  if (/\.typ$/i.test(path)) return (await workflowAt(dirname(path))) === 'workshop' ? 'typst' : 'writing'
+  if (/\.typ$/i.test(path)) return workflow === 'workshop' ? 'typst' : 'writing'
   if (PROSE.test(path)) return 'writing'
   if (SHELL.test(path) || TEST_PATH.test(path)) return 'dev'
-  if (/\.py$/i.test(path)) return (await workflowAt(dirname(path))) === 'ds' ? 'ds' : null
+  if (/\.py$/i.test(path)) return workflow === 'ds' ? 'ds' : null
   return null
 }
 
