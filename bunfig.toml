@@ -17,6 +17,9 @@
 [test]
 pathIgnorePatterns = [
   "**/scratch/**",
+  # The watcher mod's kit tests import claude-code/testing and run under `claude plugin test`
+  # (scripts/mod-test.sh); tests/farm-watch-runs.test.ts runs them from here.
+  "**/hooks/mod-tests/**",
   "**/tests/agent-contract.test.mjs",
   "**/tests/overflow-check.test.mjs",
   "**/tests/typst-convention-guard.test.mjs",

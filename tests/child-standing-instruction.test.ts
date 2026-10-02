@@ -89,7 +89,7 @@ describe('the early-stop standing instruction reaches every unattended child pro
       timeout: 120_000,
       // hermeticEnv pins TMPDIR to this test's own directory and drops the ambient session id, so
       // farm.sh's START/DONE rows land in $d/farm-events instead of the caller's own event stream,
-      // which a live session's farm-runs monitor reads as real dispatches.
+      // which a live session's watcher mod reads as real dispatches.
       env: hermeticEnv(d, { PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1' }),
     })
 

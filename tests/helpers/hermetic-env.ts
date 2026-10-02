@@ -16,10 +16,11 @@ const { CLAUDE_CODE_SESSION_ID: _sid, CLAUDE_CODE_BRIDGE_SESSION_ID: _bid, ...re
 /** `process.env` with every ambient session identity stripped. */
 export const HERMETIC_ENV: Record<string, string> = rest as Record<string, string>
 
-/** `HERMETIC_ENV` plus this test's own TMPDIR and whatever else it pins. */
+/** `HERMETIC_ENV` plus this test's own TMPDIR and whatever else it pins. FARM_OUTCOMES goes in the
+ *  same directory: farm.sh otherwise appends every throwaway row to the machine-wide labelled set. */
 export function hermeticEnv(
   dir: string,
   extra: Record<string, string> = {},
 ): Record<string, string> {
-  return { ...HERMETIC_ENV, TMPDIR: dir, ...extra }
+  return { ...HERMETIC_ENV, TMPDIR: dir, FARM_OUTCOMES: `${dir}/farm-outcomes.jsonl`, ...extra }
 }

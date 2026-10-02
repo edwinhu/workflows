@@ -56,19 +56,20 @@ append it automatically. Do not hand-roll a delegation that skips it.
 
 ## One watcher per SESSION, not one per dispatch
 
-**Do NOT arm a per-dispatch `Monitor`.** The `farm-runs` plugin monitor (`monitors/monitors.json`,
-`when: always` → `scripts/farm-monitor.sh`, exits with its session since v6.27.3) watches every farm
-run and grind loop this session launches, and wakes YOU — not the user — on `DONE` and on a run whose
-process is gone with no verdict (`GONE`). Nine backgrounded dispatches, four unmonitored, all four
-surfaced only when the user asked (2026-09-10): one watcher covers them all. If it was stopped,
-`/reload-plugins` restarts it.
+**Do NOT arm a `Monitor` or an `until test -s` loop to be woken.** The watcher mod
+(`hooks/register.ts`) reads every farm run, work round and grind loop this session launches from
+`$TMPDIR/farm-events/<session>/`, keeps one status line while any runs (`farm: 2 running (ds-rules
+43m, …) · work <run> round 2/3 2/5 checks`), and wakes YOU — not the user — ONCE per run on `DONE`
+and on a run whose process is gone with no verdict (`GONE`), naming its report path. `/farm` prints
+the table: label, state, elapsed, artifact, report. Its timer restarts with every session start and
+reload, which the retired `farm-runs` monitor never did — a finished run once woke nobody for hours.
 
-**Arm a task-specific wait ONLY when a run's finish must trigger a follow-up action** — a wake is
+**Arm a task-specific wait ONLY when a run's finish must trigger a follow-up COMMAND** — a wake is
 not your next step. Background that step: `until test -s <expect>; do sleep 20; done; <next step>`.
 Never with an unbracketed `pgrep -f`; the v6.26.3 guard denies a pattern matching its own checker.
 
 **A `--workflow` run prints an hourly `CronCreate` backstop** — it survives `--resume`/`--continue`
-and a dead monitor (`--no-cron` opts out; `--tasks` prints none). Arm it the turn you see it. When
+and a session that was not running (`--no-cron` opts out; `--tasks` prints none). Arm it the turn you see it. When
 you launch that run DETACHED (`setsid nohup … > log`) the printout lands in the log, not in front of
 you, so create the cron yourself at launch: `7 * * * *`, recurring, non-durable, prompt
 `and? (farm <run-dir name>)`.

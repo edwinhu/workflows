@@ -26,7 +26,7 @@ stop is allowed and costs no round.
 
 ## The cron prompt — a nudge, and armed by default
 
-A `work` dispatch is watched by the `farm-runs` monitor, but that monitor dies with the session, so an
+A `work` dispatch is watched by the watcher mod (`/farm`), but it runs only while a session does, so an
 hourly cron is armed as the backstop unless `--no-cron` is passed. The whole template is:
 
 ```

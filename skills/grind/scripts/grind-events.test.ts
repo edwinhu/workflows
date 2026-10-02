@@ -3,7 +3,7 @@
  *
  * The ending notification only fires when the loop reaches an ending. A loop killed hard — reboot,
  * OOM, kill -9 — reaches none and writes no terminal journal record either, so nothing says so and
- * the operator discovers it by asking. farm-monitor.sh already watches for exactly that shape:
+ * the operator discovers it by asking. The watcher mod (hooks/register.ts) watches for exactly that shape:
  * a file in $TMPDIR/farm-events/<session>/ whose pid is gone with no DONE line. So the loop files
  * itself there, in farm.sh's protocol rather than a second one of its own.
  *
@@ -18,9 +18,9 @@ import { mkdtempSync, rmSync, writeFileSync, readFileSync, readdirSync, existsSy
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { grindEnv } from './grind-test-env'
+import { classify, parseEvents, wakeable, wakeText, type View } from '../../../hooks/watch/runs.ts'
 
 const GRIND = `${import.meta.dir}/grind.sh`
-const MONITOR = `${import.meta.dir}/../../farm-out/scripts/farm-monitor.sh`
 
 const SESSION = 'sess-grind-events'
 
@@ -52,7 +52,7 @@ function run(args: string[], env: Record<string, string>) {
 }
 
 /** The only event file in the directory, and the pid its NAME carries — which is what both readers
- *  of this stream (farm-monitor's liveness check, farm-alive.sh) take the pid from. */
+ *  of this stream (the watcher mod's liveness check, farm-alive.sh) take the pid from. */
 function eventFile(eventDir: string): { path: string; pid: number; lines: string[] } {
   const names = existsSync(eventDir) ? readdirSync(eventDir).filter(n => n.endsWith('.ndjson')) : []
   expect(names.length).toBe(1)
@@ -88,13 +88,17 @@ function budgetRun(d: string, extra: string[] = []) {
   }
 }
 
-/** farm-monitor.sh is a `while :; sleep 20` tail. Drive one pass with a timeout and read what it
- *  printed; 124 is the timeout's own exit and says nothing about the pass. */
-function monitorPass(env: Record<string, string>, seconds = 2): string {
-  const r = spawnSync('timeout', [String(seconds), 'bash', MONITOR], {
-    encoding: 'utf8', timeout: (seconds + 20) * 1000, env,
+/** One pass of the watcher mod over the directory: its own parser and classifier, with the liveness
+ *  and artifact facts it gathers through $ read here from the real process table and disk. */
+function watchPass(eventDir: string): View[] {
+  const names = existsSync(eventDir) ? readdirSync(eventDir).filter(n => /^\d+\.ndjson$/.test(n)) : []
+  const runs = names.flatMap(n =>
+    parseEvents(readFileSync(join(eventDir, n), 'utf8'), join(eventDir, n), Number(n.split('.')[0]), SESSION))
+  const alive = new Set(runs.map(r => r.pid).filter(p => spawnSync('kill', ['-0', String(p)]).status === 0))
+  const present = new Set(runs.flatMap(r => [r.out, ...r.claims]).filter(p => p && existsSync(p)))
+  return classify(runs, {
+    alive, present, firstSeen: new Map(), loopExit: new Map(), round: new Map(), phase: new Map(),
   })
-  return r.stdout ?? ''
 }
 
 describe('grind.sh — the loop files itself in the launching session\'s event stream', () => {
@@ -228,22 +232,23 @@ describe('grind.sh — the loop files itself in the launching session\'s event s
   })
 })
 
-describe('grind.sh — farm-monitor reads the stream without being taught a second protocol', () => {
-  test('a finished loop renders its milestones and is NOT reported gone', () => {
+describe('grind.sh — the watcher mod reads the stream without being taught a second protocol', () => {
+  test('a finished loop is done with its terminal state, and is NOT reported gone', () => {
     const { d, env, eventDir } = sandbox('grind-ev-monitor')
     const { args } = budgetRun(d)
 
     run(args, env)
-    const { pid } = eventFile(eventDir)
-    const out = monitorPass(env)
+    const views = watchPass(eventDir)
 
-    expect(out).toContain('grind: START grind%20journal.jsonl')
-    expect(out).toContain('grind: DONE budget rc=4')
+    expect(views.length).toBe(1)
+    expect(views[0]!.kind).toBe('grind')
+    expect(views[0]!.label).toBe('grind journal.jsonl')
     // The loop's pid is long gone by now, but it wrote DONE, so it ended rather than died.
-    expect(out).not.toContain(`GONE pid=${pid}`)
+    expect(views[0]!.state).toBe('done')
+    expect(views[0]!.done).toEqual({ status: 'budget', detail: 'budget rc=4' })
   }, 60_000)
 
-  test('a SIGKILLed loop leaves START with no DONE, and farm-monitor reports it dead', () => {
+  test('a SIGKILLed loop leaves START with no DONE, and the watcher reports it GONE', () => {
     const { d, env, eventDir } = sandbox('grind-ev-kill')
     writeFileSync(join(d, 'prompt.txt'), 'work')
     const journal = join(d, 'journal.jsonl')
@@ -275,6 +280,8 @@ describe('grind.sh — farm-monitor reads the stream without being taught a seco
       spawnSync('sleep', ['0.1'])
     }
     expect(lines.some(l => l.includes(' START '))).toBe(true)
+    // Alive and parked: running, not gone.
+    expect(watchPass(eventDir)[0]!.state).toBe('running')
 
     // The hard kill: no trap runs, no journal ending, no DONE.
     spawnSync('kill', ['-9', String(pid)])
@@ -290,12 +297,14 @@ describe('grind.sh — farm-monitor reads the stream without being taught a seco
     // stream has to carry this.
     expect(records(journal).some(r => ['done', 'stalled', 'budget', 'stopped'].includes(r.kind))).toBe(false)
 
-    expect(monitorPass(env)).toContain(`GONE pid=${pid}`)
+    const views = watchPass(eventDir)
+    expect(views[0]!.state).toBe('gone')
+    expect(wakeText(views[0]!, Date.now())).toContain(`grind loop grind journal.jsonl is GONE: pid ${pid}`)
   }, 60_000)
 
-  test('a grind file in the directory leaves farm\'s own rendering byte-identical', () => {
-    // farm-monitor takes no arguments and watches every file in the directory. A grind loop parked
-    // beside a farm dispatch must not change one byte of what the farm run prints.
+  test('a grind file in the directory leaves the farm run\'s classification unchanged', () => {
+    // The watcher reads every file in the directory. A grind loop parked beside a farm dispatch must
+    // not change how the farm run is read, nor be paired with its lines.
     const { d, env, eventDir } = sandbox('grind-ev-farm')
     const farmLines = [
       'farm: START review cwd=/tmp/x out=/tmp/x/result.json expect=1',
@@ -306,16 +315,14 @@ describe('grind.sh — farm-monitor reads the stream without being taught a seco
     // A pid that is gone: 2^22 is above every Linux pid_max default, so nothing owns it.
     writeFileSync(join(eventDir, '4194304.ndjson'), farmLines.join('\n') + '\n')
 
-    const before = monitorPass(env)
+    const farmOnly = (vs: View[]) => vs.filter(v => v.kind === 'farm').map(v => [v.label, v.state, v.done])
+    const before = watchPass(eventDir)
     const { args } = budgetRun(d)
     run(args, env)
-    const after = monitorPass(env)
+    const after = watchPass(eventDir)
 
-    for (const l of farmLines) expect(before).toContain(l)
-    // Same farm lines, same order, in both passes — the grind file added lines of its own and
-    // changed none of farm's.
-    const farmOnly = (s: string) => s.split('\n').filter(l => l.startsWith('farm: ')).join('\n')
-    expect(farmOnly(after)).toBe(farmOnly(before))
-    expect(after).toContain('grind: DONE budget rc=4')
+    expect(farmOnly(before)).toEqual([['review', 'done', { status: 'ok', detail: 'ok toolCalls=7' }]])
+    expect(farmOnly(after)).toEqual(farmOnly(before))
+    expect(wakeable(after).map(v => v.kind).sort()).toEqual(['farm', 'grind'])
   }, 60_000)
 })

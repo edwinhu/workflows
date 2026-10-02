@@ -1,5 +1,5 @@
 /**
- * Phase 3 arms the HOLD in this session, and the WAKE is the farm-runs monitor.
+ * Phase 3 arms the HOLD in this session, and the WAKE is the watcher mod.
  *
  * The hold lives in the dispatching (main) session: it survives a run that dies, and the judge rules
  * on the user's own objective rather than on a round verdict. `--run` is what makes a stop legal
@@ -190,12 +190,12 @@ describe('half one: the HOLD is armed by the dispatch, in this session', () => {
 })
 
 /**
- * HALF TWO: THE WAKE. The `farm-runs` plugin monitor watches the run for the whole session and is the
- * PRIMARY wake — but it dies with the session, and on 2026-09-27 a session restarted a loop at 23:14
+ * HALF TWO: THE WAKE. The watcher mod (hooks/register.ts) watches the run and is the PRIMARY wake —
+ * but it runs only while a session does, and on 2026-09-27 a session restarted a loop at 23:14
  * with no watcher re-armed. A cron survives `--resume`/`--continue` and a watcher that never armed, so
  * the hourly heartbeat is the BACKSTOP and is on by DEFAULT; `--no-cron` opts out.
  */
-describe('half two: the cron is the DEFAULT backstop, the monitor is the primary wake', () => {
+describe('half two: the cron is the DEFAULT backstop, the watcher mod is the primary wake', () => {
   const r = dispatch(fixture())
 
   test('the hourly CronCreate call is printed by default, off the :00 mark', () => {
@@ -204,15 +204,16 @@ describe('half two: the cron is the DEFAULT backstop, the monitor is the primary
     expect(/cron:\s+(\S.*)$/m.exec(r.out)![1].trim()).toBe('7 * * * *')
   })
 
-  test('the farm-runs monitor runs for the whole session, not on skill invoke', () => {
-    const m = JSON.parse(readFileSync(join(REPO, 'monitors/monitors.json'), 'utf8'))
-    expect(m.find((x: any) => x.name === 'farm-runs').when).toBe('always')
+  test('the wake is the watcher mod, wired as the plugin\'s hooks module; the monitor is retired', () => {
+    const h = JSON.parse(readFileSync(join(REPO, 'hooks/hooks.json'), 'utf8'))
+    expect(h.modules).toEqual(['./register.ts'])
+    expect(existsSync(join(REPO, 'monitors/monitors.json'))).toBe(false)
   })
 
-  test('--no-cron prints no cron — one line names the monitor as the only wake', () => {
+  test('--no-cron prints no cron — one line names the watcher mod as the only wake', () => {
     const c = dispatch(fixture(), {}, ['--no-cron'])
     expect(c.out).not.toContain('CronCreate')
-    expect(c.out).toMatch(/farm-runs monitor/)
+    expect(c.out).toMatch(/watcher mod is the ONLY wake/)
     expect(c.out).toMatch(/--no-cron/)
   }, 60_000)
 

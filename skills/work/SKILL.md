@@ -386,18 +386,20 @@ beside the wave graph.
 ### What WAKES the session, once it has gone quiet
 
 A Stop hook reaches nothing when no turn is running, so the hold alone cannot restart a session that
-has gone quiet. The **`farm-runs` plugin monitor** does: it runs for the whole session, shares
-`$TMPDIR/farm-events/$CLAUDE_CODE_SESSION_ID` with the `farm.sh` this dispatch launches, and wakes the
-main chat on milestones, on the verdict, and on a run that dies without one.
+has gone quiet. The **watcher mod** (`hooks/register.ts`) does: it reads
+`$TMPDIR/farm-events/$CLAUDE_CODE_SESSION_ID`, where `work-round.sh`, `work-loop.sh` and their
+`farm.sh` file themselves, shows the round and phase in the status line, and wakes the main chat ONCE
+on the loop's exit (the round's verdict when no loop runs) and on a run that dies without one.
+`/farm` prints the table.
 
-**The monitor does not survive the session.** It is gone across `--resume`/`--continue`, and it is
-absent entirely when it was never armed — on 2026-09-27 a session restarted a loop at 23:14 with no
-watcher re-armed and nothing woke it. So the cron is the **backstop, on by default**: the dispatch
+**Nothing wakes a session that is not running.** A run that finishes while no session is open is
+reported when the session next starts, and on 2026-09-27 a restarted loop sat at 23:14 with nothing
+to wake. So the cron is the **backstop, on by default**: the dispatch
 prints an hourly `CronCreate` call (`WORK_LOOP_INTERVAL_MINUTES` sets the period) whose prompt is a
 nudge (`and? (work run <runid>)`) — a few words, and a tick mid-round is allowed through uncounted by
 the hold, so it is cheap. **Make that call before your next action and report the job id**; `CronList`
 is the only thing that proves it exists. `--no-cron` opts out, and then the dispatch says in one line
-that the monitor is the only wake.
+that the watcher mod is the only wake.
 
 Nothing is typed into this session and nothing is queued, so there is no send to verify, no transport
 to fall back to, and no ordering constraint against Phase 4.

@@ -7,7 +7,7 @@ import { spawnSync } from 'node:child_process'
 const FARM = join(import.meta.dir, '..', 'skills', 'farm-out', 'scripts', 'farm.sh')
 
 // Nothing in the repo ever deletes farm-events files: farm.sh appends, farm-alive.sh and
-// farm-monitor.sh only read. The liveness checker greps every file in the directory on each
+// the watcher mod only read. The liveness checker greps every file in the directory on each
 // poll, so the cost of a check grows with every farm.sh invocation ever made on the machine.
 test('a run evicts stale event files for pids that are long gone', () => {
   const tmp = mkdtempSync(join(tmpdir(), 'evict-'))
@@ -25,7 +25,7 @@ test('a run evicts stale event files for pids that are long gone', () => {
   spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', tmp],
     // CLAUDE_CODE_SESSION_ID pinned empty: the event dir is keyed by it, and `bun test` itself
     // runs inside a session, so an ambient value moves the dir out from under this fixture.
-    { encoding: 'utf8', env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, TMPDIR: tmp, FARM_OUT_CHILD: '1', CLAUDE_CODE_SESSION_ID: '' } })
+    { encoding: 'utf8', env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, TMPDIR: tmp, FARM_OUTCOMES: `${tmp}/farm-outcomes.jsonl`, FARM_OUT_CHILD: '1', CLAUDE_CODE_SESSION_ID: '' } })
   const left = readdirSync(evd).length
   rmSync(tmp, { recursive: true, force: true })
   expect(left).toBeLessThan(41)   // the 40 stale ones must not all survive alongside the new one

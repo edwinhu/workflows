@@ -1,4 +1,8 @@
 {
+  "description": "Settings hooks, plus the watcher mod (register.ts) for this session's farm and work runs",
+  "modules": [
+    "./register.ts"
+  ],
   "hooks": {
     "SessionStart": [
       {

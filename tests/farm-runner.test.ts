@@ -23,7 +23,9 @@ function runFarm(expectPath: string, opts: { writeRelative?: string } = {}) {
   const res = spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', agentCwd], {
     encoding: 'utf8',
     cwd: root,                                   // deliberately NOT agentCwd
-    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1', FARM_OUTCOMES: join(root, 'farm-outcomes.jsonl') },
+    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1', FARM_OUTCOMES: join(root, 'farm-outcomes.jsonl'),
+           // the sandbox's own event stream: a live session's watcher mod would wake on these rows
+           TMPDIR: root, CLAUDE_CODE_SESSION_ID: 'farm-runner-test' },
   })
   const parsed = JSON.parse(res.stdout || '[]')
   rmSync(root, { recursive: true, force: true })
@@ -58,7 +60,9 @@ function runRow(row: Record<string, unknown>) {
   const res = spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', agentCwd], {
     encoding: 'utf8',
     cwd: root,
-    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1', FARM_OUTCOMES: join(root, 'farm-outcomes.jsonl') },
+    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1', FARM_OUTCOMES: join(root, 'farm-outcomes.jsonl'),
+           // the sandbox's own event stream: a live session's watcher mod would wake on these rows
+           TMPDIR: root, CLAUDE_CODE_SESSION_ID: 'farm-runner-test' },
   })
   let argv: string[] = []
   try { argv = readFileSync(argvFile, 'utf8').split('\n').filter(Boolean) } catch { /* never invoked */ }

@@ -59,7 +59,7 @@ grind.sh -- an unattended loop whose only memory is one append-only journal.
                   PushNotification), because agent-msg to an idle session can be stored and
                   never delivered. Opt-in, so test runs never reach a phone.
                   [--no-events] stops writing the farm-events record the launching session's
-                  farm-runs monitor reads; on by default, and a loop that dies hard is only
+                  watcher mod reads; on by default, and a loop that dies hard is only
                   noticed because that record is there.
   grind.sh append --journal J '{"kind":"progress","key":"..."}'
   grind.sh floors --journal J
@@ -422,18 +422,18 @@ NOTIFY= NOTIFY_TO= NOTIFY_JOURNAL= PUSH=
 # ---------------------------------------------------------------- the event stream
 # The notification above only fires when the loop reaches an ending. A loop killed hard -- reboot,
 # OOM, kill -9 -- reaches none, writes no terminal journal record either, and nothing ever says so.
-# The launching session already runs a watcher for exactly that shape: farm-monitor.sh tails
-# $TMPDIR/farm-events/<session>/<pid>.ndjson and reports any file whose pid is gone with no DONE
-# line. So the loop files itself there.
+# The launching session already runs a watcher for exactly that shape: the watcher mod
+# (hooks/register.ts) reads $TMPDIR/farm-events/<session>/<pid>.ndjson and wakes the session for any
+# file whose pid is gone with no DONE line. So the loop files itself there.
 #
 # ONE protocol, not two: line shape, percent encoding and write discipline are farm.sh's
 # (skills/farm-out/scripts/farm.sh:116-134), and the file is keyed on the LOOP's pid because that
-# is the pid the monitor kill -0's. Fields are named `journal=`, never `out=` or `path=` --
+# is the pid the watcher checks. Fields are named `journal=`, never `out=` or `path=` --
 # farm-alive.sh matches those two by value to decide a dispatch is alive.
 #
 # The session is captured HERE, at process start, and never re-read: an iteration is a fresh claude
 # with its own CLAUDE_CODE_SESSION_ID, and keying on that would file the loop's ending in a
-# directory the launching session's monitor does not watch.
+# directory the launching session's watcher does not read.
 GRIND_LAUNCH_SESSION=${CLAUDE_CODE_SESSION_ID:-}
 EVENTS=       # the event file, once started; empty means every emit is a no-op
 EVENTS_OFF=   # --no-events

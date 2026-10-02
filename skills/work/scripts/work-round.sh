@@ -14,7 +14,7 @@
 # never reported as a CRITICAL. No raw.json means the agents never returned: no RESULT is written,
 # exactly as a dead farm run left none before.
 #
-# Liveness: farm-alive.sh and farm-monitor.sh key on $TMPDIR/farm-events/<session>/<pid>.ndjson.
+# Liveness: farm-alive.sh and the watcher mod (hooks/register.ts) key on $TMPDIR/farm-events/<session>/<pid>.ndjson.
 # The farm.sh children each write their own; this script writes one claiming RESULT, so the run is
 # alive between children and a death with no DONE is reported. WORK_FARM overrides farm.sh.
 set -uo pipefail
@@ -31,7 +31,7 @@ EVENT_DIR="${TMPDIR:-/tmp}/farm-events${CLAUDE_CODE_SESSION_ID:+/$CLAUDE_CODE_SE
 mkdir -p "$EVENT_DIR" 2>/dev/null || true
 EVENTS="$EVENT_DIR/$$.ndjson"
 emit() { printf 'farm: %s\n' "$*" >>"$EVENTS" 2>/dev/null || true; }
-emit "START work-round cwd=$(enc "$CWD") out=$(enc "$RESULT") expect=1"
+emit "START work-round cwd=$(enc "$CWD") out=$(enc "$RESULT") expect=1 t=$(date +%s)"
 emit "CLAIM work-round path=$(enc "$RESULT") "
 
 step() { printf '\nwork-round: %s\n' "$*"; }
