@@ -1,5 +1,5 @@
 {
-  "_doc": "Calibration set for skills/work/scripts/rule-calibrate.ts. Paths are repo-relative. layout 'files': every file in the case dir goes to the extractor, plan.md as --plan. layout 'diff': before/ is committed in a temp repo, after/ is laid over it, .fixture suffixes are stripped. A case with 'source' is a real excerpt copied 2026-10-02; the note lives here because every file in a case dir reaches the extractor.",
+  "_doc": "Calibration set for skills/work/scripts/rule-calibrate.ts. Paths are repo-relative. layout 'files': every file in the case dir goes to the extractor, plan.md as --plan. layout 'diff': before/ is committed in a temp repo, after/ is laid over it, .fixture suffixes are stripped. A case with 'base' is replayed as a diff in either layout: base is committed, the case dir is laid over it, and diff-scoped rules see only the changed lines. A case with 'source' is a real excerpt copied 2026-10-02; the note lives here because every file in a case dir reaches the extractor.",
   "criterion": { "violatingAtLeast": 0.85, "compliantBelow": 0.5, "crossFlagAbove": 0.5 },
   "sets": {
     "ds": {
@@ -29,12 +29,28 @@
         "DQ4": [
           { "kind": "violating", "path": "tests/fixtures/jev/DQ4/vio2" },
           { "kind": "compliant", "path": "tests/fixtures/jev/DQ4/sat2" },
-          { "kind": "compliant", "path": "tests/fixtures/jev/real/DQ-32_agk2019", "source": "hidden-figures scripts/32_agk2019_russell_float.py @8a59d9f, lines 84-130; accepted deliverable" }
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DQ-32_agk2019", "source": "hidden-figures scripts/32_agk2019_russell_float.py @8a59d9f, lines 84-130; accepted deliverable" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DQ-legacy-run_s220/ok", "base": "tests/fixtures/jev/real/R1-run_s220", "source": "board-structuring scripts/run_s220_robustness.py @5489b70 (the R1-run_s220 excerpt), accepted legacy code with unlogged transforms; the new hunk logs its counts" },
+          { "kind": "violating", "path": "tests/fixtures/jev/real/DQ-legacy-run_s220/bad", "base": "tests/fixtures/jev/real/R1-run_s220", "source": "board-structuring scripts/run_s220_robustness.py @5489b70 (the R1-run_s220 excerpt), same legacy base; the new hunk adds one unlogged transform" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DQ-legacy-ownership/ok", "base": "tests/fixtures/jev/real/UNI-ownership", "source": "hidden-figures src/ownership.py @9aedfe8 (the UNI-ownership excerpt), accepted legacy code with unlogged transforms; the new hunk logs its counts" },
+          { "kind": "violating", "path": "tests/fixtures/jev/real/DQ-legacy-ownership/bad", "base": "tests/fixtures/jev/real/UNI-ownership", "source": "hidden-figures src/ownership.py @9aedfe8 (the UNI-ownership excerpt), same legacy base; the new hunk adds one unlogged transform" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DQ-legacy-xs5_table2/ok", "base": "tests/fixtures/jev/real/DQ-legacy-xs5_table2/base", "source": "mirror scripts/cit/xs5_table2_divergence.py @746f423, lines 24-26 and 57-98, accepted legacy code with unlogged transforms; the new hunk logs its counts" },
+          { "kind": "violating", "path": "tests/fixtures/jev/real/DQ-legacy-xs5_table2/bad", "base": "tests/fixtures/jev/real/DQ-legacy-xs5_table2/base", "source": "mirror scripts/cit/xs5_table2_divergence.py @746f423, lines 24-26 and 57-98, same legacy base; the new hunk adds one unlogged transform" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DQ-legacy-08_agk_sample/ok", "base": "tests/fixtures/jev/real/DQ-legacy-08_agk_sample/base", "source": "hf-wt-float scripts/08_agk_sample.py @5f2c32b, lines 313-381, accepted legacy code with unlogged transforms; the new hunk logs its counts" },
+          { "kind": "violating", "path": "tests/fixtures/jev/real/DQ-legacy-08_agk_sample/bad", "base": "tests/fixtures/jev/real/DQ-legacy-08_agk_sample/base", "source": "hf-wt-float scripts/08_agk_sample.py @5f2c32b, lines 313-381, same legacy base; the new hunk adds one unlogged transform" }
         ],
         "DQ6": [
           { "kind": "violating", "path": "tests/fixtures/jev/DQ6/vio2" },
           { "kind": "compliant", "path": "tests/fixtures/jev/DQ6/sat2" },
-          { "kind": "compliant", "path": "tests/fixtures/jev/real/DQ-32_agk2019", "source": "hidden-figures scripts/32_agk2019_russell_float.py @8a59d9f, lines 84-130; accepted deliverable" }
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DQ-32_agk2019", "source": "hidden-figures scripts/32_agk2019_russell_float.py @8a59d9f, lines 84-130; accepted deliverable" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DQ-legacy-run_s220/ok", "base": "tests/fixtures/jev/real/R1-run_s220", "source": "board-structuring scripts/run_s220_robustness.py @5489b70 (the R1-run_s220 excerpt), accepted legacy code with unlogged transforms; the new hunk logs its counts" },
+          { "kind": "violating", "path": "tests/fixtures/jev/real/DQ-legacy-run_s220/bad", "base": "tests/fixtures/jev/real/R1-run_s220", "source": "board-structuring scripts/run_s220_robustness.py @5489b70 (the R1-run_s220 excerpt), same legacy base; the new hunk adds one unlogged transform" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DQ-legacy-ownership/ok", "base": "tests/fixtures/jev/real/UNI-ownership", "source": "hidden-figures src/ownership.py @9aedfe8 (the UNI-ownership excerpt), accepted legacy code with unlogged transforms; the new hunk logs its counts" },
+          { "kind": "violating", "path": "tests/fixtures/jev/real/DQ-legacy-ownership/bad", "base": "tests/fixtures/jev/real/UNI-ownership", "source": "hidden-figures src/ownership.py @9aedfe8 (the UNI-ownership excerpt), same legacy base; the new hunk adds one unlogged transform" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DQ-legacy-xs5_table2/ok", "base": "tests/fixtures/jev/real/DQ-legacy-xs5_table2/base", "source": "mirror scripts/cit/xs5_table2_divergence.py @746f423, lines 24-26 and 57-98, accepted legacy code with unlogged transforms; the new hunk logs its counts" },
+          { "kind": "violating", "path": "tests/fixtures/jev/real/DQ-legacy-xs5_table2/bad", "base": "tests/fixtures/jev/real/DQ-legacy-xs5_table2/base", "source": "mirror scripts/cit/xs5_table2_divergence.py @746f423, lines 24-26 and 57-98, same legacy base; the new hunk adds one unlogged transform" },
+          { "kind": "compliant", "path": "tests/fixtures/jev/real/DQ-legacy-08_agk_sample/ok", "base": "tests/fixtures/jev/real/DQ-legacy-08_agk_sample/base", "source": "hf-wt-float scripts/08_agk_sample.py @5f2c32b, lines 313-381, accepted legacy code with unlogged transforms; the new hunk logs its counts" },
+          { "kind": "violating", "path": "tests/fixtures/jev/real/DQ-legacy-08_agk_sample/bad", "base": "tests/fixtures/jev/real/DQ-legacy-08_agk_sample/base", "source": "hf-wt-float scripts/08_agk_sample.py @5f2c32b, lines 313-381, same legacy base; the new hunk adds one unlogged transform" }
         ],
         "E7": [
           { "kind": "violating", "path": "tests/fixtures/jev/E7/vio2" },
