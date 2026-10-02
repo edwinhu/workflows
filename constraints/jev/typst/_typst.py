@@ -148,3 +148,14 @@ def scope_note(changed, skipped):
     return {'n_skipped_unchanged': skipped,
             'diff_scope_note': 'only spans on lines the round added or changed are listed; unchanged '
                                'spans are out of scope, counted in n_skipped_unchanged, and never a violation'}
+
+
+def added_state(rule, files, key, items):
+    """With diff info, the state Jev judges: the added spans with only the neighbours needed to judge
+    them. Legacy spans, their counts and the file's length stay out, or their register leaks in."""
+    from _common import render_json
+    named = {i['file'] for i in items}
+    return render_json(rule, [(r, None) for r, _ in files if r in named], {
+        key: items[:MAX_ITEMS],
+        'scope_note': 'only what this round added is listed, each with the neighbouring lines needed to '
+                      'judge it; the rest of the file is not under review'}, [])
