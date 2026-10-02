@@ -39,9 +39,10 @@ runner emits a line for them — ENUM requires that — but neither can be COMPU
 artifact. DQ4 needs the input → transform → output count chain and DQ6 needs a before/after shape;
 the runner sees only the file that was produced. They were labelled `computed` in the first version
 of this table, which read as "the runner checked these and they were fine" when the runner had done
-no work at all. Third-party review caught it. Both still have to be dispositioned by the verifier
-against task-local evidence, exactly like the MODEL-EVALUATED rows — the `always N/A` label is what
-stops that obligation from looking discharged.
+no work at all. Third-party review caught it. Both still need a disposition against task-local
+evidence: in a `/ds` run the Jev rules DQ4 and DQ6 give it, as M1, UNI, DEN and R1 do for their rows,
+and the lens reads those verdicts rather than re-grading them. The `always N/A` label is what stops
+that obligation from looking discharged by the runner.
 
 
 ## Data Quality Checks (DQ1-DQ6)
