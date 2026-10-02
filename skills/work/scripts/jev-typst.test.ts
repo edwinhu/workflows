@@ -62,9 +62,11 @@ const SEPARATES: Record<string, (vio: any, sat: any) => void> = {
     expect(v.slides_subtitle_and_first_body_line[0].share_of_subtitle_words)
       .toBeGreaterThan(s.slides_subtitle_and_first_body_line[0].share_of_subtitle_words),
   "T-STORY": (v, s) => {
-    expect(v.storytelling_comments[0]).toMatchObject({ line: 14, has_arrow_separator: false });
-    expect(v.storytelling_comments[0].diagram).toMatchObject({ call: "fletcher-diagram", n_placed_labels: 4, n_edges_or_lines: 3 });
-    expect(s.storytelling_comments[0].has_arrow_separator).toBe(true);
+    expect(v.storytelling_comments[0]).toMatchObject({ line: 14, names_visual_property: false, states_audience_conclusion: false });
+    expect(v.storytelling_comments[0].diagram_call).toEqual({ line: 15, call: "fletcher-diagram" });
+    expect(v.n_comments_missing_mechanism_or_insight).toBe(1);
+    expect(s.storytelling_comments[0]).toMatchObject({ names_visual_property: true, states_audience_conclusion: true });
+    expect(s.n_comments_missing_mechanism_or_insight).toBe(0);
   },
   "T-CALLOUT": (v, s) => {
     expect(v.callouts).toHaveLength(1);
