@@ -11,7 +11,7 @@ import { chmodSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSyn
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
-import { classify, parseEvents, statusLine, table, wakeable, wakeText, type Facts } from '../hooks/watch/runs.ts'
+import { beaconFresh, classify, parseEvents, statusLine, table, wakeable, wakeText, type Facts } from '../hooks/watch/runs.ts'
 
 const REPO = join(import.meta.dir, '..')
 const FARM = join(REPO, 'skills', 'farm-out', 'scripts', 'farm.sh')
@@ -119,11 +119,66 @@ describe('classify: ownership of nested rows, GONE, and the status line', () => 
   })
 })
 
+// Verbatim from the secreg session e3b75752's $TMPDIR/farm-events (2026-10-02, slides diagnose
+// 1002-slides-18-diag). "farm: DONE work-loop rc=3" landed at 22:09:45 and no wake came: replayed here,
+// the loop is done, not nested, and the one wakeable view — the lines were never the problem.
+describe('replay: secreg 1002-slides-18-diag', () => {
+  const R = '/home/eh/.local/state/craft/1002-slides-18-diag'
+  const SID = 'e3b75752-8459-4201-8118-4b52c8e0bc9c'
+  const files: [number, string][] = [
+    [2656363, `farm: START work-round cwd=/home/eh/areas/secreg out=${R}/result.json expect=1 t=1790992951\n` +
+      `farm: CLAIM work-round path=${R}/result.json \nfarm: DONE work-round ok\n`],
+    [2656379, `farm: START workflow cwd=/home/eh/areas/secreg out=${R}/raw.json expect=1 t=1790992951\n` +
+      `farm: CLAIM workflow path=${R}/raw.json \nfarm: CLAIM workflow path=${R}/raw.json \nfarm: DONE workflow ok toolCalls=4 W=0\n`],
+    [2657005, `farm: START work-loop cwd=/home/eh/areas/secreg out=${R}/loop.exit expect=1 t=1790992953\nfarm: DONE work-loop rc=3\n`],
+    [2697872, `farm: START lens cwd=/home/eh/areas/secreg out= expect=1 t=1790993251\n` +
+      `farm: CLAIM lens path=${R}/lens.json \nfarm: DONE lens ok toolCalls=23 W=0\n`],
+  ]
+  const runs = files.flatMap(([pid, text]) => parseEvents(text, `/e/${pid}.ndjson`, pid, SID))
+  const facts: Facts = {
+    alive: new Set(), present: new Set([`${R}/result.json`, `${R}/raw.json`, `${R}/lens.json`, `${R}/loop.exit`]),
+    firstSeen: new Map(), loopExit: new Map([[`${R}/loop.exit`, '3']]), round: new Map(), phase: new Map(),
+  }
+  const views = classify(runs, facts)
+
+  test('every run is done; workflow and lens are nested in the work run', () => {
+    expect(views.map(v => [v.label, v.kind, v.state, v.nested])).toEqual([
+      ['work-round', 'work-round', 'done', false],
+      ['workflow', 'farm', 'done', true],
+      ['work-loop', 'work-loop', 'done', false],
+      ['lens', 'farm', 'done', true],
+    ])
+  })
+
+  test('the loop is the only wakeable view, and its wake text names exit 3', () => {
+    const w = wakeable(views)
+    expect(w.map(v => v.id)).toEqual([`${SID}:2657005:0:work-loop:1790992953`])
+    expect(wakeText(w[0]!, 1790993390_000)).toStartWith(
+      'work run 1002-slides-18-diag loop finished: exit 3 (redispatch refused at Tier 1) after 7m.')
+  })
+
+  test('the DONE line alone decides it: without loop.exit the loop is still done and wakes', () => {
+    const v = wakeable(classify(runs, { ...facts, loopExit: new Map(), present: new Set() }))
+    expect(v.map(x => [x.label, x.state])).toEqual([['work-loop', 'done']])
+    expect(wakeText(v[0]!, 1790993390_000)).toContain('exit 3')
+  })
+})
+
+test('a beacon is fresh for four ticks, and only digits count', () => {
+  const now = 1790993390_000
+  expect(beaconFresh('1790993390', now)).toBe(true)
+  expect(beaconFresh(String(1790993390 - 60), now)).toBe(true)
+  expect(beaconFresh(String(1790993390 - 61), now)).toBe(false)
+  expect(beaconFresh(undefined, now)).toBe(false)
+  expect(beaconFresh('', now)).toBe(false)
+  expect(beaconFresh('soon', now)).toBe(false)
+})
+
 test('the mod kit tests pass (scripts/mod-test.sh -> claude plugin test)', () => {
   if (spawnSync('bash', ['-c', 'command -v claude'], { timeout: 130_000 }).status !== 0) return
   const r = spawnSync('bash', [join(REPO, 'scripts', 'mod-test.sh')], { encoding: 'utf8', timeout: 120_000 })
-  // 8 watcher + 9 guards (hooks/mod-tests/guards.test.ts) + 18 per-edit Jev (hooks/mod-tests/jev.test.ts)
-  expect(r.stdout + r.stderr).toMatch(/\b35 pass\b/)
+  // 11 watcher + 9 guards (hooks/mod-tests/guards.test.ts) + 18 per-edit Jev (hooks/mod-tests/jev.test.ts)
+  expect(r.stdout + r.stderr).toMatch(/\b38 pass\b/)
   expect(r.stdout + r.stderr).toMatch(/\b0 fail\b/)
   expect(r.status).toBe(0)
 }, 130_000)

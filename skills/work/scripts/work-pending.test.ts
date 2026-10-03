@@ -1,5 +1,5 @@
 /**
- * "Is a work run armed but undispatched?" — the question main-thread-guard.sh holds every Edit,
+ * "Is a work run approved but undispatched?" — the question main-thread-guard.sh holds every Edit,
  * Write and delegation on.
  *
  * The run dir does not have to live under the same root as the plan file. A dispatch block may name
@@ -16,7 +16,7 @@
  */
 import { afterAll, describe, expect, test, setDefaultTimeout } from 'bun:test'
 import { execFileSync } from 'node:child_process'
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -72,12 +72,35 @@ function recordDispatch(dir: string, runId: string, hash: string, root = '.work'
 }
 
 /**
+ * A transcript in which the user APPROVED every plan file under TMP. These tests pin where plans
+ * and dispatch records are looked for, so approval is granted wholesale here; what counts as an
+ * approval is pinned by work-pending-approval.test.ts.
+ */
+function approvedTranscript(): string {
+  const plans = (readdirSync(TMP, { recursive: true }) as string[]).filter(f => f.endsWith('p.md'))
+  const lines = plans.flatMap((rel, i) => {
+    const plan = join(TMP, rel)
+    const id = `toolu_${i}`
+    return [
+      JSON.stringify({ type: 'assistant', message: { content: [{ type: 'tool_use', id, name: 'ExitPlanMode', input: { planFilePath: plan } }] } }),
+      JSON.stringify({ type: 'user', message: { content: [{ type: 'tool_result', tool_use_id: id, content: 'User has approved your plan.' }] } }),
+    ]
+  })
+  const t = join(TMP, 'approved.jsonl')
+  writeFileSync(t, lines.join('\n') + '\n')
+  return t
+}
+
+/**
  * The guard's own read of this script: the plan path, or '' for "nothing pending".
  * HOME points at an empty dir so the developer's own user-tier `plansDirectory` cannot decide
- * these cases — the script reads three settings tiers now, and one of them is `$HOME`.
+ * these cases — the script reads three settings tiers now, and one of them is `$HOME`. TMPDIR is
+ * this file's own, so a developer's dispatch log cannot decide them either.
  */
 function pending(root: string): string {
-  const r = Bun.spawnSync(['bash', PENDING, root], { timeout: 120_000, env: { ...process.env, HOME: EMPTY_HOME } })
+  const r = Bun.spawnSync(['bash', PENDING, root, '--transcript', approvedTranscript()], {
+    timeout: 120_000, env: { ...process.env, HOME: EMPTY_HOME, TMPDIR: TMP, CLAUDE_CODE_SESSION_ID: '' },
+  })
   return new TextDecoder().decode(r.stdout).split('\t')[0].trim()
 }
 
