@@ -4,9 +4,10 @@
 # work-result.sh), against the checkout this script lives in, then decidable assertions over what
 # they left on disk. A failing canary blocks the tag.
 #
-#   scripts/canary.sh --run              both runs (costs model calls: a few farm rows each)
-#   scripts/canary.sh --run --only diag|dev   one of them
-#   scripts/canary.sh --dry-run          build + plan-lint + probes for both, dispatch nothing
+#   scripts/canary.sh --run              suites + template + both runs (the runs cost model calls)
+#   scripts/canary.sh --run --only suites|template|diag|dev   one step
+#   scripts/canary.sh --dry-run          suites + template, then build + plan-lint + probes for both
+#                                        runs, dispatching nothing — no model calls
 #   scripts/canary.sh --assert RUN_DIR --events DIR [--expect-exit 0|8] [--mech-count 'RE' ...]
 #                                        re-run the assertions on an existing run dir
 #   CANARY_TIMEOUT_MIN=40                wall cap per run (default 40)
@@ -15,6 +16,12 @@
 # (a) DIAG: a read-only teaching slides DIAGNOSE of an already-taught secreg lecture whose gates
 #     passed. Run dir under ~/.local/state/work; the course tree is only ever READ.
 # (b) DEV: one dev round on a throwaway git repo in a temp dir — a red bun test, one task to green it.
+# SUITES: workflows' scripts/test.sh AND teaching's tests/run-all.sh, each pointed at the other's
+#     checkout under release, so a cross-repo break blocks the tag of EITHER repo (teaching 4.3.7's
+#     {{NAME}} refs turned workflows' gate-vacuity red while only teaching's suite had run).
+# TEMPLATE: teaching's notes repair template rendered for secreg lecture $LECTURE by
+#     course_paths.py (scripts/render-template.ts), every course path it names on disk, and
+#     plan-lint at 0 findings of any severity — the plan a real session would dispatch.
 #
 # Isolation: TMPDIR, CLAUDE_CODE_SESSION_ID and CLAUDE_PROJECT_DIR point into a canary temp root, so the
 # hold state, the dispatch log, the farm-events stream and any settings.local.json land there — never
@@ -31,6 +38,9 @@ set -uo pipefail
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 WORK="$ROOT/skills/work/scripts"
 TEACHING=${CANARY_TEACHING:-$HOME/.claude/skills/teaching}
+# Resolved: teaching's tests compare paths against their own real checkout, so the default symlink
+# would fail them for a reason that is not a defect.
+TEACHING=$(cd "$TEACHING" 2>/dev/null && pwd -P || printf '%s' "$TEACHING")
 COURSE=${CANARY_COURSE:-$HOME/areas/secreg}
 STATE=${CANARY_STATE:-$HOME/.local/state/work}
 TIMEOUT_MIN=${CANARY_TIMEOUT_MIN:-40}
@@ -48,7 +58,7 @@ while [ $# -gt 0 ]; do
     --events) ASSERT_EVENTS=${2-}; shift 2 || die "--events needs a directory" ;;
     --expect-exit) ASSERT_EXIT=${2-}; shift 2 || die "--expect-exit needs a code list" ;;
     --mech-count) ASSERT_COUNTS+=("${2-}"); shift 2 || die "--mech-count needs a regex" ;;
-    -h|--help) sed -n '2,25p' "${BASH_SOURCE[0]}"; exit 0 ;;
+    -h|--help) sed -n '2,32p' "${BASH_SOURCE[0]}"; exit 0 ;;
     *) die "unknown argument: $1" ;;
   esac
 done
@@ -56,7 +66,8 @@ if [ "$RUN" = 0 ] && [ "$DRY" = 0 ] && [ -z "$ASSERT_DIR" ]; then
   echo "usage: canary.sh --run | --dry-run | --assert RUN_DIR --events DIR — no mode named (--run costs model calls)" >&2
   exit 2
 fi
-case "$ONLY" in ''|diag|dev) ;; *) die "--only must be diag or dev, got: $ONLY" ;; esac
+case "$ONLY" in ''|suites|template|diag|dev) ;; *) die "--only must be suites, template, diag or dev, got: $ONLY" ;; esac
+step() { [ -z "$ONLY" ] || [ "$ONLY" = "$1" ]; }
 case "$TIMEOUT_MIN" in ''|*[!0-9]*) die "CANARY_TIMEOUT_MIN must be whole minutes" ;; esac
 
 # ------------------------------------------------------------------ the assertions (decidable only)
@@ -236,6 +247,8 @@ if [ -n "$ASSERT_DIR" ]; then
 fi
 
 # ------------------------------------------------------------------ setup
+# The suites step runs workflows' own suite; a canary started from inside it would recurse.
+[ -z "${CANARY_NESTED:-}" ] || die "refusing to run inside a canary's own suite run (CANARY_NESTED is set)"
 command -v bun >/dev/null || die "bun not on PATH"
 command -v jq >/dev/null || die "jq not on PATH"
 STAMP=$(date +%m%d-%H%M%S)-$$
@@ -372,10 +385,64 @@ PY
   echo "$dir"
 }
 
+# ------------------------------------------------------------------ suites: both repos, before any tag
+# Each suite is pointed at the OTHER repo's checkout under release: teaching's tests resolve plan-lint,
+# leg_counts and the Jev runner from this checkout, and workflows' gate-vacuity probes $TEACHING.
+run_suites() {
+  local rc
+  [ -x "$ROOT/scripts/test.sh" ] || { echo "FAIL [suites] $ROOT/scripts/test.sh is missing — NO SUITE RAN"; FAILED=1; return; }
+  [ -f "$TEACHING/tests/run-all.sh" ] || { echo "FAIL [suites] $TEACHING/tests/run-all.sh is missing — NO SUITE RAN"; FAILED=1; return; }
+  echo; echo "=== canary suites: workflows ($ROOT)"
+  ( cd "$ROOT" && CANARY_NESTED=1 TEACHING_PLUGIN_ROOT="$TEACHING" bash scripts/test.sh ) > "$HOME_DIR/workflows-suite.log" 2>&1
+  rc=$?
+  # Each suite's summary and its failing tests are what a reader needs; the full log is kept.
+  grep -E '^\(fail\)|^ *[0-9]+ (pass|fail)$|^Ran |^test\.sh: |Unhandled error' "$HOME_DIR/workflows-suite.log" | tail -n 40
+  [ "$rc" = 0 ] || { echo "FAIL [suites] workflows scripts/test.sh exited $rc — log $HOME_DIR/workflows-suite.log"; FAILED=1; }
+  echo; echo "=== canary suites: teaching ($TEACHING)"
+  mkdir -p "$HOME_DIR/tmp/teaching-suite"
+  ( cd "$TEACHING" && CANARY_NESTED=1 TMPDIR="$HOME_DIR/tmp/teaching-suite" PLAN_LINT="$WORK/plan-lint.ts" \
+      WORKFLOWS_ROOT="$ROOT" LEG_COUNTS_PY="$WORK/leg_counts.py" bash tests/run-all.sh ) > "$HOME_DIR/teaching-suite.log" 2>&1
+  rc=$?
+  grep -E '^\(fail\)|^ *[0-9]+ (pass|fail)$|[0-9]+ (passed|failed)|^FAILED|^ERROR|^==' "$HOME_DIR/teaching-suite.log" | tail -n 25
+  [ "$rc" = 0 ] || { echo "FAIL [suites] teaching tests/run-all.sh exited $rc — log $HOME_DIR/teaching-suite.log"; FAILED=1; }
+}
+
+# ------------------------------------------------------------------ template: a real course's plan lints clean
+run_template() {
+  local dir=$HOME_DIR/template rc n
+  mkdir -p "$dir"
+  echo; echo "=== canary template: teaching notes repair template, secreg lecture $LECTURE"
+  [ -f "$TEACHING/scripts/render-template.ts" ] \
+    || { echo "FAIL [template] $TEACHING/scripts/render-template.ts is missing — nothing rendered"; FAILED=1; return; }
+  bun "$TEACHING/scripts/render-template.ts" --skill notes --mode repair --course "$COURSE" \
+      --lecture "$LECTURE" --check-paths > "$dir/args.raw.json"
+  rc=$?
+  [ "$rc" = 0 ] || { echo "FAIL [template] render-template.ts exited $rc (1 = a course path is absent, 2 = no render)"; FAILED=1; return; }
+  python3 - "$dir" <<'PY' || { echo "FAIL [template] could not build the plan and args for plan-lint"; FAILED=1; return; }
+import json, os, sys
+d = sys.argv[1]
+args = json.load(open(os.path.join(d, "args.raw.json")))
+plan = os.path.join(d, "plan.md")
+open(plan, "w").write("# CANARY notes repair template\n\n<!-- work:dispatch\n"
+                      + json.dumps({"runId": "canary-template", "args": args}, indent=1) + "\n-->\n")
+json.dump({**args, "planPath": plan, "rounds": 1}, open(os.path.join(d, "args.json"), "w"), indent=2)
+PY
+  bun "$WORK/plan-lint.ts" "$dir/args.json" --json > "$dir/lint.json"
+  rc=$?
+  n=$(python3 -c 'import json,sys; print(len(json.load(open(sys.argv[1]))["findings"]))' "$dir/lint.json" 2>/dev/null)
+  case "$rc:$n" in
+    0:0) echo "template: plan-lint 0 finding(s) over the rendered notes repair template" ;;
+    *) echo "FAIL [template] plan-lint exited $rc with ${n:-an uncountable number of} finding(s) — a template must lint with ZERO of any severity"
+       bun "$WORK/plan-lint.ts" "$dir/args.json" 2>&1 | head -n 20; FAILED=1 ;;
+  esac
+}
+
 # ------------------------------------------------------------------ run
 RUNS=()   # NAME|DIR|RUN_DIR|EXPECT|COUNTS (counts joined by \x1f)
 FAILED=0
-if [ "$ONLY" != dev ]; then
+step suites && run_suites
+step template && run_template
+if step diag; then
   d=$(plan_diag) || exit 2
   echo; echo "=== canary (a): read-only diagnose, secreg lecture $LECTURE -> $STATE/$DIAG_ID"
   # The diagnose plan states its own maxRounds 1; the loop exits 8 at a read-only verdict.
@@ -385,7 +452,7 @@ if [ "$ONLY" != dev ]; then
     echo "FAIL [diag] work-dispatch.sh refused or failed (exit above)"; FAILED=1
   fi
 fi
-if [ "$ONLY" != diag ]; then
+if step dev; then
   d=$(plan_dev) || exit 2
   echo; echo "=== canary (b): dev round on a throwaway repo ($d) -> $STATE/$DEV_ID"
   if dispatch dev "$d" "$d/plan.md" 2; then
@@ -396,9 +463,12 @@ if [ "$ONLY" != diag ]; then
 fi
 
 if [ "$DRY" = 1 ]; then
-  echo; echo "canary: --dry-run — built, linted and probed; nothing dispatched"
-  # Only the two run dirs this invocation minted (their ids carry this STAMP).
-  rm -rf -- "$HOME_DIR" "$STATE/$DIAG_ID" "$STATE/$DEV_ID"
+  echo; echo "canary: --dry-run — suites and template run; runs built, linted and probed; nothing dispatched"
+  [ "$FAILED" = 0 ] && echo "canary: dry-run PASS" || echo "canary: dry-run FAIL — the failures are listed above"
+  # Only the two run dirs this invocation minted (their ids carry this STAMP); a failure keeps the
+  # temp root, which holds the teaching suite's log and the rendered template.
+  rm -rf -- "$STATE/$DIAG_ID" "$STATE/$DEV_ID"
+  if [ "$FAILED" = 0 ]; then rm -rf -- "$HOME_DIR"; else echo "canary: temp root kept at $HOME_DIR"; fi
   exit "$FAILED"
 fi
 

@@ -107,3 +107,51 @@ describe('canary --assert', () => {
     expect(r.out).toContain('START work-loop has no DONE')
   })
 })
+
+/**
+ * The two steps that run before any model call, in --dry-run as well as --run. SUITES runs BOTH repos'
+ * suites (teaching 4.3.7 shipped {{NAME}} refs that turned workflows' gate-vacuity red because only
+ * teaching's suite ran); TEMPLATE renders teaching's notes repair template for a real course with
+ * course_paths.py and requires plan-lint to find nothing in it. Each fails CLOSED when its input is gone.
+ */
+describe('canary suites and template steps', () => {
+  const TEACHING = process.env.TEACHING_PLUGIN_ROOT || join(process.env.HOME ?? '', '.claude/skills/teaching')
+  function canary(args: string[], env: Record<string, string>) {
+    const tmp = mkdtempSync(join(root, 'dry-'))
+    const r = spawnSync('bash', [CANARY, ...args], {
+      encoding: 'utf8', timeout: 60_000,
+      env: { ...process.env, CANARY_TMP: tmp, CANARY_STATE: join(tmp, 'state'), CANARY_NESTED: '', ...env },
+    })
+    return { status: r.status, out: r.stdout + r.stderr }
+  }
+
+  test('--dry-run --only template renders a course, finds every path and lints it to zero findings', () => {
+    const r = canary(['--dry-run', '--only', 'template'],
+      { CANARY_TEACHING: TEACHING, CANARY_COURSE: join(TEACHING, 'tests/fixtures/course-layout'), CANARY_DIAG_LECTURE: '7' })
+    expect(r.out).toMatch(/render-template: [1-9]\d* course path\(s\) examined in the notes repair template, 0 absent/)
+    expect(r.out).toContain('template: plan-lint 0 finding(s) over the rendered notes repair template')
+    expect(r.status).toBe(0)
+  })
+
+  test('a teaching checkout without render-template.ts is a FAIL, never a skipped step', () => {
+    const fake = mkdtempSync(join(root, 'no-teaching-'))
+    const r = canary(['--dry-run', '--only', 'template'], { CANARY_TEACHING: fake })
+    expect(r.status).toBe(1)
+    expect(r.out).toContain('FAIL [template]')
+  })
+
+  test('a teaching checkout without its suite runner is a FAIL before either suite runs', () => {
+    const fake = mkdtempSync(join(root, 'no-suite-'))
+    const r = canary(['--dry-run', '--only', 'suites'], { CANARY_TEACHING: fake })
+    expect(r.status).toBe(1)
+    expect(r.out).toContain('FAIL [suites]')
+    expect(r.out).toContain('NO SUITE RAN')
+    expect(r.out).not.toContain('=== canary suites: workflows')
+  })
+
+  test('a canary started inside its own suite run refuses with exit 2 instead of recursing', () => {
+    const r = canary(['--dry-run', '--only', 'suites'], { CANARY_NESTED: '1' })
+    expect(r.status).toBe(2)
+    expect(r.out).toContain('CANARY_NESTED')
+  })
+})

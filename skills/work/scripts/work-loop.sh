@@ -182,9 +182,36 @@ record_outcomes() {
   return 0
 }
 
+# The round line names where its cap came from and, apart from it, the plan's goalTurns. They count
+# different things: maxRounds caps the RUN's rounds (work-redispatch.sh hard-stops there), goalTurns
+# budgets the SESSION hold's red Stops. Capping the loop at min(both) would end a detached run on a
+# count of turns it never sees; a bare "of 6" beside goalTurns: 3 read as goalTurns being ignored.
+CAP_NOTE=$(python3 - "$ARGS" "$PLAN" "$LOOPS" <<'PY' 2>/dev/null
+import json, re, sys
+args_path, plan, loops = sys.argv[1], sys.argv[2], int(sys.argv[3])
+def whole(v): return v if isinstance(v, int) and not isinstance(v, bool) else None
+mr = whole(json.load(open(args_path)).get("maxRounds"))
+if mr == loops:
+    cap = f"maxRounds {mr}"
+elif mr is None and loops == 6:
+    cap = "maxRounds, default 6"
+else:
+    cap = f"--loops {loops}, the plan's maxRounds is {mr if mr is not None else 'unstated (default 6)'}"
+turns = None
+m = re.search(r'<!--\s*work:dispatch\s*(.*?)-->', open(plan).read(), re.S)
+if m:
+    try: turns = whole(json.loads(m.group(1)).get("goalTurns"))
+    except Exception: pass
+note = f"round cap: {cap}"
+if turns and turns > 0:
+    note += f"; goalTurns {turns} is the session hold's Stop budget, not a round cap"
+print(f" ({note})")
+PY
+)
+
 round=1
 while :; do
-  echo "work-loop: round $round of $LOOPS — waiting on $RESULT"
+  echo "work-loop: round $round of $LOOPS$CAP_NOTE — waiting on $RESULT"
 
   # Wait WITH a liveness leg. Order matters: the verdict is checked first, so a run that finished
   # between two polls is never reported dead. The grace covers only the registration window at the
