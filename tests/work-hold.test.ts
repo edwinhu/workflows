@@ -8,7 +8,7 @@ import {
   decide, statePath, parseJudgeVerdict, parseNoul,
   transcriptContext, renderHistory, pushRound,
   lastLedgerEntry, ledgerPath, ABANDONED, inFlight, ceilingReached, redispatchLine,
-  PASSED_GOAL_MET, PASSED_UNJUDGED, unevaluatedNote, UNEVALUATED_AFTER_SECONDS,
+  PASSED_GOAL_MET, PASSED_UNJUDGED, VERDICT_REACHED, unevaluatedNote, UNEVALUATED_AFTER_SECONDS,
 } from '../hooks/work-hold'
 import { useTmp } from './helpers/tmp.ts'
 
@@ -1323,5 +1323,57 @@ describe('work-hold.sh composes the continuation clause per mode', () => {
     const tail = 'Report at the ceiling, not at the first stopping point.'
     expect(arm(['exit 1', '--goal', 'g']).json.continuation).toEndWith(tail)
     expect(arm(['--goal', 'g']).json.continuation).toEndWith(tail)
+  })
+})
+
+/**
+ * secreg 2026-10-02, run 1002-slides-18-diag: a readOnly run ("reach a verdict") FAILed round 1 and
+ * the hold went on holding. work-loop.sh now ends such a run at loop.exit 8 — verdict reached — and
+ * that verdict IS the goal, so the hold releases on it rather than asking a judge for a round that
+ * cannot happen. Both judges are dead here: the old code blocks a check-less hold on that.
+ */
+describe('a readOnly run that reached its verdict releases the hold', () => {
+  const now = Math.floor(Date.now() / 1000)
+  const hold = (sid: string, args: object, loopExit: string | null) => {
+    const dir = mkTmp('holdverdict-')
+    const r = runDir(dir, { result: '{"overallPass":false,"verdict":"FAIL"}' })
+    writeFileSync(join(r, 'args.json'), JSON.stringify(args))
+    if (loopExit !== null) writeFileSync(join(r, 'loop.exit'), loopExit + '\n')
+    writeFileSync(join(dir, `work-hold-${sid}.json`), JSON.stringify({
+      check: '', goal: 'reach a verdict on the deck', startedAt: now, ceilingMinutes: 720, maxRounds: 6,
+      rounds: 0, run: r,
+    }))
+    const out = spawnSync('bun', [HOOK], { timeout: 120_000,
+      input: JSON.stringify({ session_id: sid }), encoding: 'utf8',
+      env: { ...HERMETIC_ENV, TMPDIR: dir, XDG_RUNTIME_DIR: '/nonexistent-so-no-agenix-key',
+        WORK_HOLD_DECISIONS_URL: 'http://127.0.0.1:1/decisions',
+        WORK_HOLD_JUDGE_URL: 'http://127.0.0.1:1/v1/chat/completions' },
+    })
+    return { ...out, state: join(dir, `work-hold-${sid}.json`), entry: lastLedgerEntry(join(dir, `work-hold-${sid}.releases.log`)) }
+  }
+
+  test('loop.exit 8 on a readOnly run releases `verdict-reached`, with no block and no round', () => {
+    const r = hold('ro8', { readOnly: true, tasks: [] }, '8')
+    expect(r.stdout.trim()).toBe('')
+    expect(existsSync(r.state)).toBe(false)
+    expect(r.entry?.verb).toBe(VERDICT_REACHED)
+    expect(r.stderr).toContain('verdict')
+  })
+
+  test('a readOnly run whose loop exited 3 (a refused round) is NOT a verdict: the hold still blocks', () => {
+    const r = hold('ro3', { readOnly: true, tasks: [] }, '3')
+    expect(JSON.parse(r.stdout).decision).toBe('block')
+    expect(r.entry).toBeNull()
+  })
+
+  test('loop.exit 8 on a run that WRITES is not trusted: the hold still blocks', () => {
+    const r = hold('rw8', { tasks: [{ id: 'T1' }] }, '8')
+    expect(JSON.parse(r.stdout).decision).toBe('block')
+    expect(r.entry).toBeNull()
+  })
+
+  test('a readOnly verdict whose loop has not exited yet is left to the judge, as before', () => {
+    const r = hold('ronone', { readOnly: true, tasks: [] }, null)
+    expect(JSON.parse(r.stdout).decision).toBe('block')
   })
 })

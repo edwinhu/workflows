@@ -242,7 +242,8 @@ fi
 #   non-zero WITH a real test result -> genuine RED, proceed
 # Writes into the args file, in place: `redBefore` {id: {exitCode, output}} (exit -1 = could not run,
 # output = last 60 lines) and `redSuiteHashes` {path: sha256} over every existing file a redCommand
-# names plus `redSuite` — work-checks.sh re-hashes them after the agents, and a change is CRITICAL.
+# names plus `redSuite` (a directory contributes its test files only) — work-checks.sh re-hashes
+# them after the agents, and a change is CRITICAL.
 # Mode `record` (--no-red-probe, --no-lint) records the same evidence and refuses nothing: without a
 # before-run the round's red verdict can only be red-unproven.
 # Exit 0 = launch; exit 3 = refuse, exactly like the plan-lint gate.
@@ -293,25 +294,43 @@ for t in gated_all:
 cwd = a.get("projectDir") or os.getcwd()
 
 
-# The red suite: every existing file a redCommand names (a directory contributes its files), plus
-# `redSuite`. Keys are paths relative to projectDir, the way work-checks.sh resolves them.
+# The red suite: every existing file a redCommand names, plus `redSuite`. A DIRECTORY argument
+# contributes only its test files: `--course /path/to/tree` named a whole course tree once, hashed
+# 1290 files (credentials included) and the args overflowed farm.sh's ARG_MAX. A secret-looking file
+# is never read, even when named. Keys are paths relative to projectDir, as work-checks.sh resolves them.
 SKIP_DIRS = {".git", "node_modules", "__pycache__", ".pixi", ".venv", ".work"}
+TEST_FILE = re.compile(
+    r"^(?:test_.*\.py|conftest\.py|.*_test\.(?:py|go|sh)|.*\.(?:test|spec)\.[cm]?[jt]sx?|.*_spec\.rb"
+    r"|.*\.bats)$")
+TEST_DIRS = {"tests", "test", "__tests__", "spec"}
+SECRET = re.compile(
+    r"^\.env(?:\..*)?$|^\.(?:netrc|npmrc|pypirc|pgpass)$|^id_(?:rsa|dsa|ecdsa|ed25519)\b"
+    r"|\.(?:pem|key|p12|pfx|keystore|jks)$"
+    r"|(?:^|[._-])(?:secrets?|credentials?|tokens?|passwords?|passwd|apikey|api-key)(?:[._-]|$)", re.I)
+
+
+def is_test_file(path):
+    parts = path.split(os.sep)
+    return bool(TEST_FILE.match(parts[-1])) or any(p in TEST_DIRS for p in parts[:-1])
 
 
 def files_under(rel):
     full = rel if os.path.isabs(rel) else os.path.join(cwd, rel)
     if os.path.isfile(full):
-        return [rel]
+        return [] if SECRET.search(os.path.basename(full)) else [rel]
     if not os.path.isdir(full):
         return []
-    out = []
+    out, walked = [], 0
     for root, dirs, names in os.walk(full):
         dirs[:] = sorted(d for d in dirs if d not in SKIP_DIRS)
         for n in sorted(names):
-            out.append(os.path.relpath(os.path.join(root, n), cwd) if not os.path.isabs(rel)
-                       else os.path.join(root, n))
-            if len(out) >= 5000:
+            walked += 1
+            if walked > 5000:
                 return out
+            path = os.path.join(root, n)
+            if SECRET.search(n) or not is_test_file(os.path.relpath(path, os.path.dirname(full))):
+                continue
+            out.append(path if os.path.isabs(rel) else os.path.relpath(path, cwd))
     return out
 
 

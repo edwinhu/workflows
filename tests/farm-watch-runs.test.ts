@@ -177,8 +177,8 @@ test('a beacon is fresh for four ticks, and only digits count', () => {
 test('the mod kit tests pass (scripts/mod-test.sh -> claude plugin test)', () => {
   if (spawnSync('bash', ['-c', 'command -v claude'], { timeout: 130_000 }).status !== 0) return
   const r = spawnSync('bash', [join(REPO, 'scripts', 'mod-test.sh')], { encoding: 'utf8', timeout: 120_000 })
-  // 11 watcher + 8 guards (hooks/mod-tests/guards.test.ts) + 17 per-edit Jev (hooks/mod-tests/jev.test.ts)
-  expect(r.stdout + r.stderr).toMatch(/\b36 pass\b/)
+  // 11 watcher + 8 guards (hooks/mod-tests/guards.test.ts) + 18 per-edit Jev (hooks/mod-tests/jev.test.ts)
+  expect(r.stdout + r.stderr).toMatch(/\b37 pass\b/)
   expect(r.stdout + r.stderr).toMatch(/\b0 fail\b/)
   expect(r.status).toBe(0)
 }, 130_000)

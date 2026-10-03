@@ -14,6 +14,7 @@
 # exit 5  converge-check.ts says NOT CONVERGING — halt rather than burn the cap on a broken brief
 # exit 6  the loop cap was reached with the gate still failing
 # exit 7  a plan defect escalates: fixing it means choosing scope, which is a human's call
+# exit 8  a readOnly run reached its verdict: an audit's FAIL is its answer, never a round to fix
 #
 # converge-check's exit 2 ("fewer than two readable result files") is KEEP GOING, never a halt:
 # every round 1 returns it, so reading it as a halt would stop every run before it began.
@@ -34,7 +35,7 @@ while [ $# -gt 0 ]; do
     --plan)     [ $# -ge 2 ] || die "--plan needs a value";     PLAN=$2;    shift 2 ;;
     --loops)    [ $# -ge 2 ] || die "--loops needs a value";    LOOPS=$2;   shift 2 ;;
     --provider) [ $# -ge 2 ] || die "--provider needs a value"; PROVIDER=$2; shift 2 ;;
-    -h|--help)  sed -n '2,20p' "${BASH_SOURCE[0]}"; exit 0 ;;
+    -h|--help)  sed -n '2,24p' "${BASH_SOURCE[0]}"; exit 0 ;;
     *) die "unknown argument: $1" ;;
   esac
 done
@@ -70,6 +71,11 @@ case "$PROVIDER" in ''|claude|codex|gemini) ;;
 esac
 
 RESULT="$RUN_DIR/result.json"
+
+# No task can close anything a readOnly run finds, so a second round re-derives the same verdict, or
+# is refused at work-redispatch.sh's Tier 1 because the findings route to the plan.
+READ_ONLY=$(python3 -c 'import json,sys; print(1 if json.load(open(sys.argv[1])).get("readOnly") is True else 0)' "$ARGS" 2>/dev/null) \
+  || die "cannot read readOnly from $ARGS"
 
 # The loop files itself in the session's farm-events stream, keyed on its own pid, so the watcher mod
 # (hooks/watch/watcher.ts) can tell a loop that exited from one that was killed: loop.exit is written by
@@ -207,6 +213,11 @@ while :; do
 
   echo "work-loop: FAIL on round $round"
   selectors
+
+  if [ "$READ_ONLY" = 1 ]; then
+    echo "work-loop: readOnly run — verdict reached on round $round; the selectors above are the audit's report, not a work queue"
+    exit 8
+  fi
 
   # Convergence is a HALT, not advice: a round failing where its predecessor failed is evidence
   # about the BRIEF, and spending the remaining cap against it buys nothing. Exit 2 is "too short

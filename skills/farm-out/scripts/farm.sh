@@ -337,21 +337,29 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
   # No --permission-mode: the runner inherits the user's default (auto), which keeps hard_deny --
   # the FERPA and licensed-data rules -- applying inside a dispatched run. The farmOutOnly policy
   # that used to fight this lives in main-thread-guard.sh now, and a hook can read FARM_OUT_CHILD.
-  local -a cmd=("$wrapper" -p "${prompt}${ANTI_SIM}${CHILD_STANDING}" --output-format stream-json --verbose)
+  # The prompt goes on STDIN, never argv: Linux caps one argv string at 128 KiB, and a --workflow
+  # prompt inlines its args file (a 168 KB one died "Argument list too long", exit 126).
+  # Cross-provider guard: gemini and codex children are told not to call a model API themselves.
+  local guard=""
+  if [ "$provider" = "gemini" ] || [ "$provider" = "codex" ]; then
+    guard="
+
+Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint, no LLM-calling scripts); do the work yourself."
+  fi
+  local prompt_file
+  prompt_file=$(mktemp -t farm-out.XXXXXX.prompt)
+  printf '%s' "${prompt}${ANTI_SIM}${CHILD_STANDING}${guard}" > "$prompt_file"
+  local -a cmd=("$wrapper" -p --output-format stream-json --verbose)
   [ -n "$agent" ] && cmd+=(--agent "$agent")
   # Per-row model override. Absent leaves the wrapper's own default -- which is what every
   # existing caller gets, since no row carried one until now.
   [ -n "$model" ] && cmd+=(--model "$model")
-  
-  # Cross-provider guard
-  if [ "$provider" = "gemini" ] || [ "$provider" = "codex" ]; then
-    cmd+=( -p "Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint, no LLM-calling scripts); do the work yourself." )
-  fi
   touch "$log.stamp"
   
   # Keep stderr: a provider that dies (proxy down, model rejected, auth stale) writes
   # there and nowhere else, and discarding it leaves only a bare exit code to debug.
-  ( cd "$CWD" && "${cmd[@]}" ) > "$log" 2>"$err" &
+  # exec: $! must be the wrapper itself, or the watchdog's SIGTERM stops a subshell and orphans it.
+  ( cd "$CWD" && exec "${cmd[@]}" ) < "$prompt_file" > "$log" 2>"$err" &
   local child_pid=$!
   
   local wd_out
@@ -384,7 +392,7 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
   mapfile -t missing < <(verify "${expects[@]:-}")
   # verify prints one blank line when nothing is missing; drop it.
   [ "${#missing[@]}" -eq 1 ] && [ -z "${missing[0]}" ] && missing=()
-  rm -f "$log" "$err"
+  rm -f "$log" "$log.stamp" "$err" "$prompt_file"
 
   # The same verdict the caller gets: exit 0 AND every promised artifact present. A run that
   # exits 0 having dropped its deliverable is a failure, and DONE-on-rc-alone would call it ok.
@@ -580,12 +588,12 @@ else
   # 20-60 minutes -- so an instruction printed afterwards arrives when the thing it backstops is
   # already over. A caller that DETACHES us (setsid nohup ... > log) never sees it on either side;
   # that caller creates the cron itself at launch (farm-out/SKILL.md).
-  # No watcher in this session (no fresh beacon): the cron is the only wake, --no-cron or not.
+  # No watcher in this session (no fresh beacon): a cron is then the only wake. --no-cron stays the
+  # caller's call -- work-round.sh passes it because work-dispatch.sh owns that run's one cron.
   watcher=0
   bash "${BASH_SOURCE[0]%/*}/../../work/scripts/farm-alive.sh" --watcher || watcher=$?
   if [ "$watcher" = 1 ] && [ "$CALLER_IS_CHILD" != 1 ]; then
-    echo "⚠ wake: NO WATCHER IN THIS SESSION -- no fresh farm-events beacon, so Claude Code loaded no plugin mod here and only the cron below wakes this session. Tell the user: /reload-plugins loads the mods."
-    CRON=1
+    echo "⚠ wake: NO WATCHER IN THIS SESSION -- no fresh farm-events beacon, so Claude Code loaded no plugin mod here and only a cron wakes this session$([ "$CRON" = 1 ] || echo '; with --no-cron that cron must be the caller'\''s, or nothing wakes it'). Tell the user: /reload-plugins loads the mods."
   fi
   if [ "$CRON" = 1 ]; then
     cron_minutes=${WORK_LOOP_INTERVAL_MINUTES:-60}
@@ -622,7 +630,7 @@ in one line rather than proceeding as though the poll were armed.
 ======================================================================
 CRONMSG
   else
-    echo "wake: --no-cron, so the watcher mod is the ONLY wake -- it watches this run and wakes this session when it finishes or dies (/farm lists it). Nothing wakes a session that is not running; drop --no-cron for the hourly backstop."
+    echo "wake: --no-cron, so this run asks for no heartbeat cron -- the watcher mod wakes this session when it finishes or dies (/farm lists it). The hourly backstop is the caller's: work-dispatch.sh prints its own; a bare farm.sh call has none unless --no-cron is dropped."
   fi
 
   # The child calls the Workflow tool; we never run the script ourselves. The long
