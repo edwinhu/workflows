@@ -539,6 +539,46 @@ test('HEADLESS (entrypoint sdk-cli) with a live owned run: no watcher, so it BLO
   expect(r.out).toContain('"decision":"block"')
 }, 30000)
 
+/**
+ * A compiled fake `claude` that reports `version` and, like the harness, runs the hook through `sh -c`
+ * as its child — so the hook's ancestry names it. A shell-script fake cannot: its exe is the shell.
+ */
+function fakeClaudeParent(dir: string, version: string): string {
+  const exe = join(dir, 'installs', 'claude', version, 'claude')
+  mkdirSync(dirname(exe), { recursive: true })
+  const src = join(dir, 'fake-claude.ts')
+  writeFileSync(src, [
+    `if (process.argv.includes('--version')) { console.log('${version} (Claude Code)'); process.exit(0) }`,
+    `const r = Bun.spawnSync(['/bin/sh', '-c', process.env.FAKE_HOOK_CMD!], { stdin: 'inherit', stdout: 'inherit', stderr: 'inherit' })`,
+    'process.exit(r.exitCode ?? 1)',
+  ].join('\n'))
+  const b = Bun.spawnSync(['bun', 'build', '--compile', src, '--outfile', exe], { stdout: 'pipe', stderr: 'pipe', timeout: 60_000 })
+  if (b.exitCode !== 0) throw new Error(`bun build --compile failed: ${b.stderr.toString()}`)
+  return exe
+}
+
+test('a STALE inherited CLAUDE_CODE_EXECPATH does not hide the running 2.1.287: a live owned run ALLOWS', async () => {
+  // The lead session was launched by a 2.1.257 parent, uninstalled since; its hooks inherit that path,
+  // so `$CLAUDE_CODE_EXECPATH --version` cannot run — and the hook blocked with a live run going.
+  const port = 18915
+  const srv = stubDecisions(port, 0.99)
+  await settle()
+  const { dir, transcript } = fixture()
+  farmEvents(dir, 'es-stale', process.pid, [START('alpha')])
+  const claude = fakeClaudeParent(dir, '2.1.287')
+  const env = interactiveEnv(dir, port, {
+    CLAUDE_CODE_EXECPATH: join(dir, 'installs', 'claude', '2.1.257', 'claude'),
+    FAKE_HOOK_CMD: `bun ${HOOK}`,
+  })
+  const p = Bun.spawnSync([claude], {
+    timeout: 120_000, cwd: ROOT, env, stdout: 'pipe', stderr: 'pipe',
+    stdin: Buffer.from(JSON.stringify(stopPayload('es-stale', transcript))),
+  })
+  srv.kill()
+  expect(p.stdout.toString()).toBe('')
+  expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).toContain('owned runs live, the watcher wakes the session: alpha')
+}, 90000)
+
 test('below 2.1.287, or with no readable version, mods do not load: it BLOCKS', async () => {
   const port = 18914
   const srv = stubDecisions(port, 0.99)

@@ -205,9 +205,10 @@ export function liveOwnedRuns(session: string, nowMs: number = Date.now()): stri
 /**
  * Is the watcher mod running in this session? It registers only on an interactive `session.start`
  * (and never for a farm child, already allowed above), and mods load only from Claude Code 2.1.287.
- * The mod writes no marker, so both halves are read from what the harness exports to hooks:
+ * The mod writes no marker, so both halves are read from the hook's own environment and parentage:
  * `CLAUDE_CODE_ENTRYPOINT` is `cli` only for the interactive terminal REPL — the binary rewrites it
- * to `sdk-cli` under `-p` — and `$CLAUDE_CODE_EXECPATH --version` is the running binary's version.
+ * to `sdk-cli` under `-p` — and `runningClaudeVersion` asks the binary that spawned this hook (not
+ * `$CLAUDE_CODE_EXECPATH`, which a hook inherits from whatever launched the session).
  * Any other entrypoint, or a version that cannot be read, counts as not active: the hook then judges
  * exactly as before.
  */
