@@ -159,7 +159,7 @@ describe('canary suites and template steps', () => {
   // and UNTRACKED created beside them — a main checkout carrying another session's work.
   function repo(name: string, files: Record<string, string>, mods: Record<string, string> = {}, untracked: Record<string, string> = {}) {
     const dir = mkdtempSync(join(root, `${name}-`))
-    const git = (...a: string[]) => spawnSync('git', ['-C', dir, '-c', 'user.name=t', '-c', 'user.email=t@t', ...a], { encoding: 'utf8' })
+    const git = (...a: string[]) => spawnSync('git', ['-C', dir, '-c', 'user.name=t', '-c', 'user.email=t@t', ...a], { encoding: 'utf8', timeout: 10_000 })
     const put = (o: Record<string, string>) => {
       for (const [f, body] of Object.entries(o)) { mkdirSync(join(dir, f, '..'), { recursive: true }); writeFileSync(join(dir, f), body) }
     }
@@ -174,8 +174,8 @@ describe('canary suites and template steps', () => {
   }, mods, { '.work/run/state.json': '{}' })
   function workflowsRepo() {
     const wf = repo('wf', { 'scripts/test.sh': FAKE_SUITE, 'release.txt': 'committed\n' }, { 'release.txt': 'WIP\n' }, { 'test2.js': '' })
-    spawnSync('cp', [CANARY, join(wf.dir, 'scripts/canary.sh')])
-    spawnSync('chmod', ['+x', join(wf.dir, 'scripts/test.sh')])
+    spawnSync('cp', [CANARY, join(wf.dir, 'scripts/canary.sh')], { timeout: 10_000 })
+    spawnSync('chmod', ['+x', join(wf.dir, 'scripts/test.sh')], { timeout: 10_000 })
     return wf
   }
   function fakeCanary(wfDir: string, env: Record<string, string>) {
