@@ -140,9 +140,14 @@ def rule_verdicts(v):
     out = []
     for x in (v[:3] if isinstance(v, list) else []):
         if isinstance(x, dict):
-            name = x.get("name") or "(unnamed)"
-            score = x.get("score")
-            out.append(f"{name}: {score}" if score is not None else name)
+            # workflow.js's shape: {rule, p, verdict, spans?}
+            s = x.get("rule") or "(unnamed)"
+            if x.get("p") is not None: s += f": p={x['p']}"
+            if x.get("verdict"): s += f" {x['verdict']}"
+            spans = x.get("spans") or []
+            if spans:
+                s += " at " + ", ".join(spans[:3]) + (f" (+{len(spans) - 3} more)" if len(spans) > 3 else "")
+            out.append(s)
         else:
             out.append(str(x))
     res = "; ".join(out)
