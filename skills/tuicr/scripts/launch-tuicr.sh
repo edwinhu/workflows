@@ -43,11 +43,28 @@ done
 INNER="$INNER; rc=\$?; printf '%s' \"\$rc\" > $(sq "$SENTINEL").tmp && mv -f $(sq "$SENTINEL").tmp $(sq "$SENTINEL")"
 
 # block until the wrapper writes the sentinel (tuicr quit), then report the exit code.
+# $1 (optional) is a liveness probe: when it fails twice running, the pane is gone and no sentinel
+# can ever arrive. TUICR_WAIT_MAX caps the wait (seconds); on expiry the TUI is left open, not killed.
+WAIT_MAX="${TUICR_WAIT_MAX:-1800}"
 wait_and_report() {
+    local alive="${1:-}" where="${2:-the review window}" ticks=0 dead=0 rc
     while [ ! -f "$SENTINEL" ]; do
         sleep 0.3
+        ticks=$((ticks + 1))
+        if [ -n "$alive" ] && [ $((ticks % 5)) = 0 ]; then
+            if "$alive"; then dead=0; else dead=$((dead + 1)); fi
+            if [ "$dead" -ge 2 ] && [ ! -f "$SENTINEL" ]; then
+                echo "launch-tuicr: $where closed before tuicr exited — nothing was reviewed" >&2
+                echo "TUICR_RC=closed"
+                return 0
+            fi
+        fi
+        if [ $((ticks * 3 / 10)) -ge "$WAIT_MAX" ]; then
+            echo "launch-tuicr: review still open after ${WAIT_MAX}s in $where — left open, not relaunched;" \
+                "read it after the human quits with resolve-session.sh + 'tuicr review comments'" >&2
+            exit 3
+        fi
     done
-    local rc
     rc=$(cat "$SENTINEL" 2>/dev/null || echo 1)
     echo "TUICR_RC=${rc:-1}"
 }
@@ -83,7 +100,12 @@ launch_via_herdr() {
 
     # `pane run` joins its COMMAND words with spaces and types the result into the pane's shell, so
     # the whole pipeline must be handed over as ONE already-quoted argument.
-    "$herdr" pane run "$pane_id" "$INNER" >/dev/null 2>&1 || true
+    local err
+    if ! err=$("$herdr" pane run "$pane_id" "$INNER" 2>&1 >/dev/null); then
+        "$herdr" tab close "$tab_id" >/dev/null 2>&1 || true
+        echo "launch-tuicr: could not start tuicr in herdr pane $pane_id: ${err:-pane run failed}" >&2
+        exit 2
+    fi
 
     # Wait for tuicr to paint its first frame (box-drawing border), then reveal the tab. Capped at
     # ~10s, and we bail early if the sentinel already exists (tuicr died on startup). On timeout we
@@ -95,7 +117,11 @@ launch_via_herdr() {
     done
     [ -f "$SENTINEL" ] || "$herdr" tab focus "$tab_id" >/dev/null 2>&1 || true
 
-    wait_and_report
+    # Say where the review is BEFORE blocking: the caller sees nothing else until tuicr quits, and a
+    # tab in another workspace is easy to miss.
+    echo "launch-tuicr: waiting for review in herdr tab $tab_id (workspace ${HERDR_WORKSPACE_ID:-current}) — quit tuicr to continue" >&2
+    pane_alive() { "$herdr" pane get "$pane_id" >/dev/null 2>&1; }
+    wait_and_report pane_alive "herdr tab $tab_id"
     "$herdr" tab close "$tab_id" >/dev/null 2>&1 || true
     return 0
 }
@@ -138,7 +164,8 @@ launch_via_ghostty() {
         fi
     fi
 
-    wait_and_report
+    echo "launch-tuicr: waiting for review in a ghostty window — quit tuicr to continue" >&2
+    wait_and_report "" "the ghostty review window"
 }
 
 launch_via_herdr || launch_via_ghostty
