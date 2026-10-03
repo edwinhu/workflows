@@ -83,8 +83,10 @@ const SEPARATES: Record<string, (vio: any, sat: any) => void> = {
   },
   "T-TRANSITION": (v, s) => {
     expect(v.sections_after_the_first[0]).toMatchObject({ line: 16, section: "Empirical Evidence" });
-    expect(v.sections_after_the_first[0].first_bullets[0].text).toStartWith("Several studies have examined");
-    expect(s.sections_after_the_first[0].first_bullets[0].text).toStartWith("So the market is concentrated.");
+    expect(v.sections_after_the_first[0].first_bullet.text).toStartWith("Several studies have examined");
+    expect(v.sections_after_the_first[0]).toMatchObject({ turn_cues: [], asks_question: false, names_previous_section: [] });
+    expect(s.sections_after_the_first[0].first_bullet.text).toStartWith("So the market is concentrated.");
+    expect(s.sections_after_the_first[0]).toMatchObject({ turn_cues: ["so"], asks_question: true });
   },
 };
 
