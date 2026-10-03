@@ -70,16 +70,23 @@ function dispatch(
   f: { dir: string; plan: string },
   extraEnv: Record<string, string> = {},
   extraArgs: string[] = [],
+  { watcher = true }: { watcher?: boolean } = {},
 ) {
   const sid = `hb-test-${Math.random().toString(36).slice(2)}`
   const tmp = mkdtempSync(join(tmpdir(), 'hold-tmpdir-'))
   scratch.push(tmp)
+  // A session whose watcher mod ticks leaves this beacon (hooks/watch/watcher.ts); without it the
+  // dispatch reports no watcher and forces the cron.
+  if (watcher) {
+    mkdirSync(join(tmp, 'farm-events', sid), { recursive: true })
+    writeFileSync(join(tmp, 'farm-events', sid, 'watcher.alive'), String(Math.floor(Date.now() / 1000)))
+  }
   const farm = script(f.dir, 'stub-farm.sh', 'exit 0')
   try {
     const out = execFileSync('bash', [DISPATCH, '--provider', 'claude', '--loops', '0', ...extraArgs, f.plan], {
       encoding: 'utf8', timeout: 180_000, cwd: f.dir,
       env: {
-        ...HERMETIC_ENV, CLAUDE_CODE_SESSION_ID: sid, TMPDIR: tmp,
+        ...HERMETIC_ENV, CLAUDE_CODE_SESSION_ID: sid, TMPDIR: tmp, FARM_OUT_CHILD: '',
         WORK_NO_SCOPE: '1', WORK_FARM: farm, ...extraEnv,
       },
     })
@@ -216,6 +223,28 @@ describe('half two: the cron is the DEFAULT backstop, the watcher mod is the pri
     expect(c.out).toMatch(/watcher mod is the ONLY wake/)
     expect(c.out).toMatch(/--no-cron/)
   }, 60_000)
+
+  // The secreg session e3b75752 (2026-10-02) loaded no plugin mod — Claude Code served its
+  // hooks-modules rollout switch off — so the "primary wake" did not exist and the slides loop's
+  // DONE rc=3 woke nobody. The dispatch can see that: no beacon.
+  test('NO watcher beacon: the dispatch says so, names /reload-plugins, and prints the cron', () => {
+    const c = dispatch(fixture(), {}, [], { watcher: false })
+    expect(c.out).toContain('NO WATCHER IN THIS SESSION')
+    expect(c.out).toContain('/reload-plugins')
+    expect(c.out).toContain('CronCreate')
+  }, 60_000)
+
+  test('NO watcher beacon overrides --no-cron: it would leave no wake at all', () => {
+    const c = dispatch(fixture(), {}, ['--no-cron'], { watcher: false })
+    expect(c.out).toContain('NO WATCHER IN THIS SESSION')
+    expect(c.out).toContain('--no-cron is overridden')
+    expect(c.out).toContain('CronCreate')
+    expect(c.out).not.toMatch(/watcher mod is the ONLY wake/)
+  }, 60_000)
+
+  test('a ticking watcher prints no warning', () => {
+    expect(r.out).not.toContain('NO WATCHER')
+  })
 
   test('--cron still works: an accepted no-op alias, same output as the default', () => {
     const c = dispatch(fixture(), {}, ['--cron'])

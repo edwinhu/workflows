@@ -1115,7 +1115,14 @@ cron_prompt="and? (work run $runid)"
 
 # Printed LAST on every path that dispatches, so nothing scrolls it away.
 print_cron_instruction() {
-  if [ "$cron" != 1 ]; then
+  # Exit 1 is a session with no watcher (no fresh beacon): the cron is then the ONLY wake.
+  local watcher=0
+  bash "$SKILL/scripts/farm-alive.sh" --watcher || watcher=$?
+  if [ "$watcher" = 1 ] && [ "${FARM_OUT_CHILD:-}" != 1 ]; then
+    echo
+    echo "⚠ wake: NO WATCHER IN THIS SESSION — farm-alive.sh --watcher found no fresh beacon, so Claude Code loaded no plugin mod here and nothing will wake this session when the run finishes except the cron below. Tell the user: /reload-plugins loads the mods (the status line then shows the run)."
+    [ "$cron" = 1 ] || echo "wake: --no-cron is overridden — with no watcher it would leave no wake at all."
+  elif [ "$cron" != 1 ]; then
     echo
     echo "wake: --no-cron, so the watcher mod is the ONLY wake — it watches this run and wakes this session on its verdict and on a run that dies without one (/farm lists it). Nothing wakes a session that is not running; drop --no-cron for the hourly backstop."
     return 0
