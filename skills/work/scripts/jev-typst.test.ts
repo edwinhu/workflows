@@ -61,8 +61,10 @@ const SEPARATES: Record<string, (vio: any, sat: any) => void> = {
     expect(Object.keys(v.subtitles[0]).sort()).toEqual(["file", "line", "opens_with_ing_word", "subtitle"]);
   },
   "T-TAKEAWAY-WH": (v, s) => {
-    expect(v.wh_subtitles).toEqual([{ file: "slides.typ", line: 16, subtitle: "What made proxy advisors powerful." }]);
-    expect(s.wh_subtitles[0].subtitle).toBe("What made proxy advisors powerful was the SEC's 2003 voting-duty rule.");
+    expect(v.wh_subtitles).toEqual([{ file: "slides.typ", line: 16, subtitle: "What made proxy advisors powerful.",
+      framed: "This slide explains what made proxy advisors powerful." }]);
+    // the frame is built by the extractor, so the judge rules on grammaticality, not on constructing it
+    expect(s.wh_subtitles[0].framed).toBe("This slide explains what made proxy advisors powerful was the SEC's 2003 voting-duty rule.");
   },
   "T-ECHO": (v, s) => {
     expect(v.slides_subtitle_and_first_body_line).toHaveLength(1);
