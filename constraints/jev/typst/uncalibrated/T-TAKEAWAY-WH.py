@@ -3,7 +3,7 @@ embedded question used as a label ("Why Nevada narrowed the controller test.") o
 wh-clause ("What AB 239 left out was Delaware's stockholder-vote route."); no flag separates them (accepted decks
 hold ~20 of the first and ~12 of the second). Calibration 2026-10-02, two two-run rounds, body withheld:
 "no main verb after the clause" wording: vio 0.27/0.31, Nevada wh label 0.31/0.30; "fits 'This slide explains
-___'" frame: vio 0.49/0.54, Nevada wh label 0.88/0.89; the wh-subject sentences 0.03-0.05 throughout. Jev reads
+___'" frame, three invocations: vio 0.49-0.65, Nevada wh label 0.85-0.89; the wh-subject sentences 0.03-0.08. Jev reads
 the clause's presupposition as an assertion. Kept here, below the glob rule-check.ts reads, until a parser fact
 (is a finite verb outside the wh-clause) or a firmer question earns it back; the lens keeps these subtitles.
 """
