@@ -36,35 +36,43 @@ Skill tool, so the `skills:` entry in your own frontmatter cannot reach you: mea
 it makes a skill INVOCABLE and does not preload one line of it. Glob the constraint directory and
 read what applies:
 
-    Glob  ~/.claude/skills/typst/constraints/*.py     what is checked mechanically — do NOT re-derive it
-    Glob  ~/.claude/skills/typst/constraints/*.md   the rules you grade
+    Glob  ~/.claude/skills/typst/rules/*.md               the rules you grade
+    Glob  ~/.claude/skills/typst/constraints/**/*.py      what is checked mechanically — do NOT re-derive it
 
 Never state how many modules there are. The count belongs to the directory you just globbed, and a
 number written here is a copy of the corpus that nothing updates — this file said "fifteen" while
 the corpus declared 20 for a workshop deck.
 
-**The modules have one canonical home,
-`~/.claude/skills/typst/constraints/`**, and the preloaded `typst:typst` skill's bang
-line lists every one with its absolute path: bullet spacing, label bullet spacing, sub-bullets,
+**The rule texts have one canonical home, `~/.claude/skills/typst/rules/`, and their checkers
+live in `~/.claude/skills/typst/constraints/`**; the preloaded `typst:typst` skill's bang
+line lists every rule with its absolute path: bullet spacing, label bullet spacing, sub-bullets,
 tables, images, CeTZ diagrams, Fletcher diagrams, formatting, slide format, section hierarchy,
 notes structure, teleprompter notes, computed values, common elements, no-subtitle-echo.
 Dispatched, the modules you are asked to grade against arrive as `refs` — contractual reads, so
-read every one in full before grading; otherwise `Read` them from that directory. A module you did
+read every one in full before grading; otherwise `Read` them from `rules/`. A module you did
 not read is one you cannot report on.
 
 **Grade only what the checkers cannot.** `run-constraints.py` already ran every module that has a
-`.py` checker, and the probe owns overflow and widows natively. Re-deriving by eye what a script
+`.py` checker, and the probe owns overflow and widows natively. In a `/workshop` run the digest
+also carries verdicts you must not re-grade, except to rule on one ranked below the block line:
+the computed `NOTE` (every slide has a notes section with spoken words), `NAR` (notes narrating
+the slide through a screen phrase) and `VSL` (a slide builds a visual exactly when its Spec
+`Visual` cell names one), and Jev's `T-HOLLOW` (a notes bullet announcing what it never writes
+out), `T-CALLOUT` (a `#callout` quoting source text), `T-STORY` (a `// Storytelling:` comment
+with no mechanism or no insight), `T-TAKEAWAY` (a noun- or gerund-phrase `===` subtitle) and
+`T-TRANSITION` (a notes `==` section opening cold). A rule in `rulesThatFailed` is diagnosed and
+routed like a mechanical failure, not re-judged. Re-deriving by eye what a script
 computed wastes the lens and produces a second, differently-numbered copy of the same findings.
 What is genuinely yours is the judgement inside each module that no regex reaches:
 
 | Judgement | The failure it catches |
 |---|---|
-| A takeaway is a claim | A takeaway that names a topic instead of asserting something |
+| A takeaway is a claim | A takeaway that names a topic instead of asserting something. A noun- or gerund-phrase `===` subtitle is `T-TAKEAWAY`'s; one opening on a wh-word, or a takeaway outside the subtitle, stays yours |
 | No subtitle echo | A bullet restating its own slide title in other words |
 | Notes expand the slide | Notes duplicating the bullets instead of carrying the spoken words |
-| Teleprompter register | Outline fragments or slide narration where speakable sentences belong. Hollow bullets are not yours in a `/workshop` run: Jev's T-HOLLOW scores them. Narration through a screen phrase ("the slide shows", "as you can see") is the `NAR` verdict in the probe output: do not re-grade it; narration phrased otherwise stays yours |
+| Teleprompter register | Outline fragments or slide narration where speakable sentences belong. Hollow bullets (`T-HOLLOW`), cold section openings (`T-TRANSITION`) and screen-phrase narration (`NAR`) are digest verdicts; narration phrased otherwise stays yours |
 | Section hierarchy | A structure the deck's argument does not actually have |
-| Diagram legibility, from source | Clipped or overlapping labels, arrows routed through nodes, illegible sizing, a diagram contradicting its caption |
+| Diagram legibility, from source | Clipped or overlapping labels, arrows routed through nodes, illegible sizing, a diagram contradicting its caption. Whether a visual exists at all is `VSL`'s |
 | Computed values | A number presented as computed that the source does not compute |
 | Table grounding | Regression or summary numbers not traceable to the paper, and synthesized tables not documented as such |
 
@@ -103,6 +111,7 @@ List every module you considered, including those you judged satisfied.
 | Report a module as PASS | That presents a judgement as a computation | MODEL-EVALUATED, with the evidence read |
 | Report a module as N/A | An N/A is not a third kind of pass | Disposition it against the deck you read |
 | Re-scan by eye for what a `.py` checker computes | `run-constraints.py` already ran; a duplicate finding costs a round | Grade the judgement half of each module |
+| Re-grade a `NOTE`, `NAR`, `VSL` or `T-*` verdict the digest carries | The second, differently-worded copy costs a round | Rule only on one ranked below the block line |
 | Judge a diagram from a render | `look_at.py` is not vendored here | Judge the Typst source, and name what source cannot settle |
 | Return no module names | The index was handed to you and not used | List every module you considered |
 | Give everything a pass | Rubber-stamping is not reviewing | Grade honestly against the loaded modules |

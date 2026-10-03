@@ -55,8 +55,8 @@ A slide that overstates what its source supports is worse than a slide that omit
 The `typst:typst` skill is preloaded, and its bang line emits the index of every module with its
 absolute path — bullet and label spacing, sub-bullets, tables, images, CeTZ and Fletcher diagrams,
 formatting, slide format, section hierarchy, notes structure, teleprompter notes, computed values,
-common elements, no-subtitle-echo. The modules themselves have one canonical home,
-`~/.claude/skills/typst/constraints/`. Dispatched, the ones your task is graded against
+common elements, no-subtitle-echo. The rule texts have one canonical home,
+`~/.claude/skills/typst/rules/` (their checkers live in `constraints/` beside it). Dispatched, the ones your task is graded against
 arrive as `refs` — contractual reads, so read every one in full before writing a slide. Interactive,
 open them from that directory as the index names them.
 
