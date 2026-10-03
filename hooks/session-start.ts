@@ -24,6 +24,7 @@ import {
 import { join, resolve } from "node:path";
 import { homedir } from "node:os";
 import { parsePayload, pyJson } from "./_gate_common.ts";
+import { pointsAtShipped } from "./lib/main-checkout.ts";
 
 /** Process-local mirror of os.environ — mutated by the loaders exactly as Python mutates os.environ. */
 const env: Record<string, string> = { ...(process.env as Record<string, string>) };
@@ -436,7 +437,8 @@ function unlinkedAgents(pluginRoot: string): string[] {
     } catch {
       linked = null;
     }
-    if (linked !== shipped) out.push(name);
+    // A plugin root that is a git worktree ships a second copy; the link targets the main checkout.
+    if (!pointsAtShipped(linked, shipped)) out.push(name);
   }
   return out;
 }
