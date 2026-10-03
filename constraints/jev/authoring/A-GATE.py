@@ -18,6 +18,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('changed_gate_or_loop_passages',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
 
 GATE_SECTION = re.compile(r'\bgate|\bexit|acceptance|done when|success criteria|review loop|verif', re.I)
 GATE_LINE = re.compile(r'\bgate\b|\bexit (condition|criteri)|\bacceptance\b|\bdone when\b|\buntil\b|'
@@ -27,7 +29,7 @@ DECIDABLE = re.compile(r'exit code|exits? [0-9]|`[^`]+`|\bcontains\b|\bgrep\b|\b
 
 
 def evidence(files, plan_lines=None, changed=None):
-    gates, examined = [], []
+    gates, examined, n_lines = [], [], 0
     for rel, a in files:
         if not rel.endswith('.md') or kind(rel) == 'planning':
             continue
@@ -35,6 +37,7 @@ def evidence(files, plan_lines=None, changed=None):
         if lines is None:
             continue
         examined.append(rel)
+        n_lines += len(lines)
         touched = changed_set(rel, changed, len(lines))
         for b in blocks(body(lines)):
             rows = [r for r in b if r[0] in touched]
@@ -52,6 +55,7 @@ def evidence(files, plan_lines=None, changed=None):
         'files_examined': examined,
         'changed_gate_or_loop_passages': gates[:MAX_ITEMS],
         'n_changed_gate_or_loop_passages': len(gates),
+        'n_lines_searched': n_lines,
         'n_naming_no_decidable_check': sum(1 for g in gates if not g['names_a_decidable_check']),
     }
-    return render_json('A-GATE', files, inventory, [])
+    return render_json('A-GATE', [(r, a) for r, a in files if r.endswith('.md') and kind(r) != 'planning'], inventory, [])

@@ -1,7 +1,7 @@
 import re
 
 from _common import render_json
-from _elide import ELISION_RX, addenda, addendum_files, clean, in_changed, notes, sentences
+from _elide import ELISION_RX, addenda, addendum_files, body_lines, clean, in_changed, notes, sentences
 
 DELIVERABLE = 'casebook-excerpt'
 SUBJECT = 'one casebook excerpt (a court opinion cut into a student reading)'
@@ -20,6 +20,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('gaps',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_body_lines_searched'
 
 ROMAN = {r: i + 1 for i, r in enumerate('I II III IV V VI VII VIII IX X XI XII XIII XIV XV'.split())}
 ORD = {'first': 1, 'second': 2, 'third': 3, 'fourth': 4, 'fifth': 5, 'sixth': 6}
@@ -111,6 +113,7 @@ def evidence(files, plan_lines=None, changed=None):
                     'omission_statements': [s[:300] for s in sentences(x) if DISCLOSE_RX.search(s)][:6]}
                    for f, t, n, x in notes(files)]
     inventory = {
+        'n_body_lines_searched': len(body_lines(files)),
         'gaps': gaps[:30],
         'n_gaps': len(gaps),
         'n_numbered_headings': n_headings,

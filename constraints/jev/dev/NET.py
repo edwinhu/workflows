@@ -13,6 +13,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('network_call_sites',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
 
 CALL = re.compile(
     r'\bfetch\s*\(|\baxios\b|\brequests\.(get|post|put|patch|delete|request|Session)\b|\bhttpx\.|urlopen|'
@@ -26,7 +28,7 @@ LOCAL_HOST = re.compile(r'^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\]|\$\{[^}]*\
 
 
 def evidence(files, plan_lines=None):
-    calls, servers, examined = [], [], []
+    calls, servers, examined, n_lines = [], [], [], 0
     for rel, a in files:
         if not is_test(rel):
             continue
@@ -34,6 +36,7 @@ def evidence(files, plan_lines=None):
         if lines is None:
             continue
         examined.append(rel)
+        n_lines += len(lines)
         for i, t in enumerate(lines):
             n = i + 1
             if LOCAL_SERVER.search(t):
@@ -51,7 +54,8 @@ def evidence(files, plan_lines=None):
         'test_files_examined': examined,
         'network_call_sites': calls[:MAX_ITEMS],
         'n_network_call_sites': len(calls),
+        'n_lines_searched': n_lines,
         'n_with_a_non_local_host': sum(bool(c['hosts']) and not c['hosts_all_local'] for c in calls),
         'local_stub_servers_or_fakes': servers[:20],
     }
-    return render_json('NET', files, inventory, [])
+    return render_json('NET', [(r, a) for r, a in files if is_test(r)], inventory, [])

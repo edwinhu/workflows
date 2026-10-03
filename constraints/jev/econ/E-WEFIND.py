@@ -21,6 +21,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('finding_sentences',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_sentences_searched'
 
 FIND_RX = (r'\bwe (?:also |further |then |still )?(?:find|show|document|observe|estimate|confirm|'
            r'detect|uncover)\b|\bour (?:results|estimates|findings|evidence|analysis|tests?) '
@@ -32,7 +34,8 @@ FRAME_RX = re.compile(r'\b(abstract|introduction|conclusions?|concluding|summary
 def evidence(files, plan_lines=None, changed=None):
     rx = re.compile(FIND_RX, re.IGNORECASE)
     found, n_all = [], 0
-    for s in sentences(files, changed):
+    ss = sentences(files, changed)
+    for s in ss:
         if not rx.search(s['sentence']):
             continue
         n_all += 1
@@ -45,6 +48,7 @@ def evidence(files, plan_lines=None, changed=None):
                       'exhibits_named_in_paragraph': s['paragraph_exhibits']})
     unanchored = [f for f in found if not f['exhibit_reference_in_reach'] and not f['exhibits_named_in_paragraph']]
     inventory = {
+        'n_sentences_searched': len(ss),
         'finding_sentences': found[:MAX_ITEMS],
         'n_finding_sentences_listed': len(found),
         'n_finding_sentences_in_files': n_all,

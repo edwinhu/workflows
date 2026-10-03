@@ -44,12 +44,17 @@ def framed(title):
     return clip(f'This slide explains {t[:1].lower()}{t[1:]}.')
 
 
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
+
+
 def evidence(files, plan_lines=None, changed=None):
-    subs, skipped = [], 0
+    subs, skipped, n_lines = [], 0, 0
     for rel, a in typ_files(files, 'deck'):
         lines = _read(a)
         if lines is None:
             continue
+        n_lines += len(lines)
         for s in slides(lines):
             if DQ_TITLE.match(s['title']) or not wh_fragment(s['title']):
                 continue
@@ -62,9 +67,10 @@ def evidence(files, plan_lines=None, changed=None):
     if changed is not None:
         return added_state('T-TAKEAWAY-WH', files, 'added_wh_subtitles', subs)
     inventory = {
+        'n_lines_searched': n_lines,
         **kind_note(files, 'deck'),
         'wh_subtitles': subs[:MAX_ITEMS],
         'n_wh_subtitles': len(subs),
         **scope_note(changed, skipped),
     }
-    return render_json('T-TAKEAWAY-WH', files, inventory, [])
+    return render_json('T-TAKEAWAY-WH', typ_files(files, 'deck'), inventory, [])

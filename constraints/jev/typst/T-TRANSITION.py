@@ -52,6 +52,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('sections_after_the_first',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
 
 RECAP = re.compile(r'\b(recap|review|introduction|overview)\b', re.IGNORECASE)
 # Closed lists: the spoken markers that turn a talk to a new topic. The judge reads the matches, never
@@ -107,11 +109,12 @@ def last_sentence(text):
 
 
 def evidence(files, plan_lines=None, changed=None):
-    out, skipped = [], 0
+    out, skipped, n_lines = [], 0, 0
     for rel, a in typ_files(files, 'notes'):
         lines = _read(a)
         if lines is None:
             continue
+        n_lines += len(lines)
         secs = [s for s in sections(lines) if s['level'] == 2]
         prev = None
         for s in secs:
@@ -138,9 +141,10 @@ def evidence(files, plan_lines=None, changed=None):
     if changed is not None:
         return added_state('T-TRANSITION', files, 'added_sections', out)
     inventory = {
+        'n_lines_searched': n_lines,
         **kind_note(files, 'notes'),
         'sections_after_the_first': out[:MAX_ITEMS],
         'n_sections_listed': len(out),
         **scope_note(changed, skipped),
     }
-    return render_json('T-TRANSITION', files, inventory, [])
+    return render_json('T-TRANSITION', typ_files(files, 'notes'), inventory, [])

@@ -26,6 +26,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('storytelling_comments',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
 
 STORY = re.compile(r'//\s*Storytelling:\s*(.*)$')
 COMMENT = re.compile(r'^\s*//\s?(.*)$')
@@ -58,13 +60,14 @@ def _flags(text):
 
 
 def evidence(files, plan_lines=None, changed=None):
-    out, skipped = [], 0
+    out, skipped, n_lines = [], 0, 0
     for rel, a in files:
         if not rel.lower().endswith('.typ'):
             continue
         lines = _read(a)
         if lines is None:
             continue
+        n_lines += len(lines)
         for i, t in enumerate(lines):
             m = STORY.search(t)
             if not m:
@@ -79,10 +82,11 @@ def evidence(files, plan_lines=None, changed=None):
             out.append({'file': rel, 'line': i + 1, 'comment': clip(text, 500), **_flags(text),
                         'diagram_call': _diagram(lines, j)})
     inventory = {
+        'n_lines_searched': n_lines,
         'storytelling_comments': out[:MAX_ITEMS],
         'n_storytelling_comments': len(out),
         'n_comments_missing_mechanism_or_insight': sum(
             not (o['names_visual_property'] and o['states_audience_conclusion']) for o in out),
         **scope_note(changed, skipped),
     }
-    return render_json('T-STORY', files, inventory, [])
+    return render_json('T-STORY', [(r, a) for r, a in files if r.lower().endswith('.typ')], inventory, [])

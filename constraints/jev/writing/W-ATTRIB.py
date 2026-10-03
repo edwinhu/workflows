@@ -20,6 +20,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('vague_attributions', 'statistics_without_a_source_marker')
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_sentences_searched'
 
 WEASEL_RX = (r'\b(studies|research|evidence|experts?|scholars|commentators|observers|critics|'
              r'analysts|many|some|most) (have )?(show|shows|shown|suggest|suggests|find|finds|found|'
@@ -56,4 +58,5 @@ def evidence(files, plan_lines=None):
         'n_statistics_without_a_source_marker': len(unsourced),
     }
     s = prose_search(files, WEASEL_RX, 'every vague attribution ("studies show", "experts agree")')
+    inventory['n_sentences_searched'] = s['lines_searched']
     return render_json('W-ATTRIB', prose_files(files), inventory, [s])

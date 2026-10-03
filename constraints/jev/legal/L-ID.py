@@ -22,13 +22,16 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('id_short_forms',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_sentences_searched'
 
 ID_RX = re.compile(r'(?<![\w.])[Ii]d\.')
 
 
 def evidence(files, plan_lines=None, changed=None):
     sites, n_all, n_notes = [], 0, 0
-    for doc in load(files):
+    docs = load(files)
+    for doc in docs:
         notes = doc['notes']
         n_notes += len(notes)
         for k, note in enumerate(notes):
@@ -50,6 +53,7 @@ def evidence(files, plan_lines=None, changed=None):
                               'antecedent_citation_clauses': [clip(c, 220) for c in ante][:8],
                               'n_antecedent_citation_clauses': len(ante)})
     inventory = {
+        'n_sentences_searched': sum(len(p['sentences']) for d in docs for p in d['paras']),
         'id_short_forms': sites[:MAX_ITEMS],
         'n_id_short_forms_listed': len(sites),
         'n_id_short_forms_in_files': n_all,

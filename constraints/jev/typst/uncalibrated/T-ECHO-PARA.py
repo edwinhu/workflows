@@ -65,12 +65,17 @@ def script_overlap(title, first):
     return sorted(shared), share, exact or (share >= SCRIPT_RATIO and len(shared) >= SCRIPT_COUNT)
 
 
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
+
+
 def evidence(files, plan_lines=None, changed=None):
-    pairs, skipped = [], 0
+    pairs, skipped, n_lines = [], 0, 0
     for rel, a in typ_files(files, 'deck'):
         lines = _read(a)
         if lines is None:
             continue
+        n_lines += len(lines)
         for s in slides(lines):
             if DQ_TITLE.match(s['title']) or not s['body']:
                 continue
@@ -89,6 +94,7 @@ def evidence(files, plan_lines=None, changed=None):
                           'script_overlap_share': round(share, 2)})
     # Withheld on measurement (docstring): the shared words, the closed lists and their counts.
     inventory = {
+        'n_lines_searched': n_lines,
         **kind_note(files, 'deck'),
         'slides_subtitle_and_first_body_line': pairs[:MAX_ITEMS],
         'n_slides_listed': len(pairs),
@@ -96,4 +102,4 @@ def evidence(files, plan_lines=None, changed=None):
                           'word overlap is below its threshold, which is why they reach this rule',
         **scope_note(changed, skipped),
     }
-    return render_json('T-ECHO-PARA', files, inventory, [])
+    return render_json('T-ECHO-PARA', typ_files(files, 'deck'), inventory, [])

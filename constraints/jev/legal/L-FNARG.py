@@ -19,6 +19,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('discursive_footnotes',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_sentences_searched'
 
 MIN_WORDS = 30
 
@@ -31,7 +33,8 @@ def _prose_words(text):
 
 def evidence(files, plan_lines=None, changed=None):
     cands, n_notes = [], 0
-    for doc in load(files):
+    docs = load(files)
+    for doc in docs:
         flat = [(i, j, s) for i, p in enumerate(doc['paras']) for j, s in enumerate(p['sentences'])]
         for note in doc['notes']:
             n_notes += 1
@@ -57,6 +60,7 @@ def evidence(files, plan_lines=None, changed=None):
             })
     cands.sort(key=lambda c: -c['discursive_words'])
     inventory = {
+        'n_sentences_searched': sum(len(p['sentences']) for d in docs for p in d['paras']),
         'discursive_footnotes': cands[:30],
         'n_discursive_footnotes': len(cands),
         'n_footnotes': n_notes,

@@ -21,6 +21,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('bracketed_spans_of_four_or_more_words', 'body_sentences_with_editor_voice_terms')
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_body_lines_searched'
 
 # a bracket that is Typst markup, not an editorial bracket: #emph[...], #text(..)[...], #super[...]
 MARKUP_OPEN_RX = re.compile(r'#[a-zA-Z.]+(\([^)]*\))?$')
@@ -61,6 +63,7 @@ def evidence(files, plan_lines=None, changed=None):
             if VOICE_RX.search(cs):
                 voice.append({'file': rel, 'line': n, 'reading': title, 'section': section, 'sentence': clean(s)[:400]})
     inventory = {
+        'n_body_lines_searched': len(body_lines(files)),
         'bracketed_spans_of_four_or_more_words': longer[:25],
         'n_bracketed_spans_of_four_or_more_words': len(longer),
         'short_bracketed_spans': [{'line': c['line'], 'bracketed': c['bracketed']} for c in minimal[:25]],

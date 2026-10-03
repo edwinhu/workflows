@@ -21,6 +21,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('text_citation_candidates', 'footnote_citation_candidates')
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_sentences_searched'
 
 AUTHOR = r"[A-Z][A-Za-z'’-]+(?:,? (?:and|&) [A-Z][A-Za-z'’-]+| et al\.)?"
 YEAR = r'(?:19|20)\d\d[a-z]?'
@@ -37,7 +39,8 @@ NUMBERED_RX = re.compile(r'(?<![\w\]])\[\d+(?:[,–-]\s*\d+)*\](?!\()')
 
 def evidence(files, plan_lines=None, changed=None):
     cands, n_narr, n_paren = [], 0, 0
-    for s in sentences(files, changed):
+    ss = sentences(files, changed)
+    for s in ss:
         t = s['sentence']
         n_narr += len(NARRATIVE_RX.findall(t))
         n_paren += len(PAREN_RX.findall(t))
@@ -53,6 +56,7 @@ def evidence(files, plan_lines=None, changed=None):
                 notes.append({'file': doc['file'], 'line': note['line'], 'footnote': note['n'],
                               'text': clip(note['text'], 400), 'kinds': kinds})
     inventory = {
+        'n_sentences_searched': len(ss),
         'text_citation_candidates': cands[:MAX_ITEMS],
         'n_text_citation_candidates': len(cands),
         'footnote_citation_candidates': notes[:20],

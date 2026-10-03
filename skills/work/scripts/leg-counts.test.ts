@@ -9,10 +9,11 @@
  */
 import { describe, expect, test } from 'bun:test'
 import { spawnSync } from 'node:child_process'
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
-import { join } from 'node:path'
+import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync, rmSync } from 'node:fs'
+import { join, resolve } from 'node:path'
 import { useTmp } from '../../../tests/helpers/tmp.ts'
-import { unexamined } from './rule-check.ts'
+import { collectEvidence, unexamined } from './rule-check.ts'
+import { caseInput } from './rule-calibrate.ts'
 
 const mkTmp = useTmp()
 const HERE = import.meta.dir
@@ -170,4 +171,62 @@ describe('rule-check: an inventory that examined nothing is unavailable, never M
     }
     expect(existsSync(target)).toBe(true)
   })
+})
+
+describe('every Jev rule declares EXAMINED, and no calibration case reads as examined nothing', () => {
+  const JEV = join(ROOT, 'constraints', 'jev')
+  const ruleFiles = (dir: string): string[] => readdirSync(dir, { withFileTypes: true }).flatMap(e =>
+    e.isDirectory() ? (e.name === '__pycache__' ? [] : ruleFiles(join(dir, e.name)))
+      : /^[^_].*\.py$/.test(e.name) && e.name !== 'evidence.py' ? [join(dir, e.name)] : [])
+
+  test('every rule file under constraints/jev, wired or uncalibrated, names its count', () => {
+    const files = ruleFiles(JEV)
+    expect(files.length).toBeGreaterThanOrEqual(46)
+    const missing = files.filter(f => !/^EXAMINED = '\w+'$/m.test(readFileSync(f, 'utf8')))
+    expect(missing.map(f => f.slice(JEV.length + 1))).toEqual([])
+  })
+
+  test('a Python file the AST rules cannot parse is examined 0 and unavailable; the regex rules still read it', () => {
+    const dir = mkTmp('jev-unparsed-')
+    const f = join(dir, 'analysis.py')
+    writeFileSync(f, 'df = load(\nresult = df.filter(x > 1\nprint(result.height)\n')
+    const ev = collectEvidence({ files: [f], root: dir, rulesDir: JEV })
+    for (const r of ['A1', 'DQ4', 'DQ6', 'M1', 'UNI']) {
+      expect(ev[r].examinedKey).toBe('n_lines_searched')
+      expect(unexamined(ev[r])).toMatch(/examined 0 n_lines_searched in 1 covered file/)
+    }
+    for (const r of ['R1', 'E7']) expect(unexamined(ev[r])).toBeNull()
+  })
+
+  // The count must be what the extractor READ, never what it matched: a candidate count is 0 on every
+  // clean file, which would turn each compliant case UNAVAILABLE. Every calibration case covers its
+  // rules' files with a non-zero count, so none of them changes path.
+  test('every calibration case: each rule carries its count, and none is unavailable', () => {
+    const manifest = JSON.parse(readFileSync(join(ROOT, 'tests/fixtures/jev/calibration.json'), 'utf8'))
+    const temps: string[] = []
+    const bad: string[] = []
+    let judged = 0
+    try {
+      for (const [set, spec] of Object.entries<any>(manifest.sets)) {
+        const dirs = [spec.rulesDir, spec.uncalibratedDir].filter(Boolean).map((d: string) => resolve(ROOT, d))
+        const cases = new Map<string, any>()
+        for (const cs of Object.values<any[]>(spec.rules)) for (const c of cs) cases.set(c.path, c)
+        for (const c of cases.values()) {
+          const input = caseInput(spec.layout, resolve(ROOT, c.path), temps, c.base && resolve(ROOT, c.base))
+          for (const dir of dirs) {
+            for (const [rule, data] of Object.entries<any>(collectEvidence({ ...input, rulesDir: dir }))) {
+              judged++
+              if (!data.examinedKey) bad.push(`${set}/${rule} on ${c.path}: no examinedKey`)
+              const why = unexamined(data)
+              if (why) bad.push(`${set}/${rule} on ${c.path}: ${why}`)
+            }
+          }
+        }
+      }
+    } finally {
+      for (const d of temps) rmSync(d, { recursive: true, force: true })
+    }
+    expect(judged).toBeGreaterThan(1000)
+    expect(bad).toEqual([])
+  }, 300_000)
 })

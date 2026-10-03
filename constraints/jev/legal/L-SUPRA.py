@@ -34,6 +34,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('supra_short_forms',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_sentences_searched'
 
 # `Name, supra note 12, at 4` / `Name, supra, at 4` / `Name, supra notes 3-4`; an internal
 # cross-reference (`supra Part II`, `supra text accompanying note 3`, bare `supra note 3`) is not one.
@@ -63,7 +65,8 @@ def _origin(notes, k, name):
 
 def evidence(files, plan_lines=None, changed=None):
     sites, n_all, n_xref = [], 0, 0
-    for doc in load(files):
+    docs = load(files)
+    for doc in docs:
         notes = doc['notes']
         by_n = {n['n']: n for n in notes}
         for k, note in enumerate(notes):
@@ -96,6 +99,7 @@ def evidence(files, plan_lines=None, changed=None):
                                                 if first and first is not tnote else None),
                 })
     inventory = {
+        'n_sentences_searched': sum(len(p['sentences']) for d in docs for p in d['paras']),
         'supra_short_forms': sites[:MAX_ITEMS],
         'n_supra_short_forms_listed': len(sites),
         'n_supra_short_forms_in_files': n_all,

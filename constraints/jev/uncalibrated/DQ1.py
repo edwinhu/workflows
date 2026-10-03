@@ -12,8 +12,12 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
+
+
 def evidence(files, plan_lines=None):
     d = _search(files, r'n_unique\(\)|nunique\(\)|null_count\(\)|isnull\(\)|isna\(\)|'
                        r'value_counts\(\)|is constant|constant column|zero-information|DQ1',
                 'the empty/constant/null column diagnostic', window=1)
-    return render_json('DQ1', files, {}, [d])
+    return render_json('DQ1', files, {'n_lines_searched': d['lines_searched']}, [d])

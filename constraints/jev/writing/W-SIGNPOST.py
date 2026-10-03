@@ -21,6 +21,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('signpost_candidates',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_sentences_searched'
 
 SIGNPOST_RX = (r'\b(this|the following|the next|the present|in this|in the next|the previous|'
                r'the preceding) (section|part|paper|memo|letter|article|essay|chapter|report|'
@@ -49,4 +51,5 @@ def evidence(files, plan_lines=None):
         'n_paragraphs': len(openers),
     }
     s = prose_search(files, SIGNPOST_RX, 'sentences that name the document or a section, or recap')
+    inventory['n_sentences_searched'] = s['lines_searched']
     return render_json('W-SIGNPOST', prose_files(files), inventory, [s])

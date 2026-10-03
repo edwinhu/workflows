@@ -17,6 +17,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('tables',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
 
 RESULT = re.compile(r'\bcoef|\bestimate|\bstd\.? ?err|\bs\.e\.|\(se\)|t-stat|t\.stat|\bbeta\b|β|'
                     r'\bDiD\b|diff(erence)?-in-diff|regression|\bR\^?2\b|R²|adj\.? r|\bp-?value',
@@ -30,9 +32,10 @@ NEAR = 6
 
 
 def evidence(files, plan_lines=None):
-    tables = []
+    tables, n_lines = [], 0
     for rel, lines in sources(files):
         if is_prose(rel):
+            n_lines += len(lines)
             for line, caption, header, n_rows in _tables_in_md(lines):
                 near = [k for k in range(max(1, line - NEAR), min(len(lines), line + n_rows + 1 + NEAR) + 1)
                         if MD_FIG.search(lines[k - 1])]
@@ -41,6 +44,7 @@ def evidence(files, plan_lines=None):
                                'main_result': bool(RESULT.search(' '.join([caption or ''] + lines[line - 1:line + 1 + n_rows]))),
                                'companion_figure': bool(near), 'figure_lines': near[:3]})
         elif is_py(rel):
+            n_lines += len(lines)
             code, _ = split_comments(lines)
             figs = [n for n, t in enumerate(code, 1) if PY_FIG.search(t)]
             for n, t in enumerate(code, 1):
@@ -57,6 +61,7 @@ def evidence(files, plan_lines=None):
                         'produced in the same file'),
         'tables': tables[:MAX_ITEMS],
         'n_tables': len(tables),
+        'n_lines_searched': n_lines,
         'n_main_result_tables_without_figure': sum(t['main_result'] and not t['companion_figure'] for t in tables),
     }
-    return render_json('A4', files, inventory, [])
+    return render_json('A4', [(r, a) for r, a in files if is_py(r) or is_prose(r)], inventory, [])

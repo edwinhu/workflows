@@ -17,6 +17,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('changed_absolute_constraint_blocks',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
 
 MARKER = re.compile(r'iron law|EXTREMELY-IMPORTANT|\*\*(NEVER|ALWAYS|NO [A-Z]+[^*]* WITHOUT)\b|'
                     r'^\s*(NEVER|ALWAYS)\b|not negotiable', re.I)
@@ -25,7 +27,7 @@ SOFT = re.compile(r'\b(should|try to|consider|prefer(ably)?|ideally|where possib
 
 
 def evidence(files, plan_lines=None, changed=None):
-    laws, examined = [], []
+    laws, examined, n_lines = [], [], 0
     for rel, a in files:
         if not rel.endswith('.md') or kind(rel) == 'planning':
             continue
@@ -33,6 +35,7 @@ def evidence(files, plan_lines=None, changed=None):
         if lines is None:
             continue
         examined.append(rel)
+        n_lines += len(lines)
         touched = changed_set(rel, changed, len(lines))
         for b in blocks(body(lines)):
             hit = [r for r in b if MARKER.search(r[1])]
@@ -46,6 +49,7 @@ def evidence(files, plan_lines=None, changed=None):
         'files_examined': examined,
         'changed_absolute_constraint_blocks': laws[:MAX_ITEMS],
         'n_changed_absolute_constraint_blocks': len(laws),
+        'n_lines_searched': n_lines,
         'n_with_soft_words': sum(1 for x in laws if x['soft_words']),
     }
-    return render_json('A-SOFT', files, inventory, [])
+    return render_json('A-SOFT', [(r, a) for r, a in files if r.endswith('.md') and kind(r) != 'planning'], inventory, [])

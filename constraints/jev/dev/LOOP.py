@@ -12,6 +12,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = (('loops_containing_a_model_route_or_farm_call', 'file', 'loop_line'),)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
 
 LOOP_HEAD = re.compile(
     r'^\s*(for|while)\b|^\s*for\s*\(|\.(map|forEach|flatMap)\s*\(|^\s*async\s+for\b|xargs\b|\bparallel\b')
@@ -23,7 +25,7 @@ MODEL = re.compile(
 
 
 def evidence(files, plan_lines=None):
-    loops, examined, n_calls, n_in_loops = [], [], 0, 0
+    loops, examined, n_calls, n_in_loops, n_lines = [], [], 0, 0, 0
     for rel, a in files:
         if is_test(rel):
             continue
@@ -31,6 +33,7 @@ def evidence(files, plan_lines=None):
         if lines is None:
             continue
         examined.append(rel)
+        n_lines += len(lines)
         model_lines = {i + 1 for i, t in enumerate(lines) if MODEL.search(t)}
         n_calls += len(model_lines)
         inside = set()
@@ -53,7 +56,8 @@ def evidence(files, plan_lines=None):
         'files_examined': examined,
         'loops_containing_a_model_route_or_farm_call': loops[:MAX_ITEMS],
         'n_such_loops': len(loops),
+        'n_lines_searched': n_lines,
         'n_model_route_farm_lines_in_changed_files': n_calls,
         'n_of_those_inside_a_changed_loop': n_in_loops,
     }
-    return render_json('LOOP', files, inventory, [])
+    return render_json('LOOP', [(r, a) for r, a in files if not is_test(r)], inventory, [])

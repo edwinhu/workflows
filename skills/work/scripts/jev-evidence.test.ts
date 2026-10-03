@@ -146,9 +146,9 @@ test('evidence.py labels files relative to --root', async () => {
     const tmpDir = mkTmp('jev-evidence-root-');
     made.push(tmpDir);
     fs.mkdirSync(join(tmpDir, 'data', 'output'), { recursive: true });
-    const testFile = join(tmpDir, 'data', 'output', 'x.csv');
-    fs.writeFileSync(testFile, 'a,b,c\n1,2,3');
+    const testFile = join(tmpDir, 'data', 'output', 'x.py');
+    fs.writeFileSync(testFile, 'a = 1\n');
     const { stdout } = await $`python3 ${PY} --files ${testFile} --root ${tmpDir}`.quiet();
     const a1State = JSON.parse(stdout.toString())['A1'].state;
-    expect(a1State.files.some((f: any) => f.path === 'data/output/x.csv')).toBe(true);
+    expect(a1State.files.some((f: any) => f.path === 'data/output/x.py')).toBe(true);
 });

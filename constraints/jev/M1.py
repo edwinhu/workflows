@@ -3,7 +3,7 @@ import ast
 import re
 
 from _common import render_json
-from _ds import MAX_ITEMS, clip, is_py, parse, sources
+from _ds import MAX_ITEMS, clip, is_py, parse, py_files, sources
 
 PROPOSITION = ('The approved plan declares where its deliverables go, and at least one output the code writes '
                'lands at a path the plan does NOT declare (typically scratch/ or /tmp) -- so a deliverable the '
@@ -17,6 +17,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('writes',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
 
 WRITERS = {'write_parquet', 'write_csv', 'to_csv', 'to_parquet', 'savefig', 'write_text', 'write_json',
            'to_excel', 'write_excel', 'to_latex', 'to_json', 'save', 'write_ipc', 'to_feather', 'to_stata'}
@@ -66,11 +68,12 @@ def _under(path, declared):
 
 def evidence(files, plan_lines=None):
     declared = _declared(plan_lines)
-    writes = []
+    writes, n_lines = [], 0
     for rel, lines in sources(files):
         tree = parse(lines) if is_py(rel) else None
         if tree is None:
             continue
+        n_lines += len(lines)
         consts = {}
         for node in ast.walk(tree):
             if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
@@ -97,7 +100,8 @@ def evidence(files, plan_lines=None):
         'plan_declared_paths': declared[:MAX_ITEMS],
         'writes_note': 'resolved_path follows string literals, NAME = "..." bindings and Path / joins',
         'writes': writes[:MAX_ITEMS],
+        'n_lines_searched': n_lines,
         'n_writes': len(writes),
         'n_writes_outside_plan_paths': sum(not w['under_a_plan_declared_path'] for w in writes),
     }
-    return render_json('M1', files, inventory, [])
+    return render_json('M1', py_files(files), inventory, [])

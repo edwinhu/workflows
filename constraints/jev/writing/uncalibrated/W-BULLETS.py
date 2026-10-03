@@ -31,6 +31,10 @@ CONNECTIVE_RX = re.compile(r'^(but|and|so|because|therefore|thus|this|that|these
                            r'however|moreover|further|as a result|in turn|hence)\b', re.IGNORECASE)
 
 
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_sentences_searched'
+
+
 def evidence(files, plan_lines=None):
     paras = paragraphs(files)
     lists = []
@@ -53,4 +57,5 @@ def evidence(files, plan_lines=None):
     }
     s = prose_search(files, r'^(but|so|because|therefore|thus|hence|as a result)\b',
                      'sentences or items that open on a connective')
+    inventory['n_sentences_searched'] = s['lines_searched']
     return render_json('W-BULLETS', prose_files(files), inventory, [s])

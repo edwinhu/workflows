@@ -22,6 +22,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('added_passages',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
 
 HISTORY = re.compile(
     r'\b(used to|previously|originally|at first|initially|over time|was (added|introduced|changed|'
@@ -63,7 +65,7 @@ def chapters(lines):
 
 
 def evidence(files, plan_lines=None, changed=None):
-    passages, examined, laws, n_added = [], [], [], 0
+    passages, examined, laws, n_added, n_lines = [], [], [], 0, 0
     for rel, a in files:
         if kind(rel) not in CONTEXT_LOADED:
             continue
@@ -73,6 +75,7 @@ def evidence(files, plan_lines=None, changed=None):
         examined.append(rel)
         touched = changed_set(rel, changed, len(lines))
         all_rows = body(lines)
+        n_lines += len(lines)
         chap = chapters(lines)
         # the rules the file states, so a dated fact can be read against the rule it rests on
         file_laws = [(n, t) for n, t, _ in all_rows if LAW.search(t)]
@@ -109,5 +112,6 @@ def evidence(files, plan_lines=None, changed=None):
         'n_with_history_markers': sum(1 for p in passages if p['history_markers']),
         'n_history_marked_not_fact_rows': sum(1 for p in passages if p['history_markers'] and not p['fact_row']),
         'n_added_nonblank_lines': n_added,
+        'n_lines_searched': n_lines,
     }
-    return render_json('A-PAD', files, inventory, [])
+    return render_json('A-PAD', [(r, a) for r, a in files if kind(r) in CONTEXT_LOADED], inventory, [])

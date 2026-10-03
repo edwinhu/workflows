@@ -19,6 +19,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('quotations_stressing_ordinary_words',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_body_lines_searched'
 
 QUOTE_RX = re.compile(r'[“"]([^“”"]{3,900})[”"]')
 EMPH_RX = re.compile(r'(?<![\w\\])_([^_]{1,200}?)_(?!\w)|#emph\[([^\]]{1,200})\]|(?<![\w\\])\*([^*]{1,200})\*(?!\w)')
@@ -53,6 +55,7 @@ def evidence(files, plan_lines=None, changed=None):
                              'text_after_the_quotation': after,
                              'notation_regex_hit_after': bool(NOTATION_RX.search(after))})
     inventory = {
+        'n_body_lines_searched': len(body_lines(files)),
         'quotations_stressing_ordinary_words': stressed[:30],
         'n_quotations_stressing_ordinary_words': len(stressed),
         'n_conventional_italics_in_quotations_set_aside': n_conventional,

@@ -22,6 +22,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('added_lines_writing_or_naming_state',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
 
 CANONICAL = {'.claude-workflows.json', 'review.json', 'episode.json', 'ACTIVE_WORKFLOW.md',
              'HUMAN_REVIEW.md', 'AUTOMATED_REVIEW.md'}
@@ -33,7 +35,7 @@ TEMP = re.compile(r'gettempdir|tmpdir\(|\$TMPDIR|/tmp/|mkdtemp|XDG_RUNTIME_DIR',
 
 
 def evidence(files, plan_lines=None, changed=None):
-    planning, writers, deleted, design, root = [], [], [], [], None
+    planning, writers, deleted, design, root, n_lines = [], [], [], [], None, 0
     for rel, a in files:
         root = root or root_of(rel, a)
         lines = _read(a)
@@ -41,6 +43,7 @@ def evidence(files, plan_lines=None, changed=None):
             if not os.path.exists(a):
                 deleted.append(rel)
             continue
+        n_lines += len(lines)
         if re.match(r'(.*/)?docs/DESIGN-.*\.md$', rel):
             design.append(rel)
         if kind(rel) == 'planning':
@@ -68,6 +71,7 @@ def evidence(files, plan_lines=None, changed=None):
         'planning_files_in_change': planning[:MAX_ITEMS],
         'added_lines_writing_or_naming_state': writers[:MAX_ITEMS],
         'n_added_lines_writing_or_naming_state': len(writers),
+        'n_lines_searched': n_lines,
         'files_deleted_by_change': deleted[:MAX_ITEMS],
         'design_docs_in_change': design,
         'existing_planning_inventory': inv,

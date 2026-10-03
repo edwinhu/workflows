@@ -1,4 +1,4 @@
-from _common import render_json
+from _common import _read, render_json
 from _dev import SUBJECT, MAX_ITEMS, ASSERT, clip, is_test, hunks
 
 PROPOSITION = ('The change weakens an existing test assertion: a diff hunk in a test file deletes an assertion '
@@ -13,10 +13,12 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = (('hunks_removing_or_rewriting_assertions', 'file', 'new_line'),)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_test_lines_diffed'
 
 
 def evidence(files, plan_lines=None):
-    out, examined, n_rem, n_add = [], [], 0, 0
+    out, examined, n_rem, n_add, n_lines = [], [], 0, 0, 0
     for rel, a in files:
         if not is_test(rel):
             continue
@@ -24,6 +26,7 @@ def evidence(files, plan_lines=None):
         if hs is None:
             continue
         examined.append(rel)
+        n_lines += len(_read(a) or [])
         for h in hs:
             rem = [(n, t) for n, t in h['removed'] if ASSERT.search(t)]
             if not rem:
@@ -39,7 +42,8 @@ def evidence(files, plan_lines=None):
         'test_files_examined': examined,
         'hunks_removing_or_rewriting_assertions': out[:MAX_ITEMS],
         'n_such_hunks': len(out),
+        'n_test_lines_diffed': n_lines,
         'n_assertion_lines_removed': n_rem,
         'n_assertion_lines_added_in_those_hunks': n_add,
     }
-    return render_json('WEAK', files, inventory, [])
+    return render_json('WEAK', [(r, a) for r, a in files if is_test(r)], inventory, [])
