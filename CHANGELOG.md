@@ -1,5 +1,17 @@
 # Changelog
 
+## [6.38.0] - 2026-10-03
+
+### Added
+
+- **Non-vacuity convention: every mechanical leg prints `<leg>: N <unit> examined`,** and `work-checks.sh` turns a leg with no count line or a bare zero into COULD-NOT-CHECK (exit 2) unless it says `nothing in scope (<why>)`; one parser, `skills/work/scripts/leg_counts.py` (wrapped by `leg-counts.sh`), serves work-checks, the canary and teaching's gates, and a Jev rule whose inventory examined 0 over a covered file is UNAVAILABLE, never MET. (aef7ec00)
+- **Every rule under `constraints/jev` declares EXAMINED,** a whole-file count of what its extractor read, and its header lists only the files that extractor reads; a test enumerates every rule and every calibration case. (eb444fe7)
+- **The canary gates both repos:** `scripts/canary.sh` gains a SUITES step (workflows `scripts/test.sh` and teaching `tests/run-all.sh`, each pointed at the other's checkout) and a TEMPLATE step (teaching's notes repair template rendered for a real lecture, every course path on disk, plan-lint at 0 findings); work-loop's round line names its cap's source apart from goalTurns. (0b88d5ee)
+
+### Fixed
+
+- **`scripts/test.sh` exits 0 on a clean checkout:** it runs a frozen-lockfile `bun install` for any skill with a `bun.lock` and no `node_modules` (the `@google/genai` errors), and wc-probe reports a `{{NAME}}` template ref as a skip instead of a missing path. (61e9401e)
+
 ## [6.37.7] - 2026-10-03
 
 ### Changed
