@@ -364,6 +364,22 @@ describe('workflow.js dispatches no agent for anything a command decides', () =>
   })
 })
 
+describe('work-checks.sh tells every command the run mode', () => {
+  test('WORK_READ_ONLY is 1 under args.readOnly and 0 otherwise, for mechanical and rule commands alike', () => {
+    const dir = repo({ 'a.txt': 'a' })
+    const plan = {
+      mechanical: [{ name: 'mode', cmd: 'echo "mode=${WORK_READ_ONLY-unset}"' }],
+      rules: [{ name: 'rules', cmd: 'echo "mode=${WORK_READ_ONLY-unset}" >&2; echo \'{"verdicts":[],"unavailable":[]}\'' }],
+    }
+    const ro = checks({ projectDir: dir, tasks: [], readOnly: true }, plan).checks
+    expect(ro.mechanical[0].output).toBe('mode=1')
+    expect(ro.rules[0].output).toBe('mode=1')
+    const rw = checks({ projectDir: dir, tasks: [] }, plan).checks
+    expect(rw.mechanical[0].output).toBe('mode=0')
+    expect(rw.rules[0].output).toBe('mode=0')
+  })
+})
+
 describe('work-checks.sh runs ruleChecks.cmd and records {name, exitCode, stdout}', () => {
   const VIOLATED = '{"verdicts":[{"rule":"R1","p":0.9,"verdict":"VIOLATED"}],"unavailable":[]}'
   const MET = '{"verdicts":[{"rule":"R1","p":0.1,"verdict":"MET"}],"unavailable":[]}'
