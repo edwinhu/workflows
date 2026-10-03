@@ -25,6 +25,7 @@ import { join, resolve } from "node:path";
 import { homedir } from "node:os";
 import { parsePayload, pyJson } from "./_gate_common.ts";
 import { pointsAtShipped } from "./lib/main-checkout.ts";
+import { BEACON } from "./watch/runs.ts";
 
 /** Process-local mirror of os.environ — mutated by the loaders exactly as Python mutates os.environ. */
 const env: Record<string, string> = { ...(process.env as Record<string, string>) };
@@ -517,6 +518,11 @@ export function buildSetupSection(
  */
 export const MIN_CLAUDE_CODE = "2.1.287";
 
+/** The tool-call guards hooks/guards/mod.ts runs, by their former settings-hook names. */
+const MOD_GUARDS =
+  "image-read-guard, read-guard, suggest-compact, pgrep-self-match, bun-parallel-guard, cron-delete-guard, " +
+  "atomic-constraint-guard, typst-convention-guard, validate-skill-paths";
+
 function versionParts(v: string): number[] | null {
   const m = v.match(/(\d+)\.(\d+)\.(\d+)/);
   return m ? m.slice(1).map(Number) : null;
@@ -540,10 +546,120 @@ export function buildVersionSection(version: string): string {
     `## ⚠ WORKFLOWS GUARDS INACTIVE — Claude Code ${versionParts(version)!.join(".")} < ${MIN_CLAUDE_CODE}`,
     "",
     `The workflows plugin requires Claude Code >= ${MIN_CLAUDE_CODE}. Its tool-call guards ` +
-      "(image-read-guard, read-guard, suggest-compact, pgrep-self-match, bun-parallel-guard, cron-delete-guard, " +
-      "atomic-constraint-guard, typst-convention-guard, validate-skill-paths) and bulk-guard " +
+      `(${MOD_GUARDS}) and bulk-guard ` +
       "run only as a mod, and this version does not load mods: none of them is enforcing. " +
       "Tell the user to update Claude Code.",
+    "",
+  ].join("\n");
+}
+
+/**
+ * Claude Code 2.1.287 loads installed plugins' mods only while its GrowthBook rollout switch
+ * `tengu_plugin_hooks_modules` is on, and decides once, at startup, from the disk cache an earlier
+ * session wrote. A cache that reads false switches every mod off for the process: no guards, no
+ * bulk-guard, no per-edit Jev, no farm watcher — and this settings hook still runs.
+ */
+export const MODS_FLAG = "tengu_plugin_hooks_modules";
+
+/** How long a startup hook waits for the watcher's first beacon: it lands ~50 ms after this hook returns. */
+export const MODS_WAIT_MS = 5000;
+
+/** Older than this, the process made its mod decision long ago and a startup hook already reported it. */
+export const MODS_STARTUP_WINDOW_MS = 60_000;
+
+/**
+ * Measured on 2.1.287 with the cached switch forced false: the process never re-decides on its own
+ * (81 s idle, no load; GrowthBook re-fetches every 6 h), and `/reload-plugins` re-decides from the
+ * session's own payload, which has arrived by then, and loads the mods at once.
+ */
+export const MODS_REMEDY =
+  "Ask the user to run `/reload-plugins` in this session: it re-decides from the session's own GrowthBook " +
+  "payload and loads the mods at once, no restart needed; `/farm` answering confirms it.";
+
+const HEADLESS_ENTRYPOINTS = new Set(["sdk-cli", "sdk-ts", "sdk-py", "mcp", "claude-code-github-action"]);
+
+/** An attended session: the watcher registers in no headless one (`-p` runs with entrypoint sdk-cli) and no farm child. */
+export function interactiveSession(env: Record<string, string | undefined> = process.env): boolean {
+  return env.FARM_OUT_CHILD !== "1" && !HEADLESS_ENTRYPOINTS.has(env.CLAUDE_CODE_ENTRYPOINT || "");
+}
+
+/** The switch as this session's global config caches it; undefined when unreadable or absent. */
+export function cachedModsFlag(env: Record<string, string | undefined> = process.env): boolean | undefined {
+  try {
+    const config = JSON.parse(readFileSync(join(env.CLAUDE_CONFIG_DIR || homedir(), ".claude.json"), "utf8"));
+    const v = config?.cachedGrowthBookFeatures?.[MODS_FLAG];
+    return typeof v === "boolean" ? v : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/** A watcher beacon for `session` written at or after `sinceMs`, polled until `waitMs` runs out. */
+export function waitForBeacon(
+  session: string,
+  sinceMs: number,
+  waitMs: number = MODS_WAIT_MS,
+  roots: string[] = [...new Set([(process.env.TMPDIR || "/tmp").replace(/\/+$/, ""), "/tmp"])],
+): boolean {
+  const deadline = Date.now() + waitMs;
+  for (;;) {
+    for (const root of roots) {
+      try {
+        if (statSync(join(root, "farm-events", session, BEACON)).mtimeMs >= sinceMs) return true;
+      } catch {
+        // no beacon under this root yet
+      }
+    }
+    if (Date.now() >= deadline) return false;
+    Bun.sleepSync(100);
+  }
+}
+
+/** `ps -o etime=` — `[[dd-]hh:]mm:ss` on procps and BSD alike — in ms; null when unreadable. */
+export function parseEtime(etime: string): number | null {
+  const m = etime.trim().match(/^(?:(\d+)-)?(?:(\d+):)?(\d+):(\d+)$/);
+  if (!m) return null;
+  const [d, h, mi, s] = m.slice(1).map((x) => Number(x || 0)) as [number, number, number, number];
+  return (((d * 24 + h) * 60 + mi) * 60 + s) * 1000;
+}
+
+export interface ModsProbe {
+  interactive: boolean;
+  /** The running Claude Code's `--version` output; "" when unreadable. */
+  version: string;
+  /** Age of the Claude Code process that spawned this hook; null when no such process was found. */
+  processAgeMs: number | null;
+  flag: boolean | undefined;
+  /** Did the watcher write a beacon since this process started? May wait up to MODS_WAIT_MS. */
+  beacon: () => boolean;
+}
+
+/**
+ * "" unless this is a freshly started interactive session on 2.1.287+ whose watcher never wrote a
+ * beacon. The beacon, not the cache, is the evidence: the session's own payload rewrites the cache
+ * ~0.1 s after the startup decision, before this hook runs, so a cache that reads true here proves
+ * nothing about what the process decided. A hook with no Claude Code parent (tests, a hand run) is
+ * silent.
+ */
+export function buildModsSection(p: ModsProbe): string {
+  if (!p.interactive || p.processAgeMs === null || p.processAgeMs > MODS_STARTUP_WINDOW_MS) return "";
+  if (belowMinClaudeCode(p.version) !== false) return "";
+  if (p.beacon()) return "";
+  const cache =
+    p.flag === false
+      ? `the cached rollout switch \`${MODS_FLAG}\` reads **false** in this session's \`.claude.json\``
+      : `the cached rollout switch \`${MODS_FLAG}\` reads ${p.flag === true ? "true now" : "nothing"}, but ` +
+        "this session's payload rewrites that cache right after the startup decision, so it does not show what the process decided";
+  return [
+    "## ⚠ WORKFLOWS PLUGIN MODS DID NOT LOAD — guards and farm watcher are OFF in this session",
+    "",
+    `No watcher beacon appeared within ${MODS_WAIT_MS / 1000} s of startup: Claude Code loaded no plugin mod in this ` +
+      `process. Likely cause: ${cache}. Inactive until fixed: the tool-call guards (${MOD_GUARDS}), ` +
+      "bulk-guard, per-edit Jev, and the farm watcher — no `/farm`, no status line, and NO wake when a farm row or " +
+      "work run finishes, so a dispatched run will finish silently.",
+    "",
+    `Remedy: ${MODS_REMEDY} Nothing reloads them on its own. If \`/reload-plugins\` still loads none, the ` +
+      "payload itself serves the switch off: say so to the user, and do not dispatch farm or work runs that rely on a wake.",
     "",
   ].join("\n");
 }
@@ -597,14 +713,26 @@ export function runningClaudeExe(
   pid: number = process.pid,
   procs: ProcTable = OS_PROCS,
 ): string {
+  const parent = claudeParent(pid, procs);
+  if (parent) return parent.exe;
+  return env.CLAUDE_CODE_EXECPATH || "";
+}
+
+/** The Claude Code process that spawned this hook (directly or through `sh -c`); null when none did. */
+export function claudeParent(pid: number = process.pid, procs: ProcTable = OS_PROCS): { pid: number; exe: string } | null {
   let p = procs.parent(pid);
   for (let hop = 0; hop < 2 && p > 1; hop++) {
     const exe = procs.exe(p).replace(/ \(deleted\)$/, "");
-    if (/(^|\/)claude(\/|$)/.test(exe)) return exe;
+    if (/(^|\/)claude(\/|$)/.test(exe)) return { pid: p, exe };
     if (!SHELLS.has(exe.split("/").pop() || "")) break;
     p = procs.parent(p);
   }
-  return env.CLAUDE_CODE_EXECPATH || "";
+  return null;
+}
+
+/** How long the process `pid` has run, from `ps`; null when it cannot tell. */
+export function processAgeMs(pid: number): number | null {
+  return parseEtime(psField(pid, "etime"));
 }
 
 /** The running binary's version, from `runningClaudeExe`; "" when it cannot tell. */
@@ -693,10 +821,12 @@ Consider running \`/pattern-capture\` to classify these and create appropriate e
 }
 
 async function main(): Promise<void> {
+  let sessionId = "";
   try {
-    parsePayload(await Bun.stdin.text());
+    const sid = parsePayload(await Bun.stdin.text())["session_id"];
+    if (typeof sid === "string") sessionId = sid;
   } catch {
-    // session_id defaults to 'unknown' — never used downstream, kept for parity.
+    // an unreadable payload names no session, so there is no beacon to look for.
   }
 
   loadCentralSecrets();
@@ -710,13 +840,27 @@ async function main(): Promise<void> {
   const patternSection = checkPendingPatterns();
   const calendarSection = buildCalendarSection();
   const setupSection = buildSetupSection();
-  const versionSection = buildVersionSection(runningClaudeVersion());
+  const version = runningClaudeVersion();
+  const versionSection = buildVersionSection(version);
+  const parent = claudeParent();
+  const procAge = parent ? processAgeMs(parent.pid) : null;
+  const modsSection = buildModsSection({
+    interactive: interactiveSession() && !!sessionId,
+    version,
+    processAgeMs: procAge,
+    flag: cachedModsFlag(),
+    // The mod decision is made before the process is a second old; a beacon from before the process
+    // started belongs to an earlier process on a resumed session id.
+    beacon: () => waitForBeacon(sessionId, Date.now() - (procAge ?? 0) - 1000),
+  });
+  if (modsSection) console.error(modsSection.split("\n")[0].replace(/^## /, ""));
 
   // Appended only when it fires. The other sections are joined unconditionally to stay byte-identical
   // to session-start.py (scripts/parity.ts compares bytes); a separator emitted for a silent section
   // would be a diff on every clean project.
   const combinedContext =
     (versionSection ? versionSection + "\n" : "") +
+    (modsSection ? modsSection + "\n" : "") +
     envSection + "\n" + calendarSection + "\n" + (setupSection ? setupSection + "\n" : "") +
     inProgressSection + "\n" + patternSection + "\n" + usingSkills;
 
@@ -724,7 +868,9 @@ async function main(): Promise<void> {
     pyJson({
       // systemMessage reaches the user; additionalContext reaches only the model.
       ...(versionSection ? { systemMessage: versionSection.split("\n")[0].replace(/^## /, "") +
-        `: the workflows plugin requires Claude Code >= ${MIN_CLAUDE_CODE}; its guards are not running. Update Claude Code.` } : {}),
+        `: the workflows plugin requires Claude Code >= ${MIN_CLAUDE_CODE}; its guards are not running. Update Claude Code.` }
+        : modsSection ? { systemMessage: modsSection.split("\n")[0].replace(/^## /, "") +
+          ". Run /reload-plugins to load them; no restart needed." } : {}),
       hookSpecificOutput: {
         hookEventName: "SessionStart",
         additionalContext: combinedContext,
