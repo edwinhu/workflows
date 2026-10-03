@@ -182,6 +182,8 @@ fi
 [ -z "$TASKS" ] || jq -e 'type == "array"' "$TASKS" >/dev/null 2>&1 \
   || refuse "--tasks $TASKS must hold a JSON array of tasks"
 
+# Whether our CALLER is a farm child (no session to wake), read before the export below.
+CALLER_IS_CHILD=${FARM_OUT_CHILD:-}
 # Exempts our own children from the main-thread-guard PreToolUse hook, which
 # would otherwise deny the delegation this script exists to perform.
 export FARM_OUT_CHILD=1
@@ -578,6 +580,13 @@ else
   # 20-60 minutes -- so an instruction printed afterwards arrives when the thing it backstops is
   # already over. A caller that DETACHES us (setsid nohup ... > log) never sees it on either side;
   # that caller creates the cron itself at launch (farm-out/SKILL.md).
+  # No watcher in this session (no fresh beacon): the cron is the only wake, --no-cron or not.
+  watcher=0
+  bash "${BASH_SOURCE[0]%/*}/../../work/scripts/farm-alive.sh" --watcher || watcher=$?
+  if [ "$watcher" = 1 ] && [ "$CALLER_IS_CHILD" != 1 ]; then
+    echo "⚠ wake: NO WATCHER IN THIS SESSION -- no fresh farm-events beacon, so Claude Code loaded no plugin mod here and only the cron below wakes this session. Tell the user: /reload-plugins loads the mods."
+    CRON=1
+  fi
   if [ "$CRON" = 1 ]; then
     cron_minutes=${WORK_LOOP_INTERVAL_MINUTES:-60}
     case "$cron_minutes" in ''|*[!0-9]*|0) cron_minutes=60 ;; esac
