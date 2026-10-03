@@ -89,7 +89,7 @@ VALIDATION_TYP = OVERFLOW_DRIVER.parent / "validation.typ"
 
 # The matrix in references/workshop-checks.md, in matrix order. ENUM asserts that a line was
 # emitted for every ID here -- the whole point of computing ENUM rather than claiming it.
-MATRIX = ["CMP", "CON", "SPEC", "NOTE", "INV", "VSL", "WID", "OVR", "ENUM", "FID", "CONV", "VIS"]
+MATRIX = ["CMP", "CON", "SPEC", "NOTE", "NAR", "INV", "VSL", "WID", "OVR", "ENUM", "FID", "CONV", "VIS"]
 
 # Checks no script can settle. Reported as MODEL-EVALUATED, never PASS/FAIL/N/A.
 MODEL_EVALUATED = {
@@ -364,6 +364,32 @@ INV_CALL_RE = re.compile(r"#inv\s*\(([^)]*)\)")
 # A visual element a slide builds: a diagram, a plot, an image, a table or a figure.
 VISUAL_RE = re.compile(r"(#fletcher-diagram|cetz\.canvas|lq\.diagram|#image|#table|#figure)\s*\(")
 INV_ARG_RE = re.compile(r'"([^"]*)"')
+
+# NAR: a spoken notes bullet that points the room at the screen instead of stating the content. Each
+# pattern is a screen reference by its words alone; a visual noun with no deictic or screen-directed
+# verb ("the court's table of factors", "as shown in Reed", "the data show") matches none of them.
+_VIS = r"(?:diagrams?|charts?|graphs?|tables?|figures?|pictures?|images?|plots?|visuals?|timelines?|maps?)"
+_SHOW = (r"(?:shows?|showing|illustrates?|presents?|depicts?|displays?|lays? out|summari[sz]es|stacks|"
+         r"sorts|plots|tracks|compares|lists|says|states|asks|points? out|walks? through|captures|maps)")
+NARRATION_PATTERNS = [
+    ("as you can see", re.compile(r"\bas you (?:can )?see\b", re.I)),
+    ("you can see here/on the visual", re.compile(
+        r"\byou (?:can )?see (?:here|(?:it |this |that )?(?:on|in|from) (?:the|this) (?:slide|screen|" + _VIS + r"))\b", re.I)),
+    ("on the slide/screen", re.compile(
+        r"\b(?:on|onto|in|from) (?:the|this|that|our|my|the next|the previous|the last) (?:slide|screen)\b|\bon[- ]screen\b", re.I)),
+    ("the slide <verb>", re.compile(
+        r"\b(?:the|this|that|next|previous|following|last) slide\b(?:\s+\w+){0,2}?\s+" + _SHOW + r"\b", re.I)),
+    ("this <visual>", re.compile(
+        r"\b(?:this|these|the following|here(?:'s| is) (?:a|the|our)) "
+        r"(?:diagrams?|charts?|graphs?|tables?|plots?|visuals?|timelines?|maps?|images?)\b", re.I)),
+    ("the <visual> <verb>", re.compile(
+        r"\b(?:the|this|that) " + _VIS + r"\s+(?:here\s+|above\s+|below\s+)?" + _SHOW + r"\b", re.I)),
+    ("<visual> on the slide", re.compile(r"\b" + _VIS + r" (?:on|in) (?:the|this) (?:slide|screen)\b", re.I)),
+    ("look at the <visual>", re.compile(r"\blook(?:ing)? at (?:this|these|the|that) (?:slide|screen|" + _VIS + r")\b", re.I)),
+]
+# A poll instruction has to name the screen: the code cannot be read aloud.
+NARRATION_EXEMPT_RE = re.compile(r"\bscan (?:the |this )?(?:QR )?code\b", re.I)
+NOTES_BULLET_RE = re.compile(r"^(\s*)-\s+(.*)$")
 
 
 def deck_titles(deck_text: str) -> list[str]:
@@ -758,6 +784,86 @@ def check_note(deck_src: Path, notes_src: Path) -> dict:
         "title key.",
         evidence,
     )
+
+
+def notes_bullets(notes_text: str) -> list[tuple[int, int, str]]:
+    """(first line, last line, text) of every `- ` bullet in comment-stripped notes; deeper-indented
+    continuation lines join their bullet, and a blank line, heading or code line ends it."""
+    out: list[list] = []
+    cur = None
+    for i, raw in enumerate(strip_typst_comments(notes_text).splitlines(), 1):
+        m = NOTES_BULLET_RE.match(raw)
+        if m:
+            cur = [i, i, m.group(2).strip(), len(m.group(1))]
+            out.append(cur)
+            continue
+        s = raw.strip()
+        if not s or s.startswith(("=", "#")):
+            cur = None
+        elif cur is not None and len(raw) - len(raw.lstrip()) > cur[3]:
+            cur[1], cur[2] = i, cur[2] + " " + s
+    return [(a, b, " ".join(t.split())) for a, b, t, _ in out]
+
+
+def added_lines(path: Path, root: Path) -> set[int] | None:
+    """Lines of `path` added against HEAD (`git diff -U0`); every line when the file is untracked.
+    None when `root` is not a git work tree: no diff info, so the whole file is in scope."""
+    def git(*args: str) -> subprocess.CompletedProcess:
+        return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True,
+                              errors="replace", timeout=SUBPROCESS_TIMEOUT)
+    try:
+        top = git("rev-parse", "--show-toplevel")
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if top.returncode != 0:
+        return None
+    rel = os.path.relpath(path.resolve(), Path(top.stdout.strip()).resolve())
+    if git("cat-file", "-e", f"HEAD:{rel}").returncode != 0:
+        n = len(path.read_text(encoding="utf-8", errors="replace").splitlines())
+        return set(range(1, n + 1))
+    added: set[int] = set()
+    for ln in git("diff", "--no-color", "--no-ext-diff", "-U0", "HEAD", "--", rel).stdout.splitlines():
+        m = re.match(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@", ln)
+        if m:
+            start, count = int(m.group(1)), int(m.group(2) or 1)
+            added.update(range(start, start + count))
+    return added
+
+
+def check_nar(notes_src: Path, root: Path) -> dict:
+    """R8: no spoken notes bullet narrates the slide ("the slide shows", "as you can see", "this
+    table presents", "the diagram on this slide"). A bracketed bullet other than `[Answer ...]` is a
+    stage direction, never read aloud, and is not checked. Only bullets touching lines added against
+    HEAD are judged: accepted notes already on HEAD are legacy, not this round's work."""
+    notes_text, err = _read_text(notes_src)
+    if notes_text is None:
+        return result("FAIL", f"speaker notes: {err}")
+    bullets = notes_bullets(notes_text)
+    if not bullets:
+        return result("FAIL", f"`{notes_src.name}` has no `- ` bullet, so no spoken line was checked.",
+                      "notes_bullets=0")
+    added = added_lines(notes_src, root)
+    hits, in_scope, stage = [], 0, 0
+    for first, last, text in bullets:
+        if added is not None and not any(n in added for n in range(first, last + 1)):
+            continue
+        if text.startswith("[") and not text.startswith("[Answer"):
+            stage += 1
+            continue
+        in_scope += 1
+        if NARRATION_EXEMPT_RE.search(text):
+            continue
+        found = [m.group(0) for _, rx in NARRATION_PATTERNS if (m := rx.search(text))]
+        if found:
+            hits.append(f"{notes_src.name}:{first} {found[0]!r} in: {text[:160]}")
+    scope = "whole file (no git diff info)" if added is None else "bullets touching lines added against HEAD"
+    evidence = (f"notes_bullets={len(bullets)} in_scope_spoken={in_scope} stage_directions={stage} "
+                f"scope={scope!r}")
+    if hits:
+        return result("FAIL", f"{len(hits)} notes bullet(s) narrate the slide instead of stating its "
+                      f"content: {'; '.join(hits)}", evidence)
+    return result("PASS", f"no in-scope spoken bullet of {in_scope} refers the room to the slide or "
+                  "screen.", evidence)
 
 
 def check_vsl(deck_src: Path, spec_rows: list[dict] | None, spec_error: str | None) -> dict:
@@ -1369,6 +1475,7 @@ def _run(plan_text: str, root: Path, slides_override: str | None, notes_override
     checks["CON"] = guarded("CON", check_con, deck_src.parent)
     checks["SPEC"] = guarded("SPEC", check_spec, spec_rows, spec_error, deck_src, paper_error)
     checks["NOTE"] = guarded("NOTE", check_note, deck_src, notes_src)
+    checks["NAR"] = guarded("NAR", check_nar, notes_src, root)
     checks["INV"] = guarded(
         "INV", check_inv, deck_src, inventory, inventory_error, spec_rows, spec_error
     )
