@@ -3,6 +3,8 @@
 //   status line   one compact line while anything runs; cleared when nothing does
 //   wake          $.prompt.submit ONCE per run that reaches DONE or GONE, remembered in $.store
 //   /farm         a table of this session's runs, printed at once, no turn
+//   beacon        <TMPDIR>/farm-events/<session>/watcher.alive, rewritten by every tick that completes:
+//                 the one thing outside this module that can tell a session whose mods never loaded
 //
 // It replaces the farm-runs plugin monitor, which never re-armed once it stopped. A timer started
 // in session.start comes back with every reload. A headless session (`claude -p`, the SDK, a farm
@@ -10,11 +12,10 @@
 // waking itself about its own runs would loop.
 import type { EngineInterface, On } from 'claude-code'
 import {
-  classify, parseEvents, statusLine, table, wakeable, wakeText, workPhase, workRound, WAKE_HORIZON_MS,
+  BEACON, classify, parseEvents, statusLine, table, TICK_MS, wakeable, wakeText, workPhase, workRound, WAKE_HORIZON_MS,
   type Facts, type Run, type View,
 } from './runs.ts'
 
-const TICK_MS = 15_000
 // Notified keys older than this are pruned from the shared store.
 const KEEP_NOTIFIED_MS = 7 * 24 * 3600_000
 
@@ -26,10 +27,14 @@ const woke = new Set<string>()
 let lastStatus: string | undefined
 let ticking = false
 
+async function tmpRoot($: EngineInterface): Promise<string> {
+  return ((await $.env.get('TMPDIR')) || '/tmp').replace(/\/+$/, '')
+}
+
 async function eventDirs($: EngineInterface): Promise<string[]> {
   const sid = await $.session.id()
   if (sid) sessions.add(sid)
-  const roots = [...new Set([(await $.env.get('TMPDIR')) || '/tmp', '/tmp'])]
+  const roots = [...new Set([await tmpRoot($), '/tmp'])]
   const dirs: string[] = []
   for (const root of roots) for (const s of sessions) dirs.push(`${root.replace(/\/+$/, '')}/farm-events/${s}`)
   return dirs
@@ -147,6 +152,10 @@ async function tick($: EngineInterface) {
       $.ui.status(line)
     }
     await wake($, views, nowMs)
+    // Last, so a tick that throws leaves the beacon to go stale. write() creates the directory, so
+    // the beacon is there before this session's first run files itself.
+    const sid = await $.session.id()
+    if (sid) await $.fs.write(`${await tmpRoot($)}/farm-events/${sid}/${BEACON}`, String(Math.floor(nowMs / 1000)))
   } finally {
     ticking = false
   }
