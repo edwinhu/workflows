@@ -43,8 +43,8 @@ declare -A WRAPPERS=( [claude]=claude-code [codex]=codex-code [gemini]=gemini-co
 # CLAUDE_PLUGIN_ROOT, so a worktree's farm.sh runs that worktree's route.ts and watchdog.
 PLUGIN_ROOT=$(dirname "$(dirname "$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")")")")")
 
-# One machine-wide, append-only JSONL: a `row` line per finished --tasks row and a `verdict` line
-# per --verdict. It is the labelled dataset Jev is graded on, so it outlives the farm-events files
+# One machine-wide, append-only JSONL: a `row` line per finished --tasks row, a `verdict` line per
+# --verdict, and an automatic `wrong` verdict for a row that dropped its expect or ended GONE. It is the labelled dataset Jev is graded on, so it outlives the farm-events files
 # and never holds prompt text.
 OUTCOMES=${FARM_OUTCOMES:-${HOME:-}/.local/state/workflows/farm-outcomes.jsonl}
 
@@ -354,7 +354,8 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
   
   local wd_out
   wd_out=$(python3 "$PLUGIN_ROOT/skills/farm-out/scripts/watchdog.py" "$child_pid" "$log" "${budget:-4000000}" "${max_turns:-250}")
-  wait "$child_pid" 2>/dev/null || true
+  # Not `|| true`: that sets $? to true's 0, so every row read as exit 0 however its child died.
+  wait "$child_pid" 2>/dev/null
   rc=$?
   
   local wd_tokens=$(printf '%s' "$wd_out" | jq -r '.tokensW // 0')
@@ -375,6 +376,9 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
   calls=$(jq -s '[.[] | select(.type=="assistant") | .message.content[]?
                  | select(.type=="tool_use")] | length' "$log" 2>/dev/null || echo 0)
   models=$(jq -sc '[.[] | select(.type=="assistant") | .message.model] | unique' "$log" 2>/dev/null || echo '[]')
+  # GONE: the child's stream ended with no `result` event -- it was killed or died mid-turn.
+  local gone=false
+  jq -se 'any(.[]; .type == "result")' "$log" >/dev/null 2>&1 || gone=true
   mapfile -t missing < <(verify "${expects[@]:-}")
   # verify prints one blank line when nothing is missing; drop it.
   [ "${#missing[@]}" -eq 1 ] && [ -z "${missing[0]}" ] && missing=()
@@ -407,10 +411,23 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
     local line
     if ! line=$(printf '%s' "$result" | jq -c --argjson m "$meta" --arg ts "$(now_iso)" --arg cwd "$CWD_ABS" \
         '. as $r | {type: "row", rowId: $m.rowId, ts: $ts, cwd: $cwd, label: $m.label, kind: $m.kind,
-                    route: $m.route, shadow: $m.shadow, promptSha256: $m.promptSha256, promptLength: $m.promptLength,
+                    route: $m.route, promptSha256: $m.promptSha256, promptLength: $m.promptLength,
                     exit: $r.exit, ok: $r.ok, missing: $r.missing, toolCalls: $r.toolCalls, models: $r.models}') \
        || ! append_outcome "$line"; then
       printf 'farm: could not record the outcome of row %s in %s\n' "$(printf '%s' "$meta" | jq -r '.rowId')" "$OUTCOMES" >&2
+    # An undelivered artifact or a child that never finished is wrong by observation, not judgement,
+    # so it is labelled here. Everything else waits for a --verdict from someone who checked it.
+    elif [ "${#missing[@]}" -gt 0 ] || [ "$gone" = true ]; then
+      if ! line=$(printf '%s' "$result" | jq -c --argjson m "$meta" --arg ts "$(now_iso)" --argjson gone "$gone" \
+          '. as $r | ([if ($r.missing|length) > 0 then "expect-missing" else empty end, if $gone then "gone" else empty end]) as $c
+           | {type: "verdict", rowId: $m.rowId, verdict: "wrong",
+              why: ("auto [\($m.kind // "-")/\($m.route.model // ($r.models[0] // "-"))]: "
+                    + ([if ($r.missing|length) > 0 then "expect missing: \($r.missing|join(", "))" else empty end,
+                        if $gone then "GONE: child ended with no result (exit \($r.exit))" else empty end] | join("; "))),
+              checks: $c, kind: $m.kind, model: ($m.route.model // $r.models[0]), ts: $ts, auto: true}') \
+         || ! append_outcome "$line"; then
+        printf 'farm: could not record the automatic verdict of row %s in %s\n' "$(printf '%s' "$meta" | jq -r '.rowId')" "$OUTCOMES" >&2
+      fi
     fi
   fi
   printf '%s\n' "$result"
@@ -528,7 +545,7 @@ for r in json.load(open(sys.argv[1], encoding="utf-8")):
     ROW_META[i]=$(jq -c --arg rowId "${ROW_ID[i]}" --arg label "${ROW_L[i]}" --arg sha "$sha" --argjson len "$len" \
       '{rowId: $rowId, label: $label, kind: .kind,
         route: {source: .source, provider: .provider, model: .model, candidate: .candidate},
-        shadow: .shadow, promptSha256: $sha, promptLength: $len}' "$rdir/$i.json") \
+        promptSha256: $sha, promptLength: $len}' "$rdir/$i.json") \
       || { rm -rf -- "$rdir"; refuse "task $i: could not read its routing decision"; }
   done
   rm -rf -- "$rdir"

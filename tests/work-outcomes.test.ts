@@ -1,14 +1,16 @@
 /**
  * work-outcomes.ts <run-dir> — a finished work round's per-task outcomes, appended to the farm
- * outcomes file so work rows join the labelled dataset Jev graduates on (docs/DESIGN-routing.md).
+ * outcomes file so work rows join the labelled dataset models and routing are measured on
+ * (docs/DESIGN-routing.md).
  *
  * One `row` line per task:
  *   {type:"row", rowId:"work:<runId>:r<round>:<taskId>", ts, cwd:<projectDir>, label:"<runId>/<taskId>",
- *    kind:<task.kind ?? "judgement">, route:{source,provider,model,candidate}, shadow, source:"work",
- *    red:<red verdict | null>, verified:<pass | null>}
- * and, for a task the verifier reached, one `verdict` line:
- *   {type:"verdict", rowId, verdict:"correct"|"wrong", why:"work verifier"[+" + red-green"], ts, auto:true}
- * correct iff pass AND (no redCommand OR red verdict is red-green). round = result-round*.json count + 1.
+ *    kind:<task.kind ?? "judgement">, route:{source,provider,model,candidate}, source:"work",
+ *    red:<red verdict | null>, verified:<every record passed | null>}
+ * and, EVERY round, one `verdict` line:
+ *   {type:"verdict", rowId, verdict, why, checks, findings, kind, model, ts, auto:true}
+ * wrong iff a check failed for the task (verify/acceptance, verify-missing, red, implement, a digest
+ * failure or lens route it owns) or a critical/major finding it owns stands. round = result-round*.json count + 1.
  * runId is the run directory's basename (args.json carries none). Idempotent by rowId. No prompt or
  * task `work` text is ever written.
  *
@@ -78,9 +80,8 @@ const byRow = (path: string, rowId: string) => lines(path).filter(l => l.rowId =
 
 const task = (id: string, over: object = {}) =>
   ({ id, name: id, work: `do ${id}`, acceptance: 'a', writablePaths: ['src/'], refs: [], ...over })
-const shadow = { unavailable: 'decisions endpoint unreachable' }
 const decision = (kind: string, provider: string, model: string, candidate: string) =>
-  ({ provider, model, kind, candidate, source: 'table', shadow })
+  ({ provider, model, kind, candidate, source: 'table' })
 
 // ------------------------------------------------------------------------------- row lines
 
@@ -125,7 +126,7 @@ describe('row lines: one per task, routed from args.routing', () => {
     expect(t1?.route).toEqual({ source: 'table', provider: 'claude', model: 'claude-opus-5-5', candidate: 'opus' })
     expect(t2?.kind).toBe('script')
     expect(t2?.route).toEqual({ source: 'table', provider: 'gemini', model: 'gemini-3.7-flash-high', candidate: 'flash' })
-    expect(t2?.shadow).toEqual(shadow)
+    expect('shadow' in t2).toBe(false)
   })
 
   test('a --provider run falls back to {source: flag, provider, model: implementerModel, candidate: null}', async () => {
@@ -133,7 +134,7 @@ describe('row lines: one per task, routed from args.routing', () => {
     expect((await outcomes(f)).code).toBe(0)
     const [t1] = rows(f.outcomes)
     expect(t1?.route).toEqual({ source: 'flag', provider: 'codex', model: 'gpt-6.1-sol', candidate: null })
-    expect('shadow' in (t1 ?? {})).toBe(true)
+    expect('shadow' in (t1 ?? {})).toBe(false)
   })
 
   test('a flag route with no implementerModel records model null', async () => {
@@ -151,7 +152,7 @@ describe('row lines: one per task, routed from args.routing', () => {
 
 // --------------------------------------------------------------------------- verdict lines
 
-describe('verdict lines: correct iff pass and (no redCommand or red-green)', () => {
+describe('verdict lines: the verifier and red legs', () => {
   const ARGS = {
     routing: { source: 'flag', provider: 'claude' },
     tasks: [
@@ -180,15 +181,20 @@ describe('verdict lines: correct iff pass and (no redCommand or red-green)', () 
   }
   const id = (t: string) => `work:v-run:r1:${t}`
 
-  test('each reached task gets the verdict its pass and red verdict decide', async () => {
+  test('each task gets the verdict its pass and red verdict decide, naming the failing checks', async () => {
     const f = runDir('v-run', ARGS, RESULT)
     expect((await outcomes(f)).code).toBe(0)
     const v = Object.fromEntries(verdicts(f.outcomes).map(l => [l.rowId, l]))
-    expect(v[id('T1')]).toMatchObject({ type: 'verdict', verdict: 'correct', why: 'work verifier + red-green', auto: true })
-    expect(v[id('T2')]).toMatchObject({ verdict: 'wrong', why: 'work verifier + red-green', auto: true })
-    expect(v[id('T3')]).toMatchObject({ verdict: 'wrong', why: 'work verifier', auto: true })
-    expect(v[id('T4')]).toMatchObject({ verdict: 'correct', why: 'work verifier', auto: true })
-    expect(v[id('T5')]).toMatchObject({ verdict: 'wrong', why: 'work verifier', auto: true })
+    const run = { kind: 'judgement', model: null, auto: true, findings: [] }
+    expect(v[id('T1')]).toMatchObject({ type: 'verdict', verdict: 'correct', checks: [], ...run,
+      why: '[judgement/unpinned] checks passed + red-green; no owned critical/major finding' })
+    expect(v[id('T2')]).toMatchObject({ verdict: 'wrong', checks: ['verify'], ...run, why: '[judgement/unpinned] failed: verify' })
+    expect(v[id('T3')]).toMatchObject({ verdict: 'wrong', checks: ['red'], ...run })
+    expect(v[id('T4')]).toMatchObject({ verdict: 'correct', checks: [], ...run,
+      why: '[judgement/unpinned] checks passed; no owned critical/major finding' })
+    expect(v[id('T5')]).toMatchObject({ verdict: 'wrong', checks: ['verify'], ...run })
+    // T6 is red-gated and the verifier never reached it: both legs are missing.
+    expect(v[id('T6')]).toMatchObject({ verdict: 'wrong', checks: ['verify-missing', 'red'], ...run })
     expect(typeof v[id('T1')]?.ts).toBe('string')
   })
 
@@ -201,12 +207,19 @@ describe('verdict lines: correct iff pass and (no redCommand or red-green)', () 
     expect({ red: r[id('T5')]?.red, verified: r[id('T5')]?.verified }).toEqual({ red: null, verified: false })
   })
 
-  test('a task never reached gets its row line, verified null, and no verdict line', async () => {
+  test('a task never reached gets its row line, verified null, and a wrong verdict', async () => {
     const f = runDir('v-run', ARGS, RESULT)
     expect((await outcomes(f)).code).toBe(0)
     const t6 = byRow(f.outcomes, id('T6'))
-    expect(t6.map(l => l.type)).toEqual(['row'])
+    expect(t6.map(l => l.type)).toEqual(['row', 'verdict'])
     expect(t6[0]).toMatchObject({ red: null, verified: null })
+    expect(t6[1].verdict).toBe('wrong')
+  })
+
+  test('under readOnly a task with no verifier record is not charged verify-missing', async () => {
+    const f = runDir('ro-run', { ...ARGS, readOnly: true, tasks: [task('T1')] }, { overallPass: true, verified: [], red: [] })
+    expect((await outcomes(f)).code).toBe(0)
+    expect(verdicts(f.outcomes)[0]).toMatchObject({ verdict: 'correct', checks: [] })
   })
 
   test('a second run over the same round appends nothing', async () => {
@@ -241,6 +254,89 @@ describe('verdict lines: correct iff pass and (no redCommand or red-green)', () 
   })
 })
 
+// ------------------------------------------------------- checks and lens findings attributed
+
+describe('verdict lines: a passing verifier is not enough', () => {
+  const ARGS = {
+    routing: {
+      kindModels: { judgement: 'claude-opus-5-5', script: 'claude-sonnet-5-5' },
+      source: 'table',
+      decisions: {
+        judgement: decision('judgement', 'claude', 'claude-opus-5-5', 'opus'),
+        script: decision('script', 'claude', 'claude-sonnet-5-5', 'sonnet'),
+      },
+    },
+    tasks: [task('T1'), task('T2', { kind: 'script' }), task('T3'), task('T4'), task('T5', { acceptanceCmd: 'bash a.sh' })],
+  }
+  const pass = (id: string) => ({ id, pass: true, evidence: 'e', failures: [] })
+  const RESULT = {
+    overallPass: false, verdict: 'FAIL',
+    verified: ['T1', 'T2', 'T3', 'T4', 'T5'].map(pass).concat([{ id: 'T5', pass: false, evidence: 'e', failures: ['x'], byCommand: true } as any]),
+    implemented: [{ id: 'T4', done: false, blockers: ['b'] }],
+    red: [],
+    findings: [
+      { title: 'SECRET-FINDING-TITLE', severity: 'critical', ownerTask: 'T1', lens: 'lens', detail: 'd' },
+      { title: 't', severity: 'minor', ownerTask: 'T2', lens: 'lens', detail: 'd' },
+      { title: 't', severity: 'major', ownerTask: 'T2', lens: 'lens', detail: 'd', defect: false },
+      { id: 'F-7', title: 't', severity: 'major', ownerTask: 'T1', lens: 'lens', detail: 'd' },
+      { title: 't', severity: 'major', ownerTask: 'plan', lens: 'lens', detail: 'd' },
+    ],
+    routes: [{ failure: 'mechanical:ds', ownerTask: 'T3', cause: 'c', fix: 'f' }],
+  }
+  const id = (t: string) => `work:lens-run:r1:${t}`
+
+  test('critical/major findings owned by a task make it wrong, named by id or lens#index', async () => {
+    const f = runDir('lens-run', ARGS, RESULT)
+    expect((await outcomes(f)).code).toBe(0)
+    const v = Object.fromEntries(verdicts(f.outcomes).map(l => [l.rowId, l]))
+    expect(v[id('T1')]).toMatchObject({
+      verdict: 'wrong', kind: 'judgement', model: 'claude-opus-5-5',
+      checks: ['lens:critical', 'lens:major'], findings: ['lens#0 (critical)', 'F-7 (major)'],
+      why: '[judgement/claude-opus-5-5] failed: lens:critical, lens:major; findings lens#0 (critical), F-7 (major)',
+    })
+    // A minor finding and a non-defect never make a task wrong.
+    expect(v[id('T2')]).toMatchObject({ verdict: 'correct', kind: 'script', model: 'claude-sonnet-5-5', checks: [], findings: [] })
+  })
+
+  test('a route, an unfinished implementer and a failed acceptanceCmd are failing checks', async () => {
+    const f = runDir('lens-run', ARGS, RESULT)
+    expect((await outcomes(f)).code).toBe(0)
+    const v = Object.fromEntries(verdicts(f.outcomes).map(l => [l.rowId, l]))
+    expect(v[id('T3')]).toMatchObject({ verdict: 'wrong', checks: ['mechanical:ds'] })
+    expect(v[id('T4')]).toMatchObject({ verdict: 'wrong', checks: ['implement'] })
+    expect(v[id('T5')]).toMatchObject({ verdict: 'wrong', checks: ['acceptance'] })
+    expect(rows(f.outcomes).find(r => r.rowId === id('T5'))?.verified).toBe(false)
+  })
+
+  test("digest.json failures are attributed to the owner work-stage.mjs named", async () => {
+    const f = runDir('lens-run', ARGS, { ...RESULT, findings: [], routes: [], implemented: [] })
+    writeFileSync(join(f.R, 'digest.json'), JSON.stringify({
+      failures: [
+        { kind: 'mechanical', check: 'mechanical:typecheck', owner: 'T2' },
+        { kind: 'acceptance', check: 'acceptance:T5', owner: 'T5' },
+        { kind: 'mechanical', check: 'mechanical:lint', owner: null },
+      ],
+    }))
+    expect((await outcomes(f)).code).toBe(0)
+    const v = Object.fromEntries(verdicts(f.outcomes).map(l => [l.rowId, l]))
+    expect(v[id('T2')]).toMatchObject({ verdict: 'wrong', checks: ['mechanical:typecheck'] })
+    expect(v[id('T5')]).toMatchObject({ verdict: 'wrong', checks: ['acceptance'] })
+    expect(v[id('T1')]).toMatchObject({ verdict: 'correct', checks: [] })
+  })
+
+  test('finding prose never reaches the file', async () => {
+    const f = runDir('lens-run', ARGS, RESULT)
+    expect((await outcomes(f)).code).toBe(0)
+    expect(readFileSync(f.outcomes, 'utf8')).not.toContain('SECRET-FINDING-TITLE')
+  })
+
+  test('every round is labelled: round 2 of the same task gets its own row and verdict', async () => {
+    const f = runDir('lens-run', ARGS, RESULT, 1)
+    expect((await outcomes(f)).code).toBe(0)
+    expect(verdicts(f.outcomes).map(l => l.rowId)).toContain('work:lens-run:r2:T1')
+  })
+})
+
 // --------------------------------------------------------------------- the real trimmed run
 
 describe('a trimmed real result.json (.work/1001-farm-routing, round 1)', () => {
@@ -261,13 +357,10 @@ describe('a trimmed real result.json (.work/1001-farm-routing, round 1)', () => 
     expect((await outcomes(f)).code).toBe(0)
     expect(rows(f.outcomes).map(r => r.rowId).sort()).toEqual(
       ['T1', 'T2', 'T3', 'T4'].map(t => `work:1001-farm-routing:r2:${t}`))
-    const v = Object.fromEntries(verdicts(f.outcomes).map(l => [l.rowId.split(':').pop(), [l.verdict, l.why]]))
-    expect(v).toEqual({
-      T1: ['correct', 'work verifier + red-green'],
-      T2: ['correct', 'work verifier + red-green'],
-      T3: ['correct', 'work verifier + red-green'],
-      T4: ['correct', 'work verifier'],
-    })
+    const v = Object.fromEntries(verdicts(f.outcomes).map(l => [l.rowId.split(':').pop(), [l.verdict, l.checks]]))
+    expect(v).toEqual({ T1: ['correct', []], T2: ['correct', []], T3: ['correct', []], T4: ['correct', []] })
+    const redGreen = verdicts(f.outcomes).filter(l => l.why.includes('+ red-green')).map(l => l.rowId.split(':').pop()).sort()
+    expect(redGreen).toEqual(['T1', 'T2', 'T3'])
     for (const r of rows(f.outcomes)) {
       expect(r.route?.source).toBe('flag')
       expect(r.route?.model).toBe('claude-opus-5-5')

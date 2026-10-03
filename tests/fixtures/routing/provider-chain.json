@@ -1,7 +1,6 @@
 {
   "_comment": "Fixture for tests/route-provider.test.ts and skills/work/scripts/work-dispatch-lens.test.ts. Same schema as scripts/lib/routing.json. The review chain holds two codex candidates, the first (luna) unavailable, so a codex-constrained row must skip it for sol. judgement has no codex candidate at all.",
   "asOf": "2026-10-01",
-  "jev": { "mode": "shadow", "model": "typesafe/jev-1.13", "threshold": 0.85, "timeoutSeconds": 2 },
   "candidates": {
     "sonnet": { "provider": "claude", "model": "claude-sonnet-5-5", "owner": "anthropic", "openrouter": "anthropic/claude-sonnet-5.5", "available": true, "price": { "prompt": 2e-6, "completion": 1e-5 } },
     "opus": { "provider": "claude", "model": "claude-opus-5-5", "owner": "anthropic", "openrouter": "anthropic/claude-opus-5.5", "available": true, "price": { "prompt": 4e-6, "completion": 2e-5 } },

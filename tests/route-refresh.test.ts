@@ -104,7 +104,7 @@ test('a full catalog marks every candidate available and exits 0', async () => {
   } finally { s.stop() }
 }, 30_000)
 
-test('asOf becomes today; kinds and jev are untouched', async () => {
+test('asOf becomes today; kinds are untouched', async () => {
   const table = tableCopy()
   const before = read(table)
   const s = stubEndpoints(FULL_CATALOG)
@@ -114,12 +114,11 @@ test('asOf becomes today; kinds and jev are untouched', async () => {
     const after = read(table)
     expect(after.asOf).toBe(today())
     expect(after.kinds).toEqual(before.kinds)
-    expect(after.jev).toEqual(before.jev)
   } finally { s.stop() }
 }, 30_000)
 
-test('kinds and jev survive even when every pick goes unavailable', async () => {
-  const table = tableCopy(t => { t.jev.mode = 'decide' })
+test('kinds survive even when every pick goes unavailable', async () => {
+  const table = tableCopy()
   const before = read(table)
   const s = stubEndpoints([])
   try {
@@ -127,7 +126,6 @@ test('kinds and jev survive even when every pick goes unavailable', async () => 
     expect(r.code).toBe(1)
     const after = read(table)
     expect(after.kinds).toEqual(before.kinds)
-    expect(after.jev).toEqual(before.jev)
   } finally { s.stop() }
 }, 30_000)
 

@@ -14,7 +14,7 @@ slot. Routing is now code that every `farm.sh --tasks` row goes through.
 
 - **`scripts/lib/routing.json`** is the one committed table. `kinds` maps each kind (`script`,
   `judgement`, `review`, `bulk`) to a `pick` and ordered `fallbacks`; `candidates` pin a provider
-  and a full model id; `jev` holds the scorer's mode, model, threshold and timeout.
+  and a full model id. A table still carrying `jev` is refused (retired below).
 - **`scripts/lib/route.ts --row`** turns one row into one decision. A row naming `provider`/`model`
   passes through (`source: explicit`). Otherwise its kind's pick, or the first available fallback
   (`source: table`). No kind and no provider/model, an unknown kind, or no available candidate is a
@@ -22,21 +22,24 @@ slot. Routing is now code that every `farm.sh --tasks` row goes through.
 - **`farm.sh`** routes every row before running any, so one refusal stops the whole run before a
   wrapper starts. `--provider` is the legacy whole-run override (`source: flag`).
 
-## Jev in shadow
+## Routing shadow scores: retired 2026-10-02
 
-Each table-routed row makes ONE Decisions call (`decisionsCall` from `hooks/work-hold.ts`, the one
-transport), capped at `jev.timeoutSeconds`. It asks a CORRECT/WRONG question per chain candidate,
-`q_<id>`, about a row summary: kind, label, agent, whether it has an `expect`, and the prompt's
-sha256 and length, never the text. In `shadow` mode the scores are recorded and never change the
-pick. Any failure (dead, hung, unparsable) sets `shadow.unavailable` and the row runs anyway.
+Each table-routed row used to make one Decisions call asking Jev CORRECT/WRONG per chain candidate,
+recorded as `shadow` and meant to graduate to deciding the pick at holdout AUC >= 0.85. Retired, with
+`jev` in `routing.json`, `source: jev` and the row/outcome `shadow` field:
 
-**Graduation.** Jev moves from shadow to decide when its holdout AUC is **>= 0.85 on
-verdict-labelled rows**: the score it gave the candidate that ran, against that row's verdict. The
-switch is a reviewed edit of `jev.mode` to `"decide"` in the committed table, never a runtime flag.
-In decide mode the cheapest available chain candidate (by `price.prompt`, null last) scoring at least
-`jev.threshold` wins (`source: jev`). If none does, the table pick stands.
+- **It saw no content.** The state was kind, label, agent, `hasExpect`, and the prompt's sha256 and
+  length. Nothing in it distinguishes a row a model will get right from one it will not.
+- **The scores were flat**: 0.19-0.39 across rows and candidates, so no threshold separates them and
+  no AUC could clear the bar. It could not graduate.
+- **The labels could not have graded it anyway**: 25 verdicts, all `correct`, because a work round
+  was labelled from its verifier alone and lens findings were attributed to no task.
+- **Rule grading is where Jev earns its place** (below): it reads the change itself and is
+  calibrated against fixtures. Routing is now measured from honest labels instead (`--outcomes`).
 
-**Rule checks for code.** Jev also scores rules, not routes. `dev` declares `ruleChecks` with
+## Jev for rules
+
+**Rule checks for code.** Jev scores rules, not routes. `dev` declares `ruleChecks` with
 `--rules constraints/jev/dev`: five rules (MOCK, WEAK, NET, SHELL, LOOP), one extractor each over the
 change's diff. Rules declare a `SUBJECT`, which `rule-check.ts` puts in its preamble; discovery
 is non-recursive, so `ds` still finds only its own rules. A rule is wired only when it scores its
@@ -54,7 +57,7 @@ every compliant or real accepted case < 0.5, on every run. Each violating case i
 every other rule in its set; a score > 0.5 is a reported cross-rule hit, not a failure. Exit 1 if a
 wired rule fails, 2 if Jev is unreachable or any score is missing (never a pass), else 0. A passing
 uncalibrated rule is printed "ready to wire"; wiring stays a reviewed move of its file. Nothing is
-written to the repo. Run it when a rule's extractor, question or cases change, and when `jev.model`
+written to the repo. Run it when a rule's extractor, question or cases change, and when the Jev model (`WORK_HOLD_DECISIONS_MODEL`)
 changes. To add a real case, copy a bounded, self-contained excerpt of an accepted deliverable into
 `tests/fixtures/jev/real/<RULE>-<name>/` (`before/`, `after/` with `.fixture` suffixes for `dev`),
 redact contacts and secrets (the repo is public), and list it under its rule with a `source` note
@@ -71,8 +74,7 @@ writes is committed source, and its only scratch is rule-calibrate's temp dirs.
 ## Refresh
 
 `route.ts --refresh` is the only sanctioned writer of `available`, `price` and `asOf`. It fetches
-the proxy catalog and the OpenRouter price list once each, never per row, and never touches `kinds`
-or `jev`. It exits 1 naming any kind whose pick went unavailable, and exits 2 with the file
+the proxy catalog and the OpenRouter price list once each, never per row, and never touches `kinds`. It exits 1 naming any kind whose pick went unavailable, and exits 2 with the file
 byte-identical when the proxy is down. An unreachable price list leaves prices unchanged. Run it
 from a repo checkout, never the plugin cache, and review the diff before committing.
 
@@ -104,11 +106,16 @@ pinned gpt-5.6-luna. A failed source skips discovery on stderr; rule in the `rou
 ## The outcomes file is a new state file
 
 `~/.local/state/workflows/farm-outcomes.jsonl` (`FARM_OUTCOMES` overrides) gets one `row` line per
-finished row (`rowId`, route, shadow scores, prompt sha256 and length, exit, ok, missing, toolCalls)
-and one `verdict` line per `farm.sh --verdict <rowId> correct|wrong "<why>"`. Appends are single
-writes, and no line holds prompt text. The boundary is load-bearing:
+finished row (`rowId`, route, prompt sha256 and length, exit, ok, missing, toolCalls) and one
+`verdict` line per `farm.sh --verdict <rowId> correct|wrong "<why>"`. farm.sh itself appends an
+automatic `wrong` (`auto: true`, `checks` `expect-missing` and/or `gone`) when a row's `expect`
+artifact is missing or its child's stream ended with no `result` event; a farm.sh killed outright
+writes no row, so there is nothing to label. A rowId's last verdict wins. Appends are single
+writes, and no line holds prompt text. Tests always set `FARM_OUTCOMES`. The boundary is load-bearing:
 
-- **It is the labelled dataset**: the holdout that decides graduation is built from these lines.
+- **It is the labelled dataset** that measures models and routing rules:
+  `bun scripts/lib/route.ts --outcomes [--file <path>] [--json]` prints, per kind x model, rows,
+  labelled, wrong, wrong rate and the top failing checks. It writes nothing.
 - **It spans projects and sessions**, so it cannot live in any one project's `episode.json`, and it
   lives outside every repo, never in `.planning/`.
 - **It outlives the farm-events files**, which are evicted once 60 minutes old with their pid gone.
@@ -134,7 +141,7 @@ dispatcher runs red-before and hashes the red suite, and `work-round.sh` runs th
 
 **`lensProvider`** (CLARIFY axis 6) adds `provider` to the review row; `route.ts` answers a
 kind+provider row with no model by that provider's first available candidate in the kind's chain
-(`source: table`, no Jev), refusing with exit 2 when none is available. A chain with no candidate of
+(`source: table`), refusing with exit 2 when none is available. A chain with no candidate of
 that provider keeps today's passthrough, so those farm rows still run (the dispatchers refuse its
 null model for the lens). Under `--provider` the review row is the only `route.ts` call and its
 model goes into `args.lens.model`: a normalised lens's default `'sonnet'` would beat `lensModel`.
@@ -142,8 +149,11 @@ The third-party runners retired on 2026-10-01: a cross-family lens gates; they c
 
 `skills/work/scripts/work-outcomes.ts <run-dir>` runs from `work-loop.sh` after each accepted round
 (`work-result.sh` exit 0 or 1, never 2; its failure never changes the loop's exit). It appends to
-the same outcomes file a `row` per task, rowId `work:<runId>:r<round>:<taskId>`, never twice, and,
-where the verifier reached the task, an automatic `verdict` (`auto: true`): `correct` iff it passed
-and the task has no `redCommand` or its red pair was `red-green`, else `wrong`. The label comes from
-the run's own gates, never a labelling call; no task text is written. A carried task (one outside
+the same outcomes file, EVERY round, a `row` and an automatic `verdict` (`auto: true`) per task,
+rowId `work:<runId>:r<round>:<taskId>`, never twice. `wrong` iff that round's checks failed for the
+task (verifier or acceptance, missing verifier, red pair not `red-green`, implementer not done, or a
+`digest.json` failure or lens route owned by it) or a critical/major finding owned by it stands;
+else `correct`. The verdict carries `kind`, `model`, `checks` (names without the task id) and
+`findings` (ids, else `<lens>#<index>`), all also spelled in `why`. The label comes from the run's
+own gates, never a labelling call; no task or finding text is written. A carried task (one outside
 `args.onlyTasks`) gets no lines: its judging round wrote them. Grind and farm-team are run 3.

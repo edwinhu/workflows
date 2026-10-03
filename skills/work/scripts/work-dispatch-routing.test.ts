@@ -125,7 +125,7 @@ function dispatch(f: { dir: string; plan: string }, flags: string[] = [], extra:
 
 const readJson = (p: string) => JSON.parse(readFileSync(p, 'utf8'))
 
-/** The decision route.ts gives each kind under the fixture table, minus the shadow block. */
+/** The decision route.ts gives each kind under the fixture table. */
 const FIXTURE_DECISIONS = {
   judgement: { kind: 'judgement', provider: 'claude', model: 'claude-opus-5-5', candidate: 'opus', source: 'table' },
   script: { kind: 'script', provider: 'claude', model: 'claude-sonnet-5-5', candidate: 'sonnet', source: 'table' },
@@ -142,21 +142,20 @@ describe('work-dispatch.sh without --provider resolves a kind map through route.
     expect(routing.kindModels).toEqual({
       judgement: 'claude-opus-5-5', script: 'claude-sonnet-5-5', review: 'claude-sonnet-5-5',
     })
-    // Shadow mode never changes a pick, so the whole map came from the table.
     expect(routing.source).toBe('table')
     expect(Object.keys(routing.decisions).sort()).toEqual(['judgement', 'review', 'script'])
     for (const k of ['judgement', 'script', 'review'] as const)
       expect(routing.decisions[k]).toMatchObject(FIXTURE_DECISIONS[k])
   })
 
-  test('each decision is route.ts output verbatim: the dead Decisions port shows as shadow.unavailable', async () => {
+  test('each decision is route.ts output verbatim, with no retired shadow block', async () => {
     const f = dispatchFixture()
     const r = await dispatch(f)
     expect(r.code).toBe(0)
     const decisions = readJson(f.argsPath).routing?.decisions
     expect(decisions).toBeDefined()
-    for (const k of ['judgement', 'script', 'review'])
-      expect(typeof decisions[k].shadow?.unavailable).toBe('string')
+    for (const k of ['judgement', 'script', 'review'] as const)
+      expect(decisions[k]).toEqual(FIXTURE_DECISIONS[k])
   })
 
   test('ROUTING_TABLE is honoured: an edited table changes the map', async () => {

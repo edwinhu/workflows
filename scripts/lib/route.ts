@@ -11,34 +11,29 @@
  *   3. routing.json beside this file
  *
  * A row resolves in this order:
- *   model (with or without  passed through, source 'explicit'; Jev is not consulted
+ *   model (with or without  passed through, source 'explicit'
  *   a provider)
  *   kind and provider       provider-constrained: the first AVAILABLE candidate of that provider in
- *                           the kind's chain (pick, then fallbacks, in order); source 'table'; Jev is
- *                           not consulted. REFUSED (exit 2, stderr names the kind and the provider)
+ *                           the kind's chain (pick, then fallbacks, in order); source 'table'.
+ *                           REFUSED (exit 2, stderr names the kind and the provider)
  *                           when the chain has candidates of that provider but none is available.
  *                           A chain with no candidate of that provider, or an unknown kind, falls
  *                           to the provider rung below.
- *   provider                passed through with a null model, source 'explicit'; Jev not consulted
+ *   provider                passed through with a null model, source 'explicit'
  *   kind                    the kind's pick, else its first AVAILABLE fallback; source 'table'
  *   neither, unknown kind,  REFUSED: exit 2, nothing on stdout, stderr names every kind.
  *   or nothing available    A refusal never falls through to a default.
  *
- * Jev (the Decisions API, through hooks/work-hold.ts `decisionsCall` — the one transport) scores
- * the kind's chain (pick, then fallbacks) in ONE call per kind-only row, capped at
- * jev.timeoutSeconds; a candidate outside the chain is never asked about and never chosen. In
- * 'shadow' mode the scores are recorded and never change the pick. In 'decide' mode the cheapest
- * available chain candidate scoring at least jev.threshold wins (source 'jev'); otherwise the
- * table pick stands.
- * Any Jev failure leaves the table pick and sets shadow.unavailable — Jev never blocks a row.
- * The state sent to Jev summarises the row; it never carries the prompt text.
+ * No model scores a row: the Jev routing shadow was retired 2026-10-02 (docs/DESIGN-routing.md).
+ * Routing is measured instead from verdict-labelled outcomes, which --outcomes reports.
  *
  *   bun scripts/lib/route.ts --row '<json>' [--table <path>]   # one decision as one JSON line
  *   bun scripts/lib/route.ts --refresh [--table <path>]        # re-derive availability, prices, signals
  *   bun scripts/lib/route.ts --propose [--table <path>] [--json]  # advisory kinds diff; never writes
+ *   bun scripts/lib/route.ts --outcomes [--file <path>] [--json]  # per kind x model labels; never writes
  *
  * --refresh is the only sanctioned writer of `available`, `price`, `signals` and `asOf`; it never
- * touches `kinds` or `jev`. Availability comes from the proxy catalog ($ROUTE_PROXY_URL), prices from
+ * touches `kinds`. Availability comes from the proxy catalog ($ROUTE_PROXY_URL), prices from
  * OpenRouter ($ROUTE_PRICES_URL), each fetched once. Exit 0; exit 1 when some kind's pick is now
  * unavailable (the table is still written); exit 2 when the proxy or the table cannot be read, with
  * the file left byte-identical. An unreachable price list leaves prices as they were.
@@ -98,10 +93,9 @@
  * is warned on stderr and leaves every usageRank null; discovery still runs. --json prints
  * {proposals, discoveries}.
  */
-import { createHash } from 'node:crypto'
-import { readFileSync, realpathSync, renameSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, realpathSync, renameSync, rmSync, writeFileSync } from 'node:fs'
+import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { decisionsCall } from '../../hooks/work-hold.ts'
 
 export type Provider = 'claude' | 'codex' | 'gemini' | 'gemini-batch'
 export type Kind = 'script' | 'judgement' | 'review' | 'bulk'
@@ -125,7 +119,6 @@ export interface Signals {
 export interface Table {
   _comment?: string
   asOf: string
-  jev: { mode: 'shadow' | 'decide'; model: string; threshold: number; timeoutSeconds: number }
   candidates: Record<string, Candidate>
   kinds: Record<Kind, { pick: string; fallbacks: string[] }>
 }
@@ -140,15 +133,12 @@ export interface Row {
   expect?: string | string[]
 }
 
-export type Shadow = { scores: Record<string, number> } | { unavailable: string }
-
 export interface Decision {
   provider: string
   model: string | null
   kind: string | null
   candidate: string | null
-  source: 'explicit' | 'table' | 'jev'
-  shadow: Shadow
+  source: 'explicit' | 'table'
 }
 
 /** A row that cannot be routed. The CLI maps it to exit 2: the caller asked wrongly. */
@@ -186,12 +176,8 @@ function validateTable(t: unknown, p: string): asserts t is Table {
   }
   if (!isObj(t)) bad('not a JSON object')
   const tt = t as Record<string, any>
-  const j = tt.jev
-  if (!isObj(j)) bad('jev is missing')
-  if (j.mode !== 'shadow' && j.mode !== 'decide') bad(`jev.mode must be shadow or decide, not ${JSON.stringify(j.mode)}`)
-  if (typeof j.model !== 'string' || !j.model) bad('jev.model must be a model id')
-  if (typeof j.threshold !== 'number' || !(j.threshold >= 0 && j.threshold <= 1)) bad('jev.threshold must be a number in [0, 1]')
-  if (typeof j.timeoutSeconds !== 'number' || !(j.timeoutSeconds > 0)) bad('jev.timeoutSeconds must be a positive number')
+  // A retired key left in a table would read as live configuration: refuse it rather than ignore it.
+  if ('jev' in tt) bad('jev is retired (routing shadow scores, docs/DESIGN-routing.md); delete the key')
 
   if (!isObj(tt.candidates) || Object.keys(tt.candidates).length === 0) bad('candidates is missing or empty')
   for (const [id, c] of Object.entries(tt.candidates as Record<string, any>)) {
@@ -251,7 +237,6 @@ export function route(row: Row, opts: { table?: Table } = {}): Decision {
       kind: kind ?? null,
       candidate: null,
       source: 'explicit',
-      shadow: { unavailable: 'explicit row: Jev is not consulted' },
     }
   }
 
@@ -275,23 +260,13 @@ export function route(row: Row, opts: { table?: Table } = {}): Decision {
         `Run route.ts --refresh, or name "provider"/"model" on the row.`,
     )
 
-  const shadow = scoreCandidates(r, kind, chain, table)
-  let chosen = pick
-  let source: Decision['source'] = 'table'
-  if (table.jev.mode === 'decide' && 'scores' in shadow) {
-    const jevPick = cheapestConfident(table, chain, shadow.scores)
-    if (jevPick) {
-      chosen = jevPick
-      source = 'jev'
-    }
-  }
-  const c = table.candidates[chosen]
-  return { provider: c.provider, model: c.model, kind, candidate: chosen, source, shadow }
+  const c = table.candidates[pick]
+  return { provider: c.provider, model: c.model, kind, candidate: pick, source: 'table' }
 }
 
 /**
- * A kind+provider row: the first available candidate of `provider` in the kind's chain, never
- * scored by Jev. Undefined when the chain holds no candidate of that provider, so the row passes
+ * A kind+provider row: the first available candidate of `provider` in the kind's chain. Undefined
+ * when the chain holds no candidate of that provider, so the row passes
  * through as an explicit provider; a refusal when it holds some but none is available, because
  * falling back to another provider would silently drop the constraint the row asked for.
  */
@@ -313,114 +288,45 @@ function providerConstrained(table: Table, kind: Kind, provider: string, label: 
     kind,
     candidate: id,
     source: 'table',
-    shadow: { unavailable: `provider-constrained row (${provider} in kind ${kind}'s chain): Jev is not consulted` },
   }
-}
-
-/** The cheapest available chain candidate at or above threshold. A null price ranks last; ties keep chain order. */
-function cheapestConfident(table: Table, chain: string[], scores: Record<string, number>): string | undefined {
-  const cost = (id: string) => table.candidates[id].price?.prompt ?? Number.POSITIVE_INFINITY
-  return chain
-    .filter(id => table.candidates[id].available && (scores[id] ?? -1) >= table.jev.threshold)
-    .sort((a, b) => (cost(a) === cost(b) ? 0 : cost(a) < cost(b) ? -1 : 1))[0]
-}
-
-/** What Jev sees of a row. A hash and a length stand in for the prompt, whose text never leaves. */
-export function jevState(row: Record<string, unknown>, kind: string): string {
-  const prompt = typeof row.prompt === 'string' ? row.prompt : ''
-  const ex = row.expect
-  return JSON.stringify({
-    task: 'a delegated agent task (a farm-out row) about to run on one of several model candidates',
-    kind,
-    label: typeof row.label === 'string' ? row.label : null,
-    promptLength: prompt.length,
-    promptSha256: createHash('sha256').update(prompt).digest('hex'),
-    hasExpect: Array.isArray(ex) ? ex.length > 0 : typeof ex === 'string' && ex.length > 0,
-    agent: typeof row.agent === 'string' ? row.agent : null,
-  })
-}
-
-/** One Decisions call scoring the kind's chain. Never throws: a failure is `{unavailable}`. */
-function scoreCandidates(row: Record<string, unknown>, kind: string, chain: string[], table: Table): Shadow {
-  const ids = [...new Set(chain)]
-  const questions = Object.fromEntries(
-    ids.map(id => {
-      const c = table.candidates[id]
-      return [
-        `q_${id}`,
-        {
-          type: 'choice',
-          instructions:
-            `If the task summarised in the state is run on candidate "${id}" -- provider ${c.provider}, ` +
-            `model ${c.model} -- will the result be CORRECT or WRONG?`,
-          criteria: {
-            CORRECT: 'the task is done as asked and its result survives independent verification',
-            WRONG: 'the result is wrong, incomplete, or fails verification',
-          },
-        },
-      ]
-    }),
-  )
-
-  let r: ReturnType<typeof decisionsCall>
-  try {
-    r = decisionsCall(jevState(row, kind), questions, {
-      maxTimeSeconds: table.jev.timeoutSeconds,
-      model: table.jev.model,
-    })
-  } catch (e) {
-    return { unavailable: `decisions call failed: ${(e as Error).message}` }
-  }
-  if (r.stdout === null) return { unavailable: r.unavailable }
-
-  let reply: any
-  try {
-    reply = JSON.parse(r.stdout)
-  } catch {
-    return { unavailable: 'decision reply was not parsable json' }
-  }
-  const scores: Record<string, number> = {}
-  for (const id of ids) {
-    const p = reply?.answers?.[`q_${id}`]?.probabilities?.CORRECT
-    if (typeof p !== 'number' || !(p >= 0 && p <= 1)) {
-      const err = typeof reply?.error?.message === 'string' ? `: ${reply.error.message.slice(0, 200)}` : ''
-      return { unavailable: `no CORRECT probability for q_${id} in the decision reply${err}` }
-    }
-    scores[id] = p
-  }
-  return { scores }
 }
 
 // ------------------------------------------------------------------------------------- CLI
 
 const USAGE =
   "usage: route.ts --row '<json>' [--table <path>]\n       route.ts --refresh [--table <path>]\n" +
-  '       route.ts --propose [--table <path>] [--json]'
+  '       route.ts --propose [--table <path>] [--json]\n       route.ts --outcomes [--file <path>] [--json]'
 
 async function cli(argv: string[]): Promise<number> {
   let rowJson: string | undefined
   let tableArg: string | undefined
   let refresh = false
   let proposeMode = false
+  let outcomesMode = false
+  let fileArg: string | undefined
   let json = false
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i]
     if (a === '--refresh') refresh = true
     else if (a === '--propose') proposeMode = true
+    else if (a === '--outcomes') outcomesMode = true
     else if (a === '--json') json = true
-    else if (a === '--row' || a === '--table') {
+    else if (a === '--row' || a === '--table' || a === '--file') {
       const v = argv[i + 1]
       if (v === undefined) return refuse(`route: ${a} needs a value\n${USAGE}`)
       if (a === '--row') rowJson = v
-      else tableArg = v
+      else if (a === '--table') tableArg = v
+      else fileArg = v
       i++
     } else return refuse(`route: unknown argument ${a}\n${USAGE}`)
   }
-  if ([refresh, proposeMode, rowJson !== undefined].filter(Boolean).length > 1)
-    return refuse(`route: --row, --refresh and --propose are separate modes\n${USAGE}`)
-  if (json && !proposeMode) return refuse(`route: --json goes with --propose\n${USAGE}`)
+  if ([refresh, proposeMode, outcomesMode, rowJson !== undefined].filter(Boolean).length > 1)
+    return refuse(`route: --row, --refresh, --propose and --outcomes are separate modes\n${USAGE}`)
+  if (json && !proposeMode && !outcomesMode) return refuse(`route: --json goes with --propose or --outcomes\n${USAGE}`)
+  if (fileArg !== undefined && !outcomesMode) return refuse(`route: --file goes with --outcomes\n${USAGE}`)
   if (refresh) return refreshCli(tableArg)
   if (proposeMode) return proposeCli(tableArg, json)
+  if (outcomesMode) return outcomesCli(fileArg, json)
   if (rowJson === undefined) return refuse(`route: --row is required\n${USAGE}`)
 
   let row: unknown
@@ -951,6 +857,92 @@ async function proposeCli(tableArg: string | undefined, json: boolean): Promise<
     `route --propose: advisory only; ${path} not written. Accept by editing its kinds (or a discovered ` +
       'candidate\'s model and openrouter) by hand.\n',
   )
+  return 0
+}
+
+// -------------------------------------------------------------------------------- outcomes
+//
+// The measurement routing is judged by: per kind x model, how many rows ran, how many carry a
+// verdict, how many of those are wrong, and which checks failed most. Read-only over the outcomes
+// file farm.sh and work-outcomes.ts append to. A rowId's LAST verdict wins, so a hand --verdict
+// written after an automatic one overrides it.
+
+export interface OutcomeGroup {
+  kind: string
+  model: string
+  rows: number
+  labelled: number
+  wrong: number
+  wrongRate: number | null
+  topChecks: { check: string; count: number }[]
+}
+
+export function outcomesReport(text: string, top = 3): OutcomeGroup[] {
+  const rows = new Map<string, any>()
+  const verdicts = new Map<string, any>()
+  for (const l of text.split('\n')) {
+    if (!l.trim()) continue
+    let o: any
+    try {
+      o = JSON.parse(l)
+    } catch {
+      continue
+    }
+    if (!isObj(o) || typeof o.rowId !== 'string') continue
+    if (o.type === 'row') rows.set(o.rowId, o)
+    else if (o.type === 'verdict' && (o.verdict === 'correct' || o.verdict === 'wrong')) verdicts.set(o.rowId, o)
+  }
+  const groups = new Map<string, OutcomeGroup & { counts: Map<string, number> }>()
+  for (const [id, r] of rows) {
+    const kind = typeof r.kind === 'string' && r.kind ? r.kind : '(none)'
+    const model =
+      (isObj(r.route) && typeof r.route.model === 'string' && r.route.model) ||
+      (Array.isArray(r.models) && typeof r.models[0] === 'string' && r.models[0]) ||
+      (isObj(r.route) && typeof r.route.provider === 'string' && `${r.route.provider}:(unpinned)`) ||
+      '(unknown)'
+    const key = `${kind}\t${model}`
+    let g = groups.get(key)
+    if (!g) groups.set(key, (g = { kind, model, rows: 0, labelled: 0, wrong: 0, wrongRate: null, topChecks: [], counts: new Map() }))
+    g.rows++
+    const v = verdicts.get(id)
+    if (!v) continue
+    g.labelled++
+    if (v.verdict !== 'wrong') continue
+    g.wrong++
+    // A hand --verdict names no checks; it counts as (unnamed) rather than vanishing from the tally.
+    const named = Array.isArray(v.checks) && v.checks.length ? v.checks.map(String) : ['(unnamed)']
+    for (const c of new Set(named)) g.counts.set(c, (g.counts.get(c) ?? 0) + 1)
+  }
+  return [...groups.values()]
+    .map(({ counts, ...g }) => ({
+      ...g,
+      wrongRate: g.labelled ? g.wrong / g.labelled : null,
+      topChecks: [...counts].sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1)).slice(0, top).map(([check, count]) => ({ check, count })),
+    }))
+    .sort((a, b) => (a.kind === b.kind ? (a.model < b.model ? -1 : 1) : a.kind < b.kind ? -1 : 1))
+}
+
+export const DEFAULT_OUTCOMES = () =>
+  process.env.FARM_OUTCOMES || join(process.env.HOME || homedir(), '.local/state/workflows/farm-outcomes.jsonl')
+
+function outcomesCli(fileArg: string | undefined, json: boolean): number {
+  const path = fileArg ?? DEFAULT_OUTCOMES()
+  if (!existsSync(path)) {
+    process.stderr.write(`route --outcomes: no outcomes file at ${path}\n`)
+    return 2
+  }
+  const groups = outcomesReport(readFileSync(path, 'utf8'))
+  if (json) {
+    process.stdout.write(`${JSON.stringify(groups)}\n`)
+    return 0
+  }
+  const out = ['kind\tmodel\trows\tlabelled\twrong\twrong_rate\ttop_failing_checks']
+  for (const g of groups)
+    out.push(
+      [g.kind, g.model, g.rows, g.labelled, g.wrong, g.wrongRate === null ? '-' : g.wrongRate.toFixed(2),
+        g.topChecks.map(c => `${c.check} (${c.count})`).join(', ') || '-'].join('\t'),
+    )
+  process.stdout.write(`${out.join('\n')}\n`)
   return 0
 }
 
