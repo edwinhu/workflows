@@ -30,7 +30,7 @@ The browser is often signed out. Credentials are the 1Password item `Bloomberg L
 "Shared with Agents"); handle them only inside a dispatched agent, never in the main thread.
 - Fields: `input#username`, `input#password`. A bare `#username` matches the `<m-text-field>`
   wrapper first. Enter `Input.insertText` after focusing; React ignores `.value`.
-- Enter does **not** submit. Click the button whose text is `Sign In`; it lands on `/start`.
+- Enter does **not** submit. Click the button whose text is `Sign In`; it lands on `bloomberglaw.com/start`.
 
 ## Search
 
