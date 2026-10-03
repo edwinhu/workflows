@@ -16,6 +16,7 @@ import {
   existsSync,
   readFileSync,
   readdirSync,
+  readlinkSync,
   realpathSync,
   statSync,
   unlinkSync,
@@ -545,9 +546,68 @@ export function buildVersionSection(version: string): string {
   ].join("\n");
 }
 
-/** The running binary's version, from the path the harness exports; "" when it cannot tell. */
+/** How a process is looked up: its executable and its parent. "" / 0 when that cannot be read. */
+export interface ProcTable {
+  exe(pid: number): string;
+  parent(pid: number): number;
+}
+
+const SHELLS = new Set(["sh", "bash", "dash", "zsh"]);
+
+function psField(pid: number, field: string): string {
+  try {
+    const p = Bun.spawnSync(["ps", "-o", `${field}=`, "-p", String(pid)], { stdout: "pipe", stderr: "ignore", timeout: 2000 });
+    return p.exitCode === 0 ? new TextDecoder().decode(p.stdout).trim() : "";
+  } catch {
+    return "";
+  }
+}
+
+/** /proc on Linux; `ps` elsewhere, whose `comm` is the executable's full path on macOS. */
+export const OS_PROCS: ProcTable = {
+  exe(pid) {
+    try {
+      return readlinkSync(`/proc/${pid}/exe`);
+    } catch {
+      return existsSync("/proc/self") ? "" : psField(pid, "comm");
+    }
+  },
+  parent(pid) {
+    try {
+      // The comm field may hold spaces and parens; ppid is the second field after its closing paren.
+      const stat = readFileSync(`/proc/${pid}/stat`, "utf8");
+      return Number(stat.slice(stat.lastIndexOf(")") + 2).split(" ")[1]) || 0;
+    } catch {
+      return existsSync("/proc/self") ? 0 : Number(psField(pid, "ppid")) || 0;
+    }
+  },
+};
+
+/**
+ * The Claude Code binary running this hook. The harness spawns a hook directly or through `sh -c`, so
+ * it is the parent, or the parent of that shell — and only a path that names claude counts. Failing
+ * that, `CLAUDE_CODE_EXECPATH`. That variable is only a hint: the harness sets it for its own Bash
+ * tool, while hooks inherit whatever the session was LAUNCHED with — a parent session's binary, maybe
+ * uninstalled since, which `--version` cannot run or reports wrong.
+ */
+export function runningClaudeExe(
+  env: Record<string, string | undefined> = process.env,
+  pid: number = process.pid,
+  procs: ProcTable = OS_PROCS,
+): string {
+  let p = procs.parent(pid);
+  for (let hop = 0; hop < 2 && p > 1; hop++) {
+    const exe = procs.exe(p).replace(/ \(deleted\)$/, "");
+    if (/(^|\/)claude(\/|$)/.test(exe)) return exe;
+    if (!SHELLS.has(exe.split("/").pop() || "")) break;
+    p = procs.parent(p);
+  }
+  return env.CLAUDE_CODE_EXECPATH || "";
+}
+
+/** The running binary's version, from `runningClaudeExe`; "" when it cannot tell. */
 export function runningClaudeVersion(): string {
-  const exe = process.env.CLAUDE_CODE_EXECPATH;
+  const exe = runningClaudeExe();
   if (!exe) return "";
   try {
     const proc = Bun.spawnSync([exe, "--version"], { stdout: "pipe", stderr: "ignore", timeout: 5000 });

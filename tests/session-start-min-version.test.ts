@@ -9,7 +9,7 @@ import { afterAll, describe, expect, test } from "bun:test";
 import { chmodSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { buildVersionSection, MIN_CLAUDE_CODE } from "../hooks/session-start.ts";
+import { buildVersionSection, MIN_CLAUDE_CODE, runningClaudeExe, type ProcTable } from "../hooks/session-start.ts";
 
 const HOOK = join(import.meta.dir, "..", "hooks", "session-start.ts");
 const TMP = mkdtempSync(join(tmpdir(), "min-version-test-"));
@@ -63,5 +63,46 @@ describe("session-start hook", () => {
     const out = runHook("2.1.287");
     expect(out.systemMessage).toBeUndefined();
     expect(out.hookSpecificOutput.additionalContext).not.toContain("GUARDS INACTIVE");
+  });
+});
+
+/** A process table: pid -> [exe, parent]. */
+function procs(table: Record<number, [string, number]>): ProcTable {
+  return { exe: (p) => table[p]?.[0] ?? "", parent: (p) => table[p]?.[1] ?? 0 };
+}
+
+const STALE = { CLAUDE_CODE_EXECPATH: "/home/u/.local/share/mise/installs/claude/2.1.257/claude" };
+
+describe("runningClaudeExe", () => {
+  // A hook inherits CLAUDE_CODE_EXECPATH from whatever launched the session: in the real failure it
+  // named a parent session's 2.1.257, uninstalled since, under a session running 2.1.287.
+  test("the binary that spawned the hook through sh -c beats an inherited, stale CLAUDE_CODE_EXECPATH", () => {
+    const t = procs({
+      300: ["/usr/bin/bun", 200],
+      200: ["/usr/bin/bash", 100],
+      100: ["/home/u/.local/share/mise/installs/claude/2.1.287/claude", 1],
+    });
+    expect(runningClaudeExe(STALE, 300, t)).toBe("/home/u/.local/share/mise/installs/claude/2.1.287/claude");
+  });
+
+  test("a direct parent counts, and so does the native installer's versions/<v> layout", () => {
+    const t = procs({ 300: ["/usr/bin/bun", 100], 100: ["/Users/u/.local/share/claude/versions/2.1.290", 1] });
+    expect(runningClaudeExe(STALE, 300, t)).toBe("/Users/u/.local/share/claude/versions/2.1.290");
+  });
+
+  test("a binary replaced on disk is still named by its path", () => {
+    const t = procs({ 300: ["/usr/bin/bun", 100], 100: ["/opt/claude/2.1.287/claude (deleted)", 1] });
+    expect(runningClaudeExe(STALE, 300, t)).toBe("/opt/claude/2.1.287/claude");
+  });
+
+  test("a non-shell, non-claude parent stops the walk: CLAUDE_CODE_EXECPATH, then nothing", () => {
+    // A test runner's own ancestry must not leak the real session's binary into a fixture.
+    const t = procs({
+      300: ["/usr/bin/bun", 200],
+      200: ["/usr/bin/bun", 100],
+      100: ["/opt/claude/2.1.287/claude", 1],
+    });
+    expect(runningClaudeExe(STALE, 300, t)).toBe(STALE.CLAUDE_CODE_EXECPATH);
+    expect(runningClaudeExe({}, 300, t)).toBe("");
   });
 });
