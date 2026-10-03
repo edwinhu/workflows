@@ -153,8 +153,8 @@ export const PASSED_GOAL_MET = 'passed-goal-met'
 export const PASSED_UNJUDGED = 'passed-unjudged'
 
 /**
- * A readOnly run's loop ended at exit 8: the audit reached its verdict, PASS or FAIL, and that verdict
- * is the answer — no task exists to change it, so holding for another round holds for nothing.
+ * A readOnly run's loop ended on a verdict, PASS or FAIL, and that verdict is the answer — no task
+ * exists to change it, so holding for another round holds for nothing.
  */
 export const VERDICT_REACHED = 'verdict-reached'
 
@@ -209,16 +209,21 @@ export function inFlight(s: { run?: string }): boolean {
 }
 
 /**
- * Did the watched run end as a READ-ONLY verdict? `loop.exit` 8 from work-loop.sh, and the run's own
- * args.json says `readOnly: true` — the exit code alone is not trusted on a run that writes.
+ * Did the watched run end as a READ-ONLY verdict? Returns `PASS, loop.exit 0` / `FAIL, loop.exit 8`,
+ * else null. work-loop.sh exits 0 on ANY accepted PASS and 8 only on a readOnly FAIL, so both are a
+ * verdict — secreg 2026-10-03, 1003-slides-18-diag PASSED at exit 0 and its "reach a verdict" goal
+ * went to the judge, which put it at 31%. Only when the run's own args.json says `readOnly: true`:
+ * on a run that writes, a PASS is a floor and its goal is still judged.
  */
-export function verdictReached(s: { run?: string }): boolean {
-  if (!s.run) return false
+export function verdictReached(s: { run?: string }): string | null {
+  if (!s.run) return null
   try {
-    if (readFileSync(join(s.run, 'loop.exit'), 'utf8').trim() !== '8') return false
-    return JSON.parse(readFileSync(join(s.run, 'args.json'), 'utf8')).readOnly === true
+    const rc = readFileSync(join(s.run, 'loop.exit'), 'utf8').trim()
+    if (rc !== '0' && rc !== '8') return null
+    if (JSON.parse(readFileSync(join(s.run, 'args.json'), 'utf8')).readOnly !== true) return null
+    return `${rc === '0' ? 'PASS' : 'FAIL'}, loop.exit ${rc}`
   } catch {
-    return false
+    return null
   }
 }
 
@@ -1373,13 +1378,14 @@ function main(): void {
     allowStop()
   }
 
-  // (b) A READ-ONLY RUN REACHED ITS VERDICT: the audit's FAIL is its answer, and the loop has stopped
+  // (b) A READ-ONLY RUN REACHED ITS VERDICT: PASS or FAIL is its answer, and the loop has stopped
   // because no round can change it. Asking the judge here would hold the session for a round that
   // never comes — secreg 2026-10-02, a readOnly "reach a verdict" run held after its FAIL.
-  if (verdictReached(s))
+  const verdict = verdictReached(s)
+  if (verdict)
     release(
       VERDICT_REACHED,
-      `the read-only run ${s.run} reached its verdict (loop.exit 8) — hold released. Report that ` +
+      `the read-only run ${s.run} reached its verdict (${verdict}) — hold released. Report that ` +
         `verdict and what it found; fixing it is a separate writing run. If a heartbeat cron exists, ` +
         `end it with CronDelete now.`,
     )

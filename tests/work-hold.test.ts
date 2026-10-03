@@ -1341,9 +1341,10 @@ describe('work-hold.sh composes the continuation clause per mode', () => {
  */
 describe('a readOnly run that reached its verdict releases the hold', () => {
   const now = Math.floor(Date.now() / 1000)
-  const hold = (sid: string, args: object, loopExit: string | null) => {
+  const hold = (sid: string, args: object, loopExit: string | null,
+    result = '{"overallPass":false,"verdict":"FAIL"}') => {
     const dir = mkTmp('holdverdict-')
-    const r = runDir(dir, { result: '{"overallPass":false,"verdict":"FAIL"}' })
+    const r = runDir(dir, { result })
     writeFileSync(join(r, 'args.json'), JSON.stringify(args))
     if (loopExit !== null) writeFileSync(join(r, 'loop.exit'), loopExit + '\n')
     writeFileSync(join(dir, `work-hold-${sid}.json`), JSON.stringify({
@@ -1365,6 +1366,23 @@ describe('a readOnly run that reached its verdict releases the hold', () => {
     expect(existsSync(r.state)).toBe(false)
     expect(r.entry?.verb).toBe(VERDICT_REACHED)
     expect(r.stderr).toContain('verdict')
+  })
+
+  // secreg 2026-10-03, run 1003-slides-18-diag: the readOnly audit PASSED, work-loop.sh exits 0 on
+  // any PASS (8 is only its FAIL exit), and the hold sent the goal to the judge, which put
+  // "reach a verdict" at 31% and advised a redispatch of a run that had nothing left to do.
+  test('loop.exit 0 (a PASS) on a readOnly run releases `verdict-reached` too, without asking the judge', () => {
+    const r = hold('ro0', { readOnly: true, tasks: [] }, '0', '{"overallPass":true,"verdict":"PASS"}')
+    expect(r.stdout.trim()).toBe('')
+    expect(existsSync(r.state)).toBe(false)
+    expect(r.entry?.verb).toBe(VERDICT_REACHED)
+    expect(r.stderr).toContain('reached its verdict (PASS, loop.exit 0)')
+  })
+
+  test('loop.exit 0 on a run that WRITES is not a read-only verdict: it still goes to the judge', () => {
+    const r = hold('rw0', { tasks: [{ id: 'T1' }] }, '0', '{"overallPass":true,"verdict":"PASS"}')
+    expect(JSON.parse(r.stdout).decision).toBe('block')
+    expect(r.entry).toBeNull()
   })
 
   test('a readOnly run whose loop exited 3 (a refused round) is NOT a verdict: the hold still blocks', () => {
