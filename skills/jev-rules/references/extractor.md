@@ -32,7 +32,10 @@ else, so every fact the proposition needs must be in it — and nothing the prop
 
 - One module per rule, `constraints/jev/<set>/<ID>.py`, exporting `PROPOSITION`, `CRITERIA` (the four
   keys VIOLATED / SATISFIED / NOT_APPLICABLE / INSUFFICIENT_EVIDENCE), `evidence`, and optionally
-  `SUBJECT` (the preamble's "You are auditing …") and `DELIVERABLE`.
+  `SUBJECT` (the preamble's "You are auditing …"), `DELIVERABLE`, and `SPANS` — the inventory keys whose
+  items are the candidates (`'key'` for items carrying `file`/`line`, `('key', file_field, line_field)`
+  otherwise). A VIOLATED verdict then carries their `file:line` in `spans`, and the digest prints them;
+  without it a repair gets a file-level verdict it cannot act on. Name candidates only, never context.
 - Shared helpers live in `_<set>.py` beside the rules; `evidence.py` skips every `_*.py` and globs the
   directory non-recursively, so `uncalibrated/` is never read by a workflow — the layout is the wiring.
 - A module in `uncalibrated/` reaches its set's helpers through the `sys.path.insert(0, <parent dir>)`
