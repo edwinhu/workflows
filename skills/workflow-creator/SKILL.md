@@ -171,7 +171,7 @@ A vendored `<domain>-constraints` skill is the same error made eagerly. It looks
 | 523d42cd: a 4-task round fell from 16 agents to 5 once checks ran in the shell and one lens read the `work-stage.mjs` digest | one lens, shell checks |
 | 213223f6 unwired 9 ds rules that did not separate (A1 stayed); 8 came back only after two live runs at violating >= 0.93, compliant < 0.5 (e9c530ea) | calibrated rules only |
 | 615d9baf: accepted decks breaking T-CALLOUT became legacy calibration bases, and the rule gates only changed lines | changed lines only |
-| EX-ORPHAN failed `rule-calibrate` and waits in teaching's `uncalibrated/` (97eb24d), gating nothing | parked rules never gate |
+| EX-ORPHAN failed `rule-calibrate` and sat in teaching's `uncalibrated/` (97eb24d), gating nothing, until a firmer extractor earned it `--wire` (c76dc78) | parked rules never gate |
 | be1722a2: L-SUPRA allows agency releases and bars bills per the user's 2026-10-02 rulings, written into its PROPOSITION | the user's call, recorded |
 | A 9-rule recalibration handed to one row took 45+ min serially | one row per item |
 | f65da574: the full suite took 661-881 s serially and 63-67 s under `bun test --parallel` | fast tests before fan-out |
