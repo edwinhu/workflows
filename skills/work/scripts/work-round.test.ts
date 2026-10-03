@@ -191,6 +191,7 @@ writeFileSync(out, JSON.stringify(r))
   const farm = join(dir, 'farm.sh')
   writeFileSync(farm, `#!/usr/bin/env bash
 set -eu
+echo "$*" >> "$CAPTURE/argv"
 while [ $# -gt 0 ]; do case $1 in
   --provider) prov=$2; shift 2;; --args) a=$2; shift 2;; --out) out=$2; shift 2;;
   --tasks) rows=$2; shift 2;; --workflow) shift 2;; *) shift;; esac; done
@@ -225,6 +226,7 @@ function round(args: any, lensReply: any = { routes: [], findings: [], carried: 
     result: existsSync(result) ? json(result) : null,
     rows: existsSync(join(cap, 'rows.json')) ? json(join(cap, 'rows.json')) : null,
     calls: existsSync(join(cap, 'calls')) ? readFileSync(join(cap, 'calls'), 'utf8').trim().split('\n') : [],
+    argv: existsSync(join(cap, 'argv')) ? readFileSync(join(cap, 'argv'), 'utf8').trim().split('\n') : [],
     jev: existsSync(join(cap, 'jev')) ? readFileSync(join(cap, 'jev'), 'utf8').trim().split('\n') : [],
     agents: existsSync(join(cap, 'agents.log')) ? readFileSync(join(cap, 'agents.log'), 'utf8').trim().split('\n') : [],
     verdict,
@@ -260,6 +262,18 @@ describe('work-round.sh: the lens is ONE farm row of kind review', () => {
     expect(row.prompt.indexOf('raise MAJOR when the work is wrong')).toBeGreaterThan(iSettled)
     // farm.sh is called exactly twice: the AGENTS workflow on the host, the lens row on its own provider
     expect(r.calls).toEqual(['workflow --provider claude', 'tasks --provider codex'])
+  })
+
+  // secreg 2026-10-02: run.log carried farm.sh's "and? (farm X)" CronCreate request beside
+  // work-dispatch's "and? (work run X)" for the same run — two backstops for one run. The dispatcher
+  // owns the cron; the --workflow child it runs must not print a second one.
+  test('the AGENTS farm.sh --workflow call passes --no-cron: one run, one backstop (the dispatcher\'s)', () => {
+    const dir = repo({ 'scripts/red.sh': 'echo "1 passed"; exit 0', 'src/a.ts': 'a' })
+    const r = round(roundArgs(dir))
+    expect(r.code).toBe(0)
+    const wf = r.argv.filter((a: string) => a.includes('--workflow'))
+    expect(wf).toHaveLength(1)
+    expect(wf[0].split(' ')).toContain('--no-cron')
   })
 
   test('the AGENTS stage runs with JEV_EDIT_MOD=1 (implementers get the per-edit Jev mod); the lens row does not', () => {
