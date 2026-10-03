@@ -20,6 +20,22 @@ else
   trap 'rm -rf "$run_tmp"' EXIT
 fi
 export TMPDIR="$run_tmp" FARM_OUTCOMES="$run_tmp/farm-outcomes.jsonl"
+# The python suites import modules that live in the tree; their bytecode would land in __pycache__/
+# beside them. Ignored by git, but still a write into the tree every run.
+export PYTHONDONTWRITEBYTECODE=1
+
+# THE TREE GUARD's snapshot: every path git reports as changed or untracked, with its content hash,
+# so a test that edits an already-dirty file is caught too. Taken before the suite and compared after.
+tree_state() {
+  git status --porcelain --untracked-files=all | while IFS= read -r line; do
+    p=${line:3}
+    if [ -f "$p" ]; then h=$(git hash-object -- "$p"); else h=-; fi
+    printf '%s %s\n' "$line" "$h"
+  done
+}
+in_git=0
+git rev-parse --is-inside-work-tree >/dev/null 2>&1 && in_git=1
+[ "$in_git" = 1 ] && tree_before=$(tree_state)
 
 # A wall-clock cap, because a hang never fails on its own: once in nine runs a worker spun at 100%
 # CPU beside an un-reaped (zombie) `bun` child of converge-check.test.ts and the run sat for 18 min.
@@ -44,6 +60,23 @@ if [ "${KEEP_TMP:-}" != 1 ]; then
     [ "$rc" = 0 ] && rc=1
   else
     echo "test.sh: leak guard ok — the run's TMPDIR is empty" >&2
+  fi
+fi
+
+# THE TREE GUARD. A test that writes into the checkout races every parallel test that scans it:
+# agent-contract's hooks/zz-ghost-unwired.ts fixture made gate-vacuity ENOENT ten times in one run.
+# Fixtures belong in useTmp() dirs or temp copies; nothing is allow-listed. A path that a test makes
+# and deletes inside the run leaves no trace here, so this catches what outlives the suite.
+if [ "$in_git" = 1 ]; then
+  tree_diff=$(diff <(printf "%s\n" "$tree_before") <(printf "%s\n" "$(tree_state)") | grep "^[<>]" || true)
+  if [ -n "$tree_diff" ]; then
+    echo "test.sh: TREE GUARD FAILED — the run created, changed or deleted paths in the checkout" >&2
+    echo "  (< before the run, > after; columns: git status, path, content hash):" >&2
+    head -40 <<<"$tree_diff" | sed 's/^/  /' >&2
+    echo "Write fixtures under a useTmp() dir (tests/helpers/tmp.ts) or a temp copy, never the repo." >&2
+    [ "$rc" = 0 ] && rc=1
+  else
+    echo "test.sh: tree guard ok — git status is unchanged by the run" >&2
   fi
 fi
 exit "$rc"
