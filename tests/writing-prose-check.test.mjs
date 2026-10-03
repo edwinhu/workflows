@@ -157,6 +157,8 @@ const HOOK = join(import.meta.dir, '..', 'hooks', 'writing-prose-check.ts')
 function runHook(payload, cwd) {
   const p = Bun.spawnSync(['bun', HOOK], { timeout: 120_000,
     cwd,
+    // the per-session seen-set lands in TMPDIR: keep it in the fixture, not the run's TMPDIR
+    env: { ...process.env, TMPDIR: cwd },
     stdin: new TextEncoder().encode(JSON.stringify(payload)),
     stdout: 'pipe',
     stderr: 'pipe',
@@ -203,7 +205,8 @@ const DECK_BODY =
   ok('git init for the Bash-branch fixture succeeded', p.exitCode === 0)
   mkdirSync(join(d, 'slides'), { recursive: true })
   write(join(d, 'slides'), 'lecture.typ', DECK_BODY)
-  const ctx = runHook({ tool_name: 'Bash', cwd: d, tool_input: { command: 'true' } }, d)
+  // The command names the deck it rewrote: a Bash call that names no file is never its writer.
+  const ctx = runHook({ tool_name: 'Bash', cwd: d, tool_input: { command: "sed -i 's/vote/ballot/' slides/lecture.typ" } }, d)
   ok('a deck dirtied by Bash reaches the audit at all', ctx !== '', JSON.stringify(ctx))
   ok('and it is scored under the deck profile, not the full ruleset',
     ctx !== '' && !ctx.includes('em_dash') && !ctx.includes('writing-'), JSON.stringify(ctx))
@@ -226,6 +229,66 @@ const DECK_BODY =
   const ctx = runHook({ tool_name: 'Write', tool_input: { file_path: letter } }, d)
   ok('a non-deck .typ still reports the em-dash system', ctx.includes('em_dash'), JSON.stringify(ctx))
   ok('a non-deck .typ still reports the writing-* systems', ctx.includes('writing-'), JSON.stringify(ctx))
+}
+
+// ── secreg lecture 18 (2026-10-02): the same findings on EVERY Bash result ───
+// A background implementer kept notes/18-insider.typ dirty and freshly written, so the Bash branch
+// picked it up after every command the orchestrating session ran (grep, cat, a review gate) and
+// attached the same 11-14 findings each time, nominalization of `misappropriation` among them.
+function gitRepo() {
+  const d = tmp()
+  const p = Bun.spawnSync(['git', 'init', '-q', '.'], { timeout: 120_000, cwd: d, stdout: 'pipe', stderr: 'pipe' })
+  ok('git init for the attribution fixture succeeded', p.exitCode === 0)
+  return d
+}
+const MEMO_BODY = '#set page(margin: 1in)\n\nThis article delves into the rich tapestry of the law.\n'
+{
+  const d = gitRepo()
+  write(d, 'memo.typ', MEMO_BODY)
+  const unrelated = runHook({ tool_name: 'Bash', cwd: d, tool_input: { command: 'grep -n Kendall /tmp/x/findings.md | tail -20' } }, d)
+  ok('a Bash command that never names the dirty prose file attaches nothing', unrelated === '', JSON.stringify(unrelated))
+  const named = runHook({ tool_name: 'Bash', cwd: d, tool_input: { command: "sed -i 's/law/statute/' memo.typ" } }, d)
+  ok('a Bash command that names the file it rewrote is still audited', named.includes('memo.typ:3'), JSON.stringify(named))
+}
+{
+  // ONE SESSION, NO CHANGE, NO REPEAT. The second call sees the same lines with the same findings.
+  const d = gitRepo()
+  write(d, 'memo.typ', MEMO_BODY)
+  const session = `fix18-${process.pid}-${Date.now()}`
+  const cmd = { command: 'typst compile memo.typ' }
+  const first = runHook({ tool_name: 'Bash', cwd: d, session_id: session, tool_input: cmd }, d)
+  const second = runHook({ tool_name: 'Bash', cwd: d, session_id: session, tool_input: cmd }, d)
+  ok('the first call reports the standing finding', first.includes('memo.typ:3'), JSON.stringify(first))
+  ok('a later call on the unchanged file does not re-attach it', second === '', JSON.stringify(second))
+  const other = runHook({ tool_name: 'Bash', cwd: d, session_id: `${session}-other`, tool_input: cmd }, d)
+  ok('another session still gets it once', other.includes('memo.typ:3'), JSON.stringify(other))
+  // A changed line is a new finding, even with the same label.
+  write(d, 'memo.typ', MEMO_BODY + '\nThat brief delves into the rich tapestry of the record.\n')
+  const third = runHook({ tool_name: 'Bash', cwd: d, session_id: session, tool_input: cmd }, d)
+  ok('a newly written line with the same label is reported', third.includes('memo.typ:5'), JSON.stringify(third))
+  ok('and the line already reported is not', !third.includes('memo.typ:3'), JSON.stringify(third))
+  const edit = runHook({ tool_name: 'Edit', session_id: session, tool_input: { file_path: join(d, 'memo.typ'), new_string: 'That brief delves into the rich tapestry of the record.' } }, d)
+  ok('an Edit whose lines carry only already-reported findings attaches nothing', edit === '', JSON.stringify(edit))
+}
+{
+  // TEACHING COURSE MATERIAL IS NOT THE WRITING WORKFLOW'S. The exact secreg paths: lecture notes
+  // notes/NN-*.typ and a lecture deck slides/<chapter>/NN.typ, as hooks/jev/rules.ts classifies them.
+  const d = gitRepo()
+  mkdirSync(join(d, 'notes'), { recursive: true })
+  mkdirSync(join(d, 'slides', '06-insider'), { recursive: true })
+  const body = '= Insider Trading\n\n- The misappropriation theory turns on a breach of confidentiality --- not on materiality alone.\n\n- This article delves into the rich tapestry of the law.\n'
+  const notes = write(join(d, 'notes'), '18-insider.typ', body)
+  const deck = write(join(d, 'slides', '06-insider'), '18.typ', '#import "@preview/touying:0.5.0": *\n' + body)
+  for (const f of [notes, deck]) {
+    const w = runHook({ tool_name: 'Write', tool_input: { file_path: f } }, d)
+    ok(`${f.slice(d.length + 1)}: no general-prose audit on lecture material`, w === '', JSON.stringify(w))
+    const b = runHook({ tool_name: 'Bash', cwd: d, tool_input: { command: `typst compile ${f}` } }, d)
+    ok(`${f.slice(d.length + 1)}: nor through the Bash branch`, b === '', JSON.stringify(b))
+  }
+  // The default is frozen: the same words in a memo still get the nominalization rule.
+  const memo = write(d, 'memo.typ', body)
+  const m = runHook({ tool_name: 'Write', tool_input: { file_path: memo } }, d)
+  ok('a non-lecture .typ still gets the nominalization rule', m.includes('nominalization'), JSON.stringify(m))
 }
 
 console.log(`${PASS} passed, ${FAIL} failed`)

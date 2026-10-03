@@ -121,6 +121,19 @@ test("an exam question .typ uses the teaching plugin's exam rules", async ($, on
   expect(w.runs[0]!.argv[w.runs[0]!.argv.indexOf('--rules') + 1]).toBe('/home/u/.claude/skills/teaching/constraints/jev/exams')
 })
 
+test('the secreg lecture 18 paths, HOME default root: notes and deck reach the teaching rules and the Jev line', async ($, on) => {
+  // secreg 2026-10-02: per-edit Jev "never observed" by the orchestrator, which edited no lecture file;
+  // the implementers' transcripts carry the lines. Pinned with the exact paths and no TEACHING_PLUGIN_ROOT.
+  const lecture = '/home/eh/.claude/skills/teaching/constraints/jev/_lecture.py'
+  const uncited = { rule: 'N-UNCITED', p: 0.96, statement: 'At least one listed answer block REQUIRES a source cite and has none' }
+  const w = world(on, { tree: { [lecture]: '' }, env: { HOME: '/home/eh' }, verdicts: [uncited] })
+  const r = await $.tool.call(write('/home/eh/areas/secreg/notes/18-insider.typ', '- Q: What did the Court hold in _Chiarella_?\n'))
+  expect(jevLines(r)).toEqual([`Jev N-UNCITED: /home/eh/areas/secreg/notes/18-insider.typ:1 — ${uncited.statement} (p=0.96)`])
+  await $.tool.call(write('/home/eh/areas/secreg/slides/06-insider/18.typ', '#slide[\n=== Chiarella\n]\n'))
+  expect(w.runs.map(x => x.argv[x.argv.indexOf('--rules') + 1])).toEqual([
+    '/home/eh/.claude/skills/teaching/constraints/jev/notes', '/home/eh/.claude/skills/teaching/constraints/jev/slides'])
+})
+
 test('TEACHING_PLUGIN_ROOT names the teaching plugin', async ($, on) => {
   const w = world(on, { tree: { '/opt/teaching/constraints/jev/_lecture.py': '' }, env: { TEACHING_PLUGIN_ROOT: '/opt/teaching' } })
   await $.tool.call(write('/home/u/p/notes/14-10b5.typ'))
