@@ -388,10 +388,10 @@ def test_hook_flags_findings_carry_implications(tmp_path):
     assert "d.md:5" not in ctx, ctx
 
 
-def _run_bash_hook(cwd: Path):
-    """Drive the hook's Bash branch, which names no file and asks git which prose file moved."""
+def _run_bash_hook(cwd: Path, command: str = "sed -i 's/law/statute/' letter.typ"):
+    """Drive the hook's Bash branch: git says which prose file moved, the command must name it."""
     payload = {"tool_name": "Bash", "cwd": str(cwd),
-               "tool_input": {"command": "true"}}
+               "tool_input": {"command": command}}
     proc = subprocess.run(
         ["bun", str(HOOK_PATH)],
         input=json.dumps(payload), capture_output=True, text=True, timeout=60,
@@ -425,6 +425,13 @@ def test_hook_bash_reports_a_prose_file_the_command_just_wrote(tmp_path):
     assert ctx is not None, "a freshly written prose file must still be picked up on Bash"
     assert "letter.typ:2" in ctx, ctx
     assert "rich/vibrant tapestry" in ctx, ctx
+
+
+def test_hook_bash_ignores_a_fresh_prose_file_the_command_does_not_name(tmp_path):
+    """Same repo, same fresh mtime — only the command differs. Another process writing the file
+    (a background implementer, secreg lecture 18) must not ride every unrelated command."""
+    repo = _bash_repo(tmp_path)
+    assert _run_bash_hook(repo, "grep -n Kendall findings.md") is None
 
 
 def test_hook_bash_ignores_a_dirty_prose_file_with_an_old_mtime(tmp_path):
