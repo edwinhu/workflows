@@ -18,6 +18,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'no quotation in the state carries emphasis',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('quotations_stressing_ordinary_words',)
 
 QUOTE_RX = re.compile(r'[“"]([^“”"]{3,900})[”"]')
 EMPH_RX = re.compile(r'(?<![\w\\])_([^_]{1,200}?)_(?!\w)|#emph\[([^\]]{1,200})\]|(?<![\w\\])\*([^*]{1,200})\*(?!\w)')

@@ -12,6 +12,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the changed tests make no network call',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('network_call_sites',)
 
 CALL = re.compile(
     r'\bfetch\s*\(|\baxios\b|\brequests\.(get|post|put|patch|delete|request|Session)\b|\bhttpx\.|urlopen|'

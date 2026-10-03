@@ -480,6 +480,22 @@ describe('the selectors are reported, because work-result.sh prints none of them
     expect(r.out).toContain('plan <- the generated file is outside every writablePath')
   })
 
+  // The shape is workflow.js's: {rule, p, verdict, spans?}. Reading any other key prints "(unnamed)".
+  test('a FAIL prints each rule verdict by its rule id, p and verdict', () => {
+    const f = runDir({
+      'result.json': verdict(false, [], {
+        rulesThatFailed: ['N-UNCITED'],
+        ruleVerdicts: [{ rule: 'N-UNCITED', p: 0.94, verdict: 'VIOLATED', spans: ['notes/18.typ:113'] },
+                       { rule: 'N-DRIFT', p: 0.33, verdict: 'MET' }],
+      }),
+    })
+    const r = loop(f, 1)
+    expect(r.code).toBe(6)
+    expect(r.out).not.toContain('(unnamed)')
+    expect(r.out).toContain('N-UNCITED: p=0.94 VIOLATED at notes/18.typ:113')
+    expect(r.out).toContain('N-DRIFT: p=0.33 MET')
+  })
+
   // Empty is printed too: "routes: (none)" says the lens routed nothing, which is a different fact from
   // a line that is absent because the loop does not read the channel at all.
   test('both channels are printed even when empty', () => {

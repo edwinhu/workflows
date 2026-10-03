@@ -19,6 +19,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the state holds no vague attribution and no factual statistic',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('vague_attributions', 'statistics_without_a_source_marker')
 
 WEASEL_RX = (r'\b(studies|research|evidence|experts?|scholars|commentators|observers|critics|'
              r'analysts|many|some|most) (have )?(show|shows|shown|suggest|suggests|find|finds|found|'

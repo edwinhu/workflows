@@ -18,6 +18,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the state holds no footnote with discursive text',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('discursive_footnotes',)
 
 MIN_WORDS = 30
 

@@ -13,6 +13,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the change adds no code that runs a shell or a subprocess',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('added_shell_or_subprocess_sites',)
 
 SINK = re.compile(
     r'\bexecSync\s*\(|\bexec\s*\(|\bexecFile(Sync)?\s*\(|\bspawn(Sync)?\s*\(|\$`|'

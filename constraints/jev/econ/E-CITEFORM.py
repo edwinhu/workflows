@@ -20,6 +20,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the state holds no citation',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('text_citation_candidates', 'footnote_citation_candidates')
 
 AUTHOR = r"[A-Z][A-Za-z'’-]+(?:,? (?:and|&) [A-Z][A-Za-z'’-]+| et al\.)?"
 YEAR = r'(?:19|20)\d\d[a-z]?'

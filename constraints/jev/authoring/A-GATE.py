@@ -17,6 +17,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the change adds or edits no gate, exit condition, acceptance clause or loop exit',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('changed_gate_or_loop_passages',)
 
 GATE_SECTION = re.compile(r'\bgate|\bexit|acceptance|done when|success criteria|review loop|verif', re.I)
 GATE_LINE = re.compile(r'\bgate\b|\bexit (condition|criteri)|\bacceptance\b|\bdone when\b|\buntil\b|'
