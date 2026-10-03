@@ -7,11 +7,15 @@
 # check it never knew about. The sections are DISCOVERED here instead, from the drafts
 # directory, so the set cannot disagree with what exists on disk.
 #
+# Every leg prints `<leg>: N <unit> examined` (work/scripts/leg-counts.sh).
+#
 # Usage: check.sh --project <dir> --bib <file> --plan <planPath> --plan-hash <hash> --style <domain>
-# Exit 0 = every leg passed. 1 = some leg failed. 2 = refusal (bad usage, no sections).
+# Exit 0 = every leg passed. 1 = some leg failed. 2 = refusal (bad usage, no sections), or a leg that
+# examined nothing.
 set -uo pipefail   # deliberately not -e: every leg must run so every leg reports.
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$HERE/../../work/scripts/leg-counts.sh"
 PROJ=""; BIB=""; PLAN=""; HASH=""; STYLE=""
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -27,11 +31,22 @@ for v in PROJ BIB PLAN HASH STYLE; do
   [ -n "${!v}" ] || { echo "check.sh: --${v,,} is required" >&2; exit 2; }
 done
 
-FAILED=0
-report() { printf 'leg %s exit=%s%s\n' "$1" "$2" "${3:+ ($3)}"; [ "$2" -eq 0 ] || FAILED=1; }
+RC=0
+report() { printf 'leg %s exit=%s%s\n' "$1" "$2" "${3:+ ($3)}"; [ "$2" -le "$RC" ] || RC="$2"; }
 
-uv run python3 "$HERE/writing_section_index.py" "$PROJ" >&2
-report grammar $?
+# The section index's JSON on stderr, then the sections it indexed.
+grammar_leg() {
+  local out s
+  out="$(uv run python3 "$HERE/writing_section_index.py" "$PROJ")"
+  s=$?
+  printf '%s\n' "$out" >&2
+  printf '%s' "$out" | python3 -c 'import json, sys
+d = json.load(sys.stdin)
+print("grammar: %d section(s) examined, ok=%s" % (len(d.get("sections") or []), d.get("ok")))' >&2
+  return "$s"
+}
+legcount_run grammar grammar_leg
+report grammar "$LEG_STATUS"
 
 # DISCOVERED, not listed. A drafts directory with no section means the gate would examine
 # nothing, which is a refusal rather than a pass.
@@ -40,19 +55,34 @@ if [ "${#SECTIONS[@]}" -eq 0 ]; then
   echo "check.sh: no *.md under $PROJ/drafts — the citation gate would examine nothing" >&2
   report cite-claim 2 "no sections found"
 else
-  rc=0
-  for d in "${SECTIONS[@]}"; do
-    uv run python3 "$HERE/writing_gate_probe.py" "$d" --bib "$BIB" --plan "$PLAN" --plan-hash "$HASH" >&2 || rc=1
-  done
-  report cite-claim "$rc" "${#SECTIONS[@]} section(s)"
+  # A section counts as examined when its probe printed a verdict; the cites are its detail.
+  cite_claim_leg() {
+    local rc=0 d out n=0 cites=0
+    for d in "${SECTIONS[@]}"; do
+      out="$(uv run python3 "$HERE/writing_gate_probe.py" "$d" --bib "$BIB" --plan "$PLAN" --plan-hash "$HASH")" || rc=1
+      printf '%s\n' "$out" >&2
+      if c="$(printf '%s' "$out" | python3 -c 'import json, sys
+d = json.load(sys.stdin)
+assert isinstance(d.get("pass"), bool)
+print(int(d.get("citesChecked") or 0))' 2>/dev/null)"; then
+        n=$((n + 1)); cites=$((cites + c))
+      fi
+    done
+    count_line cite-claim "$n" "section(s)" "of ${#SECTIONS[@]}, $cites cite(s) checked" >&2
+    return "$rc"
+  }
+  legcount_run cite-claim cite_claim_leg
+  report cite-claim "$LEG_STATUS" "${#SECTIONS[@]} section(s)"
 fi
 
 # The style rules a regex settles (Ship diction, ALL-CAPS emphasis, register crossing). The
 # judged register rules are rule-check.ts's, over constraints/jev/writing.
-uv run python3 "$HERE/writing_style_check.py" --project "$PROJ" --style "$STYLE" >&2
-report style $?
+style_leg() { uv run python3 "$HERE/writing_style_check.py" --project "$PROJ" --style "$STYLE" >&2; }
+legcount_run style style_leg
+report style "$LEG_STATUS"
 
-uv run python3 "$HERE/writing_prose_gate.py" --project "$PROJ" --style "$STYLE" >&2
-report prose $?
+prose_leg() { uv run python3 "$HERE/writing_prose_gate.py" --project "$PROJ" --style "$STYLE" >&2; }
+legcount_run prose prose_leg
+report prose "$LEG_STATUS"
 
-exit "$FAILED"
+exit "$RC"

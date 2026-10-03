@@ -144,6 +144,9 @@ def main(argv=None) -> int:
             print(f"{f.relative_to(a.project)}:{n}: {rule}: {msg}")
             found += 1
     print(f"writing_style_check: {found} finding(s) across {len(files)} file(s)", file=sys.stderr)
+    # The non-vacuity count line (work/scripts/leg-counts.sh).
+    lines = sum(len(f.read_text(encoding="utf-8", errors="replace").splitlines()) for f in files)
+    print(f"style: {lines} line(s) examined in {len(files)} file(s)", file=sys.stderr)
     return 1 if found else 0
 
 

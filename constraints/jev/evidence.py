@@ -102,6 +102,11 @@ def main(my_dir=None):
             out[mod_name]['subject'] = mod.SUBJECT
         if getattr(mod, 'SPANS', None):
             out[mod_name]['spans'] = spans(state, mod.SPANS)
+        # EXAMINED names the state count of what the inventory read; rule-check.ts reports a zero over a
+        # covered file as unavailable rather than letting the judge call an empty inventory MET.
+        if getattr(mod, 'EXAMINED', None):
+            out[mod_name]['examinedKey'] = mod.EXAMINED
+            out[mod_name]['examined'] = (state or {}).get(mod.EXAMINED)
 
     print(json.dumps(out, indent=2, default=str))
 

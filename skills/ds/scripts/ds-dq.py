@@ -553,6 +553,10 @@ def main(argv: list[str] | None = None) -> int:
         }
 
     print(json.dumps(report, indent=2, sort_keys=False))
+    # The non-vacuity count line (work/scripts/leg-counts.sh): a plan declaring no output examined none.
+    computed = sum(1 for output in report.values() for k, e in output.items()
+                   if not k.startswith("_") and isinstance(e, dict) and e.get("status") in ("PASS", "FAIL"))
+    print(f"ds-dq: {len(rows)} data output(s) examined, {computed} computed check(s)", file=sys.stderr)
     failed = any(
         isinstance(entry, dict) and entry.get("status") == "FAIL"
         for output in report.values()

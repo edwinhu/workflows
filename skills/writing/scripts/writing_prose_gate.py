@@ -225,6 +225,8 @@ def gate(project: Path, style: str, engine: Path = ENGINE, out=sys.stdout) -> in
 
     _show("BLOCKING (hard):", hard, out)
     _show("advisory (soft):", soft, out)
+    # The non-vacuity count line (work/scripts/leg-counts.sh): the drafts prose-audit returned results for.
+    print(f"prose: {len(results)} draft(s) examined of {len(present)} present", file=out)
     print(
         f"\nPROSE-HARD: {len(hard)} hard span(s), {len(soft)} soft advisory span(s) "
         f"over {len(present)} draft(s), style {style} "

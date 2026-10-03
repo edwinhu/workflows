@@ -1556,6 +1556,9 @@ def main(argv: list[str] | None = None) -> int:
 
     for line in format_lines(report):
         print(line)
+    # The non-vacuity count line (work/scripts/leg-counts.sh): the checks settled over the deck.
+    checks = [k for k, e in report.items() if k != "_declared" and isinstance(e, dict) and e.get("status")]
+    print(f"workshop-deck: {len(checks)} deck check(s) examined", file=sys.stderr)
     if args.json_path:
         Path(args.json_path).expanduser().write_text(
             json.dumps(report, indent=2, sort_keys=False), encoding="utf-8"

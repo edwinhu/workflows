@@ -16,15 +16,21 @@
 # writablePaths reach it, else by 'plan'. WORK_CHECK_TIMEOUT (seconds, default 1800) bounds each command.
 # Every command sees WORK_READ_ONLY=1 under args.readOnly, else 0: a gate whose scope differs between a
 # diagnose run (nothing edited, so judge the whole file) and a repair run (judge what it added) reads it.
+# NON-VACUITY: a red, acceptance or mechanical command's FULL output (before the tail) goes through
+# leg_counts.audit. A leg that printed no `<leg>: N <unit> examined` line, or a bare zero, turns an exit
+# 0 or 1 into 2 (COULD-NOT-CHECK) and is named in the output's last lines and the summary.
 set -euo pipefail
 
 [[ $# -eq 3 ]] || { echo "usage: work-checks.sh ARGS RAW OUT" >&2; exit 2; }
 
-python3 - "$1" "$2" "$3" <<'PY'
+python3 - "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" "$1" "$2" "$3" <<'PY'
 import hashlib, json, os, re, subprocess, sys
 from concurrent.futures import ThreadPoolExecutor
 
-args_path, raw_path, out_path = sys.argv[1:4]
+sys.path.insert(0, sys.argv[1])
+from leg_counts import audit
+
+args_path, raw_path, out_path = sys.argv[2:5]
 args = json.load(open(args_path))
 raw = json.load(open(raw_path))
 if not isinstance(raw, dict) or raw.get('stage') != 'agents' or not isinstance(raw.get('checkPlan'), dict):
@@ -34,6 +40,7 @@ cwd = args.get('projectDir') or os.getcwd()
 timeout = int(os.environ.get('WORK_CHECK_TIMEOUT', '1800'))
 env = {**os.environ, 'WORK_READ_ONLY': '1' if args.get('readOnly') is True else '0'}
 TAIL = 60
+VACUOUS = {}   # cmd -> the audit's failures, for the summary line
 
 def tail(s):
     return '\n'.join(s.splitlines()[-TAIL:])
@@ -46,10 +53,15 @@ def run(cmd):
         return -1, f'could not run: timed out after {timeout}s: {cmd}'
     except OSError as e:
         return -1, f'could not run: {e}: {cmd}'
-    out = tail((p.stdout or '') + (p.stderr or ''))
+    full = (p.stdout or '') + (p.stderr or '')
     if p.returncode in (126, 127):
-        return -1, f'could not run (exit {p.returncode}): {cmd}\n{out}'
-    return p.returncode, out
+        return -1, f'could not run (exit {p.returncode}): {cmd}\n{tail(full)}'
+    vacuous = audit(full)
+    if vacuous:
+        full += ''.join(f'\nCOULD-NOT-CHECK: {v}' for v in vacuous)
+        VACUOUS[cmd] = vacuous
+        return max(p.returncode, 2), tail(full)
+    return p.returncode, tail(full)
 
 def run_rules(cmd):
     try:
@@ -125,6 +137,8 @@ with open(out_path, 'w') as fh:
     json.dump(out, fh, indent=2)
     fh.write('\n')
 bad = [f"{k}:{r.get('id') or r.get('name')}={r['exitCode']}" for k in ('red', 'acceptance', 'mechanical', 'rules') for r in out[k] if r['exitCode'] != 0]
+vac = [f"{k}:{key} {v.split(' — ')[0]}" for k, key, cmd in jobs for v in VACUOUS.get(cmd, [])]
 print(f"work-checks: {len(jobs)} command(s), {len(bad)} non-zero{(' (' + ', '.join(bad) + ')') if bad else ''}; "
-      f"red suite {len(hashes)} file(s), {len(changed)} changed -> {out_path}")
+      f"red suite {len(hashes)} file(s), {len(changed)} changed -> {out_path}"
+      + (f"\nwork-checks: COULD-NOT-CHECK {'; '.join(vac)}" if vac else ''))
 PY

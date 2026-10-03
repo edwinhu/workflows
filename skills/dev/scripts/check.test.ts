@@ -10,11 +10,15 @@ const run = (...a: string[]) => {
   return { code: r.status ?? -1, out: r.stdout ?? "", err: r.stderr ?? "" };
 };
 const proj = () => mkdtempSync(join(tmpdir(), "devcheck-"));
+// A test command that ran tests says how many; the tests leg counts them (work/scripts/leg-counts.sh),
+// so a stand-in for a passing or failing suite prints a runner summary rather than being `true`/`false`.
+const PASS = "echo 'Ran 1 test across 1 file.'";
+const FAIL = `${PASS}; false`;
 
 test("every leg reports, and none short-circuits the ones after it", () => {
   const d = proj();
   try {
-    const r = run("--project-dir", d, "--test-cmd", "false", "--lint-cmd", "true", "--build-cmd", "true");
+    const r = run("--project-dir", d, "--test-cmd", FAIL, "--lint-cmd", "true", "--build-cmd", "true");
     expect(r.code).toBe(1);
     // The failing leg is FIRST; lint and build must still have run and said so.
     expect(r.out).toContain("leg tests exit=1");
@@ -26,7 +30,7 @@ test("every leg reports, and none short-circuits the ones after it", () => {
 test("all declared legs passing is exit 0", () => {
   const d = proj();
   try {
-    const r = run("--project-dir", d, "--test-cmd", "true", "--lint-cmd", "true", "--build-cmd", "true");
+    const r = run("--project-dir", d, "--test-cmd", PASS, "--lint-cmd", "true", "--build-cmd", "true");
     expect(r.code).toBe(0);
   } finally { rmSync(d, { recursive: true, force: true }); }
 });
@@ -46,14 +50,14 @@ test("declaring nothing is exit 2, never a clean pass", () => {
 test("an undeclared leg passes and says so, so it cannot be mistaken for absent", () => {
   const d = proj();
   try {
-    const r = run("--project-dir", d, "--test-cmd", "true");
+    const r = run("--project-dir", d, "--test-cmd", PASS);
     expect(r.code).toBe(0);
     expect(r.out).toContain("leg build exit=0 (not declared)");
   } finally { rmSync(d, { recursive: true, force: true }); }
 });
 
 test("a bad project dir and an unknown flag are both refusals", () => {
-  expect(run("--project-dir", "/nope/nope", "--test-cmd", "true").code).toBe(2);
+  expect(run("--project-dir", "/nope/nope", "--test-cmd", PASS).code).toBe(2);
   expect(run("--project-dir", ".", "--wat").code).toBe(2);
 });
 
@@ -61,7 +65,7 @@ test("a bad project dir and an unknown flag are both refusals", () => {
 test("a leg runs inside --project-dir", () => {
   const d = proj();
   try {
-    const r = run("--project-dir", d, "--test-cmd", `test "$(pwd -P)" = "$(cd ${d} && pwd -P)"`);
+    const r = run("--project-dir", d, "--test-cmd", `test "$(pwd -P)" = "$(cd ${d} && pwd -P)" && ${PASS}`);
     expect(r.code).toBe(0);
   } finally { rmSync(d, { recursive: true, force: true }); }
 });
@@ -83,11 +87,11 @@ function gitProj(files: Record<string, string>, after: Record<string, string>) {
 test("scan: an added focused test fails the gate; the same line committed before does not", () => {
   const d = gitProj({ "tests/a.test.ts": `${ONLY}('x', () => {})\n` }, { "tests/a.test.ts": `${ONLY}('x', () => {})\nit('y', () => {})\n` });
   try {
-    const clean = run("--project-dir", d, "--test-cmd", "true");
+    const clean = run("--project-dir", d, "--test-cmd", PASS);
     expect(clean.code).toBe(0);
     expect(clean.out).toContain("leg scan exit=0");
     writeFileSync(join(d, "tests/b.test.ts"), `${ONLY}('z', () => {})\n`);
-    const r = run("--project-dir", d, "--test-cmd", "true");
+    const r = run("--project-dir", d, "--test-cmd", PASS);
     expect(r.code).toBe(1);
     expect(r.out).toContain("leg scan exit=1");
     expect(r.err).toContain("focused-or-skipped-test: tests/b.test.ts:1");
@@ -102,7 +106,7 @@ test("scan: TLS off and a private key in added source lines fail; fixtures/ and 
     "src/ok.py": "requests.get(u, verify=False)  # scan: allow\n",
   });
   try {
-    const r = run("--project-dir", d, "--test-cmd", "true");
+    const r = run("--project-dir", d, "--test-cmd", PASS);
     expect(r.code).toBe(1);
     expect(r.err).toContain("tls-verification-off: src/a.ts:2");
     expect(r.err).toContain("secret: src/k.pem:1");
@@ -113,12 +117,45 @@ test("scan: TLS off and a private key in added source lines fail; fixtures/ and 
 
 test("scan: a focused test outside a test path is not a hit, and a non-git dir reports and passes", () => {
   const d = gitProj({}, { "src/doc.ts": `// call ${ONLY}( to focus\n` });
-  try { expect(run("--project-dir", d, "--test-cmd", "true").code).toBe(0); }
+  try { expect(run("--project-dir", d, "--test-cmd", PASS).code).toBe(0); }
   finally { rmSync(d, { recursive: true, force: true }); }
   const e = proj();
   try {
-    const r = run("--project-dir", e, "--test-cmd", "true");
+    const r = run("--project-dir", e, "--test-cmd", PASS);
     expect(r.code).toBe(0);
     expect(r.out).toContain("leg scan exit=0 (not a git repo)");
   } finally { rmSync(e, { recursive: true, force: true }); }
+});
+
+// NON-VACUITY: a test command that ran nothing cannot pass the gate, whatever it exits.
+test("a test command with no runner summary is COULD-NOT-CHECK (2), not a pass", () => {
+  const d = proj();
+  try {
+    const r = run("--project-dir", d, "--test-cmd", "true");
+    expect(r.code).toBe(2);
+    expect(r.out).toContain("leg tests exit=2");
+    expect(r.err).toContain("COULD-NOT-CHECK: leg tests printed no count line");
+  } finally { rmSync(d, { recursive: true, force: true }); }
+});
+
+test("a runner that reports zero tests is COULD-NOT-CHECK (2)", () => {
+  const d = proj();
+  try {
+    const r = run("--project-dir", d, "--test-cmd", "echo '0 passed in 0.01s'");
+    expect(r.code).toBe(2);
+    expect(r.err).toContain("leg tests examined 0 — vacuous");
+  } finally { rmSync(d, { recursive: true, force: true }); }
+});
+
+test("the tests leg counts what the runner ran, and --test-count-re counts an unknown runner", () => {
+  const d = proj();
+  try {
+    const r = run("--project-dir", d, "--test-cmd", "printf ' 3 pass\\n 0 fail\\nRan 3 tests across 2 files.\\n'");
+    expect(r.code).toBe(0);
+    expect(r.err).toContain("tests: 3 test(s) examined (bun)");
+    const c = run("--project-dir", d, "--test-cmd", "echo 'checked 7 cases'", "--test-count-re", "checked (\\d+) cases");
+    expect(c.code).toBe(0);
+    expect(c.err).toContain("tests: 7 test(s) examined (custom)");
+    expect(c.err).toContain("lint: 0 command(s) examined — nothing in scope (not declared)");
+  } finally { rmSync(d, { recursive: true, force: true }); }
 });
