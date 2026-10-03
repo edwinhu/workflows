@@ -24,6 +24,17 @@ export TMPDIR="$run_tmp" FARM_OUTCOMES="$run_tmp/farm-outcomes.jsonl"
 # beside them. Ignored by git, but still a write into the tree every run.
 export PYTHONDONTWRITEBYTECODE=1
 
+# Skills with their own locked npm deps (cite-check, deep-research: @google/genai). At runtime bun
+# auto-installs them because no node_modules sits above the skill, but `bun test` never auto-installs,
+# so a checkout nobody ran `bun install` in (every fresh worktree) fails those suites with "Cannot
+# find module". Install from the lockfile; a failure here stops the run rather than going red later.
+for lock in skills/*/bun.lock; do
+  d=$(dirname "$lock")
+  [ -d "$d/node_modules" ] && continue
+  bun install --cwd "$d" --frozen-lockfile --silent \
+    || { echo "test.sh: bun install failed in $d (offline with a cold bun cache?)" >&2; exit 1; }
+done
+
 # THE TREE GUARD's snapshot: every path git reports as changed or untracked, with its content hash,
 # so a test that edits an already-dirty file is caught too. Taken before the suite and compared after.
 tree_state() {
