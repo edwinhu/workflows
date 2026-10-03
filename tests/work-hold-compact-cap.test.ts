@@ -238,6 +238,8 @@ function env(dir: string, session: string, herdr: string, user: string, project:
     XDG_RUNTIME_DIR: "/nonexistent-so-no-agenix-key",
     WORK_HOLD_DECISIONS_URL: "http://127.0.0.1:1/decisions",
     CLAUDE_CODE_AUTO_COMPACT_WINDOW: "",
+    // The cap writes the PROJECT's settings file, so it is opt-in; these tests opt in explicitly.
+    WORK_HOLD_COMPACT_WINDOW: "250000",
   } as Record<string, string>;
 }
 
@@ -447,4 +449,41 @@ test("no transport at all skips the cap and writes no local file", () => {
   expect(out).toContain("Not capped");
   expect(out).toContain("no agent-msg id and no Herdr pane");
   expect(existsSync(join(project, ".claude", "settings.local.json"))).toBe(false);
+});
+
+// --------------------------------------------------------- the project tree is never written by default
+
+/**
+ * Secreg 2026-10-03 (session e3b75752): every arm wrote `autoCompactWindow` into
+ * /home/eh/areas/secreg/.claude/settings.local.json — a course tree other sessions treat as
+ * read-only. Hold state belongs in TMPDIR or the run dir; the cap's only live path is a project file,
+ * so by default the hold does not cap at all, and says how to cap by hand.
+ */
+test("a default arm, with a working transport, writes nothing under the project and says why", () => {
+  const dir = tmp("holdcap-noproj-");
+  const project = join(dir, "project");
+  mkdirSync(project, { recursive: true });
+  const session = "cap-noproj-1";
+  const applied = join(dir, "applied.log");
+  const user = join(dir, "settings.json");
+  const seed = JSON.stringify({ theme: "dark" }, null, 2) + "\n";
+  writeFileSync(user, seed);
+  const local = join(project, ".claude", "settings.local.json");
+  const herdr = fakeHerdr(dir, session, applied, user, local);
+  const e = env(dir, session, herdr, user, project);
+  delete e.WORK_HOLD_COMPACT_WINDOW;
+
+  const arm = Bun.spawnSync(
+    ["bash", join(REPO, "skills/work/scripts/work-hold.sh"), "exit 1", "--rounds", "8"],
+    { timeout: 120_000, env: e, stdout: "pipe", stderr: "pipe" },
+  );
+  const out = arm.stdout.toString() + arm.stderr.toString();
+  expect(out).toContain("ARMED");
+  expect(out).toContain("not capped");
+  expect(out).toContain(local);
+  expect(existsSync(join(project, ".claude"))).toBe(false);
+  expect(existsSync(applied)).toBe(false);
+  expect(readFileSync(user, "utf8")).toBe(seed);
+  const state = JSON.parse(readFileSync(join(dir, `work-hold-${session}.json`), "utf8"));
+  expect(state.compact).toBeUndefined();
 });
