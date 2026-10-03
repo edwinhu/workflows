@@ -1,0 +1,91 @@
+{
+  "goal": "Repair notes/18-insider.typ so that check.sh for lecture 18 names no failing leg other than hierarchy (a deck-side leg outside this run's write surface) and the notes-auditor lens returns no surviving critical or major finding.",
+  "projectDir": "/home/eh/areas/secreg",
+  "readOnly": false,
+  "implementerAgentType": "lecture-impl",
+  "verifierAgentType": "Explore",
+  "rounds": 1,
+  "tasks": [
+    {
+      "id": "r18-align",
+      "name": "18 — alignment and hierarchy",
+      "dependsOn": null,
+      "work": "Repair lecture 18's notes so every slide section has one corresponding notes section under the right heading, in the deck's order, and no NEXT SLIDE description names a slide that moved or is gone. Correct the notes; never edit the deck to match them. Known from the baseline gate: (1) the Hypothetical 2 notes section lacks a === section for the deck's opening scenario slide 'Kendall buys PGM options and sells Starway shares through his broker.' (slides/06-insider/18.typ line 580) — add it, with the scenario setup taken from that slide and the TM; (2) in the Chiarella section the deck order is fact slide, 'To whom does Chiarella owe a duty of confidentiality?', then Discussion Questions 1 of 6 through 6 of 6 — the notes put the 'To whom' section after DQ 2 of 6; move it so the order matches; (3) fix every stale NEXT SLIDE description the alignment leg reports so each names the slide that actually follows. The hierarchy leg judges the deck's heading levels, which this task may not edit: leave it.",
+      "writablePaths": [
+        "/home/eh/areas/secreg/notes/18-insider.typ"
+      ],
+      "refs": [
+        "/home/eh/.claude/skills/teaching/skills/notes/references/verification-checks.md",
+        "/home/eh/.claude/skills/teaching/skills/notes/references/review-checks/notes-alignment.md",
+        "/home/eh/areas/secreg/slides/06-insider/18.typ"
+      ],
+      "acceptance": "`grep -q '^=== Kendall buys PGM options and sells Starway shares through his broker' /home/eh/areas/secreg/notes/18-insider.typ && test $(grep -c '^===' /home/eh/areas/secreg/notes/18-insider.typ) -eq $(grep -c '^===' /home/eh/areas/secreg/slides/06-insider/18.typ)` exits 0 (it exits 1 at baseline: 41 notes === against 42 slide ===, and no Hypothetical 2 scenario section), and the check.sh command in r18-style's redCommand names neither `alignment` nor `conventions` in its failing-leg list.",
+      "redCommand": null,
+      "redDisposition": "The gate is ONE entry point whose exit code is the whole mechanical verdict, so no command can be red for this dimension alone. The red is carried by this lecture's terminal task r18-style, whose redCommand is the same gate and which craft probes BEFORE any implementer in this chain runs."
+    },
+    {
+      "id": "r18-cover",
+      "name": "18 — coverage and fidelity",
+      "dependsOn": [
+        "r18-align"
+      ],
+      "work": "Close lecture 18's source-grounded content gaps: every inventory item COVERED or explicitly excluded with evidence, no heading or holding stripped of its facts, no hypothetical without its scenario setup, and every case fact, holding, date and figure agreeing with the source document. The source document controls conflicts. Known from the baseline gate: the constraints leg reports the duplicate question 'Which project do you pick and why?' (notes lines ~109 and ~127); use the deck's own wording for each — 'Project 1A or Project 1B --- which do you pick and why?' and 'Project 2A or Project 2B --- which do you pick and why?'. The inventory was realigned on 2026-10-02: the tipping/Dirks items (DOC-9, VIS-7, HYPO-4, DQ-45 to DQ-57, CASE-3, VIS-8) now belong to lecture 19 and must NOT be added to these notes.",
+      "writablePaths": [
+        "/home/eh/areas/secreg/notes/18-insider.typ"
+      ],
+      "refs": [
+        "/home/eh/.claude/skills/teaching/skills/notes/references/verification-checks.md",
+        "/home/eh/.claude/skills/teaching/skills/notes/references/review-checks/coverage.md",
+        "/home/eh/.claude/skills/teaching/skills/notes/references/review-checks/fidelity.md",
+        "/home/eh/areas/secreg/inventory/content-inventory-06-18.md",
+        "/home/eh/areas/secreg/docs/TM.txt"
+      ],
+      "acceptance": "The `notes-auditor` lens returns no surviving MAJOR for a MISSING or COLLAPSED inventory item or a source contradiction, and `check.sh` on the command in r18-align's acceptance does not name `constraints` and names no failing leg it did not already name before this task ran.",
+      "redCommand": null,
+      "redDisposition": "Same as r18-align: one entry point, one exit code, and the chain's red sits on r18-style."
+    },
+    {
+      "id": "r18-style",
+      "name": "18 — teleprompter style",
+      "dependsOn": [
+        "r18-cover"
+      ],
+      "work": "Repair lecture 18's transitions and speakability last, once its structure and content are settled: an opening transition connecting the prior topic to the new one, a forward setup ending each significant section, and no narration or hollow bullet — say the thing at the podium rather than describing what will be said. DENSE and FRAGMENT are advisory counts; do not chase them here.",
+      "writablePaths": [
+        "/home/eh/areas/secreg/notes/18-insider.typ"
+      ],
+      "refs": [
+        "/home/eh/.claude/skills/teaching/skills/notes/references/verification-checks.md",
+        "/home/eh/.claude/skills/teaching/skills/notes/references/notes-checks.md"
+      ],
+      "acceptance": "That same command names no failing leg other than `hierarchy`, and the lens's lecture-18 style item returns no surviving COLD transition, NARRATION bullet or HOLLOW bullet.",
+      "redCommand": "bash /home/eh/.claude/skills/teaching/skills/notes/scripts/check.sh --course . --source docs/TM.txt --lecture 18:notes/18-insider.typ:slides/06-insider/18.typ:inventory/content-inventory-06-18.md",
+      "redDisposition": null
+    }
+  ],
+  "mechanicalChecks": [
+    {
+      "name": "notes-mech",
+      "cmd": "bash /home/eh/.claude/skills/teaching/skills/notes/scripts/check.sh --course /home/eh/areas/secreg --source /home/eh/areas/secreg/docs/TM.txt --lecture 18:notes/18-insider.typ:slides/06-insider/18.typ:inventory/content-inventory-06-18.md"
+    }
+  ],
+  "ruleChecks": {
+    "name": "jev-notes-rules",
+    "cmd": "bun ~/.claude/skills/workflows/skills/work/scripts/rule-check.ts --project-dir /home/eh/areas/secreg --rules /home/eh/.claude/skills/teaching/constraints/jev/notes"
+  },
+  "lens": {
+    "agentType": "notes-auditor",
+    "refs": [
+      "/home/eh/.claude/skills/teaching/skills/notes/references/verification-checks.md",
+      "/home/eh/.claude/skills/teaching/skills/notes/references/notes-checks.md",
+      "/home/eh/.claude/skills/teaching/skills/notes/references/review-checks/notes-alignment.md",
+      "/home/eh/.claude/skills/teaching/skills/notes/references/review-checks/coverage.md",
+      "/home/eh/.claude/skills/teaching/skills/notes/references/review-checks/fidelity.md",
+      "/home/eh/areas/secreg/notes/18-insider.typ",
+      "/home/eh/areas/secreg/slides/06-insider/18.typ",
+      "/home/eh/areas/secreg/inventory/content-inventory-06-18.md",
+      "/home/eh/areas/secreg/docs/TM.txt"
+    ],
+    "prompt": "Judge the chapter's notes using this CHECKLIST. RED: diagnose every failure in the digest and route it to its owner task id, or 'plan'. GREEN: one open-ended pass, every finding with an ownerTask. Read the refs in full first. Each item below is a former lens, kept verbatim with its severity rules.\n\n- notes-content-18: Judge ONE lecture — 18 — for content: its notes against its slides chapter deck, its inventory, and the source document /home/eh/areas/secreg/docs/TM.txt, using N2, Coverage and X1 in the refs. Report as a MAJOR finding, one per item: a notes section MISSING for a slide section; a section that is PARTIAL (present but covering only part of its slide); notes content that is EXTRA (on no slide); an inventory item MISSING from the notes; an item COLLAPSED (a heading or holding stripped of its facts, or a hypothetical with no scenario setup); a statement in the notes the source document contradicts — verify against the EXTERNAL source, never against internal consistency, since notes and slides can agree perfectly and both be wrong. Quote the inventory id or slide heading and the notes line. If you classified ZERO items, report that as CRITICAL: an audit that examined nothing has not found nothing. Bullet density, fragments, narration, hollowness and transitions are NOT findings here — they belong to notes-style-18 or to a mechanical check. A section DRIFTED off its slide heading is NOT a finding here either: the Jev rule N-DRIFT decides it, and a hit reaches you in rulesThatFailed.\n- notes-style-18: Judge ONE lecture — 18 — for teleprompter style, reading ONLY its notes file, using N3 and N6 in the refs. Upstream's teleprompter-style reviewer owns N3 and N6 together and both read only this file, so this item covers both. A COLD section opening under N6 Part A is the N-COLD verdict in the digest: do not re-grade it, except to rule on a verdict ranked below the block line, which you report as a MAJOR finding. NARRATION and HOLLOW bullets are NOT findings here: the Jev rules N-NARRATION and N-HOLLOW decide them, and a hit reaches you in rulesThatFailed. DENSE and FRAGMENT are counted mechanically by teleprompter-notes.py under the constraints check, where they are ADVISORY, and must NOT be re-judged here, in either direction — this item carries a MAJOR floor, so a DENSE bullet reported as a finding here would block a dimension the refs record as non-blocking. You will read §N6 whole, Part A and Part B together: **N6 Part B ABRUPT setups are NOT findings here.** They are advisory and never block, this item carries a MAJOR floor, and an ABRUPT reported as a finding would block a dimension the refs record as non-blocking. Note them as info only. Quote the bullet or the two sections the transition joins. If you classified ZERO items, report that as CRITICAL: an audit that examined nothing has not found nothing.\n- citations: Adjudicate N4 layer L3 for the WHOLE chapter — every lecture whose notes file the refs name, not just the first. Run `bash /home/eh/.claude/skills/teaching/skills/notes/scripts/run-uncited-answers-probe.sh /home/eh/areas/secreg/notes/18-insider.typ` naming EVERY lecture's notes file in one invocation, and adjudicate ONLY the answer blocks in its `uncitedCandidates` list: layers L1 and L2 are the probe's deterministic verdict and you must NOT re-derive candidates or widen the list. For each candidate decide whether it REQUIRES a source cite or is acceptable general reasoning, and report as MAJOR each one that requires a cite and has none, quoting the block and naming the source it should cite. This is ONE adjudication — there is no re-vote. If the probe output is absent, unparseable, or its scope shows it examined zero answer blocks — for ANY of the lectures named — report that as CRITICAL rather than returning no findings. If you classified ZERO items, report that as CRITICAL: an audit that examined nothing has not found nothing.\n- question-dedup: Judge N5 across the WHOLE chapter's discussion questions — every lecture whose notes file the refs name, not just the first — and their siblings under /home/eh/areas/secreg/notes/. Judge ONLY the semantic residue: report as MAJOR an ANSWER-OVERLAP pair (two questions worded differently whose answers are the same legal analysis) and a NARRATIVE-RESTATEMENT (a question whose answer merely restates the narrative of an earlier question rather than advancing it). Same-wording duplicates and near-duplicates are decided mechanically — within-file by no-duplicate-questions.py and across files by check-cross-chapter-questions.py — and must NOT be re-judged here, in either direction. Quote both questions and name their files. If you classified ZERO items, report that as CRITICAL: an audit that examined nothing has not found nothing.\n- scope-fidelity: Judge scope fidelity: did the edits stay inside the approved plan's task table and each task's writablePaths? Report as MAJOR any notes file, inventory or other file changed that no task's writablePaths names, and any lecture edited that the plan's `## Lectures In Scope` table does not list. Report as CRITICAL any write outside the course directory, any edit to the source document or to a slides deck — both are read-only input in every mode — and any repair that deletes content rather than correcting it. The course tree carried uncommitted inventory edits before this run (docs/table_of_cases.md and inventory/*.md); those are not this run's writes.\n\nChange nothing."
+  }
+}
