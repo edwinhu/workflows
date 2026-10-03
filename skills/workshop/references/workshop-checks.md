@@ -30,7 +30,7 @@ detector is absent and therefore passes vacuously. **A check that cannot fail is
 **`N/A` is not a third kind of pass.** An `N/A` line carries a machine-generated reason and is still
 owed a disposition by the verifier against task-local evidence, exactly like a `MODEL-EVALUATED` row.
 It is not permission to stop looking. No computed check in this matrix is `always N/A`: each of
-`CMP CON SPEC NOTE INV VSL WID OVR ENUM` has a fixture that makes it FAIL.
+`CMP CON SPEC NOTE NAR INV VSL WID OVR ENUM` has a fixture that makes it FAIL.
 
 **A `MODEL-EVALUATED` line is never `PASS`.** Reporting `FID`, `CONV` or `VIS` as PASS — in the
 probe, in a task report, or in a verifier summary — is a defect of the same class as a vacuous
@@ -44,6 +44,7 @@ computed pass.
 | CON | Vendored Typst constraints report no failure, no error, no skip, over a non-zero inspected-file count | computed |
 | SPEC | Slide Spec rows and built slides correspond one-to-one by normalized title | computed |
 | NOTE | Every built slide has a non-empty `notes.typ` section under the same normalized title key | computed |
+| NAR | No spoken notes bullet on lines added against HEAD narrates the slide ("the slide shows", "as you can see") | computed |
 | INV | Each built slide's emitted ID set equals that slide's Slide Spec `Inventory` cell | computed |
 | VSL | Each built slide builds a visual exactly when its Slide Spec `Visual` cell names one | computed |
 | WID | Zero widow lines in the handout build of the deck PDF | computed |
@@ -156,6 +157,26 @@ notes section.
 
 The match is on the key, **never on topic similarity** — a topic match is a judgement, and this row
 is computed.
+
+### NAR: Notes narrate the content, not the slide — computed
+
+**Means:** no spoken `notes.typ` bullet refers the room to the screen instead of stating the content
+(`teleprompter-style.md` Failure 3). A bullet narrates when its words match a screen reference:
+"as you can see", "you can see here", "on the/this/next slide" or "on the screen", "the slide
+shows/says/asks/lists …", "this table/chart/diagram/graph/plot/map/timeline", "the figure/chart …
+shows/illustrates/tracks …", "the table on this slide", "look at this chart". A visual noun used
+about the subject matter ("the court's table of factors", "as shown in _Reed_", "the data show")
+matches none. A bracketed bullet other than `[Answer …]` is a stage direction, never read aloud; a
+poll instruction to scan a code on the screen is exempt.
+
+**Scope:** inside a git work tree, only bullets touching lines added against `HEAD` (an untracked
+file is all added); accepted notes already on `HEAD` are legacy. Outside one, the whole file.
+
+**Evidence:** bullet count, in-scope spoken bullets, stage directions skipped, the scope, and each
+narrating bullet with its line and the phrase matched.
+
+**Non-vacuity (R11).** `NAR` FAILs when `notes.typ` is absent or unreadable or holds zero `- `
+bullets. Narration phrased with no screen word stays a CONV judgement.
 
 ### INV: Emitted IDs equal the slide's declared inventory — computed
 
