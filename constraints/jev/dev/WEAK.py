@@ -12,6 +12,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'no diff hunk in a test file removes or rewrites an assertion',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = (('hunks_removing_or_rewriting_assertions', 'file', 'new_line'),)
 
 
 def evidence(files, plan_lines=None):

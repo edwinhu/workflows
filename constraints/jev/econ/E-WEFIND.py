@@ -20,6 +20,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the state holds no finding sentence',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('finding_sentences',)
 
 FIND_RX = (r'\bwe (?:also |further |then |still )?(?:find|show|document|observe|estimate|confirm|'
            r'detect|uncover)\b|\bour (?:results|estimates|findings|evidence|analysis|tests?) '

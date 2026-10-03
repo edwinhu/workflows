@@ -21,6 +21,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the change adds no state file, .planning/ file or state-writing code',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('added_lines_writing_or_naming_state',)
 
 CANONICAL = {'.claude-workflows.json', 'review.json', 'episode.json', 'ACTIVE_WORKFLOW.md',
              'HUMAN_REVIEW.md', 'AUTOMATED_REVIEW.md'}

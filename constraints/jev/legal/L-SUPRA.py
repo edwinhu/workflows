@@ -33,6 +33,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the state holds no supra short form that names a source',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('supra_short_forms',)
 
 # `Name, supra note 12, at 4` / `Name, supra, at 4` / `Name, supra notes 3-4`; an internal
 # cross-reference (`supra Part II`, `supra text accompanying note 3`, bare `supra note 3`) is not one.

@@ -16,6 +16,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the files contain no main-result table -- only sample descriptions, diagnostics or intermediate outputs',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('tables',)
 
 RESULT = re.compile(r'\bcoef|\bestimate|\bstd\.? ?err|\bs\.e\.|\(se\)|t-stat|t\.stat|\bbeta\b|β|'
                     r'\bDiD\b|diff(erence)?-in-diff|regression|\bR\^?2\b|R²|adj\.? r|\bp-?value',

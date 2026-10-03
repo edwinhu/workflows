@@ -25,6 +25,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the state lists no storytelling comment',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('storytelling_comments',)
 
 STORY = re.compile(r'//\s*Storytelling:\s*(.*)$')
 COMMENT = re.compile(r'^\s*//\s?(.*)$')

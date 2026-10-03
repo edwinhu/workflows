@@ -21,6 +21,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the change adds no prose to a context-loaded file',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('added_passages',)
 
 HISTORY = re.compile(
     r'\b(used to|previously|originally|at first|initially|over time|was (added|introduced|changed|'

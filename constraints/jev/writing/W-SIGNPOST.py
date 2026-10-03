@@ -20,6 +20,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the state holds no prose sentences',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('signpost_candidates',)
 
 SIGNPOST_RX = (r'\b(this|the following|the next|the present|in this|in the next|the previous|'
                r'the preceding) (section|part|paper|memo|letter|article|essay|chapter|report|'
