@@ -32,7 +32,8 @@ the deliverable of this step; a rule missing from it was never decided.
   never separated in Jev; `ds-dq.py check_dq1` decides it on the output.
 - **Sources can contradict the rule.** Before building, check the rule against its own sources and the
   accepted work: exam sentinels ("all of the above") are LEGITIMATE in slate-variety, so a ban
-  (EX-SENTINEL) contradicts the professor. Record the conflict in the reason column and ask.
+  (EX-SENTINEL) contradicts the professor. Record the conflict in the reason column and ask; the user
+  ruled the source right and EX-SENTINEL was retired (2026-10-02).
 
 ## After triage
 
