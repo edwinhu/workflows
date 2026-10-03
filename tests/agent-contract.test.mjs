@@ -31,6 +31,7 @@ import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import { jsCodeView, parseLenses } from "../skills/plugin-creator/scripts/pc-probe.ts"
 import { useTmp } from './helpers/tmp.ts'
+import { pointsAtShipped, mainCheckoutTwin } from '../hooks/lib/main-checkout.ts'
 
 const mkTmp = useTmp()
 
@@ -228,13 +229,14 @@ function values(fm, key) {
     if (userScoped) {
       ok(`${name} resolves in ~/.claude/agents/`, linked !== null,
          `~/.claude/agents/${name}.md is missing or dangling — the agent is not user-scoped`)
+      // In a worktree the link targets the SAME relative path in the main checkout; still exact.
       ok(`~/.claude/agents/${name}.md points at the shipped file`,
-         linked !== null && linked === shipped, `${linked} != ${shipped}`)
+         pointsAtShipped(linked, shipped), `${linked} != ${shipped}`)
     } else {
       // An `agents/` file stays plugin-scoped ON PURPOSE: it must keep answering only to
       // workflows:<name>, and linking it would give one file two discovery paths.
       ok(`${name} is NOT linked into ~/.claude/agents/ (stays plugin-scoped)`,
-         linked === null || linked !== shipped, String(linked))
+         !pointsAtShipped(linked, shipped), String(linked))
     }
   }
 }
@@ -364,10 +366,12 @@ function values(fm, key) {
   const sbody = existsSync(sk) ? readFileSync(sk, 'utf8') : ''
   ok('skills/ds/SKILL.md dispatches ds-reviewer',
      sbody.includes('ds-reviewer'))
-  ok('skills/ds/SKILL.md keys the new lens "ds-constraints"',
-     /key:\s*"ds-constraints"/.test(sbody))
-  ok('skills/ds/SKILL.md still keeps its four Explore lenses',
-     (sbody.match(/agentType:\s*"Explore"/g) ?? []).length === 4,
+  // ONE lens after the checks (d4a2eca6), dispatched to the read-only reviewer, never to Explore,
+  // whose predefined prompt no preloaded constraint index reaches.
+  ok('skills/ds/SKILL.md dispatches its one lens to ds-reviewer',
+     /lens:\s*\{\s*agentType:\s*"ds-reviewer"/.test(sbody))
+  ok('skills/ds/SKILL.md dispatches no lens to Explore',
+     !/agentType:\s*"Explore"/.test(sbody),
      String((sbody.match(/agentType:\s*"Explore"/g) ?? []).length))
   ok('skills/ds/SKILL.md still pins verifierAgentType: Explore',
      /verifierAgentType:\s*"Explore"/.test(sbody))
@@ -415,10 +419,10 @@ function values(fm, key) {
   const sbody = existsSync(sk) ? readFileSync(sk, 'utf8') : ''
   ok('skills/workshop/SKILL.md dispatches workshop-reviewer',
      sbody.includes('workshop-reviewer'))
-  ok('skills/workshop/SKILL.md keys the new lens "deck-constraints"',
-     /key:\s*"deck-constraints"/.test(sbody))
-  ok('skills/workshop/SKILL.md still keeps its five Explore lenses',
-     (sbody.match(/agentType:\s*"Explore"/g) ?? []).length === 5,
+  ok('skills/workshop/SKILL.md dispatches its one lens to workshop-reviewer',
+     /lens:\s*\{\s*agentType:\s*"workshop-reviewer"/.test(sbody))
+  ok('skills/workshop/SKILL.md dispatches no lens to Explore',
+     !/agentType:\s*"Explore"/.test(sbody),
      String((sbody.match(/agentType:\s*"Explore"/g) ?? []).length))
   ok('skills/workshop/SKILL.md still pins verifierAgentType: Explore',
      /verifierAgentType:\s*"Explore"/.test(sbody))
@@ -461,7 +465,7 @@ function values(fm, key) {
            `${bare} is in user-agents/ and symlinked to user scope; dispatch it by the bare name`)
       } else {
         ok(`skills/${s}: agentType ${t} is bare, so it must resolve in ~/.claude/agents/`,
-           userAgentTarget(bare) === realpathSync(p),
+           pointsAtShipped(userAgentTarget(bare), realpathSync(p)),
            `~/.claude/agents/${bare}.md does not point at ${p}`)
       }
     }
@@ -722,8 +726,10 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
                       { timeout: 120_000, cwd: ROOT, encoding: 'utf8' })
   const hits = (r.stdout || '').split('\n').map(s => s.trim()).filter(Boolean)
     // This file names both paths in its own assertions, so it always self-matches once tracked.
+    // Jev's real cases under tests/fixtures/ are frozen verbatim captures of past trees.
     .filter(f => f !== 'CHANGELOG.md' && !f.startsWith('scratch/') && !f.startsWith('.planning/')
-                 && f !== 'tests/agent-contract.test.mjs' && !f.startsWith('docs/investigations/'))
+                 && f !== 'tests/agent-contract.test.mjs' && !f.startsWith('docs/investigations/')
+                 && !f.startsWith('tests/fixtures/'))
   ok('no tracked file outside CHANGELOG.md references the retired output-style path',
      hits.length === 0, hits.join(', '))
   // The README keeps the ARGUMENT — deleting the mechanism without the reasoning invites its return.
@@ -1033,12 +1039,15 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
 
   // Every shipped .md/.ts, minus the changelog, scratch, vendored docs and this file: no reference
   // to the dead command. The lookahead keeps unrelated paths like `data_ref/start.html` out.
-  const STALE = /commands\/start\.md|\/start(?![\w./-])/
+  // The lookbehind keeps a site path like `bloomberglaw.com/start` out.
+  const STALE = /commands\/start\.md|(?<![\w.])\/start(?![\w./-])/
   const stale = []
   const walk = dir => {
     for (const e of readdirSync(dir, { withFileTypes: true })) {
       if (['node_modules', '.git', 'scratch', 'vendor', 'external', 'CHANGELOG.md',
            'agent-contract.test.mjs'].includes(e.name)) continue
+      // Dot-dirs ship nothing; `.claude/worktrees/` would scan every sibling checkout.
+      if (e.isDirectory() && e.name.startsWith('.')) continue
       const p = join(dir, e.name)
       if (e.isDirectory()) { walk(p); continue }
       if (!/\.(md|ts|mjs)$/.test(e.name)) continue
@@ -1458,13 +1467,13 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
 // checked — that is what catches a `writing-suggest-verify` whose suffix is not a hook noun.
 //
 // Exclusions are historical surfaces: CHANGELOG.md, scratch/, .planning/, docs/ (design records
-// that state retirements), and tests/ + scripts/ (synthetic fixture paths like `hooks/x.ts`).
+// that state retirements), and tests/ + scripts/ + any *.test.ts (synthetic fixture paths like `hooks/x.ts`).
 {
   const tracked = (spawnSync('git', ['ls-files'], { timeout: 120_000, cwd: ROOT, encoding: 'utf8' }).stdout || '')
     .split('\n').map(s => s.trim()).filter(Boolean)
   const IN_SCOPE = f =>
     f !== 'CHANGELOG.md' &&
-    !/^(scratch|\.planning|docs|tests|scripts)\//.test(f) &&
+    !/^(scratch|\.planning|docs|tests|scripts)\//.test(f) && !/\.test\.(ts|mjs)$/.test(f) &&
     (/^(hooks|skills|agents|user-agents|references)\//.test(f) || (!f.includes('/') && f.endsWith('.md')))
   const trackedBasenames = new Set(tracked.map(f => f.split('/').pop().split('.')[0]))
   const hookExists = n => existsSync(join(ROOT, 'hooks', `${n}.ts`)) || existsSync(join(ROOT, 'hooks', `${n}.sh`))
@@ -1562,6 +1571,7 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
       const n = entry.name
       if (!entry.isFile() || !/\.(ts|sh)$/.test(n)) continue
       if (n.startsWith('_')) continue                                  // library by convention
+      if (/\.test\.(ts|sh)$/.test(n)) continue                        // a test of a hook, not a hook
       if (registryText.includes(n)) continue                           // registered
       let header
       try { header = readFileSync(join(dir, n), 'utf8').slice(0, 2000) } catch { continue }
@@ -1639,6 +1649,9 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
     if (root === null) return []
     return (await extractAndCheck(io, abs, readFileSync(abs, 'utf8'), root))
       .filter(([, , resolved]) => resolved !== 'FENCED_BANG_BACKTICK')
+      // A gitignored per-machine file (`*.local.md`) lives only in the MAIN checkout; from a
+      // worktree, the same relative path there resolves it. A file missing from both still fails.
+      .filter(([, , resolved]) => { const twin = mainCheckoutTwin(resolved); return !(twin && existsSync(twin)) })
       .map(([line, raw, resolved]) => `L${line}: ${raw} -> ${resolved}`)
   }
 
