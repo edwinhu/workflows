@@ -24,7 +24,7 @@
 // Assertion 1 is the load-bearing one.
 //
 // Run: bun tests/agent-contract.test.mjs
-import { readdirSync, readFileSync, existsSync, realpathSync, statSync, mkdtempSync, mkdirSync, writeFileSync, unlinkSync } from 'node:fs'
+import { readdirSync, readFileSync, existsSync, realpathSync, statSync, mkdtempSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { tmpdir, homedir } from 'node:os'
 import { fileURLToPath } from 'node:url'
@@ -1602,21 +1602,18 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
   }
 
   // NON-VACUITY, computed rather than asserted: a hook file that is neither registered, a library,
-  // nor quarantined must be REPORTED. Exercised against the real detector, not a restatement.
+  // nor quarantined must be REPORTED. Exercised against the real detector, not a restatement. The
+  // ghost lives in a temp dir: written into hooks/ it raced every parallel test that scans hooks/.
   const ghost = 'zz-ghost-unwired.ts'
-  const ghostPath = join(HOOK_DIR, ghost)
-  writeFileSync(ghostPath, '#!/usr/bin/env bun\n/** PostToolUse hook: a guard nothing invokes. */\n')
-  try {
-    ok('the detector catches an unregistered hook with an event header (not vacuous)',
-       unwiredHooks(HOOK_DIR, hooksJson, UNREGISTERED_BY_DECISION).includes(ghost))
-    ok('the detector clears that same file once hooks.json registers it',
-       !unwiredHooks(HOOK_DIR, `${hooksJson}\n"bun x/hooks/${ghost}"`, UNREGISTERED_BY_DECISION).includes(ghost))
-    ok('the detector clears that same file once it is quarantined',
-       !unwiredHooks(HOOK_DIR, hooksJson, { ...UNREGISTERED_BY_DECISION, [ghost]: 'x' }).includes(ghost))
-  } finally {
-    unlinkSync(ghostPath)
-  }
-  ok('the non-vacuity fixture was removed', !existsSync(ghostPath))
+  const ghostDir = mkTmp('ghost-hooks-')
+  writeFileSync(join(ghostDir, ghost), '#!/usr/bin/env bun\n/** PostToolUse hook: a guard nothing invokes. */\n')
+  ok('the detector catches an unregistered hook with an event header (not vacuous)',
+     unwiredHooks(ghostDir, hooksJson, UNREGISTERED_BY_DECISION).includes(ghost))
+  ok('the detector clears that same file once hooks.json registers it',
+     !unwiredHooks(ghostDir, `${hooksJson}\n"bun x/hooks/${ghost}"`, UNREGISTERED_BY_DECISION).includes(ghost))
+  ok('the detector clears that same file once it is quarantined',
+     !unwiredHooks(ghostDir, hooksJson, { ...UNREGISTERED_BY_DECISION, [ghost]: 'x' }).includes(ghost))
+  ok('the non-vacuity fixture never touched hooks/', !existsSync(join(HOOK_DIR, ghost)))
 }
 
 
@@ -1664,19 +1661,24 @@ const REGISTER_SKILLS = ['writing-general', 'writing-legal', 'writing-econ']
   // NON-VACUITY, computed against the real checker: a fixture inside the plugin whose reference
   // names a file that does not exist must be REPORTED, and the same fixture pointing at a file
   // that does exist must be CLEARED — so the scan discriminates rather than failing on everything.
-  const fixture = join(ROOT, 'references', 'zz-ghost-skill-path.md')
-  writeFileSync(fixture, 'See `${CLAUDE_PLUGIN_ROOT}/skills/zz-ghost/references/nope.md` for details.\n')
-  try {
-    const ghost = await brokenPathRefs(fixture)
-    ok('the scan catches a reference to a file that does not exist (not vacuous)',
-       ghost.length === 1, ghost.join('; '))
-    writeFileSync(fixture, 'See `${CLAUDE_PLUGIN_ROOT}/hooks/validate-skill-paths.ts` for details.\n')
-    ok('the scan clears that same fixture once the reference resolves',
-       (await brokenPathRefs(fixture)).length === 0)
-  } finally {
-    unlinkSync(fixture)
+  // The plugin is a temp copy carrying only what the checker resolves against (its manifest and the
+  // one file the resolving reference names), so the real tree is never written.
+  const plugin = mkTmp('ghost-plugin-')
+  for (const rel of ['.claude-plugin/plugin.json', 'hooks/validate-skill-paths.ts']) {
+    mkdirSync(join(plugin, dirname(rel)), { recursive: true })
+    writeFileSync(join(plugin, rel), readFileSync(join(ROOT, rel)))
   }
-  ok('the skill-path non-vacuity fixture was removed', !existsSync(fixture))
+  mkdirSync(join(plugin, 'references'))
+  const fixture = join(plugin, 'references', 'zz-ghost-skill-path.md')
+  writeFileSync(fixture, 'See `${CLAUDE_PLUGIN_ROOT}/skills/zz-ghost/references/nope.md` for details.\n')
+  const ghost = await brokenPathRefs(fixture)
+  ok('the scan catches a reference to a file that does not exist (not vacuous)',
+     ghost.length === 1, ghost.join('; '))
+  writeFileSync(fixture, 'See `${CLAUDE_PLUGIN_ROOT}/hooks/validate-skill-paths.ts` for details.\n')
+  ok('the scan clears that same fixture once the reference resolves',
+     (await brokenPathRefs(fixture)).length === 0)
+  ok('the skill-path non-vacuity fixture never touched the repo',
+     !existsSync(join(ROOT, 'references', 'zz-ghost-skill-path.md')))
 }
 
 

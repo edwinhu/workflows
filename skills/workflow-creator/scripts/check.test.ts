@@ -60,10 +60,9 @@ function harness(opts: { parityStub?: string; noSiblings?: boolean } = {}): stri
   return join(s, 'check.sh')
 }
 
-// DECLARED EXEMPTION, scoped to these two lines: they are the deliberately broken references the
-// wc-probe leg has to fire on. They are fixture data, not paths this file uses.
+// DECLARED EXEMPTION, scoped to this line: it is the deliberately broken reference the wc-probe
+// leg has to fire on. It is fixture data, not a path this file uses.
 // <!-- wc-probe: ignore-paths:start -->
-const MISSING_REF = `${import.meta.dir}/does-not-exist.sh`
 const BROKEN_AGENT = '---\nname: guard\ndescription: d\n---\n\nuses ${CLAUDE_PLUGIN_ROOT}/x.sh\n'
 // <!-- wc-probe: ignore-paths:end -->
 
@@ -184,10 +183,11 @@ test('both structure legs REFUSE with exit 2 when the probes are unreachable', (
 })
 
 test('a forced failure in the wc-probe leg propagates', () => {
-  const t = target({
-    skill: `${CLEAN_SKILL}\nRun \`bash ${MISSING_REF}\`.\n`,
-    tests: { 'fixture.test.ts': PASSING_TEST },
-  })
+  // The missing script is named inside the TARGET's own skill dir, a root wc-probe always checks. A
+  // path in this checkout was checked only when the checkout sat under $HOME, so the case failed
+  // from any worktree under /tmp.
+  const t = target({ tests: { 'fixture.test.ts': PASSING_TEST } })
+  writeFileSync(join(t, 'SKILL.md'), `${CLEAN_SKILL}\nRun \`bash ${join(t, 'scripts', 'does-not-exist.sh')}\`.\n`)
   const r = run(harness(), ['--target', t])
   expect(legStatus(r.stdout, 'wc-probe')).not.toContain('exit=0')
   expect(legLines(r.stdout).length).toBe(7)

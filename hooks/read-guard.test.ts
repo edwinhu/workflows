@@ -1,22 +1,19 @@
-import { expect, test, describe, beforeAll, afterAll } from "bun:test";
-import { resolve } from "node:path";
-import { writeFileSync, unlinkSync } from "node:fs";
+import { expect, test, describe, beforeAll } from "bun:test";
+import { join, resolve } from "node:path";
+import { writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
+import { useTmp } from "../tests/helpers/tmp.ts";
 
+const mkTmp = useTmp();
 const hookPath = resolve(import.meta.dir, "read-guard.ts");
-const largeFile = resolve(import.meta.dir, "large-test-file.txt");
+// In a temp dir, never beside the hook: parallel suites scan hooks/ while this file exists.
+const largeFile = join(mkTmp("read-guard-"), "large-test-file.txt");
 
 beforeAll(() => {
   // Generate 3MB file
   const chunk = "a".repeat(1024);
   const data = chunk.repeat(3000);
   writeFileSync(largeFile, data);
-});
-
-afterAll(() => {
-  try {
-    unlinkSync(largeFile);
-  } catch {}
 });
 
 function runHook(payload: any, env?: any) {

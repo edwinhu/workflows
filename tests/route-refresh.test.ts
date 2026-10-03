@@ -70,7 +70,10 @@ async function refresh(args: string[], env: Record<string, string>) {
     env: { ...base, ROUTE_PROXY_URL: DEAD, ROUTE_PRICES_URL: 'http://127.0.0.1:1/prices',
       ROUTE_RANKINGS_URL: 'http://127.0.0.1:1/rankings', ROUTE_AA_URL: 'http://127.0.0.1:1/aa',
       OPENROUTER_API_KEY: 'test-or-key', ARTIFICIAL_ANALYSIS_API_KEY: 'test-aa-key',
-      WORK_HOLD_DECISIONS_URL: 'http://127.0.0.1:1/', WORK_HOLD_JUDGE_TOKEN: 'test-token', ...env },
+      WORK_HOLD_DECISIONS_URL: 'http://127.0.0.1:1/', WORK_HOLD_JUDGE_TOKEN: 'test-token',
+      // `bun test` runs in UTC while a bare `bun` child runs in the system zone, so from 20:00 to
+      // midnight EDT the child's asOf was a day behind today() here. One zone for both.
+      TZ: Intl.DateTimeFormat().resolvedOptions().timeZone, ...env },
     stdout: 'pipe', stderr: 'pipe',
   })
   const killer = setTimeout(() => p.kill(), 20_000)

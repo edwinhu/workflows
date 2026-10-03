@@ -15,8 +15,7 @@ HERE = Path(__file__).resolve().parent
 
 class LocalRunnerTest(unittest.TestCase):
     def setUp(self):
-        (HERE.parents[3] / "scratch").mkdir(exist_ok=True)
-        self.temp = tempfile.TemporaryDirectory(dir=HERE.parents[3] / "scratch")
+        self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.runner = self.root / "runner"
