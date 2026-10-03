@@ -335,21 +335,29 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
   # No --permission-mode: the runner inherits the user's default (auto), which keeps hard_deny --
   # the FERPA and licensed-data rules -- applying inside a dispatched run. The farmOutOnly policy
   # that used to fight this lives in main-thread-guard.sh now, and a hook can read FARM_OUT_CHILD.
-  local -a cmd=("$wrapper" -p "${prompt}${ANTI_SIM}${CHILD_STANDING}" --output-format stream-json --verbose)
+  # The prompt goes on STDIN, never argv: Linux caps one argv string at 128 KiB, and a --workflow
+  # prompt inlines its args file (a 168 KB one died "Argument list too long", exit 126).
+  # Cross-provider guard: gemini and codex children are told not to call a model API themselves.
+  local guard=""
+  if [ "$provider" = "gemini" ] || [ "$provider" = "codex" ]; then
+    guard="
+
+Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint, no LLM-calling scripts); do the work yourself."
+  fi
+  local prompt_file
+  prompt_file=$(mktemp -t farm-out.XXXXXX.prompt)
+  printf '%s' "${prompt}${ANTI_SIM}${CHILD_STANDING}${guard}" > "$prompt_file"
+  local -a cmd=("$wrapper" -p --output-format stream-json --verbose)
   [ -n "$agent" ] && cmd+=(--agent "$agent")
   # Per-row model override. Absent leaves the wrapper's own default -- which is what every
   # existing caller gets, since no row carried one until now.
   [ -n "$model" ] && cmd+=(--model "$model")
-  
-  # Cross-provider guard
-  if [ "$provider" = "gemini" ] || [ "$provider" = "codex" ]; then
-    cmd+=( -p "Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint, no LLM-calling scripts); do the work yourself." )
-  fi
   touch "$log.stamp"
   
   # Keep stderr: a provider that dies (proxy down, model rejected, auth stale) writes
   # there and nowhere else, and discarding it leaves only a bare exit code to debug.
-  ( cd "$CWD" && "${cmd[@]}" ) > "$log" 2>"$err" &
+  # exec: $! must be the wrapper itself, or the watchdog's SIGTERM stops a subshell and orphans it.
+  ( cd "$CWD" && exec "${cmd[@]}" ) < "$prompt_file" > "$log" 2>"$err" &
   local child_pid=$!
   
   local wd_out
@@ -382,7 +390,7 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
   mapfile -t missing < <(verify "${expects[@]:-}")
   # verify prints one blank line when nothing is missing; drop it.
   [ "${#missing[@]}" -eq 1 ] && [ -z "${missing[0]}" ] && missing=()
-  rm -f "$log" "$err"
+  rm -f "$log" "$log.stamp" "$err" "$prompt_file"
 
   # The same verdict the caller gets: exit 0 AND every promised artifact present. A run that
   # exits 0 having dropped its deliverable is a failure, and DONE-on-rc-alone would call it ok.

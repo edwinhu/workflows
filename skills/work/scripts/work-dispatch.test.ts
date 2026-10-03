@@ -186,6 +186,46 @@ describe('the redCommand probe runs at dispatch, not a round later', () => {
     expect(a.redSuiteHashes).toEqual({ 'scripts/check.sh': sha })
   })
 
+  // Observed 2026-10-02 (secreg): `--course /home/eh/areas/secreg` hashed all 1290 files of the
+  // course tree, .canvas-token included, and the 168 KB args then died E2BIG on farm.sh's argv.
+  test('a directory argument contributes only its test files, and a secret-looking file is never read', () => {
+    const f = fixture({ redCommand: 'bash scripts/check.sh --course course' })
+    script(f.dir, 'check.sh', 'echo "1 failed"\nexit 1')
+    const course = join(f.dir, 'course')
+    for (const d of ['notes', 'slides', 'tests']) mkdirSync(join(course, d), { recursive: true })
+    for (let i = 0; i < 400; i++) writeFileSync(join(course, 'notes', `n${i}.typ`), `= ${i}\n`)
+    writeFileSync(join(course, '.canvas-token'), 'SECRET')
+    writeFileSync(join(course, '.env'), 'KEY=SECRET')
+    writeFileSync(join(course, 'tests', 'test_notes.py'), 'def test(): assert False\n')
+    writeFileSync(join(course, 'slides', 'deck.test.ts'), 'test("x", () => {})\n')
+    writeFileSync(join(f.dir, 'scripts', 'api-token'), 'SECRET')
+    const r = dispatch(f)
+    expect(r.code).toBe(0)
+    const a = JSON.parse(readFileSync(f.argsPath, 'utf8'))
+    expect(Object.keys(a.redSuiteHashes).sort()).toEqual(
+      ['course/slides/deck.test.ts', 'course/tests/test_notes.py', 'scripts/check.sh'])
+    expect(JSON.stringify(a).length).toBeLessThan(8_000)
+  })
+
+  test('a named test directory contributes all its files, helpers included', () => {
+    const f = fixture({ redCommand: 'bash scripts/check.sh tests' })
+    script(f.dir, 'check.sh', 'echo "1 failed"\nexit 1')
+    mkdirSync(join(f.dir, 'tests'), { recursive: true })
+    writeFileSync(join(f.dir, 'tests', 'helpers.py'), 'X = 1\n')
+    expect(dispatch(f).code).toBe(0)
+    const a = JSON.parse(readFileSync(f.argsPath, 'utf8'))
+    expect(Object.keys(a.redSuiteHashes).sort()).toEqual(['scripts/check.sh', 'tests/helpers.py'])
+  })
+
+  test('a secret-looking file the redCommand names explicitly is still never hashed', () => {
+    const f = fixture({ redCommand: 'bash scripts/check.sh .canvas-token' })
+    script(f.dir, 'check.sh', 'echo "1 failed"\nexit 1')
+    writeFileSync(join(f.dir, '.canvas-token'), 'SECRET')
+    expect(dispatch(f).code).toBe(0)
+    const a = JSON.parse(readFileSync(f.argsPath, 'utf8'))
+    expect(Object.keys(a.redSuiteHashes)).toEqual(['scripts/check.sh'])
+  })
+
   // red-not-red moved from a dispatch refusal to the gate: the before-run is RECORDED in
   // args.redBefore and scored red-not-red by the gate, so the round launches but cannot pass red.
   test('exit 0 is reported as red-not-red and recorded in args.redBefore — the gate scores it', () => {
