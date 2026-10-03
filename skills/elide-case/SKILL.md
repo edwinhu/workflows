@@ -212,6 +212,9 @@ would be refused before dispatch. One row owns `docs/` instead:
 run keeps all three rows — collapsing them re-introduces the overlap the moment a second reading is
 added.
 
+`retrieve` stays one serial row (P17 exempted): every Westlaw export shares the user's one signed-in browser, one delivery queue whose top item `#0_qitem` is clicked, and one Downloads directory, so concurrent retrievals can take each other's file.
+<!-- wc-probe: ignore-serial-loop -->
+
 ```js
 {
   projectDir: "/home/eh/areas/secreg",          // the COURSE directory — the tree being edited
