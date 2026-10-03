@@ -265,6 +265,22 @@ describe('D2 — fenced-block extraction in Markdown', () => {
     expect(p7.length).toBe(0)
   })
 
+  // teaching's plan templates spell course paths as {{NAME}}, filled by course_paths.py --render
+  // before dispatch: an unknown path, not a missing one. A literal missing ref beside it still fires.
+  test('P7 reports a {{NAME}} ref as a skip, and still flags a real missing ref', () => {
+    const body = ['```js', 'Workflow({', '  tasks: [',
+      '    { id: "t1", work: "w", acceptance: "a", refs: ["{{COURSE}}/{{L1_DECK}}", "{{SOURCE}}"] },',
+      '    { id: "t2", work: "w", acceptance: "a", refs: ["no-such-ref.md"] },',
+      '  ],', '})', '```'].join('\n')
+    const file = join(fixture({ 'SKILL.md': skillMd('fenced', body) }), 'SKILL.md')
+    const skips: any[] = []
+    const p7 = probe.checkRefsDeclaration(file, probe.maskNonFenced(read(file)), dirname(file), [], undefined, skips)
+    expect(p7.map((f: any) => f.detail).join('\n')).not.toContain('t1')
+    expect(p7.some((f: any) => f.detail.includes('t2') && f.detail.includes('does not exist'))).toBe(true)
+    expect(skips.map((s: any) => s.token)).toEqual(['{{COURSE}}/{{L1_DECK}}', '{{SOURCE}}'])
+    expect(skips[0].reason).toContain('{{COURSE}}')
+  })
+
   test('P7 refuses an attempt with no refs key', () => {
     const body = ['```js', 'Workflow({', '  tasks: [],', '  attempts: [{key: "a1", prompt: "foo"}]', '})', '```'].join('\n')
     const dir = fixture({ 'SKILL.md': skillMd('fenced', body) })
