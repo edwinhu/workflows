@@ -21,6 +21,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the state holds no Id. short form',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('id_short_forms',)
 
 ID_RX = re.compile(r'(?<![\w.])[Ii]d\.')
 

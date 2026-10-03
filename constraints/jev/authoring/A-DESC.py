@@ -17,6 +17,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the change touches no skill, agent or command description',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('changed_descriptions',)
 
 SENT = re.compile(r'(?<=[.;!?])\s+(?=[A-Z(\'"])')
 

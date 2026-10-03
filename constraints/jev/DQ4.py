@@ -13,6 +13,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the files perform no row-changing transform of a data frame',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('transform_sites',)
 
 
 def evidence(files, plan_lines=None, changed=None):
