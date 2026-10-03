@@ -3643,7 +3643,7 @@ describe('ruleChecks configuration', () => {
 
 // ------------------------------------------------------------------ D37-D41: the 2026-10-02 round-shape rules
 
-/** Every finding AND advisory of one rule: P15 and P17 report in `advisories`, the rest in `findings`. */
+/** Every finding AND advisory of one rule: P17 reports in `advisories`, the rest in `findings`. */
 const allOf = (dir: string, prefix: string) => {
   const r = probe.runProbe(dir)
   return [...r.findings, ...(r.advisories ?? [])].filter((f: any) => String(f.rule).startsWith(prefix))
@@ -3707,7 +3707,7 @@ describe('D37 — P14: an agent leg that only runs a command and reports its exi
   })
 })
 
-describe('D38 — P15: an agent grades a rule the fence\'s ruleChecks already scores (advisory, parked)', () => {
+describe('D38 — P15: an agent grades a rule the fence\'s ruleChecks already scores (gates)', () => {
   /** A rules dir with one wired rule, one helper, and one parked rule that must never count. */
   const rulesDir = (dir: string) => {
     const r = join(dir, 'rules')
@@ -3724,20 +3724,22 @@ describe('D38 — P15: an agent grades a rule the fence\'s ruleChecks already sc
     ...parts,
   ])
 
-  test('a scoredChecks penalty count named for a wired rule is a finding, and it does not gate', () => {
+  test('a scoredChecks penalty count named for a wired rule is a MAJOR finding, and it gates', () => {
     const dir = fixture({ 'SKILL.md': skillMd('p15-scored') })
     const r = rulesDir(dir)
     writeFileSync(join(dir, 'SKILL.md'), skillMd('p15-scored', fenceWith(r, [
       'scoredChecks: [{ key: "audit", items: ["a"], prompt: "Count defects.", schema: {}, components: [{ name: "n3", weight: 1, base: 10, penalties: { dense: 0.2, hollow: 1.0, cold: 1.0 } }] }]',
     ])))
     const result = probe.runProbe(dir)
-    const found = result.advisories.filter((f: any) => f.rule.startsWith('P15'))
+    const found = result.findings.filter((f: any) => f.rule.startsWith('P15'))
     expect(found.map((f: any) => f.detail).join(' ')).toContain('N-HOLLOW')
     expect(found.length).toBe(1)
     expect(found[0].severity).toBe('major')
-    expect(result.findings.filter((f: any) => f.rule.startsWith('P15'))).toEqual([])
+    expect(result.advisories.filter((f: any) => f.rule.startsWith('P15'))).toEqual([])
     const c = cli(['--target', dir])
-    expect(c.out).toContain('[advisory major] P15 duplicate grading')
+    expect(c.out).toContain('[major] P15 duplicate grading')
+    expect(c.out).not.toContain('[advisory major] P15')
+    expect(c.code).toBe(1)
   })
 
   test('a lens sentence grading the rule by its capitalised name or its id is a finding', () => {
@@ -3759,6 +3761,19 @@ describe('D38 — P15: an agent grades a rule the fence\'s ruleChecks already sc
       'lens: { prompt: "HOLLOW bullets are NOT findings here: the Jev rule N-HOLLOW decides them. Report every COLD transition.", refs: [] }',
     ])))
     expect(allOf(dir, 'P15')).toEqual([])
+  })
+
+  test('a lens that hands the rule ids to the digest\'s verdicts, and keeps a broader judgement stated as such, is clean', () => {
+    const dir = fixture({ 'SKILL.md': skillMd('p15-defer') })
+    const r = rulesDir(dir)
+    writeFileSync(join(dir, 'SKILL.md'), skillMd('p15-defer', fenceWith(r, [
+      'lens: { prompt: "CHECKLIST: (1) A1 and N-HOLLOW are the jev-rules verdicts in the digest: do not re-grade them, except to rule on a verdict the digest ranks below the block line. Two judgements reach past the wired rule texts and stay yours: whether the sources admit the same entities.", refs: [] }',
+    ])))
+    expect(allOf(dir, 'P15')).toEqual([])
+  })
+
+  test('the ds skill this repo ships carries no P15 finding', () => {
+    expect(allOf(join(SELF_DIR, '..', '..', 'ds'), 'P15')).toEqual([])
   })
 
   test('a fence with no ruleChecks is not judged, and an unresolvable --rules is reported NOT CHECKED', () => {
