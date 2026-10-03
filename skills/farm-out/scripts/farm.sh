@@ -621,7 +621,7 @@ in one line rather than proceeding as though the poll were armed.
 ======================================================================
 CRONMSG
   else
-    echo "wake: --no-cron, so the watcher mod is the ONLY wake -- it watches this run and wakes this session when it finishes or dies (/farm lists it). Nothing wakes a session that is not running; drop --no-cron for the hourly backstop."
+    echo "wake: --no-cron, so this run asks for no heartbeat cron -- the watcher mod wakes this session when it finishes or dies (/farm lists it). The hourly backstop is the caller's: work-dispatch.sh prints its own; a bare farm.sh call has none unless --no-cron is dropped."
   fi
 
   # The child calls the Workflow tool; we never run the script ourselves. The long

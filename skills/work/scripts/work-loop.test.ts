@@ -54,7 +54,7 @@ function verdict(pass: boolean, tasksThatFlagged: string[] = [], extra: Record<s
  * mechanicalChecks is deliberately empty: work-result.sh RE-RUNS every declared check, so a
  * fixture that declared one would be asserting that command's behaviour rather than the loop's.
  */
-function runDir(results: Record<string, object>) {
+function runDir(results: Record<string, object>, over: Record<string, unknown> = {}) {
   const dir = mkdtempSync(join(tmpdir(), 'work-loop-'))
   scratch.push(dir)
   const R = join(dir, '.work', 'loop-run')
@@ -69,6 +69,7 @@ function runDir(results: Record<string, object>) {
       id: 'T1', name: 'one', work: 'do the thing', writablePaths: ['src/'], refs: [],
       redCommand: 'bash scripts/check.sh', acceptance: '`bash scripts/check.sh` exits 0',
     }],
+    ...over,
   }
   writeFileSync(join(R, 'args.json'), JSON.stringify(args, null, 2))
   writeFileSync(plan, '# Plan\n\n## Run sizing\n\nnothing parked\n\n' +
@@ -107,6 +108,42 @@ describe('the loop returns the gate verdict', () => {
     expect(r.code).toBe(0)
     // A second round would have rotated the verdict; nothing should have been redispatched.
     expect(existsSync(join(f.R, 'result-round1.json'))).toBe(false)
+  })
+})
+
+/**
+ * secreg 2026-10-02, run 1002-slides-18-diag: a readOnly run whose goal was "reach a verdict" FAILed
+ * round 1 with two plan-routed findings, and the loop went on to round 2 — work-redispatch.sh refused
+ * it at Tier 1 ("amend the plan: add <path> to a task's writablePaths") and loop.exit read 3, the code
+ * for a refused round. A read-only run has no task that could close anything: its FAIL is its answer.
+ */
+describe('a readOnly run stops at its first adjudicated verdict', () => {
+  const readOnly = { readOnly: true, goal: 'reach a verdict', tasks: [] }
+  const planFail = verdict(false, [], {
+    scoreTable: { tasksTotal: 0 },
+    planFindings: [{ title: 'DQ-17 missing', severity: 'major', detail: 'd', ownerTask: 'plan' }],
+  })
+
+  test('a FAIL ends the loop at exit 8 (verdict reached), with no second round and no Tier 1 refusal', () => {
+    const f = runDir({ 'result.json': planFail }, readOnly)
+    const r = loop(f, 6)
+    expect({ code: r.code, refused: r.out.includes('Tier 1') }).toEqual({ code: 8, refused: false })
+    expect(r.out).not.toContain('round 2 of 6')
+    // the audit's report is still printed: the selectors are what the verdict found
+    expect(r.out).toContain('plan <- DQ-17 missing')
+    expect(r.out).toContain('verdict reached')
+    // nothing was rotated: no redispatch ran
+    expect(existsSync(join(f.R, 'result-round1.json'))).toBe(false)
+  })
+
+  test('a readOnly PASS still exits 0', () => {
+    const f = runDir({ 'result.json': verdict(true, [], { scoreTable: { tasksTotal: 0 } }) }, readOnly)
+    expect(loop(f, 6).code).toBe(0)
+  })
+
+  test('a FAIL on a run that writes still goes on to the next round (here: the cap of 1)', () => {
+    const f = runDir({ 'result.json': verdict(false, ['T1']) })
+    expect(loop(f, 1).code).toBe(6)
   })
 })
 
