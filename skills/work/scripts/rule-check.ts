@@ -13,6 +13,8 @@ export interface Verdict {
   verdict: string;
   /** --batch only: the rule's one-line statement (statement()). */
   statement?: string;
+  /** VIOLATED only, when the rule declares SPANS: the `file:line` candidates the verdict was judged over. */
+  spans?: string[];
 }
 export interface Unavailable {
   rule: string;
@@ -230,7 +232,9 @@ export function checkRules(opts: {
       continue;
     }
     const verdict = r.p >= opts.blockAt ? 'VIOLATED' : 'MET';
-    verdicts.push(batched ? { rule: ruleName, p: r.p, verdict, statement: statement(data.proposition) } : { rule: ruleName, p: r.p, verdict });
+    const v: Verdict = batched ? { rule: ruleName, p: r.p, verdict, statement: statement(data.proposition) } : { rule: ruleName, p: r.p, verdict };
+    if (verdict === 'VIOLATED' && Array.isArray(data.spans) && data.spans.length) v.spans = data.spans;
+    verdicts.push(v);
   }
 
   verdicts.sort((a, b) => b.p - a.p);
