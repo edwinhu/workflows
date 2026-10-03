@@ -26,7 +26,7 @@ helper moves every rule that imports it.
   does this). A rule that keeps landing there wants a firmer state, not more runs: T-STORY's charter
   case read 0.84–0.89 until its extractor stopped showing the diagram labels, then 0.99–1.00.
 - **A "ready to wire" pair inside a failing history is noise.** T-TAKEAWAY failed rounds 2 and 3 and
-  passed round 4 (0.46/0.47); it stayed parked.
+  passed round 4 (0.46/0.47); it stayed parked until its state changed.
 - **Cross-rule hits.** Fix the twin when it breaks two rules by accident; accept (`--accept-cross`)
   when one defect breaks both by definition (an unlogged transform violates DQ4 and DQ6).
 - **Uncalibrated rules still cost calls** in every set run and appear in the cross matrix; a parked

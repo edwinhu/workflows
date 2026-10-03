@@ -11,13 +11,13 @@ const EVIDENCE = join(BASE, "constraints/jev/evidence.py");
 const TYPST = join(BASE, "constraints/jev/typst");
 const UNCAL = join(TYPST, "uncalibrated");
 const FIX = join(BASE, "tests/fixtures/jev/typst");
-const WIRED = ["T-CALLOUT", "T-HOLLOW", "T-STORY"];
-const UNWIRED = ["T-ECHO", "T-NARRATE", "T-TAKEAWAY", "T-TRANSITION"];
+const WIRED = ["T-CALLOUT", "T-HOLLOW", "T-STORY", "T-TAKEAWAY"];
+const UNWIRED = ["T-ECHO", "T-NARRATE", "T-TAKEAWAY-WH", "T-TRANSITION"];
 const made: string[] = [];
 afterAll(() => made.forEach(d => rmSync(d, { recursive: true, force: true })));
 
 const FILE: Record<string, string> = {
-  "T-TAKEAWAY": "slides.typ", "T-ECHO": "slides.typ", "T-STORY": "slides.typ", "T-CALLOUT": "slides.typ",
+  "T-TAKEAWAY": "slides.typ", "T-TAKEAWAY-WH": "slides.typ", "T-ECHO": "slides.typ", "T-STORY": "slides.typ", "T-CALLOUT": "slides.typ",
   "T-NARRATE": "notes.typ", "T-HOLLOW": "notes.typ", "T-TRANSITION": "notes.typ",
 };
 
@@ -40,7 +40,7 @@ function state(rule: string, kase: "vio" | "sat", changed?: Record<string, numbe
   return evidence(dir, [join(root, FILE[rule])], root, changed)[rule].state;
 }
 
-test("--rules-dir typst discovers exactly the wired rules; uncalibrated/ holds the other four", () => {
+test("--rules-dir typst discovers exactly the wired rules; uncalibrated/ holds the rest", () => {
   const root = join(FIX, "T-HOLLOW", "vio");
   const out = evidence(TYPST, [join(root, "notes.typ")], root);
   expect(Object.keys(out).sort()).toEqual(WIRED);
@@ -57,6 +57,12 @@ const SEPARATES: Record<string, (vio: any, sat: any) => void> = {
   "T-TAKEAWAY": (v, s) => {
     expect(v.subtitles.map((x: any) => x.subtitle)).toContain("Proxy Advisors Overview");
     expect(s.subtitles.map((x: any) => x.subtitle)).not.toContain("Proxy Advisors Overview");
+    // the subtitle alone: the body's first lines state the claim a label omits
+    expect(Object.keys(v.subtitles[0]).sort()).toEqual(["file", "line", "subtitle"]);
+  },
+  "T-TAKEAWAY-WH": (v, s) => {
+    expect(v.wh_subtitles).toEqual([{ file: "slides.typ", line: 16, subtitle: "What made proxy advisors powerful." }]);
+    expect(s.wh_subtitles[0].subtitle).toBe("What made proxy advisors powerful was the SEC's 2003 voting-duty rule.");
   },
   "T-ECHO": (v, s) =>
     expect(v.slides_subtitle_and_first_body_line[0].share_of_subtitle_words)
@@ -101,12 +107,21 @@ for (const rule of [...WIRED, ...UNWIRED]) {
 test("deck rules find nothing in a notes file and notes rules nothing in a deck", () => {
   const notes = join(FIX, "T-HOLLOW", "vio");
   const deck = join(FIX, "T-TAKEAWAY", "vio");
-  const onNotes = evidence(UNCAL, [join(notes, "notes.typ")], notes);
+  const onNotes = evidence(TYPST, [join(notes, "notes.typ")], notes);
   expect(onNotes["T-TAKEAWAY"].state.n_subtitles).toBe(0);
   expect(onNotes["T-TAKEAWAY"].state.files_not_of_this_kind).toEqual(["notes.typ"]);
   const onDeck = evidence(TYPST, [join(deck, "slides.typ")], deck);
   expect(onDeck["T-HOLLOW"].state.n_announcing_bullets).toBe(0);
   expect(onDeck["T-HOLLOW"].state.notes_files_examined).toEqual([]);
+});
+
+test("T-TAKEAWAY defers a wh-opening subtitle without `?` to T-TAKEAWAY-WH, which lists only those", () => {
+  const root = join(FIX, "T-TAKEAWAY-WH", "vio");
+  const wired = evidence(TYPST, [join(root, "slides.typ")], root)["T-TAKEAWAY"].state;
+  expect(wired.subtitles.map((x: any) => x.subtitle)).toEqual(["Two firms advise holders of most of the shares voted at U.S. annual meetings."]);
+  expect(wired.n_wh_subtitles_judged_by_T_TAKEAWAY_WH).toBe(1);
+  expect(state("T-TAKEAWAY-WH", "vio").n_wh_subtitles).toBe(1);
+  expect(state("T-TAKEAWAY-WH", "sat").n_wh_subtitles).toBe(1);
 });
 
 test("diff scope: a span on unchanged lines is skipped, counted, and never listed", () => {
@@ -174,5 +189,5 @@ test("T-HOLLOW: rule-check --rules typst blocks the violating notes and passes t
   expect(vio.out.verdicts.filter((v: any) => v.verdict === "VIOLATED")).toMatchObject([{ rule: "T-HOLLOW" }]);
   const sat = await ruleCheck("sat");
   expect(sat.code).toBe(0);
-  expect(sat.out.verdicts.map((v: any) => v.verdict)).toEqual(["MET", "MET", "MET"]);
+  expect(sat.out.verdicts.map((v: any) => v.verdict)).toEqual(WIRED.map(() => "MET"));
 }, 30000);
