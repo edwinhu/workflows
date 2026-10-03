@@ -258,12 +258,13 @@ run that dies.
 |---|---|
 | **`args.goalCheck`** (optional) | the ONE command that settles the whole plan. Armed as the hold's check. NEVER a round verdict — `plan-lint` runs it through `hold-lint.ts` and a CRITICAL blocks the dispatch |
 | no `goalCheck` | the hold is **check-less**: the judge alone on `args.goal`, bounded by `maxRounds` and `compose-goal.sh --minutes` |
-| `--run <run-dir>` | recorded by the arm. While the round is in flight a stop is ALLOWED and costs no round: a detached process is doing the work |
+| `--run <run-dir>` | recorded by the arm. While the round is in flight a stop is ALLOWED and costs no round: a detached process is doing the work. Once its verdict lands the judge reads only that `result.json`'s named facts (failing legs, `survivingBlocking`, failed rules) against the goal's own conditions, never the transcript |
 
 **Under the hold, a failed round advances with `work-redispatch.sh <plan> <run>/args.json --dispatch`,
 never a fresh `work-dispatch.sh`** — the first re-runs only the tasks that flagged and their dependents
 and carries the rest; the second re-runs every task, throwing away the round's verified work. The
-hold's first counted block and its `--brief` say so with the paths filled in.
+hold's first counted block and its `--brief` say so with the paths filled in — or, when the redispatch
+would be refused at its Tier 1 gate (plan-routed items, unchanged spec hash), say that the plan blocks instead.
 
 ### The check command — the rules `hold-lint.ts` enforces
 
@@ -303,7 +304,8 @@ bash $A --disarm                # THE USER releases it: a tty prompt, or the per
 
 Defaults are 4 rounds and 120 minutes; above either, the arm prints the per-wake context cost and the
 equivalent `grind` command, then arms. A dispatch arms with `--rounds` = the block's `goalTurns`
-(else `args.maxRounds`): the hold counts this session's red Stops, which are turns. Each run keeps its
+(else `args.maxRounds`). A hold on a run counts the rounds the run DISPATCHED (`args.json` `rounds`),
+never Stops; a hold with no run counts its red Stops. Each run keeps its
 own hold in the one state object — a second dispatch queues the first run's hold rather than replacing
 it, a re-dispatch of the SAME plan replaces its own, the Stop hook judges whichever held run is not in
 flight, and a release promotes the next. Arming caps this session's auto-compact window at 250000
