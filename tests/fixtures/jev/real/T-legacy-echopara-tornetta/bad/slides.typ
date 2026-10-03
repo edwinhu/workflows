@@ -55,7 +55,7 @@
 #slide[
   === Would SB 21 change anything?
 
-  - The first closing question: would SB 21 change anything? #pause
+  - The first closing question: does the new Delaware statute make any difference? #pause
 
   - SB 21 is the Delaware legislative response the earlier slide anticipated --- the "different category for tech start-ups, with 'controller friendly' rules." By the time the question is asked, the statute is~enacted. #pause
 
