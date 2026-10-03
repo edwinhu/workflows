@@ -839,8 +839,15 @@ describe('work-hold.sh and the auto-compact cap', () => {
     return { ...r, dir }
   }
 
-  test('with no pane it arms anyway and names the manual fix', () => {
-    const r = arm({})
+  test('by default it arms without capping, and writes nothing in the project', () => {
+    const r = arm({ WORK_HOLD_COMPACT_WINDOW: '' })
+    expect(r.status).toBe(0)
+    expect(r.stdout).toContain('not capped')
+    expect(r.stdout).toContain('a hold writes nothing in a project tree')
+  })
+
+  test('opted in with no pane, it arms anyway and names the manual fix', () => {
+    const r = arm({ WORK_HOLD_COMPACT_WINDOW: '250000' })
     expect(r.status).toBe(0)
     expect(r.stdout).toContain('no Herdr pane')
     expect(r.stdout).toContain('settings.local.json')

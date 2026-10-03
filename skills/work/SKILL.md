@@ -308,11 +308,11 @@ equivalent `grind` command, then arms. A dispatch arms with `--rounds` = the blo
 never Stops; a hold with no run counts its red Stops. Each run keeps its
 own hold in the one state object — a second dispatch queues the first run's hold rather than replacing
 it, a re-dispatch of the SAME plan replaces its own, the Stop hook judges whichever held run is not in
-flight, and a release promotes the next. Arming caps this session's auto-compact window at 250000
-through the project's `.claude/settings.local.json` — the only settings tier both above the user file
-and writable mid-session (managed needs root, `--settings` is startup-only), and kept out of commits by
-Claude Code's own global excludes — and the last release restores it (`WORK_HOLD_COMPACT_WINDOW=0`
-opts out; a session STARTED in that project meanwhile reads the cap too). Templates for the check, the nudge and an unattended brief:
+flight, and a release promotes the next. A held run whose loop died without a verdict (its
+farm-events pids all gone, no `result.json`) is dropped on the next Stop, said once, and holds nothing.
+A hold writes nothing in a project tree, so it does not cap the auto-compact window: the only live cap
+is the project's `.claude/settings.local.json` (managed needs root, `--settings` is startup-only).
+`WORK_HOLD_COMPACT_WINDOW=250000` at arm time opts into that write, restored at release. Templates for the check, the nudge and an unattended brief:
 [`references/hold-templates.md`](${CLAUDE_PLUGIN_ROOT}/skills/work/references/hold-templates.md).
 
 **Release is not the session's to take.** Three layers, none sufficient alone:

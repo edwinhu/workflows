@@ -161,6 +161,17 @@ export const VERDICT_REACHED = 'verdict-reached'
 /** The verb `work-abandon.sh` appends when the USER retires a run. */
 export const ABANDONED = 'abandoned by user'
 
+/** The verb the Stop hook appends when a held run died without a verdict and its hold was dropped. */
+export const RUN_DIED = 'run died'
+
+/** Said once, on the Stop that dropped a dead run: in the block's reason, else as a system message. */
+let deadNote = ''
+const noted = (reason: string) => (deadNote ? `${deadNote}\n${reason}` : reason)
+function allowStop(): never {
+  if (deadNote) process.stdout.write(JSON.stringify({ systemMessage: deadNote }))
+  process.exit(0)
+}
+
 /**
  * The ledger's last word about the HOLD — `capped` lines are bookkeeping for the context window and
  * say nothing about whether a hold is armed or released, so they are read through.
@@ -209,6 +220,71 @@ export function verdictReached(s: { run?: string }): boolean {
   } catch {
     return false
   }
+}
+
+/**
+ * Did the watched run DIE without a verdict? Null when it did not, or when nothing says so.
+ *
+ * `inFlight` reads "args.json, no result.json" as a round being worked, which is also exactly what a
+ * killed loop leaves — secreg 2026-10-03, 1002-slides-18-repair's loop took a SIGTERM and its hold
+ * sat queued as "in flight" with nothing alive to write a verdict. The pids are already on disk:
+ * work-loop.sh and the round each file `<root>/farm-events/<session>/<pid>.ndjson` with
+ * out=<run>/loop.exit or <run>/result.json (farm.sh's percent-encoding, the caller's spelling and
+ * its realpath both). Dead means such a record exists and every pid in it is gone; with no record
+ * the run keeps its in-flight reading, so a hold never drops a run on missing evidence.
+ */
+export function runDied(s: { run?: string }, session: string, root?: string): string | null {
+  if (!s.run || !session || !inFlight(s)) return null
+  const enc = (p: string) => p.replace(/%/g, '%25').replace(/ /g, '%20').replace(/\t/g, '%09').replace(/=/g, '%3D')
+  const runs = new Set([s.run.replace(/\/+$/, '')])
+  try {
+    runs.add(realpathSync(s.run))
+  } catch {
+    /* the spelling given is all there is */
+  }
+  const targets = [...runs].flatMap(r => [`${r}/loop.exit`, `${r}/result.json`].map(enc))
+  const pids: number[] = []
+  for (const base of new Set([root || process.env.TMPDIR || tmpdir(), '/tmp'])) {
+    const dir = join(base, 'farm-events', session)
+    let names: string[]
+    try {
+      names = readdirSync(dir)
+    } catch {
+      continue
+    }
+    for (const name of names) {
+      const pid = Number(name.replace(/\.ndjson$/, ''))
+      if (!name.endsWith('.ndjson') || !Number.isInteger(pid) || pid <= 0) continue
+      let text: string
+      try {
+        text = readFileSync(join(dir, name), 'utf8')
+      } catch {
+        continue
+      }
+      const cites = (line: string) => targets.some(t => line.includes(` out=${t} `) || line.includes(` path=${t} `) ||
+        line.endsWith(` out=${t}`) || line.endsWith(` path=${t}`))
+      if (text.split('\n').some(cites)) pids.push(pid)
+    }
+  }
+  if (!pids.length) return null
+  const alive = (pid: number) => {
+    try {
+      process.kill(pid, 0)
+      return true
+    } catch (e) {
+      return (e as NodeJS.ErrnoException).code === 'EPERM'
+    }
+  }
+  if (pids.some(alive)) return null
+  let rc = ''
+  try {
+    rc = readFileSync(join(s.run, 'loop.exit'), 'utf8').trim()
+  } catch {
+    /* absent: killed before the wrapper could write it */
+  }
+  return rc
+    ? `its loop exited ${rc} and no result.json was written`
+    : `no process is left (pid ${pids.join(', ')}), and it wrote no loop.exit and no result.json — the loop was killed`
 }
 
 // The unevaluated-hold diagnosis lives in guards/hold.ts so the plugin's mod (cron-delete) can
@@ -1085,6 +1161,15 @@ function capCli(): void {
   if (process.env.WORK_HOLD_COMPACT_WINDOW === '0') return say('WORK_HOLD_COMPACT_WINDOW=0; not capped')
   if (process.env.CLAUDE_CODE_AUTO_COMPACT_WINDOW)
     return say('CLAUDE_CODE_AUTO_COMPACT_WINDOW is set; it wins and /autocompact refuses. Not capped')
+  // THE PROJECT TREE IS NOT HOLD STATE. The cap's only live path is the project's own settings file,
+  // and a hold writes nothing in a project unless asked to — secreg 2026-10-03, every arm wrote
+  // `autoCompactWindow` into a course tree other sessions treat as read-only.
+  if (!process.env.WORK_HOLD_COMPACT_WINDOW)
+    return say(
+      `not capped — the only live cap is ${localSettingsPath()}, and a hold writes nothing in a ` +
+        'project tree. To cap anyway: WORK_HOLD_COMPACT_WINDOW=250000 at arm time (writes that file, ' +
+        'restored at release), or `/autocompact 250000` yourself (writes your global settings)',
+    )
 
   let s: State
   try {
@@ -1101,7 +1186,7 @@ function capCli(): void {
         `${local} and run \`/autocompact auto\` yourself. Not capped`,
     )
 
-  const raw = Number(process.env.WORK_HOLD_COMPACT_WINDOW || 250_000)
+  const raw = Number(process.env.WORK_HOLD_COMPACT_WINDOW)
   const window = Math.min(1_000_000, Math.max(100_000, Number.isFinite(raw) ? raw : 250_000))
 
   s.compact = writeLocalCap(local, window, capProvenance(local, window))
@@ -1190,6 +1275,29 @@ function main(): void {
   // below is a Stop this file processed — the in-flight allow, the block, and each release — and a
   // stamp attached to only some of them would make the quietest path look like the dead hook. It
   // costs one write per Stop, on a file this hook already rewrites on most of them.
+  // A HELD RUN THAT DIED is dropped here, ONCE: it leaves the state, so no later Stop sees it again.
+  // The ledger gets `run died` and then `armed (pruned)` with what is left, so deleting the file still
+  // restores the remaining holds; with none left it is a release, and the ledger's last word says so.
+  const died = [s, ...(s.queued ?? [])]
+    .map(h => ({ run: h.run || '', why: runDied(h, session) }))
+    .filter((d): d is { run: string; why: string } => d.why !== null)
+  if (died.length) {
+    let left: State | null = s
+    for (const d of died) left = left ? dropRun(left, d.run).state : null
+    const at = new Date().toISOString()
+    for (const d of died) appendFileSync(ledger, `${at}\t${RUN_DIED}\t${d.run}\t${d.why}\n`)
+    deadNote =
+      died.map(d => `hold: dropped ${d.run} — the run died without a verdict: ${d.why}.`).join('\n') +
+      ' Nothing holds this session on it; redispatch it if it is still wanted, or tell the user it died.'
+    if (!left) {
+      uncap(session, s)
+      rmSync(path, { force: true })
+      allowStop()
+    }
+    appendFileSync(ledger, `${at}\tarmed (pruned)\t${JSON.stringify(left)}\n`)
+    s = left!
+  }
+
   s = activeHold(s)
   s.lastEvaluatedAt = now
   // A watched run's rounds are the ones it DISPATCHED, read from its args.json — never this Stop.
@@ -1218,7 +1326,7 @@ function main(): void {
         `hold: ${message} ${next.queued!.length + 1} other hold(s) still armed — next: ` +
           `${next.run || next.check || next.goal}.\n`,
       )
-      process.exit(0)
+      allowStop()
     }
     uncap(session, s)
     rmSync(path, { force: true })
@@ -1230,7 +1338,7 @@ function main(): void {
           : '') +
         '\n',
     )
-    process.exit(0)
+    allowStop()
   }
 
   /** Block, count the round, and record what refused it. */
@@ -1242,7 +1350,7 @@ function main(): void {
     const clauses = clausesFor(s, first)
     process.stdout.write(JSON.stringify({
       decision: 'block',
-      reason: reason + (clauses ? `\n${clauses}` : ''),
+      reason: noted(reason + (clauses ? `\n${clauses}` : '')),
     }))
     process.exit(0)
   }
@@ -1262,7 +1370,7 @@ function main(): void {
         `${c}, with the run still in flight. Hold released UNMET — say so, and if a heartbeat cron ` +
           `exists, end it with CronDelete now: a cron outlives the work and nothing else can end it.`,
       )
-    process.exit(0)
+    allowStop()
   }
 
   // (b) A READ-ONLY RUN REACHED ITS VERDICT: the audit's FAIL is its answer, and the loop has stopped
@@ -1370,7 +1478,7 @@ function main(): void {
     : ''
   process.stdout.write(JSON.stringify({
     decision: 'block',
-    reason: `hold: ${d.reason}${goalB}${noteB}${clausesB ? `\n${clausesB}` : ''}`,
+    reason: noted(`hold: ${d.reason}${goalB}${noteB}${clausesB ? `\n${clausesB}` : ''}`),
   }))
   process.exit(0)
 }
@@ -1412,11 +1520,11 @@ function brief(): void {
     // The run, and whether a round is in flight: while it is, a stop is ALLOWED and costs no round,
     // so a session that reads this knows the block it did not get was not a bug.
     s.run
-      ? `RUN: ${s.run} — ${inFlight(s) ? 'IN FLIGHT (a stop is allowed and counts no round; the clock still runs)' : 'not in flight (a verdict is on disk)'}`
+      ? `RUN: ${s.run} — ${runDied(s, session) ? 'DIED without a verdict (the next Stop drops this hold)' : inFlight(s) ? 'IN FLIGHT (a stop is allowed and counts no round; the clock still runs)' : 'not in flight (a verdict is on disk)'}`
       : '',
     `BUDGET: ${runRounds(s) ?? s.rounds} of ${s.maxRounds} rounds ${runRounds(s) === null ? 'used' : 'dispatched'}; ${left} min left of the ${s.ceilingMinutes} min ceiling.`,
     ...(s.queued ?? []).map(q =>
-      `ALSO HELD: ${q.run || q.check || q.goal} — ${q.run && inFlight(q) ? 'in flight' : 'evaluated once this hold releases or goes in flight'}.`),
+      `ALSO HELD: ${q.run || q.check || q.goal} — ${runDied(q, session) ? 'DIED without a verdict (the next Stop drops it)' : q.run && inFlight(q) ? 'in flight' : 'evaluated once this hold releases or goes in flight'}.`),
     [s.authority, s.continuation, redispatchLine(s)].filter(Boolean).join(' '),
     rounds ? `ROUNDS SO FAR — do not repeat these:\n${rounds}` : '',
   ].filter(Boolean)
