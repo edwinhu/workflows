@@ -7,6 +7,20 @@ import os
 import sys
 import subprocess
 
+def spans(state, spec):
+    """`file:line` of every candidate a rule's SPANS names, in state order: an entry is an inventory key
+    whose items carry `file` and `line`, or (key, file_field, line_field) when they are named otherwise.
+    These are what the verdict was judged over, so a VIOLATED one points a repair at its lines."""
+    out = []
+    for entry in spec:
+        key, ff, lf = (entry, 'file', 'line') if isinstance(entry, str) else entry
+        for item in (state or {}).get(key) or []:
+            f, n = (item.get(ff), item.get(lf)) if isinstance(item, dict) else (None, None)
+            if f and isinstance(n, int) and f'{f}:{n}' not in out:
+                out.append(f'{f}:{n}')
+    return out
+
+
 def main(my_dir=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('--files', nargs='+', required=True)
@@ -84,6 +98,8 @@ def main(my_dir=None):
         }
         if getattr(mod, 'SUBJECT', None):
             out[mod_name]['subject'] = mod.SUBJECT
+        if getattr(mod, 'SPANS', None):
+            out[mod_name]['spans'] = spans(state, mod.SPANS)
 
     print(json.dumps(out, indent=2, default=str))
 

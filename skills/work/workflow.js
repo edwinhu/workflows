@@ -1266,6 +1266,8 @@ const mechanicalThatFailed = mechanical.filter(r => r.exitCode !== 0)
 
 const rulesThatFailed = []
 const ruleVerdicts = []
+// A failed rule's candidate spans in the digest: enough to route and start a repair, not the whole list.
+const RULE_SPANS_SHOWN = 12
 if (ruleChecks) {
   let parsed = null
   let parseFailed = false
@@ -1295,7 +1297,8 @@ if (ruleChecks) {
     rulesThatFailed.push(`ruleChecks:${ruleChecks.name}`)
   } else {
     for (const v of parsed.verdicts) {
-      ruleVerdicts.push({ rule: v.rule, p: v.p, verdict: v.verdict })
+      const spans = Array.isArray(v.spans) ? v.spans.filter(x => typeof x === 'string') : []
+      ruleVerdicts.push(spans.length ? { rule: v.rule, p: v.p, verdict: v.verdict, spans } : { rule: v.rule, p: v.p, verdict: v.verdict })
       if (v.p >= ruleChecks.blockAt) {
         rulesThatFailed.push(v.rule)
       }
@@ -1330,7 +1333,8 @@ const digest = {
   rulesThatFailed: rulesThatFailed.map(id => {
     if (id.startsWith('ruleChecks:')) return `${id} (check died, unparseable, or unavailable is non-empty)`
     const v = ruleVerdicts.find(x => x.rule === id)
-    return `${v.rule}: p=${v.p} — ${v.verdict}`
+    const at = v.spans ? ` at ${v.spans.slice(0, RULE_SPANS_SHOWN).join(', ')}${v.spans.length > RULE_SPANS_SHOWN ? ` (+${v.spans.length - RULE_SPANS_SHOWN} more)` : ''}` : ''
+    return `${v.rule}: p=${v.p} — ${v.verdict}${at}`
   }),
   advisoryRules: ruleVerdicts.filter(v => v.p < (ruleChecks ? ruleChecks.blockAt : 1)).sort((a, b) => b.p - a.p).map(v => `${v.rule}: p=${v.p} — ${v.verdict}`),
   carried: carriedFindings,
