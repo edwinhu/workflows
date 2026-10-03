@@ -12,6 +12,7 @@
  * Output goes through pyJson, never JSON.stringify: json.dumps' separators and ensure_ascii
  * change the bytes of the ⚠️ in the remote-session banner and of every em dash below.
  */
+import { sessionLine as openrouterCreditsLine } from "../scripts/lib/openrouter-credits.ts";
 import {
   existsSync,
   readFileSync,
@@ -854,6 +855,8 @@ async function main(): Promise<void> {
     beacon: () => waitForBeacon(sessionId, Date.now() - (procAge ?? 0) - 1000),
   });
   if (modsSection) console.error(modsSection.split("\n")[0].replace(/^## /, ""));
+  // Attended sessions only: a headless row or farm child has nobody to top the account up.
+  const credits = interactiveSession() && !!sessionId ? openrouterCreditsLine() : null;
 
   // Appended only when it fires. The other sections are joined unconditionally to stay byte-identical
   // to session-start.py (scripts/parity.ts compares bytes); a separator emitted for a silent section
@@ -861,16 +864,19 @@ async function main(): Promise<void> {
   const combinedContext =
     (versionSection ? versionSection + "\n" : "") +
     (modsSection ? modsSection + "\n" : "") +
+    (credits ? `## ⚠ ${credits}\n` : "") +
     envSection + "\n" + calendarSection + "\n" + (setupSection ? setupSection + "\n" : "") +
     inProgressSection + "\n" + patternSection + "\n" + usingSkills;
 
+  const notice = versionSection ? versionSection.split("\n")[0].replace(/^## /, "") +
+      `: the workflows plugin requires Claude Code >= ${MIN_CLAUDE_CODE}; its guards are not running. Update Claude Code.`
+    : modsSection ? modsSection.split("\n")[0].replace(/^## /, "") + ". Run /reload-plugins to load them; no restart needed."
+    : "";
+  const systemMessage = [credits && `⚠ ${credits}`, notice].filter(Boolean).join("\n");
   console.log(
     pyJson({
       // systemMessage reaches the user; additionalContext reaches only the model.
-      ...(versionSection ? { systemMessage: versionSection.split("\n")[0].replace(/^## /, "") +
-        `: the workflows plugin requires Claude Code >= ${MIN_CLAUDE_CODE}; its guards are not running. Update Claude Code.` }
-        : modsSection ? { systemMessage: modsSection.split("\n")[0].replace(/^## /, "") +
-          ". Run /reload-plugins to load them; no restart needed." } : {}),
+      ...(systemMessage ? { systemMessage } : {}),
       hookSpecificOutput: {
         hookEventName: "SessionStart",
         additionalContext: combinedContext,

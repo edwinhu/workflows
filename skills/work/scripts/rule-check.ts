@@ -3,7 +3,7 @@ import { spawnSync } from 'child_process';
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
 import { join, basename, dirname, resolve } from 'path';
-import { decisionsCall } from '../../../hooks/work-hold.ts';
+import { decisionsCall, OPENROUTER_OUT_OF_CREDITS } from '../../../hooks/work-hold.ts';
 
 export const defaultRulesDir = join(__dirname, '../../../constraints/jev');
 
@@ -142,6 +142,7 @@ export function scoreRule(ruleName: string, data: any, projectName: string): { p
     const callRes = decisionsCall(fullState, questions);
     if (callRes.unavailable) {
       finalError = callRes.unavailable;
+      if (finalError === OPENROUTER_OUT_OF_CREDITS) break;
       continue;
     }
 
