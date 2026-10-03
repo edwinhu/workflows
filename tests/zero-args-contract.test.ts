@@ -90,6 +90,9 @@ const EXCLUSIONS: Record<string, string> = {
   "scripts/doc_render.py":
     "NOT A CHECKER: the docx/pptx/xlsx -> PDF/PNG converter. Its exit code means the render ran, " +
     "and running it bare would write rendered output.",
+  "scripts/jev-spend.ts":
+    "ZERO ARGS IS THE INVOCATION: a read-only spend report over the Jev call log it locates " +
+    "itself (jevCallLogPath); its exit code means the report printed, not a verdict.",
   "scripts/docx_repair.py":
     "NOT A CHECKER: repairs a Google-Docs-exported .docx in place. Exit code means the repair ran.",
   "scripts/x2t_kern.py":

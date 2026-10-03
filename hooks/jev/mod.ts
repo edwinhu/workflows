@@ -117,7 +117,9 @@ async function changedLines($: $, tool: string, input: Record<string, unknown>, 
 
 /** The context lines for one evaluation; [] when nothing reaches the bar or anything failed. */
 async function evaluate($: $, { set, dir, register }: Target, file: string, ranges: Range[], cwd: string): Promise<string[]> {
+  // the spend log's caller tag (scripts/jev-spend.ts); `env` because the tag is all this run changes
   const argv = [
+    'env', 'JEV_CALLER=jev-edit',
     'bun', `${$.plugin.root}/skills/work/scripts/rule-check.ts`, '--batch',
     '--rules', dir, ...(register ? ['--rules', register] : []), '--files', file,
     '--changed-lines', '-', '--max-time', JEV_MAX_SECONDS,

@@ -74,7 +74,8 @@ export function caseInput(layout: string, caseDir: string, temps: string[], base
 // Worker mode: score one rule on one evidence entry in its own process, so the sync curl calls run in parallel.
 function worker(jobFile: string) {
   const { rule, data, project } = JSON.parse(readFileSync(jobFile, 'utf8'));
-  console.log(JSON.stringify(scoreRule(rule, data, project)));
+  // never the reply cache: calibration re-asks on purpose, and run-to-run spread is what it measures
+  console.log(JSON.stringify(scoreRule(rule, data, project, { caller: 'rule-calibrate', cache: false })));
 }
 
 async function pool<T, R>(items: T[], n: number, fn: (t: T) => Promise<R>): Promise<R[]> {
@@ -114,7 +115,7 @@ async function main() {
   for (const s of setNames) if (!manifest.sets[s]) { console.error(`unknown set: ${s}`); process.exit(1); }
 
   // Jev first: an unreachable endpoint must read as exit 2, never as a table of failures or passes.
-  const ping = decisionsCall('{"ping": true}', { q0: { type: 'choice', instructions: 'Is this a ping?', criteria: { YES: 'it is', NO: 'it is not' } } }, { maxTimeSeconds: 30 });
+  const ping = decisionsCall('{"ping": true}', { q0: { type: 'choice', instructions: 'Is this a ping?', criteria: { YES: 'it is', NO: 'it is not' } } }, { maxTimeSeconds: 30, caller: 'rule-calibrate', cache: false });
   let pingOk = false;
   if (ping.stdout !== null) { try { pingOk = !!JSON.parse(ping.stdout)?.answers; } catch { /* not JSON */ } }
   if (!pingOk) {

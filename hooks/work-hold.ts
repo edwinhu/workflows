@@ -33,10 +33,10 @@
  * MET releases, UNMET blocks) -> a ceiling (release, UNMET).
  */
 
-import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, realpathSync, rmSync, statSync, writeFileSync } from 'node:fs'
+import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, realpathSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 import { homedir, tmpdir } from 'node:os'
 import { holdStateName } from './guards/hold.ts'
 
@@ -675,39 +675,186 @@ export function openrouterKey(): { key: string; missing: null } | { key: null; m
   return token ? { key: token, missing: null } : { key: null, missing: 'empty openrouter key' }
 }
 
+const DECISIONS_URL = 'https://openrouter.ai/api/alpha/decisions'
+
+/** Who is spending: opts.caller, else $JEV_CALLER, else the running script's name. */
+function callerName(explicit?: string): string {
+  if (explicit) return explicit
+  if (process.env.JEV_CALLER) return process.env.JEV_CALLER
+  const a = (process.argv[1] || '').split('/').pop() || '-'
+  return a.replace(/\.(ts|js|mjs)$/, '')
+}
+
+/**
+ * The append-only call log bin/jev-spend reads: one NDJSON line per decisionsCall, billed or not.
+ * $JEV_CALL_LOG names it ('off' = none); unset, it is ${XDG_STATE_HOME:-~/.local/state}/jev/calls.ndjson
+ * against the real endpoint and nothing against a stub URL, so a test run outside scripts/test.sh
+ * never writes the user's log. Not $TMPDIR: the canary and farm rows give each suite run a fresh one,
+ * and their calls would vanish with it.
+ */
+export function jevCallLogPath(): string | null {
+  const v = process.env.JEV_CALL_LOG
+  if (v === 'off') return null
+  if (v) return v
+  if (process.env.WORK_HOLD_DECISIONS_URL && process.env.WORK_HOLD_DECISIONS_URL !== DECISIONS_URL) return null
+  return join(process.env.XDG_STATE_HOME || join(homedir(), '.local/state'), 'jev', 'calls.ndjson')
+}
+
+/**
+ * The content-addressed reply cache: <dir>/<sha256(url, model, state, questions)>.json, one file per
+ * reply (no read-modify-write between concurrent hooks), kept $JEV_CACHE_TTL seconds (default a day).
+ * An identical request is answered from it unbilled. The dir is $JEV_CACHE_DIR, else
+ * ${XDG_CACHE_HOME:-~/.cache}/jev — machine-wide, because the repeats it exists for (a suite's live
+ * tests, a re-run rule leg) come from runs that each get their own $TMPDIR. On against the real
+ * endpoint only, unless $JEV_CACHE=on; $JEV_CACHE=off, or opts.cache false, bypasses it.
+ */
+export function jevCacheDir(): string | null {
+  const v = process.env.JEV_CACHE
+  if (v === 'off') return null
+  const stub = process.env.WORK_HOLD_DECISIONS_URL && process.env.WORK_HOLD_DECISIONS_URL !== DECISIONS_URL
+  if (stub && v !== 'on') return null
+  return process.env.JEV_CACHE_DIR || join(process.env.XDG_CACHE_HOME || join(homedir(), '.cache'), 'jev')
+}
+
+function cacheTtlMs(): number {
+  const n = Number(process.env.JEV_CACHE_TTL)
+  return (Number.isFinite(n) && n >= 0 && process.env.JEV_CACHE_TTL !== '' ? n : 86400) * 1000
+}
+
+function logCall(rec: Record<string, unknown>): void {
+  const path = jevCallLogPath()
+  if (!path) return
+  try {
+    mkdirSync(dirname(path), { recursive: true })
+    appendFileSync(path, JSON.stringify(rec) + '\n')
+  } catch {
+    /* a spend record is never a reason to fail a judge call */
+  }
+}
+
+/** A curl config-file string: quoted, with the escapes curl's config parser undoes. */
+function curlQuote(v: string): string {
+  return '"' + v.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t') + '"'
+}
+
+/** Expired replies go on a write, at most one sweep a minute per process. */
+let lastSweep = 0
+function sweepCache(dir: string, ttl: number, now: number): void {
+  if (now - lastSweep < 60_000) return
+  lastSweep = now
+  try {
+    for (const f of readdirSync(dir)) {
+      const p = join(dir, f)
+      try {
+        if (now - statSync(p).mtimeMs > ttl) rmSync(p, { force: true })
+      } catch {}
+    }
+  } catch {}
+}
+
 export function decisionsCall(
   state: string,
   questions: Record<string, { type: string; instructions: string; criteria?: Record<string, string> }>,
-  opts: { maxTimeSeconds?: number; model?: string } = {},
+  opts: { maxTimeSeconds?: number; model?: string; caller?: string; session?: string; cache?: boolean } = {},
 ): { stdout: string; unavailable: null } | { stdout: null; unavailable: string } {
-  const url = process.env.WORK_HOLD_DECISIONS_URL || 'https://openrouter.ai/api/alpha/decisions'
+  const url = process.env.WORK_HOLD_DECISIONS_URL || DECISIONS_URL
   const model = opts.model || process.env.WORK_HOLD_DECISIONS_MODEL || 'typesafe/jev-1.13'
   const maxTime =
     typeof opts.maxTimeSeconds === 'number' && Number.isFinite(opts.maxTimeSeconds) && opts.maxTimeSeconds > 0
       ? opts.maxTimeSeconds
       : 60
+  const started = Date.now()
+  const rec: Record<string, unknown> = {
+    ts: new Date(started).toISOString(),
+    caller: callerName(opts.caller),
+    session: opts.session || process.env.CLAUDE_CODE_SESSION_ID || '-',
+    cwd: process.cwd(),
+    model,
+    stateBytes: Buffer.byteLength(state),
+    questions: Object.keys(questions).length,
+  }
+
+  const payload = JSON.stringify({ state, model, questions })
+  const cacheDir = opts.cache === false ? null : jevCacheDir()
+  const ttl = cacheTtlMs()
+  const cachePath = cacheDir && ttl > 0
+    ? join(cacheDir, createHash('sha256').update(url).update('\0').update(payload).digest('hex') + '.json')
+    : null
+  if (cachePath) {
+    try {
+      if (started - statSync(cachePath).mtimeMs <= ttl) {
+        const body = readFileSync(cachePath, 'utf8')
+        const hit = JSON.parse(body)
+        if (Object.keys(questions).every(q => hit?.answers?.[q])) {
+          // `saved` is what the original ask cost: the cached reply carries its own usage
+          const saved = typeof hit?.usage?.cost === 'number' ? hit.usage.cost : null
+          logCall({ ...rec, cache: 'hit', inTokens: 0, outTokens: 0, cost: 0, saved, ms: Date.now() - started })
+          return { stdout: body, unavailable: null }
+        }
+      }
+    } catch {
+      /* no entry, or an unreadable one: ask */
+    }
+  }
 
   const k = openrouterKey()
-  if (k.key === null) return { stdout: null, unavailable: k.missing }
+  if (k.key === null) {
+    logCall({ ...rec, cache: cachePath ? 'miss' : 'off', unavailable: k.missing })
+    return { stdout: null, unavailable: k.missing }
+  }
 
+  // The key AND the payload go to curl as one config on stdin (`-K -`), never argv: argv is
+  // world-readable in `ps`, and a temp file holding the key outlives a child killed mid-call.
   // curl exits 0 on a 4xx, so the status rides on a trailing line: a 402 body otherwise reaches every
   // caller as a reply with no answers, and the empty account reads as a parse failure.
   const r = spawnSync(
     'curl',
     ['-sS', '--max-time', String(maxTime), '-X', 'POST', url,
-     '-H', `Authorization: Bearer ${k.key}`,
+     '-K', '-',
      '-H', 'Content-Type: application/json',
-     '-w', '\n%{http_code}',
-     '--data-binary', '@-'],
+     '-w', '\n%{http_code}'],
     // The spawn timeout is a backstop 30 s behind curl's own cap: 90 s at the default 60.
-    { encoding: 'utf8', input: JSON.stringify({ state, model, questions }), timeout: (maxTime + 30) * 1000 },
+    {
+      encoding: 'utf8',
+      input: `header = ${curlQuote(`Authorization: Bearer ${k.key}`)}\ndata-binary = ${curlQuote(payload)}\n`,
+      timeout: (maxTime + 30) * 1000,
+    },
   )
-  if (r.error || r.status !== 0) return { stdout: null, unavailable: 'decisions endpoint unreachable' }
+  const done = { ...rec, cache: cachePath ? 'miss' : 'off', ms: 0 }
+  if (r.error || r.status !== 0) {
+    logCall({ ...done, ms: Date.now() - started, unavailable: 'decisions endpoint unreachable' })
+    return { stdout: null, unavailable: 'decisions endpoint unreachable' }
+  }
   const raw = r.stdout || ''
   const nl = raw.lastIndexOf('\n')
   const body = nl >= 0 ? raw.slice(0, nl) : raw
   const status = Number(nl >= 0 ? raw.slice(nl + 1).trim() : 0)
+  let reply: any = null
+  try {
+    reply = JSON.parse(body)
+  } catch {}
+  const u = reply?.usage ?? {}
+  logCall({
+    ...done,
+    ms: Date.now() - started,
+    status,
+    inTokens: typeof u.input_tokens === 'number' ? u.input_tokens : null,
+    outTokens: typeof u.output_tokens === 'number' ? u.output_tokens : null,
+    cost: typeof u.cost === 'number' ? u.cost : null,
+    ...(reply?.answers ? {} : { unavailable: outOfCredits(status, body) ? 'out of credits' : 'no answers' }),
+  })
   if (outOfCredits(status, body)) return { stdout: null, unavailable: OPENROUTER_OUT_OF_CREDITS }
+  // Only a reply that answered EVERY question is kept: an error or a partial reply is asked again,
+  // never replayed — a caller's retry would otherwise get the same miss back.
+  if (cachePath && status < 400 && Object.keys(questions).every(q => reply?.answers?.[q])) {
+    try {
+      mkdirSync(cacheDir!, { recursive: true })
+      const tmp = `${cachePath}.${process.pid}.tmp`
+      writeFileSync(tmp, body)
+      renameSync(tmp, cachePath)
+      sweepCache(cacheDir!, ttl, started)
+    } catch {}
+  }
   return { stdout: body, unavailable: null }
 }
 
@@ -738,7 +885,7 @@ function judgeViaDecisions(
           `count against it, and the whole-plan verdict is not the goal. Goal: ${goal}`
         : `This goal is met AND no obvious open work remains that the session should do next: ${goal}`,
     },
-  })
+  }, { caller: 'work-hold' })
   if (r.stdout === null) return { verdict: 'UNAVAILABLE', reason: r.unavailable }
   return parseNoul(r.stdout, 'met', threshold)
 }
