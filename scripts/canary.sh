@@ -16,9 +16,10 @@
 # (a) DIAG: a read-only teaching slides DIAGNOSE of an already-taught secreg lecture whose gates
 #     passed. Run dir under ~/.local/state/work; the course tree is only ever READ.
 # (b) DEV: one dev round on a throwaway git repo in a temp dir — a red bun test, one task to green it.
-# SUITES: workflows' scripts/test.sh AND teaching's tests/run-all.sh, each pointed at the other's
-#     checkout under release, so a cross-repo break blocks the tag of EITHER repo (teaching 4.3.7's
-#     {{NAME}} refs turned workflows' gate-vacuity red while only teaching's suite had run).
+# SUITES: workflows' scripts/test.sh in a clean worktree at the committed HEAD, AND teaching's
+#     tests/run-all.sh (FAIL on a tracked-file change there), each pointed at the other's tree under
+#     release, so a cross-repo break blocks the tag of EITHER repo (teaching 4.3.7's {{NAME}} refs
+#     turned workflows' gate-vacuity red while only teaching's suite had run).
 # TEMPLATE: teaching's notes repair template rendered for secreg lecture $LECTURE by
 #     course_paths.py (scripts/render-template.ts), every course path it names on disk, and
 #     plan-lint at 0 findings of any severity — the plan a real session would dispatch.
@@ -58,7 +59,7 @@ while [ $# -gt 0 ]; do
     --events) ASSERT_EVENTS=${2-}; shift 2 || die "--events needs a directory" ;;
     --expect-exit) ASSERT_EXIT=${2-}; shift 2 || die "--expect-exit needs a code list" ;;
     --mech-count) ASSERT_COUNTS+=("${2-}"); shift 2 || die "--mech-count needs a regex" ;;
-    -h|--help) sed -n '2,32p' "${BASH_SOURCE[0]}"; exit 0 ;;
+    -h|--help) sed -n '2,33p' "${BASH_SOURCE[0]}"; exit 0 ;;
     *) die "unknown argument: $1" ;;
   esac
 done
@@ -388,23 +389,49 @@ PY
 # ------------------------------------------------------------------ suites: both repos, before any tag
 # Each suite is pointed at the OTHER repo's checkout under release: teaching's tests resolve plan-lint,
 # leg_counts and the Jev runner from this checkout, and workflows' gate-vacuity probes $TEACHING.
+# The tag goes on the committed HEAD, so workflows' suite runs in a clean worktree at HEAD: the main
+# checkout carries other sessions' uncommitted files, and one unpinned binary there blocked 6.38.0.
+# Teaching stays in its checkout (its agent-resolution test needs the real path), so a tracked-file
+# change there FAILS: a dirty tree is not what gets tagged.
+SUITE_WT=""
+drop_suite_wt() {   # only the worktree this invocation minted
+  [ -n "$SUITE_WT" ] || return 0
+  git -C "$ROOT" worktree remove --force "$SUITE_WT" >/dev/null 2>&1 || rm -rf -- "$SUITE_WT"
+  git -C "$ROOT" worktree prune >/dev/null 2>&1
+  SUITE_WT=""
+}
 run_suites() {
-  local rc
+  local rc head dirty wf
   [ -x "$ROOT/scripts/test.sh" ] || { echo "FAIL [suites] $ROOT/scripts/test.sh is missing — NO SUITE RAN"; FAILED=1; return; }
   [ -f "$TEACHING/tests/run-all.sh" ] || { echo "FAIL [suites] $TEACHING/tests/run-all.sh is missing — NO SUITE RAN"; FAILED=1; return; }
-  echo; echo "=== canary suites: workflows ($ROOT)"
-  ( cd "$ROOT" && CANARY_NESTED=1 TEACHING_PLUGIN_ROOT="$TEACHING" bash scripts/test.sh ) > "$HOME_DIR/workflows-suite.log" 2>&1
+  head=$(git -C "$ROOT" rev-parse HEAD 2>/dev/null) \
+    || { echo "FAIL [suites] $ROOT is not a git checkout — no committed HEAD to test, NO SUITE RAN"; FAILED=1; return; }
+  SUITE_WT=$(mktemp -d "$HOME_DIR/suite-head.XXXXXX") \
+    && git -C "$ROOT" worktree add --detach "$SUITE_WT" "$head" >/dev/null 2>&1 \
+    || { echo "FAIL [suites] could not create a clean worktree at ${head:0:12} — NO SUITE RAN"; drop_suite_wt; FAILED=1; return; }
+  trap drop_suite_wt EXIT
+  wf=$SUITE_WT
+  echo; echo "=== canary suites: workflows at ${head:0:12} (committed HEAD, clean worktree $wf)"
+  ( cd "$wf" && CANARY_NESTED=1 TEACHING_PLUGIN_ROOT="$TEACHING" bash scripts/test.sh ) > "$HOME_DIR/workflows-suite.log" 2>&1
   rc=$?
   # Each suite's summary and its failing tests are what a reader needs; the full log is kept.
   grep -E '^\(fail\)|^ *[0-9]+ (pass|fail)$|^Ran |^test\.sh: |Unhandled error' "$HOME_DIR/workflows-suite.log" | tail -n 40
-  [ "$rc" = 0 ] || { echo "FAIL [suites] workflows scripts/test.sh exited $rc — log $HOME_DIR/workflows-suite.log"; FAILED=1; }
-  echo; echo "=== canary suites: teaching ($TEACHING)"
+  [ "$rc" = 0 ] || { echo "FAIL [suites] workflows scripts/test.sh at ${head:0:12} exited $rc — log $HOME_DIR/workflows-suite.log"; FAILED=1; }
+  echo; echo "=== canary suites: teaching ($TEACHING at $(git -C "$TEACHING" rev-parse --short=12 HEAD 2>/dev/null || echo 'no git HEAD'))"
+  dirty=$(git -C "$TEACHING" status --porcelain --untracked-files=no 2>&1)
+  if [ -n "$dirty" ]; then
+    echo "FAIL [suites] teaching checkout has uncommitted changes to tracked files — the suite below is not testing what gets tagged:"
+    printf '%s\n' "$dirty" | sed 's/^/  /'
+    FAILED=1
+  fi
   mkdir -p "$HOME_DIR/tmp/teaching-suite"
-  ( cd "$TEACHING" && CANARY_NESTED=1 TMPDIR="$HOME_DIR/tmp/teaching-suite" PLAN_LINT="$WORK/plan-lint.ts" \
-      WORKFLOWS_ROOT="$ROOT" LEG_COUNTS_PY="$WORK/leg_counts.py" bash tests/run-all.sh ) > "$HOME_DIR/teaching-suite.log" 2>&1
+  ( cd "$TEACHING" && CANARY_NESTED=1 TMPDIR="$HOME_DIR/tmp/teaching-suite" PLAN_LINT="$wf/skills/work/scripts/plan-lint.ts" \
+      WORKFLOWS_ROOT="$wf" LEG_COUNTS_PY="$wf/skills/work/scripts/leg_counts.py" bash tests/run-all.sh ) > "$HOME_DIR/teaching-suite.log" 2>&1
   rc=$?
   grep -E '^\(fail\)|^ *[0-9]+ (pass|fail)$|[0-9]+ (passed|failed)|^FAILED|^ERROR|^==' "$HOME_DIR/teaching-suite.log" | tail -n 25
   [ "$rc" = 0 ] || { echo "FAIL [suites] teaching tests/run-all.sh exited $rc — log $HOME_DIR/teaching-suite.log"; FAILED=1; }
+  drop_suite_wt
+  trap - EXIT
 }
 
 # ------------------------------------------------------------------ template: a real course's plan lints clean
