@@ -2005,6 +2005,19 @@ test('ruleChecks p at block-at fails the gate via rulesThatFailed', async () => 
   expect(result.ruleVerdicts).toEqual([{ rule: 'R1', p: 0.85, verdict: 'fail' }])
 })
 
+test('a VIOLATED rule exiting 2 is a rule failure, and its spans reach ruleVerdicts and the RED lens digest', async () => {
+  const spans = ['notes/18-insider.typ:113', 'notes/18-insider.typ:207']
+  const stdout = JSON.stringify({ verdicts: [{ rule: 'N-UNCITED', p: 0.94, verdict: 'VIOLATED', spans }], unavailable: [] })
+  const { result, prompts } = await run(
+    { ...baseArgs, tasks: one, ruleChecks: { name: 'rules', cmd: 'x', blockAt: 0.85 } },
+    replies({ rules: { rules: { name: 'rules', exitCode: 2, stdout } } })
+  )
+  expect(result.overallPass).toBe(false)
+  expect(result.rulesThatFailed).toEqual(['N-UNCITED'])
+  expect(result.ruleVerdicts).toEqual([{ rule: 'N-UNCITED', p: 0.94, verdict: 'VIOLATED', spans }])
+  expect(prompts.get('lens')).toContain('N-UNCITED: p=0.94 — VIOLATED at notes/18-insider.typ:113, notes/18-insider.typ:207')
+})
+
 test('ruleChecks below block-at is advisory and passes', async () => {
   const stdout = JSON.stringify({ verdicts: [{ rule: 'R1', p: 0.84, verdict: 'warn' }], unavailable: [] })
   const { result } = await run(

@@ -10,10 +10,27 @@
 # Normalisation is symmetric by construction: the emitter writes both the caller's spelling and
 # its realpath -m form, and we look for either spelling of our own argument. Normalising on one
 # side only reports a live run dead whenever the two sides spell the same file differently.
+#
+# farm-alive.sh --watcher: exit 0 iff THIS session's watcher mod is ticking — its beacon
+# <root>/farm-events/<session>/watcher.alive (epoch seconds, rewritten every 15 s) is at most 60 s old.
+# Exit 1 when it is stale or absent: Claude Code loaded no plugin mod in this session (version below
+# 2.1.287, or its tengu_plugin_hooks_modules rollout switch served off), so nothing wakes it but a
+# cron. Exit 2 with no session id: no beacon can be named. Same window as hooks/watch/runs.ts.
 set -uo pipefail
 
+if [ "${1:-}" = "--watcher" ]; then
+  [ -n "${CLAUDE_CODE_SESSION_ID:-}" ] || exit 2
+  now=$(date +%s)
+  for root in "${TMPDIR:-/tmp}" /tmp; do
+    b=$(cat "${root%/}/farm-events/$CLAUDE_CODE_SESSION_ID/watcher.alive" 2>/dev/null) || continue
+    case "$b" in ''|*[!0-9]*) continue ;; esac
+    [ $((now - b)) -le 60 ] && [ $((b - now)) -le 60 ] && exit 0
+  done
+  exit 1
+fi
+
 out=${1:-}
-[ -n "$out" ] || { echo "usage: farm-alive.sh <result.json path>" >&2; exit 2; }
+[ -n "$out" ] || { echo "usage: farm-alive.sh <result.json path> | --watcher" >&2; exit 2; }
 
 dir="${TMPDIR:-/tmp}/farm-events${CLAUDE_CODE_SESSION_ID:+/$CLAUDE_CODE_SESSION_ID}"
 [ -d "$dir" ] || exit 1

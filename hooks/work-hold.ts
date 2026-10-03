@@ -73,6 +73,46 @@ interface State {
   rounds: number
   history?: RoundRecord[]
   compact?: CapRecord
+  /**
+   * The other holds this session armed, oldest last — one per work run, in THIS object rather than a
+   * file per run. The top-level hold is the one evaluated; `activeHold` rotates a queued hold to the
+   * top when the top's run is in flight and the queued one's is not, and a release promotes the next.
+   */
+  queued?: State[]
+}
+
+/** Swap queued hold `i` to the top. The container fields (compact, queued) stay with the top. */
+export function promote(s: State, i: number): State {
+  const q = [...(s.queued ?? [])]
+  const [next] = q.splice(i, 1)
+  const { queued: _q, compact, ...prev } = s
+  return { ...next, queued: [...q, prev as State], compact }
+}
+
+/** Drop the top hold and promote the first queued one. */
+export function nextHold(s: State): State {
+  const [next, ...rest] = s.queued ?? []
+  return { ...next, queued: rest, compact: s.compact }
+}
+
+/**
+ * The hold this Stop is about: the top one unless its run is in flight while a queued one's is not.
+ * A run in flight is being worked elsewhere; a held run with its verdict in is the session's work.
+ */
+export function activeHold(s: State): State {
+  if (!s.queued?.length || !inFlight(s)) return s
+  const i = s.queued.findIndex(q => !inFlight(q))
+  return i < 0 ? s : promote(s, i)
+}
+
+/** Remove the hold watching `run` from the container; null when no hold is left. */
+export function dropRun(s: State, run: string): { state: State | null; dropped: boolean } {
+  const all = [s, ...(s.queued ?? [])]
+  const keep = all.filter(h => h.run !== run)
+  if (keep.length === all.length) return { state: s, dropped: false }
+  if (!keep.length) return { state: null, dropped: true }
+  const [top, ...rest] = keep.map(({ queued: _q, compact: _c, ...h }) => h as State)
+  return { state: { ...top, queued: rest, compact: s.compact }, dropped: true }
 }
 
 /** One round of the hold, as the hook observed it. */
@@ -987,12 +1027,29 @@ function main(): void {
   // below is a Stop this file processed — the in-flight allow, the block, and each release — and a
   // stamp attached to only some of them would make the quietest path look like the dead hook. It
   // costs one write per Stop, on a file this hook already rewrites on most of them.
+  s = activeHold(s)
   s.lastEvaluatedAt = now
   writeFileSync(path, JSON.stringify(s))
 
-  /** Every release goes through here: ledger line, window restored, state gone, one message. */
+  /**
+   * Every release goes through here: ledger line, window restored, state gone, one message. With
+   * other holds queued the next is promoted instead, the window stays capped, and the ledger gets an
+   * `armed` line for it, so deleting the file still restores the hold rather than escaping it.
+   */
   const release = (verb: string, message: string): void => {
     appendFileSync(ledger, `${new Date().toISOString()}\t${verb}\t${s.check || s.goal || ''}\n`)
+    if (s.queued?.length) {
+      const next = nextHold(s)
+      // Promoted holds keep their own clock; the liveness stamp is the container's.
+      next.lastEvaluatedAt = now
+      writeFileSync(path, JSON.stringify(next))
+      appendFileSync(ledger, `${new Date().toISOString()}\tarmed (promoted)\t${JSON.stringify(next)}\n`)
+      process.stderr.write(
+        `hold: ${message} ${next.queued!.length + 1} other hold(s) still armed — next: ` +
+          `${next.run || next.check || next.goal}.\n`,
+      )
+      process.exit(0)
+    }
     uncap(session, s)
     rmSync(path, { force: true })
     const moved = rubricDrift(s)
@@ -1186,6 +1243,8 @@ function brief(): void {
       ? `RUN: ${s.run} — ${inFlight(s) ? 'IN FLIGHT (a stop is allowed and counts no round; the clock still runs)' : 'not in flight (a verdict is on disk)'}`
       : '',
     `BUDGET: ${s.rounds} of ${s.maxRounds} rounds used; ${left} min left of the ${s.ceilingMinutes} min ceiling.`,
+    ...(s.queued ?? []).map(q =>
+      `ALSO HELD: ${q.run || q.check || q.goal} — ${q.run && inFlight(q) ? 'in flight' : 'evaluated once this hold releases or goes in flight'}.`),
     [s.authority, s.continuation, redispatchLine(s)].filter(Boolean).join(' '),
     rounds ? `ROUNDS SO FAR — do not repeat these:\n${rounds}` : '',
   ].filter(Boolean)
@@ -1193,8 +1252,35 @@ function brief(): void {
   process.exit(0)
 }
 
+/**
+ * `--drop-run DIR`: release only the hold watching DIR — work-abandon.sh's half. Prints `released`
+ * when no hold is left (the caller then restores the window and removes the state), `kept` when other
+ * holds remain, `absent` when no hold watches DIR.
+ */
+function dropRunCli(): void {
+  const session = process.env.CLAUDE_CODE_SESSION_ID || ''
+  const run = process.argv[process.argv.indexOf('--drop-run') + 1] || ''
+  let s: State
+  try {
+    s = JSON.parse(readFileSync(statePath(session), 'utf8'))
+  } catch {
+    process.stdout.write('absent\n')
+    return
+  }
+  const d = dropRun(s, run)
+  if (!d.dropped) return void process.stdout.write('absent\n')
+  if (d.state) {
+    writeFileSync(statePath(session), JSON.stringify(d.state))
+    appendFileSync(ledgerPath(session), `${new Date().toISOString()}\tarmed (remaining)\t${JSON.stringify(d.state)}\n`)
+    return void process.stdout.write('kept\n')
+  }
+  process.stdout.write('released\n')
+}
+
 if (import.meta.main)
-  (process.argv.includes('--brief')
+  (process.argv.includes('--drop-run')
+    ? dropRunCli
+    : process.argv.includes('--brief')
     ? brief
     : process.argv.includes('--cap')
       ? capCli
