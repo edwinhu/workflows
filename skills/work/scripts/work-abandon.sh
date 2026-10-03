@@ -58,11 +58,25 @@ if [ -n "$SID" ]; then
   if [ -f "$STATE" ]; then
     HOOK="$(cd "$(dirname "$(readlink -f "$0")")/../../.." && pwd)/hooks/work-hold.ts"
     printf '%s\tabandoned by user\t%s\n' "$AT" "$WHY" >> "$LOG"
-    # Restore the compact window BEFORE the state goes: the cap record lives inside it, exactly as
-    # --disarm and every release in the hook do it.
-    [ -r "$HOOK" ] && command -v bun >/dev/null 2>&1 && bun "$HOOK" --uncap
-    rm -f "$STATE"
-    echo "work-abandon: hold released (ledger: abandoned by user)"
+    # Only THIS run's hold: a session holding several runs keeps the others. A hold that watches no
+    # run at all (hand-armed) is released as before.
+    drop=released
+    if [ -r "$HOOK" ] && command -v bun >/dev/null 2>&1; then
+      drop=$(bun "$HOOK" --drop-run "$(cd "$RUN" && pwd)" 2>/dev/null) || drop=released
+      if [ "$drop" = absent ] && jq -e '.run' "$STATE" >/dev/null 2>&1; then
+        echo "work-abandon: the hold armed in this session watches other run(s), not $RUN — left armed."
+        drop=kept
+      fi
+    fi
+    if [ "$drop" = kept ]; then
+      echo "work-abandon: this run's hold released; any other hold in this session stays armed."
+    else
+      # Restore the compact window BEFORE the state goes: the cap record lives inside it, exactly as
+      # --disarm and every release in the hook do it.
+      [ -r "$HOOK" ] && command -v bun >/dev/null 2>&1 && bun "$HOOK" --uncap
+      rm -f "$STATE"
+      echo "work-abandon: hold released (ledger: abandoned by user)"
+    fi
   else
     echo "work-abandon: no hold armed for this session."
   fi

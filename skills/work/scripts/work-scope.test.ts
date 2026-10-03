@@ -95,7 +95,8 @@ function dispatch(f: { dir: string; plan: string }, env: Record<string, string>)
       encoding: 'utf8',
       timeout: 120_000,
       cwd: f.dir,
-      env: { ...process.env, CLAUDE_CODE_SESSION_ID: '', ...env },
+      // The fixture's own TMPDIR: a real dispatch appends to $TMPDIR/work-dispatch.log.
+      env: { ...process.env, CLAUDE_CODE_SESSION_ID: '', TMPDIR: f.dir, ...env },
     })
     return { code: 0, out }
   } catch (e: any) {

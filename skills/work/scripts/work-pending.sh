@@ -1,27 +1,42 @@
 #!/usr/bin/env bash
-# Is a work run armed but undispatched in this project?
+# Is a work run approved but undispatched in this project?
 #
-# Armed  = the newest plan carries a `<!-- work:dispatch … -->` block. Writing that block is
-#          what arms the run, and the plan is the only file plan mode may write — which is also
-#          the only thing that survives the context clear on plan approval.
-# Undispatched = no <root>/*/args.json records this plan's CURRENT spec hash, and that hash is
-#          not listed in <root>/abandoned, for <root> in .work and .craft. The hash is over the
-#          dispatch block's canonical JSON, so editing the prose around it does not read as an
-#          un-dispatched amendment.
-#          `.craft/` is the pre-rename run directory and is read here PERMANENTLY, as history: a
-#          plan dispatched before the rename has its only record there, forever, so reading only
-#          .work/ reports every such plan as owed. History only — nothing is ever written to
-#          .craft/, and a .craft/ run is never treated as in flight.
+#   work-pending.sh [root] [--transcript PATH] [--written]
+#
+# Armed  = the newest plan carries a `<!-- work:dispatch … -->` block.
+# Approved = an ExitPlanMode for THAT plan file returned without error in this session's transcript
+#          (or in the transcript a re-seeded "Implement the following plan" session names). Writing a
+#          plan is staging it; only the user's approval makes a dispatch owed. The transcript is
+#          --transcript, else ~/.claude/projects/*/$CLAUDE_CODE_SESSION_ID.jsonl; with neither, no
+#          approval can be shown and nothing is owed. --written skips this test (work-dispatch.sh's
+#          "dispatch the newest armed plan" default, where the caller already chose to dispatch).
+# Undispatched = no run dir records this plan's CURRENT spec hash, and the hash was not abandoned.
+#          Run dirs are found three ways: <root>/{.work,.craft}/*/args.json, the same under the
+#          block's projectDir, and the dispatch log ${TMPDIR}/work-dispatch.log, where
+#          work-dispatch.sh records every run dir it writes — so a `--run-dir` outside the project
+#          is found too. A log entry is trusted only when that args.json still carries the hash.
+#          `.craft/` and `<root>/.work/abandoned` are history, read but never written: abandonment
+#          is recorded in the dispatch log, outside the project tree.
+#          The hash is over the dispatch block's canonical JSON, so editing the prose around it does
+#          not read as an un-dispatched amendment.
 #
 # Prints "<planPath>\t<runId>" and exits 0 when a dispatch is owed; silent exit 1 otherwise.
 # Called per Edit/Write by main-thread-guard.sh, so the negative path must stay cheap: the
-# directory test below fires before anything reads or hashes a file.
+# directory test below fires before anything reads or hashes a file, and the transcript is read last.
 set -uo pipefail
 
 # Resolved before the cd below — a relative $0 would not survive it.
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
-cd "${1:-$PWD}" 2>/dev/null || exit 1
+root_arg="" transcript="" written=0
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --transcript) transcript="${2-}"; shift 2 || exit 1 ;;
+    --written) written=1; shift ;;
+    *) root_arg="$1"; shift ;;
+  esac
+done
+cd "${root_arg:-$PWD}" 2>/dev/null || exit 1
 
 # The plans directory is `plansDirectory`, not a fixed path — the shell twin of
 # hooks/lib/plans-dir.ts. Precedence is Claude Code's own (project local > shared project > user),
@@ -62,10 +77,21 @@ hash=$(bash "$SCRIPTS/work-dispatch.sh" --spec-hash "$plan" 2>/dev/null) || exit
 # forever because the dispatch record of a plan dispatched before the rename exists nowhere else.
 HISTORY_ROOTS=(.work .craft)
 
-# Abandoned: one hash per line, appended by `work-dispatch.sh --abandon` (to .work only).
+# Abandoned: legacy one-hash-per-line files (history; nothing writes them now).
 for r in "${HISTORY_ROOTS[@]}"; do
   if [ -f "$r/abandoned" ] && grep -qxF "$hash" "$r/abandoned"; then exit 1; fi
 done
+
+# The dispatch log: "<iso>\t<verb>\t<hash>\t<path>". `abandoned` releases; `dispatched` names the run
+# dir, which must still carry the hash — the log says where to look, the run dir says what ran.
+DLOG="${TMPDIR:-/tmp}/work-dispatch.log"
+if [ -f "$DLOG" ]; then
+  while IFS=$'\t' read -r _ verb h path; do
+    [ "$h" = "$hash" ] || continue
+    [ "$verb" = abandoned ] && exit 1
+    [ "$verb" = dispatched ] && [ -f "$path/args.json" ] && grep -qF "\"$hash\"" "$path/args.json" && exit 1
+  done < <(grep -F "$hash" "$DLOG")
+fi
 
 # Dispatched: some run dir already wrote args for this exact spec. A re-hash after a FAIL-loop
 # amendment therefore re-arms the run, which is correct — the amended spec has not been dispatched.
@@ -103,6 +129,15 @@ if [ -n "$projdir" ] && [ "$projdir" != "$PWD" ]; then
       grep -qF "\"$hash\"" "$a" && exit 1
     done
   done
+fi
+
+# APPROVAL, last because it reads a transcript. A plan nobody approved is staged, not owed.
+if [ "$written" != 1 ]; then
+  if [ -z "$transcript" ] && [ -n "${CLAUDE_CODE_SESSION_ID:-}" ]; then
+    transcript=$(ls "$HOME"/.claude/projects/*/"$CLAUDE_CODE_SESSION_ID".jsonl 2>/dev/null | head -1)
+  fi
+  [ -n "$transcript" ] && [ -f "$transcript" ] || exit 1
+  python3 "$SCRIPTS/plan-approved.py" "$(realpath "$plan")" "$transcript" || exit 1
 fi
 
 runid=$(sed -n 's/.*"runId"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$plan" | head -1)

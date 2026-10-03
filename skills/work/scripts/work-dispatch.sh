@@ -9,7 +9,7 @@
 # without re-deriving anything, and without re-exploring the tree the plan was built from.
 #
 #   work-dispatch.sh [plan.md]        dispatch (plan defaults to the armed one)
-#   work-dispatch.sh --abandon [plan] record the plan as not-to-be-run; releases the guard
+#   work-dispatch.sh --abandon [plan] record the plan as not-to-be-run (in $TMPDIR/work-dispatch.log); releases the guard
 #   work-dispatch.sh --print [plan]   write args.preview.json and stop; the run stays armed
 #   work-dispatch.sh --no-lint [plan] skip EVERY dispatch tier below
 #   work-dispatch.sh --no-red-probe   record the red before-run but refuse nothing; keep plan-lint
@@ -865,17 +865,23 @@ if [ -n "${1:-}" ]; then
 fi
 
 if [ -z "$plan" ]; then
-  plan=$(bash "$SKILL/scripts/work-pending.sh" "$PWD" | cut -f1)
+  plan=$(bash "$SKILL/scripts/work-pending.sh" "$PWD" --written | cut -f1)
   [ -n "$plan" ] || { echo "no armed work run in $PWD (and no plan given)" >&2; exit 2; }
 fi
 [ -f "$plan" ] || { echo "no such plan: $plan" >&2; exit 2; }
 plan=$(realpath "$plan")
 hash=$(spec_hash "$plan") || exit 1
 
+# The dispatch log, read by work-pending.sh: where each spec hash was dispatched, or that it was
+# abandoned. In TMPDIR, never the project: a run dispatched with --run-dir must be findable without
+# writing into the tree it promised not to touch. It replaces the per-project `.work/abandoned`.
+DLOG="${TMPDIR:-/tmp}/work-dispatch.log"
+log_dispatch() { printf '%s\t%s\t%s\t%s\n' "$(date -Is)" "$1" "$hash" "$2" 2>/dev/null >> "$DLOG" || :; }
+
 if [ "$mode" = abandon ]; then
-  mkdir -p .work && printf '%s\n' "$hash" >> .work/abandoned
+  log_dispatch abandoned "$plan"
   echo "abandoned: $plan"
-  echo "  hash $hash recorded in $PWD/.work/abandoned — the guard no longer holds writes."
+  echo "  hash $hash recorded in $DLOG — the guard no longer holds writes."
   echo "  Editing the spec re-arms it (new hash); dispatch with: work-dispatch.sh $plan"
   exit 0
 fi
@@ -903,17 +909,20 @@ args["planPath"], args["specHash"] = plan, hash_
 # Where work is installed, so the prompts workflow.js builds name paths that exist here.
 args["skillRoot"] = skill_root
 args.setdefault("projectDir", block.get("projectDir") or __import__("os").getcwd())
-print(json.dumps({"runId": run_id, "turns": block.get("goalTurns", 12),
+print(json.dumps({"runId": run_id, "turns": block.get("goalTurns"),
                   "maxRounds": args.get("maxRounds", 6), "args": args}))
 PY
 ) || exit 1
 
 runid=$(python3 -c 'import json,sys; print(json.loads(sys.argv[1])["runId"])' "$run")
-turns=$(python3 -c 'import json,sys; print(json.loads(sys.argv[1])["turns"])' "$run")
+# goalTurns is the HOLD's budget: the hold counts red Stops of this session, which are turns, not run
+# rounds. Empty when the plan does not state it, and the hold then falls back to maxRounds. It used to
+# be read here and used nowhere, so `goalTurns: 3` armed a hold whose ceiling said 6 (2026-10-02).
+turns=$(python3 -c 'import json,sys; t=json.loads(sys.argv[1])["turns"]; print(t if isinstance(t,int) and not isinstance(t,bool) and t>0 else "")' "$run")
 # The GOAL's round clause reads args.rounds, which work-redispatch increments and hard-stops at
 # maxRounds. Composed against goalTurns it named a number the counter can never reach — observed
 # 2026-08-27, "reads 24 or more" against a maxRounds of 3 — leaving the wall clock as the only live
-# escape. goalTurns still governs the turn budget; it is not a round budget.
+# escape. So the goal reads maxRounds and the hold reads goalTurns.
 maxrounds=$(python3 -c 'import json,sys; print(json.loads(sys.argv[1])["maxRounds"])' "$run")
 R="${rundir:-$PWD/.work}/$runid"
 mkdir -p "$R" || exit 1
@@ -1053,6 +1062,9 @@ echo "args:  $out"
 # the run is farmed out. For testing this script itself.
 [ -n "${WORK_DISPATCH_DRYRUN:-}" ] && { echo "WORK_DISPATCH_DRYRUN: lint passed, nothing dispatched."; exit 0; }
 
+# Past every test seam: this is a real dispatch, so record where its run dir is.
+log_dispatch dispatched "$R"
+
 # Phase 3: the WAKE and the HOLD.
 #
 # THE WAKE is the watcher mod (hooks/watch/watcher.ts). Its timer restarts with every session start and
@@ -1129,11 +1141,11 @@ arm_hold() {
   minutes=$("$SKILL/scripts/compose-goal.sh" --minutes 2>/dev/null)
   case "$minutes" in ''|*[!0-9]*) minutes=720 ;; esac
   if [ -n "$goalcheck" ]; then
-    bash "$hold" "$goalcheck" --goal "$goal" --run "$R" --rounds "$maxrounds" --minutes "$minutes"
+    bash "$hold" "$goalcheck" --goal "$goal" --run "$R" --rounds "${turns:-$maxrounds}" --minutes "$minutes"
     rc=$?
   elif [ -n "$goal" ]; then
     # CHECK-LESS: Jev alone on the goal, bounded by the same two ceilings.
-    bash "$hold" --goal "$goal" --run "$R" --rounds "$maxrounds" --minutes "$minutes"
+    bash "$hold" --goal "$goal" --run "$R" --rounds "${turns:-$maxrounds}" --minutes "$minutes"
     rc=$?
   else
     echo "hold: not armed — the plan states neither args.goalCheck nor args.goal, so there is nothing to hold on."

@@ -186,8 +186,11 @@ cannot state its own hash:
 Writing it is what arms the run, and the plan is the only file plan mode may write — which is also
 the only thing that survives approval. **Claude Code clears the context when a plan is approved near
 the ceiling** and re-seeds a bare `Implement the following plan:` session with no `work` in it, which
-will otherwise implement in the main thread. While a plan is armed and no `.work/*/args.json`
-records its hash, `~/.claude/hooks/main-thread-guard.sh` denies Edit/Write/Agent in that project —
+will otherwise implement in the main thread. While a plan is armed AND APPROVED — an ExitPlanMode
+for that file returned without error in this session's transcript, or in the one a re-seeded session
+names (`work-pending.sh`) — and no run dir records its hash (`.work/`, the block's `projectDir`, or
+any `--run-dir`, found through `$TMPDIR/work-dispatch.log`), `~/.claude/hooks/main-thread-guard.sh`
+denies Edit/Write/Agent in that project —
 resolving the project from the nearest ancestor of `cwd`, so a `cd` cannot disarm it — and blocks the
 turn from ending once; both name the dispatch command. It denies only what some task's
 `writablePaths` covers (`work-dispatch.sh --covers`, failing closed when the spec cannot decide):
@@ -197,7 +200,9 @@ task's output and must still exist before wave 1 — the plan declares `scaffold
 `work-dispatch.sh --scaffold` tells the guard to allow it. Without that list the only exit was
 `--abandon`, which releases the guard for the **whole rest of the session** and silences the Stop
 nudge along with it, so a plan defect became a disarmed run. A `readOnly` run never writes, so
-there the Stop nudge is the only thing that fires. Derive the prose Run sizing block from the JSON;
+there the Stop nudge is the only thing that fires. **A plan written but not approved is staged**: no
+guard, no nudge, until ExitPlanMode or an explicit `work-dispatch.sh <plan>`. `--abandon` un-stages
+an approved one and records that in `$TMPDIR/work-dispatch.log`, never in the project tree. Derive the prose Run sizing block from the JSON;
 `work-dispatch.sh` prints the fan-out it computes, so drift shows up before anything is dispatched.
 
 The user edits the plan file and approves via ExitPlanMode. Then **hash the plan where plan mode
@@ -297,9 +302,15 @@ bash $A --disarm                # THE USER releases it: a tty prompt, or the per
 ```
 
 Defaults are 4 rounds and 120 minutes; above either, the arm prints the per-wake context cost and the
-equivalent `grind` command, then arms. Arming caps this session's auto-compact window at 250000
-through `.claude/settings.local.json`, and every release restores it (`WORK_HOLD_COMPACT_WINDOW=0`
-opts out). Templates for the check, the nudge and an unattended brief:
+equivalent `grind` command, then arms. A dispatch arms with `--rounds` = the block's `goalTurns`
+(else `args.maxRounds`): the hold counts this session's red Stops, which are turns. Each run keeps its
+own hold in the one state object — a second dispatch queues the first run's hold rather than replacing
+it, a re-dispatch of the SAME plan replaces its own, the Stop hook judges whichever held run is not in
+flight, and a release promotes the next. Arming caps this session's auto-compact window at 250000
+through the project's `.claude/settings.local.json` — the only settings tier both above the user file
+and writable mid-session (managed needs root, `--settings` is startup-only), and kept out of commits by
+Claude Code's own global excludes — and the last release restores it (`WORK_HOLD_COMPACT_WINDOW=0`
+opts out; a session STARTED in that project meanwhile reads the cap too). Templates for the check, the nudge and an unattended brief:
 [`references/hold-templates.md`](${CLAUDE_PLUGIN_ROOT}/skills/work/references/hold-templates.md).
 
 **Release is not the session's to take.** Three layers, none sufficient alone:
@@ -414,7 +425,7 @@ and `work-elapsed.sh`.
 
 **If the USER abandons the run**, retire it with
 `bash ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/work-abandon.sh <run-dir> --why '<reason>'`: it writes
-the run's verdict (`overallPass=false, abandoned=true`), releases the hold, and allows the `CronDelete`
+the run's verdict (`overallPass=false, abandoned=true`), releases that run's hold (others stay), and allows the `CronDelete`
 a `cron-delete-guard` deny would otherwise refuse. It is the only sanctioned way out of an armed hold
 short of the user confirming `work-hold.sh --disarm` at a terminal.
 
@@ -827,7 +838,9 @@ Two consequences, and they are the whole of the change:
   the orchestrator makes out loud with the user, not a gate this file imposes on every run.
 
 ```bash
-# 30-minute timeout; NEVER run_in_background; NEVER relaunch on timeout (the TUI is still open)
+# 30-minute timeout; NEVER run_in_background; NEVER relaunch on timeout (the TUI is still open).
+# stderr names the herdr tab before blocking; a tab closed unreviewed returns `unreviewed`, a failed
+# launch exits 2, and TUICR_WAIT_MAX (1800 s) ends the wait with exit 3, leaving the TUI open.
 bash ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/human-review-gate.sh -w --no-update-check
 # or: -r <range> / pr <N> per the plan's review surface
 ```
