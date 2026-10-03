@@ -20,6 +20,9 @@ else
   trap 'rm -rf "$run_tmp"' EXIT
 fi
 export TMPDIR="$run_tmp" FARM_OUTCOMES="$run_tmp/farm-outcomes.jsonl"
+# No test reads the real OpenRouter balance: every interactive SessionStart spawn would, and a low
+# account would then change what those tests see. tests/openrouter-credits.test.ts points at its stubs.
+export OPENROUTER_CREDITS_URL=off
 # The python suites import modules that live in the tree; their bytecode would land in __pycache__/
 # beside them. Ignored by git, but still a write into the tree every run.
 export PYTHONDONTWRITEBYTECODE=1

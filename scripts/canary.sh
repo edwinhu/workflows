@@ -23,6 +23,8 @@
 # TEMPLATE: teaching's notes repair template rendered for secreg lecture $LECTURE by
 #     course_paths.py (scripts/render-template.ts), every course path it names on disk, and
 #     plan-lint at 0 findings of any severity — the plan a real session would dispatch.
+# CREDITS: a --run that dispatches reads the OpenRouter balance first (scripts/lib/openrouter-credits.ts
+#     --preflight) and exits 1 with the top-up line on an empty account.
 #
 # Isolation: TMPDIR, CLAUDE_CODE_SESSION_ID and CLAUDE_PROJECT_DIR point into a canary temp root, so the
 # hold state, the dispatch log, the farm-events stream and any settings.local.json land there — never
@@ -59,7 +61,7 @@ while [ $# -gt 0 ]; do
     --events) ASSERT_EVENTS=${2-}; shift 2 || die "--events needs a directory" ;;
     --expect-exit) ASSERT_EXIT=${2-}; shift 2 || die "--expect-exit needs a code list" ;;
     --mech-count) ASSERT_COUNTS+=("${2-}"); shift 2 || die "--mech-count needs a regex" ;;
-    -h|--help) sed -n '2,33p' "${BASH_SOURCE[0]}"; exit 0 ;;
+    -h|--help) sed -n '2,35p' "${BASH_SOURCE[0]}"; exit 0 ;;
     *) die "unknown argument: $1" ;;
   esac
 done
@@ -174,7 +176,10 @@ for r in rules:
         continue
     if not v.get("verdicts"):
         fail(f"rule leg {r.get('name')}: 0 verdicts — examined nothing")
-    if v.get("unavailable"):
+    broke = [u.get("reason", "") for u in v.get("unavailable") or [] if "out of credits" in str(u.get("reason", ""))]
+    if broke:
+        fail(f"rule leg {r.get('name')}: {broke[0]}")
+    elif v.get("unavailable"):
         fail(f"rule leg {r.get('name')}: unavailable {json.dumps(v['unavailable'])[:220]}")
 if res is not None:
     st = res.get("scoreTable") or {}
@@ -252,6 +257,10 @@ fi
 [ -z "${CANARY_NESTED:-}" ] || die "refusing to run inside a canary's own suite run (CANARY_NESTED is set)"
 command -v bun >/dev/null || die "bun not on PATH"
 command -v jq >/dev/null || die "jq not on PATH"
+# A canary on an empty OpenRouter account is doomed: every Jev rule leg comes back unavailable.
+if [ "$RUN" = 1 ] && { step diag || step dev; }; then
+  bun "$ROOT/scripts/lib/openrouter-credits.ts" --preflight || exit 1
+fi
 STAMP=$(date +%m%d-%H%M%S)-$$
 HOME_DIR=$(mktemp -d "${CANARY_TMP:-/tmp}/workflows-canary.XXXXXX") || die "mktemp failed"
 mkdir -p "$HOME_DIR/tmp" "$STATE"

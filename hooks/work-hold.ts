@@ -645,6 +645,36 @@ export function parseNoul(
  * reading it from a table it owns. Returns raw stdout on success, or an `unavailable` reason. It
  * NEVER throws and never interprets an answer.
  */
+/** The reason every OpenRouter caller gives for a 402. The user tops up by hand; there is no auto top-up. */
+export const OPENROUTER_OUT_OF_CREDITS =
+  'OpenRouter is out of credits — top up at https://openrouter.ai/settings/credits'
+
+/** HTTP 402, or OpenRouter's error body for it (`error.code` 402, "insufficient credits"), under any status. */
+export function outOfCredits(status: number, body: string): boolean {
+  if (status === 402) return true
+  const said = (t: unknown) => /insufficient credits|out of credits|requires more credits/i.test(String(t ?? ''))
+  try {
+    const err = JSON.parse(body)?.error
+    return !!err && (err.code === 402 || said(err.message))
+  } catch {
+    return status >= 400 && said(body.slice(0, 2000))
+  }
+}
+
+/** The OpenRouter key every caller uses: $WORK_HOLD_JUDGE_TOKEN, else the agenix secret. Null with the reason. */
+export function openrouterKey(): { key: string; missing: null } | { key: null; missing: string } {
+  let token = process.env.WORK_HOLD_JUDGE_TOKEN || ''
+  if (!token) {
+    const runtime = process.env.XDG_RUNTIME_DIR || '/run/user/1000'
+    try {
+      token = readFileSync(`${runtime}/agenix/openrouter-api-key`, 'utf8').trim()
+    } catch {
+      return { key: null, missing: 'no openrouter key (agenix secret not present)' }
+    }
+  }
+  return token ? { key: token, missing: null } : { key: null, missing: 'empty openrouter key' }
+}
+
 export function decisionsCall(
   state: string,
   questions: Record<string, { type: string; instructions: string; criteria?: Record<string, string> }>,
@@ -657,28 +687,28 @@ export function decisionsCall(
       ? opts.maxTimeSeconds
       : 60
 
-  let token = process.env.WORK_HOLD_JUDGE_TOKEN || ''
-  if (!token) {
-    const runtime = process.env.XDG_RUNTIME_DIR || '/run/user/1000'
-    try {
-      token = readFileSync(`${runtime}/agenix/openrouter-api-key`, 'utf8').trim()
-    } catch {
-      return { stdout: null, unavailable: 'no openrouter key (agenix secret not present)' }
-    }
-  }
-  if (!token) return { stdout: null, unavailable: 'empty openrouter key' }
+  const k = openrouterKey()
+  if (k.key === null) return { stdout: null, unavailable: k.missing }
 
+  // curl exits 0 on a 4xx, so the status rides on a trailing line: a 402 body otherwise reaches every
+  // caller as a reply with no answers, and the empty account reads as a parse failure.
   const r = spawnSync(
     'curl',
     ['-sS', '--max-time', String(maxTime), '-X', 'POST', url,
-     '-H', `Authorization: Bearer ${token}`,
+     '-H', `Authorization: Bearer ${k.key}`,
      '-H', 'Content-Type: application/json',
+     '-w', '\n%{http_code}',
      '--data-binary', '@-'],
     // The spawn timeout is a backstop 30 s behind curl's own cap: 90 s at the default 60.
     { encoding: 'utf8', input: JSON.stringify({ state, model, questions }), timeout: (maxTime + 30) * 1000 },
   )
   if (r.error || r.status !== 0) return { stdout: null, unavailable: 'decisions endpoint unreachable' }
-  return { stdout: r.stdout || '', unavailable: null }
+  const raw = r.stdout || ''
+  const nl = raw.lastIndexOf('\n')
+  const body = nl >= 0 ? raw.slice(0, nl) : raw
+  const status = Number(nl >= 0 ? raw.slice(nl + 1).trim() : 0)
+  if (outOfCredits(status, body)) return { stdout: null, unavailable: OPENROUTER_OUT_OF_CREDITS }
+  return { stdout: body, unavailable: null }
 }
 
 function judgeViaDecisions(
@@ -773,7 +803,17 @@ function judgeGoal(
   // judge below stays as the fallback for when the key or the endpoint is not there.
   const decided = judgeViaDecisions(evidence, goal, !!facts)
   if (decided.verdict !== 'UNAVAILABLE') return decided
+  // An empty OpenRouter account must reach the user through the hold message, whatever the fallback says.
+  if (decided.reason === OPENROUTER_OUT_OF_CREDITS) {
+    const chat = judgeViaChat(prompt)
+    return chat.verdict === 'UNAVAILABLE'
+      ? decided
+      : { verdict: chat.verdict, reason: `${chat.reason} (chat fallback; Jev skipped: ${OPENROUTER_OUT_OF_CREDITS})` }
+  }
+  return judgeViaChat(prompt)
+}
 
+function judgeViaChat(prompt: string): { verdict: 'MET' | 'UNMET' | 'UNAVAILABLE'; reason: string } {
   // STRUCTURED OUTPUT, not prose parsing. The verdict is a boolean, and asking for it in prose
   // then scanning for a standalone MET/UNMET is guesswork with a fail-open hole: the wrapper's own
   // warning lines sat ahead of the answer, and a judge that cannot be parsed silently stops
