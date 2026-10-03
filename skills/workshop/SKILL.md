@@ -150,7 +150,7 @@ resolves them against no particular directory; `writablePaths` and every `mechan
              "${CLAUDE_PLUGIN_ROOT}/skills/workshop/templates/custom-outline.typ"] },
   ],
 
-  // The workshop gate. workshop-deck owns the nine computed rows and is never conditional.
+  // The workshop gate. workshop-deck owns the ten computed rows and is never conditional.
   // constraints ships the same runner standalone: it exits 0 ONLY when failed[], errors[] and
   // skipped[] are all empty AND the summed `inspected` is greater than zero, and 1 otherwise, so
   // it is a check capable of failing on a presentation directory that does not resolve or a corpus
@@ -209,7 +209,7 @@ resolves them against no particular directory; `writablePaths` and every `mechan
     "An artifact absent from the plan's ## Outputs and Verification is one nothing will check and cannot be claimed as verified. Do not verify an output that section never declared.",
     "The deck is built by dispatched agents. Main chat writes no .typ file, by any tool.",
     "Standing workshop doer authority — the Typst constraint corpus governs every deck and notes task. You already hold its index: your agent definition names the typst:typst skill, whose bang renders the index at load time from each rule's own frontmatter, so it is correct the moment a rule is added or retired. NEVER state how many modules there are; the index in your context IS the set. They have one canonical home and are never copied into a skill. A task's refs are contractual reads of task ARTEFACTS, not constraints: read in full every file your task's refs name before writing a slide. ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/slide-spec-grammar.md stays a separate load.",
-    "Rules: ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/workshop-checks.md defines all twelve checks and which are computed; ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/slide-spec-grammar.md defines the plan grammar the probe parses; the canonical Typst constraints under ~/.claude/skills/typst/constraints/ govern the source and are the checker's authority — indexed for every doer by the preloaded typst:typst skill's bang line, never copied into a task's refs; the deck templates are ${CLAUDE_PLUGIN_ROOT}/skills/workshop/templates/theme.typ and ${CLAUDE_PLUGIN_ROOT}/skills/workshop/templates/custom-outline.typ.",
+    "Rules: ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/workshop-checks.md defines all thirteen checks and which are computed; ${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/slide-spec-grammar.md defines the plan grammar the probe parses; the canonical Typst constraints under ~/.claude/skills/typst/constraints/ govern the source and are the checker's authority — indexed for every doer by the preloaded typst:typst skill's bang line, never copied into a task's refs; the deck templates are ${CLAUDE_PLUGIN_ROOT}/skills/workshop/templates/theme.typ and ${CLAUDE_PLUGIN_ROOT}/skills/workshop/templates/custom-outline.typ.",
   ].join("\n"),
 
   implementerAgentType: "workshop",   // the doer's own prompt replaces Claude Code's software-engineering one, which frames a talk as a codebase
