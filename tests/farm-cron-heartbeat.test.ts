@@ -95,11 +95,18 @@ describe('a --workflow run from a session with no ticking watcher', () => {
   const ME = { FARM_OUT_CHILD: '', CLAUDE_CODE_SESSION_ID: 'fc-sess' }
   const WF = ['--provider', 'claude', '--workflow', '@wf', '--out', '@out', '--cwd', '@cwd', '--no-cron']
 
-  test('no beacon: it says so and prints the CronCreate block despite --no-cron', () => {
+  test('no beacon: it says so; --no-cron stays the caller\'s and the line says what that leaves', () => {
     const r = run(WF, ME)
     expect(r.status).toBe(0)
     expect(r.stdout).toContain('NO WATCHER IN THIS SESSION')
-    expect(r.stdout).toContain('CronCreate')
+    expect(r.stdout).toContain("with --no-cron that cron must be the caller's, or nothing wakes it")
+    expect(r.stdout).toContain('/reload-plugins')
+  })
+
+  test('no beacon, default cron: the warning precedes the CronCreate block', () => {
+    const r = run(WF.filter(a => a !== '--no-cron'), ME)
+    expect(r.stdout).toContain('NO WATCHER IN THIS SESSION')
+    expect(r.stdout.indexOf('NO WATCHER')).toBeLessThan(r.stdout.indexOf('CronCreate'))
   })
 
   test('a stale beacon (61 s) is no watcher either', () => {

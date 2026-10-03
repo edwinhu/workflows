@@ -12,7 +12,7 @@
  * reworded copy is red the moment it lands.
  *
  * Every assertion goes through the real prompt-building path with a stub wrapper standing in for the
- * provider -- farm.sh's argv, the file farm-team.sh feeds the wrapper on stdin, grind.sh's
+ * provider -- farm.sh's stdin, the file farm-team.sh feeds the wrapper on stdin, grind.sh's
  * build_prompt. Grepping the scripts would pass on a variable that is defined and never referenced,
  * which is the defect most likely to happen here: a `-p` line that forgets to concatenate it.
  *
@@ -65,7 +65,7 @@ function show(label: string, got: string): string {
 }
 
 describe('the early-stop standing instruction reaches every unattended child prompt', () => {
-  test('farm.sh: it is concatenated onto the -p argument, after the row prompt', () => {
+  test('farm.sh: it is concatenated onto the prompt fed on stdin, after the row prompt', () => {
     const d = workdir('child-instr-farm')
     const agentCwd = join(d, 'agentcwd')
     const bin = join(d, 'bin')
@@ -74,10 +74,10 @@ describe('the early-stop standing instruction reaches every unattended child pro
 
     // The stub IS the provider as far as farm.sh is concerned: it files the argv it was handed and
     // prints one result line, so the row completes without a model call.
-    const argvFile = join(d, 'argv.txt')
+    const promptFile = join(d, 'prompt.txt')
     script(
       join(bin, 'claude-code'),
-      `printf '%s\\0' "$@" > "${argvFile}"\nprintf '{"type":"result","result":"done"}\\n'`,
+      `cat > "${promptFile}"\nprintf '{"type":"result","result":"done"}\\n'`,
     )
 
     const tasks = join(d, 'tasks.json')
@@ -93,9 +93,8 @@ describe('the early-stop standing instruction reaches every unattended child pro
       env: hermeticEnv(d, { PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1' }),
     })
 
-    expect(existsSync(argvFile), `farm.sh never invoked the wrapper; stderr: ${r.stderr}`).toBe(true)
-    const argv = readFileSync(argvFile, 'utf8').split('\0')
-    const p = argv[argv.indexOf('-p') + 1] ?? ''
+    expect(existsSync(promptFile), `farm.sh never invoked the wrapper; stderr: ${r.stderr}`).toBe(true)
+    const p = readFileSync(promptFile, 'utf8')
 
     // The row's own prompt must still be there: appending the instruction must not replace it.
     expect(p).toContain('ROW-PROMPT-SENTINEL')

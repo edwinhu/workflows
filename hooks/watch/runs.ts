@@ -266,7 +266,7 @@ export function table(views: View[], nowMs: number): string {
 const LOOP_EXITS: Record<string, string> = {
   '0': 'gate passed', '1': 'dispatch died with no verdict', '2': 'bad arguments or result refused',
   '3': 'redispatch refused at Tier 1', '5': 'NOT CONVERGING', '6': 'loop cap reached, gate failing',
-  '7': 'plan defect escalates to a human',
+  '7': 'plan defect escalates to a human', '8': 'read-only run reached its verdict',
 }
 
 /** The prompt that wakes the session for a finished or dead run. */

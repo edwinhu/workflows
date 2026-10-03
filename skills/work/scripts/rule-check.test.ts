@@ -84,6 +84,47 @@ test('p at or above block-at exits 2', async () => {
   expect(res.exitCode).toBe(2);
 });
 
+test('a VIOLATED verdict carries the file:line spans its rule declares (SPANS); a MET one carries none', async () => {
+  const rules = mkTmp('rule-spans-');
+  // X-SPAN lists two candidates under `items`; X-CTX also lists a line under `context`, which its
+  // SPANS does not name, so it must not surface; X-NONE declares no SPANS at all.
+  fs.writeFileSync(join(rules, 'X-SPAN.py'), [
+    "PROPOSITION = 'p'", "CRITERIA = {'VIOLATED': 'v', 'SATISFIED': 's'}", "SPANS = ('items',)",
+    "def evidence(files, plan_lines=None):",
+    "    return {'items': [{'file': 'notes/18-insider.typ', 'line': 113}, {'file': 'notes/18-insider.typ', 'line': 207}]}", ''].join('\n'));
+  fs.writeFileSync(join(rules, 'X-CTX.py'), [
+    "PROPOSITION = 'p'", "CRITERIA = {'VIOLATED': 'v', 'SATISFIED': 's'}",
+    "SPANS = (('pairs', 'notes_file', 'notes_line'),)",
+    "def evidence(files, plan_lines=None):",
+    "    return {'pairs': [{'notes_file': 'notes/18-insider.typ', 'notes_line': 40, 'deck_file': 'slides/06/18.typ', 'deck_line': 9}],",
+    "            'context': [{'file': 'slides/06/18.typ', 'line': 9}]}", ''].join('\n'));
+  fs.writeFileSync(join(rules, 'X-NONE.py'), [
+    "PROPOSITION = 'p'", "CRITERIA = {'VIOLATED': 'v', 'SATISFIED': 's'}",
+    "def evidence(files, plan_lines=None):",
+    "    return {'items': [{'file': 'a.typ', 'line': 1}]}", ''].join('\n'));
+  fs.writeFileSync(join(rules, 'X-MET.py'), [
+    "PROPOSITION = 'p MET'", "CRITERIA = {'VIOLATED': 'v', 'SATISFIED': 's'}", "SPANS = ('items',)",
+    "def evidence(files, plan_lines=None):",
+    "    return {'items': [{'file': 'a.typ', 'line': 5}]}", ''].join('\n'));
+  const server = Bun.serve({
+    port: 0,
+    async fetch(req) {
+      const body = await req.text();
+      const p = body.includes('p MET') ? 0.1 : 0.94;
+      return new Response(JSON.stringify({ answers: { q0: { probabilities: { VIOLATED: p } } } }));
+    }
+  });
+  const res = await runRuleCheck(['--files', join(import.meta.dir, 'rule-check.ts'), '--rules', rules], server.port);
+  server.stop(true);
+
+  expect(res.exitCode).toBe(2);
+  const by = Object.fromEntries(JSON.parse(res.stdout.toString()).verdicts.map((v: any) => [v.rule, v]));
+  expect(by['X-SPAN']).toEqual({ rule: 'X-SPAN', p: 0.94, verdict: 'VIOLATED', spans: ['notes/18-insider.typ:113', 'notes/18-insider.typ:207'] });
+  expect(by['X-CTX'].spans).toEqual(['notes/18-insider.typ:40']);
+  expect('spans' in by['X-NONE']).toBe(false);
+  expect(by['X-MET']).toEqual({ rule: 'X-MET', p: 0.1, verdict: 'MET' });
+});
+
 test('an empty reply marks the rule unavailable and exits 1', async () => {
   const server = Bun.serve({
     port: 0,
