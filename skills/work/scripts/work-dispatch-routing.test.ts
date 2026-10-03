@@ -271,3 +271,45 @@ describe('work-redispatch.sh re-resolves the kind map on every round', () => {
     expect(existsSync(f.marker)).toBe(false)
   })
 })
+
+/**
+ * `X=$(printf '%s\n' "$multiline" | head -1)` under `set -euo pipefail` exits the script with 141
+ * and an empty stderr whenever head closes before printf's later write()s land — 1 in ~2,000 rounds
+ * under the suite's parallel load, which is how the refusal case above once failed with stderr "".
+ * The scheduling race cannot be forced portably, so the shim forces its OUTCOME: the real head's
+ * output, and the pipeline status 141 that the race produces.
+ */
+describe('work-redispatch.sh survives a pipeline reader that closes early', () => {
+  function sigpipeHead(dir: string): string {
+    const bin = join(dir, 'sigpipe-bin')
+    mkdirSync(bin, { recursive: true })
+    const real = Bun.which('head')
+    writeFileSync(join(bin, 'head'), `#!/usr/bin/env bash\n'${real}' "$@"\nexit 141\n`)
+    chmodSync(join(bin, 'head'), 0o755)
+    return `${bin}:${process.env.PATH}`
+  }
+
+  test('the refusal path still reaches route.ts and says nothing was spent', async () => {
+    const f = redispatchFixture(STALE)
+    const r = await redispatch(f, [], { ROUTING_TABLE: judgementRefuses(), PATH: sigpipeHead(f.dir) })
+    expect(r.stderr).toMatch(/judgement/)
+    expect(r.stderr).toMatch(/Nothing was spent/)
+    expect(r.code).toBe(3)
+  })
+
+  test('a routed round still writes its fresh map and launches', async () => {
+    const f = redispatchFixture(STALE)
+    // A round stub, not the real work-round.sh: a detached real round outlives afterAll and
+    // re-creates the swept fixture dir with its farm-events.
+    const launched = join(f.dir, 'round-ran')
+    const round = join(f.dir, 'round-stub.sh')
+    writeFileSync(round, `#!/usr/bin/env bash\nprintf '%s\\n' "$*" > '${launched}'\n`)
+    chmodSync(round, 0o755)
+    const r = await redispatch(f, [], { PATH: sigpipeHead(f.dir), WORK_ROUND: round })
+    expect(r.stdout).toMatch(/dispatched, log:/)
+    expect(r.code).toBe(0)
+    expect(readJson(f.args).routing?.kindModels?.judgement).toBe('claude-opus-5-5')
+    for (let i = 0; i < 100 && !existsSync(launched); i++) await Bun.sleep(50)
+    expect(existsSync(launched)).toBe(true)
+  })
+})
