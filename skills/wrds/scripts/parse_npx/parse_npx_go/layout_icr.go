@@ -602,6 +602,21 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 			continue
 		}
 
+		// A `Page N of N` FOOTER CLOSES ANY OPEN ICR BLOCK. This grammar prints no
+		// page footer; one marks the end of the page the block sat on, and what
+		// follows can be a different report altogether -- a split table, its
+		// identity rows and its vote rows in separate bands (HC Capital Trust
+		// 2011). Left open, the last block's issuer, ticker, CUSIP and meeting
+		// date are stamped on every item-shaped row after it, where a share
+		// count in the first column reads as an item number. The block's own
+		// next page reopens it with its identity header, so nothing is lost.
+		if icrPageFooter(line) {
+			haveMtg = false
+			lastRow, lastLine = -1, -2
+			pooledSeries, pooledFrom = "", -1
+			continue
+		}
+
 		// THE FUND SECTION MARKER. Resolution is by EXACT normalised equality
 		// against a <SERIES-NAME> the filing itself declares -- never the
 		// tolerant lookup, whose leading-code strip errs about 1 in 25, which is
@@ -962,6 +977,22 @@ func parseICR(text string, meta FilingMeta) ([]VoteRow, error) {
 		}
 	}
 	return rows, nil
+}
+
+// icrPageFooter reports a bare `Page N of N` line.
+func icrPageFooter(line string) bool {
+	f := strings.Fields(line)
+	if len(f) != 4 || !strings.EqualFold(f[0], "Page") || !strings.EqualFold(f[2], "of") {
+		return false
+	}
+	for _, n := range []string{f[1], f[3]} {
+		for _, c := range n {
+			if c < '0' || c > '9' {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 // isISSReportBanner reports whether a line is the ISS report's own header rule,
