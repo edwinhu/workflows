@@ -58,7 +58,7 @@ const SEPARATES: Record<string, (vio: any, sat: any) => void> = {
     expect(v.subtitles.map((x: any) => x.subtitle)).toContain("Proxy Advisors Overview");
     expect(s.subtitles.map((x: any) => x.subtitle)).not.toContain("Proxy Advisors Overview");
     // the subtitle alone: the body's first lines state the claim a label omits
-    expect(Object.keys(v.subtitles[0]).sort()).toEqual(["file", "line", "subtitle"]);
+    expect(Object.keys(v.subtitles[0]).sort()).toEqual(["file", "line", "opens_with_ing_word", "subtitle"]);
   },
   "T-TAKEAWAY-WH": (v, s) => {
     expect(v.wh_subtitles).toEqual([{ file: "slides.typ", line: 16, subtitle: "What made proxy advisors powerful." }]);
