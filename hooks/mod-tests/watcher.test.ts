@@ -83,6 +83,7 @@ function world(on: any, tree: Tree, opts: { alive?: number[]; store?: Map<string
     return { value: direct.map(n => ({ name: n, kind: 'file', size: (tree[prefix + n] ?? '').length, mtimeMs: NOW - 1000, isLink: false })) }
   })
   on('fs.read', ($: any, e: any) => (e.path in tree ? { value: tree[e.path] } : { deny: `ENOENT ${e.path}` }))
+  on('fs.write', ($: any, e: any) => { tree[e.path] = e.text; return { value: undefined } })
   on('fs.stat', ($: any, e: any) =>
     (e.path in tree ? { value: { kind: 'file', size: tree[e.path]!.length, mtimeMs: NOW, isLink: false } } : { deny: `ENOENT ${e.path}` }))
   on('process.run', ($: any, e: any) => {
@@ -195,4 +196,82 @@ test('a farm child (FARM_OUT_CHILD=1) registers nothing either', async ($, on) =
   await start($)
   await clock.advance(60_000)
   expect(seen).toEqual([])
+})
+
+test('every tick rewrites the session\'s beacon, which is how a hook tells the watcher runs here', async ($, on) => {
+  const tree = farmTree()
+  const { clock } = world(on, tree, { alive: [100] })
+  await start($)
+  await clock.settle()
+  expect(tree[`${dir(SID)}/watcher.alive`]).toBe(String(Math.floor(NOW / 1000)))
+  await clock.advance(15_000)
+  expect(tree[`${dir(SID)}/watcher.alive`]).toBe(String(Math.floor(NOW / 1000) + 15))
+  // Written for this session only; another session's directory gets no beacon from us.
+  expect(`${dir('OTHER')}/watcher.alive` in tree).toBe(false)
+})
+
+test('a headless session writes no beacon: no watcher runs there', async ($, on) => {
+  const tree = farmTree()
+  const { clock } = world(on, tree, { alive: [100] })
+  await start($, false)
+  await clock.settle()
+  await clock.advance(60_000)
+  expect(`${dir(SID)}/watcher.alive` in tree).toBe(false)
+})
+
+// The secreg session e3b75752 (2026-10-02): its slides diagnose 1002-slides-18-diag, verbatim from
+// $TMPDIR/farm-events/e3b75752-…/{2656363,2656379,2657005,2697872}.ndjson. The work-loop's DONE rc=3
+// landed at 22:09:45 and no wake reached the session — because the session loaded no mods at all, not
+// because these lines are mis-read: with the watcher running they wake it exactly once.
+test('secreg 1002-slides-18-diag: the loop\'s DONE rc=3 wakes once; its round, workflow and lens rows do not', async ($, on) => {
+  const R = '/home/eh/.local/state/craft/1002-slides-18-diag'
+  const D = dir('e3b75752-8459-4201-8118-4b52c8e0bc9c')
+  const tree: Tree = {
+    [`${D}/2656363.ndjson`]:
+      `farm: START work-round cwd=/home/eh/areas/secreg out=${R}/result.json expect=1 t=1790992951\n` +
+      `farm: CLAIM work-round path=${R}/result.json \nfarm: DONE work-round ok\n`,
+    [`${D}/2656379.ndjson`]:
+      `farm: START workflow cwd=/home/eh/areas/secreg out=${R}/raw.json expect=1 t=1790992951\n` +
+      `farm: CLAIM workflow path=${R}/raw.json \nfarm: CLAIM workflow path=${R}/raw.json \n` +
+      `farm: DONE workflow ok toolCalls=4 W=0\n`,
+    [`${D}/2657005.ndjson`]:
+      `farm: START work-loop cwd=/home/eh/areas/secreg out=${R}/loop.exit expect=1 t=1790992953\n` +
+      `farm: DONE work-loop rc=3\n`,
+    [`${D}/2697872.ndjson`]:
+      `farm: START lens cwd=/home/eh/areas/secreg out= expect=1 t=1790993251\n` +
+      `farm: CLAIM lens path=${R}/lens.json \nfarm: DONE lens ok toolCalls=23 W=0\n`,
+    [`${R}/result.json`]: '{}', [`${R}/raw.json`]: '{}', [`${R}/lens.json`]: '{}', [`${R}/loop.exit`]: '3\n',
+  }
+  const seen: string[] = []
+  // 22:09:50 EDT, five seconds after the DONE line.
+  const clock = mock.clock(on, { now: 1790993390_000 })
+  mock.env(on, { TMPDIR: ROOT })
+  on('session.start', () => ({ cwd: '/home/eh/areas/secreg' }))
+  on('session.id', () => ({ value: 'e3b75752-8459-4201-8118-4b52c8e0bc9c' }))
+  on('command.register', () => ({ value: undefined }))
+  on('ui.status', () => ({ value: undefined }))
+  on('prompt.submit', ($: any, e: any) => { seen.push(e.text); return { text: e.text } })
+  const store = new Map<string, unknown>()
+  on('store.get', ($: any, e: any) => ({ value: store.get(e.key) }))
+  on('store.set', ($: any, e: any) => { store.set(e.key, e.value); return { value: undefined } })
+  on('store.keys', () => ({ value: [...store.keys()] }))
+  on('store.delete', ($: any, e: any) => { store.delete(e.key); return { value: undefined } })
+  on('fs.list', ($: any, e: any) => {
+    const prefix = e.path.replace(/\/+$/, '') + '/'
+    const names = Object.keys(tree).filter(p => p.startsWith(prefix)).map(p => p.slice(prefix.length).split('/')[0]!)
+    if (!names.length) return { deny: `ENOENT ${e.path}` }
+    return { value: [...new Set(names)].map(n => ({ name: n, kind: 'file', size: (tree[prefix + n] ?? '').length, mtimeMs: 1790993385_000, isLink: false })) }
+  })
+  on('fs.read', ($: any, e: any) => (e.path in tree ? { value: tree[e.path] } : { deny: `ENOENT ${e.path}` }))
+  on('fs.stat', ($: any, e: any) =>
+    (e.path in tree ? { value: { kind: 'file', size: tree[e.path]!.length, mtimeMs: 1790993385_000, isLink: false } } : { deny: `ENOENT ${e.path}` }))
+  on('fs.write', ($: any, e: any) => { tree[e.path] = e.text; return { value: undefined } })
+  on('process.run', () => ({ value: { exitCode: 1, stdout: '', stderr: '' } }))
+  await start($)
+  await clock.settle()
+  await clock.advance(15_000)
+  expect(seen.length).toBe(1)
+  expect(seen[0]).toContain('work run 1002-slides-18-diag loop finished: exit 3 (redispatch refused at Tier 1) after 7m.')
+  expect([...store.keys()]).toEqual(['notified:e3b75752-8459-4201-8118-4b52c8e0bc9c:2657005:0:work-loop:1790992953'])
+  expect(tree[`${D}/watcher.alive`]).toBe('1790993405')
 })

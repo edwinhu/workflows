@@ -2,9 +2,11 @@
 /**
  * PostToolUse hook: the deterministic prose audit + structural constraints after draft edits.
  *
- * Fires on Edit|Write to:
+ * Fires on Edit|Write to, and on a Bash command that NAMES:
  *   - `drafts/*.md`   — markdown drafts (existing gate), AND
- *   - `*.typ` LETTERS — Typst letters (NOT slide decks; decks are skipped).
+ *   - `*.typ`         — Typst prose; a deck gets the `deck` profile. Teaching course material
+ *                       (lecture notes, a lecture deck, exam files) is skipped: see isCourseMaterial.
+ * A finding already shown to this session, same label on the same line text, is not shown again.
  *
  * ONE PROSE ENGINE, ONE STRUCTURAL ENGINE:
  *   1. scripts/prose-audit.py — every prose/AI-tell pattern system, de-duplicated, span-id'd.
@@ -27,10 +29,12 @@
  * Non-blocking: reports violations as an additionalContext message.
  */
 import { context, readPayload } from "./_gate_common";
-import { existsSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { authenticatedWritingPlan } from "./lib/writing-plan-context.ts";
 import { join, dirname } from "node:path";
 import { isTypDeckWith, pyName, pyParts, pySuffix } from "./guards/deck.ts";
+import { TEACHING_SETS, ruleSetOf } from "./jev/rules.ts";
 
 const PLUGIN_ROOT = dirname(import.meta.dir);
 const CHECK_ALL = join(PLUGIN_ROOT, "constraints", "run-constraints.py");
@@ -273,7 +277,14 @@ export function gitChangedRanges(path: string): Range[] {
 /** How recently a file must have changed to count as written by the command that just ran. */
 const RECENT_WRITE_MS = 120_000;
 
-function bashTouchedProseFile(cwd: string): string {
+/** Does the Bash command text name this file? A command that writes a file by path says so; one
+ *  that does not was not the writer, however fresh the file's mtime. */
+export function commandNames(command: string, absPath: string): boolean {
+  const name = pyName(absPath);
+  return name !== "" && command.includes(name);
+}
+
+export function bashTouchedProseFile(cwd: string, command: string): string {
   try {
     const r = Bun.spawnSync(["git", "-C", cwd, "status", "--porcelain", "--untracked-files=all"],
       { stdout: "pipe", stderr: "ignore" });
@@ -294,6 +305,11 @@ function bashTouchedProseFile(cwd: string): string {
       // downstream, once, in runProseAudit.
       const isTyp = rel.endsWith(".typ");
       if (!isDraftMd && !isTyp) continue;
+      // ONLY A FILE THE COMMAND NAMES. Recency alone attributed a file another process was writing
+      // to whatever this session ran next: secreg lecture 18 (2026-10-02) had a background
+      // implementer rewriting notes/18-insider.typ, and the same 11-14 findings rode every grep,
+      // cat and review-gate call the orchestrator made.
+      if (!commandNames(command, abs)) continue;
       try { cands.push({ path: abs, mtime: statSync(abs).mtimeMs }); } catch { /* deleted */ }
     }
     // ONLY A FILE THIS COMMAND PLAUSIBLY WROTE. Without a recency bound the newest DIRTY prose
@@ -309,6 +325,43 @@ function bashTouchedProseFile(cwd: string): string {
     fresh.sort((a, b) => b.mtime - a.mtime);
     return fresh[0]?.path ?? "";
   } catch { return ""; }
+}
+
+/** Lecture notes, a lecture deck and exam files: the teaching plugin's own checks own their style
+ *  (N3 teleprompter, the notes/slides/exams Jev sets), and the writing workflow excludes course
+ *  materials. The same predicate routes them away from the writing rules in the per-edit Jev mod,
+ *  so the two hooks cannot disagree about what is course material. */
+export function isCourseMaterial(path: string): boolean {
+  const set = ruleSetOf(path, null);
+  return set !== null && TEACHING_SETS.has(set);
+}
+
+function seenPath(session: string): string {
+  return join(process.env.TMPDIR || tmpdir(), `prose-check-seen-${session.replace(/[^\w-]/g, "_")}.json`);
+}
+
+/** The findings this session has not been shown yet, recorded as shown. A finding is its label on
+ *  a line's TEXT, not its line number: an insertion above shifts numbers without changing anything
+ *  the writer has to act on, and an edited line is a new finding even under the same label. */
+export function unseen(session: string, path: string, violations: string[]): string[] {
+  if (!session) return violations;
+  let lines: string[] = [];
+  try { lines = readFileSync(path, "utf8").split("\n"); } catch { /* deleted: keys fall back to the label */ }
+  const keyOf = (v: string): string => {
+    const m = /^[^:]*:(\d+|doc) (.*)$/s.exec(v);
+    const text = m && m[1] !== "doc" ? (lines[Number(m[1]) - 1] ?? "").trim() : "";
+    return `${path}\0${m ? m[2] : v}\0${text}`;
+  };
+  const file = seenPath(session);
+  let seen: string[] = [];
+  try { seen = JSON.parse(readFileSync(file, "utf8")); } catch { /* first call this session */ }
+  const known = new Set(seen);
+  const fresh = violations.filter((v) => !known.has(keyOf(v)));
+  if (fresh.length) {
+    for (const v of fresh) known.add(keyOf(v));
+    try { writeFileSync(file, JSON.stringify([...known])); } catch { /* advisory: worst case a repeat */ }
+  }
+  return fresh;
 }
 
 async function main(): Promise<void> {
@@ -330,12 +383,13 @@ async function main(): Promise<void> {
   let filePath = (toolInput.file_path as string) ?? "";
   if (toolName === "Bash") {
     const cwd = (hookInput.cwd as string) ?? process.cwd();
-    filePath = bashTouchedProseFile(cwd);
+    filePath = bashTouchedProseFile(cwd, (toolInput.command as string) ?? "");
   }
   if (!filePath) process.exit(0);
 
   const path = pyStr(filePath);
   const suffix = pySuffix(path).toLowerCase();
+  if (isCourseMaterial(path)) process.exit(0);
 
   let projectRoot: string;
   let runCheckAllFlag: boolean;
@@ -370,7 +424,7 @@ async function main(): Promise<void> {
   // Belt and braces on the de-duplication invariant: the audit collapses overlapping spans, and
   // check-all no longer contributes prose at all, so an identical line reaching here twice would
   // be a wiring regression. Report it once regardless.
-  violations = [...new Set(violations)];
+  violations = unseen((hookInput.session_id as string) ?? "", path, [...new Set(violations)]);
 
   if (!violations.length) process.exit(0);
 

@@ -9,7 +9,7 @@
 # without re-deriving anything, and without re-exploring the tree the plan was built from.
 #
 #   work-dispatch.sh [plan.md]        dispatch (plan defaults to the armed one)
-#   work-dispatch.sh --abandon [plan] record the plan as not-to-be-run; releases the guard
+#   work-dispatch.sh --abandon [plan] record the plan as not-to-be-run (in $TMPDIR/work-dispatch.log); releases the guard
 #   work-dispatch.sh --print [plan]   write args.preview.json and stop; the run stays armed
 #   work-dispatch.sh --no-lint [plan] skip EVERY dispatch tier below
 #   work-dispatch.sh --no-red-probe   record the red before-run but refuse nothing; keep plan-lint
@@ -242,7 +242,8 @@ fi
 #   non-zero WITH a real test result -> genuine RED, proceed
 # Writes into the args file, in place: `redBefore` {id: {exitCode, output}} (exit -1 = could not run,
 # output = last 60 lines) and `redSuiteHashes` {path: sha256} over every existing file a redCommand
-# names plus `redSuite` — work-checks.sh re-hashes them after the agents, and a change is CRITICAL.
+# names plus `redSuite` (a directory contributes its test files only) — work-checks.sh re-hashes
+# them after the agents, and a change is CRITICAL.
 # Mode `record` (--no-red-probe, --no-lint) records the same evidence and refuses nothing: without a
 # before-run the round's red verdict can only be red-unproven.
 # Exit 0 = launch; exit 3 = refuse, exactly like the plan-lint gate.
@@ -293,25 +294,43 @@ for t in gated_all:
 cwd = a.get("projectDir") or os.getcwd()
 
 
-# The red suite: every existing file a redCommand names (a directory contributes its files), plus
-# `redSuite`. Keys are paths relative to projectDir, the way work-checks.sh resolves them.
+# The red suite: every existing file a redCommand names, plus `redSuite`. A DIRECTORY argument
+# contributes only its test files: `--course /path/to/tree` named a whole course tree once, hashed
+# 1290 files (credentials included) and the args overflowed farm.sh's ARG_MAX. A secret-looking file
+# is never read, even when named. Keys are paths relative to projectDir, as work-checks.sh resolves them.
 SKIP_DIRS = {".git", "node_modules", "__pycache__", ".pixi", ".venv", ".work"}
+TEST_FILE = re.compile(
+    r"^(?:test_.*\.py|conftest\.py|.*_test\.(?:py|go|sh)|.*\.(?:test|spec)\.[cm]?[jt]sx?|.*_spec\.rb"
+    r"|.*\.bats)$")
+TEST_DIRS = {"tests", "test", "__tests__", "spec"}
+SECRET = re.compile(
+    r"^\.env(?:\..*)?$|^\.(?:netrc|npmrc|pypirc|pgpass)$|^id_(?:rsa|dsa|ecdsa|ed25519)\b"
+    r"|\.(?:pem|key|p12|pfx|keystore|jks)$"
+    r"|(?:^|[._-])(?:secrets?|credentials?|tokens?|passwords?|passwd|apikey|api-key)(?:[._-]|$)", re.I)
+
+
+def is_test_file(path):
+    parts = path.split(os.sep)
+    return bool(TEST_FILE.match(parts[-1])) or any(p in TEST_DIRS for p in parts[:-1])
 
 
 def files_under(rel):
     full = rel if os.path.isabs(rel) else os.path.join(cwd, rel)
     if os.path.isfile(full):
-        return [rel]
+        return [] if SECRET.search(os.path.basename(full)) else [rel]
     if not os.path.isdir(full):
         return []
-    out = []
+    out, walked = [], 0
     for root, dirs, names in os.walk(full):
         dirs[:] = sorted(d for d in dirs if d not in SKIP_DIRS)
         for n in sorted(names):
-            out.append(os.path.relpath(os.path.join(root, n), cwd) if not os.path.isabs(rel)
-                       else os.path.join(root, n))
-            if len(out) >= 5000:
+            walked += 1
+            if walked > 5000:
                 return out
+            path = os.path.join(root, n)
+            if SECRET.search(n) or not is_test_file(os.path.relpath(path, os.path.dirname(full))):
+                continue
+            out.append(path if os.path.isabs(rel) else os.path.relpath(path, cwd))
     return out
 
 
@@ -865,17 +884,23 @@ if [ -n "${1:-}" ]; then
 fi
 
 if [ -z "$plan" ]; then
-  plan=$(bash "$SKILL/scripts/work-pending.sh" "$PWD" | cut -f1)
+  plan=$(bash "$SKILL/scripts/work-pending.sh" "$PWD" --written | cut -f1)
   [ -n "$plan" ] || { echo "no armed work run in $PWD (and no plan given)" >&2; exit 2; }
 fi
 [ -f "$plan" ] || { echo "no such plan: $plan" >&2; exit 2; }
 plan=$(realpath "$plan")
 hash=$(spec_hash "$plan") || exit 1
 
+# The dispatch log, read by work-pending.sh: where each spec hash was dispatched, or that it was
+# abandoned. In TMPDIR, never the project: a run dispatched with --run-dir must be findable without
+# writing into the tree it promised not to touch. It replaces the per-project `.work/abandoned`.
+DLOG="${TMPDIR:-/tmp}/work-dispatch.log"
+log_dispatch() { printf '%s\t%s\t%s\t%s\n' "$(date -Is)" "$1" "$hash" "$2" 2>/dev/null >> "$DLOG" || :; }
+
 if [ "$mode" = abandon ]; then
-  mkdir -p .work && printf '%s\n' "$hash" >> .work/abandoned
+  log_dispatch abandoned "$plan"
   echo "abandoned: $plan"
-  echo "  hash $hash recorded in $PWD/.work/abandoned — the guard no longer holds writes."
+  echo "  hash $hash recorded in $DLOG — the guard no longer holds writes."
   echo "  Editing the spec re-arms it (new hash); dispatch with: work-dispatch.sh $plan"
   exit 0
 fi
@@ -903,17 +928,20 @@ args["planPath"], args["specHash"] = plan, hash_
 # Where work is installed, so the prompts workflow.js builds name paths that exist here.
 args["skillRoot"] = skill_root
 args.setdefault("projectDir", block.get("projectDir") or __import__("os").getcwd())
-print(json.dumps({"runId": run_id, "turns": block.get("goalTurns", 12),
+print(json.dumps({"runId": run_id, "turns": block.get("goalTurns"),
                   "maxRounds": args.get("maxRounds", 6), "args": args}))
 PY
 ) || exit 1
 
 runid=$(python3 -c 'import json,sys; print(json.loads(sys.argv[1])["runId"])' "$run")
-turns=$(python3 -c 'import json,sys; print(json.loads(sys.argv[1])["turns"])' "$run")
+# goalTurns is the HOLD's budget: the hold counts red Stops of this session, which are turns, not run
+# rounds. Empty when the plan does not state it, and the hold then falls back to maxRounds. It used to
+# be read here and used nowhere, so `goalTurns: 3` armed a hold whose ceiling said 6 (2026-10-02).
+turns=$(python3 -c 'import json,sys; t=json.loads(sys.argv[1])["turns"]; print(t if isinstance(t,int) and not isinstance(t,bool) and t>0 else "")' "$run")
 # The GOAL's round clause reads args.rounds, which work-redispatch increments and hard-stops at
 # maxRounds. Composed against goalTurns it named a number the counter can never reach — observed
 # 2026-08-27, "reads 24 or more" against a maxRounds of 3 — leaving the wall clock as the only live
-# escape. goalTurns still governs the turn budget; it is not a round budget.
+# escape. So the goal reads maxRounds and the hold reads goalTurns.
 maxrounds=$(python3 -c 'import json,sys; print(json.loads(sys.argv[1])["maxRounds"])' "$run")
 R="${rundir:-$PWD/.work}/$runid"
 mkdir -p "$R" || exit 1
@@ -1053,6 +1081,9 @@ echo "args:  $out"
 # the run is farmed out. For testing this script itself.
 [ -n "${WORK_DISPATCH_DRYRUN:-}" ] && { echo "WORK_DISPATCH_DRYRUN: lint passed, nothing dispatched."; exit 0; }
 
+# Past every test seam: this is a real dispatch, so record where its run dir is.
+log_dispatch dispatched "$R"
+
 # Phase 3: the WAKE and the HOLD.
 #
 # THE WAKE is the watcher mod (hooks/watch/watcher.ts). Its timer restarts with every session start and
@@ -1084,7 +1115,14 @@ cron_prompt="and? (work run $runid)"
 
 # Printed LAST on every path that dispatches, so nothing scrolls it away.
 print_cron_instruction() {
-  if [ "$cron" != 1 ]; then
+  # Exit 1 is a session with no watcher (no fresh beacon): the cron is then the ONLY wake.
+  local watcher=0
+  bash "$SKILL/scripts/farm-alive.sh" --watcher || watcher=$?
+  if [ "$watcher" = 1 ] && [ "${FARM_OUT_CHILD:-}" != 1 ]; then
+    echo
+    echo "⚠ wake: NO WATCHER IN THIS SESSION — farm-alive.sh --watcher found no fresh beacon, so Claude Code loaded no plugin mod here and nothing will wake this session when the run finishes except the cron below. Tell the user: /reload-plugins loads the mods (the status line then shows the run)."
+    [ "$cron" = 1 ] || echo "wake: --no-cron is overridden — with no watcher it would leave no wake at all."
+  elif [ "$cron" != 1 ]; then
     echo
     echo "wake: --no-cron, so the watcher mod is the ONLY wake — it watches this run and wakes this session on its verdict and on a run that dies without one (/farm lists it). Nothing wakes a session that is not running; drop --no-cron for the hourly backstop."
     return 0
@@ -1129,11 +1167,11 @@ arm_hold() {
   minutes=$("$SKILL/scripts/compose-goal.sh" --minutes 2>/dev/null)
   case "$minutes" in ''|*[!0-9]*) minutes=720 ;; esac
   if [ -n "$goalcheck" ]; then
-    bash "$hold" "$goalcheck" --goal "$goal" --run "$R" --rounds "$maxrounds" --minutes "$minutes"
+    bash "$hold" "$goalcheck" --goal "$goal" --run "$R" --rounds "${turns:-$maxrounds}" --minutes "$minutes"
     rc=$?
   elif [ -n "$goal" ]; then
     # CHECK-LESS: Jev alone on the goal, bounded by the same two ceilings.
-    bash "$hold" --goal "$goal" --run "$R" --rounds "$maxrounds" --minutes "$minutes"
+    bash "$hold" --goal "$goal" --run "$R" --rounds "${turns:-$maxrounds}" --minutes "$minutes"
     rc=$?
   else
     echo "hold: not armed — the plan states neither args.goalCheck nor args.goal, so there is nothing to hold on."

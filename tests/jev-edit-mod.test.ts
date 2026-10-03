@@ -67,6 +67,9 @@ test("a lecture's notes are notes and its deck is slides; other .typ in a course
   expect(await ruleSetFor('/c/secreg/notes/_reg-s.typ', none)).toBe('writing')
   expect(await ruleSetFor('/c/secreg/slides/05-10b5.typ', none)).toBe('writing')
   expect(await ruleSetFor('/c/secreg/addenda/01.typ', none)).toBe('elide') // an excerpt: the elide-case rules
+  // the exact secreg lecture 18 files (2026-10-02)
+  expect(await ruleSetFor('/home/eh/areas/secreg/notes/18-insider.typ', none)).toBe('notes')
+  expect(await ruleSetFor('/home/eh/areas/secreg/slides/06-insider/18.typ', none)).toBe('slides')
   expect([...TEACHING_SETS].sort()).toEqual(['exams', 'notes', 'slides'])
 })
 

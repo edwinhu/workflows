@@ -14,8 +14,12 @@ const FARM = join(import.meta.dir, '..', 'skills', 'farm-out', 'scripts', 'farm.
  * A --workflow run against a stub wrapper. The stub writes the --out artifact so the run reaches
  * its DONE path, which is where a printout that came too late would still be visible.
  */
-function run(args: string[], env: Record<string, string> = {}) {
+function run(args: string[], env: Record<string, string> = {}, beacon?: { sid: string; ageS: number }) {
   const tmp = mkdtempSync(join(tmpdir(), 'farmcron-'))
+  if (beacon) {
+    mkdirSync(join(tmp, 'farm-events', beacon.sid), { recursive: true })
+    writeFileSync(join(tmp, 'farm-events', beacon.sid, 'watcher.alive'), String(Math.floor(Date.now() / 1000) - beacon.ageS))
+  }
   const bin = join(tmp, 'bin'); mkdirSync(bin, { recursive: true })
   const out = join(tmp, 'runs', 'run-7f3a'); mkdirSync(out, { recursive: true })
   const outFile = join(out, 'result.json')
@@ -82,5 +86,37 @@ describe('a --tasks run prints nothing — the session monitor covers a row', ()
     expect(r.status).toBe(0)
     expect(r.stdout).not.toContain('CronCreate')
     expect(() => JSON.parse(r.stdout)).not.toThrow()
+  })
+})
+
+// A session that loaded no plugin mod (the secreg session e3b75752, 2026-10-02: Claude Code served
+// its hooks-modules rollout switch off) has no watcher, so the cron is its only wake.
+describe('a --workflow run from a session with no ticking watcher', () => {
+  const ME = { FARM_OUT_CHILD: '', CLAUDE_CODE_SESSION_ID: 'fc-sess' }
+  const WF = ['--provider', 'claude', '--workflow', '@wf', '--out', '@out', '--cwd', '@cwd', '--no-cron']
+
+  test('no beacon: it says so; --no-cron stays the caller\'s and the line says what that leaves', () => {
+    const r = run(WF, ME)
+    expect(r.status).toBe(0)
+    expect(r.stdout).toContain('NO WATCHER IN THIS SESSION')
+    expect(r.stdout).toContain("with --no-cron that cron must be the caller's, or nothing wakes it")
+    expect(r.stdout).toContain('/reload-plugins')
+  })
+
+  test('no beacon, default cron: the warning precedes the CronCreate block', () => {
+    const r = run(WF.filter(a => a !== '--no-cron'), ME)
+    expect(r.stdout).toContain('NO WATCHER IN THIS SESSION')
+    expect(r.stdout.indexOf('NO WATCHER')).toBeLessThan(r.stdout.indexOf('CronCreate'))
+  })
+
+  test('a stale beacon (61 s) is no watcher either', () => {
+    const r = run(WF, ME, { sid: 'fc-sess', ageS: 61 })
+    expect(r.stdout).toContain('NO WATCHER IN THIS SESSION')
+  })
+
+  test('a fresh beacon: --no-cron holds and nothing is said', () => {
+    const r = run(WF, ME, { sid: 'fc-sess', ageS: 0 })
+    expect(r.stdout).not.toContain('NO WATCHER')
+    expect(r.stdout).not.toContain('CronCreate')
   })
 })
