@@ -545,3 +545,39 @@ describe('the run directory is the only state — no new state file is introduce
     expect(readdirSync(f.R).filter(n => !allowed.has(n))).toEqual([])
   })
 })
+
+/**
+ * secreg 2026-10-02: every 1002-* run's loop.log opened "round 1 of 6" under a plan with goalTurns: 3,
+ * while the hold correctly armed with 3. Both numbers are right — maxRounds caps the RUN's rounds
+ * (work-redispatch.sh hard-stops there), goalTurns budgets the SESSION's red Stops — so the loop keeps
+ * its cap and its round line names both, rather than leaving a reader to think goalTurns was ignored.
+ */
+describe('the round line names the round cap and the hold budget apart', () => {
+  function withTurns(f: { plan: string; R: string }, block: Record<string, unknown>) {
+    const args = JSON.parse(readFileSync(join(f.R, 'args.json'), 'utf8'))
+    writeFileSync(f.plan, '# Plan\n\n' +
+      `<!-- work:dispatch\n${JSON.stringify({ runId: 'loop-run', ...block, args }, null, 2)}\n-->\n`)
+  }
+
+  test('goalTurns 3 with no maxRounds: the cap of 6 is named as the maxRounds default, and goalTurns as the hold budget', () => {
+    const f = runDir({ 'result.json': verdict(true) })
+    withTurns(f, { goalTurns: 3 })
+    const r = loop(f, 6)
+    expect(r.code).toBe(0)
+    expect(r.out).toContain('round 1 of 6 (round cap: maxRounds, default 6; goalTurns 3 is the session hold\'s Stop budget, not a round cap)')
+  })
+
+  test('a stated maxRounds is named as the source, and no goalTurns clause appears when the plan states none', () => {
+    const f = runDir({ 'result.json': verdict(true) }, { maxRounds: 4 })
+    const r = loop(f, 4)
+    expect(r.out).toContain('round 1 of 4 (round cap: maxRounds 4)')
+    expect(r.out).not.toContain('goalTurns')
+  })
+
+  test('an explicit --loops that differs from maxRounds is named as --loops', () => {
+    const f = runDir({ 'result.json': verdict(true) }, { maxRounds: 4 })
+    withTurns(f, { goalTurns: 2 })
+    const r = loop(f, 2)
+    expect(r.out).toContain('round 1 of 2 (round cap: --loops 2, the plan\'s maxRounds is 4; goalTurns 2 is the session hold\'s Stop budget, not a round cap)')
+  })
+})

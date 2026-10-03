@@ -95,7 +95,9 @@ function auditTargets(): string[] {
   return m[1]
     .split(/\s+/)
     .filter(Boolean)
-    .map((t) => t.replace(/\$WF|\$\{WF\}/g, ROOT));
+    .map((t) => t.replace(/\$WF|\$\{WF\}/g, ROOT))
+    // The release canary points this at the teaching checkout under release, as it does $WF.
+    .map((t) => (process.env.TEACHING_PLUGIN_ROOT ? t.replace(/^\/home\/eh\/projects\/teaching(?=\/)/, process.env.TEACHING_PLUGIN_ROOT) : t));
 }
 
 const TARGETS = auditTargets();
