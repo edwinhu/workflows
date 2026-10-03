@@ -1,5 +1,24 @@
 # Changelog
 
+## [6.37.5] - 2026-10-03
+
+### Added
+
+- **Canary release gate.** `scripts/canary.sh --run` drives a real read-only diagnose and a real dev round end to end and fails on any tool error line, a vacuous leg, W=0 tokens on a row with tool calls, or a run with no START/DONE in the watcher stream; a failing canary blocks the tag. (404450be)
+
+### Changed
+
+- **`farm.sh` prompts go on stdin and the watchdog counts tokens,** so a long brief no longer dies with E2BIG and a row with tool calls no longer records W=0; the red suite skips untested dirs and secrets. (11a086ac)
+- **A readOnly work run stops at its verdict (exit 8) and the hold releases;** `farm.sh --workflow` rounds run with `--no-cron` (one run, one backstop); plan-lint lints a plan `.md` through its `work:dispatch` block. (cdbe8524, 7470da76, 124ea8f8)
+- **Every check command is told the run mode** (`WORK_READ_ONLY`). (37e898fb)
+- **Rule verdicts name their lines.** A VIOLATED verdict carries its rule's file:line spans, every wired workflows rule declares SPANS, and work-loop prints verdicts by rule, p and verdict instead of `(unnamed)`. (b331c733, da5351d3, e694784f)
+- **The prose hook attributes a Bash result to the file it names,** reports each finding once and skips course material; the typst-convention guard judges an Edit on the lines it changed, once per session. (1319854d, 4b1b6a6a)
+- **work: approval-gated pending, run dirs found anywhere, one hold per run,** and the review gate never hangs silently. (57689d3a)
+- **work-redispatch runs a task-routed fix beside plan-routed items;** plan-lint refuses acceptance clauses that name a lens or rule verdict. (08c2a2d9)
+- **work-hold judges a run's goal on its `result.json` facts,** counts dispatched rounds, and gives no redispatch advice into a Tier 1 refusal. (4acfc0b8)
+- **The watcher writes a liveness beacon,** so a session with no mods loaded is no longer trusted to wake; session-start says loudly when plugin mods did not load (remedy: `/reload-plugins`). (e686a3f1, 43587025)
+- **Work run state lives under `~/.local/state/work`;** a test fails any new reference to the retired craft run root. (7a19732d)
+
 ## [6.37.4] - 2026-10-02
 
 ### Changed
