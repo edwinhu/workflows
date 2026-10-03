@@ -121,7 +121,9 @@ function cap(text: string, n: number): string {
   return text.length > n ? text.substring(0, n) + "\n...[STATE TRUNCATED]..." : text;
 }
 
-export function scoreRule(ruleName: string, data: any, projectName: string): { p: number } | { unavailable: string } {
+export function scoreRule(
+  ruleName: string, data: any, projectName: string, opts: { caller?: string; cache?: boolean } = {},
+): { p: number } | { unavailable: string } {
   const { state, proposition, criteria, subject, deliverable } = data;
   const fullState = cap(
     preamble(subject || `one ${deliverable ?? 'data-science'} deliverable`, projectName, evidencePaths(state)) + JSON.stringify(state, null, 1),
@@ -139,7 +141,8 @@ export function scoreRule(ruleName: string, data: any, projectName: string): { p
   let finalError = "";
 
   for (let attempt = 1; attempt <= 2; attempt++) {
-    const callRes = decisionsCall(fullState, questions);
+    // a retry follows a reply that failed, which is never cached; the first ask may be answered from the cache
+    const callRes = decisionsCall(fullState, questions, opts);
     if (callRes.unavailable) {
       finalError = callRes.unavailable;
       if (finalError === OPENROUTER_OUT_OF_CREDITS) break;
@@ -302,6 +305,9 @@ function main() {
       }
     }
   }
+
+  // the spend log's caller: --batch is the per-edit Jev mod's path, every other run a rule leg
+  process.env.JEV_CALLER ||= batch ? 'jev-edit' : 'rule-check';
 
   let changed: Record<string, number[][]> | null = null;
   if (changedFile) {

@@ -1,0 +1,4 @@
+#!/bin/sh
+# Jev (OpenRouter Decisions) spend by caller and day, from decisionsCall's call log.
+script_dir=$(CDPATH= cd -P "${0%/*}" && pwd)
+exec bun "$script_dir/../scripts/jev-spend.ts" "$@"

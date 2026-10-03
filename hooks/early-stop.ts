@@ -365,7 +365,7 @@ function main(): void {
   const threshold = Number(process.env.EARLY_STOP_THRESHOLD || 0.8)
   const r = decisionsCall(judgeState(turn.request, message), {
     [QUESTION_KEY]: { type: 'noul', instructions: INSTRUCTIONS },
-  })
+  }, { caller: 'early-stop', session })
   if (r.stdout === null) return allowNow(session, turn.marker, `judge unavailable: ${r.unavailable}`)
 
   const v = parseNoul(r.stdout, QUESTION_KEY, threshold)
