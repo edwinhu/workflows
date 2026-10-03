@@ -48,13 +48,13 @@ SKILL_ROOT = RUNNER.parent.parent
 FIXTURES = SKILL_ROOT / "fixtures"
 CLEAN = FIXTURES / "clean"
 
-MATRIX = ["CMP", "CON", "SPEC", "NOTE", "INV", "VSL", "WID", "OVR", "ENUM", "FID", "CONV", "VIS"]
+MATRIX = ["CMP", "CON", "SPEC", "NOTE", "NAR", "INV", "VSL", "WID", "OVR", "ENUM", "FID", "CONV", "VIS"]
 MODEL_EVALUATED_CHECKS = ("FID", "CONV", "VIS")
-COMPUTED_CHECKS = ("CMP", "CON", "SPEC", "NOTE", "INV", "VSL", "WID", "OVR", "ENUM")
+COMPUTED_CHECKS = ("CMP", "CON", "SPEC", "NOTE", "NAR", "INV", "VSL", "WID", "OVR", "ENUM")
 # ENUM is a meta-check over the emitted line set: a line WAS emitted for each ID even on a run where
 # every artifact check failed closed, so it stays PASS there. These are the ones that must all go
 # red when the plan declares nothing the probe can open.
-ARTIFACT_CHECKS = ("CMP", "CON", "SPEC", "NOTE", "INV", "VSL", "WID", "OVR")
+ARTIFACT_CHECKS = ("CMP", "CON", "SPEC", "NOTE", "NAR", "INV", "VSL", "WID", "OVR")
 
 # Everything the probe's subprocesses reach for, minus `typst`: check-overflow.sh needs a shell and
 # uv, and run-constraints.py is invoked through uv when uv is on PATH.
@@ -1009,6 +1009,96 @@ def test_note_fails_when_a_matched_notes_section_carries_no_spoken_line(tmp_path
     assert "1 notes section(s) carry no spoken line" in report["NOTE"]["detail"]
     assert "Blockholders raise dividends by four points." in report["NOTE"]["detail"]
     assert_only_failure(report, "NOTE")
+
+
+# ------------------------------------------------------------------------------------------------
+# NAR -- no spoken notes bullet narrates the slide
+# ------------------------------------------------------------------------------------------------
+
+
+def test_nar_fails_when_a_bullet_narrates_the_slide(tmp_path: Path):
+    root = stage(tmp_path)
+    substitute(notes_src(root), "- Give the point estimate once.",
+               "- The slide shows the point estimate once.")
+    report = probe(root)
+    assert "'The slide shows'" in report["NAR"]["detail"], report["NAR"]
+    assert_only_failure(report, "NAR")
+
+
+def test_nar_reads_answer_blocks_and_continuation_lines(tmp_path: Path):
+    # An `[Answer ...]` block is read aloud; a phrase on a continuation line still belongs to its bullet.
+    root = stage(tmp_path)
+    substitute(notes_src(root), "- Then move to the event study.",
+               "- [Answer: the jump is four points.]\n\n- Then move to the event study, and\n"
+               "  as you can see the jump is immediate.")
+    report = probe(root)
+    assert "'as you can see'" in report["NAR"]["detail"], report["NAR"]
+    assert_only_failure(report, "NAR")
+
+
+def test_nar_passes_subject_matter_stage_directions_and_poll_codes(tmp_path: Path):
+    root = stage(tmp_path)
+    substitute(notes_src(root), "- Then move to the event study.",
+               "- Then move to the event study.\n\n"
+               "- The court's table of factors settles it, as shown in Reed v. Rook, and the data show the same.\n\n"
+               "- [Pause here; the slide shows the table.]\n\n"
+               "- Take out your phones and scan the QR code on the screen.")
+    report = probe(root)
+    assert report.status("NAR") == "PASS", report["NAR"]
+    assert "stage_directions=1" in report["NAR"]["evidence"], report["NAR"]
+
+
+def test_nar_judges_only_lines_added_against_head(tmp_path: Path):
+    # Accepted notes on HEAD that narrate are legacy; the round is judged on the bullets it adds.
+    root = stage(tmp_path)
+    substitute(notes_src(root), "- Give the point estimate once.",
+               "- Here is the question the slide asks: is four points large?")
+    git = ["git", "-C", str(root), "-c", "user.name=t", "-c", "user.email=t@t"]
+    subprocess.run([*git, "init", "-q"], check=True)
+    subprocess.run([*git, "add", "-A"], check=True)
+    subprocess.run([*git, "commit", "-qm", "accepted notes"], check=True)
+    substitute(notes_src(root), "- Then move to the event study.",
+               "- Then move to the event study, which isolates the announcement day.")
+    report = probe(root)
+    assert report.status("NAR") == "PASS", report["NAR"]
+    assert "in_scope_spoken=1" in report["NAR"]["evidence"], report["NAR"]
+    substitute(notes_src(root), "which isolates the announcement day.",
+               "which the chart on this slide isolates.")
+    report = probe(root)
+    assert report.status("NAR") == "FAIL", report["NAR"]
+    assert "isolates" in report["NAR"]["detail"] and "question the slide asks" not in report["NAR"]["detail"]
+
+
+# The calibration set of the retired Jev rule T-NARRATE, kept as this check's regression set. A case
+# with a base is laid over its committed base, so only the bullets it adds are in scope.
+JEV_FIX = SKILL_ROOT.parent.parent / "tests" / "fixtures" / "jev"
+NAR_CASES = [
+    ("FAIL", "typst/T-NARRATE/vio", None),
+    ("PASS", "typst/T-NARRATE/sat", None),
+    ("PASS", "real/T-texas-notes", None),
+    ("PASS", "real/T-legacy-narrate-charter/ok", "real/T-charter-notes"),
+    ("FAIL", "real/T-legacy-narrate-charter/bad", "real/T-charter-notes"),
+    ("PASS", "real/T-legacy-narrate-texas/ok", "real/T-texas-notes"),
+    ("FAIL", "real/T-legacy-narrate-texas/bad", "real/T-texas-notes"),
+]
+
+
+@pytest.mark.parametrize("want,case,base", NAR_CASES, ids=[c for _, c, _ in NAR_CASES])
+def test_nar_separates_the_retired_jev_calibration_set(tmp_path: Path, want: str, case: str, base: str | None):
+    root = tmp_path / "case"
+    if base is None:
+        # a work tree with no commit: the case file is untracked, so every line is in scope
+        shutil.copytree(JEV_FIX / case, root)
+        subprocess.run(["git", "-C", str(root), "init", "-q"], check=True)
+    else:
+        shutil.copytree(JEV_FIX / base, root)
+        git = ["git", "-C", str(root), "-c", "user.name=t", "-c", "user.email=t@t"]
+        subprocess.run([*git, "init", "-q"], check=True)
+        subprocess.run([*git, "add", "-A"], check=True)
+        subprocess.run([*git, "commit", "-qm", "base"], check=True)
+        shutil.copytree(JEV_FIX / case, root, dirs_exist_ok=True)
+    got = workshop_deck.check_nar(root / "notes.typ", root)
+    assert got["status"] == want, got
 
 
 # ------------------------------------------------------------------------------------------------

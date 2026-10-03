@@ -12,13 +12,13 @@ const TYPST = join(BASE, "constraints/jev/typst");
 const UNCAL = join(TYPST, "uncalibrated");
 const FIX = join(BASE, "tests/fixtures/jev/typst");
 const WIRED = ["T-CALLOUT", "T-HOLLOW", "T-STORY", "T-TAKEAWAY"];
-const UNWIRED = ["T-ECHO", "T-NARRATE", "T-TAKEAWAY-WH", "T-TRANSITION"];
+const UNWIRED = ["T-ECHO", "T-TAKEAWAY-WH", "T-TRANSITION"];
 const made: string[] = [];
 afterAll(() => made.forEach(d => rmSync(d, { recursive: true, force: true })));
 
 const FILE: Record<string, string> = {
   "T-TAKEAWAY": "slides.typ", "T-TAKEAWAY-WH": "slides.typ", "T-ECHO": "slides.typ", "T-STORY": "slides.typ", "T-CALLOUT": "slides.typ",
-  "T-NARRATE": "notes.typ", "T-HOLLOW": "notes.typ", "T-TRANSITION": "notes.typ",
+  "T-HOLLOW": "notes.typ", "T-TRANSITION": "notes.typ",
 };
 
 function evidence(dir: string, files: string[], root: string, changed?: Record<string, number[][]>) {
@@ -79,10 +79,6 @@ const SEPARATES: Record<string, (vio: any, sat: any) => void> = {
     expect(v.callouts[0]).toMatchObject({ line: 15, has_quotation_marks: true });
     expect(s.callouts[0].has_quotation_marks).toBe(false);
   },
-  "T-NARRATE": (v, s) => {
-    expect(v.bullets_mentioning_a_visual.map((b: any) => b.line)).toEqual([12, 14]);
-    expect(s.n_bullets_mentioning_a_visual).toBe(0);
-  },
   "T-HOLLOW": (v, s) => {
     expect(v.announcing_bullets).toHaveLength(1);
     expect(v.announcing_bullets[0]).toMatchObject({ file: "notes.typ", line: 12, announcing_phrase: "walk through" });
@@ -93,8 +89,10 @@ const SEPARATES: Record<string, (vio: any, sat: any) => void> = {
   },
   "T-TRANSITION": (v, s) => {
     expect(v.sections_after_the_first[0]).toMatchObject({ line: 16, section: "Empirical Evidence" });
-    expect(v.sections_after_the_first[0].first_bullets[0].text).toStartWith("Several studies have examined");
-    expect(s.sections_after_the_first[0].first_bullets[0].text).toStartWith("So the market is concentrated.");
+    expect(v.sections_after_the_first[0].first_bullet.text).toStartWith("Several studies have examined");
+    expect(v.sections_after_the_first[0]).toMatchObject({ turn_cues: [], asks_question: false, names_previous_section: [] });
+    expect(s.sections_after_the_first[0].first_bullet.text).toStartWith("So the market is concentrated.");
+    expect(s.sections_after_the_first[0]).toMatchObject({ turn_cues: ["so"], asks_question: true });
   },
 };
 
@@ -132,15 +130,6 @@ test("diff scope: a span on unchanged lines is skipped, counted, and never liste
   expect(out.n_skipped_unchanged).toBe(1);
   expect(out.diff_scope_note).toContain("never a violation");
   expect(state("T-HOLLOW", "vio", { [notes]: [[12, 12]] }).n_announcing_bullets).toBe(1);
-});
-
-test("stage directions in brackets are not spoken, so T-NARRATE sets them aside", () => {
-  const d = mkdtempSync(join(tmpdir(), "jev-typst-stage-"));
-  made.push(d);
-  writeFileSync(join(d, "notes.typ"), "== A\n\n- [Pause here; the slide shows the table.]\n\n- [Answer: the slide shows it.]\n");
-  const s = evidence(UNCAL, [join(d, "notes.typ")], d)["T-NARRATE"].state;
-  expect(s.n_bracketed_stage_directions_not_spoken).toBe(1);
-  expect(s.bullets_mentioning_a_visual.map((b: any) => b.line)).toEqual([5]);
 });
 
 // The stub reads the T-HOLLOW state and answers VIOLATED when an announcing bullet's next bullet does

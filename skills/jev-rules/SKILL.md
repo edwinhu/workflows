@@ -24,7 +24,9 @@ later round it fires on; a rule wired on noise blocks at random. Both are worse 
 
 **A rule a regex, AST walk or count settles is a script leg in the workflow's `check.sh`, never a Jev
 rule.** Jev is for the judgement residue. DQ1 sat at 0.62–0.66 on its own violation and 0.78–0.91 on
-other rules' files until a script (`ds-dq.py check_dq1`) took it.
+other rules' files until a script (`ds-dq.py check_dq1`) took it. T-NARRATE's accepted Texas notes held
+0.50–0.61 over seven invocations; its screen-phrase lexicon, as the workshop `NAR` check, separates
+every case of its set.
 </EXTREMELY-IMPORTANT>
 
 ## The process
