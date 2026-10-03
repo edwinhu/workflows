@@ -184,8 +184,15 @@ if a version site is ever added, add it there and `--check` will keep everyone h
 scripts/test.sh            # whole suite, files in parallel; or scripts/test.sh ./tests/public-extension-contract.test.ts
 git commit -am "chore: release vX.Y.Z"
 git push origin main
+scripts/canary.sh --run    # CANARY GATE: a real read-only diagnose + a real dev round, ~15 min, costs model calls
 git tag -a workflows--vX.Y.Z -m "workflows vX.Y.Z" && git push origin workflows--vX.Y.Z
 ```
+
+**A failing canary blocks the tag** — no exceptions, no "flaky" re-labelling. It drives the real
+dispatch → loop → checks → lens → work-result path end to end and fails on any tool error line,
+a vacuous leg, W=0 tokens on a row with tool calls, or a run with no START/DONE in the watcher stream.
+The secreg lecture-18 prep (2026-10-02) hit 21 tool problems that ~2,900 unit tests had passed.
+Report each listed failure; fix, re-run, then tag. `--dry-run` lints and probes without model calls.
 
 **`claude plugin update` resolves releases from annotated `workflows--vX.Y.Z` git tags, NOT
 from `marketplace.json`.** Push main without the tag and the release reaches nobody — every
