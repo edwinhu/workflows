@@ -10,6 +10,26 @@
 /** A run that finishes later than this after its start is history, not news: the watcher does not wake for it. */
 export const WAKE_HORIZON_MS = 24 * 3600_000
 
+/** The watcher's tick period. */
+export const TICK_MS = 15_000
+
+/** Written into the session's event directory by every tick that completes: epoch seconds. It is the
+ *  only evidence the watcher runs in a session — Claude Code can skip loading plugin mods altogether
+ *  (version below 2.1.287, or its `tengu_plugin_hooks_modules` rollout switch served off), and nothing
+ *  else a hook or script can read says so. Not `<pid>.ndjson`, so no reader takes it for a run. */
+export const BEACON = 'watcher.alive'
+
+/** A beacon older than this means no watcher ticks in that session: four missed ticks. */
+export const BEACON_FRESH_MS = 4 * TICK_MS
+
+/** Is a beacon's content (epoch seconds) fresh at `nowMs`? */
+export function beaconFresh(text: string | undefined, nowMs: number): boolean {
+  const s = (text ?? '').trim()
+  if (!/^\d+$/.test(s)) return false
+  const age = nowMs - Number(s) * 1000
+  return age >= -BEACON_FRESH_MS && age <= BEACON_FRESH_MS
+}
+
 export type Run = {
   id: string
   file: string
