@@ -15,6 +15,15 @@ HEADING = re.compile(r'^\s*(=+)\s+(\S.*?)\s*$')
 BULLET = re.compile(r'^(\s*)-\s+(.*)$')
 SLIDE_OPEN = re.compile(r'^\s*#(?:(?:hidden-)?slide\s*(?:\(|\[)|pagebreak\b)')
 DQ_TITLE = re.compile(r'^Discussion Questions?\b', re.IGNORECASE)
+WH_OPEN = re.compile(r'^\W*(?:why|how|what|where|when|who|whom|whose|which|whether)\b', re.IGNORECASE)
+
+
+def wh_fragment(title):
+    """A subtitle opening on a wh-word without a closing `?`: an embedded question ("Why X did Y.") is a
+    label, but the same opening can be a sentence's subject clause ("What X left out was Y."), and only a
+    reading of the main verb tells them apart."""
+    t = title.strip()
+    return bool(WH_OPEN.match(t)) and not t.endswith('?')
 
 
 def clip(s, n=TEXT):

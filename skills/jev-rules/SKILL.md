@@ -72,8 +72,8 @@ When `--wire` exits 0, start the next JEV row of the triage table at once; never
   scripts; diff-scoped with legacy-base pairs, bad 1.00 and ok 0.00 (9dd3be43).
 - **A pass at the bar is noise; fix the state, not the bar.** T-STORY's charter case sat at 0.84–0.89
   until the extractor withheld the diagram labels that supplied the insight its comment lacked and
-  gave closed-list flags instead: 0.99–1.00 (b3db6917). T-TAKEAWAY ranged 0.41–0.61 across 8 runs and
-  stayed parked despite one "ready to wire" pair. `--wire` adds a third invocation within 0.03 of a bar.
+  gave closed-list flags instead: 0.99–1.00 (b3db6917). T-TAKEAWAY ranged 0.41–0.61 across 8 runs until
+  its state stopped showing the slide body, whose lines stated the claim the label lacked: 0.89–0.97. `--wire` adds a third invocation within 0.03 of a bar.
 - **Jev is the backend.** strands-decider v19 separated 0 of 18 rules (p stayed in 0.17–0.83; margin
   +0.105 against Jev's +0.564).
 
