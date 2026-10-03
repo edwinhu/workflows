@@ -2127,7 +2127,12 @@ func parseProxyEdge(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error) {
 		if whole[i] && !summary[i] && !wrapped[i] && (fundLine == i-1 || !peItemCell(lines, tbl, i-1, i, labels)) &&
 			!peBandCell(tbl, band, i, labels) && !peBallotRowCell(lines, run, tbl, i, i) &&
 			peFundName(line) {
-			setFund(line)
+			// The registrant's own conformed name names no fund, so it never
+			// overrides a banner already resolved above it (Clearwater
+			// Investment Trust 2011, the `Fund Name` cell of every ballot).
+			if fundSeries == "" || normalizeSeriesName(line) != normalizeSeriesName(meta.CompanyName) {
+				setFund(line)
+			}
 			continue
 		}
 		// The same bare heading, with the trailing type word of the declared name

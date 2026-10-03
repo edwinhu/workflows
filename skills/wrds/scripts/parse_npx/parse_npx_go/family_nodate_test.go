@@ -214,6 +214,18 @@ func TestFamilyNoDate(t *testing.T) {
 				continue
 			}
 			cemex[r.MeetingDate]++
+			// The label-value block's own "Fund Name" cell prints the
+			// registrant's COMPANY CONFORMED NAME ("Clearwater Investment
+			// Trust"), not a series name -- it must not override the
+			// "CLEARWATER GROWTH FUND" banner the section opened with, which
+			// is the filing's own declared S000000697 (<SERIES-NAME>Clearwater
+			// Growth Fund).
+			if r.SeriesID != "S000000697" {
+				t.Errorf("CEMEX item %s: series=%q, want S000000697 (Clearwater Growth Fund, from the section banner, not the label-value block's own decoy \"Fund Name\" cell)", r.ItemSeq, r.SeriesID)
+			}
+			if !strings.Contains(strings.ToLower(r.FundName), "growth") {
+				t.Errorf("CEMEX item %s: fund=%q, want it to carry CLEARWATER GROWTH FUND, not the decoy \"Fund Name\" cell value", r.ItemSeq, r.FundName)
+			}
 		}
 		// 24-Feb-2011 ballot prints items 1-10; 25-Mar-11 prints items 1-3.
 		if cemex["20110224"] != 10 || cemex["20110325"] != 3 || len(cemex) != 2 {
