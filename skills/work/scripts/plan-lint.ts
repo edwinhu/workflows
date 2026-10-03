@@ -915,6 +915,32 @@ const runContext = (_argsPath: string, j: any): Partial<Plan> => {
   return out
 }
 
+/**
+ * A plan .md that carries a `<!-- work:dispatch -->` block is linted the way the dispatch gate lints
+ * it: the block's args (the one regex work-dispatch.sh extracts with), plus the document facts
+ * `runContext` adds. The block is what is dispatched, so the prose table is not the plan then — a
+ * readOnly plan has no table at all and read as "nothing to lint". A block that is present but
+ * unreadable throws rather than falling back to the prose, which would grade something nobody runs.
+ */
+const parsePlanMarkdown = (md: string): Plan => {
+  const m = /<!--\s*work:dispatch\s*([\s\S]*?)-->/.exec(md)
+  if (!m) return parseMarkdown(md)
+  let block: any
+  try {
+    block = JSON.parse(m[1])
+  } catch (e) {
+    throw new Error(`work:dispatch block is not valid JSON (${(e as Error).message})`)
+  }
+  if (!block || typeof block.args !== 'object' || block.args === null || Array.isArray(block.args))
+    throw new Error('work:dispatch block needs an args object')
+  return {
+    ...parseArgs(block.args),
+    runSizingText: sectionText(md, /Run sizing/i),
+    planText: md,
+    tableArity: parseMarkdown(md).tableArity,
+  }
+}
+
 // ---------------------------------------------------------------- main
 
 const main = () => {
@@ -933,7 +959,7 @@ const main = () => {
     if (path.endsWith('.json')) {
       const j = JSON.parse(raw)
       plan = { ...parseArgs(j), ...runContext(path, j) }
-    } else plan = parseMarkdown(raw)
+    } else plan = parsePlanMarkdown(raw)
   } catch (e) {
     console.error(`plan-lint: cannot read or parse ${path}: ${(e as Error).message}`)
     process.exit(2)
@@ -973,4 +999,4 @@ const main = () => {
 
 if (import.meta.main) main()
 
-export { lint, parseMarkdown, parseArgs, runContext, taskGraph, formatGraph, commandsIn, coveredBy, stripLineSuffix, type Plan, type Finding, type TaskGraph }
+export { lint, parseMarkdown, parsePlanMarkdown, parseArgs, runContext, taskGraph, formatGraph, commandsIn, coveredBy, stripLineSuffix, type Plan, type Finding, type TaskGraph }

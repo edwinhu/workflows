@@ -932,3 +932,62 @@ test('per-document batch extraction rule is case-insensitive', () => {
   const p = base({ tasks: [task({ work: 'Hand-code each filing' })] })
   expect(rules(p)).toContain('per-document-batch-extraction')
 })
+
+// ---------------------------------------------------------------- a plan .md is linted through its dispatch block
+//
+// secreg 2026-10-02: `plan-lint.ts plan.md` on a readOnly plan said "has no task table and no
+// mechanicalChecks — nothing to lint" while its work:dispatch block carried a mechanicalCheck, and
+// on a three-task plan whose tasks live only in the block. The .md must lint what is dispatched.
+
+import { spawnSync } from 'node:child_process'
+
+const lintFile = (name: string, body: string, ...flags: string[]) => {
+  const d = mkdtempSync(join(tmpdir(), 'plan-lint-md-'))
+  dirs.push(d)
+  const f = join(d, name)
+  writeFileSync(f, body)
+  const r = spawnSync('bun', [LINT, f, ...flags], { timeout: 60_000, encoding: 'utf8' })
+  return { code: r.status, out: (r.stdout || '') + (r.stderr || ''), file: f, dir: d }
+}
+const planWithBlock = (block: unknown) =>
+  `# Plan\n\n| NN | deck |\n|---|---|\n| 18 | a.typ |\n\n## Run sizing\n\n<!-- work:dispatch\n${typeof block === 'string' ? block : JSON.stringify(block, null, 2)}\n-->\n`
+
+test('a readOnly plan .md whose block carries only mechanicalChecks lints, not "nothing to lint"', () => {
+  const r = lintFile('plan.md', planWithBlock({ runId: 'ro', args: {
+    goal: 'reach a verdict', readOnly: true, tasks: [], mechanicalChecks: [{ name: 'mech', cmd: 'bash check.sh' }],
+  } }))
+  expect(r.out).not.toContain('nothing to lint')
+  expect({ code: r.code, out: r.out.trim() }).toEqual({ code: 0, out: '0 finding(s) over 0 task(s) — 0 distinct rule(s)' })
+})
+
+test('a plan .md lints the tasks in its block, with the same findings as the args.json the gate lints', () => {
+  const args = {
+    goal: 'g', mechanicalChecks: [{ name: 'tests', cmd: 'bun test' }],
+    tasks: [task({ acceptance: 'the usage text documents the flag' })],
+  }
+  const md = lintFile('plan.md', planWithBlock({ runId: 'r', args }), '--json')
+  const viaArgs = lintFile('args.json', JSON.stringify({ ...args, planPath: md.file }), '--json')
+  expect(md.code).toBe(1)
+  const rulesOf = (o: string) => JSON.parse(o).findings.map((f: any) => f.rule).sort()
+  expect(JSON.parse(md.out).tasks).toBe(1)
+  expect(rulesOf(md.out)).toContain('acceptance-clause-uncommanded')
+  expect(rulesOf(md.out)).toEqual(rulesOf(viaArgs.out))
+})
+
+test('a plan .md with a malformed dispatch block fails loudly, never falling back to the prose', () => {
+  const r = lintFile('plan.md', planWithBlock('{ "runId": "x", "args": { "tasks": [ }'))
+  expect(r.code).toBe(2)
+  expect(r.out).toContain('work:dispatch block is not valid JSON')
+})
+
+test('a plan .md whose block has no args object fails loudly', () => {
+  const r = lintFile('plan.md', planWithBlock({ runId: 'x' }))
+  expect(r.code).toBe(2)
+  expect(r.out).toContain('work:dispatch block needs an args object')
+})
+
+test('a plan .md with no block and no task table is still "nothing to lint", exit 2', () => {
+  const r = lintFile('plan.md', '# Plan\n\nprose only\n')
+  expect(r.code).toBe(2)
+  expect(r.out).toContain('nothing to lint')
+})
