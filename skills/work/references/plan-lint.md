@@ -27,6 +27,9 @@ unambiguous — measured 13/13 true positives across three real plans. `acceptan
 and `redcommand-relative-path` are `minor` and advisory: whether a prose sentence states a
 requirement is itself a judgement, which is what tier 1 exists to exclude. A clause a mechanical
 check already runs is not a finding at all.
+`acceptance-names-a-verdict` is `major` because it is not a judgement: a task's verifier runs
+before its round's rules and lens, so a clause asking it for a lens or rule verdict cannot be checked
+(measured 11/11 true positives over 50 run args and 97 dispatch plans, 2026-10-02).
 
 Tier 2 executes commands taken verbatim from a plan that has not been vetted yet: live-service and
 network commands are skipped unless `--unsafe`, and `--skip <key,key>` drops named ones. A gate that
