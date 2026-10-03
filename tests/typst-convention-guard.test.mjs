@@ -81,6 +81,70 @@ for (const [name, content] of [
   ok(`${name} produces no finding`, run.context === '', run.stdout.slice(0, 160))
 }
 
+console.log('an Edit is judged on the lines it changed, not on the whole file')
+// The guard read the whole file on every Edit, so an edit at line 79 came back with
+// "Line 8/11/18/21/24" — standing violations the edit never touched (secreg lecture-18 session,
+// 2026-10-02). An Edit is scoped to its new_string span; a Write is the whole file by definition.
+function edit(content, newString, { name = 'scoped.typ', session, extra = {} } = {}) {
+  const path = join(dir, name)
+  mkdirSync(dirname(path), { recursive: true })
+  writeFileSync(path, content)
+  const payload = { tool_name: 'Edit', tool_input: { file_path: path, old_string: 'x', new_string: newString, ...extra } }
+  if (session) payload.session_id = session
+  const result = Bun.spawnSync(['bun', HOOK], { timeout: 120_000,
+    stdin: Buffer.from(JSON.stringify(payload)), stdout: 'pipe', stderr: 'pipe',
+    env: { ...process.env, TMPDIR: dir },
+  })
+  const stdout = result.stdout.toString()
+  let context = ''
+  try { context = JSON.parse(stdout).hookSpecificOutput?.additionalContext ?? '' } catch { context = '' }
+  return { code: result.exitCode, stdout, context }
+}
+{
+  // Violations on lines 8, 11, 18, 21, 24 (the evidence's numbers); clean filler to line 79.
+  const lines = Array.from({ length: 80 }, (_, i) => `Line ${i + 1} of plain prose.`)
+  for (const n of [8, 11, 18, 21, 24]) lines[n - 1] = `Cost is $${n} per unit`
+  lines[78] = 'A sentence the edit rewrote.'
+  const standing = lines.join('\n') + '\n'
+  const far = edit(standing, 'A sentence the edit rewrote.')
+  ok('an edit far from standing violations gets no context', far.context === '', far.context.slice(0, 200))
+
+  const introduced = lines.slice()
+  introduced[78] = 'The fee is $79 now'
+  const near = edit(introduced.join('\n') + '\n', 'The fee is $79 now')
+  ok('an edit introducing a violation reports that line', /Line 79: Unescaped dollar sign/.test(near.context), near.context.slice(0, 300))
+  ok('and only that line', !/Line (8|11|18|21|24):/.test(near.context), near.context.slice(0, 300))
+
+  const multi = edit('= H\n\nintro\n- one\n- two\nafter\n', '- one\n- two')
+  ok('a multi-line new_string covers every line it spans', /Line 4: Missing blank line between top-level bullets/.test(multi.context), multi.context)
+
+  const all = edit('- a\n\n- a\n\n$1 and $1\n', '- a', { extra: { replace_all: true } })
+  ok('a replace_all edit with no violation in its spans stays silent', all.context === '', all.context)
+
+  const gone = edit(standing, 'text that is not in the file')
+  ok('a new_string absent from the file attributes nothing', gone.context === '', gone.context.slice(0, 200))
+
+  const w = check(standing, 'scoped-write.typ')
+  ok('a Write still reports the whole file', /Line 8: Unescaped dollar sign/.test(w.context), w.context.slice(0, 200))
+}
+
+console.log('each finding is reported once per session')
+{
+  const content = '= H\n\nThe fee is $5 now\n'
+  const first = edit(content, 'The fee is $5 now', { name: 'once.typ', session: 'sess-once' })
+  ok('the first call reports the finding', /Line 3: Unescaped dollar sign/.test(first.context), first.context)
+  const again = edit(content, 'The fee is $5 now', { name: 'once.typ', session: 'sess-once' })
+  ok('a repeat call in the same session does not', again.context === '', again.context)
+  const moved = edit('= H\n\nnew line above\nThe fee is $5 now\n', 'new line above\nThe fee is $5 now', { name: 'once.typ', session: 'sess-once' })
+  ok('nor does the same line moved to a new number', moved.context === '', moved.context)
+  const changed = edit('= H\n\nThe fee is $6 now\n', 'The fee is $6 now', { name: 'once.typ', session: 'sess-once' })
+  ok('a changed line is a new finding under the same label', /Line 3: Unescaped dollar sign/.test(changed.context), changed.context)
+  const other = edit(content, 'The fee is $5 now', { name: 'once.typ', session: 'sess-other' })
+  ok('another session sees it', /Line 3: Unescaped dollar sign/.test(other.context), other.context)
+  const noSession = [0, 1].map(() => edit(content, 'The fee is $5 now', { name: 'once.typ' }))
+  ok('with no session id nothing is deduplicated', noSession.every(r => /Line 3:/.test(r.context)), noSession.map(r => r.context).join(' | '))
+}
+
 console.log('non-Typst writes are ignored entirely')
 {
   const run = check('- a bullet\n', 'notes.md')

@@ -122,8 +122,8 @@ describe('classify: ownership of nested rows, GONE, and the status line', () => 
 test('the mod kit tests pass (scripts/mod-test.sh -> claude plugin test)', () => {
   if (spawnSync('bash', ['-c', 'command -v claude'], { timeout: 130_000 }).status !== 0) return
   const r = spawnSync('bash', [join(REPO, 'scripts', 'mod-test.sh')], { encoding: 'utf8', timeout: 120_000 })
-  // 8 watcher + 8 guards (hooks/mod-tests/guards.test.ts) + 18 per-edit Jev (hooks/mod-tests/jev.test.ts)
-  expect(r.stdout + r.stderr).toMatch(/\b34 pass\b/)
+  // 8 watcher + 9 guards (hooks/mod-tests/guards.test.ts) + 18 per-edit Jev (hooks/mod-tests/jev.test.ts)
+  expect(r.stdout + r.stderr).toMatch(/\b35 pass\b/)
   expect(r.stdout + r.stderr).toMatch(/\b0 fail\b/)
   expect(r.status).toBe(0)
 }, 130_000)
