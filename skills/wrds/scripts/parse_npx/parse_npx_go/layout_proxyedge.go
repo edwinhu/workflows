@@ -2223,6 +2223,12 @@ func peStackedContexts(raw []byte, lines []string, tables []int) map[int]peConte
 	feed := &htmlRowFeed{src: body}
 	out := make(map[int]peContextRun)
 	ordinal, cursor := 0, 0
+	// The issuer can head the identity grid on a row of its own (`Online
+	// Resources Corporation` over `Ticker | Meeting Date | Country | Security
+	// ID | ...`, Principal Funds 0000898745-11-000564): the labels row then
+	// carries no name and borrows the single-cell heading directly above it.
+	var heading string
+	headingOrdinal := -1
 	for {
 		row, ok := feed.next()
 		if !ok {
@@ -2230,6 +2236,13 @@ func peStackedContexts(raw []byte, lines []string, tables []int) map[int]peConte
 		}
 		for ordinal < len(marks) && marks[ordinal] < base+row.off {
 			ordinal++
+		}
+		pending, pendingOrdinal := heading, headingOrdinal
+		heading, headingOrdinal = "", -1
+		if !row.newTable && htmlFilledCells(row.cells) == 1 {
+			if _, issuer, _ := htmlStackedLabelsWithIssuer(row.cells); issuer != "" {
+				heading, headingOrdinal = issuer, ordinal
+			}
 		}
 		labels, name, ok := htmlSplitStackedLabelsWithIssuer(row.cells, feed)
 		if !ok {
@@ -2246,6 +2259,9 @@ func peStackedContexts(raw []byte, lines []string, tables []int) map[int]peConte
 		}
 		if !ok {
 			labels, name, ok = htmlStackedLabelsWithIssuer(row.cells)
+		}
+		if ok && name == "" && pending != "" && pendingOrdinal == ordinal {
+			name = pending
 		}
 		if !ok || name == "" {
 			continue
