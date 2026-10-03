@@ -292,12 +292,16 @@ print(freeze_note)
 print("synced from plan: " + (", ".join(synced) if synced else "(already in sync)"))
 PY
 )
-SYNCED=$(printf '%s\n' "$OLD_HASH" | tail -1)
-ROUND=$(printf '%s\n' "$OLD_HASH" | sed -n 2p)
-PREV_RESULT=$(printf '%s\n' "$OLD_HASH" | sed -n 3p)
-MAX_ROUNDS=$(printf '%s\n' "$OLD_HASH" | sed -n 4p)
-FREEZE_NOTE=$(printf '%s\n' "$OLD_HASH" | sed -n 5p)
-OLD_HASH=$(printf '%s\n' "$OLD_HASH" | head -1)
+# Split in-shell, never `printf | head -1`: printf writes a multi-line value in several write()s, so
+# head can exit after the first line and the next write takes SIGPIPE. Under pipefail that is a 141,
+# and set -e exits on it with nothing on stderr (measured: 1 in ~2,000 rounds under parallel load).
+mapfile -t PY_OUT <<<"$OLD_HASH"
+OLD_HASH=${PY_OUT[0]}
+ROUND=${PY_OUT[1]}
+PREV_RESULT=${PY_OUT[2]}
+MAX_ROUNDS=${PY_OUT[3]}
+FREEZE_NOTE=${PY_OUT[4]}
+SYNCED=${PY_OUT[5]}
 
 printf 'plan:     %s\n' "$PLAN_ABS"
 printf 'round:    %s of %s\n' "$ROUND" "$MAX_ROUNDS"
@@ -455,7 +459,7 @@ if len(paths) < len(items):
     print("amend the plan: reword the acceptance, redCommand or mechanical check each item without a file cites, then re-hash")
 PY
 ) || die "cannot read the previous verdict's plan-routed items"
-  case "$(printf '%s\n' "$PLAN_ROUTED" | head -1)" in
+  case "${PLAN_ROUTED%%$'\n'*}" in
     report) printf '%s\n' "$PLAN_ROUTED" | tail -n +2 ;;
     refuse)
       rm -f "$STAGE"
