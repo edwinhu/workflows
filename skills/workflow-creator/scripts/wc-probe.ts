@@ -522,12 +522,13 @@ export function isPathCheckExempt(text: string): boolean {
  * `bash $HOME/scripts/g.sh` was resolved LITERALLY — against a directory named `$HOME` that of
  * course does not exist — and every hook registration written that way became a false CRITICAL.
  * An environment variable this process cannot see is not a broken path; it is an unknown one.
+ * So is a `{{NAME}}` plan-template placeholder (teaching's course_paths.py --render fills them).
  */
 export function unresolvedVarIn(raw: string, ctx: SkillContext): string | null {
   let p = raw.trim()
   if (ctx.skillDir) p = p.split('${CLAUDE_SKILL_DIR}').join(ctx.skillDir)
   if (ctx.pluginRoot) p = p.split('${CLAUDE_PLUGIN_ROOT}').join(ctx.pluginRoot)
-  const m = /\$\{[^}]*\}?|\$[A-Za-z_][A-Za-z0-9_]*/.exec(p)
+  const m = /\$\{[^}]*\}?|\$[A-Za-z_][A-Za-z0-9_]*|\{\{[A-Za-z_][A-Za-z0-9_]*\}\}/.exec(p)
   return m ? m[0] : null
 }
 
