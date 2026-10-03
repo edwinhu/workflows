@@ -128,7 +128,7 @@
         }
       },
       "tsExpected": {
-        "stdoutSha256": "da1e15ca60018813c96a3df3cf85310f7365f6da3df0a320bd511ef3e33406e9",
+        "stdoutSha256": "6436e3bfa8aebdf3d71294b6add50d1c020dadf8a2f0501284aa48d6a61276e7",
         "exit": 0,
         "fs": {}
       }

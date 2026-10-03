@@ -466,6 +466,13 @@ function farmEvents(dir: string, session: string, pid: number, lines: string[]):
   writeFileSync(join(d, `${pid}.ndjson`), lines.join('\n') + '\n')
 }
 
+/** What a ticking watcher leaves in the session's event directory: epoch seconds, `ageS` ago. */
+function beacon(dir: string, session: string, ageS = 0): void {
+  const d = join(dir, 'farm-events', session)
+  mkdirSync(d, { recursive: true })
+  writeFileSync(join(d, 'watcher.alive'), String(Math.floor(Date.now() / 1000) - ageS))
+}
+
 const START = (label: string) => `farm: START ${label} t=${Math.floor(Date.now() / 1000)} cwd=/x`
 
 /** A pid that has exited: the child is reaped by spawnSync before it returns. */
@@ -482,13 +489,14 @@ function interactiveEnv(dir: string, port: number, extra: Record<string, string>
   })
 }
 
-test('a LIVE owned run in an interactive session on 2.1.287+ ALLOWS: the watcher wakes it', async () => {
+test('a LIVE owned run with a FRESH watcher beacon ALLOWS: the watcher wakes it', async () => {
   const port = 18909
   const srv = stubDecisions(port, 0.99)
   await settle()
   const { dir, transcript } = fixture()
   // The test runner's own pid: alive for as long as the hook runs.
   farmEvents(dir, 'es-live', process.pid, [START('alpha')])
+  beacon(dir, 'es-live')
   const r = runHook(interactiveEnv(dir, port), stopPayload('es-live', transcript))
   srv.kill()
   expect(r.out).toBe('')
@@ -501,6 +509,7 @@ test('a FINISHED owned run (DONE line) leaves the judge in charge: it BLOCKS', a
   await settle()
   const { dir, transcript } = fixture()
   farmEvents(dir, 'es-done', process.pid, [START('alpha'), 'farm: DONE alpha ok rc=0'])
+  beacon(dir, 'es-done')
   const r = runHook(interactiveEnv(dir, port), stopPayload('es-done', transcript))
   srv.kill()
   expect(r.out).toContain('"decision":"block"')
@@ -512,6 +521,7 @@ test('a GONE owned run (no DONE, pid dead) leaves the judge in charge: it BLOCKS
   await settle()
   const { dir, transcript } = fixture()
   farmEvents(dir, 'es-gone', deadPid(), [START('alpha')])
+  beacon(dir, 'es-gone')
   const r = runHook(interactiveEnv(dir, port), stopPayload('es-gone', transcript))
   srv.kill()
   expect(r.out).toContain('"decision":"block"')
@@ -523,6 +533,7 @@ test("ANOTHER session's live run does not count: it BLOCKS", async () => {
   await settle()
   const { dir, transcript } = fixture()
   farmEvents(dir, 'some-other-session', process.pid, [START('theirs')])
+  beacon(dir, 'es-mine')
   const r = runHook(interactiveEnv(dir, port), stopPayload('es-mine', transcript))
   srv.kill()
   expect(r.out).toContain('"decision":"block"')
@@ -539,62 +550,39 @@ test('HEADLESS (entrypoint sdk-cli) with a live owned run: no watcher, so it BLO
   expect(r.out).toContain('"decision":"block"')
 }, 30000)
 
-/**
- * A compiled fake `claude` that reports `version` and, like the harness, runs the hook through `sh -c`
- * as its child — so the hook's ancestry names it. A shell-script fake cannot: its exe is the shell.
- */
-function fakeClaudeParent(dir: string, version: string): string {
-  const exe = join(dir, 'installs', 'claude', version, 'claude')
-  mkdirSync(dirname(exe), { recursive: true })
-  const src = join(dir, 'fake-claude.ts')
-  writeFileSync(src, [
-    `if (process.argv.includes('--version')) { console.log('${version} (Claude Code)'); process.exit(0) }`,
-    `const r = Bun.spawnSync(['/bin/sh', '-c', process.env.FAKE_HOOK_CMD!], { stdin: 'inherit', stdout: 'inherit', stderr: 'inherit' })`,
-    'process.exit(r.exitCode ?? 1)',
-  ].join('\n'))
-  const b = Bun.spawnSync(['bun', 'build', '--compile', src, '--outfile', exe], { stdout: 'pipe', stderr: 'pipe', timeout: 60_000 })
-  if (b.exitCode !== 0) throw new Error(`bun build --compile failed: ${b.stderr.toString()}`)
-  return exe
-}
-
-test('a STALE inherited CLAUDE_CODE_EXECPATH does not hide the running 2.1.287: a live owned run ALLOWS', async () => {
-  // The lead session was launched by a 2.1.257 parent, uninstalled since; its hooks inherit that path,
-  // so `$CLAUDE_CODE_EXECPATH --version` cannot run — and the hook blocked with a live run going.
+test('a STALE beacon (the watcher stopped ticking) leaves the judge in charge: it BLOCKS', async () => {
   const port = 18915
   const srv = stubDecisions(port, 0.99)
   await settle()
   const { dir, transcript } = fixture()
   farmEvents(dir, 'es-stale', process.pid, [START('alpha')])
-  const claude = fakeClaudeParent(dir, '2.1.287')
-  const env = interactiveEnv(dir, port, {
-    CLAUDE_CODE_EXECPATH: join(dir, 'installs', 'claude', '2.1.257', 'claude'),
-    FAKE_HOOK_CMD: `bun ${HOOK}`,
-  })
-  const p = Bun.spawnSync([claude], {
-    timeout: 120_000, cwd: ROOT, env, stdout: 'pipe', stderr: 'pipe',
-    stdin: Buffer.from(JSON.stringify(stopPayload('es-stale', transcript))),
-  })
+  beacon(dir, 'es-stale', 61)
+  const r = runHook(interactiveEnv(dir, port), stopPayload('es-stale', transcript))
   srv.kill()
-  expect(p.stdout.toString()).toBe('')
-  expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).toContain('owned runs live, the watcher wakes the session: alpha')
-}, 90000)
+  expect(r.out).toContain('"decision":"block"')
+}, 30000)
 
-test('below 2.1.287, or with no readable version, mods do not load: it BLOCKS', async () => {
+// The secreg session e3b75752 (2026-10-02): interactive, Claude Code 2.1.287, its notes repair
+// 1002-notes-18-repair-b live — and NO beacon, because Claude Code served its hooks-modules rollout
+// switch off and loaded no mod: no watcher, so nothing would wake it. The lines are its event files
+// 2692394/2692410/2693151 verbatim, with the run dir moved into the fixture and t= made recent.
+test('secreg e3b75752: live owned runs on 2.1.287 but NO beacon (mods never loaded): it BLOCKS', async () => {
   const port = 18914
   const srv = stubDecisions(port, 0.99)
   await settle()
-  const old = fixture()
-  farmEvents(old.dir, 'es-old', process.pid, [START('alpha')])
-  const rOld = runHook(
-    interactiveEnv(old.dir, port, { CLAUDE_CODE_EXECPATH: fakeClaude(old.dir, '2.1.286') }),
-    stopPayload('es-old', old.transcript),
-  )
-  const none = fixture()
-  farmEvents(none.dir, 'es-nover', process.pid, [START('alpha')])
-  const envNone = interactiveEnv(none.dir, port)
-  delete envNone.CLAUDE_CODE_EXECPATH
-  const rNone = runHook(envNone, stopPayload('es-nover', none.transcript))
+  const { dir, transcript } = fixture()
+  const R = join(dir, 'craft', '1002-notes-18-repair-b')
+  const t = Math.floor(Date.now() / 1000) - 120
+  const S = 'e3b75752-8459-4201-8118-4b52c8e0bc9c'
+  farmEvents(dir, S, process.pid, [
+    `farm: START work-round cwd=/home/eh/areas/secreg out=${R}/result.json expect=1 t=${t}`,
+    `farm: CLAIM work-round path=${R}/result.json `,
+  ])
+  farmEvents(dir, S, process.ppid, [
+    `farm: START work-loop cwd=/home/eh/areas/secreg out=${R}/loop.exit expect=1 t=${t + 2}`,
+  ])
+  const r = runHook(interactiveEnv(dir, port), stopPayload(S, transcript))
   srv.kill()
-  expect(rOld.out).toContain('"decision":"block"')
-  expect(rNone.out).toContain('"decision":"block"')
+  expect(r.out).toContain('"decision":"block"')
+  expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).not.toContain('the watcher wakes the session')
 }, 30000)

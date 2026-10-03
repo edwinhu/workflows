@@ -66,13 +66,21 @@ elif time.time() - s.get("startedAt", 0) >= 600:
     arm = int((time.time() - s.get("startedAt", 0)) // 60)
     print(f"  checked: never evaluated since arm {arm}m ago — this session's Stop hook is not "
           f"running work-hold.ts; run /reload-plugins")
+for q in s.get("queued") or []:
+    qr = q.get("run") or ""
+    qf = ""
+    if qr:
+        qres = os.path.join(qr, "result.json")
+        qf = " (in flight)" if (os.path.exists(os.path.join(qr, "args.json"))
+                                and not (os.path.exists(qres) and os.path.getsize(qres) > 0)) else " (not in flight)"
+    print(f"  queued:  {qr or q.get('check') or q.get('goal')}{qf} — {q.get('rounds',0)} of {q.get('maxRounds','?')} rounds used")
 rounds = (s.get("history") or [])[-3:]
 if rounds:
     print("  last:    " + "; ".join(f"round {h['round']} exit {h['exit']}" for h in rounds))
 
 def check_of(verb, payload):
     payload = payload.strip()
-    if verb in ("armed", "capped") and payload.startswith("{"):
+    if (verb.startswith("armed") or verb == "capped") and payload.startswith("{"):
         try:
             d = json.loads(payload)
             return d.get("check") or d.get("path") or ""
@@ -208,6 +216,8 @@ else
   CONTINUATION_CLAUSE="An unmet goal is not a stopping point: take the next action in the same turn. $GOAL_CONTINUATION_TAIL"
 fi
 
+# The holds already armed, so a refusal below can put them back rather than delete them with the new one.
+PRIOR_STATE=$(cat "$STATE" 2>/dev/null || true)
 python3 - "$STATE" "$CHECK" "$ROUNDS" "$MINUTES" "${GOAL:-}" "$AUTHORITY_CLAUSE" "$CONTINUATION_CLAUSE" "${RUN:-}" <<'PY'
 import hashlib, json, os, re, sys, time
 path, check, rounds, minutes = sys.argv[1:5]
@@ -237,6 +247,45 @@ state = {"check": check, "startedAt": int(time.time()),
 # Absolute, because the hook runs from whatever cwd the Stop happens in.
 if run:
     state["run"] = os.path.abspath(os.path.expanduser(run))
+
+# ONE STATE OBJECT, EVERY RUN. A session that dispatches a second run must not lose the first run's
+# hold: measured 2026-10-02, a notes dispatch overwrote a slides run's hold with nothing said. The
+# older holds wait in `queued`; the hook evaluates whichever is not in flight. A hold for the SAME
+# plan (a re-dispatch under a new run id) or the same run dir is replaced — out loud.
+def plan_of(r):
+    try:
+        return json.load(open(os.path.join(r, "args.json"))).get("planPath") or ""
+    except Exception:
+        return ""
+
+def label(h):
+    return h.get("run") or h.get("check") or h.get("goal") or "?"
+
+try:
+    prior = json.load(open(path))
+except Exception:
+    prior = None
+if isinstance(prior, dict):
+    compact = prior.pop("compact", None)
+    olds = [prior] + [q for q in (prior.pop("queued", None) or []) if isinstance(q, dict)]
+    new_run = state.get("run", "")
+    new_plan = plan_of(new_run) if new_run else ""
+    kept = []
+    for o in olds:
+        o.pop("queued", None)
+        o.pop("compact", None)
+        orun = o.get("run", "")
+        same = (orun == new_run) or bool(new_plan and orun and plan_of(orun) == new_plan)
+        if same:
+            print(f"  replaces the hold on {label(o)}")
+        else:
+            kept.append(o)
+    if kept:
+        state["queued"] = kept
+        for o in kept:
+            print(f"  also holding: {label(o)} (queued; evaluated when it is not in flight)")
+    if compact:
+        state["compact"] = compact
 json.dump(state, open(path, "w"))
 print(f"  rubric: {len(files)} file(s) pinned by content", file=sys.stderr)
 PY
@@ -262,7 +311,7 @@ if [ -r "$LINT" ] && command -v bun >/dev/null 2>&1; then
       # "Not armed" has to be TRUE on disk. The state file is written above (the rubric has to be
       # pinned from the same parse), and leaving it behind on a refusal arms the hold anyway: the
       # Stop hook reads the file, not this exit code. No ledger line exists yet, so nothing restores it.
-      rm -f "$STATE"
+      if [ -n "$PRIOR_STATE" ]; then printf '%s' "$PRIOR_STATE" > "$STATE"; else rm -f "$STATE"; fi
       echo "work-hold: fix the critical finding(s) above first. Not armed." >&2
       exit 2
     fi

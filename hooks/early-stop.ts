@@ -27,9 +27,9 @@
  *   3. NEVER DOUBLE-BLOCKS WITH `work-hold`. An armed hold is already holding the session on an
  *      objective and speaks for itself; this one stands down for the duration.
  *   4. NEVER BLOCKS WHILE THE WATCHER WILL WAKE THE SESSION. When a farm or work run this session
- *      launched is still live and the watcher mod (`hooks/watch/watcher.ts`) is running here, the owed
- *      work is in flight and its finish arrives as a `$.prompt.submit` — a block would only force
- *      busy-work. See `liveOwnedRuns` and `watcherActive`.
+ *      launched is still live and the watcher mod (`hooks/watch/watcher.ts`) is running here — its
+ *      beacon is fresh — the owed work is in flight and its finish arrives as a `$.prompt.submit`, so a
+ *      block would only force busy-work. See `liveOwnedRuns` and `watcherActive`.
  *
  * The judge is the one `work-hold.ts` already uses — Jev, through the Decisions API — reached
  * through that file's exported `decisionsCall`/`parseNoul`. There is exactly one Decisions transport
@@ -43,8 +43,9 @@ import { createHash } from 'node:crypto'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { decisionsCall, lastLedgerEntry, ledgerPath, parseNoul, statePath } from './work-hold.ts'
-import { belowMinClaudeCode, runningClaudeVersion } from './session-start.ts'
-import { classify, dirname, parseEvents, wakeable, WAKE_HORIZON_MS, type Facts, type Run } from './watch/runs.ts'
+import {
+  BEACON, beaconFresh, classify, dirname, parseEvents, wakeable, WAKE_HORIZON_MS, type Facts, type Run,
+} from './watch/runs.ts'
 
 /** Blocks allowed per user turn. Two is one more chance than the session gets by itself. */
 export const MAX_BLOCKS_PER_TURN = 2
@@ -203,18 +204,19 @@ export function liveOwnedRuns(session: string, nowMs: number = Date.now()): stri
 }
 
 /**
- * Is the watcher mod running in this session? It registers only on an interactive `session.start`
- * (and never for a farm child, already allowed above), and mods load only from Claude Code 2.1.287.
- * The mod writes no marker, so both halves are read from the hook's own environment and parentage:
- * `CLAUDE_CODE_ENTRYPOINT` is `cli` only for the interactive terminal REPL — the binary rewrites it
- * to "sdk-cli" under `-p` — and `runningClaudeVersion` asks the binary that spawned this hook (not
- * `$CLAUDE_CODE_EXECPATH`, which a hook inherits from whatever launched the session).
- * Any other entrypoint, or a version that cannot be read, counts as not active: the hook then judges
- * exactly as before.
+ * Is the watcher mod running in this session? Only its own beacon says so: every tick it completes
+ * rewrites `<TMPDIR>/farm-events/<session>/watcher.alive`. An interactive 2.1.287+ session is not
+ * proof — Claude Code skips plugin mods entirely when its `tengu_plugin_hooks_modules` rollout switch
+ * is served off (the secreg session e3b75752, 2026-10-02, loaded none and was never woken), and a
+ * headless session or a farm child registers no watcher. No fresh beacon: the hook judges as before.
  */
-export function watcherActive(): boolean {
-  if (process.env.CLAUDE_CODE_ENTRYPOINT !== 'cli') return false
-  return belowMinClaudeCode(runningClaudeVersion()) === false
+export function watcherActive(session: string, nowMs: number = Date.now()): boolean {
+  for (const root of new Set([tmp(), '/tmp'])) {
+    try {
+      if (beaconFresh(readFileSync(`${root.replace(/\/+$/, '')}/farm-events/${session}/${BEACON}`, 'utf8'), nowMs)) return true
+    } catch {}
+  }
+  return false
 }
 
 /** The tail of a string, marked when it was cut — the tell is at the END of a turn-ending message. */
@@ -336,7 +338,7 @@ function main(): void {
     return allowNow(session, '-', 'a work-hold is armed: it speaks for this session')
 
   const live = liveOwnedRuns(session)
-  if (live.length && watcherActive())
+  if (live.length && watcherActive(session))
     return allowNow(session, '-', `owned runs live, the watcher wakes the session: ${live.join(', ')}`)
 
   const message = typeof payload.last_assistant_message === 'string' ? payload.last_assistant_message : ''
