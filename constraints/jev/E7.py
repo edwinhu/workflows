@@ -17,6 +17,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'no file fetches from the network concurrently',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = (('clients', 'file', 'concurrency_lines'),)
 
 CONCURRENCY = re.compile(r'ThreadPoolExecutor\s*\(|ProcessPoolExecutor\s*\(|asyncio\.gather\s*\(|'
                          r'asyncio\.Semaphore\s*\(|\.map\(|limit_per_host\s*=|max_workers\s*=')

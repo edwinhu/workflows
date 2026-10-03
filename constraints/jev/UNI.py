@@ -16,6 +16,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the files apply no universe predicate on an entity column',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('predicate_sites',)
 
 ENTITY = re.compile(r'^(shrcd|exchcd|shrcls|sharetype|share_type|securitytype|security_type|siccd|sic|sic2|'
                     r'exchange|primexch|issuertype|share_code|exch_code|permno|permco|gvkey|cik|cusip\d?|'

@@ -19,6 +19,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the excerpt has no headings and no enumerations',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('gaps',)
 
 ROMAN = {r: i + 1 for i, r in enumerate('I II III IV V VI VII VIII IX X XI XII XIII XIV XV'.split())}
 ORD = {'first': 1, 'second': 2, 'third': 3, 'fourth': 4, 'fifth': 5, 'sixth': 6}

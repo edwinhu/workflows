@@ -13,6 +13,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the state lists no callout',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('callouts',)
 
 
 def _body(text, start):

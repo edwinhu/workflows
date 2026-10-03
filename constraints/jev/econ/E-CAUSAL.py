@@ -22,6 +22,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the state holds no causal-language sentence about a result',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('causal_language_sentences',)
 
 CAUSAL_RX = (r'\b(?:causes?|caused|causing|causal(?:ly)?|leads? to|led to|drives?|driven by|drove|results? in|'
              r'resulted in|effect of|effects of|impact of|impacts|increases|increased|reduces|reduced(?!-form)|'

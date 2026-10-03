@@ -20,6 +20,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the state holds no sentence reporting an estimate',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('estimate_sentences',)
 
 # statistical significance, not the plain-English "significant impact"
 ESTIMATE_RX = (r'\bstatistically (?:in)?significan(?:t|tly|ce)\b|\b(?:in)?significant at\b|\bsignificance level|'

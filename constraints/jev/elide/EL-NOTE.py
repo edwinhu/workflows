@@ -21,6 +21,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'no reading carries an editors\' note',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('reading_notes',)
 
 CONVENTION_RX = re.compile(r'ellips|elision|omissions? (are|is|have been) (marked|indicated)|footnotes?[^.]{0,60}'
                            r'(omitted|renumbered)|record citations?|bracket', re.IGNORECASE)
