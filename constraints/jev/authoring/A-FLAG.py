@@ -16,6 +16,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('changed_red_flags',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
 
 FLAG_SECTION = re.compile(r'red.?flag|\bstop\b', re.I)
 FLAG_LINE = re.compile(r'\bSTOP\b|catch yourself|find yourself|notice yourself|tempted|\babout to\b|red flag', re.I)
@@ -25,7 +27,7 @@ TABLE_SEP = re.compile(r'^\s*\|[\s:|-]+\|\s*$')
 
 
 def evidence(files, plan_lines=None, changed=None):
-    flags, examined = [], []
+    flags, examined, n_lines = [], [], 0
     for rel, a in files:
         if not rel.endswith('.md') or kind(rel) == 'planning':
             continue
@@ -33,6 +35,7 @@ def evidence(files, plan_lines=None, changed=None):
         if lines is None:
             continue
         examined.append(rel)
+        n_lines += len(lines)
         touched = changed_set(rel, changed, len(lines))
         for n, t, heading in body(lines):
             s = t.strip()
@@ -53,6 +56,7 @@ def evidence(files, plan_lines=None, changed=None):
         'files_examined': examined,
         'changed_red_flags': flags[:MAX_ITEMS],
         'n_changed_red_flags': len(flags),
+        'n_lines_searched': n_lines,
         'n_with_intention_words_in_trigger': sum(1 for f in flags if f['intention_words']),
     }
-    return render_json('A-FLAG', files, inventory, [])
+    return render_json('A-FLAG', [(r, a) for r, a in files if r.endswith('.md') and kind(r) != 'planning'], inventory, [])

@@ -21,6 +21,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('estimate_sentences',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_sentences_searched'
 
 # statistical significance, not the plain-English "significant impact"
 ESTIMATE_RX = (r'\bstatistically (?:in)?significan(?:t|tly|ce)\b|\b(?:in)?significant at\b|\bsignificance level|'
@@ -40,7 +42,8 @@ PRECISION_RX = re.compile(r'\bstandard errors?\b|\bs\.e\.|\bt-stat|\bt\s?=|\bp\s
 def evidence(files, plan_lines=None, changed=None):
     rx = re.compile(ESTIMATE_RX, re.IGNORECASE)
     cands, n_all = [], 0
-    for s in sentences(files, changed):
+    ss = sentences(files, changed)
+    for s in ss:
         if not rx.search(s['sentence']):
             continue
         n_all += 1
@@ -53,6 +56,7 @@ def evidence(files, plan_lines=None, changed=None):
                       'exhibit_reference_in_reach': bool(EXHIBIT_RX.search(' '.join(
                           x for x in (s['before'], s['sentence'], s['after']) if x)))})
     inventory = {
+        'n_sentences_searched': len(ss),
         'estimate_sentences': cands[:MAX_ITEMS],
         'n_estimate_sentences_listed': len(cands),
         'n_estimate_sentences_in_files': n_all,

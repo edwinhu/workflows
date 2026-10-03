@@ -3,7 +3,7 @@ import ast
 import re
 
 from _common import render_json
-from _ds import MAX_ITEMS, clip, is_py, parse, sources
+from _ds import MAX_ITEMS, clip, is_py, parse, py_files, sources
 
 PROPOSITION = ('The sample universe is defined in more than one place: the same entity column (share code, '
                'exchange, security type, SIC, the id set) is filtered by a LITERAL predicate written out '
@@ -17,6 +17,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('predicate_sites',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
 
 ENTITY = re.compile(r'^(shrcd|exchcd|shrcls|sharetype|share_type|securitytype|security_type|siccd|sic|sic2|'
                     r'exchange|primexch|issuertype|share_code|exch_code|permno|permco|gvkey|cik|cusip\d?|'
@@ -75,11 +77,12 @@ def _columns(node):
 
 
 def evidence(files, plan_lines=None):
-    sites, shared = [], []
+    sites, shared, n_lines = [], [], 0
     for rel, lines in sources(files):
         tree = parse(lines) if is_py(rel) else None
         if tree is None:
             continue
+        n_lines += len(lines)
         src = '\n'.join(lines)
         for node in ast.walk(tree):
             arg = None
@@ -112,6 +115,7 @@ def evidence(files, plan_lines=None):
         'predicate_sites': sites[:MAX_ITEMS],
         'entity_columns': columns,
         'shared_definition_applications': shared[:MAX_ITEMS],
+        'n_lines_searched': n_lines,
         'n_columns_filtered_literally_at_2_or_more_sites': sum(c['n_literal_sites'] >= 2 for c in columns),
     }
-    return render_json('UNI', files, inventory, [])
+    return render_json('UNI', py_files(files), inventory, [])

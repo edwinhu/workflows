@@ -33,6 +33,10 @@ CONTRAST_RX = (r"\bnot (just|only|merely|simply|about)\b|\bnot\b[^.;:]{1,60}[,;:
                r"\bthe question (is|was) not\b")
 
 
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_sentences_searched'
+
+
 def evidence(files, plan_lines=None):
     rx = re.compile(CONTRAST_RX, re.IGNORECASE)
     contrasts, closers = [], []
@@ -53,4 +57,5 @@ def evidence(files, plan_lines=None):
         'n_paragraphs_of_three_or_more_sentences': len(closers),
     }
     s = prose_search(files, CONTRAST_RX, 'every "not X but Y" / "isn\'t A; it\'s B" contrast')
+    inventory['n_sentences_searched'] = s['lines_searched']
     return render_json('W-FIGURES', prose_files(files), inventory, [s])

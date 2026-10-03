@@ -2,7 +2,7 @@
 import re
 
 from _common import render_json
-from _ds import MAX_ITEMS, clip, is_py, sources, split_comments
+from _ds import MAX_ITEMS, clip, is_py, py_files, sources, split_comments
 
 PROPOSITION = ('A fresh re-run would NOT reproduce the result: the code makes at least one random draw '
                '(sampling, shuffling, a train/test split, bootstrap, simulation, a randomized estimator) '
@@ -16,6 +16,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('random_draws',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
 
 DRAW = re.compile(r'\bnp\.random\.(?!seed|default_rng|RandomState|Generator)\w+\(|\brandom\.(?!seed)\w+\(|'
                   r'\brng\.\w+\(|\.sample\(|\.shuffle\(|\bshuffle\(|train_test_split\(|\bKFold\(|'
@@ -28,10 +30,11 @@ UNSEEDED_RNG = re.compile(r'default_rng\(\s*\)|RandomState\(\s*\)')
 
 
 def evidence(files, plan_lines=None):
-    draws, seeds = [], []
+    draws, seeds, n_lines = [], [], 0
     for rel, lines in sources(files):
         if not is_py(rel):
             continue
+        n_lines += len(lines)
         code, _ = split_comments(lines)
         seeded_from = None
         for n, t in enumerate(code, 1):
@@ -54,6 +57,7 @@ def evidence(files, plan_lines=None):
         'random_draws': draws[:MAX_ITEMS],
         'seed_sites': seeds[:MAX_ITEMS],
         'n_random_draws': len(draws),
+        'n_lines_searched': n_lines,
         'n_unseeded_draws': sum(not d['seeded'] for d in draws),
     }
-    return render_json('R1', files, inventory, [])
+    return render_json('R1', py_files(files), inventory, [])

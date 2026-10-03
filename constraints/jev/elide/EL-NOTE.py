@@ -22,6 +22,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('reading_notes',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_readings'
 
 CONVENTION_RX = re.compile(r'ellips|elision|omissions? (are|is|have been) (marked|indicated)|footnotes?[^.]{0,60}'
                            r'(omitted|renumbered)|record citations?|bracket', re.IGNORECASE)

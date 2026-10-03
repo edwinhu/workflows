@@ -18,12 +18,14 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('changed_descriptions',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_descriptions_read'
 
 SENT = re.compile(r'(?<=[.;!?])\s+(?=[A-Z(\'"])')
 
 
 def evidence(files, plan_lines=None, changed=None):
-    descs, examined = [], []
+    descs, examined, n_desc = [], [], 0
     for rel, a in files:
         if kind(rel) not in ('skill', 'agent', 'command'):
             continue
@@ -34,6 +36,7 @@ def evidence(files, plan_lines=None, changed=None):
         _, fm = frontmatter(lines)
         if 'description' not in fm:
             continue
+        n_desc += 1
         lo, hi, raw = fm['description']
         touched = changed_set(rel, changed, len(lines))
         if not any(n in touched for n in range(lo, hi + 1)):
@@ -46,5 +49,6 @@ def evidence(files, plan_lines=None, changed=None):
         'files_examined': examined,
         'changed_descriptions': descs[:MAX_ITEMS],
         'n_changed_descriptions': len(descs),
+        'n_descriptions_read': n_desc,
     }
-    return render_json('A-DESC', files, inventory, [])
+    return render_json('A-DESC', [(r, a) for r, a in files if kind(r) in ('skill', 'agent', 'command')], inventory, [])

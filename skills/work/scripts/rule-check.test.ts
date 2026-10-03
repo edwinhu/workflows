@@ -215,12 +215,13 @@ test('the state carries the C8 preamble and project-relative paths', async () =>
   const tmpDir = mkTmp('rule-check-test-');
   fs.mkdirSync(join(tmpDir, 'data'));
   fs.mkdirSync(join(tmpDir, 'data', 'output'));
-  fs.writeFileSync(join(tmpDir, 'data', 'output', 'x.csv'), 'a,b,c\n1,2,3');
+  // a Python file: the ds rules list only the files they read (rule-check.ts counts those as covered)
+  fs.writeFileSync(join(tmpDir, 'data', 'output', 'x.py'), 'a = 1\n');
   
   spawnSync('git', ['init'], { timeout: 120_000, cwd: tmpDir });
   spawnSync('git', ['add', '.'], { timeout: 120_000, cwd: tmpDir });
   spawnSync('git', ['commit', '-m', 'init'], { timeout: 120_000, cwd: tmpDir, env: { ...process.env, GIT_AUTHOR_NAME: 'test', GIT_AUTHOR_EMAIL: 'test@example.com', GIT_COMMITTER_NAME: 'test', GIT_COMMITTER_EMAIL: 'test@example.com' } });
-  fs.appendFileSync(join(tmpDir, 'data', 'output', 'x.csv'), '4,5,6');
+  fs.appendFileSync(join(tmpDir, 'data', 'output', 'x.py'), 'b = 2\n');
 
   const res = await runRuleCheck(['--project-dir', tmpDir], server.port);
   server.stop(true);
@@ -228,7 +229,7 @@ test('the state carries the C8 preamble and project-relative paths', async () =>
   expect(res.exitCode).toBe(0);
   expect(capturedBody).toStartWith('You are auditing one data-science deliverable');
   expect(capturedBody).toContain('PROJECT: ' + basename(tmpDir));
-  expect(capturedBody).toContain('EVIDENCE: data/output/x.csv');
+  expect(capturedBody).toContain('EVIDENCE: data/output/x.py');
 });
 
 test('a transient failure is retried once', async () => {

@@ -14,6 +14,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('added_shell_or_subprocess_sites',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
 
 SINK = re.compile(
     r'\bexecSync\s*\(|\bexec\s*\(|\bexecFile(Sync)?\s*\(|\bspawn(Sync)?\s*\(|\$`|'
@@ -24,12 +26,13 @@ ARGV = re.compile(r'\b(spawn|spawnSync|execFile|execFileSync)\s*\(\s*[\'"][\w./-
 
 
 def evidence(files, plan_lines=None):
-    sinks, examined = [], []
+    sinks, examined, n_lines = [], [], 0
     for rel, a in files:
         lines, added = _read(a), added_lines(a)
         if lines is None:
             continue
         examined.append(rel)
+        n_lines += len(lines)
         for i, t in enumerate(lines):
             n = i + 1
             if added is not None and n not in added:
@@ -47,6 +50,7 @@ def evidence(files, plan_lines=None):
         'files_examined': examined,
         'added_shell_or_subprocess_sites': sinks[:MAX_ITEMS],
         'n_sites': len(sinks),
+        'n_lines_searched': n_lines,
         'n_sites_interpolating_on_the_line': sum(s['interpolates_on_line'] for s in sinks),
     }
     return render_json('SHELL', files, inventory, [])

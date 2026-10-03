@@ -19,6 +19,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('sentences_with_two_or_more_hedges',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_sentences'
 
 HEDGES = [r'may', r'might', r'could', r'possibly', r'perhaps', r'arguably', r'potentially',
           r'likely', r'unlikely', r'somewhat', r'seems?', r'seemingly', r'appears?', r'apparently',

@@ -16,6 +16,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('rate_sites',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
 
 REPORT = re.compile(r'\b(print|log\w*|logger\.\w+|info|warning|write|echo)\s*\(|\bf["\']')
 PY_RATE = re.compile(r'%\}|:[,_]?\.?\d*%|\d%|\bpercent\b|\bpct\b(?!\s*\()')
@@ -29,7 +31,7 @@ NEAR = 2
 
 
 def evidence(files, plan_lines=None):
-    sites = []
+    sites, n_lines = [], 0
     for rel, lines in sources(files):
         if is_py(rel):
             code, _ = split_comments(lines)
@@ -40,6 +42,7 @@ def evidence(files, plan_lines=None):
             hits = [n for n, t in enumerate(lines, 1) if MD_RATE.search(t) and not NOT_RATE.search(t)]
         else:
             continue
+        n_lines += len(lines)
         for n in hits:
             near = [k for k in range(max(1, n - NEAR), min(len(text), n + NEAR) + 1) if BASE.search(text[k - 1]) or COUNT.search(text[k - 1])]
             sites.append({'file': rel, 'line': n, 'text': clip(lines[n - 1]),
@@ -51,6 +54,7 @@ def evidence(files, plan_lines=None):
                             'n=, "base", "denominator" or an interpolated absolute count'),
         'rate_sites': sites[:MAX_ITEMS],
         'n_rate_sites': len(sites),
+        'n_lines_searched': n_lines,
         'n_rates_without_base': sum(not s['base_stated'] for s in sites),
     }
-    return render_json('DEN', files, inventory, [])
+    return render_json('DEN', [(r, a) for r, a in files if is_py(r) or is_prose(r)], inventory, [])

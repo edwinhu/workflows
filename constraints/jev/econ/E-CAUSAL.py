@@ -23,6 +23,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('causal_language_sentences',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_sentences_searched'
 
 CAUSAL_RX = (r'\b(?:causes?|caused|causing|causal(?:ly)?|leads? to|led to|drives?|driven by|drove|results? in|'
              r'resulted in|effect of|effects of|impact of|impacts|increases|increased|reduces|reduced(?!-form)|'
@@ -44,7 +46,8 @@ DESIGN_RX = (r'\b(?:first[- ]stage|second[- ]stage|just-identified|over-identifi
 def evidence(files, plan_lines=None, changed=None):
     crx, drx = re.compile(CAUSAL_RX, re.IGNORECASE), re.compile(DESIGN_RX)
     cands, design, n_all = [], {}, 0
-    for s in sentences(files, changed):
+    ss = sentences(files, changed)
+    for s in ss:
         for m in drx.finditer(s['sentence']):
             design.setdefault(m.group(0).lower(), []).append(f"{s['file']}:{s['line']}")
         bare = SPEC_RX.sub(' ', s['sentence'])
@@ -53,6 +56,7 @@ def evidence(files, plan_lines=None, changed=None):
             if s['in_scope']:
                 cands.append({**span(s), 'causal_words': sorted({m.group(0).lower() for m in crx.finditer(bare)})})
     inventory = {
+        'n_sentences_searched': len(ss),
         'causal_language_sentences': cands[:MAX_ITEMS],
         'n_causal_language_sentences_listed': len(cands),
         'n_causal_language_sentences_in_files': n_all,

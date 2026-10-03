@@ -3,7 +3,7 @@ import ast
 import re
 
 from _common import render_json
-from _ds import MAX_ITEMS, clip, is_py, parse, sources, split_comments
+from _ds import MAX_ITEMS, clip, is_py, parse, py_files, sources, split_comments
 
 PROPOSITION = ('A specification curve in these files stands with no robustness check of a different kind beside '
                'it. A specification curve is an estimator run across a grid of specification choices (controls, '
@@ -19,6 +19,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('specification_curve_sites',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
 
 # an estimator call: a library model, or a project helper whose name says it fits a regression
 ESTIMATOR = re.compile(r'^(OLS|WLS|GLS|Logit|Probit|Poisson|PanelOLS|RandomEffects|BetweenOLS|FirstDifferenceOLS|'
@@ -79,12 +81,13 @@ def _iterables(src, loop):
 
 
 def evidence(files, plan_lines=None):
-    estimations, curves, checks, robustness_loops = [], [], [], []
+    estimations, curves, checks, robustness_loops, n_lines = [], [], [], [], 0
     for rel, lines in sources(files):
         tree = parse(lines) if is_py(rel) else None
         if tree is None:
             continue
         src = '\n'.join(lines)
+        n_lines += len(lines)
         code, _ = split_comments(lines)
         docs = _docstring_lines(tree)
         check_lines = set()
@@ -132,6 +135,7 @@ def evidence(files, plan_lines=None):
         'n_robustness_check_sites': len(checks),
         'n_specification_curve_sites_without_robustness_check':
             sum(not c['robustness_check_in_files'] for c in curves),
+        'n_lines_searched': n_lines,
         'robustness_check_kinds': sorted({k for c in checks for k in c['kinds']}),
     }
-    return render_json('A1', files, inventory, [])
+    return render_json('A1', py_files(files), inventory, [])

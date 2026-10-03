@@ -19,6 +19,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('marks_inside_a_sentence',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_body_lines_searched'
 
 
 def _position(sent):
@@ -43,6 +45,7 @@ def evidence(files, plan_lines=None, changed=None):
                  'after': clean(ss[j + 1])[:300] if j + 1 < len(ss) else None}
             (inside if _position(s) == 'inside a sentence' else between).append(c)
     inventory = {
+        'n_body_lines_searched': len(body_lines(files)),
         'doctrinal_target': plan_target(plan_lines) or 'no plan supplied',
         'marks_inside_a_sentence': inside[:30],
         'n_marks_inside_a_sentence': len(inside),

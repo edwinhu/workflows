@@ -14,6 +14,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('callouts',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
 
 
 def _body(text, start):
@@ -39,13 +41,14 @@ def _body(text, start):
 
 
 def evidence(files, plan_lines=None, changed=None):
-    out, skipped = [], 0
+    out, skipped, n_lines = [], 0, 0
     for rel, a in files:
         if not rel.lower().endswith('.typ'):
             continue
         lines = _read(a)
         if lines is None:
             continue
+        n_lines += len(lines)
         text = '\n'.join(lines)
         offs = [0]
         for t in lines:
@@ -66,8 +69,9 @@ def evidence(files, plan_lines=None, changed=None):
                         'callout_body': clip(body, 500),
                         'has_quotation_marks': any(q in body for q in ('"', '“', '”'))})
     inventory = {
+        'n_lines_searched': n_lines,
         'callouts': out[:MAX_ITEMS],
         'n_callouts': len(out),
         **scope_note(changed, skipped),
     }
-    return render_json('T-CALLOUT', files, inventory, [])
+    return render_json('T-CALLOUT', [(r, a) for r, a in files if r.lower().endswith('.typ')], inventory, [])

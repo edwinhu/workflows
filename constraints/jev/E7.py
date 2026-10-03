@@ -3,7 +3,7 @@ import ast
 import re
 
 from _common import render_json
-from _ds import MAX_ITEMS, clip, is_py, parse, sources, split_comments
+from _ds import MAX_ITEMS, clip, is_py, parse, py_files, sources, split_comments
 
 PROPOSITION = ('Code fetches from a network host CONCURRENTLY (a worker pool, gather or semaphore) without all '
                'three facts that make the rate defensible: (1) the effective request rate computed in code, '
@@ -18,6 +18,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = (('clients', 'file', 'concurrency_lines'),)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
 
 CONCURRENCY = re.compile(r'ThreadPoolExecutor\s*\(|ProcessPoolExecutor\s*\(|asyncio\.gather\s*\(|'
                          r'asyncio\.Semaphore\s*\(|\.map\(|limit_per_host\s*=|max_workers\s*=')
@@ -48,10 +50,11 @@ def _num(node, consts):
 
 
 def evidence(files, plan_lines=None):
-    clients = []
+    clients, n_lines = [], 0
     for rel, lines in sources(files):
         if not is_py(rel):
             continue
+        n_lines += len(lines)
         code, comment = split_comments(lines)
         conc = [n for n, t in enumerate(code, 1) if CONCURRENCY.search(t)]
         net = [n for n, t in enumerate(code, 1) if NETWORK.search(t)]
@@ -93,7 +96,8 @@ def evidence(files, plan_lines=None):
                          '(URL, "documented", "published") within 2 lines'),
         'clients': clients[:MAX_ITEMS],
         'n_concurrent_clients': len(clients),
+        'n_lines_searched': n_lines,
         'n_clients_failing_a_fact': sum((not c['rate_computed']) or (not c['ceiling_cited']) or
                                         c['rate_exceeds_ceiling'] for c in clients),
     }
-    return render_json('E7', files, inventory, [])
+    return render_json('E7', py_files(files), inventory, [])

@@ -20,6 +20,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('runs_of_case_paragraphs',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_sentences_searched'
 
 CASE_RX = re.compile(r"\b(?:In re|Ex parte)\s+[A-Z][\w.'&-]+|\b[A-Z][\w.'&-]*(?:\s+[A-Z&][\w.'&-]*){0,5}\s+v\.\s+"
                      r"[A-Z][\w.'&-]*|\b(?:the|The)\s+(?:court|Court|panel|Chancellor|Vice Chancellor)\s+"
@@ -33,7 +35,8 @@ def _case_para(p):
 
 def evidence(files, plan_lines=None, changed=None):
     runs, n_case_paras = [], 0
-    for doc in load(files):
+    docs = load(files)
+    for doc in docs:
         paras = [p for p in doc['paras'] if p['kind'] == 'para']
         k = 0
         while k < len(paras):
@@ -60,6 +63,7 @@ def evidence(files, plan_lines=None, changed=None):
                 })
             k = j + 1
     inventory = {
+        'n_sentences_searched': sum(len(p['sentences']) for d in docs for p in d['paras']),
         'runs_of_case_paragraphs': runs[:MAX_ITEMS],
         'n_runs': len(runs),
         'n_paragraphs_opening_on_a_case': n_case_paras,

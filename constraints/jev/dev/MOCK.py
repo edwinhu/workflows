@@ -14,6 +14,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('changed_tests',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
 
 MOCK_MATCHER = re.compile(
     r'toHaveBeenCalled\w*|toBeCalled\w*|toHaveBeenNthCalledWith|\.mock\.(calls|results)|'
@@ -25,7 +27,7 @@ DOUBLE = re.compile(
 
 
 def evidence(files, plan_lines=None):
-    tests, examined, untouched = [], [], 0
+    tests, examined, untouched, n_lines = [], [], 0, 0
     for rel, a in files:
         if not is_test(rel):
             continue
@@ -33,6 +35,7 @@ def evidence(files, plan_lines=None):
         if lines is None:
             continue
         examined.append(rel)
+        n_lines += len(lines)
         doubles = {g for m in DOUBLE.finditer('\n'.join(lines)) for g in m.groups() if g}
         dbl = re.compile(r'\b(' + '|'.join(map(re.escape, sorted(doubles))) + r')\b') if doubles else None
         for start, name, end in test_blocks(lines):
@@ -58,7 +61,8 @@ def evidence(files, plan_lines=None):
         'test_doubles_note': 'on_mock = the assertion names a mock matcher or a variable bound to a test double',
         'changed_tests': tests[:MAX_ITEMS],
         'n_changed_tests': len(tests),
+        'n_lines_searched': n_lines,
         'n_changed_tests_asserting_only_on_mocks': sum(t['every_assertion_on_mock'] for t in tests),
         'n_untouched_tests_skipped': untouched,
     }
-    return render_json('MOCK', files, inventory, [])
+    return render_json('MOCK', [(r, a) for r, a in files if is_test(r)], inventory, [])

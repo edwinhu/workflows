@@ -17,6 +17,8 @@ CRITERIA = {
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
 SPANS = ('announcing_bullets',)
+# what the inventory read, whole-file: 0 over a covered file is UNAVAILABLE, never MET (rule-check.ts)
+EXAMINED = 'n_lines_searched'
 
 ITEMS = r'(?:scenarios|hypotheticals|examples|factors|points|reasons|issues|cases|steps|questions|ways)'
 NUM = r'(?:two|three|four|five|six|seven|eight|nine|ten|several|a few|many|various|a number of)'
@@ -32,11 +34,12 @@ COUNT = {'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7, 'eigh
 
 
 def evidence(files, plan_lines=None, changed=None):
-    cands, n_bullets, skipped = [], 0, 0
+    cands, n_bullets, skipped, n_lines = [], 0, 0, 0
     for rel, a in typ_files(files, 'notes'):
         lines = _read(a)
         if lines is None:
             continue
+        n_lines += len(lines)
         heads = [i + 1 for i, t in enumerate(lines) if heading(t)]
         bl = bullets(lines)
         n_bullets += len(bl)
@@ -57,10 +60,11 @@ def evidence(files, plan_lines=None, changed=None):
                           'n_sibling_bullets_after_it_before_the_next_heading': len(after),
                           'following_bullets': [{'line': bn, 'text': bt[:220]} for bn, bt in after[:10]]})
     inventory = {
+        'n_lines_searched': n_lines,
         **kind_note(files, 'notes'),
         'announcing_bullets': cands[:MAX_ITEMS],
         'n_announcing_bullets': len(cands),
         'n_notes_bullets': n_bullets,
         **scope_note(changed, skipped),
     }
-    return render_json('T-HOLLOW', files, inventory, [])
+    return render_json('T-HOLLOW', typ_files(files, 'notes'), inventory, [])

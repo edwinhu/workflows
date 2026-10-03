@@ -43,6 +43,10 @@ def split_comments(lines):
     return code, comment
 
 
+def py_files(files):
+    return [(r, a) for r, a in files if is_py(r)]
+
+
 def sources(files):
     """[(rel, lines)] for every readable file."""
     out = []
