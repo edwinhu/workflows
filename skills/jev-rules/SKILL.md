@@ -88,4 +88,4 @@ When `--wire` exits 0, start the next JEV row of the triage table at once; never
 | About to hand the extractor's whole file to the state | the judge guesses, as on 9 of 10 ds rules | extract the spans and the count the proposition reads |
 | About to move a module out of `uncalibrated/` by hand | it skips the two-invocation gate | `new-rule.ts --wire` |
 | About to change `blockAt` or the manifest criterion for one rule | every rule's evidence was measured against 0.85 / 0.5 | fix the question or the extractor, or park |
-| About to try a fourth wording for a rule that failed two rounds on accepted work | T-ECHO and T-TRANSITION never moved; the rule text and the accepted work disagree | ask the user which is right, or park with the numbers in the docstring |
+| About to try a fourth wording for a rule that failed two rounds on accepted work | T-ECHO never moved; T-TRANSITION wired only after the user ruled the bridge is the first and last sentence across the break | ask the user which is right, or park with the numbers in the docstring |

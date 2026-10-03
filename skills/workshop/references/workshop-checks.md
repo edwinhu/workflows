@@ -363,8 +363,12 @@ proposition per calibrated rule over spans an extractor pulls with `file:line`, 
 round's changed lines. Wired: `T-HOLLOW` (a notes bullet announcing scenarios, factors or examples
 the notes never write out), `T-CALLOUT` (a `#callout` quoting source text), `T-STORY` (a
 `// Storytelling:` comment naming no visual mechanism or no insight) and `T-TAKEAWAY` (a `===` subtitle
-that is a noun- or gerund-phrase label; one opening on a wh-word stays with the lens). Accepted decks that
-break `T-CALLOUT`, `T-STORY` or `T-TAKEAWAY` are not re-judged: only spans on changed lines are. p >= 0.85 lands in
+that is a noun- or gerund-phrase label; one opening on a wh-word stays with the lens) and `T-TRANSITION`
+(a notes `==` section whose first bullet carries no turn cue and does not pick up the previous section's last
+sentence; a link only to an earlier topic is no bridge). A cold section opening is the `T-TRANSITION`
+verdict in the digest: do not re-grade it, except to rule on a verdict ranked below the block line.
+Accepted decks that break `T-CALLOUT`, `T-STORY`, `T-TAKEAWAY` or `T-TRANSITION` are not re-judged: only
+spans on changed lines are. p >= 0.85 lands in
 `rulesThatFailed`; lower scores reach the lens as a ranked checklist. The rules in
 `constraints/jev/typst/uncalibrated/` are not scored -- each module's docstring records the
 calibration that kept it out.
