@@ -39,6 +39,8 @@ type Plan = {
    * one dispatch earlier than the arm would.
    */
   goalCheck?: string
+  /** `args.ruleChecks` — the Jev rule runner whose verdicts gate the run as `rulesThatFailed`. */
+  ruleChecks?: { name: string; cmd: string } | null
   /**
    * THE single review lens — `args.lens`, or the `Review lens:` line of the Run-sizing block.
    * `null` when the plan declares none, which is legal: `work` supplies a default prompt. Optional
@@ -282,6 +284,10 @@ const parseArgs = (j: any): Plan => ({
   })),
   // Absent is the common case and legal; a present-but-unusable value is a finding, not a silent ''.
   goalCheck: j.goalCheck === undefined || j.goalCheck === null ? undefined : String(j.goalCheck),
+  ruleChecks:
+    j.ruleChecks && typeof j.ruleChecks === 'object' && typeof j.ruleChecks.name === 'string'
+      ? { name: j.ruleChecks.name, cmd: typeof j.ruleChecks.cmd === 'string' ? j.ruleChecks.cmd : '' }
+      : null,
   // `args.lens` — one object, so there is one lens to grade. A caller still passing the retired
   // `reviewLenses` array supplies NO lens here; workflow.js refuses that arg outright, so the loud
   // failure is there rather than in a lint rule that would have to guess which entry was meant.
@@ -343,6 +349,24 @@ const coveredByMechanical = (clause: string, mech: { cmd: string }[]): boolean =
     ...(clause.match(SUITE) ?? []).map(t => t.toLowerCase().replace(/s$/, '')),
   ]
   return tokens.some(t => mech.some(m => m.cmd.toLowerCase().includes(t.toLowerCase())))
+}
+
+/**
+ * A clause whose truth is a lens's or a rule runner's VERDICT. A task's verifier runs in the round's
+ * agents stage, before work-checks.sh runs the rules and before the lens reads the digest, so the only
+ * such verdict it could ever see is last round's, judged on the tree before this task's fix. Both
+ * already gate the run: the lens through its surviving blocking findings, ruleChecks through
+ * `rulesThatFailed`. MET/VIOLATED are rule-check's own verdict words, matched case-sensitively.
+ */
+const VERDICT_SOURCE = /\blens(?:'s|es)?\b|\b[\w-]+-auditor\b|\brule-check\b/i
+const VERDICT_CLAIM = /\bsurviv(?:ing|es?|ed)\b|\b(?:returns?|reports?|raises?|flags?)\s+no\b/i
+const RULE_WORD = /\b(?:MET|VIOLATED)\b/
+/** A hyphenated rule id (`N-UNCITED`) carrying a verdict word: a hold judge's bare "goal MET" is not one. */
+const RULE_ID_VERDICT = /\b[A-Z][A-Z0-9]*-[A-Z0-9][A-Z0-9-]*\b[^.;]*?\b(?:MET|VIOLATED)\b/
+const namesVerdict = (clause: string, ruleRunner: string): boolean => {
+  const claims = VERDICT_CLAIM.test(clause) || RULE_WORD.test(clause)
+  return (VERDICT_SOURCE.test(clause) && claims) || RULE_ID_VERDICT.test(clause) ||
+    (ruleRunner !== '' && clause.includes(ruleRunner) && claims)
 }
 
 /** Acceptance cells are semicolon-delimited by work's own plan convention. */
@@ -501,8 +525,20 @@ const lint = (p: Plan): Finding[] => {
       )
     }
 
+    // R1b — an acceptance clause gating on a lens or rule verdict, which no verifier can read.
+    const verdictClauses = clausesOf(t.acceptance).filter(c => namesVerdict(c, p.ruleChecks?.name ?? ''))
+    for (const c of verdictClauses)
+      add(
+        'acceptance-names-a-verdict',
+        'major',
+        where,
+        "acceptance clause gates on a lens or rule verdict, which the task's verifier cannot read: it runs before this round's rules and lens, so it could only see last round's verdict on the tree before this fix. Drop the clause — a rule verdict already gates the run through ruleChecks (rulesThatFailed), a lens verdict through the lens prompt's checklist and its surviving findings — and keep the acceptance to commands that are false before the work and true after it",
+        c.length > 160 ? c.slice(0, 157) + '…' : c,
+      )
+
     // R1 — an acceptance clause no command checks. The single largest class in the corpus.
     for (const c of clausesOf(t.acceptance)) {
+      if (verdictClauses.includes(c)) continue
       if (!hasCommand(c) && !coveredByMechanical(c, p.mechanicalChecks))
         add(
           'acceptance-clause-uncommanded',

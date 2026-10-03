@@ -21,7 +21,8 @@
 # fall back to FULL. The lens and mechanical checks always judge the whole deliverable.
 #
 # Proven red survives FULL round >= 2 only for the same command: fixed code cannot reproduce RED.
-# Unchanged spec + planFindings refuses with exit 3. All-plan routing after an amendment permits
+# Unchanged spec + planFindings refuses with exit 3 unless a failure is routed to a task; then the
+# plan items are reported and carried as carriedFindings and the round proceeds. All-plan routing after an amendment permits
 # onlyTasks: [] only when every task is carried. taskFixes delivers routed items to their implementers.
 #
 # From round 2, carriedFindings holds the previous verdict's blocking survivors, with evidenced
@@ -381,11 +382,14 @@ if [ "$OLD_HASH" = "$NEW_HASH" ]; then
   printf 'note:     spec hash unchanged — the dispatch block was not edited\n'
 fi
 
-# Plan-owned findings cannot close under the same spec: refuse before committing any mutation.
+# Plan-owned findings cannot close under the same spec, but they block only a round with nothing else
+# to do. A failure the lens routed to a TASK closes by re-running that task, so plan-routed items beside
+# it are reported and carried — they gate the next verdict and reach human review through
+# carriedFindings — never a reason to withhold the task's fix. Otherwise refused before any mutation.
 if [ "$DISPATCH" = "--dispatch" ] && [ "$HASH_CHANGED" = 0 ] \
    && [ -n "$PREV_RESULT" ] && [ -f "$PREV_RESULT" ]; then
-  PLAN_ROUTED=$(python3 -c '
-import json, sys
+  PLAN_ROUTED=$(python3 - "$PREV_RESULT" "$STAGE" <<'PY'
+import hashlib, json, sys
 try:
     with open(sys.argv[1]) as fh: r = json.load(fh)
 except (OSError, json.JSONDecodeError):
@@ -393,6 +397,13 @@ except (OSError, json.JSONDecodeError):
 items = r.get("planFindings")
 if not isinstance(items, list) or not items:
     raise SystemExit(0)
+with open(sys.argv[2]) as fh:
+    stage = json.load(fh)
+task_ids = {t.get("id") for t in stage.get("tasks") or [] if isinstance(t, dict)}
+def owner(x):
+    return x["ownerTask"].strip() if isinstance(x, dict) and isinstance(x.get("ownerTask"), str) else ""
+blocking = [f for f in r.get("findings") or [] if isinstance(f, dict) and f.get("severity") in ("critical", "major")]
+to_task = [x for x in list(r.get("routes") or []) + blocking if owner(x) in task_ids]
 paths, lines = [], []
 for x in items:
     if not isinstance(x, dict):
@@ -403,24 +414,62 @@ for x in items:
     if where:
         paths.append(str(where))
     lines.append(f"  - {what}" + (f" [{where}]" if where else " (names no file)"))
+if to_task:
+    # Route-shaped items ({failure, cause, fix}) become carried claims. A blocking finding the plan
+    # owns is already in the carry derived from `findings` above.
+    carried = list(stage.get("carriedFindings") or [])
+    have = {f.get("id") for f in carried if isinstance(f, dict)}
+    added = 0
+    for x in items:
+        if not isinstance(x, dict) or x.get("title") or not x.get("failure"):
+            continue
+        fid = "c-" + hashlib.sha1(f"plan|{x['failure']}|".encode("utf-8")).hexdigest()[:10]
+        if fid in have:
+            continue
+        detail = " ".join(s for s in (str(x.get("cause") or "").strip(),
+                                      f"Fix: {x['fix']}" if x.get("fix") else "") if s) or str(x["failure"])
+        carried.append({"id": fid, "title": str(x["failure"]), "severity": "major", "detail": detail,
+                        "lens": "plan", "ownerTask": "plan"})
+        have.add(fid)
+        added += 1
+    stage["carriedFindings"] = carried
+    with open(sys.argv[2], "w") as fh:
+        json.dump(stage, fh, indent=2, ensure_ascii=False)
+        fh.write("\n")
+    print("report")
+    print(f"plan:     {len(items)} item(s) routed to the PLAN, which no task can close — REPORTED, not blocking:")
+    print("\n".join(lines))
+    print(f"  carried for the verdict and human review: {added} added to carriedFindings")
+    print(f"  the round proceeds for the {len(to_task)} failure(s) routed to a task: "
+          + "; ".join(f"{owner(x)} <- {x.get('failure') or x.get('title')}" for x in to_task))
+    raise SystemExit(0)
+print("refuse")
 print(len(items))
-print(", ".join(dict.fromkeys(paths)) or "(none named)")
-print("\n".join(lines))' "$PREV_RESULT") || PLAN_ROUTED=""
-  if [ -n "$PLAN_ROUTED" ]; then
-    rm -f "$STAGE"
-    {
-      printf '\nBLOCKED: %s item(s) in %s are routed to the PLAN, and the spec hash is unchanged.\n' \
-        "$(printf '%s\n' "$PLAN_ROUTED" | head -1)" "$PREV_RESULT"
-      printf 'Nothing dispatched; the run stays armed. Nothing was spent: args.json is unchanged, the\n'
-      printf 'counters above were NOT written, result.json is unrotated.\n'
-      printf '%s\n' "$(printf '%s\n' "$PLAN_ROUTED" | tail -n +3)"
-      printf "amend the plan: add <path> to a task's writablePaths (or reword), then re-hash\n"
-      printf '  path(s) named: %s\n' "$(printf '%s\n' "$PLAN_ROUTED" | sed -n 2p)"
-      printf 'No task can close these: re-dispatching the same brief re-derives the same gap, and FULL\n'
-      printf 'would re-probe red commands the last round already fixed. Amend, then run this command again.\n'
-    } >&2
-    exit 3
-  fi
+print("\n".join(lines))
+if paths:
+    print("amend the plan: add <path> to a task's writablePaths (or reword), then re-hash")
+    print("  path(s) named: " + ", ".join(dict.fromkeys(paths)))
+if len(paths) < len(items):
+    # No writablePaths change reaches an item that names no file: what it cites is a task's
+    # acceptance, redCommand or a mechanical check, so that wording is the amendment.
+    print("amend the plan: reword the acceptance, redCommand or mechanical check each item without a file cites, then re-hash")
+PY
+) || die "cannot read the previous verdict's plan-routed items"
+  case "$(printf '%s\n' "$PLAN_ROUTED" | head -1)" in
+    report) printf '%s\n' "$PLAN_ROUTED" | tail -n +2 ;;
+    refuse)
+      rm -f "$STAGE"
+      {
+        printf '\nBLOCKED: %s item(s) in %s are routed to the PLAN, and the spec hash is unchanged.\n' \
+          "$(printf '%s\n' "$PLAN_ROUTED" | sed -n 2p)" "$PREV_RESULT"
+        printf 'Nothing dispatched; the run stays armed. Nothing was spent: args.json is unchanged, the\n'
+        printf 'counters above were NOT written, result.json is unrotated.\n'
+        printf '%s\n' "$(printf '%s\n' "$PLAN_ROUTED" | tail -n +3)"
+        printf 'No task can close these: re-dispatching the same brief re-derives the same gap, and FULL\n'
+        printf 'would re-probe red commands the last round already fixed. Amend, then run this command again.\n'
+      } >&2
+      exit 3 ;;
+  esac
 fi
 
 # ---------------------------------------------------------------- the selective re-run, derived
@@ -524,9 +573,15 @@ const mechFailed: string[] = [
   ...rec("mechanicalThatFailed").map((m: any) => m && typeof m === "object" ? String(m.name ?? "(unnamed)") : String(m)),
   ...rec("rulesThatFailed").map((m: any) => m && typeof m === "object" ? String(m.name ?? "(unnamed)") : String(m))
 ]
+// The digest names a rule failure by its runner, `rules:<ruleChecks.name>`, never by rule id, so a
+// route quoting it is the route for every rule id that runner failed.
+const ruleRunner = args.ruleChecks && typeof args.ruleChecks.name === "string" ? `rules:${args.ruleChecks.name}`.toLowerCase() : ""
+const ruleIds = new Set(rec("rulesThatFailed").map((m: any) => m && typeof m === "object" ? String(m.name ?? "(unnamed)") : String(m)))
 const routeFor = (name: string) => routes.find((r: any) => {
   const o = ownerOf(r)
-  return (o === PLAN_OWNER || byId.has(o)) && String(r.failure ?? "").toLowerCase().includes(name.toLowerCase())
+  const failure = String(r.failure ?? "").toLowerCase()
+  return (o === PLAN_OWNER || byId.has(o)) &&
+    (failure.includes(name.toLowerCase()) || (ruleRunner !== "" && ruleIds.has(name) && failure.includes(ruleRunner)))
 })
 const mechNote: string[] = []
 const mechToTask = mechFailed.filter(n => byId.has(ownerOf(routeFor(n))))

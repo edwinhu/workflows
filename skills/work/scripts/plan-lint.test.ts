@@ -991,3 +991,40 @@ test('a plan .md with no block and no task table is still "nothing to lint", exi
   expect(r.code).toBe(2)
   expect(r.out).toContain('nothing to lint')
 })
+
+// ---------------------------------------------------------------- acceptance naming a verdict
+
+// A task's verifier runs before the round's rules and lens, so a lens or rule verdict in an
+// acceptance is one it can never read — secreg 1002-notes-18-repair-b routed exactly this to the plan.
+const verdict = (acceptance: string, over: Partial<Plan> = {}) =>
+  lint(base({ tasks: [task({ acceptance })], ...over })).filter(f => f.rule === 'acceptance-names-a-verdict')
+
+test("the real r18-style clause naming the lens's style item is a major", () => {
+  const f = verdict("That same command names no failing leg other than `hierarchy`, and the lens's lecture-18 style item returns no surviving COLD transition, NARRATION bullet or HOLLOW bullet.")
+  expect(f.map(x => x.severity)).toEqual(['major'])
+  expect(f[0].message).toContain('ruleChecks (rulesThatFailed)')
+})
+
+test('an auditor lens verdict is caught, and is not double-reported as uncommanded', () => {
+  const p = base({ tasks: [task({ acceptance: 'The `notes-auditor` lens returns no surviving MAJOR for a MISSING inventory item.' })] })
+  expect(rules(p)).toContain('acceptance-names-a-verdict')
+  expect(rules(p)).not.toContain('acceptance-clause-uncommanded')
+})
+
+test('a rule verdict is caught by the ruleChecks name or by a hyphenated rule id, command or not', () => {
+  const rc = { ruleChecks: { name: 'jev-notes-rules', cmd: 'bun rule-check.ts' } }
+  expect(verdict('jev-notes-rules reports N-UNCITED MET', rc)).toHaveLength(1)
+  expect(verdict('`bun rule-check.ts --rules notes` shows N-COLD, N-NARRATION and N-HOLLOW all MET')).toHaveLength(1)
+})
+
+test('a bare goal MET, a lens as subject matter, and a ruleChecks name without a verdict are not verdict clauses', () => {
+  const rc = { ruleChecks: { name: 'jev-notes-rules', cmd: 'bun rule-check.ts' } }
+  expect(verdict('`bun test tests/work-hold.test.ts` passes and the judge reports MET')).toHaveLength(0)
+  expect(verdict('the notes read the case through the lens of agency theory')).toHaveLength(0)
+  expect(verdict('`bun rule-calibrate.ts jev-notes-rules` exits 0', rc)).toHaveLength(0)
+})
+
+test('parseArgs carries ruleChecks through', () => {
+  expect(parseArgs({ tasks: [], ruleChecks: { name: 'r', cmd: 'c' } }).ruleChecks).toEqual({ name: 'r', cmd: 'c' })
+  expect(parseArgs({ tasks: [] }).ruleChecks).toBeNull()
+})
