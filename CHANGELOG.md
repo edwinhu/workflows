@@ -1,10 +1,21 @@
 # Changelog
 
-## [Unreleased]
+## [6.37.2] - 2026-10-02
 
 ### Added
 
 - **The `jev-rules` skill: turn a written rule into a calibrated Jev rule check.** Triage (script before Jev), the extractor contract, the one-proposition form, twins and real accepted cases (legacy-base pairs), the wiring criterion, and a failure-diagnosis table built from the 2026-10-02 rule sets. `skills/jev-rules/scripts/new-rule.ts <set> <ID>` scaffolds the module in `uncalibrated/`, placeholder twins, the calibration-manifest entry (written in the manifest's existing shape) and a stub test, refusing to overwrite. `--wire` moves the module only after two passing `rule-calibrate --rule` invocations, a third when a score sits within 0.03 of a bar, and refuses on a TODO, a placeholder twin or a cross-rule hit. `rule-calibrate.ts` exports `caseInput` for the stub tests.
+
+### Changed
+
+- **A guard denies a multi-file `bun test` without `--parallel`** (`bun-parallel-guard`, in the guards mod). (aa570cfe)
+- **wc-probe P14-P18 and P15 gating.** Probe rules R1-R5 and the 2026-10-02 fact rows land in workflow-creator; P15 duplicate grading leaves ADVISORY_RULES (baseline zero after the ds and teaching notes changes) and now gates, with D38 and two new cases. cite-check tests use per-test temp dirs (P18). (45c63e3d, 96b10c80, b778fcb7)
+- **workflow-creator links the `jev-rules` skill.** (bc52d937)
+- **Jev typst rules judge only the added span; `T-STORY` has a firm margin.** (2242d11d, b3db6917)
+- **ds lens defers to Jev rule verdicts.** M1, UNI, DEN, R1, DQ4 and DQ6 are no longer re-graded by the model lens; DEL stays model-evaluated, and the two broader judgements are stated as such. (34f6e336)
+- **early-stop allows the stop while owned farm runs are live,** when the watcher mod is running here (CLI entrypoint, Claude Code >= 2.1.287); otherwise unchanged. (d3027a48)
+- **Python suites run under pytest-xdist** (`-n auto`). (9c69cfad)
+- **No test writes into the repo tree; `scripts/test.sh` guards it.** agent-contract, read-guard, mod-guards-parity and local_runner_test fixtures moved to temp dirs; check.test.ts's wc-probe leg and route-refresh's timezone case fixed; the suite sets PYTHONDONTWRITEBYTECODE and fails on any path the run creates, changes or deletes in `git status`. (77ec49d7)
 
 ## [6.37.1] - 2026-10-02
 
