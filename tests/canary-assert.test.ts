@@ -154,4 +154,63 @@ describe('canary suites and template steps', () => {
     expect(r.status).toBe(2)
     expect(r.out).toContain('CANARY_NESTED')
   })
+
+  // A git repo in a temp dir: FILES committed at one commit, then MODS written over the tracked ones
+  // and UNTRACKED created beside them — a main checkout carrying another session's work.
+  function repo(name: string, files: Record<string, string>, mods: Record<string, string> = {}, untracked: Record<string, string> = {}) {
+    const dir = mkdtempSync(join(root, `${name}-`))
+    const git = (...a: string[]) => spawnSync('git', ['-C', dir, '-c', 'user.name=t', '-c', 'user.email=t@t', ...a], { encoding: 'utf8' })
+    const put = (o: Record<string, string>) => {
+      for (const [f, body] of Object.entries(o)) { mkdirSync(join(dir, f, '..'), { recursive: true }); writeFileSync(join(dir, f), body) }
+    }
+    git('init', '-q'); put(files); git('add', '-A'); git('commit', '-qm', 'release')
+    put(mods); put(untracked)
+    return { dir, git, head: git('rev-parse', 'HEAD').stdout.trim() }
+  }
+  // The suite fails if it can see the uncommitted edit: release.txt reads WIP only in the working tree.
+  const FAKE_SUITE = '#!/usr/bin/env bash\ngrep -q committed release.txt || { echo "(fail) suite read uncommitted WIP"; exit 1; }\necho " 1 pass"; echo " 0 fail"\n'
+  const teachingRepo = (mods: Record<string, string> = {}) => repo('teaching', {
+    'tests/run-all.sh': 'echo "1 passed"\n', 'notes.typ': 'committed\n',
+  }, mods, { '.work/run/state.json': '{}' })
+  function workflowsRepo() {
+    const wf = repo('wf', { 'scripts/test.sh': FAKE_SUITE, 'release.txt': 'committed\n' }, { 'release.txt': 'WIP\n' }, { 'test2.js': '' })
+    spawnSync('cp', [CANARY, join(wf.dir, 'scripts/canary.sh')])
+    spawnSync('chmod', ['+x', join(wf.dir, 'scripts/test.sh')])
+    return wf
+  }
+  function fakeCanary(wfDir: string, env: Record<string, string>) {
+    const tmp = mkdtempSync(join(root, 'dry-'))
+    const r = spawnSync('bash', [join(wfDir, 'scripts/canary.sh'), '--dry-run', '--only', 'suites'], {
+      encoding: 'utf8', timeout: 60_000,
+      env: { ...process.env, CANARY_TMP: tmp, CANARY_STATE: join(tmp, 'state'), CANARY_NESTED: '', ...env },
+    })
+    return { status: r.status, out: r.stdout + r.stderr }
+  }
+
+  test('the workflows suite runs on the committed HEAD in a clean worktree, never the dirty main checkout', () => {
+    const wf = workflowsRepo()
+    const t = teachingRepo()
+    const before = wf.git('status', '--porcelain').stdout
+    expect(before).toContain(' M release.txt')
+    const r = fakeCanary(wf.dir, { CANARY_TEACHING: t.dir })
+    expect(r.out).not.toContain('suite read uncommitted WIP')
+    expect(r.out).toContain(`=== canary suites: workflows at ${wf.head.slice(0, 12)} (committed HEAD, clean worktree`)
+    expect(r.status).toBe(0)
+    // Only the worktree it minted is gone; the main checkout's WIP and untracked files are untouched.
+    expect(wf.git('worktree', 'list', '--porcelain').stdout.match(/^worktree /gm)?.length).toBe(1)
+    expect(wf.git('status', '--porcelain').stdout).toBe(before)
+  })
+
+  test('a teaching checkout with uncommitted changes to tracked files FAILS naming them; untracked .work/ is fine', () => {
+    const wf = workflowsRepo()
+    const clean = fakeCanary(wf.dir, { CANARY_TEACHING: teachingRepo().dir })
+    expect(clean.out).not.toContain('FAIL [suites] teaching')
+    expect(clean.status).toBe(0)
+
+    const dirty = fakeCanary(wf.dir, { CANARY_TEACHING: teachingRepo({ 'notes.typ': 'WIP\n' }).dir })
+    expect(dirty.status).toBe(1)
+    expect(dirty.out).toContain('FAIL [suites] teaching checkout has uncommitted changes to tracked files')
+    expect(dirty.out).toContain('M notes.typ')
+    expect(dirty.out).not.toContain('.work/')
+  })
 })
