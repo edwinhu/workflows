@@ -1,5 +1,18 @@
 # Changelog
 
+## [6.37.4] - 2026-10-02
+
+### Changed
+
+- **Every round gets an honest outcome label.** `work-outcomes.ts` writes a verdict for every task of every accepted round: wrong when the round's checks failed for the task (verifier or acceptance, missing verifier, red pair, unfinished implementer, a `digest.json` failure or lens route it owns) or a critical/major lens finding it owns stands. The verdict carries kind, model, checks and finding ids. (ac1701a6)
+- **`farm.sh` records wrong verdicts for missing-artifact and GONE rows, and keeps the child's exit code.** A row whose expect artifact is missing, or whose child ends with no result event, now appends an automatic wrong verdict; `wait || true` had made every recorded exit 0. (ac1701a6)
+- **Jev routing shadow scores retired.** `route.ts` drops the shadow (no content in its state, flat 0.19-0.39 scores) and refuses a table carrying `jev`; new `route.ts --outcomes` reports rows, wrong rate and top failing checks per kind x model. Reason in `docs/DESIGN-routing.md`. (ac1701a6)
+- **The suite is green.** parse_def14a_own's python suites are gated in `tests/pytest-extra.txt`; agent-contract and the unlinked-agents check accept a `~/.claude/agents` link into the main checkout of the same repo (`hooks/lib/main-checkout.ts`), so they run in a worktree. (e9a37e94)
+- **workshop-reviewer reads its real corpus and defers to wired checks,** with a corpus-glob guard test. (47f6fac3)
+- **`CLAUDE_CODE_EXECPATH` reader guard.** `tests/execpath-readers.test.ts` fails any new code line reading the variable outside `runningClaudeExe`; session-start and early-stop were the only readers. (eb8a014c)
+- **Jev parked and retired rules.** `T-ECHO` retired (the script owns its lexical cases, `T-ECHO-PARA` its paraphrase cases); `T-ECHO-PARA` parked at twin 0.91-0.96, real decks <= 0.23, but legacy-base bad cases 0.85-0.90 and a paraphrase 0.70-0.75; `T-TAKEAWAY-WH` stays parked at vio 0.85-0.88 against the 0.90 margin. (aec73430, 0a3d3a89)
+- **elide-case `retrieve` stays serial** (one shared Westlaw browser, delivery queue and Downloads directory), with a P17 `ignore-serial-loop` exemption; two retired script paths in the implementation notes are marked so wc-probe P2 passes. (8345a80f)
+
 ## [6.37.3] - 2026-10-02
 
 ### Changed
