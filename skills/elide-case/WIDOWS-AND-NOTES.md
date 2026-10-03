@@ -10,7 +10,7 @@ into the addendum preamble.
 
 ### Reuse vs. new: a NEW script, and why
 
-`/home/eh/projects/teaching/scripts/check-widows.py` was read first. It is **not extended**.
+`teaching/scripts/check-widows.py` (since retired) was read first. It is **not extended**.
 A new script ships at `skills/elide-case/scripts/check-page-breaks.py`.
 
 The two share about twenty lines — pymupdf's `get_text("dict")` line extraction, which the
