@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.37.6] - 2026-10-03
+
+### Changed
+
+- **plan-lint R19 exempts an acceptance that is the task's own redCommand,** so a chain's terminal task can spell out its gate command lint-clean instead of the anaphor "that same command exits 0". (7f55a303)
+- **work-hold writes nothing in the project tree by default** (the `autoCompactWindow` cap is now opt-in via `WORK_HOLD_COMPACT_WINDOW`), **and drops a held run that died without a verdict**, judged from its farm-events pids; `--brief` marks it `DIED`. (c9c4e479)
+
 ## [6.37.5] - 2026-10-03
 
 ### Added
