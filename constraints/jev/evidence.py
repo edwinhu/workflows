@@ -9,15 +9,17 @@ import subprocess
 
 def spans(state, spec):
     """`file:line` of every candidate a rule's SPANS names, in state order: an entry is an inventory key
-    whose items carry `file` and `line`, or (key, file_field, line_field) when they are named otherwise.
+    whose items carry `file` and `line`, or (key, file_field, line_field) when they are named otherwise;
+    a line field may hold a list of line numbers (E7's concurrency_lines).
     These are what the verdict was judged over, so a VIOLATED one points a repair at its lines."""
     out = []
     for entry in spec:
         key, ff, lf = (entry, 'file', 'line') if isinstance(entry, str) else entry
         for item in (state or {}).get(key) or []:
             f, n = (item.get(ff), item.get(lf)) if isinstance(item, dict) else (None, None)
-            if f and isinstance(n, int) and f'{f}:{n}' not in out:
-                out.append(f'{f}:{n}')
+            for k in (n if isinstance(n, list) else [n]):
+                if f and isinstance(k, int) and f'{f}:{k}' not in out:
+                    out.append(f'{f}:{k}')
     return out
 
 

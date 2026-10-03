@@ -18,6 +18,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'specification_curve_sites is empty: the files estimate no specification curve',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('specification_curve_sites',)
 
 # an estimator call: a library model, or a project helper whose name says it fits a regression
 ESTIMATOR = re.compile(r'^(OLS|WLS|GLS|Logit|Probit|Poisson|PanelOLS|RandomEffects|BetweenOLS|FirstDifferenceOLS|'

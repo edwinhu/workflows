@@ -16,6 +16,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'no plan was supplied, the plan declares no output path, or the code writes nothing',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('writes',)
 
 WRITERS = {'write_parquet', 'write_csv', 'to_csv', 'to_parquet', 'savefig', 'write_text', 'write_json',
            'to_excel', 'write_excel', 'to_latex', 'to_json', 'save', 'write_ipc', 'to_feather', 'to_stata'}

@@ -16,6 +16,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the change adds or edits no Iron Law, EXTREMELY-IMPORTANT block or absolute rule',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('changed_absolute_constraint_blocks',)
 
 MARKER = re.compile(r'iron law|EXTREMELY-IMPORTANT|\*\*(NEVER|ALWAYS|NO [A-Z]+[^*]* WITHOUT)\b|'
                     r'^\s*(NEVER|ALWAYS)\b|not negotiable', re.I)

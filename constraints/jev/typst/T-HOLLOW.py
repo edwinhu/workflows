@@ -16,6 +16,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the state lists no announcing bullet',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('announcing_bullets',)
 
 ITEMS = r'(?:scenarios|hypotheticals|examples|factors|points|reasons|issues|cases|steps|questions|ways)'
 NUM = r'(?:two|three|four|five|six|seven|eight|nine|ten|several|a few|many|various|a number of)'

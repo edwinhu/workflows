@@ -51,6 +51,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the state lists no section that needs a transition',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('sections_after_the_first',)
 
 RECAP = re.compile(r'\b(recap|review|introduction|overview)\b', re.IGNORECASE)
 # Closed lists: the spoken markers that turn a talk to a new topic. The judge reads the matches, never

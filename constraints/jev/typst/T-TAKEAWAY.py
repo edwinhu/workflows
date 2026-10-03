@@ -36,6 +36,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the state lists no slide subtitle',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('subtitles',)
 
 
 def evidence(files, plan_lines=None, changed=None):
