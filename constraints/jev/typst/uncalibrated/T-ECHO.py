@@ -11,6 +11,14 @@ so the ceiling is Jev's, not the twin's. Accepted work also breaks the written r
 deck (colloquium 0779d15, line 1597) opens "Would SB 21 change anything?" with "The first closing
 question: would SB 21 change anything?", 0.80-0.88 alone and 0.39 diluted among the deck's 13 listed
 slides. Wiring needs the user's ruling on that slide plus a judge that clears paraphrase with margin.
+
+USER RULING 2026-10-02: that SB 21 slide IS an echo; new work follows the rule, the legacy deck stays.
+It is now the legacy-base pair real/T-legacy-echo-tornetta (bad adds the slide verbatim on lines
+1542-1591 of that deck, ok replaces its first bullet with a non-echo line). Third pass, no extractor
+or proposition change, two `rule-calibrate --runs 2` invocations: vio 0.89/0.89 then 0.82/0.89 (FAIL),
+bad 0.86/0.88 then 0.84/0.90 (FAIL), ok 0.06-0.09, sat 0.00, real 0.07-0.27. Still parked. The typst
+plugin's no-subtitle-echo.py now skips code lines (typst 2f541df) and flags both the vio twin (4/7
+terms) and the SB 21 slide (3/3) mechanically, so the lexical half is a script's; only paraphrase is left.
 """
 """UNCALIBRATED -- not wired. Calibration 2026-10-02, two runs each of two rounds: violating fixture never reached 0.85: 0.75/0.79 with the first wording, 0.51/0.56 with the stricter one; compliant and real <= 0.28.
 Kept here, below the glob rule-check.ts reads, until the question or the extractor earns it back.
