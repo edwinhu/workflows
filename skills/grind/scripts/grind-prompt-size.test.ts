@@ -137,7 +137,7 @@ describe('grind.sh — GRIND_FLOORS is bounded, so the prompt still fits in one 
       .filter(l => Buffer.byteLength(l, 'utf8') > FLOOR_LINE_MAX)
       .map(l => `${l.slice(2).split('\t')[0]} (${Buffer.byteLength(l, 'utf8')} bytes)`)
     expect(oversized, `floor lines over ${FLOOR_LINE_MAX} bytes: ${oversized.join(', ')}`).toEqual([])
-  })
+  }, 60_000)   // 60 sequential grind.sh spawns: bun's 5 s default fails it under a loaded suite
 
   test('the whole prompt stays under MAX_ARG_STRLEN', () => {
     const d = workdir('grind-floorcap-total')
@@ -152,5 +152,5 @@ describe('grind.sh — GRIND_FLOORS is bounded, so the prompt still fits in one 
       `the runner was never invoked; grind.sh said: ${r.stderr}`,
     ).toBe(true)
     expect(Buffer.byteLength(prompt(1), 'utf8')).toBeLessThan(MAX_ARG_STRLEN)
-  })
+  }, 60_000)
 })
