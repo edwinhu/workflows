@@ -230,7 +230,7 @@ for (const c of mechanicalChecks) {
 }
 // The shell side of the round. work-dispatch.sh runs every red-gated task's redCommand BEFORE launch
 // (`redBefore`, by task id) and hashes the red suite (`redSuiteHashes`: every existing file a
-// redCommand names, plus `redSuite`). work-checks.sh runs red-after, each acceptanceCmd, each
+// redCommand names — a directory only its test files — plus `redSuite`). work-checks.sh runs red-after, each acceptanceCmd, each
 // mechanical cmd and the re-hash once the agents return, and hands the result back as `round`.
 // No agent ever runs a command whose exit code decides the gate.
 if (args.redSuite !== undefined && (!Array.isArray(args.redSuite) || args.redSuite.some(p => typeof p !== 'string' || !p.trim()))) {
