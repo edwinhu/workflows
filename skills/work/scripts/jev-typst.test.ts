@@ -58,9 +58,15 @@ const SEPARATES: Record<string, (vio: any, sat: any) => void> = {
     expect(v.subtitles.map((x: any) => x.subtitle)).toContain("Proxy Advisors Overview");
     expect(s.subtitles.map((x: any) => x.subtitle)).not.toContain("Proxy Advisors Overview");
   },
-  "T-ECHO": (v, s) =>
-    expect(v.slides_subtitle_and_first_body_line[0].share_of_subtitle_words)
-      .toBeGreaterThan(s.slides_subtitle_and_first_body_line[0].share_of_subtitle_words),
+  "T-ECHO": (v, s) => {
+    expect(v.slides_subtitle_and_first_body_line).toHaveLength(1);
+    expect(v.slides_subtitle_and_first_body_line[0]).toMatchObject({
+      line: 10, share_of_subtitle_terms_repeated: 0.75, adds_number: false, quotes_or_cites_source: false,
+      adds_reason_or_consequence: false, adds_example: false,
+    });
+    expect(s.slides_subtitle_and_first_body_line).toHaveLength(0);
+    expect([v.n_slides, s.n_slides]).toEqual([2, 2]);
+  },
   "T-STORY": (v, s) => {
     expect(v.storytelling_comments[0]).toMatchObject({ line: 14, names_visual_property: false, states_audience_conclusion: false });
     expect(v.storytelling_comments[0].diagram_call).toEqual({ line: 15, call: "fletcher-diagram" });
