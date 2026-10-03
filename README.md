@@ -208,7 +208,7 @@ reviewers exist because grading against a constraint set needs a body this repo 
 built-in judge's prompt is predefined, so the modules it grades against have to reach it as task
 `refs` rather than as anything the lens can skip — and no exam reviewer exists because a prompt
 covers it. Constraint prose itself is never a skill: it has one canonical home under
-`constraints/` (Typst modules under `~/.claude/skills/typst/constraints/`),
+`constraints/` (Typst rule texts under `~/.claude/skills/typst/rules/`, checkers under `constraints/`),
 reaches dispatched agents as `refs`, and reaches interactive ones through the `typst:typst` bang
 line. The same test explains the two workflows that set no implementer override: `/dev` and
 `/workflow-creator` produce code and workflow definitions, where the software-engineering framing is
