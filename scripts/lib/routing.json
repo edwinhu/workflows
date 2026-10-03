@@ -1,12 +1,6 @@
 {
-  "_comment": "The farm-out routing table, read by scripts/lib/route.ts. kinds and jev are hand-edited and reviewed; candidate availability, price and asOf change ONLY through `bun scripts/lib/route.ts --refresh`, the only sanctioned way to update them, and its diff is reviewed before commit. Models are pinned full ids: an unpinned wrapper slot is wrapper-local and can name another family.",
+  "_comment": "The farm-out routing table, read by scripts/lib/route.ts. kinds are hand-edited and reviewed; candidate availability, price and asOf change ONLY through `bun scripts/lib/route.ts --refresh`, the only sanctioned way to update them, and its diff is reviewed before commit. Models are pinned full ids: an unpinned wrapper slot is wrapper-local and can name another family.",
   "asOf": "2026-10-02",
-  "jev": {
-    "mode": "shadow",
-    "model": "typesafe/jev-1.13",
-    "threshold": 0.85,
-    "timeoutSeconds": 10
-  },
   "candidates": {
     "sonnet": {
       "provider": "claude",

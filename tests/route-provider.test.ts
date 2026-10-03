@@ -11,9 +11,7 @@ const mkTmp = useTmp()
  * Provider-constrained rows: a row naming a kind AND a provider but no model resolves to the first
  * AVAILABLE candidate of that provider in the kind's chain (pick, then fallbacks, in order).
  *
- *   chain has an available candidate of the provider  -> {..., candidate:<id>, source:'table',
- *                                                          shadow:{unavailable:<names the constraint>}}
- *                                                          Jev is not consulted
+ *   chain has an available candidate of the provider  -> {..., candidate:<id>, source:'table'}
  *   chain has candidates of the provider, none available -> REFUSED: exit 2, empty stdout,
  *                                                          stderr names the kind and the provider
  *   chain has no candidate of the provider             -> today's explicit passthrough, unchanged
@@ -61,13 +59,9 @@ function parseDecision(r: Run) {
   return JSON.parse(lines[0])
 }
 
-/** A constrained decision: the candidate fields exact, shadow a single `unavailable` string naming the constraint. */
+/** A constrained decision: exactly the candidate fields, source table. */
 function expectConstrained(d: any, want: { provider: string; model: string; kind: string; candidate: string }) {
-  const { shadow, ...rest } = d
-  expect(rest).toEqual({ ...want, source: 'table' })
-  expect(Object.keys(shadow)).toEqual(['unavailable'])
-  expect(typeof shadow.unavailable).toBe('string')
-  expect(shadow.unavailable).toMatch(/provider/i)
+  expect(d).toEqual({ ...want, source: 'table' })
 }
 
 /** A stub Decisions server that records every request body and answers with scores of 0.99. */
@@ -173,7 +167,6 @@ describe('a provider absent from the chain passes through exactly as today', () 
     const d = parseDecision(await decide({ kind: 'judgement', provider: 'codex' }))
     expect(d).toEqual({
       provider: 'codex', model: null, kind: 'judgement', candidate: null, source: 'explicit',
-      shadow: { unavailable: 'explicit row: Jev is not consulted' },
     })
   })
 
@@ -181,35 +174,20 @@ describe('a provider absent from the chain passes through exactly as today', () 
     const d = parseDecision(await decide({ kind: 'review', provider: 'codex', model: 'gpt-5.6-luna' }))
     expect(d).toEqual({
       provider: 'codex', model: 'gpt-5.6-luna', kind: 'review', candidate: null, source: 'explicit',
-      shadow: { unavailable: 'explicit row: Jev is not consulted' },
     })
   })
 })
 
-describe('Jev is not consulted on a constrained row', () => {
-  test('no request reaches a live Jev stub, even in decide mode', async () => {
-    const jev = stubJev()
-    try {
-      const table = fixtureCopy(t => { t.jev.mode = 'decide' })
-      const d = parseDecision(await decide({ kind: 'review', provider: 'codex', prompt: 'p' }, table,
-        { WORK_HOLD_DECISIONS_URL: jev.url }))
-      expectConstrained(d, { provider: 'codex', model: 'gpt-6.1-sol', kind: 'review', candidate: 'sol' })
-      expect(jev.bodies).toHaveLength(0)
-    } finally { jev.stop() }
-  }, 30_000)
-
-  test('a counting stub sees zero requests for the constrained row and >=1 for a kind-only row', async () => {
-    // Same stub for both rows: the kind-only row proves the stub is live and reachable, so the
-    // constrained row's zero is an observation, not a dead endpoint.
+describe('no Decisions call on any row', () => {
+  test('a live stub sees zero requests for a constrained row and for a kind-only row', async () => {
     const jev = stubJev()
     try {
       const env = { WORK_HOLD_DECISIONS_URL: jev.url }
       const d = parseDecision(await decide({ kind: 'review', provider: 'gemini', prompt: 'p' }, FIXTURE, env))
       expectConstrained(d, { provider: 'gemini', model: 'gemini-3.8-flash-high', kind: 'review', candidate: 'flash38' })
-      expect(jev.bodies).toHaveLength(0)
       const k = await decide({ kind: 'review', prompt: 'p' }, FIXTURE, env)
       expect(k.code).toBe(0)
-      expect(jev.bodies.length).toBeGreaterThanOrEqual(1)
+      expect(jev.bodies).toHaveLength(0)
     } finally { jev.stop() }
   }, 30_000)
 })

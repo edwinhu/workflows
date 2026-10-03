@@ -1,5 +1,4 @@
 import { test, expect } from 'bun:test'
-import { createHash } from 'node:crypto'
 import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -12,9 +11,8 @@ const mkTmp = useTmp()
 /**
  * The spec for scripts/lib/route.ts: one row in, one routing decision out.
  *
- * Every Jev case runs the CLI with an ASYNC spawn. `decisionsCall` blocks on spawnSync(curl), so an
- * in-process route() against an in-test Bun.serve would wait on the event loop it is blocking.
- * In-process API calls are made only where Jev is not consulted or is the dead port.
+ * Routing makes no Decisions call (the Jev shadow was retired 2026-10-02); the stub Decisions server
+ * below is only there to prove it is never asked. --outcomes reports over a temp outcomes file.
  */
 
 const ROOT = join(import.meta.dir, '..')
@@ -92,7 +90,6 @@ test('loadTable reads the fixture table', () => {
   const t = loadTable(FIXTURE)
   expect(Object.keys(t.candidates).sort()).toEqual([...CANDIDATES].sort())
   expect(t.kinds.script).toEqual({ pick: 'sonnet', fallbacks: ['flash'] })
-  expect(t.jev.mode).toBe('shadow')
 })
 
 test('route() passes an explicit provider and model through verbatim', async () => {
@@ -210,164 +207,81 @@ test('ROUTING_TABLE is used when --table is absent', async () => {
   expect(d).toMatchObject({ candidate: 'opus', model: 'claude-opus-5-5', source: 'table' })
 }, 30_000)
 
-// ---------------------------------------------------------------------------------- shadow
+// ------------------------------------------------------------------- shadow retired 2026-10-02
 
-test('shadow: one Decisions call, one CORRECT/WRONG choice question per candidate in the kind chain', async () => {
-  const jev = stubJev(scoresReply({ sonnet: 0.6, opus: 0.7, flash: 0.8, luna: 0.95 }))
-  try {
-    const d = parseDecision(await decide({ label: 'L', prompt: 'p', kind: 'script' }, FIXTURE,
-      { WORK_HOLD_DECISIONS_URL: jev.url }))
-    expect(jev.bodies).toHaveLength(1)
-    const body = jev.bodies[0]
-    expect(body.model).toBe('typesafe/jev-1.13')
-    // script's chain is sonnet then flash: opus and luna are not asked about.
-    expect(Object.keys(body.questions).sort()).toEqual(['q_flash', 'q_sonnet'])
-    for (const q of Object.values(body.questions) as any[]) {
-      expect(q.type).toBe('choice')
-      expect(JSON.stringify(q)).toContain('CORRECT')
-      expect(JSON.stringify(q)).toContain('WRONG')
-    }
-    expect(d.shadow.scores).toEqual({ sonnet: 0.6, flash: 0.8 })
-  } finally { jev.stop() }
-}, 30_000)
-
-test('shadow: the pick does not change, however Jev scores it', async () => {
-  const jev = stubJev(scoresReply({ sonnet: 0.01, opus: 0.99, flash: 0.99, luna: 0.99 }))
-  try {
-    const d = parseDecision(await decide({ prompt: 'p', kind: 'script' }, FIXTURE, { WORK_HOLD_DECISIONS_URL: jev.url }))
-    expect(d).toMatchObject({ candidate: 'sonnet', model: 'claude-sonnet-5-5', source: 'table' })
-    expect(d.shadow.scores.sonnet).toBe(0.01)
-  } finally { jev.stop() }
-}, 30_000)
-
-test('the state sent to Jev summarises the row and never carries the prompt text', async () => {
-  const prompt = 'ZEBRA-QUARTZ-7781 refactor the frobnicator and report back'
-  const sha = createHash('sha256').update(prompt).digest('hex')
+test('a table-routed row makes no Decisions call and carries no shadow field', async () => {
   const jev = stubJev(scoresReply({ sonnet: 0.9, opus: 0.9, flash: 0.9, luna: 0.9 }))
   try {
-    parseDecision(await decide({ label: 'zebra-row', prompt, kind: 'review', agent: 'ds', expect: 'out.md' }, FIXTURE,
-      { WORK_HOLD_DECISIONS_URL: jev.url }))
-    expect(jev.bodies).toHaveLength(1)
-    const raw = JSON.stringify(jev.bodies[0])
-    expect(raw).not.toContain('ZEBRA-QUARTZ-7781')
-    expect(raw).not.toContain('frobnicator')
-    const state = jev.bodies[0].state
-    expect(typeof state).toBe('string')
-    expect(() => JSON.parse(state)).not.toThrow()
-    expect(state).toContain(sha)
-    expect(state).toContain('"review"')
-    expect(state).toContain('"zebra-row"')
-    expect(state).toContain(String(prompt.length))
-    expect(state).toContain('"ds"')
+    for (const kind of KINDS) {
+      const d = parseDecision(await decide({ label: 'L', prompt: 'p', kind }, FIXTURE, { WORK_HOLD_DECISIONS_URL: jev.url }))
+      expect(d.source).toBe('table')
+      expect('shadow' in d).toBe(false)
+    }
+    expect(jev.bodies).toHaveLength(0)
   } finally { jev.stop() }
+}, 60_000)
+
+test('a table still carrying the retired jev key is refused, naming it', async () => {
+  const table = fixtureCopy(t => { t.jev = { mode: 'shadow', model: 'typesafe/jev-1.13', threshold: 0.85, timeoutSeconds: 10 } })
+  const r = await decide({ prompt: 'p', kind: 'script' }, table)
+  expect(r.code).toBe(1)
+  expect(r.stdout).toBe('')
+  expect(r.stderr).toContain('jev is retired')
+  expect(() => loadTable(table)).toThrow(/jev is retired/)
 }, 30_000)
 
-test('Jev unreachable: routing still succeeds with shadow.unavailable', async () => {
-  const d = parseDecision(await decide({ prompt: 'p', kind: 'script' }, FIXTURE, { WORK_HOLD_DECISIONS_URL: DEAD }))
-  expect(d).toMatchObject({ candidate: 'sonnet', source: 'table' })
-  expect(typeof d.shadow.unavailable).toBe('string')
-  expect(d.shadow.unavailable.length).toBeGreaterThan(0)
+// -------------------------------------------------------------------------------- outcomes
+
+const OUT_LINES = [
+  { type: 'row', rowId: 'a', kind: 'script', route: { model: 'm-sonnet' } },
+  { type: 'row', rowId: 'b', kind: 'script', route: { model: 'm-sonnet' } },
+  { type: 'row', rowId: 'c', kind: 'script', route: { model: 'm-sonnet' } },
+  { type: 'row', rowId: 'd', kind: 'judgement', route: { model: null, provider: 'claude' }, models: ['m-opus'] },
+  { type: 'row', rowId: 'e', kind: 'judgement', route: { model: null, provider: 'codex' } },
+  { type: 'verdict', rowId: 'a', verdict: 'wrong', checks: ['verify', 'lens:major'] },
+  { type: 'verdict', rowId: 'b', verdict: 'wrong', checks: ['lens:major'] },
+  { type: 'verdict', rowId: 'c', verdict: 'wrong', checks: ['red'] },
+  // A later hand verdict overrides the automatic one for the same rowId.
+  { type: 'verdict', rowId: 'c', verdict: 'correct', why: 'checked by hand' },
+  { type: 'verdict', rowId: 'd', verdict: 'wrong', why: 'by hand' },
+  { type: 'verdict', rowId: 'zz', verdict: 'wrong', checks: ['orphan'] },
+]
+const outcomesFile = () => {
+  const p = join(mkTmp('route-outcomes-'), 'farm-outcomes.jsonl')
+  writeFileSync(p, OUT_LINES.map(l => JSON.stringify(l)).join('\n') + '\n{torn line\n')
+  return p
+}
+
+test('--outcomes --json: per kind x model rows, labelled, wrong rate, top failing checks', async () => {
+  const r = await runCli(['--outcomes', '--file', outcomesFile(), '--json'])
+  expect(r.code).toBe(0)
+  const groups = JSON.parse(r.stdout)
+  expect(groups).toEqual([
+    { kind: 'judgement', model: 'codex:(unpinned)', rows: 1, labelled: 0, wrong: 0, wrongRate: null, topChecks: [] },
+    { kind: 'judgement', model: 'm-opus', rows: 1, labelled: 1, wrong: 1, wrongRate: 1, topChecks: [{ check: '(unnamed)', count: 1 }] },
+    { kind: 'script', model: 'm-sonnet', rows: 3, labelled: 3, wrong: 2, wrongRate: 2 / 3,
+      topChecks: [{ check: 'lens:major', count: 2 }, { check: 'verify', count: 1 }] },
+  ])
 }, 30_000)
 
-test('Jev answering 500: routing still succeeds with shadow.unavailable', async () => {
-  const jev = stubJev(() => new Response('boom', { status: 500 }))
-  try {
-    const d = parseDecision(await decide({ prompt: 'p', kind: 'bulk' }, FIXTURE, { WORK_HOLD_DECISIONS_URL: jev.url }))
-    expect(d).toMatchObject({ candidate: 'flash', source: 'table' })
-    expect(typeof d.shadow.unavailable).toBe('string')
-  } finally { jev.stop() }
+test('--outcomes prints a table and never writes the file it reads', async () => {
+  const f = outcomesFile()
+  const before = readFileSync(f, 'utf8')
+  const r = await runCli(['--outcomes', '--file', f])
+  expect(r.code).toBe(0)
+  expect(r.stdout.split('\n')[0]).toBe('kind\tmodel\trows\tlabelled\twrong\twrong_rate\ttop_failing_checks')
+  expect(r.stdout).toContain('script\tm-sonnet\t3\t3\t2\t0.67\tlens:major (2), verify (1)')
+  expect(readFileSync(f, 'utf8')).toBe(before)
 }, 30_000)
 
-test('Jev answering garbage: routing still succeeds with shadow.unavailable', async () => {
-  const jev = stubJev(() => new Response('not json at all'))
-  try {
-    const d = parseDecision(await decide({ prompt: 'p', kind: 'bulk' }, FIXTURE, { WORK_HOLD_DECISIONS_URL: jev.url }))
-    expect(d).toMatchObject({ candidate: 'flash', source: 'table' })
-    expect(typeof d.shadow.unavailable).toBe('string')
-  } finally { jev.stop() }
-}, 30_000)
-
-test('a hanging Jev is cut off at jev.timeoutSeconds: under 8 s, still routed', async () => {
-  let release: () => void = () => {}
-  const hung = new Promise<void>(r => { release = r })
-  const jev = stubJev(async () => { await hung; return new Response('{}') })
-  try {
-    const r = await decide({ prompt: 'p', kind: 'script' }, FIXTURE, { WORK_HOLD_DECISIONS_URL: jev.url })
-    expect(r.ms).toBeLessThan(8_000)
-    const d = parseDecision(r)
-    expect(d).toMatchObject({ candidate: 'sonnet', source: 'table' })
-    expect(typeof d.shadow.unavailable).toBe('string')
-  } finally { release(); jev.stop() }
-}, 30_000)
-
-test('Jev in-process at the dead port: route() still returns the table pick', async () => {
-  const saved = { url: process.env.WORK_HOLD_DECISIONS_URL, tok: process.env.WORK_HOLD_JUDGE_TOKEN }
-  process.env.WORK_HOLD_DECISIONS_URL = DEAD
-  process.env.WORK_HOLD_JUDGE_TOKEN = 'test-token'
-  try {
-    const d: any = await route({ prompt: 'p', kind: 'script' }, { table: loadTable(FIXTURE) })
-    expect(d).toMatchObject({ candidate: 'sonnet', provider: 'claude', model: 'claude-sonnet-5-5', source: 'table' })
-    expect(typeof d.shadow.unavailable).toBe('string')
-  } finally {
-    if (saved.url === undefined) delete process.env.WORK_HOLD_DECISIONS_URL; else process.env.WORK_HOLD_DECISIONS_URL = saved.url
-    if (saved.tok === undefined) delete process.env.WORK_HOLD_JUDGE_TOKEN; else process.env.WORK_HOLD_JUDGE_TOKEN = saved.tok
-  }
-}, 30_000)
-
-// ---------------------------------------------------------------------------------- decide
-
-const DECIDE = () => fixtureCopy(t => { t.jev.mode = 'decide' })
-
-test('decide: the cheapest available chain candidate at or above threshold wins, source jev', async () => {
-  // review's chain is sonnet then opus: sonnet is cheaper and clears 0.85; opus scores higher.
-  const table = fixtureCopy(t => { t.jev.mode = 'decide'; t.kinds.review = { pick: 'opus', fallbacks: ['sonnet'] } })
-  const jev = stubJev(scoresReply({ sonnet: 0.88, opus: 0.97 }))
-  try {
-    const d = parseDecision(await decide({ prompt: 'p', kind: 'review' }, table, { WORK_HOLD_DECISIONS_URL: jev.url }))
-    expect(d).toMatchObject({ candidate: 'sonnet', provider: 'claude', model: 'claude-sonnet-5-5', source: 'jev', kind: 'review' })
-  } finally { jev.stop() }
-}, 30_000)
-
-test('decide: a candidate outside the kind chain is never scored or chosen, however cheap and confident', async () => {
-  // flash is the cheapest candidate in the table but not in judgement's chain (opus, sonnet).
-  const jev = stubJev(scoresReply({ sonnet: 0.9, opus: 0.97, flash: 0.99, luna: 0.99 }))
-  try {
-    const d = parseDecision(await decide({ prompt: 'p', kind: 'judgement' }, DECIDE(), { WORK_HOLD_DECISIONS_URL: jev.url }))
-    expect(Object.keys(jev.bodies[0].questions).sort()).toEqual(['q_opus', 'q_sonnet'])
-    expect(Object.keys(d.shadow.scores).sort()).toEqual(['opus', 'sonnet'])
-    expect(d).toMatchObject({ candidate: 'sonnet', source: 'jev', kind: 'judgement' })
-  } finally { jev.stop() }
-}, 30_000)
-
-test('decide: a score below threshold disqualifies the cheaper candidate', async () => {
-  const jev = stubJev(scoresReply({ sonnet: 0.9, opus: 0.97, flash: 0.84, luna: 0.1 }))
-  try {
-    const d = parseDecision(await decide({ prompt: 'p', kind: 'judgement' }, DECIDE(), { WORK_HOLD_DECISIONS_URL: jev.url }))
-    expect(d).toMatchObject({ candidate: 'sonnet', model: 'claude-sonnet-5-5', source: 'jev' })
-  } finally { jev.stop() }
-}, 30_000)
-
-test('decide: an unavailable candidate is never chosen, however cheap and confident', async () => {
-  const table = fixtureCopy(t => { t.jev.mode = 'decide'; t.candidates.flash.available = false })
-  const jev = stubJev(scoresReply({ sonnet: 0.9, opus: 0.95, flash: 0.99, luna: 0.1 }))
-  try {
-    const d = parseDecision(await decide({ prompt: 'p', kind: 'judgement' }, table, { WORK_HOLD_DECISIONS_URL: jev.url }))
-    expect(d).toMatchObject({ candidate: 'sonnet', source: 'jev' })
-  } finally { jev.stop() }
-}, 30_000)
-
-test('decide: when nobody clears the threshold the table pick stands, source table', async () => {
-  const jev = stubJev(scoresReply({ sonnet: 0.5, opus: 0.6, flash: 0.7, luna: 0.1 }))
-  try {
-    const d = parseDecision(await decide({ prompt: 'p', kind: 'judgement' }, DECIDE(), { WORK_HOLD_DECISIONS_URL: jev.url }))
-    expect(d).toMatchObject({ candidate: 'opus', model: 'claude-opus-5-5', source: 'table' })
-  } finally { jev.stop() }
-}, 30_000)
-
-test('decide: Jev unavailable falls back to the table pick, source table', async () => {
-  const d = parseDecision(await decide({ prompt: 'p', kind: 'judgement' }, DECIDE(), { WORK_HOLD_DECISIONS_URL: DEAD }))
-  expect(d).toMatchObject({ candidate: 'opus', source: 'table' })
-  expect(typeof d.shadow.unavailable).toBe('string')
+test('--outcomes reads FARM_OUTCOMES when --file is absent, and exits 2 on a missing file', async () => {
+  const f = outcomesFile()
+  const r = await runCli(['--outcomes', '--json'], { FARM_OUTCOMES: f })
+  expect(r.code).toBe(0)
+  expect(JSON.parse(r.stdout)).toHaveLength(3)
+  const missing = await runCli(['--outcomes'], { FARM_OUTCOMES: join(mkTmp('route-outcomes-'), 'absent.jsonl') })
+  expect(missing.code).toBe(2)
+  expect(missing.stderr).toContain('no outcomes file')
 }, 30_000)
 
 // ------------------------------------------------------------------------ committed table
@@ -384,7 +298,6 @@ test('the committed routing.json is well formed', () => {
     expect(['opus', 'sonnet', 'haiku']).not.toContain(c.model)
   }
   expect(t.candidates[t.kinds.judgement.pick].model).toMatch(/^claude-opus-/)
-  expect(t.jev.mode).toBe('shadow')
-  expect(loadTable(COMMITTED).jev.mode).toBe('shadow')
-  expect(loadTable().jev.mode).toBe('shadow')
+  expect('jev' in t).toBe(false)
+  expect(Object.keys(loadTable(COMMITTED).candidates).length).toBeGreaterThan(0)
 })

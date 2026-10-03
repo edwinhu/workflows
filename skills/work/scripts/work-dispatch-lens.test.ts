@@ -157,19 +157,16 @@ function planFile(dir: string, runId: string, args: object) {
 
 const readJson = (p: string) => JSON.parse(readFileSync(p, 'utf8'))
 
-/** The provider-constrained answer for each lensProvider under provider-chain.json, minus shadow. */
+/** The provider-constrained answer for each lensProvider under provider-chain.json. */
 const LENS = {
   codex: { provider: 'codex', model: 'gpt-6.1-sol', kind: 'review', candidate: 'sol', source: 'table' },
   gemini: { provider: 'gemini', model: 'gemini-3.8-flash-high', kind: 'review', candidate: 'flash38', source: 'table' },
   claude: { provider: 'claude', model: 'claude-sonnet-5-5', kind: 'review', candidate: 'sonnet', source: 'table' },
 } as const
 
-/** A logged decision is a constrained one: exact fields, shadow a single `unavailable` string. */
+/** A logged decision is a constrained one: exactly these fields. */
 function expectConstrained(d: any, want: object) {
-  const { shadow, ...rest } = d
-  expect(rest).toEqual(want)
-  expect(Object.keys(shadow ?? {})).toEqual(['unavailable'])
-  expect(typeof shadow.unavailable).toBe('string')
+  expect(d).toEqual(want)
 }
 
 /** Every call made without --provider: <= 4, each kind once, provider only on the review row. */

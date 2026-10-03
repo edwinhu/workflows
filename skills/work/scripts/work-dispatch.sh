@@ -630,7 +630,7 @@ archive_plan() {
 # resolved HERE, before the args are handed over. One route.ts call per KIND, never per task or step,
 # run in parallel so the pass costs one Jev timeout. judgement, script and review are always
 # resolved; bulk only when a task declares it, so a bulk task always has a model.
-#   no provider    {kindModels:{kind: model}, source: jev|table, decisions:{kind: route.ts output}}
+#   no provider    {kindModels:{kind: model}, source: table, decisions:{kind: route.ts output}}
 #   --provider X   {source:'flag', provider:X}; route.ts is not consulted
 # args.lensProvider P (claude|codex|gemini) puts provider:P on the review row, so route.ts answers with
 # P's first available candidate in kinds.review's chain. Under --provider X it is the ONE call made:
@@ -691,7 +691,7 @@ def resolve(kinds):
         except OSError as exc:
             failed.append((k, "n/a", f"could not run bun {route_ts}: {exc}"))
     for k, p in procs.items():
-        # A backstop only: route.ts caps its one Jev call at jev.timeoutSeconds itself.
+        # A backstop only: route.ts reads a local table and makes no network call.
         try:
             out, err = p.communicate(timeout=120)
         except subprocess.TimeoutExpired:
@@ -758,7 +758,7 @@ else:
         blocked(failed)
     routing = {
         "kindModels": {k: decisions[k]["model"] for k in kinds},
-        "source": "jev" if any(d.get("source") == "jev" for d in decisions.values()) else "table",
+        "source": "table",
         "decisions": {k: decisions[k] for k in kinds},
     }
     summary = f"routing: {routing['source']} — " + ", ".join(f"{k} {m}" for k, m in routing["kindModels"].items())

@@ -12,7 +12,7 @@ const mkTmp = useTmp()
  * line per row (plus `--verdict` lines) to $FARM_OUTCOMES.
  *
  * The three wrappers are stubs that log their argv and print a canned result, so nothing reaches a
- * provider. Jev is the dead port unless a case says otherwise.
+ * provider. Routing makes no Decisions call; the dead port is there to keep it that way.
  */
 
 const FARM = join(import.meta.dir, '..', 'skills', 'farm-out', 'scripts', 'farm.sh')
@@ -105,7 +105,8 @@ test('1. a script row runs on claude-code --model claude-sonnet-5-5 and writes o
   expect(o.route.model).toBe('claude-sonnet-5-5')
   expect(o.promptSha256).toMatch(/^[0-9a-f]{64}$/)
   expect(o.promptLength).toBe('do the thing'.length)
-  for (const k of ['exit', 'ok', 'missing', 'toolCalls', 'models', 'shadow', 'ts']) expect(o).toHaveProperty(k)
+  for (const k of ['exit', 'ok', 'missing', 'toolCalls', 'models', 'ts']) expect(o).toHaveProperty(k)
+  expect(o).not.toHaveProperty('shadow')
   expect(o.exit).toBe(0)
   expect(o.ok).toBe(true)
 }, 30_000)
@@ -182,16 +183,16 @@ test('7. stderr announces each row as `farm: ROW <label> <rowId>` with the outco
   expect(res.stderr).toContain(`farm: ROW announced ${o.rowId}`)
 }, 30_000)
 
-test('8. with Jev dead the row still runs on the table pick and records shadow.unavailable', async () => {
+test('8. a routed row runs on the table pick, and an ok row gets no automatic verdict', async () => {
   const r = rig()
-  const res = await runRows(r, [{ label: 'nojev', prompt: 'p', kind: 'judgement' }], [], { WORK_HOLD_DECISIONS_URL: DEAD })
+  const res = await runRows(r, [{ label: 'plain', prompt: 'p', kind: 'judgement' }])
   expect(res.code).toBe(0)
   const inv = invocations(r)
   expect(inv).toHaveLength(1)
   expect(modelOf(inv[0])).toBe('claude-opus-5-5')
   const o = rowLines(r)[0]
   expect(o?.route?.source).toBe('table')
-  expect(o?.shadow?.unavailable).toBeTruthy()
+  expect(lines(r).filter(l => l.type === 'verdict')).toHaveLength(0)
 }, 30_000)
 
 test('9. the prompt text never appears in outcomes.jsonl', async () => {
@@ -243,4 +244,40 @@ test('10c. --verdict on an unknown rowId exits 2, appends nothing, runs no wrapp
   expect(res.code).toBe(2)
   expect(readFileSync(r.outcomes, 'utf8')).toBe(before)
   expect(invocations(r).length).toBe(nInv)
+}, 30_000)
+
+test('11a. a row whose expect artifact is missing gets an automatic wrong verdict naming it', async () => {
+  const r = rig()
+  const res = await runRows(r, [{ label: 'noart', prompt: 'p', kind: 'script', expect: ['out/never.md'] }])
+  expect(res.code).toBe(1)
+  const o = rowLines(r)[0]
+  expect(o.missing).toEqual(['out/never.md'])
+  const v = lines(r).filter(l => l.type === 'verdict')
+  expect(v).toHaveLength(1)
+  expect(v[0]).toMatchObject({
+    rowId: o.rowId, verdict: 'wrong', auto: true, checks: ['expect-missing'], kind: 'script', model: 'claude-sonnet-5-5',
+  })
+  expect(v[0].why).toContain('expect missing: out/never.md')
+  expect(v[0].why).toContain('[script/claude-sonnet-5-5]')
+}, 30_000)
+
+test('11b. a row whose child ends with no result event (GONE) gets an automatic wrong verdict', async () => {
+  const r = rig()
+  writeFileSync(join(r.root, 'bin', 'claude-code'), '#!/usr/bin/env bash\nexit 137\n')
+  const res = await runRows(r, [{ label: 'died', prompt: 'p', kind: 'script' }])
+  expect(res.code).toBe(1)
+  const o = rowLines(r)[0]
+  const v = lines(r).filter(l => l.type === 'verdict')
+  expect(v).toHaveLength(1)
+  expect(v[0]).toMatchObject({ rowId: o.rowId, verdict: 'wrong', auto: true, checks: ['gone'] })
+  expect(v[0].why).toContain('GONE')
+}, 30_000)
+
+test('11c. a hand --verdict after an automatic one is appended, never refused', async () => {
+  const r = rig()
+  await runRows(r, [{ label: 'noart', prompt: 'p', kind: 'script', expect: ['out/never.md'] }])
+  const o = rowLines(r)[0]
+  const res = await farm(r, ['--verdict', o.rowId, 'correct', 'artifact was written elsewhere and checked'])
+  expect(res.code).toBe(0)
+  expect(lines(r).filter(l => l.type === 'verdict').map(l => l.verdict)).toEqual(['wrong', 'correct'])
 }, 30_000)

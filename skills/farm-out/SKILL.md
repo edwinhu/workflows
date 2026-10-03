@@ -166,14 +166,14 @@ each row to `scripts/lib/route.ts`, which picks the provider and a pinned model 
 
 `--provider` is the legacy whole-run override: that wrapper for every row, route.ts never consulted.
 
-Jev scores the kind's chain in **shadow**: one Decisions call per routed row, logged, never changing
-the pick and never blocking a row. Each row prints `farm: ROW <label> <rowId>` on stderr and appends
-one line to `~/.local/state/workflows/farm-outcomes.jsonl` (`FARM_OUTCOMES` overrides). Once you have
-verified a result, label it: `farm.sh --verdict <rowId> correct|wrong "<why>"`. Those verdicts are
-the holdout Jev must clear before it may decide.
+Each row prints `farm: ROW <label> <rowId>` on stderr and appends one line to
+`~/.local/state/workflows/farm-outcomes.jsonl` (`FARM_OUTCOMES` overrides). A row whose `expect`
+artifact is missing, or whose child ended with no result (GONE), is labelled `wrong` automatically.
+Once you have verified any other result, label it: `farm.sh --verdict <rowId> correct|wrong "<why>"`.
+`route.ts --outcomes` prints rows, wrong rate and top failing checks per kind x model.
 
 `bun scripts/lib/route.ts --refresh`, run from a checkout of this repo and never the plugin cache,
-updates availability (proxy catalog) and prices (OpenRouter) and never touches `kinds` or `jev`.
+updates availability (proxy catalog) and prices (OpenRouter) and never touches `kinds`.
 Review its `routing.json` diff before committing. `route.ts --propose` reads the refreshed signals
 and prints suggested `kinds` changes with reasons, plus newer same-family models the proxy serves
 that beat a candidate at <= its price (`candidate C: model <old> -> <new>`), writing nothing: you
