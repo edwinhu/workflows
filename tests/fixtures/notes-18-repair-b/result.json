@@ -1,0 +1,189 @@
+{
+  "overallPass": false,
+  "verdict": "FAIL",
+  "scoreTable": {
+    "tasksTotal": 3,
+    "attempts": [],
+    "rulesThatFailed": 1,
+    "ruleVerdicts": 5,
+    "tasksJudgedThisRun": 3,
+    "implementedDone": 3,
+    "verifyPassed": 2,
+    "lensesRun": 1,
+    "lensesReported": 1,
+    "lensMode": "RED",
+    "scoresRun": 1,
+    "scoresReported": 1,
+    "lensFindings": 0,
+    "routes": 4,
+    "survivingBlocking": 0,
+    "survivingMinor": 0,
+    "carriedSubmitted": 0,
+    "carriedOpen": 0,
+    "planFindings": 3,
+    "dispositions": 2,
+    "dispositionsRoutedFromFindings": 0,
+    "redGated": 1,
+    "redProven": 0,
+    "redUnproven": 0,
+    "redNotRed": 0,
+    "greenNotGreen": 1,
+    "redCarried": 0,
+    "mechanicalRun": 1,
+    "mechanicalPassed": 0
+  },
+  "tasksThatFlagged": [
+    "r18-style",
+    "r18-cover"
+  ],
+  "mechanicalThatFailed": [
+    {
+      "name": "notes-mech",
+      "exitCode": 1,
+      "output": "=== check: 1 lecture(s), 11 legs\ncheck: FAIL (exit 1) — failing leg(s):\n  - hierarchy (exit 1)\nadvisory: poll-candidates and already-answered listed above — neither gates\nran: /home/eh/areas/secreg/notes/18-insider.typ — 105 uncited candidate(s) for L3 adjudication\namerican-english: 1 file(s), 88 added line(s) read, clean\ncase-cites: 1 file(s), 0 added (CP N) cite(s) checked, clean"
+    }
+  ],
+  "rulesThatFailed": [
+    "N-UNCITED"
+  ],
+  "ruleVerdicts": [
+    {
+      "rule": "N-UNCITED",
+      "p": 0.97,
+      "verdict": "VIOLATED"
+    },
+    {
+      "rule": "N-DRIFT",
+      "p": 0.2,
+      "verdict": "MET"
+    },
+    {
+      "rule": "N-COLD",
+      "p": 0.13,
+      "verdict": "MET"
+    },
+    {
+      "rule": "N-HOLLOW",
+      "p": 0.09,
+      "verdict": "MET"
+    },
+    {
+      "rule": "N-NARRATION",
+      "p": 0,
+      "verdict": "MET"
+    }
+  ],
+  "lensesThatFlagged": [],
+  "findings": [],
+  "carried": [],
+  "routes": [
+    {
+      "failure": "red:r18-style — owner r18-style",
+      "ownerTask": "plan",
+      "cause": "The check.sh output shows exactly one failing leg, hierarchy (exit 1). The plan's own spec says hierarchy judges the slides deck, fails the same way on lectures 16, 17 and 19, and is outside the write surface. The redCommand is the whole check.sh gate, so its exit code stays 1 whatever r18-style does. The near-duplicate listings in the output are advisory text, not failing legs: the gate names only hierarchy. The second numbered failure in the digest has the same cause.",
+      "fix": "Amend the plan. Either make r18-style's redCommand a gate that excludes the hierarchy leg (for example, a wrapper that greps the 'failing leg(s)' list for anything other than hierarchy), or drop the redCommand. A notes task cannot turn an exit-1 deck leg green, and editing the deck is forbidden."
+    },
+    {
+      "failure": "mechanical:notes-mech — owner r18-align",
+      "ownerTask": "plan",
+      "cause": "The command exits 1 only because of the hierarchy leg (deck-side, unreachable by any task's writablePaths). Every other leg is clean in the output (american-english, case-cites, section-table, inventory-valid). The NEAR-DUPLICATE entries are mostly between other lectures' files (15/16, 19/28, 21/25), which this plan's tasks cannot edit. The two pairs that include notes/18-insider.typ (Chiarella vs Dirks at lines 368/19:141, and the Kendall classical-theory questions vs 20:340) did not make any leg fail.",
+      "fix": "Reword the mechanical check's pass condition to 'no failing leg other than hierarchy', or exempt hierarchy for this run. Do not route this to a notes task."
+    },
+    {
+      "failure": "rules:jev-notes-rules — owner unrouted (route it)",
+      "ownerTask": "r18-cover",
+      "cause": "N-UNCITED is VIOLATED at p=0.97. The check.sh probe reports 105 uncited answer-block candidates in notes/18-insider.typ. Missing source cites on answer blocks are a source-grounding defect, which r18-cover's remit covers (TM and case facts traced to the source). The other rules (N-DRIFT, N-COLD, N-HOLLOW, N-NARRATION) are MET, so r18-style has no rule violation to fix here. notes/18-insider.typ is writable by r18-cover.",
+      "fix": "Add a source cite (TM page or line, or CP N casebook cite, as notes-checks.md N4 specifies) to each answer block that asserts a holding, fact, date, or figure. Leave cites off general-reasoning answers. Do not delete content."
+    },
+    {
+      "failure": "verify:r18-style — owner r18-style",
+      "ownerTask": "plan",
+      "cause": "r18-style's acceptance has a second clause, 'the lens's lecture-18 style item returns no surviving COLD transition, NARRATION bullet or HOLLOW bullet'. The blind verifier has only commands to run, and no command reports COLD, NARRATION or HOLLOW. Those verdicts come from the jev-notes-rules rule-check. That check's latest result is N-COLD 0.13, N-NARRATION 0 and N-HOLLOW 0.09, all MET, but the verifier cannot reach it.",
+      "fix": "Reword r18-style's acceptance to a command the verifier can run, for example: `bun ~/.claude/skills/workflows/skills/work/scripts/rule-check.ts --project-dir /home/eh/areas/secreg --rules /home/eh/.claude/skills/teaching/constraints/jev/notes` shows N-COLD, N-NARRATION and N-HOLLOW all MET. Also drop the hierarchy-sensitive exit-code clause, as in the first route."
+    }
+  ],
+  "planFindings": [
+    {
+      "failure": "red:r18-style — owner r18-style",
+      "ownerTask": "plan",
+      "cause": "The check.sh output shows exactly one failing leg, hierarchy (exit 1). The plan's own spec says hierarchy judges the slides deck, fails the same way on lectures 16, 17 and 19, and is outside the write surface. The redCommand is the whole check.sh gate, so its exit code stays 1 whatever r18-style does. The near-duplicate listings in the output are advisory text, not failing legs: the gate names only hierarchy. The second numbered failure in the digest has the same cause.",
+      "fix": "Amend the plan. Either make r18-style's redCommand a gate that excludes the hierarchy leg (for example, a wrapper that greps the 'failing leg(s)' list for anything other than hierarchy), or drop the redCommand. A notes task cannot turn an exit-1 deck leg green, and editing the deck is forbidden."
+    },
+    {
+      "failure": "mechanical:notes-mech — owner r18-align",
+      "ownerTask": "plan",
+      "cause": "The command exits 1 only because of the hierarchy leg (deck-side, unreachable by any task's writablePaths). Every other leg is clean in the output (american-english, case-cites, section-table, inventory-valid). The NEAR-DUPLICATE entries are mostly between other lectures' files (15/16, 19/28, 21/25), which this plan's tasks cannot edit. The two pairs that include notes/18-insider.typ (Chiarella vs Dirks at lines 368/19:141, and the Kendall classical-theory questions vs 20:340) did not make any leg fail.",
+      "fix": "Reword the mechanical check's pass condition to 'no failing leg other than hierarchy', or exempt hierarchy for this run. Do not route this to a notes task."
+    },
+    {
+      "failure": "verify:r18-style — owner r18-style",
+      "ownerTask": "plan",
+      "cause": "r18-style's acceptance has a second clause, 'the lens's lecture-18 style item returns no surviving COLD transition, NARRATION bullet or HOLLOW bullet'. The blind verifier has only commands to run, and no command reports COLD, NARRATION or HOLLOW. Those verdicts come from the jev-notes-rules rule-check. That check's latest result is N-COLD 0.13, N-NARRATION 0 and N-HOLLOW 0.09, all MET, but the verifier cannot reach it.",
+      "fix": "Reword r18-style's acceptance to a command the verifier can run, for example: `bun ~/.claude/skills/workflows/skills/work/scripts/rule-check.ts --project-dir /home/eh/areas/secreg --rules /home/eh/.claude/skills/teaching/constraints/jev/notes` shows N-COLD, N-NARRATION and N-HOLLOW all MET. Also drop the hierarchy-sensitive exit-code clause, as in the first route."
+    }
+  ],
+  "dispositions": [
+    {
+      "title": "Plan spec hash",
+      "detail": "work-dispatch.sh --spec-hash printed 35f48aea7b17271d9f3d46db85e6d08d81a3e3cb7df94cbe2241c26a4b4de80a, matching the authority hash.",
+      "lens": "lens"
+    },
+    {
+      "title": "Jev style rules",
+      "file": "/home/eh/areas/secreg/notes/18-insider.typ",
+      "detail": "The digest's rule checklist has N-DRIFT 0.2, N-COLD 0.13, N-HOLLOW 0.09 and N-NARRATION 0, all MET. Only N-UNCITED failed.",
+      "lens": "lens"
+    }
+  ],
+  "implemented": [
+    {
+      "id": "r18-align",
+      "done": true,
+      "changedFiles": [
+        "/home/eh/areas/secreg/notes/18-insider.typ"
+      ]
+    },
+    {
+      "id": "r18-cover",
+      "done": true,
+      "changedFiles": [
+        "/home/eh/areas/secreg/notes/18-insider.typ"
+      ]
+    },
+    {
+      "id": "r18-style",
+      "done": true,
+      "changedFiles": [
+        "/home/eh/areas/secreg/notes/18-insider.typ"
+      ]
+    }
+  ],
+  "verified": [
+    {
+      "id": "r18-align",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "r18-cover",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "r18-style",
+      "pass": false,
+      "failures": [
+        "Lens style item (COLD / NARRATION / HOLLOW) for lecture 18 was not demonstrated clean by any command I could run; check.sh has no leg that reports those verdicts. The second clause of the acceptance is unproven, and ambiguity fails."
+      ]
+    }
+  ],
+  "red": [
+    {
+      "id": "r18-style",
+      "command": "bash /home/eh/.claude/skills/teaching/skills/notes/scripts/check.sh --course . --source docs/TM.txt --lecture 18:notes/18-insider.typ:slides/06-insider/18.typ:inventory/content-inventory-06-18.md",
+      "verdict": "green-not-green",
+      "beforeExit": 1,
+      "afterExit": 1
+    }
+  ]
+}

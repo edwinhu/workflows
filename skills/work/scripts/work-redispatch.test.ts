@@ -1721,3 +1721,94 @@ describe('the provider passthrough', () => {
     expect(keys).not.toContain('dispatchProvider')
   })
 })
+
+/**
+ * The real round-1 verdict of secreg's 1002-notes-18-repair-b, replayed (tests/fixtures/notes-18-repair-b,
+ * a trimmed copy; the course tree is never read). Three routes went to the plan, naming no file, and one
+ * — the N-UNCITED rule failure — to task r18-cover. The redispatch refused the whole round at exit 3
+ * ("path(s) named: (none named)"), so the one fix a task could make was withheld by three it could not.
+ */
+describe('the real 1002-notes-18-repair-b verdict: a task-routed fix beside plan-routed items', () => {
+  const FIX = join(import.meta.dir, '../../../tests/fixtures/notes-18-repair-b')
+  const COURSE = '/home/eh/areas/secreg'
+  const AMENDED: Record<string, string> = {
+    'r18-cover': '`bash scripts/check.sh` names no failing leg other than `hierarchy`.',
+    'r18-style': 'That same command names no failing leg other than `hierarchy`.',
+  }
+
+  function realRun(opts: { acceptance: 'real' | 'amended'; dropTaskRoute?: boolean }) {
+    const dir = mkTmp('work-redispatch-n18-')
+    scratch.push(dir)
+    redScript(dir, 'check.sh', 'echo "1 failed"\nexit 1')
+    const a = JSON.parse(readFileSync(join(FIX, 'args.json'), 'utf8').split(COURSE).join(dir))
+    for (const t of a.tasks) {
+      if (t.redCommand) t.redCommand = 'bash scripts/check.sh'
+      if (opts.acceptance === 'amended' && AMENDED[t.id]) t.acceptance = AMENDED[t.id]
+    }
+    a.mechanicalChecks = a.mechanicalChecks.map((m: any) => ({ ...m, cmd: 'true' }))
+    a.ruleChecks = { ...a.ruleChecks, cmd: 'true' }
+    const { rounds, ...block } = a
+    const plan = join(dir, 'plan.md')
+    writeFileSync(plan, '# Plan\n\n## Run sizing\n\nnothing parked\n\n' +
+      `<!-- work:dispatch\n${JSON.stringify({ runId: 'n18-replay', args: block }, null, 2)}\n-->\n`)
+    const specHash = execFileSync('bash', [join(import.meta.dir, 'work-dispatch.sh'), '--spec-hash', plan], { encoding: 'utf8', timeout: 60_000 }).trim()
+    const args = join(dir, 'args.json')
+    writeFileSync(args, JSON.stringify({ ...a, rounds, planPath: plan, specHash }, null, 2) + '\n')
+    const r = JSON.parse(readFileSync(join(FIX, 'result.json'), 'utf8').split(COURSE).join(dir))
+    // The red record's command is the round's own redCommand, so it stays a valid (if unproven) record.
+    for (const x of r.red) x.command = 'bash scripts/check.sh'
+    if (opts.dropTaskRoute) r.routes = r.routes.filter((x: any) => x.ownerTask === 'plan')
+    writeFileSync(join(dir, 'result.json'), JSON.stringify(r, null, 2) + '\n')
+    return { dir, plan, args }
+  }
+
+  test('the fixture is the real shape: 3 plan-routed items naming no file, 1 route to r18-cover', () => {
+    const r = JSON.parse(readFileSync(join(FIX, 'result.json'), 'utf8'))
+    expect(r.planFindings.map((x: any) => [x.ownerTask, x.file ?? null])).toEqual([['plan', null], ['plan', null], ['plan', null]])
+    expect(r.routes.filter((x: any) => x.ownerTask !== 'plan').map((x: any) => [x.failure, x.ownerTask]))
+      .toEqual([['rules:jev-notes-rules — owner unrouted (route it)', 'r18-cover']])
+  })
+
+  test('the task-routed fix dispatches; the plan items are reported and carried, not blocking', () => {
+    const f = realRun({ acceptance: 'amended' })
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(0)
+    expect(r.out).toContain('3 item(s) routed to the PLAN, which no task can close — REPORTED, not blocking')
+    expect(r.out).toContain('r18-cover <- rules:jev-notes-rules')
+    expect(r.out).not.toContain('BLOCKED')
+    const a = readArgs(f.args)
+    // The rule failure is named by its runner in the digest, so the route narrows to its owner.
+    expect(r.out).toContain('N-UNCITED -> r18-cover')
+    expect(a.onlyTasks).toEqual(['r18-cover', 'r18-style'])
+    expect(Object.keys(a.taskFixes)).toEqual(['r18-cover'])
+    // Carried: they gate the next verdict as plan-owned claims and reach human review from there.
+    const plan = (a.carriedFindings ?? []).filter((c: any) => c.ownerTask === 'plan')
+    expect(plan.map((c: any) => c.title)).toEqual([
+      'red:r18-style — owner r18-style', 'mechanical:notes-mech — owner r18-align', 'verify:r18-style — owner r18-style'])
+    expect(plan.every((c: any) => c.severity === 'major' && c.detail.includes('Fix: '))).toBe(true)
+    expect(a.freezeFindingSet).toBe(true)
+  })
+
+  test('with no task-routed failure the round is still refused, and no path rule is applied to pathless items', () => {
+    const f = realRun({ acceptance: 'amended', dropTaskRoute: true })
+    const before = readFileSync(f.args, 'utf8')
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(3)
+    expect(r.out).toContain('3 item(s) in')
+    expect(r.out).not.toContain('(none named)')
+    expect(r.out).not.toContain("add <path> to a task's writablePaths")
+    expect(r.out).toContain('reword the acceptance, redCommand or mechanical check each item without a file cites')
+    expect(readFileSync(f.args, 'utf8')).toBe(before)
+  })
+
+  // Item 19: the verify:r18-style route exists because the acceptance asks the verifier for a lens
+  // verdict. Unamended, that wording is now refused at Tier 1, before a round is spent on it.
+  test('the plan as written is refused at Tier 1 for acceptance clauses naming a lens verdict', () => {
+    const f = realRun({ acceptance: 'real' })
+    const r = redispatch(f.plan, f.args)
+    expect(r.code).toBe(3)
+    expect(r.out).toContain('acceptance-names-a-verdict  [task r18-cover]')
+    expect(r.out).toContain('acceptance-names-a-verdict  [task r18-style]')
+    expect(r.out).toMatch(/BLOCKED: 2 major\/critical plan-lint finding/)
+  })
+})
