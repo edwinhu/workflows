@@ -233,6 +233,31 @@ export function ceilingReached(
   return null
 }
 
+/**
+ * The rounds a WATCHED run has actually dispatched — `args.json.rounds`, which work-dispatch.sh sets
+ * to 1 and work-redispatch.sh advances only when a round really goes out. Null when the hold watches
+ * no run or its args carry no count; such a hold counts its own red Stops instead.
+ *
+ * A Stop is not a round. Counting Stops drained the budget while work was paused: secreg 2026-10-02,
+ * "Round 2/6" and then 3/6 with no dispatch in between, args.json still at rounds 1.
+ */
+export function runRounds(s: { run?: string }): number | null {
+  if (!s.run) return null
+  try {
+    const n = JSON.parse(readFileSync(join(s.run, 'args.json'), 'utf8')).rounds
+    return typeof n === 'number' && Number.isFinite(n) ? n : null
+  } catch {
+    return null
+  }
+}
+
+/** The round clause of a block message: dispatched rounds for a run, the next Stop-round otherwise. */
+export function roundLabel(s: { run?: string; rounds: number; maxRounds: number }): string {
+  return runRounds(s) === null
+    ? `Round ${s.rounds + 1}/${s.maxRounds}`
+    : `${s.rounds}/${s.maxRounds} rounds dispatched (a Stop is not a round)`
+}
+
 /** What the hook decides, separated from the IO so it can be tested. */
 export function decide(
   s: State,
@@ -251,7 +276,7 @@ export function decide(
   return {
     action: 'block',
     reason:
-      `\`${s.check}\` exits ${checkExit} — not met. Round ${s.rounds + 1}/${s.maxRounds}, ` +
+      `\`${s.check}\` exits ${checkExit} — not met. ${roundLabel(s)}, ` +
       `${s.ceilingMinutes - minutes} min left. Act now: fix the cause; do not loosen the check.`,
   }
 }
@@ -356,6 +381,75 @@ export function renderHistory(h: RoundRecord[] | undefined): string {
 
 export function pushRound(s: State, r: RoundRecord, max = 20): void {
   s.history = [...(s.history ?? []), r].slice(-max)
+}
+
+/** The leg names check.sh lists under "failing leg(s):", each as printed, e.g. `hierarchy (exit 1)`. */
+export function failingLegs(output: string): string[] {
+  const lines = String(output || '').split('\n')
+  const i = lines.findIndex((l) => /failing leg\(s\):/.test(l))
+  if (i < 0) return []
+  const out: string[] = []
+  for (const l of lines.slice(i + 1)) {
+    const m = l.match(/^\s+-\s+(.+?)\s*$/)
+    if (!m) break
+    out.push(m[1])
+  }
+  return out
+}
+
+/**
+ * The watched run's verdict as NAMED FACTS — what a goal is written against.
+ *
+ * A goal names legs, findings and counts ("check.sh names no failing leg other than hierarchy, and the
+ * lens has no surviving critical or major finding"); `overallPass` aggregates every gate in the plan,
+ * including the ones the goal excludes. Without these the judge saw only the transcript, where the
+ * session had pasted `verdict: FAIL (overallPass=false)`, and put a met goal at 29% (secreg
+ * 2026-10-02: the one failing leg was the excluded `hierarchy (exit 1)`, survivingBlocking 0).
+ * Empty when the run has no readable result.json. Plain words only: the red verdict's own label
+ * (green-not-green) and the flagged-task list cost the met goal ~8 points live and named no
+ * condition a goal states.
+ */
+export function runFacts(run: string | undefined): string {
+  if (!run) return ''
+  let r: Record<string, any>
+  try {
+    const raw = JSON.parse(readFileSync(join(run, 'result.json'), 'utf8'))
+    r = Array.isArray(raw) ? raw[raw.length - 1] : raw
+    if (!r || typeof r !== 'object') return ''
+  } catch {
+    return ''
+  }
+  const legsOf = (output: string, exit: unknown): string => {
+    const legs = failingLegs(output)
+    if (legs.length) return `; failing leg(s), as the check names them: ${legs.join(', ')} — every other leg passed`
+    return exit === 0 ? '' : output ? `; output ends: ${String(output).trim().slice(-200)}` : ''
+  }
+  const out: string[] = []
+  for (const m of Array.isArray(r.mechanical) ? r.mechanical : [])
+    if (m && typeof m === 'object')
+      out.push(`mechanical check ${m.name}: exit ${m.exitCode}${legsOf(m.output, m.exitCode)}`)
+  for (const c of Array.isArray(r.red) ? r.red : [])
+    if (c && typeof c === 'object')
+      out.push(
+        `red command ${c.id} (\`${String(c.command || '').slice(0, 200)}\`): exit ${c.afterExit} after ` +
+          `the round (it exited ${c.beforeExit} before)${legsOf(c.afterOutput, c.afterExit)}`,
+      )
+  const t = r.scoreTable && typeof r.scoreTable === 'object' ? r.scoreTable : {}
+  if (typeof t.survivingBlocking === 'number')
+    out.push(
+      `lens: survivingBlocking ${t.survivingBlocking} (critical/major findings that survived the round), ` +
+        `survivingMinor ${t.survivingMinor ?? '?'}, lens findings ${t.lensFindings ?? '?'}`,
+    )
+  const names = (k: string) => (Array.isArray(r[k]) && r[k].length ? r[k].map((x: any) => (typeof x === 'string' ? x : x?.name ?? x?.id ?? JSON.stringify(x))).join(', ') : 'none')
+  out.push(`lenses that flagged: ${names('lensesThatFlagged')}`)
+  out.push(`rules that failed: ${names('rulesThatFailed')}`)
+  // LAST, and labelled: the aggregate is a fact about the plan, not the goal.
+  out.push(
+    `whole-plan verdict: ${r.verdict ?? '?'} (overallPass=${r.overallPass}) — this aggregates EVERY gate ` +
+      `in the plan, including any the goal excludes; it is not the goal`,
+  )
+  return `RUN FACTS — read from ${join(run, 'result.json')}; judge each condition the goal states against these:\n` +
+    out.map((l) => `  - ${l}`).join('\n')
 }
 
 /**
@@ -509,6 +603,7 @@ export function decisionsCall(
 function judgeViaDecisions(
   state: string,
   goal: string,
+  hasFacts = false,
 ): { verdict: 'MET' | 'UNMET' | 'UNAVAILABLE'; reason: string } {
   // The threshold is DELIBERATELY high. Releasing a hold ends the work, so "probably done" is not
   // done: an uncertain answer should keep the session working, which is the failure this whole
@@ -519,9 +614,18 @@ function judgeViaDecisions(
       // TWO CLAUSES, because the stall this exists to stop happens at a moment of legitimate
       // completion: the stated goal reads done and the session has just named the next thing it
       // found. "Met" alone releases there; "met AND nothing obvious left open" does not.
+      //
+      // A WATCHED RUN is the exception: its goal is written against the run's verdict, so the state
+      // is the run's facts and the question is the goal's own conditions against them. Measured live
+      // 2026-10-02 on the secreg verdict: the two-clause question scored the met goal 51-67% and the
+      // same verdict with a non-excluded leg failing 12-67% — open work elsewhere in the session
+      // drowned the goal; this question scored them 83% and 10%.
       type: 'noul',
-      instructions:
-        `This goal is met AND no obvious open work remains that the session should do next: ${goal}`,
+      instructions: hasFacts
+        ? 'Judged ONLY against the RUN FACTS in the state, condition by condition, every condition this ' +
+          'goal states holds. A failing leg, rule or verdict the goal excludes or does not name does not ' +
+          `count against it, and the whole-plan verdict is not the goal. Goal: ${goal}`
+        : `This goal is met AND no obvious open work remains that the session should do next: ${goal}`,
     },
   })
   if (r.stdout === null) return { verdict: 'UNAVAILABLE', reason: r.unavailable }
@@ -533,6 +637,7 @@ function judgeGoal(
   goal: string,
   check: string,
   history?: RoundRecord[],
+  run?: string,
 ): { verdict: 'MET' | 'UNMET' | 'UNAVAILABLE'; reason: string } {
   // The verdict is ONE WORD, so the model does almost no work -- the cost is what we send it.
   // Sending 12000 characters of transcript to get back "MET" is paying for input to produce a bit.
@@ -540,17 +645,24 @@ function judgeGoal(
   // sit in; both are overridable when a goal needs more.
   const TAIL_CHARS = Number(process.env.WORK_HOLD_JUDGE_TAIL_CHARS || 4000)
   const SUMMARY_CHARS = Number(process.env.WORK_HOLD_JUDGE_SUMMARY_CHARS || 3000)
-  let ctx: { summary: string; tail: string }
-  try {
-    ctx = transcriptContext(readFileSync(transcriptPath, 'utf8'), TAIL_CHARS, SUMMARY_CHARS)
-  } catch {
-    return { verdict: 'UNAVAILABLE', reason: 'no readable transcript' }
+  // A watched run with a readable verdict is judged on its FACTS alone: the transcript paraphrases
+  // them (the session had pasted `overallPass=false`) and the hold's own history carries the earlier
+  // judge's percentages, both of which pulled a met goal down to 29%.
+  const facts = runFacts(run)
+  let ctx: { summary: string; tail: string } = { summary: '', tail: '' }
+  if (!facts) {
+    try {
+      ctx = transcriptContext(readFileSync(transcriptPath, 'utf8'), TAIL_CHARS, SUMMARY_CHARS)
+    } catch {
+      return { verdict: 'UNAVAILABLE', reason: 'no readable transcript' }
+    }
+    if (!ctx.tail.trim() && !ctx.summary.trim())
+      return { verdict: 'UNAVAILABLE', reason: 'empty transcript' }
   }
-  if (!ctx.tail.trim() && !ctx.summary.trim())
-    return { verdict: 'UNAVAILABLE', reason: 'empty transcript' }
 
-  const rounds = renderHistory(history)
+  const rounds = facts ? '' : renderHistory(history)
   const evidence = [
+    facts,
     ctx.summary &&
       `EARLIER IN THIS RUN — the session's own compaction summary of turns since dropped from its context:\n${ctx.summary}`,
     rounds && `WHAT THE HOLD RECORDED, round by round:\n${rounds}`,
@@ -559,21 +671,26 @@ function judgeGoal(
     .filter(Boolean)
     .join('\n\n')
 
-  const prompt =
-    `You are judging whether a coding session has MET its stated goal AND has no obvious open work ` +
-    `left to do next. You are not the session; judge only from the evidence below.\n\nGOAL: ${goal}\n\n` +
-    (check
-      ? `A command called the check already exits 0: ${check}\nThat is a floor, not proof the goal is met.\n\n`
-      : `There is no check command: the goal is the whole objective.\n\n`) +
-    `${evidence}\n\n` +
-    `Set met=false if the goal names work that is still outstanding, blocked, or only partly done, ` +
-    `or if the session has itself named an obvious next action it has not taken. ` +
-    `Put one sentence of evidence in why.`
+  const prompt = facts
+    ? `You are judging whether every condition a goal states holds, ONLY against the run facts below. ` +
+      `A failing leg, rule or verdict the goal excludes or does not name does not count against it, and ` +
+      `the whole-plan verdict is not the goal.\n\nGOAL: ${goal}\n\n${evidence}\n\n` +
+      `Set met=false if any condition the goal states is contradicted or not established by the facts. ` +
+      `Put one sentence of evidence in why.`
+    : `You are judging whether a coding session has MET its stated goal AND has no obvious open work ` +
+      `left to do next. You are not the session; judge only from the evidence below.\n\nGOAL: ${goal}\n\n` +
+      (check
+        ? `A command called the check already exits 0: ${check}\nThat is a floor, not proof the goal is met.\n\n`
+        : `There is no check command: the goal is the whole objective.\n\n`) +
+      `${evidence}\n\n` +
+      `Set met=false if the goal names work that is still outstanding, blocked, or only partly done, ` +
+      `or if the session has itself named an obvious next action it has not taken. ` +
+      `Put one sentence of evidence in why.`
 
   // Jev first: a decision model returns a calibrated probability for one typed question, which is
   // this judge's exact shape and an order of magnitude cheaper than a chat round trip. The chat
   // judge below stays as the fallback for when the key or the endpoint is not there.
-  const decided = judgeViaDecisions(evidence, goal)
+  const decided = judgeViaDecisions(evidence, goal, !!facts)
   if (decided.verdict !== 'UNAVAILABLE') return decided
 
   // STRUCTURED OUTPUT, not prose parsing. The verdict is a boolean, and asking for it in prose
@@ -831,7 +948,9 @@ const stateRef = (path: string) => `(state: ${path} — inspect it with the Read
  * has actually lost them. `first` is derived from the round counter, so it records no new state.
  */
 const clausesFor = (s: State, first: boolean): string =>
-  first ? [s.authority, s.continuation, redispatchLine(s)].filter(Boolean).join(' ') : ''
+  first
+    ? [s.authority, s.continuation, redispatchLine(s)].filter(Boolean).join(' ')
+    : redispatchBlocked(s)
 
 /**
  * How to advance a WATCHED run after a failed round — or '' when this hold watches none.
@@ -850,11 +969,55 @@ export function redispatchLine(s: { run?: string }): string {
   } catch {
     /* the args are the run's, not the hold's: an unreadable one costs the placeholder, not the line */
   }
+  const blocked = redispatchBlocked(s)
+  if (blocked) return blocked
   return (
     `After a failed round, advance it with \`work-redispatch.sh ${plan} ${join(s.run, 'args.json')} --dispatch\`, ` +
     'which re-runs only the tasks that flagged and their dependents and carries the rest — not a fresh ' +
     'work-dispatch.sh, which re-runs every task.'
   )
+}
+
+/**
+ * work-redispatch.sh's Tier 1 refusal, computed rather than remembered: the last verdict routed items
+ * to the PLAN, NO failure is routed to a task (a task-routed fix runs beside plan items and carries
+ * them), and the plan's spec hash still equals the run's — so `--dispatch` exits 3 and spends nothing.
+ * Telling the session to redispatch there is telling it to hit a wall (secreg 2026-10-02). Returns
+ * what blocks instead, or ''. Mirrors the gate in work-redispatch.sh; tests/work-hold-judge-facts
+ * runs the script itself on the same fixtures so the two cannot drift apart unnoticed. Recomputed
+ * each time, so amending the plan (a new hash) lifts it with no record of ours.
+ */
+export function redispatchBlocked(s: { run?: string }): string {
+  if (!s.run) return ''
+  try {
+    const a = JSON.parse(readFileSync(join(s.run, 'args.json'), 'utf8'))
+    const raw = JSON.parse(readFileSync(join(s.run, 'result.json'), 'utf8'))
+    const r = Array.isArray(raw) ? raw[raw.length - 1] : raw
+    const items = Array.isArray(r?.planFindings) ? r.planFindings : []
+    if (!items.length || typeof a.planPath !== 'string' || typeof a.specHash !== 'string') return ''
+    const tasks = new Set((Array.isArray(a.tasks) ? a.tasks : []).map((t: any) => t?.id))
+    const owner = (x: any) => (typeof x?.ownerTask === 'string' ? x.ownerTask.trim() : '')
+    const blocking = (Array.isArray(r.findings) ? r.findings : []).filter((f: any) => ['critical', 'major'].includes(f?.severity))
+    if ([...(Array.isArray(r.routes) ? r.routes : []), ...blocking].some((x: any) => tasks.has(owner(x)))) return ''
+    const script = process.env.WORK_HOLD_DISPATCH || join(import.meta.dir, '..', 'skills', 'work', 'scripts', 'work-dispatch.sh')
+    const h = spawnSync('bash', [script, '--spec-hash', a.planPath], { encoding: 'utf8', timeout: 20_000 })
+    if (h.status !== 0 || (h.stdout || '').trim() !== a.specHash) return ''
+    const named = items
+      .slice(0, 5)
+      .map((x: any) => (typeof x === 'string' ? x : x?.failure || x?.title || x?.id || '(unlabelled)'))
+      .join('; ')
+    const pathless = items.some((x: any) => !x?.file)
+    return (
+      `Do NOT redispatch: work-redispatch.sh refuses this run at its Tier 1 gate — ${items.length} item(s) ` +
+      `in the last verdict are routed to the PLAN (${named}), none to a task, and ${a.planPath} is ` +
+      `unchanged since it was dispatched. What blocks is the plan: amend it (${pathless
+        ? "reword the acceptance, redCommand or mechanical check each item cites"
+        : "add the path to a task's writablePaths, or reword the item"}), or take these items to the ` +
+      `user; only then is a redispatch possible.`
+    )
+  } catch {
+    return ''
+  }
 }
 
 const agentMsgBin = () => process.env.WORK_HOLD_AGENT_MSG || 'agent-msg'
@@ -1029,7 +1192,14 @@ function main(): void {
   // costs one write per Stop, on a file this hook already rewrites on most of them.
   s = activeHold(s)
   s.lastEvaluatedAt = now
+  // A watched run's rounds are the ones it DISPATCHED, read from its args.json — never this Stop.
+  const dispatched = runRounds(s)
+  if (dispatched !== null) s.rounds = dispatched
   writeFileSync(path, JSON.stringify(s))
+  // The first block: round 0 for a hold counting its own Stops; for a watched run, whose counter is
+  // already past 0 when its first verdict lands, the first block with no round recorded.
+  const firstBlock = () => (dispatched === null ? s.rounds === 0 : !(s.history ?? []).length)
+  const countRound = () => { if (dispatched === null) s.rounds += 1 }
 
   /**
    * Every release goes through here: ledger line, window restored, state gone, one message. With
@@ -1065,8 +1235,8 @@ function main(): void {
 
   /** Block, count the round, and record what refused it. */
   const block = (reason: string, note: string): void => {
-    const first = s.rounds === 0
-    s.rounds += 1
+    const first = firstBlock()
+    countRound()
     pushRound(s, { round: s.rounds, at: now, exit: 0, note })
     writeFileSync(path, JSON.stringify(s))
     const clauses = clausesFor(s, first)
@@ -1083,7 +1253,9 @@ function main(): void {
   // to outlive the ceiling, so an expired hold releases here rather than waiting for a verdict that
   // may never come.
   if (inFlight(s)) {
-    const c = ceilingReached(s, now)
+    // The CLOCK only: the round in flight is already in the dispatched count, so the round ceiling
+    // would expire a hold on the very round it is waiting for.
+    const c = ceilingReached(dispatched === null ? s : { ...s, rounds: 0 }, now)
     if (c)
       release(
         'expired',
@@ -1117,7 +1289,7 @@ function main(): void {
     // The classifier's own words when it said MET; null means nobody confirmed the goal.
     let judged: string | null = null
     if (s.goal) {
-      const j = judgeGoal(String(payload.transcript_path || ''), s.goal, s.check, s.history)
+      const j = judgeGoal(String(payload.transcript_path || ''), s.goal, s.check, s.history, s.run)
       if (j.verdict === 'UNMET') {
         // (d) The ceilings bind here too. A judge that keeps answering UNMET over a green check is a
         // hold with no clock unless this is asked before the block.
@@ -1132,7 +1304,7 @@ function main(): void {
           (checkless
             ? `hold: the goal is judged NOT met: ${j.reason}`
             : `hold: \`${s.check}\` exits 0 but the goal is judged NOT met: ${j.reason}`) +
-            `\nGoal: ${s.goal}\nRound ${s.rounds + 1}/${s.maxRounds}.`,
+            `\nGoal: ${s.goal}\n${roundLabel(s)}.`,
           `judge UNMET: ${j.reason}`,
         )
       }
@@ -1152,7 +1324,7 @@ function main(): void {
           block(
             `hold: judge unavailable (${j.reason}), and this hold has no check — nothing has ` +
               `confirmed the goal, so the session keeps working.\nGoal: ${s.goal}\n` +
-              `Round ${s.rounds + 1}/${s.maxRounds}.`,
+              `${roundLabel(s)}.`,
             `judge unavailable: ${j.reason}`,
           )
         }
@@ -1186,8 +1358,8 @@ function main(): void {
         `CronDelete now: a cron outlives the work and nothing else can end it.`,
     )
 
-  const firstB = s.rounds === 0
-  s.rounds += 1
+  const firstB = firstBlock()
+  countRound()
   pushRound(s, { round: s.rounds, at: now, exit })
   writeFileSync(path, JSON.stringify(s))
   const movedB = rubricDrift(s)
@@ -1242,7 +1414,7 @@ function brief(): void {
     s.run
       ? `RUN: ${s.run} — ${inFlight(s) ? 'IN FLIGHT (a stop is allowed and counts no round; the clock still runs)' : 'not in flight (a verdict is on disk)'}`
       : '',
-    `BUDGET: ${s.rounds} of ${s.maxRounds} rounds used; ${left} min left of the ${s.ceilingMinutes} min ceiling.`,
+    `BUDGET: ${runRounds(s) ?? s.rounds} of ${s.maxRounds} rounds ${runRounds(s) === null ? 'used' : 'dispatched'}; ${left} min left of the ${s.ceilingMinutes} min ceiling.`,
     ...(s.queued ?? []).map(q =>
       `ALSO HELD: ${q.run || q.check || q.goal} — ${q.run && inFlight(q) ? 'in flight' : 'evaluated once this hold releases or goes in flight'}.`),
     [s.authority, s.continuation, redispatchLine(s)].filter(Boolean).join(' '),

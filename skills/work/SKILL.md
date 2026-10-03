@@ -258,12 +258,13 @@ run that dies.
 |---|---|
 | **`args.goalCheck`** (optional) | the ONE command that settles the whole plan. Armed as the hold's check. NEVER a round verdict — `plan-lint` runs it through `hold-lint.ts` and a CRITICAL blocks the dispatch |
 | no `goalCheck` | the hold is **check-less**: the judge alone on `args.goal`, bounded by `maxRounds` and `compose-goal.sh --minutes` |
-| `--run <run-dir>` | recorded by the arm. While the round is in flight a stop is ALLOWED and costs no round: a detached process is doing the work |
+| `--run <run-dir>` | recorded by the arm. While the round is in flight a stop is ALLOWED and costs no round: a detached process is doing the work. Once its verdict lands the judge reads only that `result.json`'s named facts (failing legs, `survivingBlocking`, failed rules) against the goal's own conditions, never the transcript |
 
 **Under the hold, a failed round advances with `work-redispatch.sh <plan> <run>/args.json --dispatch`,
 never a fresh `work-dispatch.sh`** — the first re-runs only the tasks that flagged and their dependents
 and carries the rest; the second re-runs every task, throwing away the round's verified work. The
-hold's first counted block and its `--brief` say so with the paths filled in.
+hold's first counted block and its `--brief` say so with the paths filled in — or, when the redispatch
+would be refused at its Tier 1 gate (plan-routed items, unchanged spec hash), say that the plan blocks instead.
 
 ### The check command — the rules `hold-lint.ts` enforces
 
@@ -303,7 +304,8 @@ bash $A --disarm                # THE USER releases it: a tty prompt, or the per
 
 Defaults are 4 rounds and 120 minutes; above either, the arm prints the per-wake context cost and the
 equivalent `grind` command, then arms. A dispatch arms with `--rounds` = the block's `goalTurns`
-(else `args.maxRounds`): the hold counts this session's red Stops, which are turns. Each run keeps its
+(else `args.maxRounds`). A hold on a run counts the rounds the run DISPATCHED (`args.json` `rounds`),
+never Stops; a hold with no run counts its red Stops. Each run keeps its
 own hold in the one state object — a second dispatch queues the first run's hold rather than replacing
 it, a re-dispatch of the SAME plan replaces its own, the Stop hook judges whichever held run is not in
 flight, and a release promotes the next. Arming caps this session's auto-compact window at 250000
@@ -614,10 +616,13 @@ bun ~/.claude/skills/workflows/skills/work/scripts/plan-preflight.ts <plan.md|ar
 `dependson-cycle`, `dependson-missing`, `redcommand-existence-only`, `redcommand-missing`,
 `red-both-declared`, `redcommand-disagreement`, `self-gating-task`, `writable-paths-overlap`,
 `plan-table-column-arity`, `prose-command`, `lens-missing-severity`, `lens-missing-condition`,
-`acceptance-is-the-mechanical-check`, `pipeline-exit-code`, `criterion-unmapped`, `count-mismatch`,
+`acceptance-is-the-mechanical-check`, `acceptance-names-a-verdict`, `pipeline-exit-code`, `criterion-unmapped`, `count-mismatch`,
 `work-artifact-unasserted` (scoped to tests and assertion scripts — things that exist to be RUN),
 plus one worth spelling out:
 
+- `acceptance-names-a-verdict`: a verifier runs before its round's rules and lens, so a clause asking
+  for a lens or rule verdict is unreadable to it. Rule verdicts gate through `ruleChecks`, lens verdicts
+  through the lens checklist; the acceptance keeps only commands.
 - `gate-shell-operator` matches `workflow.js`'s own operator regex exactly, with no `bash -c`
   exemption, so tier 1 cannot pass a gate that arg-validation then refuses.
 
@@ -742,7 +747,7 @@ includes transitive dependents and tasks with missing implemented/verified/red r
 | `mechanicalThatFailed` | `{name, exitCode, output}` for each failed check; `-1` means unchecked/dead, not passed | Fix the diagnosed cause. Checks always re-run; a lens route to a task narrows implementation to that owner. An unattributed mechanical failure forces FULL. |
 | `rulesThatFailed` | rule ids (`DEN`, `M1`, …) whose Jev p >= `blockAt`, plus `ruleChecks:<name>` when the runner died, printed no parseable line, or reported a rule unavailable; per-rule p is in `ruleVerdicts` | Fix the diagnosed cause. Rules always re-run; a lens route to a task narrows implementation to that owner. A rule is wired only after `bun skills/work/scripts/rule-calibrate.ts` passes it (docs/DESIGN-routing.md). |
 | `lensesThatFlagged` | `['lens']` when a blocking finding stands, including an open carried claim or a dead-lens critical | Act on the finding's owner; the lens always re-runs. Fresh findings held as residue do not set this selector. |
-| `planFindings` | routes or standing blocking findings owned by `"plan"` | Amend the dispatch spec: add the required path to a task's `writablePaths`, or reword the requirement, then re-hash. Unchanged spec hash refuses redispatch with exit 3, spending no round or rotating the result. After an amendment, an all-plan failure permits `onlyTasks: []` when all task records are carried. |
+| `planFindings` | routes or standing blocking findings owned by `"plan"` | Amend the dispatch spec: add the required path to a task's `writablePaths`, or reword the requirement, then re-hash. Unchanged spec hash refuses redispatch with exit 3, spending no round or rotating the result — unless a failure is routed to a task: then the round runs for it and the plan items are reported and carried as `carriedFindings`. After an amendment, an all-plan failure permits `onlyTasks: []` when all task records are carried. |
 
 Use `work-redispatch.sh <plan> <run>/args.json --dispatch`, not hand-written scope args. For a
 lens-only failure lacking a valid owner, redispatch falls back to `file`→`writablePaths`, stripping

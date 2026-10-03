@@ -236,6 +236,21 @@ let baseRoot: string | null = null
   if (tar.status === 0 && existsSync(join(dir, 'hooks', 'read-guard.ts'))) baseRoot = dir
 }
 
+/**
+ * Deliberate behaviour changes made after the port: records they apply to are compared script vs
+ * handler only, since the pre-port original answers the old way by design. Each predicate is the
+ * change's exact reach, so every other record of that guard still runs three-way.
+ *   typst-convention-guard (2026-10-02): an Edit is judged on its new_string's lines, and a finding
+ *   is shown once per session (seen-set in the temp dir). Reach: an Edit carrying new_string, or
+ *   any payload carrying a session id.
+ */
+const CHANGED_SINCE_BASE: Record<string, (p: Record<string, unknown>) => boolean> = {
+  'typst-convention-guard.ts': p =>
+    typeof p.session_id === 'string' ||
+    (p.tool_name === 'Edit' && typeof (p.tool_input as Record<string, unknown> | undefined)?.new_string === 'string'),
+}
+const changedSinceBase = (r: Rec): boolean => CHANGED_SINCE_BASE[r.script]?.(JSON.parse(r.stdin)) ?? false
+
 // ── tests ──────────────────────────────────────────────────────────────────────────────────────
 const reachable = records.filter(r => unreachable(r) === null)
 const skipped = records.filter(r => unreachable(r) !== null)
@@ -246,7 +261,8 @@ test('the recorded inputs cover every ported guard', () => {
   console.log(
     `parity: ${records.length} recorded invocations, ${reachable.length} compared, ${skipped.length} unreachable by a mod: ` +
       [...new Set(skipped.map(r => `${r.script} (${unreachable(r)})`))].join('; ') +
-      (baseRoot ? `; three-way with ${BASE}` : `; git could not produce ${BASE}:hooks, so script vs handler only`),
+      (baseRoot ? `; three-way with ${BASE}` : `; git could not produce ${BASE}:hooks, so script vs handler only`) +
+      `; ${reachable.filter(changedSinceBase).length} under a deliberate post-port change, script vs handler only`,
   )
 })
 
@@ -267,7 +283,7 @@ describe('script and mod handler agree on every recorded input', () => {
         expect(handler.files).toEqual(script.files)
         // Never an approval: a deny, or the result next(e) gave with context added — nothing else.
         expect(handler.keys.every(k => ['deny', 'result', 'context'].includes(k))).toBe(true)
-        if (baseRoot && existsSync(join(baseRoot, 'hooks', r.script))) {
+        if (baseRoot && existsSync(join(baseRoot, 'hooks', r.script)) && !changedSinceBase(r)) {
           const original = runScript(r, baseRoot)
           expect({ deny: original.deny, context: original.context }).toEqual({ deny: script.deny, context: script.context })
           expect(original.files).toEqual(script.files)
