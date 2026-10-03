@@ -24,6 +24,11 @@ the deliverable of this step; a rule missing from it was never decided.
 - **A script that fires on accepted work is not a script yet.** E13 (table headers named by code
   variables) flags the user's own AGK appendix; TOC density flags accepted decks 13 and 14; slide-count
   COLLAPSED resolved 5 of 25 items. Those stayed SCRIPTABLE-not-implemented, with the reason recorded.
+- **Decides the set is not decidable: score a held-out set written before the script.** T-TAKEAWAY-WH's
+  wh-label test (no finite main verb after the wh-clause) was decided on all 25 set and colloquium
+  subtitles by a closed-class lexicon and by a spaCy `en_core_web_sm` parse, yet each called 3 of 10
+  held-out sentences labels ("Who pays when the deal fails depends on …"); `en_core_web_md` missed a set
+  case. It stayed Jev.
 - **A rate is advisory.** The authorial `we` (0.87% legal vs 7.75%) and `we find` openers are rates;
   the coauthored accepted articles use `we` throughout, so a gate would block accepted prose.
 - **Jev needs a bounded span set.** N5 answer overlap is pairwise over the whole notes corpus: no span
