@@ -1,5 +1,15 @@
 # Changelog
 
+## [6.37.3] - 2026-10-02
+
+### Changed
+
+- **early-stop and session-start read the running Claude version from the hook's parent process,** not an inherited `CLAUDE_CODE_EXECPATH`. A session resumed from an uninstalled binary carried a stale value, so `watcherActive()` was false and the Stop hook blocked with owned farm runs live; the binary that spawned the hook (directly or through `sh -c`) is used, with `CLAUDE_CODE_EXECPATH` as the fallback. (0c324db3)
+- **Jev typst rules wired.** `T-TAKEAWAY` is wired, with embedded-question subtitles split to the parked `T-TAKEAWAY-WH` and a gerund flag that firms the margin; `T-TRANSITION` is wired on the first and last sentence across the break. (f6e04ac2, b9fcb186, bda98698)
+- **`T-NARRATE` became a script.** It was decidable, so the screen-phrase lexicon runs as the computed NAR row of the workshop checks (`workshop-deck.py`) instead of a Jev rule. (c662d5ec)
+- **Parked rules.** `T-ECHO` stays parked, now with the SB 21 legacy real pair; `T-TRANSITION` was parked with measured numbers before it was wired. (2a0aa2f8, 5cea6d2c, 72028d48)
+- **`EX-SENTINEL` retired (doc residue)** and `EX-ORPHAN` wired, with a workflow-creator fact row; the `jev-rules` skill references (triage, diagnosis, calibration) are updated to match. (27584191, fe5f99b8)
+
 ## [6.37.2] - 2026-10-02
 
 ### Added
