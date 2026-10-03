@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.37.7] - 2026-10-03
+
+### Changed
+
+- **work-hold releases a read-only run that PASSED** (`loop.exit 0`) as `verdict-reached` instead of sending its goal to the judge, which had scored a met read-only audit at 31%; a writing run's PASS is still judged. (f46d1cdb)
+
 ## [6.37.6] - 2026-10-03
 
 ### Changed
