@@ -15,6 +15,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the files report no rate, share or percentage',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('rate_sites',)
 
 REPORT = re.compile(r'\b(print|log\w*|logger\.\w+|info|warning|write|echo)\s*\(|\bf["\']')
 PY_RATE = re.compile(r'%\}|:[,_]?\.?\d*%|\d%|\bpercent\b|\bpct\b(?!\s*\()')

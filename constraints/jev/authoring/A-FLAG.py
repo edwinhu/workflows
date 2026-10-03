@@ -15,6 +15,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the change adds or edits no red flag or STOP interrupt',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('changed_red_flags',)
 
 FLAG_SECTION = re.compile(r'red.?flag|\bstop\b', re.I)
 FLAG_LINE = re.compile(r'\bSTOP\b|catch yourself|find yourself|notice yourself|tempted|\babout to\b|red flag', re.I)

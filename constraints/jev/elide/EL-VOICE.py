@@ -20,6 +20,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the state holds no opinion body text',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('bracketed_spans_of_four_or_more_words', 'body_sentences_with_editor_voice_terms')
 
 # a bracket that is Typst markup, not an editorial bracket: #emph[...], #text(..)[...], #super[...]
 MARKUP_OPEN_RX = re.compile(r'#[a-zA-Z.]+(\([^)]*\))?$')

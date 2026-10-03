@@ -13,6 +13,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the change adds or edits no test',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('changed_tests',)
 
 MOCK_MATCHER = re.compile(
     r'toHaveBeenCalled\w*|toBeCalled\w*|toHaveBeenNthCalledWith|\.mock\.(calls|results)|'

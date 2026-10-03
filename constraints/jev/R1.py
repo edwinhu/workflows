@@ -15,6 +15,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the code makes no random draw',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('random_draws',)
 
 DRAW = re.compile(r'\bnp\.random\.(?!seed|default_rng|RandomState|Generator)\w+\(|\brandom\.(?!seed)\w+\(|'
                   r'\brng\.\w+\(|\.sample\(|\.shuffle\(|\bshuffle\(|train_test_split\(|\bKFold\(|'

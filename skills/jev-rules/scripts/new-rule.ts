@@ -103,6 +103,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'TODO: the state lists no <span>',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('spans',)  # the inventory keys holding the candidates; a VIOLATED verdict names their file:line
 
 MAX_ITEMS = 40
 

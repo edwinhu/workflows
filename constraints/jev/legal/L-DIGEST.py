@@ -19,6 +19,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the state holds no paragraph that recounts a decision',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('runs_of_case_paragraphs',)
 
 CASE_RX = re.compile(r"\b(?:In re|Ex parte)\s+[A-Z][\w.'&-]+|\b[A-Z][\w.'&-]*(?:\s+[A-Z&][\w.'&-]*){0,5}\s+v\.\s+"
                      r"[A-Z][\w.'&-]*|\b(?:the|The)\s+(?:court|Court|panel|Chancellor|Vice Chancellor)\s+"

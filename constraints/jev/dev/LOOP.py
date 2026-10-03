@@ -11,6 +11,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the change touches no model, route.ts or farm.sh call',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = (('loops_containing_a_model_route_or_farm_call', 'file', 'loop_line'),)
 
 LOOP_HEAD = re.compile(
     r'^\s*(for|while)\b|^\s*for\s*\(|\.(map|forEach|flatMap)\s*\(|^\s*async\s+for\b|xargs\b|\bparallel\b')

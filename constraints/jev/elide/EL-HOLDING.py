@@ -18,6 +18,7 @@ CRITERIA = {
     'NOT_APPLICABLE': 'the excerpt carries no editorial elision mark',
     'INSUFFICIENT_EVIDENCE': 'the state does not show enough to settle it',
 }
+SPANS = ('marks_inside_a_sentence',)
 
 
 def _position(sent):
