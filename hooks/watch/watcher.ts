@@ -4,7 +4,7 @@
 //   wake          $.prompt.submit ONCE per run that reaches DONE or GONE, remembered in $.store
 //   /farm         a table of this session's runs, printed at once, no turn
 //
-// It replaces the `farm-runs` plugin monitor, which never re-armed once it stopped. A timer started
+// It replaces the farm-runs plugin monitor, which never re-armed once it stopped. A timer started
 // in session.start comes back with every reload. A headless session (`claude -p`, the SDK, a farm
 // child with FARM_OUT_CHILD=1) registers nothing: it has nobody to draw for, and a farm child
 // waking itself about its own runs would loop.
