@@ -58,11 +58,20 @@ test('a headless farm child is guarded too (FARM_OUT_CHILD=1)', async ($, on) =>
   expect((await $.tool.call({ tool: 'Monitor', command: 'rg foo' })).deny).toContain('has no path argument')
 })
 
-test('an Edit that leaves a Typst violation gets the convention context after the result', async ($, on) => {
+test('an Edit that leaves a Typst violation gets the convention context after the result, once', async ($, on) => {
   world(on, { '/w/deck.typ': '- a\n- b\n' })
-  const r = await $.tool.call({ tool: 'Edit', file_path: 'deck.typ', old_string: 'x', new_string: 'y' })
+  const r = await $.tool.call({ tool: 'Edit', file_path: 'deck.typ', old_string: '- c', new_string: '- b' })
   expect(r.result).toBe('ran')
   expect(r.context?.join('\n')).toContain('Line 1: Missing blank line between top-level bullets')
+  // Same session, same finding on the same line text: not repeated.
+  const again = await $.tool.call({ tool: 'Edit', file_path: 'deck.typ', old_string: '- c', new_string: '- b' })
+  expect(again).toEqual({ result: 'ran' })
+})
+
+test('an Edit far from standing Typst violations gets no convention context', async ($, on) => {
+  world(on, { '/w/deck.typ': 'Cost is $5\n\nplain\n\nrewritten line\n' })
+  const r = await $.tool.call({ tool: 'Edit', file_path: 'deck.typ', old_string: 'old line', new_string: 'rewritten line' })
+  expect(r).toEqual({ result: 'ran' })
 })
 
 test('deleting the heartbeat of an in-flight work run is denied', async ($, on) => {
