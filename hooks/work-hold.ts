@@ -152,6 +152,12 @@ export function ledgerPath(session: string): string {
 export const PASSED_GOAL_MET = 'passed-goal-met'
 export const PASSED_UNJUDGED = 'passed-unjudged'
 
+/**
+ * A readOnly run's loop ended at exit 8: the audit reached its verdict, PASS or FAIL, and that verdict
+ * is the answer — no task exists to change it, so holding for another round holds for nothing.
+ */
+export const VERDICT_REACHED = 'verdict-reached'
+
 /** The verb `work-abandon.sh` appends when the USER retires a run. */
 export const ABANDONED = 'abandoned by user'
 
@@ -188,6 +194,20 @@ export function inFlight(s: { run?: string }): boolean {
     return statSync(join(s.run, 'result.json')).size === 0
   } catch {
     return true                                   // absent result.json IS the in-flight shape
+  }
+}
+
+/**
+ * Did the watched run end as a READ-ONLY verdict? `loop.exit` 8 from work-loop.sh, and the run's own
+ * args.json says `readOnly: true` — the exit code alone is not trusted on a run that writes.
+ */
+export function verdictReached(s: { run?: string }): boolean {
+  if (!s.run) return false
+  try {
+    if (readFileSync(join(s.run, 'loop.exit'), 'utf8').trim() !== '8') return false
+    return JSON.parse(readFileSync(join(s.run, 'args.json'), 'utf8')).readOnly === true
+  } catch {
+    return false
   }
 }
 
@@ -1072,6 +1092,17 @@ function main(): void {
       )
     process.exit(0)
   }
+
+  // (b) A READ-ONLY RUN REACHED ITS VERDICT: the audit's FAIL is its answer, and the loop has stopped
+  // because no round can change it. Asking the judge here would hold the session for a round that
+  // never comes — secreg 2026-10-02, a readOnly "reach a verdict" run held after its FAIL.
+  if (verdictReached(s))
+    release(
+      VERDICT_REACHED,
+      `the read-only run ${s.run} reached its verdict (loop.exit 8) — hold released. Report that ` +
+        `verdict and what it found; fixing it is a separate writing run. If a heartbeat cron exists, ` +
+        `end it with CronDelete now.`,
+    )
 
   const exit = checkless
     ? 0
