@@ -12,12 +12,12 @@ const TYPST = join(BASE, "constraints/jev/typst");
 const UNCAL = join(TYPST, "uncalibrated");
 const FIX = join(BASE, "tests/fixtures/jev/typst");
 const WIRED = ["T-CALLOUT", "T-HOLLOW", "T-STORY", "T-TAKEAWAY", "T-TRANSITION"];
-const UNWIRED = ["T-ECHO", "T-TAKEAWAY-WH"];
+const UNWIRED = ["T-ECHO-PARA", "T-TAKEAWAY-WH"];
 const made: string[] = [];
 afterAll(() => made.forEach(d => rmSync(d, { recursive: true, force: true })));
 
 const FILE: Record<string, string> = {
-  "T-TAKEAWAY": "slides.typ", "T-TAKEAWAY-WH": "slides.typ", "T-ECHO": "slides.typ", "T-STORY": "slides.typ", "T-CALLOUT": "slides.typ",
+  "T-TAKEAWAY": "slides.typ", "T-TAKEAWAY-WH": "slides.typ", "T-ECHO-PARA": "slides.typ", "T-STORY": "slides.typ", "T-CALLOUT": "slides.typ",
   "T-HOLLOW": "notes.typ", "T-TRANSITION": "notes.typ",
 };
 
@@ -64,14 +64,15 @@ const SEPARATES: Record<string, (vio: any, sat: any) => void> = {
     expect(v.wh_subtitles).toEqual([{ file: "slides.typ", line: 16, subtitle: "What made proxy advisors powerful." }]);
     expect(s.wh_subtitles[0].subtitle).toBe("What made proxy advisors powerful was the SEC's 2003 voting-duty rule.");
   },
-  "T-ECHO": (v, s) => {
-    expect(v.slides_subtitle_and_first_body_line).toHaveLength(1);
-    expect(v.slides_subtitle_and_first_body_line[0]).toMatchObject({
-      line: 10, share_of_subtitle_terms_repeated: 0.75, adds_number: false, quotes_or_cites_source: false,
-      adds_reason_or_consequence: false, adds_example: false,
-    });
-    expect(s.slides_subtitle_and_first_body_line).toHaveLength(0);
-    expect([v.n_slides, s.n_slides]).toEqual([2, 2]);
+  "T-ECHO-PARA": (v, s) => {
+    // the paraphrase shares one word, under no-subtitle-echo.py's threshold; the second slide adds numbers
+    expect(v.slides_subtitle_and_first_body_line).toEqual([{
+      file: "slides.typ", line: 10, subtitle: "Boards rarely fire a CEO after one bad year.",
+      first_body_line: { line: 13, text: "Directors seldom dismiss a chief executive following a single poor year." },
+      script_overlap_share: 0.12,
+    }]);
+    expect(s.slides_subtitle_and_first_body_line[0].script_overlap_share).toBe(0);
+    expect([v.n_slides_listed, s.n_slides_listed]).toEqual([1, 1]);
   },
   "T-STORY": (v, s) => {
     expect(v.storytelling_comments[0]).toMatchObject({ line: 14, names_visual_property: false, states_audience_conclusion: false });
