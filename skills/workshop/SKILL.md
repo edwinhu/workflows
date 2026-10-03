@@ -177,7 +177,8 @@ resolves them against no particular directory; `writablePaths` and every `mechan
   // Jev scores the calibrated deck/notes rules under constraints/jev/typst (T-HOLLOW: a notes bullet
   // announcing content the notes never write out; T-CALLOUT: a callout quoting source text; T-STORY: a
   // storytelling comment without mechanism or insight; T-TAKEAWAY: a noun- or gerund-phrase `===`
-  // subtitle), on the round's changed lines only; p >= 0.85 lands in rulesThatFailed and blocks, lower
+  // subtitle; T-TRANSITION: a notes `==` section whose first bullet does not pick up the previous
+  // section's last sentence), on the round's changed lines only; p >= 0.85 lands in rulesThatFailed and blocks, lower
   // ones reach the lens ranked. The rules in typst/uncalibrated/ are not scored.
   ruleChecks: { name: "jev-typst-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --project-dir <projectDir> --plan <planPath> --rules ${CLAUDE_PLUGIN_ROOT}/constraints/jev/typst" },
 

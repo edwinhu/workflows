@@ -11,8 +11,8 @@ const EVIDENCE = join(BASE, "constraints/jev/evidence.py");
 const TYPST = join(BASE, "constraints/jev/typst");
 const UNCAL = join(TYPST, "uncalibrated");
 const FIX = join(BASE, "tests/fixtures/jev/typst");
-const WIRED = ["T-CALLOUT", "T-HOLLOW", "T-STORY", "T-TAKEAWAY"];
-const UNWIRED = ["T-ECHO", "T-TAKEAWAY-WH", "T-TRANSITION"];
+const WIRED = ["T-CALLOUT", "T-HOLLOW", "T-STORY", "T-TAKEAWAY", "T-TRANSITION"];
+const UNWIRED = ["T-ECHO", "T-TAKEAWAY-WH"];
 const made: string[] = [];
 afterAll(() => made.forEach(d => rmSync(d, { recursive: true, force: true })));
 
@@ -97,6 +97,9 @@ const SEPARATES: Record<string, (vio: any, sat: any) => void> = {
     expect(v.sections_after_the_first[0]).toMatchObject({ line: 16, section: "Empirical Evidence" });
     expect(v.sections_after_the_first[0].first_bullet.text).toStartWith("Several studies have examined");
     expect(v.sections_after_the_first[0]).toMatchObject({ turn_cues: [], asks_question: false, names_previous_section: [] });
+    expect(v.sections_after_the_first[0].previous_section_last_sentence).toBe("That concentration is the reason anyone worries about their influence at all.");
+    expect(v.sections_after_the_first[0]).toMatchObject({ repeats_from_last_sentence: [], opens_on_pointer: null });
+    expect(s.sections_after_the_first[0]).not.toHaveProperty("previous_section_last_sentence");
     expect(s.sections_after_the_first[0].first_bullet.text).toStartWith("So the market is concentrated.");
     expect(s.sections_after_the_first[0]).toMatchObject({ turn_cues: ["so"], asks_question: true });
   },
