@@ -764,7 +764,22 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 			stacked, stackedIssuer = labels, name
 			continue
 		}
-		if lead, candidate := htmlContextLead(cells); candidate && (ctx.Issuer == "" || len(cells) == 0 || htmlFlat(cells[0]) != "") {
+		// A bare one-cell heading immediately above the ballot's OWN identity
+		// column header (`Ticker | Security ID: | Meeting Date | Meeting
+		// Status`) is a new issuer regardless of what ctx.Issuer still holds:
+		// that header proves the block is its own, position being the
+		// evidence exactly as htmlBallotIssuerOverColumnHeader already reads
+		// it for the bannerFund case. Without this, ctx.Issuer stays
+		// non-empty until the FIRST data row of each issuer's OWN block
+		// re-seals it (the per-row grouped-export rule below), which is one
+		// row too late to let this heading in: a meeting after the filing's
+		// first is refused and every later block inherits the issuer printed
+		// before it (Putnam Variable Trust 822671, filer agent 0000928816,
+		// 0000928816-11-001081.txt alone: every meeting after the first,
+		// inside ONE <TABLE> with only an `<HR>` divider between them,
+		// stamped 46,785 rows with its first issuer's name).
+		if lead, candidate := htmlContextLead(cells); candidate && (ctx.Issuer == "" || len(cells) == 0 ||
+			htmlFlat(cells[0]) != "" || htmlBallotIssuerOverColumnHeader(feed, cells)) {
 			// An issuer wrapped over two one-cell rows: `Putnam Money Market
 			// Liquidity` then `Fund`. Only a short continuation joins.
 			if leadJoin && htmlTickerShaped(lead) {
