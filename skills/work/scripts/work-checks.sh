@@ -14,6 +14,8 @@
 # its stderr tail goes to output.
 # A red-suite file whose sha256 differs from the dispatcher's is a change owned by the task whose
 # writablePaths reach it, else by 'plan'. WORK_CHECK_TIMEOUT (seconds, default 1800) bounds each command.
+# Every command sees WORK_READ_ONLY=1 under args.readOnly, else 0: a gate whose scope differs between a
+# diagnose run (nothing edited, so judge the whole file) and a repair run (judge what it added) reads it.
 set -euo pipefail
 
 [[ $# -eq 3 ]] || { echo "usage: work-checks.sh ARGS RAW OUT" >&2; exit 2; }
@@ -30,6 +32,7 @@ if not isinstance(raw, dict) or raw.get('stage') != 'agents' or not isinstance(r
 plan = raw['checkPlan']
 cwd = args.get('projectDir') or os.getcwd()
 timeout = int(os.environ.get('WORK_CHECK_TIMEOUT', '1800'))
+env = {**os.environ, 'WORK_READ_ONLY': '1' if args.get('readOnly') is True else '0'}
 TAIL = 60
 
 def tail(s):
@@ -37,7 +40,7 @@ def tail(s):
 
 def run(cmd):
     try:
-        p = subprocess.run(['bash', '-c', cmd], cwd=cwd, capture_output=True, text=True,
+        p = subprocess.run(['bash', '-c', cmd], cwd=cwd, env=env, capture_output=True, text=True,
                            errors='replace', timeout=timeout)
     except subprocess.TimeoutExpired:
         return -1, f'could not run: timed out after {timeout}s: {cmd}'
@@ -50,7 +53,7 @@ def run(cmd):
 
 def run_rules(cmd):
     try:
-        p = subprocess.run(['bash', '-c', cmd], cwd=cwd, capture_output=True, text=True,
+        p = subprocess.run(['bash', '-c', cmd], cwd=cwd, env=env, capture_output=True, text=True,
                            errors='replace', timeout=timeout)
     except subprocess.TimeoutExpired:
         return -1, '', f'could not run: timed out after {timeout}s: {cmd}'

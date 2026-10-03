@@ -507,7 +507,8 @@ The driver's exit codes: **0** PASS; **exit 1** the dispatch died with no verdic
 names); **exit 2** `work-result.sh` refused the verdict; **exit 5** `converge-check.ts` reported NOT
 CONVERGING, which is evidence about the BRIEF — re-plan rather than spend the remaining rounds;
 **exit 6** the round cap was reached; **exit 7** a plan defect needs a scope decision, which is a
-human's to make.
+human's to make; **exit 8** a `readOnly` run reached its verdict on its first adjudicated round (an
+audit's FAIL is its answer), and the hold releases on it.
 
 **Run that wait as a `Monitor`, not a foreground Bash call** — Bash caps at 10 minutes and a gate
 runs 20-60. Pass the loop body as Monitor's `command` with `persistent: true` (no deadline), keeping
