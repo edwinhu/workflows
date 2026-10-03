@@ -15,6 +15,11 @@ import {
   BEACON, classify, parseEvents, statusLine, table, TICK_MS, wakeable, wakeText, workPhase, workRound, WAKE_HORIZON_MS,
   type Facts, type Run, type View,
 } from './runs.ts'
+import { setForecastCache } from '../jev/forecast-mod.ts'
+
+// The Jev forecast band's sampling tick (hooks/jev/forecast-mod.ts): ten minutes, and the script's
+// own hourly gate decides whether that reaches the network.
+const FORECAST_TICK_MS = 10 * 60_000
 
 // Notified keys older than this are pruned from the shared store.
 const KEEP_NOTIFIED_MS = 7 * 24 * 3600_000
@@ -161,6 +166,17 @@ async function tick($: EngineInterface) {
   }
 }
 
+/** One forecast sample, under credit-warn's hourly gate, then the cache handed to the band. */
+async function forecastTick($: EngineInterface): Promise<void> {
+  try {
+    await $.process.run(['bun', `${$.plugin.root}/scripts/lib/openrouter-credits.ts`, '--sample'], { timeoutMs: 20_000 })
+  } catch { /* the read below still shows the last sample */ }
+  let c: unknown = null
+  try { c = JSON.parse(await $.fs.read(`${await tmpRoot($)}/openrouter-credits.json`)) } catch { /* no cache yet */ }
+  setForecastCache(c)
+  try { $.ui.invalidate('ui.render') } catch { /* headless */ }
+}
+
 export function registerWatcher(on: On) {
   on('session.start', async ($, e, next) => {
     if (!e.isInteractive || (await $.env.get('FARM_OUT_CHILD')) === '1') return next(e)
@@ -168,6 +184,9 @@ export function registerWatcher(on: On) {
     $.clock.every(TICK_MS, () => tick($))
     void tick($)
     void prune($, await $.clock.now())
+    // The module's one session.start, so the Jev forecast band's tick starts here too.
+    $.clock.every(FORECAST_TICK_MS, () => forecastTick($))
+    void forecastTick($)
     await $.command.register({
       name: 'farm',
       description: "This session's farm-out runs and work rounds: state, elapsed, artifact, report",

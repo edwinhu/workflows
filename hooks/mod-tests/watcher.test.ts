@@ -59,10 +59,10 @@ function liveWorkTree(): Tree {
   }
 }
 
-type Seen = { submits: string[]; statuses: (string | undefined)[]; commands: string[]; timers: number }
+type Seen = { submits: string[]; statuses: (string | undefined)[]; commands: string[]; timers: number; runs: string[][] }
 
 function world(on: any, tree: Tree, opts: { alive?: number[]; store?: Map<string, unknown> } = {}) {
-  const seen: Seen = { submits: [], statuses: [], commands: [], timers: 0 }
+  const seen: Seen = { submits: [], statuses: [], commands: [], timers: 0, runs: [] }
   const store = opts.store ?? new Map<string, unknown>()
   const clock = mock.clock(on, { now: NOW })
   mock.env(on, { TMPDIR: ROOT })
@@ -75,6 +75,8 @@ function world(on: any, tree: Tree, opts: { alive?: number[]; store?: Map<string
   on('store.set', ($: any, e: any) => { store.set(e.key, e.value); return { value: undefined } })
   on('store.delete', ($: any, e: any) => { store.delete(e.key); return { value: undefined } })
   on('store.keys', () => ({ value: [...store.keys()] }))
+  // the engine's own AbovePrompt: nothing of its own, so a plugin's band is the whole band
+  on('ui.render', () => ({ type: 'engine', ref: 0 }))
   on('fs.list', ($: any, e: any) => {
     const prefix = e.path.replace(/\/+$/, '') + '/'
     const names = Object.keys(tree).filter(p => p.startsWith(prefix)).map(p => p.slice(prefix.length))
@@ -87,6 +89,7 @@ function world(on: any, tree: Tree, opts: { alive?: number[]; store?: Map<string
   on('fs.stat', ($: any, e: any) =>
     (e.path in tree ? { value: { kind: 'file', size: tree[e.path]!.length, mtimeMs: NOW, isLink: false } } : { deny: `ENOENT ${e.path}` }))
   on('process.run', ($: any, e: any) => {
+    seen.runs.push(e.argv)
     const asked = String(e.argv.at(-1)).split(',').map(Number)
     const live = asked.filter(p => (opts.alive ?? []).includes(p))
     return { value: { exitCode: live.length ? 0 : 1, stdout: live.map(p => `  ${p}\n`).join(''), stderr: '' } }
@@ -274,4 +277,60 @@ test('secreg 1002-slides-18-diag: the loop\'s DONE rc=3 wakes once; its round, w
   expect(seen[0]).toContain('work run 1002-slides-18-diag loop finished: exit 3 (redispatch refused at Tier 1) after 7m.')
   expect([...store.keys()]).toEqual(['notified:e3b75752-8459-4201-8118-4b52c8e0bc9c:2657005:0:work-loop:1790992953'])
   expect(tree[`${D}/watcher.alive`]).toBe('1790993405')
+})
+
+/** The credit-warn cache with a day of hourly samples spending $3.40/day, newest at NOW, $19.77 left. */
+function creditsTree(perDay = 3.4, last = 19.77): Tree {
+  const samples: [number, number][] = []
+  for (let i = 24; i >= 0; i--) samples.push([NOW - i * 3_600_000, +(last + (i * perDay) / 24).toFixed(6)])
+  return { [`${ROOT}/openrouter-credits.json`]: JSON.stringify({ checkedAt: NOW, balance: last, samples }) }
+}
+
+const band = (hasSurvey = false) => ({
+  plugin: 'workflows', surface: 'terminal' as const, component: 'AbovePrompt' as const,
+  props: { hasSurvey, isWorking: false, maxRows: 10, bodyColumns: 100, scroll: { offset: 0, bodyRows: 9, contentRows: 1 } } as any,
+})
+
+test('the Jev forecast band: the tick samples through credit-warn, the band draws the cache', async ($, on) => {
+  const { seen, clock } = world(on, creditsTree())
+  await start($)
+  await clock.settle()
+  expect(seen.runs.filter(a => a.includes('--sample')).map(a => a.slice(-2).join(' ')))
+    .toEqual([`${seen.runs.find(a => a.includes('--sample'))![1]} --sample`])
+  expect(seen.runs.find(a => a.includes('--sample'))![1]).toMatch(/\/scripts\/lib\/openrouter-credits\.ts$/)
+  const ui = await $.ui.mount(band())
+  expect((await ui.find({ type: 'Text', text: /^Jev / }))?.text).toBe('Jev $19.77 · $3.40/day · ~6 days')
+  await ui.unmount()
+  // the next sample is ten minutes on, not every watcher tick
+  await clock.advance(15_000)
+  expect(seen.runs.filter(a => a.includes('--sample')).length).toBe(1)
+  await clock.advance(10 * 60_000)
+  expect(seen.runs.filter(a => a.includes('--sample')).length).toBe(2)
+})
+
+test('the Jev forecast band names an empty account', async ($, on) => {
+  const out = world(on, creditsTree(3.4, -0.24))
+  await start($)
+  await out.clock.settle()
+  const ui = await $.ui.mount(band())
+  expect((await ui.find({ type: 'Text', text: /OUT OF CREDITS/ }))?.text)
+    .toBe('Jev OUT OF CREDITS — top up at https://openrouter.ai/settings/credits (balance -$0.24)')
+  await ui.unmount()
+})
+
+test('the Jev forecast band stays away with no samples (a cache from before the samples)', async ($, on) => {
+  const { seen, clock } = world(on, { [`${ROOT}/openrouter-credits.json`]: JSON.stringify({ checkedAt: NOW, balance: 19.77 }) })
+  await start($)
+  await clock.settle()
+  const ui = await $.ui.mount(band())
+  expect(await ui.find({ type: 'Text', text: /^Jev / })).toBeUndefined()
+  await ui.unmount()
+  expect(seen.runs.filter(a => a.includes('--sample')).length).toBe(1)
+})
+
+test('a headless session never samples credits', async ($, on) => {
+  const { seen, clock } = world(on, creditsTree())
+  await start($, false)
+  await clock.settle()
+  expect(seen.runs.filter(a => a.includes('--sample'))).toEqual([])
 })

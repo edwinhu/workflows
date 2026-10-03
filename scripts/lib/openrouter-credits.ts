@@ -9,12 +9,15 @@
  *   bun scripts/lib/openrouter-credits.ts --preflight   canary: exit 1 with the top-up line at <= $0;
  *                                                       low prints the warning and exits 0
  *   bun scripts/lib/openrouter-credits.ts --balance [--fresh]   print the balance
+ *   bun scripts/lib/openrouter-credits.ts --sample      silent: refresh the cache under the same hourly
+ *                                                       gate (the Jev forecast band's tick)
  *
  * Balance = total_credits - total_usage from GET /api/v1/credits (docs: api-reference/credits/
  * get-remaining-credits; documented as management-key only, answers 200 to the inference key too —
  * measured 2026-10-03), read with the key every Decisions caller uses. At most one API call an hour:
  * the result, a failed read included, is cached in $TMPDIR/openrouter-credits.json, which also
- * records the day of the last desktop notification. An unreachable API, an error status or no key
+ * records the day of the last desktop notification and, per successful read, one [ms, balance] sample
+ * for the Jev forecast band (hooks/jev/forecast.ts; a week, at most 200). An unreachable API, an error status or no key
  * is UNKNOWN and silent — never a false alarm.
  *
  *   OPENROUTER_LOW_BALANCE=3       warn below this many dollars
@@ -25,11 +28,10 @@ import { spawnSync } from 'node:child_process'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { OPENROUTER_OUT_OF_CREDITS, openrouterKey, outOfCredits } from '../../hooks/work-hold.ts'
+import { addSample, type CreditsCache as Cache } from '../../hooks/jev/forecast.ts'
 
 const HOUR_MS = 3_600_000
 const TOPUP = 'https://openrouter.ai/settings/credits'
-
-interface Cache { checkedAt: number; balance: number | null; notifiedOn?: string }
 
 const cachePath = () => join(process.env.TMPDIR || tmpdir(), 'openrouter-credits.json')
 
@@ -84,7 +86,15 @@ export function balance(opts: { fresh?: boolean; now?: number } = {}): { balance
   if (process.env.OPENROUTER_CREDITS_URL === 'off') return { balance: null, cache: { checkedAt: now, balance: null }, cached: true }
   const c = readCache()
   if (c && !opts.fresh && now - c.checkedAt < HOUR_MS) return { balance: c.balance, cache: c, cached: true }
-  const next: Cache = { checkedAt: now, balance: fetchBalance(), ...(c?.notifiedOn ? { notifiedOn: c.notifiedOn } : {}) }
+  const b = fetchBalance()
+  // A cache written before samples existed still holds one real reading: it is the first sample.
+  const prior = c?.samples ?? (c && typeof c.balance === 'number' ? [[c.checkedAt, c.balance] as [number, number]] : undefined)
+  const samples = b === null ? prior : addSample(prior, now, b)
+  const next: Cache = {
+    checkedAt: now, balance: b,
+    ...(c?.notifiedOn ? { notifiedOn: c.notifiedOn } : {}),
+    ...(samples?.length ? { samples } : {}),
+  }
   writeCache(next)
   return { balance: next.balance, cache: next, cached: false }
 }
@@ -142,11 +152,15 @@ if (import.meta.main) {
     if (line) console.log(line)
     process.exit(0)
   }
+  if (args.includes('--sample')) {
+    balance()
+    process.exit(0)
+  }
   if (args.includes('--session')) {
     const line = sessionLine()
     if (line) console.log(line)
     process.exit(0)
   }
-  console.error('usage: openrouter-credits.ts --session | --preflight | --balance [--fresh]')
+  console.error('usage: openrouter-credits.ts --session | --preflight | --balance [--fresh] | --sample')
   process.exit(2)
 }
