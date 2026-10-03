@@ -12,6 +12,7 @@
 
 - **`scripts/test.sh` exits 0 on a clean checkout:** it runs a frozen-lockfile `bun install` for any skill with a `bun.lock` and no `node_modules` (the `@google/genai` errors), and wc-probe reports a `{{NAME}}` template ref as a skip instead of a missing path. (61e9401e)
 - **The canary's suites step tests the committed HEAD:** the workflows suite runs in a minted clean worktree at `HEAD`, never the main checkout where other sessions' uncommitted files sit, and a teaching checkout with uncommitted changes to tracked files fails naming them. (050dfc31, 5a03fd58)
+- **An empty OpenRouter account is named, not disguised:** `decisionsCall` maps HTTP 402 or the insufficient-credits body to "OpenRouter is out of credits — top up at …", which rule-check, the work hold and the canary carry verbatim (it used to read `missing answers.q0.probabilities in reply`); `scripts/lib/openrouter-credits.ts` warns at SessionStart before the balance runs out. (d7ede4dc)
 
 ## [6.37.7] - 2026-10-03
 
