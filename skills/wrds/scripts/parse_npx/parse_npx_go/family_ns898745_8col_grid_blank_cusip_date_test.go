@@ -57,3 +57,53 @@ func TestFamilyNS898745EightColumnGridKeepsCUSIPAndMeetingDate(t *testing.T) {
 		t.Fatalf("no Online Resources Corporation row parsed out of %d rows", len(sink.buf))
 	}
 }
+
+// A second page of the same filing (source lines 601617-602119, appended to
+// the fixture after the Online Resources page) prints the SAME 8-column
+// ProxyEdge grid except the label row merges `Meeting Type` and `Record Date`
+// into one colspan=2 cell (`Meeting Type Record Date`), so the label row has
+// 7 cells against the value row's 8. htmlStackedLabelsWithIssuer rejects any
+// unrecognized label cell outright (returns ok=false as soon as one cell's
+// flattened text fails the known-label lookup), discarding the whole grid's
+// context -- 3D Systems Corporation (CUSIP 88554D205, 17-May-11) and Acacia
+// Research Corporation (CUSIP 003881307, 17-May-11) both lose CUSIP and
+// meeting date even though both values are printed plainly in their own
+// cells.
+func TestFamilyNS898745MergedMeetingTypeRecordDateLabelKeepsCUSIPAndMeetingDate(t *testing.T) {
+	oldDict, oldMap := cikDict, seriesMap
+	t.Cleanup(func() { cikDict, seriesMap = oldDict, oldMap })
+	var err error
+	cikDict, err = loadCIKSeries(filepath.Join("testdata", "family_ns898745_8col_grid_blank_cusip_date", "principal_dict.tsv"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	seriesMap = nil
+
+	const fixture = "principal_8col_grid.txt"
+	sink := &rowSink{}
+	meta := processFile(fixture, filepath.Join("testdata", "family_ns898745_8col_grid_blank_cusip_date", fixture), sink, make([]byte, headBytes))
+	if meta.ParseStatus != "ok" || meta.Layout != "proxyedge" {
+		t.Fatalf("fixture/dispatch precondition: status=%s layout=%s rows=%d error=%s", meta.ParseStatus, meta.Layout, len(sink.buf), meta.ErrorMsg)
+	}
+	want := map[string][2]string{
+		"3D Systems Corporation":      {"88554D205", "20110517"},
+		"Acacia Research Corporation": {"003881307", "20110517"},
+	}
+	seen := map[string]bool{}
+	for i, r := range sink.buf {
+		exp, ok := want[r.IssuerName]
+		if !ok {
+			continue
+		}
+		seen[r.IssuerName] = true
+		if r.CUSIP != exp[0] || r.MeetingDate != exp[1] {
+			t.Errorf("row %d (%s, merged Meeting Type/Record Date label cell): cusip=%q date=%q series=%q fund=%q want cusip=%s date=%s",
+				i, r.IssuerName, r.CUSIP, r.MeetingDate, r.SeriesID, r.FundName, exp[0], exp[1])
+		}
+	}
+	for issuer := range want {
+		if !seen[issuer] {
+			t.Fatalf("no %s row parsed out of %d rows", issuer, len(sink.buf))
+		}
+	}
+}

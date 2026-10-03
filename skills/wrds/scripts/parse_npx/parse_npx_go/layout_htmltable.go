@@ -3893,7 +3893,16 @@ var htmlStackedLabelSet = map[string]string{
 	"MEETING DATE": "MEETING DATE", "MTG DATE": "MEETING DATE", "DATE OF MEETING": "MEETING DATE",
 	"MEETING COUNTRY DATE": "MEETING DATE COUNTRY",
 	"RECORD DATE":          "RECORD DATE",
-	"MEETING TYPE":         "MEETING TYPE", "MTG TYPE": "MEETING TYPE", "MEETING STATUS": "MEETING STATUS",
+	// A colspan=2 label cell merges `Meeting Type` and `Record Date` into one
+	// cell while the value row keeps them as two separate cells (Principal
+	// Funds Inc 0000898745-11-000564, second occurrence of the 8-column
+	// ProxyEdge grid: 3D Systems Corporation, Acacia Research Corporation).
+	// Neither field is read into htmlContext, so the compound is recognized
+	// and ignored rather than rejecting the whole label row -- which is what
+	// unconditionally happened before, blanking every other column (CUSIP,
+	// Meeting Date) that sits at an unaffected index.
+	"MEETING TYPE RECORD DATE": "MEETING TYPE RECORD DATE",
+	"MEETING TYPE":             "MEETING TYPE", "MTG TYPE": "MEETING TYPE", "MEETING STATUS": "MEETING STATUS",
 	"COUNTRY OF TRADE": "COUNTRY", "COUNTRY": "COUNTRY", "ISSUER": "ISSUER", "ISSUER NAME": "ISSUER",
 	"COMPANY NAME": "ISSUER", "COMPANY": "ISSUER", "SECURITY": "CUSIP",
 	// Labels of an identity header that carry no identity: the meeting's
