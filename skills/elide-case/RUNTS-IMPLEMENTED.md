@@ -2,8 +2,8 @@
 
 Implementation of RUNTS.md §5, 2026-09-10. Files changed:
 
-- `/home/eh/projects/teaching/scripts/check-widows.py` (shared with the slides workflow)
-- `/home/eh/projects/workflows/skills/elide-case/scripts/check-page-breaks.py`
+- `teaching/scripts/check-widows.py` (shared with the slides workflow; since retired)
+- `skills/elide-case/scripts/check-page-breaks.py` (since retired)
 - `/home/eh/projects/workflows/skills/elide-case/scripts/check.sh`
 - `/home/eh/projects/workflows/skills/elide-case/scripts/check.test.ts`
 - `/home/eh/projects/workflows/skills/elide-case/fixtures/make-pagebreak-fixture.py`
