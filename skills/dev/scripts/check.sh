@@ -10,15 +10,23 @@
 # a project with no build step should say so once, here, rather than have the plan quietly
 # omit a row that nobody can tell from a forgotten one.
 #
-# Usage: check.sh --project-dir <dir> [--test-cmd <cmd>] [--lint-cmd <cmd>] [--build-cmd <cmd>]
-# Exit 0 = every declared leg passed. 1 = some leg failed. 2 = refusal.
+# Every leg prints `<leg>: N <unit> examined` (work/scripts/leg-counts.sh). The tests leg counts the
+# tests the runner reports; a runner whose summary is not recognised needs --test-count-re, a regex
+# whose groups are summed, or the leg cannot say it ran anything and is COULD-NOT-CHECK.
+#
+# Usage: check.sh --project-dir <dir> [--test-cmd <cmd>] [--test-count-re <re>] [--lint-cmd <cmd>] [--build-cmd <cmd>]
+# Exit 0 = every declared leg passed. 1 = some leg failed. 2 = refusal, or a leg that examined nothing.
 set -uo pipefail   # deliberately not -e: every leg must run so every leg reports.
 
-PROJ="."; TESTCMD=""; LINTCMD=""; BUILDCMD=""; DECLARED=0
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$HERE/../../work/scripts/leg-counts.sh"
+
+PROJ="."; TESTCMD=""; TESTRE=""; LINTCMD=""; BUILDCMD=""; DECLARED=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --project-dir) PROJ="${2:-}"; shift 2 ;;
     --test-cmd) TESTCMD="${2:-}"; shift 2 ;;
+    --test-count-re) TESTRE="${2:-}"; shift 2 ;;
     --lint-cmd) LINTCMD="${2:-}"; shift 2 ;;
     --build-cmd) BUILDCMD="${2:-}"; shift 2 ;;
     *) echo "check.sh: unknown argument $1" >&2; exit 2 ;;
@@ -26,14 +34,17 @@ while [ $# -gt 0 ]; do
 done
 [ -d "$PROJ" ] || { echo "check.sh: --project-dir $PROJ is not a directory" >&2; exit 2; }
 
-FAILED=0
-report() { printf 'leg %s exit=%s%s\n' "$1" "$2" "${3:+ ($3)}"; [ "$2" -eq 0 ] || FAILED=1; }
+RC=0
+report() { printf 'leg %s exit=%s%s\n' "$1" "$2" "${3:+ ($3)}"; [ "$2" -le "$RC" ] || RC="$2"; }
 leg() {
   local name="$1" cmd="$2"
-  if [ -z "$cmd" ]; then report "$name" 0 "not declared"; return; fi
+  if [ -z "$cmd" ]; then
+    count_line "$name" 0 "command(s)" "— nothing in scope (not declared)" >&2
+    report "$name" 0 "not declared"; return
+  fi
   DECLARED=$((DECLARED+1))
-  ( cd "$PROJ" && eval "$cmd" ) >&2
-  report "$name" $?
+  legcount_run "$name" legcount_cmd "$name" "$PROJ" "$cmd" "$([ "$name" = tests ] && printf '%s' "$TESTRE")"
+  report "$name" "$LEG_STATUS"
 }
 
 leg tests "$TESTCMD"
@@ -41,11 +52,16 @@ leg lint  "$LINTCMD"
 leg build "$BUILDCMD"
 
 # Always runs, never counts as declared: it reads the diff, not a project command.
-python3 "$(dirname "$0")/diff-scan.py" "$PROJ"
-case $? in
-  0) report scan 0 ;;
-  3) report scan 0 "not a git repo" ;;
-  *) report scan 1 "focused/skipped test, TLS off or secret in added lines; 'scan: allow' exempts a line" ;;
+SCAN_NOTE=""
+scan_leg() {
+  python3 "$HERE/diff-scan.py" "$PROJ"
+  case $? in 0) return 0 ;; 3) SCAN_NOTE="not a git repo"; return 0 ;; 2) return 2 ;; *) return 1 ;; esac
+}
+legcount_run scan scan_leg
+case $LEG_STATUS in
+  0) report scan 0 "$SCAN_NOTE" ;;
+  1) report scan 1 "focused/skipped test, TLS off or secret in added lines; 'scan: allow' exempts a line" ;;
+  *) report scan "$LEG_STATUS" ;;
 esac
 
 # A run in which nothing was declared examined nothing, and must not read as a clean gate.
@@ -53,4 +69,4 @@ if [ "$DECLARED" -eq 0 ]; then
   echo "check.sh: no command was declared — this gate ran nothing, which is not a pass" >&2
   exit 2
 fi
-exit "$FAILED"
+exit "$RC"

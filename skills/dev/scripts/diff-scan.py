@@ -51,17 +51,22 @@ def added(root):
 def main():
     root = sys.argv[1] if len(sys.argv) > 1 else '.'
     if git(root, 'rev-parse', '--is-inside-work-tree').returncode != 0:
+        print('scan: 0 added line(s) examined — nothing in scope (not a git repo)', file=sys.stderr)
         return 3
-    hits = 0
+    hits = lines = 0
     for path, n, text in added(root):
         if 'fixtures/' in path or 'scan: allow' in text:
             continue
+        lines += 1
         for name, tests_only, rx in CHECKS:
             if tests_only and not TEST_PATH.search(path):
                 continue
             if rx.search(text):
                 print(f'{name}: {path}:{n}: {text.strip()[:160]}', file=sys.stderr)
                 hits += 1
+    # The non-vacuity count line (work/scripts/leg-counts.sh); a change that adds nothing is empty scope.
+    print(f'scan: {lines} added line(s) examined'
+          + ('' if lines else ' — nothing in scope (no line added over HEAD)'), file=sys.stderr)
     return 1 if hits else 0
 
 

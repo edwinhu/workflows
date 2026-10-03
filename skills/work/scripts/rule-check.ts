@@ -207,6 +207,24 @@ export function scoreRulesBatch(
 }
 
 // The first clause of a rule's proposition: the one line a per-edit note quotes.
+// NON-VACUITY: a rule declaring EXAMINED (evidence.py passes examinedKey/examined) names the count of
+// what its inventory read. Over a covered non-empty file a zero means the extractor read nothing, and
+// a judge handed that empty inventory answers MET; the rule is unavailable instead. A rule covering no
+// non-empty file does not apply, and keeps its old path.
+export function unexamined(data: any): string | null {
+  if (!data || data.examinedKey === undefined) return null;
+  const files = Array.isArray(data.state?.files) ? data.state.files : [];
+  const covered = files.filter((f: any) => typeof f?.lines === 'number' && f.lines > 0).length;
+  if (covered === 0) return null;
+  if (typeof data.examined !== 'number') {
+    return `its inventory carries no count ${data.examinedKey} — what it examined is unknown (COULD-NOT-CHECK)`;
+  }
+  if (data.examined === 0) {
+    return `its inventory examined 0 ${data.examinedKey} in ${covered} covered file(s) — nothing was judged (COULD-NOT-CHECK)`;
+  }
+  return null;
+}
+
 export function statement(proposition: string): string {
   const one = String(proposition ?? '').replace(/\s+/g, ' ').trim().split(/(?<=[^.]{12})[:.;](?:\s|$)/)[0];
   return one.length > 140 ? one.slice(0, 139) + '…' : one;
@@ -222,7 +240,12 @@ export function checkRules(opts: {
   const evidenceData = Object.assign({}, ...dirs.map(rulesDir => collectEvidence({ ...opts, rulesDir })));
   const verdicts: Verdict[] = [];
   const unavailable: Unavailable[] = [];
-  const picked = Object.fromEntries(Object.entries(evidenceData).filter(([n]) => !opts.only || opts.only.includes(n)));
+  const chosen = Object.entries(evidenceData).filter(([n]) => !opts.only || opts.only.includes(n));
+  for (const [ruleName, data] of chosen) {
+    const why = unexamined(data);
+    if (why) unavailable.push({ rule: ruleName, reason: why });
+  }
+  const picked = Object.fromEntries(chosen.filter(([, data]) => !unexamined(data)));
   const batched = opts.batch ? scoreRulesBatch(picked, opts.projectName, { maxTimeSeconds: opts.maxTimeSeconds }) : null;
 
   for (const [ruleName, data] of Object.entries(picked)) {

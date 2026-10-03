@@ -62,8 +62,11 @@ case "$TIMEOUT_MIN" in ''|*[!0-9]*) die "CANARY_TIMEOUT_MIN must be whole minute
 # ------------------------------------------------------------------ the assertions (decidable only)
 # assert_run RUN_DIR EVENTS_DIR EXPECTED_EXITS [COUNT_REGEX ...] — prints one FAIL line per failure.
 assert_run() {
-  python3 - "$@" <<'PY'
+  LEG_COUNTS_DIR="$WORK" python3 - "$@" <<'PY'
 import glob, json, os, re, sys
+
+sys.path.insert(0, os.environ["LEG_COUNTS_DIR"])
+from leg_counts import audit as leg_audit
 
 run, events, expect = sys.argv[1], sys.argv[2], sys.argv[3].split(",")
 counts = sys.argv[4:]
@@ -125,7 +128,10 @@ for p in logs:
             fail(f"{label} in {os.path.basename(p)}: {line.strip()[:220]}")
             break
 
-# 3. Every mechanical and rule leg examined a non-zero amount.
+# 3. Every mechanical and rule leg examined a non-zero amount: leg_counts.audit, the one parser of the
+# `<leg>: N <unit> examined` convention that work-checks.sh and every check.sh leg also use. The output
+# is checks.json's 60-line tail, so a leg whose header was cut is not looked for here — work-checks.sh
+# audited the full output and left its COULD-NOT-CHECK lines in that tail (assertion 2 reports them).
 try:
     c = json.load(open(os.path.join(run, "checks.json")))
 except Exception:
@@ -133,12 +139,10 @@ except Exception:
 mech = c.get("mechanical") or []
 if not mech:
     fail("checks.json has no mechanical check — the round gated on nothing")
-COUNT = re.compile(r"^([\w-]+): .*?\b(\d+) (?:added )?(?:\(CP N\) )?(?:line|cite|test|item|page|row)\(s\) (read|checked|examined|scanned)\b", re.M)
 for m in mech:
     out = (m.get("output") or "") + "\n" + (m.get("stdout") or "")
-    for leg, n, verb in [(g[0], int(g[1]), g[2]) for g in COUNT.findall(out)]:
-        if n == 0:
-            fail(f"mechanical {m.get('name')}: leg {leg} {verb} 0 — vacuous")
+    for f in leg_audit(out):
+        fail(f"mechanical {m.get('name')}: {f}")
     for rx in counts:
         hits = [int(x) for x in re.findall(rx, out)]
         if not hits:
@@ -376,7 +380,7 @@ if [ "$ONLY" != dev ]; then
   echo; echo "=== canary (a): read-only diagnose, secreg lecture $LECTURE -> $STATE/$DIAG_ID"
   # The diagnose plan states its own maxRounds 1; the loop exits 8 at a read-only verdict.
   if dispatch diag "$d" "$d/plan.md" 1; then
-    RUNS+=("diag|$d|$STATE/$DIAG_ID|0,8|american-english: \d+ file\(s\), (\d+) (?:added )?line\(s\) read"$'\x1f'"case-cites: \d+ file\(s\), (\d+) (?:added )?\(CP N\) cite\(s\) checked")
+    RUNS+=("diag|$d|$STATE/$DIAG_ID|0,8|american-english: (\d+) (?:added )?line\(s\) examined"$'\x1f'"case-cites: (\d+) (?:added )?\(CP N\) cite\(s\) examined")
   else
     echo "FAIL [diag] work-dispatch.sh refused or failed (exit above)"; FAILED=1
   fi
