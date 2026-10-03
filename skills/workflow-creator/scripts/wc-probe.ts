@@ -3494,12 +3494,9 @@ export function checkTaskRowCoverage(file: string, text: string, exemptions: rea
  * positive costs the probe its trust, so every predicate names a literal shape, never a theme.
  *
  * ADVISORY_RULES report in `ProbeResult.advisories` and never move the exit code. P17 is advisory by
- * design. P15 is PARKED there: its 2026-10-02 baseline is 15 findings in two audited gates (ds,
- * teaching notes) that gate-vacuity requires to pass, and a parked rule never gates. Move it out
- * when that baseline is zero.
+ * design. P15 gates: its 2026-10-02 baseline of 15 findings (ds, teaching notes) was cleared first.
  */
 export const ADVISORY_RULES: ReadonlySet<string> = new Set([
-  'P15 duplicate grading',
   'P17 serial row loop',
 ])
 
