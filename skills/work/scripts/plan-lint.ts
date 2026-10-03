@@ -566,9 +566,12 @@ const lint = (p: Plan): Finding[] => {
     }
 
     // R19 — a mechanical check runs whether or not this task did anything, so an acceptance made
-    // only of them is true before the work starts.
+    // only of them is true before the work starts. Unless it is the task's OWN redCommand:
+    // red-at-dispatch refuses the round when that exits 0 before the work (`red-not-red`), so the
+    // clause is proven false-before — and a terminal task's acceptance has no other honest form.
     const acceptCmds = commandsIn(t.acceptance)
-    if (acceptCmds.length && acceptCmds.every(c => mechCmds.has(c))) {
+    const ownRed = (t.redCommand ?? '').replace(/\s+/g, ' ').trim()
+    if (acceptCmds.length && acceptCmds.every(c => mechCmds.has(c)) && !acceptCmds.includes(ownRed)) {
       const ev = acceptCmds.join(' ; ')
       add(
         'acceptance-is-the-mechanical-check',

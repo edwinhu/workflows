@@ -863,6 +863,33 @@ test('one distinguishing clause is enough — the acceptance is no longer only t
   expect(rules(p)).not.toContain('acceptance-is-the-mechanical-check')
 })
 
+// A chain's terminal task carries the whole gate as its redCommand, and red-at-dispatch refuses
+// the round (`red-not-red`) when that command already exits 0 — so an acceptance that spells the
+// same command is PROVEN false before the work. Flagging it left the task no lint-clean way to state
+// its acceptance: the bare "that same command exits 0" is R1's uncommanded clause (secreg 18,
+// 2026-10-02, teaching's notes/slides/exams repair and create templates).
+test("an acceptance that is the task's own redCommand is not flagged — red-at-dispatch proves it false before the work", () => {
+  const gate = 'bash scripts/check.sh --target notes'
+  const p = base({
+    tasks: [task({ acceptance: `\`${gate}\` exits 0.`, redCommand: gate })],
+    mechanicalChecks: [{ name: 'check', cmd: gate }],
+  })
+  expect(lint(p)).toEqual([])
+})
+
+test("the redCommand exemption is the task's own red, not any red in the plan", () => {
+  const gate = 'bash scripts/check.sh --target notes'
+  const p = base({
+    tasks: [
+      task({ id: 'T1', acceptance: `\`${gate}\` exits 0`, redCommand: null, redDisposition: 'chain red sits on T2' }),
+      task({ id: 'T2', acceptance: `\`${gate}\` exits 0`, redCommand: gate }),
+    ],
+    mechanicalChecks: [{ name: 'check', cmd: gate }],
+  })
+  const f = lint(p).filter(x => x.rule === 'acceptance-is-the-mechanical-check')
+  expect(f.map(x => x.where)).toEqual(['task T1'])
+})
+
 test('an acceptance naming no command at all is not this rule — that is R1', () => {
   const p = base({
     tasks: [task({ acceptance: 'the usage text documents the flag' })],
