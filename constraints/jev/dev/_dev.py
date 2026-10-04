@@ -37,9 +37,29 @@ def clip(s):
     return s if len(s) <= TEXT else s[:TEXT] + '…'
 
 
-def hunks(abs_path):
+def scope(changed, label):
+    """The file's changed ranges, or None when there is no diff info for it (every hunk counts)."""
+    return None if changed is None else changed.get(label)
+
+
+def _within(n, ranges):
+    return any(lo <= n <= hi for lo, hi in ranges)
+
+
+def _touches(h, ranges):
+    """A hunk meets the ranges when one of its added lines does; a pure deletion after line c (a point
+    c + 0.5 in rule-check's ranges, line c + 1 in the per-edit mod's) when a range meets c..c+1."""
+    if h['added']:
+        return any(_within(n, ranges) for n, _ in h['added'])
+    c = h['start']
+    return any(lo <= c + 1 and hi >= c for lo, hi in ranges)
+
+
+def hunks(abs_path, ranges=None):
     """[{start, removed:[(n,text)], added:[(n,text)]}] against HEAD. An untracked or new file is
-    one hunk of all-added lines; a file git cannot see is None."""
+    one hunk of all-added lines; a file git cannot see is None. `ranges` (scope()) keeps the hunks
+    it touches, and of an untracked file's one hunk only the lines inside it: a round's ranges are
+    its own diff, so this narrows only the per-edit mod's call, to the lines the edit wrote."""
     root = _root(abs_path)
     lines = _read(abs_path)
     if root is None or lines is None:
@@ -48,7 +68,8 @@ def hunks(abs_path):
     tracked = subprocess.run(['git', '-C', root, 'cat-file', '-e', f'HEAD:{rel}'],
                              capture_output=True).returncode == 0
     if not tracked:
-        return [{'start': 1, 'removed': [], 'added': [(i + 1, t) for i, t in enumerate(lines)]}]
+        added = [(i + 1, t) for i, t in enumerate(lines) if ranges is None or _within(i + 1, ranges)]
+        return [{'start': 1, 'removed': [], 'added': added}]
     diff = subprocess.run(['git', '-C', root, 'diff', '--no-color', '-U0', 'HEAD', '--', rel],
                           capture_output=True, text=True, errors='replace').stdout
     out, cur, old_n, new_n = [], None, 0, 0
@@ -64,14 +85,14 @@ def hunks(abs_path):
             cur['removed'].append((old_n, ln[1:])); old_n += 1
         elif ln.startswith('+'):
             cur['added'].append((new_n, ln[1:])); new_n += 1
-    return out
+    return out if ranges is None else [h for h in out if _touches(h, ranges)]
 
 
-def added_lines(abs_path):
-    hs = hunks(abs_path)
+def added_lines(abs_path, ranges=None):
+    hs = hunks(abs_path, ranges)
     if hs is None:
         return None
-    return {n for h in hs for n, _ in h['added']}
+    return {n for h in hs for n, _ in h['added'] if ranges is None or _within(n, ranges)}
 
 
 def test_blocks(lines):

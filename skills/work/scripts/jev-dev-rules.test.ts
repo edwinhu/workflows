@@ -1,8 +1,9 @@
 import { afterAll, expect, test } from "bun:test";
 import { spawnSync } from "child_process";
-import { cpSync, existsSync, mkdtempSync, readdirSync, renameSync, rmSync, statSync } from "fs";
+import { cpSync, existsSync, mkdtempSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from "fs";
+import { changedRanges } from "./rule-check.ts";
 import { tmpdir } from "os";
-import { join } from "path";
+import { dirname, join } from "path";
 
 // The five dev rules against their fixture twins. Each twin is a before/ tree (committed) and an
 // after/ tree (left in the working tree), so the extractors see a real `git diff HEAD`. Files carry a
@@ -166,3 +167,48 @@ for (const rule of RULES) {
     expect(sat.out.verdicts.every((v: any) => v.verdict === "MET")).toBe(true);
   }, 30000);
 }
+
+// `changed` scopes the dev extractors. A round passes its own diff (changedRanges), so its evidence must
+// be byte-for-byte what it was with no ranges at all; only the per-edit mod's narrower span narrows it.
+function evidenceScoped(d: string, ranges: Record<string, number[][]>): Record<string, any> {
+  const f = join(mkdtempSync(join(tmpdir(), "jev-dev-changed-")), "changed.json");
+  made.push(dirname(f));
+  writeFileSync(f, JSON.stringify(ranges));
+  const r = spawnSync("python3", [join(RULES_DIR, "evidence.py"), "--files", ...changed(d), "--root", d, "--changed-lines", f], { timeout: 120_000, encoding: "utf8" });
+  expect(r.status).toBe(0);
+  return JSON.parse(r.stdout);
+}
+
+for (const rule of RULES) {
+  test(`${rule}: a round's own ranges leave every dev rule's evidence unchanged`, () => {
+    for (const twin of ["vio", "sat"] as const) {
+      const d = repo(rule, twin);
+      const ranges = changedRanges(d)!;
+      expect(Object.keys(ranges).length).toBeGreaterThan(0);
+      expect(evidenceScoped(d, ranges)).toEqual(evidence(d));
+    }
+  });
+}
+
+test("MOCK: an edit's span lists only the tests it touched", () => {
+  const d = repo("MOCK", "vio");
+  const whole = evidence(d).MOCK.state;
+  const first = whole.changed_tests.find((t: any) => t.every_assertion_on_mock);
+  const file = join(d, first.file);
+  const s = evidenceScoped(d, { [file]: [[first.line, first.line]] }).MOCK.state;
+  expect(s.n_changed_tests).toBe(1);
+  expect(s.changed_tests[0]).toEqual(first);
+  expect(s.n_untouched_tests_skipped).toBe(whole.n_untouched_tests_skipped + whole.n_changed_tests - 1);
+  expect(s.n_lines_searched).toBe(whole.n_lines_searched);
+});
+
+test("WEAK: the mod's point after a pure deletion still reaches the deleting hunk", () => {
+  const d = repo("WEAK", "vio");
+  const whole = evidence(d).WEAK.state;
+  const h = whole.hunks_removing_or_rewriting_assertions[0];
+  const file = join(d, h.file);
+  // a span that writes one of the hunk's lines keeps it; a span far away drops it
+  const line = h.added_lines.length ? h.added_lines[0].line : h.new_line + 1;
+  expect(evidenceScoped(d, { [file]: [[line, line]] }).WEAK.state.hunks_removing_or_rewriting_assertions[0]).toEqual(h);
+  expect(evidenceScoped(d, { [file]: [[9999, 9999]] }).WEAK.state.n_such_hunks).toBe(0);
+});
