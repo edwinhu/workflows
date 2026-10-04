@@ -1,6 +1,6 @@
 import re
 from _common import _read, render_json
-from _dev import SUBJECT, MAX_ITEMS, clip, is_test, added_lines, body
+from _dev import SUBJECT, MAX_ITEMS, clip, is_test, added_lines, body, scope
 
 PROPOSITION = ('The change calls a model, an LLM API, route.ts or farm.sh once per item inside a loop over '
                'tasks, items, rows or files, instead of one batched call (one farm-out row set, one batch job).')
@@ -24,12 +24,12 @@ MODEL = re.compile(
     r'generativelanguage\.googleapis|aiplatform\.googleapis|claude\s+-p\b|codex\s+exec\b|agy\s+-p\b|/v1/(messages|chat)')
 
 
-def evidence(files, plan_lines=None):
+def evidence(files, plan_lines=None, changed=None):
     loops, examined, n_calls, n_in_loops, n_lines = [], [], 0, 0, 0
     for rel, a in files:
         if is_test(rel):
             continue
-        lines, added = _read(a), added_lines(a)
+        lines, added = _read(a), added_lines(a, scope(changed, rel))
         if lines is None:
             continue
         examined.append(rel)

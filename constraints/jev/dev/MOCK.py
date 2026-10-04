@@ -1,6 +1,6 @@
 import re
 from _common import _read, render_json
-from _dev import SUBJECT, MAX_ITEMS, ASSERT, clip, is_test, added_lines, test_blocks
+from _dev import SUBJECT, MAX_ITEMS, ASSERT, clip, is_test, added_lines, test_blocks, scope
 
 PROPOSITION = ('At least one test that this change adds or edits has NO assertion on a return value, output or '
                'state of the code under test: every one of its assertions inspects a test double (how often a mock, '
@@ -26,12 +26,12 @@ DOUBLE = re.compile(
     r'(\w+)\s*=\s*sinon\.(?:stub|spy|fake)|\bas\s+(\w+)\s*:\s*$|(\w+)\s*=\s*mocker\.(?:patch|spy)')
 
 
-def evidence(files, plan_lines=None):
+def evidence(files, plan_lines=None, changed=None):
     tests, examined, untouched, n_lines = [], [], 0, 0
     for rel, a in files:
         if not is_test(rel):
             continue
-        lines, added = _read(a), added_lines(a)
+        lines, added = _read(a), added_lines(a, scope(changed, rel))
         if lines is None:
             continue
         examined.append(rel)

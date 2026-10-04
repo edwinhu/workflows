@@ -1,5 +1,5 @@
 from _common import _read, render_json
-from _dev import SUBJECT, MAX_ITEMS, ASSERT, clip, is_test, hunks
+from _dev import SUBJECT, MAX_ITEMS, ASSERT, clip, is_test, hunks, scope
 
 PROPOSITION = ('The change weakens an existing test assertion: a diff hunk in a test file deletes an assertion '
                'without an equally strict replacement, or replaces it with a looser one (exact value to '
@@ -17,12 +17,12 @@ SPANS = (('hunks_removing_or_rewriting_assertions', 'file', 'new_line'),)
 EXAMINED = 'n_test_lines_diffed'
 
 
-def evidence(files, plan_lines=None):
+def evidence(files, plan_lines=None, changed=None):
     out, examined, n_rem, n_add, n_lines = [], [], 0, 0, 0
     for rel, a in files:
         if not is_test(rel):
             continue
-        hs = hunks(a)
+        hs = hunks(a, scope(changed, rel))
         if hs is None:
             continue
         examined.append(rel)
