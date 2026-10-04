@@ -5,7 +5,7 @@ description: >
   literature rather than the open web. Triggers: "what did I highlight about X", "find that article
   I saved", "search my notebooks", "do I have anything on this", "find papers on X", "who cites
   this", "get me the BibTeX", "ask my NotebookLM about Y", "what's in my reading list", "pull that
-  doc out of my Drive". Covers NotebookLM, Readwise/Reader, Google Scholar and Google Workspace. Use
+  doc out of my Drive". Covers NotebookLM, Readwise/Reader, Consensus, Google Scholar and Google Workspace. Use
   proactively whenever a request points at something the user already read or saved, even when they
   name no tool. IRON LAW: main chat NEVER calls the readwise CLI directly — delegate every Readwise
   call here. NEGATIVE ROUTING: an open-web sweep or a synthesized multi-source report goes to the
@@ -78,7 +78,7 @@ If a tool fails (nlm, readwise, scholar), you MUST:
 **You MUST classify the query (Step 0) before searching. No exceptions.**
 
 ```
-ACADEMIC (papers/research): Paperpile → bib files → Scholar → Consensus → NLM/Readwise
+ACADEMIC (papers/research): Paperpile → bib files → Consensus → Scholar → NLM/Readwise
 WEB (articles/blogs/news):  NLM → Readwise
 ```
 
@@ -86,11 +86,11 @@ WEB (articles/blogs/news):  NLM → Readwise
 
 ```
 STOP if you catch yourself:
-- Searching NLM/Readwise first for an academic paper lookup (use Paperpile/bib/Scholar first)
+- Searching NLM/Readwise first for an academic paper lookup (use Paperpile/bib/Consensus first)
 - Searching Scholar/Consensus for a news article or blog post (use NLM/Readwise)
 - Skipping the routing classification entirely and defaulting to one path
-- Using Consensus INSTEAD of Google Scholar (Consensus supplements Scholar, doesn't replace it)
-- Using Google Scholar without loading trusted-journals.local.md first
+- Running a topic sweep or literature review on Google Scholar. Scholar CAPTCHAs under volume; sweeps go to Consensus.
+- Searching Consensus or Scholar without loading trusted-journals.local.md first
 - Searching the web for ANYTHING (Google Scholar is NOT "the web" - it's structured academic search)
 
 These are WORKFLOW VIOLATIONS.
@@ -104,7 +104,7 @@ You do NOT have access to:
 
 **Exception: NLM Research** - You CAN use `nlm research` command to find and import new sources when user explicitly requests research. This is NOT for ad-hoc web lookups.
 
-If the answer isn't in the user's library (NLM -> Readwise -> Scholar) and research isn't requested, say so.
+If the answer isn't found on the routed path (Step 0) and research isn't requested, say so.
 </EXTREMELY-IMPORTANT>
 
 ## Step 0: Route the Query
@@ -115,7 +115,7 @@ If the answer isn't in the user's library (NLM -> Readwise -> Scholar) and resea
 Is the target an ACADEMIC PAPER?
   Signals: author names, journal title, paper title, DOI, citation,
            "paper by X", "article in JFE", research topic query
-  → ACADEMIC PATH (Paperpile → bib → Scholar → Consensus → NLM/Readwise)
+  → ACADEMIC PATH (Paperpile → bib → Consensus → Scholar → NLM/Readwise)
 
 Is the target a WEBSITE or WEB ARTICLE?
   Signals: URL, blog post, news article, newsletter, podcast,
@@ -154,23 +154,22 @@ a publication name (NYT, Bloomberg, WSJ) or a URL.
                     Not in bib files?
                           ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  3. GOOGLE SCHOLAR (scholar CLI) - academic discovery        │
+│  3. CONSENSUS (CLI) - PRIMARY discovery / literature review  │
 │     - FIRST: Read trusted-journals.local.md                 │
-│     - NL search: scholar search "question" --json           │
-│     - Keyword: scholar lookup "terms" --json                │
-│     - Cross-ref results against trusted journals/authors    │
+│     - consensus search "query" --n 50 --sort citations       │
+│     - Filters: --type --years --journal(s-file) --publisher  │
+│     - Topic sweeps, "find papers on X", multi-query reviews  │
 │     - Mark ★ for results from known-good sources            │
 └─────────────────────────────────────────────────────────────┘
                           │
-                    Not enough / want more?
+                    Known title/author, citers, BibTeX, a miss?
                           ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  3b. CONSENSUS (CLI) - structured academic search            │
-│     - consensus search "query" --n 50 --sort citations       │
-│     - Filters: --type --years --journal(s-file) --publisher  │
-│     - Returns: title, abstract, DOI, study type, takeaway   │
-│     - Best for: systematic evidence, meta-analyses, RCTs    │
-│     - Complements Scholar with structured study metadata     │
+│  3b. GOOGLE SCHOLAR (scholar CLI) - targeted lookups only    │
+│     - Known title/author: scholar lookup "terms" --json     │
+│     - "Who cites this", cite/BibTeX export                  │
+│     - A few confirmation queries for Consensus misses       │
+│     - Serial, ≤~20 calls per run; never a sweep             │
 └─────────────────────────────────────────────────────────────┘
                           │
                     Still need more context?
@@ -439,9 +438,14 @@ Search academic literature via the `scholar` CLI (on PATH via `~/.local/bin/scho
 | Author-specific | `scholar lookup "author:lastname keyword" --json` |
 | Re-authenticate | `scholar auth --port 9222` |
 
+**Rate discipline:**
+- Never run Scholar calls in parallel, across delegates or with `&`. Serial only, at most ~20 per run.
+- **Exit 75** (CAPTCHA/rate limit): the CLI makes one automatic browser solve (NopeCHA in the chrome-cdp browser on :9250). If it still exits 75, stop calling Scholar for the rest of the run, record the failure, and continue on Consensus. Never loop retries.
+- **Exit 77**: `crumb refresh scholar`, then `crumb login scholar` (needs the user).
+
 ### Domain Knowledge (MANDATORY)
 
-**Before every Google Scholar search, read the shared trusted-journal list:**
+**Before every Consensus or Scholar search, read the shared trusted-journal list:**
 
 ```bash
 # ALWAYS read this first
@@ -456,19 +460,18 @@ This contains the user's curated list of trusted journals and authors. Use it to
 ### When to Use Google Scholar
 
 ```
-User asks about academic literature AND:
-  - Not found in NLM notebooks
-  - Not found in Readwise highlights
-  → Use Google Scholar for discovery
+Known title or author, "who cites this", cite/BibTeX export,
+or a few confirmation queries for papers Consensus missed
+  → Use Google Scholar. Topic sweeps go to Consensus.
 ```
 
-**Google Scholar is for DISCOVERY only.** Found something good? Save it to Readwise or NLM for future use.
+Found something good? Save it to Readwise or NLM for future use.
 
 ## Consensus (CLI)
 
-Search academic papers via `~/projects/consensus-cli/consensus`. **Secondary to
-Google Scholar** — use when you want structured study metadata, systematic
-evidence filters, or an explicit journal restriction.
+Search academic papers via `~/projects/consensus-cli/consensus`. **Primary academic
+search** — topic sweeps, "find papers on X" and multi-query literature reviews,
+plus structured study metadata, evidence filters and journal restriction.
 
 **Never call `mcp__consensus__search`.** The MCP server caps results at 3 and
 runs on a free account; the CLI drives the signed-in browser session and returns
@@ -500,12 +503,12 @@ result set usually means a bad name, not a dry topic. Verify with
 
 | Scenario | Use |
 |----------|-----|
-| Broad literature discovery | Google Scholar |
-| Author-specific search | Google Scholar |
+| Broad literature discovery / review | Consensus |
+| Known title/author, citers, BibTeX | Google Scholar |
 | Filter by study type (RCT, meta-analysis) | Consensus |
 | Need structured evidence summaries | Consensus |
 | Restrict results to the user's trusted journals | Consensus (`--journals-file`) — Scholar cannot filter by venue |
-| Both tools available | Scholar first, Consensus to supplement |
+| Both tools available | Consensus first, Scholar for targeted lookups/citations |
 
 ### Auth
 
@@ -513,7 +516,7 @@ result set usually means a bad name, not a dry topic. Verify with
 - **OAuth (free account):** 10-20 papers per search — browser opens on first use
 - **Enterprise:** Bearer token auth
 
-If MCP tool is unavailable (not configured), degrade gracefully — report to user and continue with Scholar only.
+If the consensus CLI fails, report it to the user; fall back to a few targeted Scholar queries, never a Scholar sweep.
 
 ## Available Skills
 
@@ -535,8 +538,8 @@ Load skills using the Skill tool: `Skill(skill="workflows:<name>")`
 1. **Route** - Classify as academic (author names, journal, research topic, DOI)
 2. **Search Paperpile** - `gws drive files list` with fulltext keyword search
 3. **Search paperpile.bib** - `rg -i "author_or_title" ~/Library/CloudStorage/GoogleDrive-eddyhu@gmail.com/My\ Drive/resources/Paperpile/paperpile.bib`
-4. **Search Google Scholar** - Load `references/trusted-journals.local.md`, then `scholar search "query" --json`
-5. **Supplement with Consensus** - `~/projects/consensus-cli/consensus search "query" --n 50 --sort citations` for structured evidence; add `--journals-file <trusted-journals.local.md>` when the user wants their journals only
+4. **Search Consensus** - Load `references/trusted-journals.local.md`, then `~/projects/consensus-cli/consensus search "query" --n 50 --sort citations`; add `--journals-file <trusted-journals.local.md>` when the user wants their journals only
+5. **Targeted Scholar lookups** - Known titles, citers, BibTeX, or a few checks for Consensus misses: `scholar lookup "terms" --json` (serial, see rate discipline)
 6. **Check NLM/Readwise** - If still need context: `nlm chat <id>`, `readwise readwise-search-highlights --vector-search-term "query"`
 7. **Curate** - Add found content to NLM for future semantic Q&A
 
@@ -548,7 +551,7 @@ Load skills using the Skill tool: `Skill(skill="workflows:<name>")`
 
 ### Deep Research (Only When Explicitly Requested)
 1. Check NLM, Readwise, and Drive Papers FIRST
-2. Search Google Scholar for academic literature
+2. Search Consensus for academic literature (Scholar for targeted lookups)
 3. If gaps still exist AND user requests broader research:
    - Load the deep-research skill: `Skill(skill="workflows:deep-research")`
    - Run: `cd ${CLAUDE_PLUGIN_ROOT}/skills/deep-research && bun deep-research.ts "query"`
@@ -558,11 +561,11 @@ Load skills using the Skill tool: `Skill(skill="workflows:<name>")`
 ## Operational Rules
 
 1. **Route first** - Classify every query as academic or web before searching (see Step 0)
-2. **Academic path: Paperpile → bib → Scholar → Consensus** - For papers, start with the user's library and discovery tools, not NLM/Readwise
+2. **Academic path: Paperpile → bib → Consensus → Scholar** - For papers, start with the user's library and discovery tools, not NLM/Readwise
 3. **Web path: NLM → Readwise** - For articles/blogs/news, start with curated knowledge bases
 4. **Readwise via CLI** - Use `readwise` (official) for most operations, `readwise-custom` for chat/prune/upload/keyword-search
-5. **Scholar with the trusted-journal list** - Always load `${CLAUDE_PLUGIN_ROOT}/references/trusted-journals.local.md` before searching Scholar; it is shared with the consensus and research skills
-6. **Consensus supplements Scholar** - Use the `consensus` CLI after Scholar for structured evidence (study types, sample sizes) and for the one thing Scholar cannot do: restricting results to the user's journals via `--journals-file`. Never `mcp__consensus__search`, and never as a replacement for Scholar.
+5. **Search with the trusted-journal list** - Always load `${CLAUDE_PLUGIN_ROOT}/references/trusted-journals.local.md` before searching Consensus or Scholar; it is shared with the consensus and research skills
+6. **Consensus is the default discovery engine** - Topic sweeps and literature reviews run on the `consensus` CLI (it also filters to the user's journals via `--journals-file`). Scholar is for targeted lookups only, serial, stopping after one failed solve on exit 75. Never `mcp__consensus__search`.
 7. **NO WEB** - Never search the open web. Google Scholar and Consensus are structured academic search, not "the web".
 8. **Never fetch from source URLs** - Readwise has the full archived content
 9. **NLM ingestion = Readwise full text** - When adding to NLM, always pull content from Readwise. The batch script (`readwise_to_nlm.py`) is the preferred method for tag-based bulk adds.
