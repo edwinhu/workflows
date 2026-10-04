@@ -1,6 +1,6 @@
 import re
 from _common import _read, render_json
-from _dev import SUBJECT, MAX_ITEMS, clip, added_lines
+from _dev import SUBJECT, MAX_ITEMS, clip, added_lines, scope
 
 PROPOSITION = ('The change builds a shell command STRING by interpolating a value that is not a constant in '
                'the source (a plan or args field, a task id, a path, a file name, user or model output) and runs '
@@ -25,10 +25,10 @@ INTERP = re.compile(r'\$\{|\bf[\'"]|[\'"`]\s*\+\s*\w|\w\s*\+\s*[\'"`]|%s|%\(|\.f
 ARGV = re.compile(r'\b(spawn|spawnSync|execFile|execFileSync)\s*\(\s*[\'"][\w./-]+[\'"]\s*,\s*\[|subprocess\.\w+\(\s*\[')
 
 
-def evidence(files, plan_lines=None):
+def evidence(files, plan_lines=None, changed=None):
     sinks, examined, n_lines = [], [], 0
     for rel, a in files:
-        lines, added = _read(a), added_lines(a)
+        lines, added = _read(a), added_lines(a, scope(changed, rel))
         if lines is None:
             continue
         examined.append(rel)

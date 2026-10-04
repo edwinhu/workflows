@@ -182,19 +182,7 @@ export function scoreRulesBatch(
 ): Record<string, { p: number } | { unavailable: string }> {
   const names = Object.keys(evidenceData);
   if (names.length === 0) return {};
-  const first = evidenceData[names[0]];
-  const paths = [...new Set(names.flatMap(n => evidencePaths(evidenceData[n].state)))];
-  const share = Math.floor(STATE_CAP / names.length);
-  const sections = names.map(n => cap(`=== RULE ${n} STATE ===\n${JSON.stringify(evidenceData[n].state, null, 1)}`, share));
-  const state = preamble(first.subject || `one ${first.deliverable ?? 'data-science'} deliverable`, projectName, paths)
-    + `Each rule's state is under its own === RULE <name> STATE === heading; judge each question on its rule's section alone.\n\n`
-    + sections.join('\n\n');
-  const questions = Object.fromEntries(names.map((n, i) => [`q${i}`, {
-    type: 'choice',
-    instructions: `Decide whether this is true of the state under === RULE ${n} STATE === (rule ${n}):\n\n${evidenceData[n].proposition}`,
-    criteria: evidenceData[n].criteria,
-  }]));
-
+  const { state, questions } = batchRequest(evidenceData, projectName);
   const all = (reason: string) => Object.fromEntries(names.map(n => [n, { unavailable: reason }]));
   const callRes = decisionsCall(state, questions, opts);
   if (callRes.unavailable) return all(callRes.unavailable);
@@ -208,6 +196,24 @@ export function scoreRulesBatch(
     const p = ans?.answers?.[`q${i}`]?.probabilities?.VIOLATED;
     return [n, typeof p === 'number' ? { p } : { unavailable: `missing answers.q${i}.probabilities.VIOLATED in reply` }];
   }));
+}
+
+/** The one Decisions request scoreRulesBatch sends, built without sending it (the spend replay reads it). */
+export function batchRequest(evidenceData: Record<string, any>, projectName: string) {
+  const names = Object.keys(evidenceData);
+  const first = evidenceData[names[0]];
+  const paths = [...new Set(names.flatMap(n => evidencePaths(evidenceData[n].state)))];
+  const share = Math.floor(STATE_CAP / names.length);
+  const sections = names.map(n => cap(`=== RULE ${n} STATE ===\n${JSON.stringify(evidenceData[n].state, null, 1)}`, share));
+  const state = preamble(first.subject || `one ${first.deliverable ?? 'data-science'} deliverable`, projectName, paths)
+    + `Each rule's state is under its own === RULE <name> STATE === heading; judge each question on its rule's section alone.\n\n`
+    + sections.join('\n\n');
+  const questions = Object.fromEntries(names.map((n, i) => [`q${i}`, {
+    type: 'choice',
+    instructions: `Decide whether this is true of the state under === RULE ${n} STATE === (rule ${n}):\n\n${evidenceData[n].proposition}`,
+    criteria: evidenceData[n].criteria,
+  }]));
+  return { state, questions };
 }
 
 // The first clause of a rule's proposition: the one line a per-edit note quotes.
