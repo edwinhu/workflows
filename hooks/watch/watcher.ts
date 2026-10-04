@@ -79,7 +79,7 @@ async function readText($: EngineInterface, p: string): Promise<string | undefin
 /** Everything classify() needs, gathered with one ps call and a stat per artifact. */
 async function gather($: EngineInterface, runs: Run[]): Promise<Facts> {
   const facts: Facts = {
-    alive: new Set(), present: new Set(), firstSeen, loopExit: new Map(), round: new Map(), phase: new Map(),
+    alive: new Set(), present: new Set(), firstSeen, loopExit: new Map(), loopExitAt: new Map(), round: new Map(), phase: new Map(),
   }
   const open = [...new Set(runs.filter(r => !r.done).map(r => r.pid))]
   if (open.length) {
@@ -100,7 +100,10 @@ async function gather($: EngineInterface, runs: Run[]): Promise<Facts> {
   for (const p of paths) if (await nonEmpty($, p)) facts.present.add(p)
   for (const d of workDirs) {
     const exit = await readText($, `${d}/loop.exit`)
-    if (exit !== undefined && exit.trim() !== '') facts.loopExit.set(`${d}/loop.exit`, exit.trim())
+    if (exit !== undefined && exit.trim() !== '') {
+      facts.loopExit.set(`${d}/loop.exit`, exit.trim())
+      try { facts.loopExitAt!.set(`${d}/loop.exit`, (await $.fs.stat(`${d}/loop.exit`)).mtimeMs) } catch {}
+    }
     const loopLog = await readText($, `${d}/loop.log`)
     const round = loopLog && workRound(loopLog)
     if (round) facts.round.set(d, round)

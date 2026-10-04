@@ -161,6 +161,8 @@ export type Facts = {
   /** file -> fallback start time (ms), the first time the watcher saw the file. */
   firstSeen: Map<string, number>
   loopExit: Map<string, string>
+  /** loop.exit path -> mtime (ms). A file older than the run's START is a dead earlier loop's, not its verdict. */
+  loopExitAt?: Map<string, number>
   round: Map<string, string>
   phase: Map<string, string>
 }
@@ -180,7 +182,9 @@ export function classify(runs: Run[], facts: Facts): View[] {
     else if (kind === 'farm') runDir = [r.out, ...r.claims].map(p => p && dirname(p)).find(d => d && workDirs.has(d))
     const nested = kind === 'farm' && runDir !== undefined
     const alive = facts.alive.has(r.pid)
-    const loopExit = kind === 'work-loop' && r.out ? facts.loopExit.get(r.out) : undefined
+    let loopExit = kind === 'work-loop' && r.out ? facts.loopExit.get(r.out) : undefined
+    const exitAt = r.out ? facts.loopExitAt?.get(r.out) : undefined
+    if (loopExit !== undefined && r.t && exitAt !== undefined && exitAt < r.t * 1000) loopExit = undefined
     let state: View['state']
     if (r.done || loopExit !== undefined) state = 'done'
     else if (alive) state = 'running'
