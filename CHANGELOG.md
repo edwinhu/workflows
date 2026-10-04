@@ -1,5 +1,15 @@
 # Changelog
 
+## [6.38.1] - 2026-10-03
+
+### Added
+
+- **Jev logs every call and caches full replies:** `decisionsCall` appends one NDJSON line per call (caller, session, tokens, cost, cache hit/miss) to `~/.local/state/jev/calls.ndjson` and answers an identical request from a one-day content-addressed cache in `~/.cache/jev` (only replies that answer every question are cached; rule-calibrate bypasses it); `bin/jev-spend` summarizes the log per day × caller or session. (21c77327)
+
+### Fixed
+
+- **`work-redispatch.sh` no longer exits silently under load:** `printf | head -1` under `set -euo pipefail` could take SIGPIPE (exit 141, empty stderr) when head exited between printf's writes — the unreproduced canary failure at `work-dispatch-routing.test.ts:265`; `mapfile` replaces the six pipelines, and a regression test forces the race's outcome. (52f13d10)
+
 ## [6.38.0] - 2026-10-03
 
 ### Added
