@@ -49,7 +49,9 @@ user objecting three times.
 Observed twice: two runs quoted invented teammate output, with zero tool calls
 and zero filesystem trace. Always give the task a checkable artifact and pass
 `--expect <path>`; the runners exit non-zero when an expected artifact is
-missing. Never relay a delegated summary you did not verify.
+missing, or when the child ended with a background job still running (the row's
+`failure` names it: `ended with background job running: <cmd>`; a Stop hook in
+the child refuses that turn end first). Never relay a delegated summary you did not verify.
 
 **2. Every delegated prompt carries the anti-simulation clause.** The runners
 append it automatically. Do not hand-roll a delegation that skips it.
@@ -168,7 +170,8 @@ each row to `scripts/lib/route.ts`, which picks the provider and a pinned model 
 
 Each row prints `farm: ROW <label> <rowId>` on stderr and appends one line to
 `~/.local/state/workflows/farm-outcomes.jsonl` (`FARM_OUTCOMES` overrides). A row whose `expect`
-artifact is missing, or whose child ended with no result (GONE), is labelled `wrong` automatically.
+artifact is missing, whose child ended with no result (GONE), or that left a background job running
+(`background-orphaned`) is labelled `wrong` automatically.
 Once you have verified any other result, label it: `farm.sh --verdict <rowId> correct|wrong "<why>"`.
 `route.ts --outcomes` prints rows, wrong rate and top failing checks per kind x model.
 

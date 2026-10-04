@@ -85,6 +85,11 @@
             "type": "command",
             "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/early-stop.ts",
             "timeout": 20
+          },
+          {
+            "type": "command",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/skills/farm-out/scripts/bgjobs.py hook",
+            "timeout": 10
           }
         ]
       }

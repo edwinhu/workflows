@@ -305,7 +305,7 @@ claim() {
 # outcome record minus what only the run can say; empty means record nothing (--workflow).
 run_one() {
   local label="$1" prompt="$2" agent="$3" model="$4" budget="$5" max_turns="$6" provider="$7" meta="$8"; shift 8
-  local expects=("$@") log err rc text calls models missing stderr_tail result
+  local expects=("$@") log err rc text calls models missing stderr_tail result orphaned failure
   local wrapper="${WRAPPERS[$provider]}"
   log=$(mktemp -t farm-out.XXXXXX.jsonl)
   err=$(mktemp -t farm-out.XXXXXX.err)
@@ -359,7 +359,12 @@ Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint
   # Keep stderr: a provider that dies (proxy down, model rejected, auth stale) writes
   # there and nowhere else, and discarding it leaves only a bare exit code to debug.
   # exec: $! must be the wrapper itself, or the watchdog's SIGTERM stops a subshell and orphans it.
-  ( cd "$CWD" && exec "${cmd[@]}" ) < "$prompt_file" > "$log" 2>"$err" &
+  # FARM_ROW_ID reaches the child and everything it starts, never us: it is how bgjobs.py finds a job
+  # the child left running, even one that setsid took out of the process group.
+  local row_id
+  row_id=$(printf '%s' "$meta" | jq -r '.rowId // empty' 2>/dev/null)
+  [ -n "$row_id" ] || row_id="wf-$$-$(od -An -N6 -tx1 /dev/urandom | tr -d ' \n')"
+  ( cd "$CWD" && export FARM_ROW_ID="$row_id" && exec "${cmd[@]}" ) < "$prompt_file" > "$log" 2>"$err" &
   local child_pid=$!
   
   local wd_out
@@ -389,6 +394,11 @@ Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint
   # GONE: the child's stream ended with no `result` event -- it was killed or died mid-turn.
   local gone=false
   jq -se 'any(.[]; .type == "result")' "$log" >/dev/null 2>&1 || gone=true
+  # A child that ended its turn with a background job running (release-6381b: "Still waiting on the
+  # canary.") fails here by name, whatever its artifacts say. bgjobs.py also stops any survivor.
+  orphaned=$(python3 "$PLUGIN_ROOT/skills/farm-out/scripts/bgjobs.py" reap "$row_id" "$log" 2>/dev/null)
+  printf '%s' "$orphaned" | jq -e 'type == "array"' >/dev/null 2>&1 || orphaned='[]'
+  failure=$(printf '%s' "$orphaned" | jq -r 'if length > 0 then "ended with background job running: " + (map(.cmd) | join("; ")) else "" end')
   mapfile -t missing < <(verify "${expects[@]:-}")
   # verify prints one blank line when nothing is missing; drop it.
   [ "${#missing[@]}" -eq 1 ] && [ -z "${missing[0]}" ] && missing=()
@@ -399,10 +409,10 @@ Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint
   if [ "$wd_exceeded" = "true" ]; then
     emit "DONE $(enc "$label") fail budget W=$wd_tokens/${budget:-4000000} toolCalls=${calls:-0}"
     emit "{\"type\":\"result\",\"tokensW\":$wd_tokens,\"budgetExceeded\":true}"
-  elif [ "$rc" -eq 0 ] && [ "${#missing[@]}" -eq 0 ]; then
+  elif [ "$rc" -eq 0 ] && [ "${#missing[@]}" -eq 0 ] && [ -z "$failure" ]; then
     emit "DONE $(enc "$label") ok toolCalls=${calls:-0} W=$wd_tokens"
   else
-    emit "DONE $(enc "$label") fail rc=$rc missing=${#missing[@]} toolCalls=${calls:-0} W=$wd_tokens"
+    emit "DONE $(enc "$label") fail rc=$rc missing=${#missing[@]} orphaned=$(printf '%s' "$orphaned" | jq length) toolCalls=${calls:-0} W=$wd_tokens"
   fi
 
   result=$(jq -n --arg label "$label" --arg result "$text" --argjson toolCalls "${calls:-0}" \
@@ -410,9 +420,11 @@ Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint
         --arg stderr "$stderr_tail" \
         --argjson tokensW "$wd_tokens" --argjson budgetExceeded "$wd_exceeded" \
         --argjson crossProvider "$cross_provider" \
+        --argjson orphaned "$orphaned" --arg failure "$failure" \
         --argjson missing "$(printf '%s\n' "${missing[@]:-}" | jq -Rsc 'split("\n") | map(select(length>0))')" \
-    '{label:$label, ok: (($missing|length)==0 and $exit==0 and ($budgetExceeded | not) and ($crossProvider | not)), exit:$exit,
-      toolCalls:$toolCalls, models:$models, missing:$missing, result:$result, tokensW:$tokensW, budgetExceeded:$budgetExceeded, crossProvider:$crossProvider}
+    '{label:$label, ok: (($missing|length)==0 and $exit==0 and ($budgetExceeded | not) and ($crossProvider | not) and ($orphaned|length)==0), exit:$exit,
+      toolCalls:$toolCalls, models:$models, missing:$missing, orphaned:$orphaned, result:$result, tokensW:$tokensW, budgetExceeded:$budgetExceeded, crossProvider:$crossProvider}
+     + (if ($failure|length) > 0 then {failure:$failure} else {} end)
      + (if $exit != 0 and ($stderr|length) > 0 then {stderr:$stderr} else {} end)')
 
   # The outcome line takes only the verdict fields: `result` is the child's own text and can quote
@@ -422,18 +434,20 @@ Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint
     if ! line=$(printf '%s' "$result" | jq -c --argjson m "$meta" --arg ts "$(now_iso)" --arg cwd "$CWD_ABS" \
         '. as $r | {type: "row", rowId: $m.rowId, ts: $ts, cwd: $cwd, label: $m.label, kind: $m.kind,
                     route: $m.route, promptSha256: $m.promptSha256, promptLength: $m.promptLength,
-                    exit: $r.exit, ok: $r.ok, missing: $r.missing, toolCalls: $r.toolCalls, models: $r.models}') \
+                    exit: $r.exit, ok: $r.ok, missing: $r.missing, orphaned: $r.orphaned, toolCalls: $r.toolCalls, models: $r.models}') \
        || ! append_outcome "$line"; then
       printf 'farm: could not record the outcome of row %s in %s\n' "$(printf '%s' "$meta" | jq -r '.rowId')" "$OUTCOMES" >&2
     # An undelivered artifact or a child that never finished is wrong by observation, not judgement,
     # so it is labelled here. Everything else waits for a --verdict from someone who checked it.
-    elif [ "${#missing[@]}" -gt 0 ] || [ "$gone" = true ]; then
+    elif [ "${#missing[@]}" -gt 0 ] || [ "$gone" = true ] || [ -n "$failure" ]; then
       if ! line=$(printf '%s' "$result" | jq -c --argjson m "$meta" --arg ts "$(now_iso)" --argjson gone "$gone" \
-          '. as $r | ([if ($r.missing|length) > 0 then "expect-missing" else empty end, if $gone then "gone" else empty end]) as $c
+          '. as $r | ([if ($r.missing|length) > 0 then "expect-missing" else empty end, if $gone then "gone" else empty end,
+                      if ($r.orphaned|length) > 0 then "background-orphaned" else empty end]) as $c
            | {type: "verdict", rowId: $m.rowId, verdict: "wrong",
               why: ("auto [\($m.kind // "-")/\($m.route.model // ($r.models[0] // "-"))]: "
                     + ([if ($r.missing|length) > 0 then "expect missing: \($r.missing|join(", "))" else empty end,
-                        if $gone then "GONE: child ended with no result (exit \($r.exit))" else empty end] | join("; "))),
+                        if $gone then "GONE: child ended with no result (exit \($r.exit))" else empty end,
+                        ($r.failure // empty)] | join("; "))),
               checks: $c, kind: $m.kind, model: ($m.route.model // $r.models[0]), ts: $ts, auto: true}') \
          || ! append_outcome "$line"; then
         printf 'farm: could not record the automatic verdict of row %s in %s\n' "$(printf '%s' "$meta" | jq -r '.rowId')" "$OUTCOMES" >&2
@@ -656,7 +670,8 @@ fi
 
 printf '%s\n' "$out"
 failed=$(printf '%s' "$out" | jq -r 'if type=="array" then . else [.] end
-                                     | map(select(.ok|not) | "\(.label) missing \(.missing|join(", "))")
+                                     | map(select(.ok|not) | "\(.label) " + ([if (.missing|length) > 0 then "missing \(.missing|join(", "))" else empty end,
+                                                                         (.failure // empty)] | if length > 0 then join("; ") else "failed" end))
                                      | join("; ")')
 if [ -n "$failed" ]; then
   printf '\nUNVERIFIED: %s\n' "$failed" >&2
