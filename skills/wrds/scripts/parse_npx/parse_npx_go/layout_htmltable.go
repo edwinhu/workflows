@@ -779,7 +779,8 @@ func parseHTMLTableRaw(raw []byte, _ string, meta FilingMeta) ([]VoteRow, error)
 		// inside ONE <TABLE> with only an `<HR>` divider between them,
 		// stamped 46,785 rows with its first issuer's name).
 		if lead, candidate := htmlContextLead(cells); candidate && (ctx.Issuer == "" || len(cells) == 0 ||
-			htmlFlat(cells[0]) != "" || htmlBallotIssuerOverColumnHeader(feed, cells)) {
+			htmlFlat(cells[0]) != "" || htmlBallotIssuerOverColumnHeader(feed, cells) ||
+			htmlBallotIssuerOverInlineIdentityRow(feed, cells)) {
 			// An issuer wrapped over two one-cell rows: `Putnam Money Market
 			// Liquidity` then `Fund`. Only a short continuation joins.
 			if leadJoin && htmlTickerShaped(lead) {
@@ -2417,6 +2418,7 @@ func htmlScanRepeatedHeaders(body []byte) map[string]bool {
 	feed := &htmlRowFeed{src: body}
 	counts := make(map[string]int)
 	governed := make(map[string]int)
+	bare := make(map[string]int)
 	for {
 		row, ok := feed.next()
 		if !ok {
@@ -2431,13 +2433,22 @@ func htmlScanRepeatedHeaders(body []byte) map[string]bool {
 		}
 		counts[key]++
 		if governed[key] < htmlHeaderConfirm {
-			governed[key] += htmlGovernedRowCount(len(row.cells), feed,
+			g := htmlGovernedRowCount(len(row.cells), feed,
 				htmlHeaderConfirm-governed[key])
+			governed[key] += g
+			if g == 0 {
+				bare[key]++
+			}
 		}
 	}
 	repeated := make(map[string]bool, len(counts))
 	for key, n := range counts {
-		if n >= 2 && governed[key] >= htmlHeaderConfirm {
+		// Two occurrences that EACH govern a row are the same evidence as three
+		// rows under one: a filing of two single-proposal meetings (Harding
+		// Loevner 1018170, a Credicorp ballot and a Bupa Arabia ballot, one
+		// proposal apiece) never reaches three, and its first table was
+		// dropped while the last, at the end of the document, was kept.
+		if n >= 2 && (governed[key] >= htmlHeaderConfirm || (governed[key] >= 2 && bare[key] == 0)) {
 			repeated[key] = true
 		}
 	}
@@ -4774,6 +4785,40 @@ func htmlBallotIssuerOverColumnHeader(feed *htmlRowFeed, cells []string) bool {
 			continue
 		}
 		return htmlIdentityColumnHeader(row.cells)
+	}
+	return false
+}
+
+// htmlBallotIssuerOverInlineIdentityRow is htmlBallotIssuerOverColumnHeader
+// for the shape where the ballot's OWN identity is printed label-and-value
+// interleaved in ONE row (`Security | M20515116 | Meeting Type |
+// ExtraOrdinary General Meeting`) rather than a separate label row over a
+// separate value row. A COLSPAN that right-pads the heading's text to the
+// LAST column of its span (Harding Loevner Funds 1018170, Saudi-market
+// ProxyEdge grid: `COLSPAN="5"` holding the name followed by two bare
+// `&nbsp;` cells) leaves cells[0] empty, so the htmlFlat(cells[0]) != "" test
+// that otherwise lets a bare heading override a non-empty ctx.Issuer never
+// fires, and every later banner in the filing inherits the first one's name
+// (4,899 rows stayed `CREDICORP LTD.` on full454). This reads the same "a
+// name hard against its own identity row is that row's issuer" evidence, for
+// the interleaved shape the plain column-header reader does not recognize.
+func htmlBallotIssuerOverInlineIdentityRow(feed *htmlRowFeed, cells []string) bool {
+	if feed == nil || htmlFilledCells(cells) != 1 {
+		return false
+	}
+	for i := 0; i < htmlIdentityStripLookahead; i++ {
+		row, ok := feed.peek(i)
+		if !ok || row.newTable {
+			return false
+		}
+		if htmlFilledCells(row.cells) == 0 {
+			continue
+		}
+		if !htmlHasWrappedLabelCell(row.cells) && !htmlBareLabelledValueRow(row.cells) && !htmlPartialMeetingDateCell(row.cells) {
+			return false
+		}
+		next, labelled := htmlReadContext(row.cells)
+		return labelled && (pvTextCUSIP(next.CUSIP) || isinToken(next.ISIN) || next.Ticker != "")
 	}
 	return false
 }

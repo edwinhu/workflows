@@ -1,0 +1,224 @@
+<SEC-DOCUMENT>0001193125-20-232686.txt : 20200827
+<SEC-HEADER>0001193125-20-232686.hdr.sgml : 20200827
+<ACCEPTANCE-DATETIME>20200827120000
+ACCESSION NUMBER:		0001193125-20-232686
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20200630
+FILED AS OF DATE:		20200827
+DATE AS OF CHANGE:		20200827
+
+FILER:
+
+	COMPANY DATA:
+		COMPANY CONFORMED NAME:			HARDING LOEVNER FUNDS INC
+		CENTRAL INDEX KEY:			0001018170
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			0930
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-07739
+		FILM NUMBER:		201139999
+
+	BUSINESS ADDRESS:
+		STREET 1:		400 CROSSING BLVD
+		CITY:			BRIDGEWATER
+		STATE:			NJ
+		ZIP:			08807
+		BUSINESS PHONE:		9089260707
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001018170
+<SERIES-ID>S000052005
+<SERIES-NAME>Harding, Loevner Funds, Inc. - International Equity Research Portfolio
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000163566
+<CLASS-CONTRACT-NAME>Institutional Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000179661
+<CLASS-CONTRACT-NAME>Investor Class
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>d914410dnpx.htm
+<DESCRIPTION>HARDING LOEVNER FUNDS INC
+<TEXT>
+<HTML>
+<BODY>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:ARIAL; font-size:9pt" ALIGN="center">
+<TR>
+<TD WIDTH="19%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="29%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="20%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="29%"></TD></TR>
+<TR BGCOLOR="#004f75" STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top" COLSPAN="7" STYLE="padding-bottom:1pt ;BORDER:1px solid #000000; padding-left:8pt; padding-right:2pt"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; line-height:24.0pt; font-size:9pt; font-family:ARIAL"><FONT
+STYLE="font-size:9pt" COLOR="#ffffff">CREDICORP LTD.</FONT></P></TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="4" STYLE="BORDER-LEFT:1px solid #ffffff; padding-left:8pt">&nbsp;</TD>
+<TD HEIGHT="4" COLSPAN="2"></TD>
+<TD HEIGHT="4" COLSPAN="2"></TD>
+<TD HEIGHT="4" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top" STYLE="BORDER-LEFT:1px solid #ffffff; padding-left:8pt"><FONT STYLE="font-size:9pt">Security</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">G2519Y108</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="font-size:9pt">Meeting Type</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Annual</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="8" STYLE="BORDER-LEFT:1px solid #ffffff; padding-left:8pt">&nbsp;</TD>
+<TD HEIGHT="8" COLSPAN="2"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top" STYLE="BORDER-LEFT:1px solid #ffffff; padding-left:8pt"><FONT STYLE="font-size:9pt">Ticker Symbol</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">BAP</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="font-size:9pt">Meeting Date</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="white-space:nowrap">27-Mar-2020</FONT></TD></TR>
+</TABLE> <P STYLE="font-size:6pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:ARIAL; font-size:8pt" ALIGN="center">
+<TR>
+<TD WIDTH="7%"></TD>
+<TD VALIGN="bottom"></TD>
+<TD WIDTH="32%"></TD>
+<TD VALIGN="bottom" WIDTH="7%"></TD>
+<TD WIDTH="11%"></TD>
+<TD VALIGN="bottom" WIDTH="5%"></TD>
+<TD WIDTH="7%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="13%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="15%"></TD></TR>
+<TR BGCOLOR="#004f75" STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:9pt">
+<TD VALIGN="top" STYLE="padding-bottom:4pt ;BORDER-LEFT:1px solid #000000; BORDER-BOTTOM:1px solid #000000; padding-left:8pt"><FONT COLOR="#ffffff">Item</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT COLOR="#ffffff">Proposal</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT COLOR="#ffffff">Proposed by</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT COLOR="#ffffff">Vote</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT COLOR="#ffffff">For/Against Management</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top" STYLE="BORDER-LEFT:1px solid #ffffff; padding-left:8pt">1</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">ELECT DIRECTOR</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD></TR>
+</TABLE>
+
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:ARIAL; font-size:9pt" ALIGN="center">
+<TR>
+<TD WIDTH="19%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="29%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="20%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="29%"></TD></TR>
+<TR BGCOLOR="#004f75" STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top" COLSPAN="5" STYLE="padding-bottom:1pt ;BORDER-LEFT:1px solid #000000; BORDER-TOP:1px solid #000000; BORDER-BOTTOM:1px solid #000000; padding-left:8pt">
+<P STYLE=" margin-top:0pt ; margin-bottom:0pt; line-height:24.0pt; font-size:9pt; font-family:ARIAL"><FONT STYLE="font-size:9pt" COLOR="#ffffff">BUPA ARABIA FOR COOPERATIVE INSURANCE COMPANY</FONT></P></TD>
+<TD VALIGN="bottom" STYLE=" BORDER-TOP:1px solid #000000; BORDER-BOTTOM:1px solid #000000">&nbsp;&nbsp;</TD>
+<TD VALIGN="top" STYLE="BORDER-TOP:1px solid #000000; BORDER-RIGHT:1px solid #000000; BORDER-BOTTOM:1px solid #000000; padding-right:2pt">&nbsp;&nbsp;</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="4" STYLE="BORDER-LEFT:1px solid #ffffff; padding-left:8pt">&nbsp;</TD>
+<TD HEIGHT="4" COLSPAN="2"></TD>
+<TD HEIGHT="4" COLSPAN="2"></TD>
+<TD HEIGHT="4" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top" STYLE="BORDER-LEFT:1px solid #ffffff; padding-left:8pt"><FONT STYLE="font-size:9pt">Security</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">M20515116</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="font-size:9pt">Meeting Type</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">ExtraOrdinary General Meeting</TD></TR>
+<TR STYLE="font-size:1pt">
+<TD HEIGHT="8" STYLE="BORDER-LEFT:1px solid #ffffff; padding-left:8pt">&nbsp;</TD>
+<TD HEIGHT="8" COLSPAN="2"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD>
+<TD HEIGHT="8" COLSPAN="2"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top" STYLE="BORDER-LEFT:1px solid #ffffff; padding-left:8pt"><FONT STYLE="font-size:9pt">Ticker Symbol</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="font-size:9pt">Meeting Date</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="white-space:nowrap">30-Jun-2020</FONT></TD></TR>
+</TABLE> <P STYLE="font-size:6pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:ARIAL; font-size:8pt" ALIGN="center">
+<TR>
+<TD WIDTH="7%"></TD>
+<TD VALIGN="bottom"></TD>
+<TD WIDTH="32%"></TD>
+<TD VALIGN="bottom" WIDTH="7%"></TD>
+<TD WIDTH="11%"></TD>
+<TD VALIGN="bottom" WIDTH="5%"></TD>
+<TD WIDTH="7%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="13%"></TD>
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="15%"></TD></TR>
+<TR BGCOLOR="#004f75" STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:9pt">
+<TD VALIGN="top" STYLE="padding-bottom:4pt ;BORDER-LEFT:1px solid #000000; BORDER-BOTTOM:1px solid #000000; padding-left:8pt"><FONT COLOR="#ffffff">Item</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT COLOR="#ffffff">Proposal</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT COLOR="#ffffff">Proposed by</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT COLOR="#ffffff">Vote</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"><FONT COLOR="#ffffff">For/Against Management</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top" STYLE="BORDER-LEFT:1px solid #ffffff; padding-left:8pt">1</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">VOTING ON THE REPORT OF THE BOARD OF DIRECTORS</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD></TR>
+</TABLE>
+
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
