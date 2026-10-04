@@ -188,14 +188,18 @@ export function liveOwnedRuns(session: string, nowMs: number = Date.now()): stri
   const facts: Facts = {
     alive: new Set(runs.filter((r) => !r.done && pidAlive(r.pid)).map((r) => r.pid)),
     present: new Set(runs.flatMap((r) => [r.out, ...r.claims]).filter((p) => p.startsWith('/') && nonEmpty(p))),
-    firstSeen, loopExit: new Map(), round: new Map(), phase: new Map(),
+    firstSeen, loopExit: new Map(), loopExitAt: new Map(), round: new Map(), phase: new Map(),
   }
   // A work loop is done once loop.exit holds its code, whatever its pid says.
   for (const r of runs) {
     if (r.label !== 'work-loop' || !r.out) continue
     try {
-      const code = readFileSync(`${dirname(r.out)}/loop.exit`, 'utf8').trim()
-      if (code) facts.loopExit.set(r.out, code)
+      const f = `${dirname(r.out)}/loop.exit`
+      const code = readFileSync(f, 'utf8').trim()
+      if (code) {
+        facts.loopExit.set(r.out, code)
+        facts.loopExitAt!.set(r.out, statSync(f).mtimeMs)
+      }
     } catch {}
   }
   return wakeable(classify(runs, facts))

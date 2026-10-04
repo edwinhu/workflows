@@ -264,6 +264,40 @@ describe('--loops N > 0 hands the driver off DETACHED instead of printing', () =
   })
 })
 
+/**
+ * 2026-10-04, hidden-figures 1004-published-apps: a loop that was oom-killed left loop.exit=1 behind,
+ * and the next dispatch of the same run id launched over it. Every reader took the stale file as the
+ * NEW loop's verdict (the watcher woke the session with a false "dispatch died").
+ */
+describe('a re-dispatch of a run dir clears the dead round\'s verdict files', () => {
+  test('loop.exit, raw.json and result.json are gone once the new loop is launched; result-round<N>.json survives', () => {
+    const f = fixture()
+    mkdirSync(f.runDir, { recursive: true })
+    writeFileSync(join(f.runDir, 'loop.exit'), '1\n')
+    writeFileSync(join(f.runDir, 'raw.json'), '{"stale":true}')
+    writeFileSync(join(f.runDir, 'result.json'), '{"stale":true}')
+    writeFileSync(join(f.runDir, 'result-round1.json'), '{"keep":true}')
+    const r = dispatch(f, { WORK_ROUND: stubFarm(f.dir, true, 4), WORK_FARM: '/bin/false' }, '--loops', '1')
+    expect(r.code).toBe(0)
+    expect(existsSync(join(f.runDir, 'loop.exit'))).toBe(false)
+    expect(existsSync(join(f.runDir, 'raw.json'))).toBe(false)
+    expect(existsSync(join(f.runDir, 'result.json'))).toBe(false)
+    expect(readFileSync(join(f.runDir, 'result-round1.json'), 'utf8')).toBe('{"keep":true}')
+    expect(readFileSync(join(f.runDir, 'result-round2.json'), 'utf8')).toBe('{"stale":true}')
+    expect(loopExit(f.runDir)).toBe('0')   // the detached loop must finish before the fixture goes
+  }, 130_000)
+
+  test('--print touches nothing of a prior run', () => {
+    const f = fixture()
+    mkdirSync(f.runDir, { recursive: true })
+    writeFileSync(join(f.runDir, 'loop.exit'), '1\n')
+    writeFileSync(join(f.runDir, 'result.json'), '{"stale":true}')
+    dispatch(f, {}, '--print')
+    expect(readFileSync(join(f.runDir, 'loop.exit'), 'utf8')).toBe('1\n')
+    expect(existsSync(join(f.runDir, 'result.json'))).toBe(true)
+  })
+})
+
 describe('--loops validation', () => {
   test('a non-numeric value is refused with exit 2 naming the flag, before anything is dispatched', () => {
     const f = fixture()

@@ -61,7 +61,7 @@ function liveWorkTree(): Tree {
 
 type Seen = { submits: string[]; statuses: (string | undefined)[]; commands: string[]; timers: number; runs: string[][] }
 
-function world(on: any, tree: Tree, opts: { alive?: number[]; store?: Map<string, unknown> } = {}) {
+function world(on: any, tree: Tree, opts: { alive?: number[]; store?: Map<string, unknown>; mtimes?: Record<string, number> } = {}) {
   const seen: Seen = { submits: [], statuses: [], commands: [], timers: 0, runs: [] }
   const store = opts.store ?? new Map<string, unknown>()
   const clock = mock.clock(on, { now: NOW })
@@ -87,7 +87,7 @@ function world(on: any, tree: Tree, opts: { alive?: number[]; store?: Map<string
   on('fs.read', ($: any, e: any) => (e.path in tree ? { value: tree[e.path] } : { deny: `ENOENT ${e.path}` }))
   on('fs.write', ($: any, e: any) => { tree[e.path] = e.text; return { value: undefined } })
   on('fs.stat', ($: any, e: any) =>
-    (e.path in tree ? { value: { kind: 'file', size: tree[e.path]!.length, mtimeMs: NOW, isLink: false } } : { deny: `ENOENT ${e.path}` }))
+    (e.path in tree ? { value: { kind: 'file', size: tree[e.path]!.length, mtimeMs: opts.mtimes?.[e.path] ?? NOW, isLink: false } } : { deny: `ENOENT ${e.path}` }))
   on('process.run', ($: any, e: any) => {
     seen.runs.push(e.argv)
     const asked = String(e.argv.at(-1)).split(',').map(Number)
@@ -333,4 +333,21 @@ test('a headless session never samples credits', async ($, on) => {
   await start($, false)
   await clock.settle()
   expect(seen.runs.filter(a => a.includes('--sample'))).toEqual([])
+})
+
+// hidden-figures 1004-published-apps (2026-10-04): a dead loop left loop.exit=1; ten seconds after the
+// re-dispatch the watcher read it as the NEW loop's verdict and woke the session with a false failure.
+test('a loop.exit older than the loop\'s START never classifies the live loop as finished', async ($, on) => {
+  const R = '/w/.work/runs/1004-x'
+  const tree: Tree = {
+    [`${dir(SID)}/700.ndjson`]: `farm: START work-loop cwd=/w out=${R}/loop.exit expect=1 t=${T0}\n`,
+    [`${R}/loop.exit`]: '1\n',
+    [`${R}/loop.log`]: 'work-loop: round 1 of 3 — waiting\n',
+  }
+  const { seen, clock } = world(on, tree, { alive: [700], mtimes: { [`${R}/loop.exit`]: (T0 - 3600) * 1000 } })
+  await start($)
+  await clock.settle()
+  await clock.advance(15_000)
+  expect(seen.submits).toEqual([])
+  expect(seen.statuses.at(-1)).toContain('work 1004-x round 1/3')
 })

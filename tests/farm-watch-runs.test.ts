@@ -177,8 +177,31 @@ test('a beacon is fresh for four ticks, and only digits count', () => {
 test('the mod kit tests pass (scripts/mod-test.sh -> claude plugin test)', () => {
   if (spawnSync('bash', ['-c', 'command -v claude'], { timeout: 130_000 }).status !== 0) return
   const r = spawnSync('bash', [join(REPO, 'scripts', 'mod-test.sh')], { encoding: 'utf8', timeout: 120_000 })
-  // 15 watcher (4 of them the Jev forecast band) + 9 guards (hooks/mod-tests/guards.test.ts) + 18 per-edit Jev (hooks/mod-tests/jev.test.ts)
-  expect(r.stdout + r.stderr).toMatch(/\b42 pass\b/)
+  // 16 watcher (4 of them the Jev forecast band) + 9 guards (hooks/mod-tests/guards.test.ts) + 18 per-edit Jev (hooks/mod-tests/jev.test.ts)
+  expect(r.stdout + r.stderr).toMatch(/\b43 pass\b/)
   expect(r.stdout + r.stderr).toMatch(/\b0 fail\b/)
   expect(r.status).toBe(0)
 }, 130_000)
+
+describe('a stale loop.exit never decides a live loop', () => {
+  const R = '/w/.work/runs/1004-published-apps'
+  const T = 1791000000
+  const runs = parseEvents(`farm: START work-loop cwd=/w out=${R}/loop.exit expect=1 t=${T}\n`, '/e/735719.ndjson', 735719, 'S')
+  const base: Facts = {
+    alive: new Set([735719]), present: new Set([`${R}/loop.exit`]), firstSeen: new Map(),
+    loopExit: new Map([[`${R}/loop.exit`, '1']]), round: new Map(), phase: new Map(),
+  }
+
+  test('loop.exit written before the START is a dead earlier loop\'s: the live loop stays running and does not wake', () => {
+    const v = classify(runs, { ...base, loopExitAt: new Map([[`${R}/loop.exit`, (T - 3600) * 1000]]) })
+    expect(v[0]!.state).toBe('running')
+    expect(v[0]!.loopExit).toBeUndefined()
+    expect(wakeable(v).filter(x => x.state !== 'running')).toEqual([])   // wake() skips running views
+  })
+
+  test('loop.exit written after the START is this loop\'s verdict', () => {
+    const v = classify(runs, { ...base, loopExitAt: new Map([[`${R}/loop.exit`, (T + 5) * 1000]]) })
+    expect(v[0]!.state).toBe('done')
+    expect(v[0]!.loopExit).toBe('1')
+  })
+})

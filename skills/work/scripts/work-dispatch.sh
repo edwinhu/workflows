@@ -1211,6 +1211,18 @@ fi
 # model ids args.routing.kindModels carries.
 host=${provider:-claude}
 
+# A dead earlier dispatch of this run id leaves its verdict files behind, and every reader (watcher,
+# work-hold, early-stop, farm-alive) takes a present loop.exit / result.json as THIS run's. Clear them
+# before anything launches; result.json is rotated, not deleted, exactly as work-redispatch.sh does,
+# so work-redispatch can still scope from it. Past the --print / DRYRUN exits above, so a preview
+# never touches a run.
+rm -f -- "$R/loop.exit" "$R/raw.json" "$R/checks.json" "$R/rows.json" "$R/lens.json"
+if [ -e "$R/result.json" ]; then
+  n=1
+  while [ -e "$R/result-round$n.json" ]; do n=$((n+1)); done
+  mv -- "$R/result.json" "$R/result-round$n.json"
+fi
+
 # One argument vector, so the two dispatch paths cannot drift apart.
 # work-round.sh runs the whole round: the workflow's agents, the checks, the digest, the ONE lens row.
 farm_cmd=(env WORK_FARM="$FARM" bash "${WORK_ROUND:-$SKILL/scripts/work-round.sh}"
