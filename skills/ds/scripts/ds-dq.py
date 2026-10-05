@@ -176,6 +176,11 @@ def parse_annotations(spec: str) -> dict[str, list[str]]:
                   an `error` column that only failed rows carry, a fully-populated
                   column would be the alarming outcome. DQ2 cannot tell those apart,
                   so the plan says which it is and the reviewer sees the claim.
+      `constant:` one repeated non-null value BY DESIGN — a per-paper file whose `paper`
+                  or `window` column is the same on every row. DQ1 flags any column with
+                  one distinct value; this exempts the named column only while it holds
+                  exactly one non-null value, so an EMPTY (all-null) column still FAILS
+                  even when declared. Aliases: `constant by design`, `const`.
       `freetext:` a name, title or path. DQ5 flags near-unique non-key string columns
                   as "likely IDs, not categories"; a firm name is near-unique because
                   firms have distinct names, not because it is a mis-declared key.
@@ -184,7 +189,7 @@ def parse_annotations(spec: str) -> dict[str, list[str]]:
     narrows exactly one check on exactly one column — unlike moving the column into
     `pk`/`event`, which would silence DQ5 by making a false statement about the key.
     """
-    out: dict[str, list[str]] = {"sparse": [], "freetext": []}
+    out: dict[str, list[str]] = {"sparse": [], "freetext": [], "constant": []}
     spec = (spec or "").strip().strip("`")
     if not spec or ":" not in spec:
         return out
@@ -195,6 +200,8 @@ def parse_annotations(spec: str) -> dict[str, list[str]]:
         key = label.strip().lower()
         if key in {"sparse", "sparse by design"}:
             out["sparse"] = [c.strip().strip("`") for c in cols.split(",") if c.strip()]
+        elif key in {"constant", "constant by design", "const"}:
+            out["constant"] = [c.strip().strip("`") for c in cols.split(",") if c.strip()]
         elif key in {"freetext", "free text", "names"}:
             out["freetext"] = [c.strip().strip("`") for c in cols.split(",") if c.strip()]
     return out
@@ -237,15 +244,18 @@ def load_frame(path: Path):
     raise ValueError(f"unsupported extension `{suffix}` (expected .parquet, .csv, or .tsv)")
 
 
-def check_dq1(df) -> dict:
-    constant = [c for c in df.columns if df[c].n_unique() <= 1]
-    if constant:
+def check_dq1(df, constant: list[str] | None = None) -> dict:
+    constant = constant or []
+    exempt = [c for c in constant if c in df.columns and df[c].n_unique() == 1 and df[c].null_count() == 0]
+    flagged = [c for c in df.columns if df[c].n_unique() <= 1 and c not in exempt]
+    if flagged:
         return result(
             "FAIL",
-            f"{len(constant)} column(s) carry zero information (constant or empty).",
-            f"constant columns: {', '.join(constant)}",
+            f"{len(flagged)} column(s) carry zero information (constant or empty).",
+            f"constant columns: {', '.join(flagged)}",
         )
-    return result("PASS", "No constant or empty columns.", f"{df.width} columns checked")
+    note = f"; {len(exempt)} declared constant-by-design and not checked: {', '.join(exempt)}" if exempt else ""
+    return result("PASS", "No constant or empty columns.", f"{df.width} columns checked{note}")
 
 
 def check_dq2(df, sparse: list[str] | None = None) -> dict:
@@ -474,7 +484,7 @@ def check_output(path: Path, keys_spec: str, window_spec: str) -> dict:
         checks["DQ6"] = check_dq6()
         checks["COV"] = result("FAIL", "Artifact has zero rows, so it covers no window at all.")
     else:
-        checks["DQ1"] = check_dq1(df)
+        checks["DQ1"] = check_dq1(df, ann["constant"])
         checks["DQ2"] = check_dq2(df, ann["sparse"])
         checks.update(check_dq3(df, pk, event))
         checks["DQ4"] = check_dq4(df)

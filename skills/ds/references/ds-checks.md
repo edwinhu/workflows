@@ -57,6 +57,8 @@ for col in df.columns:
         print(f"WARNING [DQ1]: {col} is constant or empty ({df[col].nunique()} unique values)")
 ```
 
+A column declared `constant:` in the plan's Key Columns cell is exempt while it holds one non-null value; all-null still fails.
+
 **Confidence if triggered:** >= 80 (report as issue)
 
 ### DQ2: High-Null Columns

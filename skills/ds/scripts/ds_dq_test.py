@@ -135,6 +135,35 @@ def test_clean_fixture_passes_dq1_and_dq2(clean: Path):
     assert checks["DQ2"]["status"] == "PASS", checks["DQ2"]
 
 
+def test_dq1_declared_constant_column_passes(dirty: Path):
+    checks = run(dirty, keys="pk: gvkey; constant: fyear, region")
+    assert checks["DQ1"]["status"] == "PASS", checks["DQ1"]
+    assert "region" in checks["DQ1"]["evidence"]
+
+
+def test_dq1_undeclared_constant_column_still_fails(dirty: Path):
+    checks = run(dirty, keys="pk: gvkey; constant: fyear")
+    assert checks["DQ1"]["status"] == "FAIL", checks["DQ1"]
+    assert "region" in checks["DQ1"]["evidence"]
+    assert "fyear" not in checks["DQ1"]["evidence"]
+
+
+def test_dq1_declared_constant_but_all_null_still_fails(tmp_path: Path):
+    path = tmp_path / "empty_col.parquet"
+    pl.DataFrame(
+        {"id": [1, 2, 3], "paper": ["a", "a", "a"], "dead": pl.Series([None, None, None], dtype=pl.Float64)}
+    ).write_parquet(path)
+    checks = run(path, keys="pk: id; constant: paper, dead")
+    assert checks["DQ1"]["status"] == "FAIL", checks["DQ1"]
+    assert "dead" in checks["DQ1"]["evidence"]
+    assert "paper" not in checks["DQ1"]["evidence"]
+
+
+def test_parse_annotations_constant_aliases():
+    for label in ("constant", "constant by design", "const"):
+        assert ds_dq.parse_annotations(f"pk: a; {label}: x, `y`")["constant"] == ["x", "y"]
+
+
 def test_clean_fixture_passes_dq3_on_declared_pk(clean: Path):
     checks = run(clean, keys="gvkey")
     assert checks["DQ3a"]["status"] == "PASS", checks["DQ3a"]
