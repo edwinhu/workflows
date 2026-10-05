@@ -134,7 +134,8 @@ Five domain requirements on the plan:
   - **Key Columns** — the declared primary key `DQ3a` tests for uniqueness. Write `a, b` for a bare
     primary key, or `pk: a, b; event: c, d` to also declare the coarser business/event key `DQ3c`
     needs to catch amendments and restatements. Without an `event:` clause `DQ3c` reports `N/A`, and
-    the runner says why.
+    the runner says why. Add `constant: c` (one repeated non-null value, e.g. `paper` in a per-paper
+    file) to exempt that column from `DQ1`; an all-null column still fails.
   - **Required Window** — the sample period `COV` checks, as `[column: ]YYYY-MM-DD..YYYY-MM-DD`.
     Write `n/a` for an unwindowed output; `COV` then reports `N/A` with that as its reason. Naming
     the column is optional only when exactly one date column exists; an ambiguous window is a `FAIL`,
