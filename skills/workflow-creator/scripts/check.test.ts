@@ -297,3 +297,50 @@ test('an unknown flag is an error, not a default', () => {
   expect(r.stderr).toContain('--verbose')
   expect(legLines(r.stdout).length).toBe(0)
 })
+
+// NON-VACUITY (skills/work/scripts/leg_counts.py). Inside a work run every mechanicalChecks command's
+// stdout+stderr goes through leg_counts.audit, and a leg with no `<leg>: N <unit> examined` line turns
+// an exit 0 into 2. These cases pass check.sh's output through that same audit, the way work-checks.sh
+// does, so a leg that stops counting fails here rather than in a run's gate.
+const LEG_COUNTS_DIR = join(SCRIPTS, '..', '..', 'work', 'scripts')
+function audit(out: string): string[] {
+  const py = 'import sys, json; sys.path.insert(0, sys.argv[1]); from leg_counts import audit; print(json.dumps(audit(sys.stdin.read())))'
+  const r = spawnSync('python3', ['-c', py, LEG_COUNTS_DIR], { input: out, encoding: 'utf8' })
+  return JSON.parse(r.stdout)
+}
+const combined = (r: { stdout: string; stderr: string }) => r.stdout + r.stderr
+const COUNTED_LEGS = ['sc-probe', 'parity', 'authoring-lint', 'node-check', 'probe-tests']
+
+test('non-vacuity: every leg of a fixture target prints a count line, so the audit has no failures', () => {
+  const r = run(harness(), ['--target', target({ js: 'export const x = 1\n', tests: { 'fixture.test.ts': PASSING_TEST } })])
+  expect(audit(combined(r))).toEqual([])
+})
+
+test('non-vacuity: a real skill in this repo (jev-rules) passes the audit through the real check.sh', () => {
+  const r = run(CHECK, ['--target', join(SCRIPTS, '..', '..', 'jev-rules')])
+  expect(audit(combined(r))).toEqual([])
+})
+
+test('non-vacuity: a leg that examined nothing says `nothing in scope (...)`, never a bare 0', () => {
+  const r = run(harness(), ['--target', target()]) // no .js, no scripts/
+  const out = combined(r)
+  expect(out).toMatch(/^node-check: 0 .* examined.*nothing in scope \(/m)
+  expect(out).toMatch(/^probe-tests: 0 .* examined.*nothing in scope \(/m)
+  expect(audit(out)).toEqual([])
+})
+
+test('non-vacuity: counts are what the leg read, not a constant', () => {
+  const one = run(harness(), ['--target', target({ js: 'export const x = 1\n', tests: { 'a.test.ts': PASSING_TEST } })])
+  const two = run(harness(), ['--target', target({ js: 'export const x = 1\n', tests: { 'a.test.ts': PASSING_TEST, 'b.test.ts': PASSING_TEST } })])
+  const n = (r: typeof one, leg: string) => Number(new RegExp(`^${leg}: .*?(\\d+) [^\\d]*? examined`, 'm').exec(combined(r))?.[1])
+  expect(n(one, 'node-check')).toBe(1)
+  expect(n(one, 'probe-tests')).toBe(1)
+  expect(n(two, 'probe-tests')).toBe(2)
+  expect(n(one, 'sc-probe')).toBe(1)
+})
+
+test('non-vacuity: the audit names exactly the legs that print no count line', () => {
+  const fails = audit(COUNTED_LEGS.map((l) => `leg ${l} exit=0`).join('\n'))
+  expect(fails.length).toBe(COUNTED_LEGS.length)
+  for (const l of COUNTED_LEGS) expect(fails.join('\n')).toContain(`leg ${l} printed no count line`)
+})

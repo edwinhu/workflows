@@ -29,6 +29,10 @@
 # stdout carries only the leg lines (the verdict); each leg's own output goes to stderr, so
 # counting `^leg ` on stdout counts legs and nothing else.
 #
+# NON-VACUITY: work-checks.sh audits this output (skills/work/scripts/leg_counts.py), so every leg
+# prints `<leg>: N <unit> examined` to stderr, N taken from what the leg read, or
+# `<leg>: 0 <unit> examined — nothing in scope (<why>)`. wc-probe and pc-probe print their own.
+#
 # Exit 0 = every leg passed. 1 = some leg failed. 2 = refusal (bad usage, missing target, or a leg
 # that COULD NOT LOOK — an unresolvable plugin root, an unreachable probe. A leg that cannot look is
 # not a leg that passed, so it never reports 0.)
@@ -76,6 +80,14 @@ report() { # report <leg name> <exit code> [note]
   esac
 }
 
+count_line() { # count_line <leg> <n> <unit> <why n may be 0>
+  if [ "$2" -gt 0 ]; then
+    echo "$1: $2 $3 examined" >&2
+  else
+    echo "$1: 0 $3 examined — nothing in scope ($4)" >&2
+  fi
+}
+
 # The plugin root is whatever `.claude-plugin/plugin.json` a walk UPWARD from the start directory
 # first finds — the marker all four plugins in this corpus carry, and the one the harness itself
 # keys on. Walked, never counted: a fixed number of `..` hops is right for exactly the nesting
@@ -120,8 +132,13 @@ elif [ ! -r "$SC_PROBE" ]; then
   echo "check.sh: cannot run sc-probe — not readable: $SC_PROBE" >&2
   report sc-probe 2 "probe unreachable"
 else
-  bun "$SC_PROBE" --target "$TARGET" >&2
-  report sc-probe $?
+  sc_out="$(bun "$SC_PROBE" --target "$TARGET" 2>&1)"
+  sc_rc=$?
+  printf '%s\n' "$sc_out" >&2
+  # The probe's own END line carries `N skill(s)`; that is the count, not a number re-derived here.
+  sc_n="$(printf '%s\n' "$sc_out" | sed -nE 's/.*[^0-9]([0-9]+) skill\(s\).*/\1/p' | tail -1)"
+  [ -n "$sc_n" ] && count_line sc-probe "$sc_n" "skill(s)" "no SKILL.md under target"
+  report sc-probe "$sc_rc"
 fi
 
 # --- leg: pc-probe -----------------------------------------------------------------------------
@@ -145,12 +162,37 @@ else
 fi
 
 # --- leg: parity -------------------------------------------------------------------------------
-bash "$SCRIPT_DIR/parity-check.sh" >&2
-report parity $?
+parity_out="$(bash "$SCRIPT_DIR/parity-check.sh" 2>&1)"
+parity_rc=$?
+printf '%s\n' "$parity_out" >&2
+# One `<agent>.md: gate=… write=…` line per fixture agent compared.
+count_line parity "$(printf '%s\n' "$parity_out" | grep -cE '^[^ ]+\.md: gate=')" "fixture agent(s)" "parity-check printed no comparison"
+report parity "$parity_rc"
 
 # --- leg: authoring-lint -----------------------------------------------------------------------
 bun "$SCRIPT_DIR/authoring-lint.ts" --target "$TARGET" >&2
-report authoring-lint $?
+lint_rc=$?
+# Added lines the lint read: addedLines() from the lint itself, under its own text/test-path filters
+# (mirrored from authoring-lint.ts TEXT_EXT / TEST_PATH — keep in step).
+lint_n="$(LINT_TARGET="$TARGET" LINT_LIB="$SCRIPT_DIR/authoring-lint.ts" bun -e '
+import { existsSync, readFileSync } from "node:fs"
+import { relative } from "node:path"
+const { addedLines } = await import(process.env.LINT_LIB!)
+const T = /\.(md|json|ts|js|mjs|py|sh|ya?ml|toml|txt)$/i
+const X = /(^|\/)(tests?|__tests__|fixtures)\/|[._-](test|spec)\.[A-Za-z]+$|\.fixture$/
+const t = process.env.LINT_TARGET!
+let n = 0
+for (const [f, l] of addedLines(t) as Map<string, Set<number> | null>) {
+  if (!T.test(f) || X.test(relative(t, f)) || !existsSync(f)) continue
+  n += l ? l.size : readFileSync(f, "utf8").split("\n").length
+}
+console.log(n)
+' 2>/dev/null)"
+case "$lint_n" in
+  ''|*[!0-9]*) ;;  # the count could not be taken: print nothing, and the audit says so
+  *) count_line authoring-lint "$lint_n" "added line(s)" "no line added over HEAD under target" ;;
+esac
+report authoring-lint "$lint_rc"
 
 # --- leg: node-check ---------------------------------------------------------------------------
 # A workflow that ships no .js is the normal case and passes; only a real syntax error fails.
@@ -161,6 +203,7 @@ for f in "$TARGET"/*.js; do
   js_n=$((js_n + 1))
   node --check "$f" >&2 || node_rc=1
 done
+count_line node-check "$js_n" "js file(s)" "target ships no .js"
 if [ "$js_n" -eq 0 ]; then
   report node-check 0 "no .js under target"
 else
@@ -170,6 +213,7 @@ fi
 # --- leg: probe-tests --------------------------------------------------------------------------
 # Target-relative on purpose: this skill's own suite is not evidence about a generated skill.
 if [ ! -d "$TARGET/scripts" ]; then
+  count_line probe-tests 0 "test(s)" "target ships no scripts/"
   report probe-tests 0 "target ships no scripts/"
 else
   # BOTH suite shapes. A workflow whose scripts are python ships pytest, and reading only
@@ -193,6 +237,8 @@ else
     # changing a verdict while changing a schedule is how a speedup quietly becomes a weakening.
     SHARDS="${CHECK_SHARDS:-4}"
     pids=()
+    # Each runner's output lands in a file so its own summary can be counted after the wait.
+    tdir="$(mktemp -d)"
     if [ "${#suite[@]}" -gt 0 ]; then
       n=${#suite[@]}
       [ "$SHARDS" -gt "$n" ] && SHARDS=$n
@@ -200,7 +246,7 @@ else
       while [ "$i" -lt "$SHARDS" ]; do
         shard=(); j=$i
         while [ "$j" -lt "$n" ]; do shard+=("${suite[$j]}"); j=$(( j + SHARDS )); done
-        bun test "${shard[@]}" >&2 &
+        bun test "${shard[@]}" >"$tdir/bun$i.out" 2>&1 &
         pids+=($!)
         i=$(( i + 1 ))
       done
@@ -210,13 +256,18 @@ else
       # cannot know a suite needs pypdf, and guessing wrong fails cases for a missing
       # import, which reads as broken contracts rather than a misconfigured runner.
       for pf in "${pysuite[@]}"; do
-        uv run --quiet --with pytest --with pytest-xdist --script "$pf" -m pytest -q "$pf" >&2 &
+        uv run --quiet --with pytest --with pytest-xdist --script "$pf" -m pytest -q "$pf" >"$tdir/py$(basename "$pf").out" 2>&1 &
         pids+=($!)
       done
     fi
     # Every child is waited on individually: `wait` with no argument discards the statuses, which
     # would turn a failing suite into a passing leg.
     for pid in "${pids[@]}"; do wait "$pid" || rc=1; done
+    cat "$tdir"/*.out >&2
+    # bun: `Ran N tests across M files`; pytest -q: `N passed` / `N failed`.
+    test_n="$(cat "$tdir"/*.out | { grep -hoE '^Ran [0-9]+ tests?|^[0-9]+ (passed|failed)|[0-9]+ (passed|failed)(,| in )' || true; } | grep -oE '[0-9]+' | awk '{ n += $1 } END { print n + 0 }')"
+    rm -rf "$tdir"
+    count_line probe-tests "${test_n:-0}" "test(s)" "no test ran"
     report probe-tests "$rc" "$(( ${#suite[@]} + ${#pysuite[@]} )) file(s)"
   fi
 fi
