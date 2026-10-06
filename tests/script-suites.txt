@@ -9,7 +9,7 @@
 #   external/*_test.py                            vendored upstream (anthropic-skills); its
 #                                                 suites are that repo's to run, and gating
 #                                                 them here would fail our audit on their bug
-#   skills/gemini-batch/scripts/test_single.py     a live Gemini API call
+#   skills/gemini-vertex/scripts/test_single.py     a live Gemini API call
 #   skills/wrds/scripts/test_connection.py         WRDS PostgreSQL credentials
 #   skills/lseg-data/scripts/test_connection.py    LSEG Data Library credentials
 #

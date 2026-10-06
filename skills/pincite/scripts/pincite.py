@@ -26,7 +26,7 @@ quote, and only the quote can be checked mechanically. A quote that re-finds on 
 page printing the claimed number is a confirmed pincite; anything else is a
 human's problem.
 
-Model choice is deliberate. gemini-batch's benchmark measured Pro as the most
+Model choice is deliberate. gemini-vertex's benchmark measured Pro as the most
 CONSERVATIVE extractor (47% detection vs Flash's 70% on identical documents), and
 under-extraction is the silent failure here -- a missed pincite looks like "the
 source doesn't support it". A weaker quote is not silent; verify() catches it.
@@ -78,7 +78,7 @@ def configure(root, body=None, bib=None, pdf_dir=None, fedreg_dir=None,
 
 
 def thinking_level(model):
-    """Lowest level the model accepts; Pro rejects MINIMAL (gemini-batch Gotcha 17)."""
+    """Lowest level the model accepts; Pro rejects MINIMAL (gemini-vertex Gotcha 17)."""
     return 'LOW' if 'pro' in model else 'MINIMAL'
 
 # ----------------------------------------------------------- source kinds

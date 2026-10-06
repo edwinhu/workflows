@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- **`gemini-batch` is renamed `gemini-vertex`:** the skill now covers Cloud Flex (≤10 documents, 5da49c61), Priority and synchronous smoke tests, not only Batch; the invariant is the platform — Vertex, never AI Studio — so the name states it. `skills/gemini-batch/` → `skills/gemini-vertex/`, `Skill workflows:gemini-vertex` in the bulk-guard deny/warn text, routing provider id `gemini-vertex` in `scripts/lib/route.ts`, and every cross-reference; "gemini batch", "batch job" and "Gemini Batch API" stay as trigger phrases.
+
 ## [6.38.1] - 2026-10-03
 
 ### Added

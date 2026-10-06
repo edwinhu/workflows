@@ -97,7 +97,7 @@ import { existsSync, readFileSync, realpathSync, renameSync, rmSync, writeFileSy
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 
-export type Provider = 'claude' | 'codex' | 'gemini' | 'gemini-batch'
+export type Provider = 'claude' | 'codex' | 'gemini' | 'gemini-vertex'
 export type Kind = 'script' | 'judgement' | 'review' | 'bulk'
 
 export interface Candidate {
@@ -146,7 +146,7 @@ export class RouteRefusal extends Error {
   readonly exitCode = 2
 }
 
-const PROVIDERS: readonly Provider[] = ['claude', 'codex', 'gemini', 'gemini-batch']
+const PROVIDERS: readonly Provider[] = ['claude', 'codex', 'gemini', 'gemini-vertex']
 /** A row naming a model the table does not know goes to the wrapper that runs most rows. */
 const DEFAULT_PROVIDER = 'claude'
 
@@ -410,7 +410,7 @@ function localDate(d = new Date()): string {
 }
 
 /**
- * Re-derive every candidate's `available` (except gemini-batch, which the proxy does not serve) and,
+ * Re-derive every candidate's `available` (except gemini-vertex, which the proxy does not serve) and,
  * when `prices` is known, its `price`. Mutates only candidates and asOf. Returns the kinds whose
  * pick is now unavailable.
  */
@@ -421,7 +421,7 @@ function applyRefresh(
   asOf: string,
 ): string[] {
   for (const c of Object.values(table.candidates)) {
-    if (c.provider !== 'gemini-batch') c.available = catalog.some(m => m.id === c.model && m.owned_by === c.owner)
+    if (c.provider !== 'gemini-vertex') c.available = catalog.some(m => m.id === c.model && m.owned_by === c.owner)
     const p = prices && c.openrouter ? prices.get(c.openrouter) : undefined
     if (p) c.price = { prompt: p.prompt, completion: p.completion }
   }

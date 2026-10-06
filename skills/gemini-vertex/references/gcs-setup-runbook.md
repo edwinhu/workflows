@@ -1,7 +1,7 @@
 # GCP setup runbook (Cloud batch)
 
-- **Run the whole thing (a human, once):** `GCP_PROJECT=.. BUCKET=.. upmd --cli --all skills/gemini-batch/references/gcs-setup-runbook.md` — every block is idempotent, so a re-run skips what is done and ends on `verify`. `upmd <file>` opens the TUI instead.
-- **Agents check setup:** `LINES=1000 COLUMNS=250 GCP_PROJECT=.. BUCKET=.. upmd --ci --block verify skills/gemini-batch/references/gcs-setup-runbook.md`; if it fails, hand the user the whole-thing command above.
+- **Run the whole thing (a human, once):** `GCP_PROJECT=.. BUCKET=.. upmd --cli --all skills/gemini-vertex/references/gcs-setup-runbook.md` — every block is idempotent, so a re-run skips what is done and ends on `verify`. `upmd <file>` opens the TUI instead.
+- **Agents check setup:** `LINES=1000 COLUMNS=250 GCP_PROJECT=.. BUCKET=.. upmd --ci --block verify skills/gemini-vertex/references/gcs-setup-runbook.md`; if it fails, hand the user the whole-thing command above.
 - **Agents never run `manual-*` blocks** — they are interactive logins; hand them to the user.
 - **Without upmd** these are plain bash blocks: run `verify` by hand.
 

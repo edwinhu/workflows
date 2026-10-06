@@ -124,7 +124,7 @@ These skills have `user-invocable: false` — Claude loads them automatically wh
 `bluebook`, `bluebook-audit`, `docx-repair`, `source-verify`
 
 ### Data Access
-`wrds`, `lseg-data`, `gemini-batch`
+`wrds`, `lseg-data`, `gemini-vertex`
 
 ### Knowledge Management
 `nlm`, `google-scholar`, `readwise`, `readwise-chat`, `readwise-search`, `readwise-docs`, `readwise-prune`
@@ -267,7 +267,7 @@ share the code; `tests/mod-guards-parity.test.ts` holds the two to identical ans
 
 ### Bulk-extraction guard (mod)
 
-`hooks/bulk-guard.mjs` is a Claude Code mod (2.1.287+), listed under `"modules"` in `hooks/hooks.json`. It runs in every session that loads the plugin, farm-out children included. It enforces the rule that per-document coding or extraction over many files is ONE `gemini-batch` job on pre-cut excerpts. On `tool.call` it does the following:
+`hooks/bulk-guard.mjs` is a Claude Code mod (2.1.287+), listed under `"modules"` in `hooks/hooks.json`. It runs in every session that loads the plugin, farm-out children included. It enforces the rule that per-document coding or extraction over many files is ONE `gemini-vertex` job on pre-cut excerpts. On `tool.call` it does the following:
 
 | Rule | Tools | Action |
 |---|---|---|

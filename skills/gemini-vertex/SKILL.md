@@ -1,7 +1,7 @@
 ---
-name: gemini-batch
+name: gemini-vertex
 version: 1.0
-description: "Use when the user says 'run this prompt over all the documents', 'process thousands of PDFs', 'extract fields from every filing', 'bulk LLM job', 'submit a batch job', 'Gemini Batch API', 'upload files to Gemini', 'flex', 'flex tier', 'Interactions API', 'cheap async Gemini', 'grounded lookups at scale', 'hand-code these', 'gold set', 'gold standard', 'code each filing', 'label / annotate these documents', 'have agents read each document', or 'coders', or needs Gemini extraction, classification or enrichment — large-scale through Cloud Batch, or a few documents (≤10) through Cloud Flex."
+description: "Use when the user says 'run this prompt over all the documents', 'process thousands of PDFs', 'extract fields from every filing', 'bulk LLM job', 'gemini batch', 'submit a batch job', 'batch job', 'Gemini Batch API', 'Vertex AI', 'Gemini on Vertex', 'Cloud Flex', 'upload files to Gemini', 'flex', 'flex tier', 'Interactions API', 'cheap async Gemini', 'grounded lookups at scale', 'hand-code these', 'gold set', 'gold standard', 'code each filing', 'label / annotate these documents', 'have agents read each document', or 'coders', or needs Gemini extraction, classification or enrichment — large-scale through Cloud Batch, or a few documents (≤10) through Cloud Flex."
 user-invocable: false
 ---
 
