@@ -1,6 +1,7 @@
 // bulk-guard: a Claude Code mod that stops per-document work at scale from billing Claude/Codex
-// accounts. Per-document coding or extraction over many files is ONE gemini-batch job on pre-cut
-// excerpts, never an agent fan-out or an agent-written model-API script.
+// accounts. Per-document coding or extraction over many files goes to Gemini via gemini-batch
+// (Flex for ≤10 documents, ONE Batch job beyond), never an agent fan-out or an agent-written
+// model-API script.
 //
 // Rules (docs/bulk-guard.md): 1 distinct-document tripwire, 2 template fan-out and per-item agent
 // loops, 3 model-API calls inside a loop, plus trimming of oversized Read/Bash/Grep results.
@@ -20,9 +21,9 @@ const DEFAULTS = {
 };
 
 export const DENY_MESSAGE =
-  "Per-document reading at scale: route this to ONE gemini-batch job on pre-cut excerpts (Skill workflows:gemini-batch; cost gate applies). Reading more filings here bills Claude/Codex accounts per document. Override only if the user sets BULK_GUARD_OFF=1.";
+  "Per-document reading at scale: route this through Gemini (Skill workflows:gemini-batch) — ≤10 documents: one Cloud Flex call each; more: ONE Cloud Batch job on pre-cut excerpts (cost gate applies). Reading more filings here bills Claude/Codex accounts per document. Override only if the user sets BULK_GUARD_OFF=1.";
 export const WARN_NOTE =
-  "bulk-guard: this session has now read {n} distinct documents one by one. If the task is per-document coding or extraction, stop and route it to ONE gemini-batch job on pre-cut excerpts (Skill workflows:gemini-batch). At {deny} documents further reads are denied.";
+  "bulk-guard: this session has now read {n} distinct documents one by one. If the task is per-document coding or extraction, stop and route it through Skill workflows:gemini-batch — ≤10 documents: Cloud Flex, one call each; more: ONE Cloud Batch job on pre-cut excerpts. At {deny} documents further reads are denied.";
 export const OFF_MESSAGE =
   "bulk-guard: BULK_GUARD_OFF is the user's override, set in their environment before the session starts; a command may not set it.";
 
