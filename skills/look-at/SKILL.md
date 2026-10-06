@@ -305,5 +305,5 @@ See `examples/` directory for:
 
 ## Related Skills
 
-- `/gemini-batch` - For batch processing of many files
+- `/gemini-vertex` - For batch processing of many files
 - Standard `Read` tool - For text files needing exact contents

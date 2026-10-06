@@ -187,4 +187,4 @@ Design: `docs/DESIGN-routing.md`.
 
 | Situation | Wrong move | Right move |
 |---|---|---|
-| Per-document LLM coding/extraction over many files | Use `--tasks` fan-out to have agents read each document | Use `gemini-batch` for large-scale extraction |
+| Per-document LLM coding/extraction over many files | Use `--tasks` fan-out to have agents read each document | Use `gemini-vertex` for large-scale extraction |

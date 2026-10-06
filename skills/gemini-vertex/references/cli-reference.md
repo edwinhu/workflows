@@ -33,9 +33,9 @@ gcloud ai batch-predictions describe JOB_ID --region="$CLOUD_LOCATION"
 ## JSONL Validation
 
 ```bash
-python skills/gemini-batch/scripts/validate_jsonl.py requests.jsonl --backend cloud
+python skills/gemini-vertex/scripts/validate_jsonl.py requests.jsonl --backend cloud
 # Historical Developer-format validation only; never submit this backend in production:
-python skills/gemini-batch/scripts/validate_jsonl.py requests.jsonl --backend developer
+python skills/gemini-vertex/scripts/validate_jsonl.py requests.jsonl --backend developer
 ```
 
 ## Results Analysis

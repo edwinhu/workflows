@@ -80,11 +80,11 @@ for fn_num, formatted_text in footnotes.items():
         }
     }
 
-# Submit batch job (see /gemini-batch skill for full pattern)
+# Submit batch job (see /gemini-vertex skill for full pattern)
 # Use examples/batch_processor.py pattern — DO NOT guess API parameters
 ```
 
-**IMPORTANT:** Follow the `/gemini-batch` skill's Iron Law — read `examples/batch_processor.py` before writing batch code.
+**IMPORTANT:** Follow the `/gemini-vertex` skill's Iron Law — read `examples/batch_processor.py` before writing batch code.
 
 **Fallback (sync):** If batch is unavailable, use:
 ```bash

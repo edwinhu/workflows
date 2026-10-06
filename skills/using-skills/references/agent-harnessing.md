@@ -111,7 +111,7 @@ Research-heavy skills use current date/time context for:
 
 See: `references/skill-metadata.py` - `get_env_context()`
 
-Applied to: `/wrds`, `/lseg-data`, `/gemini-batch`
+Applied to: `/wrds`, `/lseg-data`, `/gemini-vertex`
 
 ## Cost Classification System
 

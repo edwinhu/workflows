@@ -20,7 +20,7 @@ SEVERITY = "hard"
 # Extend as new sibling skills acquire examples.
 EXTERNAL_SKILLS = [
     "wrds",
-    "gemini-batch",
+    "gemini-vertex",
     "lseg-data",
     "nlm",
     "readwise",

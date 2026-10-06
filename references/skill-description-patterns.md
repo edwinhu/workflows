@@ -6,7 +6,7 @@ This document clarifies the different description patterns for workflow phase sk
 
 ### 1. Standalone Skills (User-Triggered)
 
-**Examples:** marimo, jupytext, wrds, lseg-data, gemini-batch, look-at, writing
+**Examples:** marimo, jupytext, wrds, lseg-data, gemini-vertex, look-at, writing
 
 **Invocation:** Users directly ask questions or make requests that trigger these skills.
 
@@ -125,7 +125,7 @@ description: "..."
 ### Standalone Skills
 - `wrds` - "This skill should be used when the user asks to 'query WRDS'..."
 - `lseg-data` - "This skill should be used when the user asks to 'access LSEG data'..."
-- `gemini-batch` - "This skill should be used when the user asks to 'use Gemini Batch API'..."
+- `gemini-vertex` - "This skill should be used when the user asks to 'use Gemini Batch API'..."
 - `look-at` - "This skill should be used when the user asks to 'look at', 'analyze'..."
 
 ### Workflow Phase Skills

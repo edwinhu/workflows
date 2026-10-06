@@ -10,7 +10,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 ROOT = Path(__file__).resolve().parents[1]
-SKILL = ROOT / "skills/gemini-batch"
+SKILL = ROOT / "skills/gemini-vertex"
 
 
 def load_example(name):

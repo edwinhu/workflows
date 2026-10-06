@@ -312,7 +312,7 @@ browsing included.
   Register pages, which are five digits — the range test then reports every FR
   document as unpaginated.
 
-- **Use Flash, not Pro.** gemini-batch measured Pro as the most CONSERVATIVE
+- **Use Flash, not Pro.** gemini-vertex measured Pro as the most CONSERVATIVE
   extractor — 47% detection vs Flash's 70% on identical documents. Here
   under-extraction is the *silent* failure: a missed pincite reads as "the
   source doesn't support it". A weaker quote is not silent — `verify` catches

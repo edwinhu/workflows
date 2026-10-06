@@ -193,9 +193,9 @@ test('an unavailable fallback alone does not fail the refresh', async () => {
   } finally { s.stop() }
 }, 30_000)
 
-test('a gemini-batch candidate is never re-derived from the proxy catalog', async () => {
+test('a gemini-vertex candidate is never re-derived from the proxy catalog', async () => {
   const table = tableCopy(t => {
-    t.candidates.batch = { provider: 'gemini-batch', model: 'gemini-3.1-flash-lite', owner: 'google',
+    t.candidates.batch = { provider: 'gemini-vertex', model: 'gemini-3.1-flash-lite', owner: 'google',
       openrouter: null, available: true, price: null }
   })
   const s = stubEndpoints(FULL_CATALOG)

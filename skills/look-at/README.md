@@ -174,7 +174,7 @@ Both achieve the same goal: offload file analysis to a fast, cheap model to extr
 
 ## Related Skills
 
-- `/gemini-batch` - For batch processing many files
+- `/gemini-vertex` - For batch processing many files
 - Standard Read tool - For text files needing exact contents
 - `/jupytext` - For working with Jupyter notebooks
 - `/marimo` - For marimo reactive notebooks

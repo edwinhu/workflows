@@ -520,7 +520,7 @@ const lint = (p: Plan): Finding[] => {
         'per-document-batch-extraction',
         'major',
         where,
-        'Per-document LLM coding or extraction must be launched via gemini-batch on pre-cut excerpts, not agents reading each document.',
+        'Per-document LLM coding or extraction must be launched via gemini-vertex on pre-cut excerpts, not agents reading each document.',
         t.work
       )
     }
