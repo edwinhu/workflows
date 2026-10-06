@@ -1,7 +1,7 @@
 ---
 name: gemini-batch
 version: 1.0
-description: "Use when the user says 'run this prompt over all the documents', 'process thousands of PDFs', 'extract fields from every filing', 'bulk LLM job', 'submit a batch job', 'Gemini Batch API', 'upload files to Gemini', 'flex', 'flex tier', 'Interactions API', 'cheap async Gemini', 'grounded lookups at scale', 'hand-code these', 'gold set', 'gold standard', 'code each filing', 'label / annotate these documents', 'have agents read each document', or 'coders', or needs large-scale Gemini extraction, classification or enrichment."
+description: "Use when the user says 'run this prompt over all the documents', 'process thousands of PDFs', 'extract fields from every filing', 'bulk LLM job', 'submit a batch job', 'Gemini Batch API', 'upload files to Gemini', 'flex', 'flex tier', 'Interactions API', 'cheap async Gemini', 'grounded lookups at scale', 'hand-code these', 'gold set', 'gold standard', 'code each filing', 'label / annotate these documents', 'have agents read each document', or 'coders', or needs Gemini extraction, classification or enrichment — large-scale through Cloud Batch, or a few documents (≤10) through Cloud Flex."
 user-invocable: false
 ---
 
@@ -19,11 +19,13 @@ user-invocable: false
 
 ## Choose the Cloud tier
 
+**Route by row count: ≤10 documents/rows → Cloud Flex PayGo; more → Cloud Batch.** This is a judgment default from Flex throughput (~9 rows/hour at peak, measured on Developer Flex). Flex gives the same 50% discount as one direct `generate_content` call per row: no GCS JSONL, no queue, no import-format failures. A bulk-guard redirect for a few documents lands on Flex, not a Batch job; recipe in [Flex](references/flex-inference.md#few-document-extraction).
+
 | Tier | Use | Price / availability | Request path |
 |---|---|---|---|
-| Cloud Batch (Recommended for bulk) | Independent extraction/classification and tested grounded lookups | 50% off real-time; shared capacity; up to 72h queued, then most jobs finish within 24h running | GCS JSONL → `client.batches.create`; `config.dest` → GCS |
+| Cloud Batch (Recommended for >10 rows) | Independent extraction/classification and tested grounded lookups | 50% off real-time; shared capacity; up to 72h queued, then most jobs finish within 24h running | GCS JSONL → `client.batches.create`; `config.dest` → GCS |
 | Cloud Standard PayGo | Same-model synchronous smoke tests; interactive search | Standard Cloud tariff; capacity/model-dependent | `client.models.generate_content` with ADC |
-| Cloud Flex PayGo (Preview) | Small, synchronous, latency-tolerant lookups | 50% off Standard; higher throttling; global only; timeout up to 30 min | Vertex header `X-Vertex-AI-LLM-Shared-Request-Type: flex` |
+| Cloud Flex PayGo (Preview) (Recommended for ≤10 rows) | Few-document extraction; small, synchronous, latency-tolerant lookups | 50% off Standard; higher throttling; global only; timeout up to 30 min | Vertex header `X-Vertex-AI-LLM-Shared-Request-Type: flex` |
 | Cloud Priority PayGo | Latency-sensitive work, not cheap bulk | Higher model-specific tariff; global and supported us/eu multi-regions, not regional endpoints | Same Vertex header, value `priority` |
 
 Sources: [Batch](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/batch-inference), [Flex](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/flex-paygo), [Priority](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/priority-paygo), [Cloud pricing](https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing). Cloud Flex/Priority are documented equivalents, **not** the Developer Interactions `service_tier` recipe or its quotas; read [tier request patterns](references/flex-inference.md).
@@ -39,11 +41,11 @@ Cloud [Interactions](https://docs.cloud.google.com/gemini-enterprise-agent-platf
 
 **NO BULK SUBMISSION WITHOUT A SAME-MODEL CLOUD SMOKE TEST AND A 5–10-ROW CLOUD END-TO-END TEST.** Skipping these scales bad prompts, lost identifiers and ungrounded answers into a bad dataset.
 
-1. Read [Cloud batch](references/vertex-ai.md), the [ADC/GCS setup runbook](references/gcs-setup-runbook.md), and `examples/batch_processor.py` or `examples/icon_batch_vision.py`. Verify project, API enablement, ADC, IAM and readable input/writable output GCS paths. gcloud user login alone is not ADC.
+1. Read [Cloud batch](references/vertex-ai.md), the [ADC/GCS setup runbook](references/gcs-setup-runbook.md), and `examples/batch_processor.py` or `examples/icon_batch_vision.py`. Verify project, API enablement, ADC, IAM and readable input/writable output GCS paths. gcloud user login alone is not ADC. Flex route (≤10 rows): read [Flex](references/flex-inference.md) instead of the GCS runbook.
 2. Fetch current Cloud [model cards](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models), [locations](https://docs.cloud.google.com/gemini-enterprise-agent-platform/resources/locations), [batch support](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/batch-inference), [thinking](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/thinking) and [pricing](https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing). New-project extraction defaults: `gemini-3.5-flash-lite` for cheap extraction, `gemini-3.8-flash` for harder extraction/search. Preserve existing model pins; Flash/Flash-Lite is the measured extraction default, not Pro. See [model-selection evidence](references/model-selection.md).
 3. **For Gemini 3.x, omit temperature, top_p and top_k.** Use exact-model-supported thinking levels: 3.8 Flash supports low/medium/high, not minimal. See [Cloud model guidance](references/models-and-pricing.md).
 4. Send relevant native PDF pages via GCS `fileData.fileUri`; preserve layout/scans. For text-native filings, pre-cut relevant sections without truncating target evidence. Historical PDF cost observations are in [Files](references/files-api.md), not a universal tokens/page tariff.
-5. Run one synchronous Cloud request with the exact model/input/schema, then 5–10 rows through the actual Cloud batch/tier. Inspect content, per-row `status` errors, finish reasons, usage, identifier round-trip and grounding if required. Follow [scale-up testing](references/scale-up-testing.md).
+5. Run one synchronous Cloud request with the exact model/input/schema, then 5–10 rows through the actual Cloud batch/tier. Inspect content, per-row `status` errors, finish reasons, usage, identifier round-trip and grounding if required. Follow [scale-up testing](references/scale-up-testing.md). A ≤10-row Flex job has no separate pilot: its first row is the smoke test.
 
 ## Production request pattern
 
@@ -78,7 +80,7 @@ Sources: [batch limits](https://docs.cloud.google.com/gemini-enterprise-agent-pl
 
 - Configure Google Search through the Cloud GenerateContentRequest tool shape and inspect `candidates[].groundingMetadata` per row. [Cloud grounding](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/grounding/grounding-with-google-search) and model support are not a promise that every batch+search+schema combination works; the exact Cloud end-to-end sample must prove it. Read [measured Cloud gotchas](references/gotchas.md#cloud-batch-facts--measured-2026-10-01) before grounded submission: empty `googleSearch` fails import; M100 grounded 97/100 on 3.8 Flash/global. Cloud batch excludes RAG/File Search.
 - **Measured on Developer API, not a Cloud availability claim:** past-tense founder framing grounded 0/138; fresh framing (“Search the web NOW for current pages… report what they say TODAY”) grounded **10/10**, 1.9 searches/row. Flex shed load with 503s at peak, about 9 rows/hour. Prefer fresh framing and verify the Cloud sample; do not route bulk to Flex merely because an old prompt failed. More evidence: [gotchas](references/gotchas.md).
-- Bulk per-document extraction is one Cloud Batch job over pre-cut inputs, **never an interactive-agent fan-out**. A 297-prospectus coder run consumed all three shared Claude accounts; it belonged in Batch.
+- Bulk (>10-row) per-document extraction is one Cloud Batch job over pre-cut inputs, **never an interactive-agent fan-out**. A 297-prospectus coder run consumed all three shared Claude accounts; it belonged in Batch.
 - Reconcile every input identifier, duplicate/missing output and row error; preserve IDs on retry. A succeeded job or valid JSON is not correctness evidence. Budget input/output and search separately; a prompt search cap is not an enforced quota. Before a full grounded run, measure about 100 Cloud rows and project query cost from usage, not the requested cap.
 - **NO GROUNDED RUN OVER ~100 ROWS WITHOUT A USER-APPROVED COST PROJECTION:** rows × pilot-measured queries/row × $14/1,000, minus the remaining free allowance; set a budget alert first. Searches were $390 of a $421 bill and every alert arrived after the spend. Formula, SKUs and the Billing → Reports URL: [search cost gate](references/gotchas.md#search-cost-gate--the-real-bill-sep-28--oct-2).
 - Use the harness's background notification mechanism for long monitoring, not a model session repeatedly narrating status. Do not switch backend, model, schema or location to clear an error without retesting.

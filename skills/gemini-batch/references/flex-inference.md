@@ -6,7 +6,7 @@ Sources checked 2026-10-01: [Cloud Flex](https://docs.cloud.google.com/gemini-en
 
 ## Synchronous Cloud request
 
-Flex PayGo is Preview, global-only, 50% off Standard, with higher throttling and longer latency. Timeout can be up to 30 minutes. For bulk use Cloud Batch rather than a synchronous Flex queue. Priority supports global and model-supported us/eu multi-regions, not regional endpoints; prices are higher and model-specific.
+Flex PayGo is Preview, global-only, 50% off Standard, with higher throttling and longer latency. Timeout can be up to 30 minutes. Over 10 rows use Cloud Batch rather than a synchronous Flex queue; ≤10 documents use Flex (below). Priority supports global and model-supported us/eu multi-regions, not regional endpoints; prices are higher and model-specific.
 
 ```python
 from google import genai
@@ -24,6 +24,27 @@ response = client.models.generate_content(
     contents="Search NOW for current sources that establish who founded Airbnb. Cite them.",
     config=types.GenerateContentConfig(tools=[types.Tool(google_search=types.GoogleSearch())]),
 )
+```
+
+## Few-document extraction
+
+Use one call per document with the same client. The PDF goes inline (or as a `gs://` `fileUri`); there is no JSONL. Key the results by your own document ID and check `finish_reason` for each row.
+
+```python
+schema = {"type": "OBJECT", "properties": {"doc_id": {"type": "STRING"}}, "required": ["doc_id"]}
+results = {}
+for doc_id, path in {"bw15": "papers/bw15.pdf", "cmw16": "papers/cmw16.pdf"}.items():
+    with open(path, "rb") as f:
+        pdf = types.Part.from_bytes(data=f.read(), mime_type="application/pdf")
+    response = client.models.generate_content(
+        model="gemini-3.8-flash",
+        contents=[pdf, f"Extract the definitions and published tables. doc_id={doc_id}"],
+        config=types.GenerateContentConfig(
+            response_mime_type="application/json", response_schema=schema,
+            thinking_config=types.ThinkingConfig(thinking_level="medium"),
+        ),
+    )
+    results[doc_id] = (response.candidates[0].finish_reason, response.text)
 ```
 
 For Priority use header value `priority`, not Developer `service_tier`. These headers can use available Provisioned Throughput first; the Cloud docs also document headers for routing exclusively to PayGo when that distinction matters. Inspect the documented mode before assuming billing/capacity.
