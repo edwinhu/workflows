@@ -3907,7 +3907,7 @@ describe('D41 — P18: a worktree or recursive delete at a fixed shared /tmp pat
 
 describe('D42 — P19: a workflow\'s persona agents preload its rule skills', () => {
   /** A throwaway plugin: one workflow dispatching `p19-impl`, its rule skill, and the agent file. */
-  const plugin = (o: { ruleSkills?: string | null, agentSkills?: string[] | null, sibling?: boolean, impl?: string }) => {
+  const plugin = (o: { ruleSkills?: string | null, agentSkills?: string[] | null, sibling?: boolean, impl?: string, ip?: string | null, extra?: Record<string, string> }) => {
     const fm = ['---', 'name: wf', 'description: a fixture workflow']
     if (o.ruleSkills != null) fm.push('metadata:', `  rule-skills: ${o.ruleSkills}`)
     fm.push('---', '', '# wf', '', workArgs([
@@ -3918,6 +3918,8 @@ describe('D42 — P19: a workflow\'s persona agents preload its rule skills', ()
     ]), '')
     const agent = ['---', 'name: p19-impl', 'description: d']
     if (o.agentSkills) agent.push('skills:', ...o.agentSkills.map(s => `  - ${s}`))
+    const ip = o.ip === undefined ? '/p19-rules' : o.ip
+    if (ip !== null) agent.push(`initialPrompt: ${ip}`)
     agent.push('---', '', 'body', '')
     const files: Record<string, string> = {
       '.claude-plugin/plugin.json': '{"name": "p19plug"}',
@@ -3926,6 +3928,7 @@ describe('D42 — P19: a workflow\'s persona agents preload its rule skills', ()
       'user-agents/p19-impl.md': agent.join('\n'),
     }
     if (o.sibling) files['skills/wf-rules/SKILL.md'] = skillMd('wf-rules')
+    Object.assign(files, o.extra ?? {})
     return join(fixture(files), 'skills', 'wf')
   }
 
@@ -3965,7 +3968,7 @@ describe('D42 — P19: a workflow\'s persona agents preload its rule skills', ()
 
   test('a sibling <workflow>-rules skill is the declaration when metadata names none', () => {
     expect(allOf(plugin({ ruleSkills: null, sibling: true, agentSkills: ['p19-rules'] }), 'P19')[0].detail).toContain('wf-rules')
-    expect(allOf(plugin({ ruleSkills: null, sibling: true, agentSkills: ['wf-rules'] }), 'P19')).toEqual([])
+    expect(allOf(plugin({ ruleSkills: null, sibling: true, agentSkills: ['wf-rules'], ip: '/wf-rules' }), 'P19')).toEqual([])
   })
 
   test('a missing agent file and a missing rule skill are findings', () => {
@@ -3977,6 +3980,49 @@ describe('D42 — P19: a workflow\'s persona agents preload its rule skills', ()
     const found = allOf(plugin({ ruleSkills: 'p19-rules', agentSkills: ['p19-rules'], impl: '<p19-impl|p19-nobody>' }), 'P19')
     expect(found.length).toBe(1)
     expect(found[0].detail).toContain('"p19-nobody"')
+  })
+
+  // The main-thread path: `skills:` never reaches a farm row or `claude --agent`; initialPrompt does.
+  const bang = (names: string) => '!`c=${CLAUDE_PLUGIN_ROOT}/scripts/load-skills.ts; [ -f "$c" ] && exec bun "$c" ' + names + '; echo "NO rule was loaded"`'
+  const stack = (names: string) => ['---', 'name: p19-stack', 'description: d', '---', '', '# p19-stack', '', ...names.split(' ').map(bang), ''].join('\n')
+
+  test('a preloaded rule skill the agent never invokes on the main thread is a MAJOR, and the CLI exits 1', () => {
+    const dir = plugin({ ruleSkills: 'p19-rules', agentSkills: ['p19-rules'], ip: null })
+    const found = allOf(dir, 'P19')
+    expect(found.length).toBe(1)
+    expect(found[0].severity).toBe('major')
+    expect(found[0].detail).toContain('does not invoke p19-rules on the main-thread path: it has no initialPrompt')
+    expect(cli(['--target', dir]).code).toBe(1)
+  })
+
+  test('its fixed twin, initialPrompt naming the rule skill (bare or plugin-qualified), is clean', () => {
+    expect(allOf(plugin({ ruleSkills: 'p19-rules', agentSkills: ['p19-rules'], ip: '/p19-rules' }), 'P19')).toEqual([])
+    const dir = plugin({ ruleSkills: 'p19-rules', agentSkills: ['p19-rules'], ip: '/p19plug:p19-rules' })
+    expect(allOf(dir, 'P19')).toEqual([])
+    expect(cli(['--target', dir]).code).toBe(0)
+  })
+
+  test('several rule skills land through one combined skill whose bangs run load-skills.ts on each', () => {
+    const base = { ruleSkills: 'p19-rules, p19-more', agentSkills: ['p19-rules', 'p19-more'], ip: '/p19-stack' }
+    const more = { 'skills/p19-more/SKILL.md': skillMd('p19-more') }
+    expect(allOf(plugin({ ...base, extra: { ...more, 'skills/p19-stack/SKILL.md': stack('p19-rules p19-more') } }), 'P19')).toEqual([])
+    const short = allOf(plugin({ ...base, extra: { ...more, 'skills/p19-stack/SKILL.md': stack('p19-rules') } }), 'P19')
+    expect(short.length).toBe(1)
+    expect(short[0].detail).toContain('does not invoke p19-more')
+  })
+
+  test('only the first slash command counts — stacking does not apply to initialPrompt', () => {
+    const found = allOf(plugin({ ruleSkills: 'p19-rules, p19-more', agentSkills: ['p19-rules', 'p19-more'], ip: '/p19-rules /p19-more',
+      extra: { 'skills/p19-more/SKILL.md': skillMd('p19-more') } }), 'P19')
+    expect(found.length).toBe(1)
+    expect(found[0].detail).toContain('does not invoke p19-more')
+  })
+
+  test('an initialPrompt naming a user-invocable: false skill loads nothing and is a MAJOR', () => {
+    const hidden = ['---', 'name: p19-rules', 'description: d', 'user-invocable: false', '---', '', '# p19-rules', ''].join('\n')
+    const found = allOf(plugin({ ruleSkills: 'p19-rules', agentSkills: ['p19-rules'], extra: { 'skills/p19-rules/SKILL.md': hidden } }), 'P19')
+    expect(found.length).toBe(1)
+    expect(found[0].detail).toContain('user-invocable: false')
   })
 
   test('every workflow this repo ships passes P19', () => {

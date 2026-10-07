@@ -200,6 +200,74 @@ export function loadConstraints(options: LoadConstraintsOptions): ConstraintLoad
   return { output, evidence, scopes: [...scopes].sort(), index };
 }
 
+const stripCode = (s: string) => s.replace(/^```[\s\S]*?^```\s*$/gm, "");
+
+/**
+ * The normative part of one rule file: from its `## Rule` / `## The Iron Law` section (else the
+ * text under its H1), the first prose paragraph, every bold-led or must/never paragraph, every list
+ * and table, and a lead-in ending in ':' before one. Code, rationale and examples stay in the file.
+ */
+export function extractRule(md: string): string {
+  const body = stripCode(md.replace(/^---\n[\s\S]*?\n---\n/, "")).replace(/^<\/?[A-Z-]+>\s*$/gm, "");
+  const lines = body.split("\n");
+  let start = lines.findIndex((l) => /^## (Rule\b|The Iron Law)/.test(l));
+  if (start === -1) start = lines.findIndex((l) => /^# /.test(l));
+  if (start === -1) throw new Error("no `## Rule` section and no H1 to lead from");
+  let end = lines.findIndex((l, i) => i > start && /^## /.test(l));
+  if (end === -1) end = lines.length;
+  const paras = lines.slice(start + 1, end).join("\n").split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+  const kept: string[] = [];
+  let prose = false;
+  for (const [i, p] of paras.entries()) {
+    if (/^#/.test(p)) continue;
+    if (p.endsWith(":") && /^(-|\d+\.|\|) /.test(paras[i + 1] ?? "")) { kept.push(p); continue; }
+    if (p.startsWith("|")) { kept.push(p); continue; }
+    if (p.startsWith("**") || /\b(MUST|NEVER|must|never)\b/.test(p)) { kept.push(p); prose = true; continue; }
+    if (/^(-|\d+\.) /.test(p)) { kept.push(p); continue; }
+    if (!prose && !p.startsWith("-")) { kept.push(p); prose = true; }
+  }
+  return kept.join("\n\n");
+}
+
+export type DigestEntry = { id: string; title: string; summary: string; file: string };
+
+/**
+ * The id index a scope's aggregates declare: every `| ID | title | [f](${CLAUDE_PLUGIN_ROOT}/rules/f.md) | summary |`
+ * row in `skills/<scope>/rules/*.md` scoped to it. Aggregates the others link to come first (the
+ * common ones), then by name.
+ */
+export function digestEntries(scope: string, pluginRoot: string): DigestEntry[] {
+  const out: DigestEntry[] = [];
+  for (const s of scope.split(",").map((w) => w.trim()).filter(Boolean)) {
+    const dir = join(pluginRoot, "skills", s, "rules");
+    let names: string[];
+    try { names = readdirSync(dir).filter((n) => n.endsWith(".md")); } catch { continue; }
+    const texts = new Map(names.map((n) => [n, readFileSync(join(dir, n), "utf8")]));
+    const inScope = names.filter((n) => {
+      let a = parseFrontmatter(texts.get(n)!)[0]["applies-to"] ?? [];
+      if (typeof a === "string") a = [a];
+      return skillMatches(a.length ? a : ["all"], s);
+    });
+    const linkedBy = (n: string) => inScope.filter((o) => o !== n && texts.get(o)!.includes(n)).length;
+    inScope.sort((a, b) => linkedBy(b) - linkedBy(a) || a.localeCompare(b));
+    for (const n of inScope) {
+      for (const m of texts.get(n)!.matchAll(/^\| ([A-Z]+\d+) \| ([^|]+?) \| \[[^\]]+\]\(\$\{CLAUDE_PLUGIN_ROOT\}\/(rules\/[\w.-]+\.md)\) \| (.+?) \|$/gm)) {
+        out.push({ id: m[1], title: m[2], file: m[3], summary: m[4] });
+      }
+    }
+  }
+  return out;
+}
+
+/** `--digest`: per indexed id, its title, summary, canonical path and normative section. "" when the scope indexes nothing. */
+export function digest(scope: string, pluginRoot: string): string {
+  const entries = digestEntries(scope, pluginRoot);
+  if (!entries.length) return "";
+  const sections = entries.map((e) =>
+    `### ${e.id} — ${e.title}\n\n_${e.summary}_ (\`${e.file}\`)\n\n${extractRule(readFileSync(join(pluginRoot, e.file), "utf8"))}`);
+  return `# Rule digest for ${scope} (${entries.length})\n\n${sections.join("\n\n")}\n`.replaceAll("${CLAUDE_PLUGIN_ROOT}", pluginRoot);
+}
+
 // CLI entry point. Guarded by import.meta.main so importing this module for its exported
 // parseFrontmatter/skillMatches (the test does) does not execute the loader and dump 29 KB of
 // constraint prose into the test output.
@@ -213,6 +281,10 @@ if (!argv.length || argv[0] === "-h" || argv[0] === "--help") {
       "Usage:",
       "    bun scripts/load-constraints.ts workshop",
       "    bun scripts/load-constraints.ts workshop-revise",
+      "    bun scripts/load-constraints.ts ds --digest",
+      "",
+      "Modes: --index (default) lists matching rules with paths; --full prints their bodies;",
+      "--digest prints, per id the scope's skills/<scope>/rules/ aggregates index, its rule statement.",
     ].join("\n"),
   );
   process.exit(0);
@@ -224,16 +296,33 @@ let constraintsDir = "";
 // INDEX is the default in all three loaders: the prose for one scope is 38,524 bytes against 1,386
 // for the index, and a load-time injection is paid on every invocation. --full gives the bodies.
 let indexOnly = true;
+let digestMode = false;
 for (let i = 1; i < argv.length; i++) {
   if (argv[i] === "--index") indexOnly = true;
   else if (argv[i] === "--full") indexOnly = false;
+  else if (argv[i] === "--digest") digestMode = true;
   else if (argv[i] === "--dir" && argv[i + 1]) constraintsDir = argv[++i];
   else {
-    console.error(`Usage: load-constraints.ts <skill-name> [--dir <constraints-dir>] [--index|--full]`);
+    console.error(`Usage: load-constraints.ts <skill-name> [--dir <constraints-dir>] [--index|--full|--digest]`);
     process.exit(2);
   }
 }
 if (!constraintsDir) constraintsDir = resolve(import.meta.dir, "..", "rules");
+if (digestMode) {
+  // The plugin root is the corpus's parent, so --dir points a fixture tree at its own aggregates.
+  try {
+    const out = digest(skillName, resolve(constraintsDir, ".."));
+    if (!out) {
+      console.error(`Error: no aggregate under skills/${skillName}/rules/ indexes a rule id — NO rule digest was produced for '${skillName}'`);
+      process.exit(2);
+    }
+    process.stdout.write(out);
+    process.exit(0);
+  } catch (e) {
+    console.error(`Error: cannot build the rule digest for '${skillName}' from ${constraintsDir}: ${(e as Error).message}`);
+    process.exit(2);
+  }
+}
 // Exit 2 for every could-not-run, matching `rules-for` and teaching's loader. Neither of the codes
 // this used to return aborts a skill load: a bang tolerates exit 1, and exit 0 with an empty body
 // renders as "this skill has no constraints" — which is what a missing corpus looked like.

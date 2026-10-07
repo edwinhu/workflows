@@ -3993,15 +3993,50 @@ export function checkRuleSkillPreload(
     const fm = agentText === null ? null : frontmatterData(agentText)
     const listed = Array.isArray(fm?.skills) ? (fm!.skills as unknown[]).map(x => norm(String(x))) : []
     const missing = decl.skills.filter(s => !listed.includes(norm(s)))
-    if (missing.length === 0) continue
-    findings.push({
-      rule: 'P19 rule-skill preload',
-      severity: 'major',
-      file,
-      line,
-      detail: `agent "${name}" (${agentFile}) does not preload ${missing.join(', ')} (${decl.source}), so launched outside a dispatch it runs without the workflow's rules`,
-      remedy: `add ${missing.join(', ')} to the agent's frontmatter skills: list`,
-    })
+    if (missing.length) {
+      findings.push({
+        rule: 'P19 rule-skill preload',
+        severity: 'major',
+        file,
+        line,
+        detail: `agent "${name}" (${agentFile}) does not preload ${missing.join(', ')} (${decl.source}), so dispatched as a subagent it runs without the workflow's rules`,
+        remedy: `add ${missing.join(', ')} to the agent's frontmatter skills: list`,
+      })
+    }
+    // `skills:` reaches only a subagent. As the MAIN thread (a farm row, `claude --agent`) the agent gets
+    // its rules from `initialPrompt` alone: its first token is one slash command (stacking does not
+    // apply there, measured 2.1.287), covering itself plus every skill a `load-skills.ts` bang in it names.
+    const ip = typeof fm?.initialPrompt === 'string' ? fm.initialPrompt.trim() : ''
+    const cmd = /^\/(\S+)/.exec(ip)?.[1] ?? null
+    const covered = new Set<string>()
+    let why = ip ? `its initialPrompt "${ip}" opens with no slash command` : 'it has no initialPrompt'
+    if (cmd) {
+      const [cp, cn] = cmd.includes(':') ? cmd.split(':') : [pluginName, cmd]
+      const cmdFile = cp === pluginName ? join(pluginRoot ?? '', 'skills', cn, 'SKILL.md') : join(home, '.claude', 'skills', cp ?? '', 'skills', cn, 'SKILL.md')
+      const cmdText = readTextOrNull(cmdFile)
+      if (cmdText === null) why = `its initialPrompt names /${cmd}, which has no SKILL.md at ${cmdFile}`
+      else if (frontmatterData(cmdText)?.['user-invocable'] === false) why = `its initialPrompt names /${cmd}, which is user-invocable: false and so loads nothing (0 turns)`
+      else {
+        onRead(cmdFile)
+        covered.add(norm(cmd))
+        for (const l of cmdText.split('\n').filter(l => l.includes('load-skills.ts'))) {
+          const args = /exec bun \S+ ([^;`]+);/.exec(l)?.[1] ?? ''
+          for (const n of args.trim().split(/\s+/).filter(Boolean)) covered.add(norm(n.includes(':') ? n : `${cp}:${n}`))
+        }
+        why = `its initialPrompt /${cmd} loads ${[...covered].join(', ')}`
+      }
+    }
+    const notOnMain = decl.skills.filter(s => !covered.has(norm(s)))
+    if (notOnMain.length) {
+      findings.push({
+        rule: 'P19 rule-skill preload',
+        severity: 'major',
+        file,
+        line,
+        detail: `agent "${name}" (${agentFile}) does not invoke ${notOnMain.join(', ')} on the main-thread path: ${why}, and a skills: preload never reaches a farm row or \`claude --agent\``,
+        remedy: `set the agent's initialPrompt to /<skill> naming the rule skill, or to a user-invocable skill whose bangs run load-skills.ts on ${notOnMain.join(', ')}`,
+      })
+    }
   }
   return findings
 }

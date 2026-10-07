@@ -18,6 +18,7 @@ skills:
   - writing-general
   - writing-legal
   - ai-anti-patterns
+initialPrompt: /prose-rules-legal
 hooks:
   PreToolUse:
     - matcher: Read|Bash|Edit|Write|MultiEdit

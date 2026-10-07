@@ -19,6 +19,7 @@ skills:
   - writing-general
   - writing-econ
   - ai-anti-patterns
+initialPrompt: /prose-rules-econ
 hooks:
   PreToolUse:
     - matcher: Read|Bash|Edit|Write|MultiEdit
