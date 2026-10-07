@@ -3,7 +3,7 @@ import { spawnSync } from 'child_process';
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
 import { join, basename, dirname, resolve } from 'path';
-import { decisionsCall, OPENROUTER_OUT_OF_CREDITS } from '../../../hooks/work-hold.ts';
+import { decisionsCall, decisionThreshold, OPENROUTER_OUT_OF_CREDITS } from '../../../hooks/work-hold.ts';
 
 export const defaultRulesDir = join(__dirname, '../../../constraints/jev');
 
@@ -15,6 +15,8 @@ export interface Verdict {
   statement?: string;
   /** VIOLATED only, when the rule declares SPANS: the `file:line` candidates the verdict was judged over. */
   spans?: string[];
+  /** 'openai' when the luna fallback answered: the verdict was judged at decisionThreshold, not blockAt. */
+  provider?: string;
 }
 export interface Unavailable {
   rule: string;
@@ -106,7 +108,7 @@ export function collectEvidence(opts: { files: string[]; plan?: string; root?: s
   }
 }
 
-// One rule's Decisions call: P(VIOLATED), or the reason it could not be had (one retry).
+// One rule's Decisions call: P(VIOLATED) and the reply's provider, or the reason it could not be had (one retry).
 const STATE_CAP = 60000;
 
 function evidencePaths(state: any): string[] {
@@ -122,8 +124,8 @@ function cap(text: string, n: number): string {
 }
 
 export function scoreRule(
-  ruleName: string, data: any, projectName: string, opts: { caller?: string; cache?: boolean } = {},
-): { p: number } | { unavailable: string } {
+  ruleName: string, data: any, projectName: string, opts: { caller?: string; cache?: boolean; fallback?: boolean } = {},
+): { p: number; provider?: string } | { unavailable: string } {
   const { state, proposition, criteria, subject, deliverable } = data;
   const fullState = cap(
     preamble(subject || `one ${deliverable ?? 'data-science'} deliverable`, projectName, evidencePaths(state)) + JSON.stringify(state, null, 1),
@@ -168,7 +170,7 @@ export function scoreRule(
       continue;
     }
 
-    return { p };
+    return ans.provider ? { p, provider: ans.provider } : { p };
   }
 
   return { unavailable: finalError };
@@ -179,7 +181,7 @@ export function scoreRule(
 // (hooks/jev/) spends one call per edit, and a failure is every rule unavailable.
 export function scoreRulesBatch(
   evidenceData: Record<string, any>, projectName: string, opts: { maxTimeSeconds?: number } = {},
-): Record<string, { p: number } | { unavailable: string }> {
+): Record<string, { p: number; provider?: string } | { unavailable: string }> {
   const names = Object.keys(evidenceData);
   if (names.length === 0) return {};
   const { state, questions } = batchRequest(evidenceData, projectName);
@@ -194,7 +196,8 @@ export function scoreRulesBatch(
   }
   return Object.fromEntries(names.map((n, i) => {
     const p = ans?.answers?.[`q${i}`]?.probabilities?.VIOLATED;
-    return [n, typeof p === 'number' ? { p } : { unavailable: `missing answers.q${i}.probabilities.VIOLATED in reply` }];
+    if (typeof p !== 'number') return [n, { unavailable: `missing answers.q${i}.probabilities.VIOLATED in reply` }];
+    return [n, ans.provider ? { p, provider: ans.provider } : { p }];
   }));
 }
 
@@ -264,8 +267,9 @@ export function checkRules(opts: {
       unavailable.push({ rule: ruleName, reason: r.unavailable });
       continue;
     }
-    const verdict = r.p >= opts.blockAt ? 'VIOLATED' : 'MET';
+    const verdict = r.p >= decisionThreshold(r, opts.blockAt) ? 'VIOLATED' : 'MET';
     const v: Verdict = batched ? { rule: ruleName, p: r.p, verdict, statement: statement(data.proposition) } : { rule: ruleName, p: r.p, verdict };
+    if (r.provider) v.provider = r.provider;
     if (verdict === 'VIOLATED' && Array.isArray(data.spans) && data.spans.length) v.spans = data.spans;
     verdicts.push(v);
   }
@@ -365,7 +369,7 @@ function main() {
 
   if (unavailable.length > 0) {
     process.exit(1);
-  } else if (verdicts.some(v => v.p >= blockAt)) {
+  } else if (verdicts.some(v => v.verdict === 'VIOLATED')) {
     process.exit(2);
   } else {
     process.exit(0);

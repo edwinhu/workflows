@@ -8,13 +8,16 @@
 //   jev-spend --json          the rows as JSON
 //
 // Read-only. Cost is the reply's own usage.cost; a cache hit costs nothing and `saved` is what the
-// original ask cost. Times are local (the day boundary is local midnight, not OpenRouter's UTC day).
+// original ask cost. A call the OpenAI fallback (gpt-6-luna) answered is its own `<key>/luna` row,
+// costed at $0.10/M input tokens. Times are local (the day boundary is local midnight, not OpenRouter's UTC day).
 import { existsSync, readFileSync } from 'node:fs'
 import { jevCallLogPath } from '../hooks/work-hold.ts'
 
 export interface CallRecord {
   ts: string
   caller: string
+  /** 'openai' for the luna fallback (decisionsCall's lunaFallback); absent for Jev. */
+  provider?: string
   session?: string
   stateBytes?: number
   questions?: number
@@ -64,7 +67,8 @@ export function summarize(recs: CallRecord[], opts: { by: 'caller' | 'session'; 
     const t = Date.parse(r.ts)
     if (!(t >= opts.sinceMs)) continue
     const day = localDay(r.ts)
-    const key = (opts.by === 'session' ? r.session : r.caller) || '-'
+    // luna fallback spend is its own row, never folded into the Jev spend it stood in for
+    const key = ((opts.by === 'session' ? r.session : r.caller) || '-') + (r.provider === 'openai' ? '/luna' : '')
     const id = `${day}\0${key}`
     const row = rows.get(id) ?? { day, key, calls: 0, billed: 0, hits: 0, failed: 0, inTokens: 0, stateBytes: 0, cost: 0, saved: 0 }
     rows.set(id, row)

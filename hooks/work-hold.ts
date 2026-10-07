@@ -39,6 +39,9 @@ import { createHash } from 'node:crypto'
 import { dirname, join } from 'node:path'
 import { homedir, tmpdir } from 'node:os'
 import { holdStateName } from './guards/hold.ts'
+import { decisionThreshold } from './jev/rules.ts'
+
+export { decisionThreshold }
 
 interface State {
   /** The goal check. EMPTY means a check-less, Jev-only hold: the goal is the whole objective. */
@@ -625,9 +628,11 @@ export function parseNoul(
     const p = typeof a?.noul === 'number' ? a.noul : null
     if (p === null) return { verdict: 'UNAVAILABLE', reason: 'no noul answer in the decision reply' }
     const pct = Math.round(p * 100)
-    return p >= threshold
-      ? { verdict: 'MET', reason: `judge put the goal met at ${pct}% (threshold ${Math.round(threshold * 100)}%)` }
-      : { verdict: 'UNMET', reason: `judge put the goal met at only ${pct}% (threshold ${Math.round(threshold * 100)}%)` }
+    const bar = decisionThreshold(d, threshold)
+    const at = `(threshold ${Math.round(bar * 100)}%${d?.provider === 'openai' ? ', luna fallback' : ''})`
+    return p >= bar
+      ? { verdict: 'MET', reason: `judge put the goal met at ${pct}% ${at}` }
+      : { verdict: 'UNMET', reason: `judge put the goal met at only ${pct}% ${at}` }
   } catch {
     return { verdict: 'UNAVAILABLE', reason: 'decision reply was not parsable json' }
   }
@@ -661,21 +666,39 @@ export function outOfCredits(status: number, body: string): boolean {
   }
 }
 
-/** The OpenRouter key every caller uses: $WORK_HOLD_JUDGE_TOKEN, else the agenix secret. Null with the reason. */
-export function openrouterKey(): { key: string; missing: null } | { key: null; missing: string } {
-  let token = process.env.WORK_HOLD_JUDGE_TOKEN || ''
+type Key = { key: string; missing: null } | { key: null; missing: string }
+
+/** A key from $<envVar>, else $XDG_RUNTIME_DIR/agenix/<secret>. Null with the reason. */
+function keyFrom(envVar: string, secret: string, name: string): Key {
+  let token = process.env[envVar] || ''
   if (!token) {
     const runtime = process.env.XDG_RUNTIME_DIR || '/run/user/1000'
     try {
-      token = readFileSync(`${runtime}/agenix/openrouter-api-key`, 'utf8').trim()
+      token = readFileSync(`${runtime}/agenix/${secret}`, 'utf8').trim()
     } catch {
-      return { key: null, missing: 'no openrouter key (agenix secret not present)' }
+      return { key: null, missing: `no ${name} key (agenix secret not present)` }
     }
   }
-  return token ? { key: token, missing: null } : { key: null, missing: 'empty openrouter key' }
+  return token ? { key: token, missing: null } : { key: null, missing: `empty ${name} key` }
+}
+
+/** The OpenRouter key every caller uses: $WORK_HOLD_JUDGE_TOKEN, else the agenix secret. Null with the reason. */
+export function openrouterKey(): Key {
+  return keyFrom('WORK_HOLD_JUDGE_TOKEN', 'openrouter-api-key', 'openrouter')
+}
+
+/** The key the OpenAI Decisions fallback uses: $OPENAI_API_KEY, else the agenix secret. Null with the reason. */
+export function openaiKey(): Key {
+  return keyFrom('OPENAI_API_KEY', 'openai-api-key', 'openai')
 }
 
 const DECISIONS_URL = 'https://openrouter.ai/api/alpha/decisions'
+
+/** Jev pointed anywhere but its real endpoint: a test's stub. */
+function jevStubbed(): boolean {
+  const u = process.env.WORK_HOLD_DECISIONS_URL
+  return !!u && u !== DECISIONS_URL
+}
 
 /** Who is spending: opts.caller, else $JEV_CALLER, else the running script's name. */
 function callerName(explicit?: string): string {
@@ -696,7 +719,7 @@ export function jevCallLogPath(): string | null {
   const v = process.env.JEV_CALL_LOG
   if (v === 'off') return null
   if (v) return v
-  if (process.env.WORK_HOLD_DECISIONS_URL && process.env.WORK_HOLD_DECISIONS_URL !== DECISIONS_URL) return null
+  if (jevStubbed()) return null
   return join(process.env.XDG_STATE_HOME || join(homedir(), '.local/state'), 'jev', 'calls.ndjson')
 }
 
@@ -711,8 +734,7 @@ export function jevCallLogPath(): string | null {
 export function jevCacheDir(): string | null {
   const v = process.env.JEV_CACHE
   if (v === 'off') return null
-  const stub = process.env.WORK_HOLD_DECISIONS_URL && process.env.WORK_HOLD_DECISIONS_URL !== DECISIONS_URL
-  if (stub && v !== 'on') return null
+  if (jevStubbed() && v !== 'on') return null
   return process.env.JEV_CACHE_DIR || join(process.env.XDG_CACHE_HOME || join(homedir(), '.cache'), 'jev')
 }
 
@@ -752,11 +774,115 @@ function sweepCache(dir: string, ttl: number, now: number): void {
   } catch {}
 }
 
+type Question = { type: string; instructions: string; criteria?: Record<string, string> }
+type DecisionResult = { stdout: string; unavailable: null } | { stdout: null; unavailable: string }
+
+/**
+ * One POST through curl. The key AND the payload go to curl as one config on stdin (`-K -`), never
+ * argv: argv is world-readable in `ps`, and a temp file holding the key outlives a child killed
+ * mid-call. curl exits 0 on a 4xx, so the status rides on a trailing line: a 402 body otherwise
+ * reaches every caller as a reply with no answers, and the empty account reads as a parse failure.
+ * Null when curl itself failed (unreachable, timed out).
+ */
+function curlPost(url: string, key: string, payload: string, maxTime: number): { status: number; body: string } | null {
+  const r = spawnSync(
+    'curl',
+    ['-sS', '--max-time', String(maxTime), '-X', 'POST', url,
+     '-K', '-',
+     '-H', 'Content-Type: application/json',
+     '-w', '\n%{http_code}'],
+    // The spawn timeout is a backstop 30 s behind curl's own cap: 90 s at the default 60.
+    {
+      encoding: 'utf8',
+      input: `header = ${curlQuote(`Authorization: Bearer ${key}`)}\ndata-binary = ${curlQuote(payload)}\n`,
+      timeout: (maxTime + 30) * 1000,
+    },
+  )
+  if (r.error || r.status !== 0) return null
+  const raw = r.stdout || ''
+  const nl = raw.lastIndexOf('\n')
+  return { body: nl >= 0 ? raw.slice(0, nl) : raw, status: Number(nl >= 0 ? raw.slice(nl + 1).trim() : 0) }
+}
+
+const OPENAI_DECISIONS_URL = 'https://api.openai.com/v1/decisions'
+const LUNA_MODEL = 'gpt-6-luna'
+
+/**
+ * The fallback when Jev failed: OpenAI's Decisions API on gpt-6-luna, its answer translated to Jev's
+ * reply shape and tagged `provider: "openai"` so every reader judges it at decisionThreshold. Each
+ * question goes as a predicate — a noul's instructions verbatim, a choice's instructions with its
+ * VIOLATED criterion, whose probability becomes probabilities.VIOLATED. Null (the caller keeps Jev's
+ * own result) when there is no key, a question it cannot pose, or no complete answer. Never cached.
+ *
+ * $OPENAI_DECISIONS_URL names the endpoint. A stubbed Jev never falls through to the real OpenAI
+ * endpoint: every suite that points Jev at a dead port or a 5xx stub would otherwise spend live calls
+ * once the key is on the machine.
+ */
+function lunaFallback(state: string, questions: Record<string, Question>, rec: Record<string, unknown>, maxTime: number): DecisionResult | null {
+  const url = process.env.OPENAI_DECISIONS_URL || (jevStubbed() ? null : OPENAI_DECISIONS_URL)
+  if (!url) return null
+  const preds: { type: 'predicate'; name: string; instructions: string }[] = []
+  for (const [name, q] of Object.entries(questions)) {
+    if (q.type === 'noul') preds.push({ type: 'predicate', name, instructions: q.instructions })
+    else if (q.type === 'choice' && typeof q.criteria?.VIOLATED === 'string')
+      preds.push({ type: 'predicate', name, instructions: `${q.instructions}\n\nAnswer the probability that this is true of the state: ${q.criteria.VIOLATED}` })
+    else return null
+  }
+  const k = openaiKey()
+  if (k.key === null) return null
+
+  const started = Date.now()
+  const base = { ...rec, ts: new Date(started).toISOString(), provider: 'openai', model: LUNA_MODEL, cache: 'off' }
+  const r = curlPost(url, k.key, JSON.stringify({ model: LUNA_MODEL, input: state, questions: preds }), maxTime)
+  if (!r) {
+    logCall({ ...base, ms: Date.now() - started, unavailable: 'openai decisions endpoint unreachable' })
+    return null
+  }
+  let reply: any = null
+  try {
+    reply = JSON.parse(r.body)
+  } catch {}
+  const prob = new Map<string, number>()
+  for (const a of Array.isArray(reply?.answers) ? reply.answers : [])
+    if (typeof a?.name === 'string' && typeof a.probability === 'number' && a.probability >= 0 && a.probability <= 1)
+      prob.set(a.name, a.probability)
+  const answers: Record<string, unknown> = {}
+  for (const [name, q] of Object.entries(questions)) {
+    const p = prob.get(name)
+    if (p === undefined) continue
+    if (q.type === 'noul') {
+      answers[name] = { type: 'noul', noul: p }
+    } else {
+      const rest = Object.keys(q.criteria!).filter(c => c !== 'VIOLATED')
+      const probabilities: Record<string, number> = { VIOLATED: p }
+      for (const c of rest) probabilities[c] = (1 - p) / rest.length
+      const choice = Object.entries(probabilities).reduce((a, b) => (b[1] > a[1] ? b : a))[0]
+      answers[name] = { type: 'choice', choice, probabilities }
+    }
+  }
+  const inTokens = typeof reply?.usage?.input_tokens === 'number' ? reply.usage.input_tokens : null
+  const outTokens = typeof reply?.usage?.output_tokens === 'number' ? reply.usage.output_tokens : null
+  // gpt-6-luna is priced at $0.10/M in
+  const cost = inTokens === null ? null : (inTokens * 0.10) / 1e6
+  const complete = r.status >= 200 && r.status < 300 && Object.keys(questions).every(q => q in answers)
+  logCall({ ...base, ms: Date.now() - started, status: r.status, inTokens, outTokens, cost, ...(complete ? {} : { unavailable: 'no answers' }) })
+  if (!complete) return null
+  return {
+    stdout: JSON.stringify({ provider: 'openai', model: LUNA_MODEL, answers, usage: { input_tokens: inTokens, output_tokens: outTokens, cost } }),
+    unavailable: null,
+  }
+}
+
+/**
+ * When Jev fails — curl failed, HTTP 429, 402 or any 5xx, or a reply that does not answer every
+ * question — the OpenAI Decisions fallback (lunaFallback) is asked once, unless opts.fallback is false;
+ * without its answer the caller gets Jev's own result unchanged. A Jev that answers is never second-guessed.
+ */
 export function decisionsCall(
   state: string,
-  questions: Record<string, { type: string; instructions: string; criteria?: Record<string, string> }>,
-  opts: { maxTimeSeconds?: number; model?: string; caller?: string; session?: string; cache?: boolean } = {},
-): { stdout: string; unavailable: null } | { stdout: null; unavailable: string } {
+  questions: Record<string, Question>,
+  opts: { maxTimeSeconds?: number; model?: string; caller?: string; session?: string; cache?: boolean; fallback?: boolean } = {},
+): DecisionResult {
   const url = process.env.WORK_HOLD_DECISIONS_URL || DECISIONS_URL
   const model = opts.model || process.env.WORK_HOLD_DECISIONS_MODEL || 'typesafe/jev-1.13'
   const maxTime =
@@ -773,6 +899,8 @@ export function decisionsCall(
     stateBytes: Buffer.byteLength(state),
     questions: Object.keys(questions).length,
   }
+  const orLuna = (jev: DecisionResult): DecisionResult =>
+    (opts.fallback === false ? null : lunaFallback(state, questions, rec, maxTime)) ?? jev
 
   const payload = JSON.stringify({ state, model, questions })
   const cacheDir = opts.cache === false ? null : jevCacheDir()
@@ -803,32 +931,13 @@ export function decisionsCall(
     return { stdout: null, unavailable: k.missing }
   }
 
-  // The key AND the payload go to curl as one config on stdin (`-K -`), never argv: argv is
-  // world-readable in `ps`, and a temp file holding the key outlives a child killed mid-call.
-  // curl exits 0 on a 4xx, so the status rides on a trailing line: a 402 body otherwise reaches every
-  // caller as a reply with no answers, and the empty account reads as a parse failure.
-  const r = spawnSync(
-    'curl',
-    ['-sS', '--max-time', String(maxTime), '-X', 'POST', url,
-     '-K', '-',
-     '-H', 'Content-Type: application/json',
-     '-w', '\n%{http_code}'],
-    // The spawn timeout is a backstop 30 s behind curl's own cap: 90 s at the default 60.
-    {
-      encoding: 'utf8',
-      input: `header = ${curlQuote(`Authorization: Bearer ${k.key}`)}\ndata-binary = ${curlQuote(payload)}\n`,
-      timeout: (maxTime + 30) * 1000,
-    },
-  )
+  const r = curlPost(url, k.key, payload, maxTime)
   const done = { ...rec, cache: cachePath ? 'miss' : 'off', ms: 0 }
-  if (r.error || r.status !== 0) {
+  if (!r) {
     logCall({ ...done, ms: Date.now() - started, unavailable: 'decisions endpoint unreachable' })
-    return { stdout: null, unavailable: 'decisions endpoint unreachable' }
+    return orLuna({ stdout: null, unavailable: 'decisions endpoint unreachable' })
   }
-  const raw = r.stdout || ''
-  const nl = raw.lastIndexOf('\n')
-  const body = nl >= 0 ? raw.slice(0, nl) : raw
-  const status = Number(nl >= 0 ? raw.slice(nl + 1).trim() : 0)
+  const { body, status } = r
   let reply: any = null
   try {
     reply = JSON.parse(body)
@@ -843,10 +952,11 @@ export function decisionsCall(
     cost: typeof u.cost === 'number' ? u.cost : null,
     ...(reply?.answers ? {} : { unavailable: outOfCredits(status, body) ? 'out of credits' : 'no answers' }),
   })
-  if (outOfCredits(status, body)) return { stdout: null, unavailable: OPENROUTER_OUT_OF_CREDITS }
+  if (outOfCredits(status, body)) return orLuna({ stdout: null, unavailable: OPENROUTER_OUT_OF_CREDITS })
+  const answered = Object.keys(questions).every(q => reply?.answers?.[q])
   // Only a reply that answered EVERY question is kept: an error or a partial reply is asked again,
   // never replayed — a caller's retry would otherwise get the same miss back.
-  if (cachePath && status < 400 && Object.keys(questions).every(q => reply?.answers?.[q])) {
+  if (cachePath && status < 400 && answered) {
     try {
       mkdirSync(cacheDir!, { recursive: true })
       const tmp = `${cachePath}.${process.pid}.tmp`
@@ -855,7 +965,8 @@ export function decisionsCall(
       sweepCache(cacheDir!, ttl, started)
     } catch {}
   }
-  return { stdout: body, unavailable: null }
+  const jev: DecisionResult = { stdout: body, unavailable: null }
+  return status === 429 || status === 402 || status >= 500 || !answered ? orLuna(jev) : jev
 }
 
 function judgeViaDecisions(

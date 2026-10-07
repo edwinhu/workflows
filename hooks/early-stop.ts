@@ -35,7 +35,8 @@
  * through that file's exported `decisionsCall`/`parseNoul`. There is exactly one Decisions transport
  * in this plugin and this hook does not add a second.
  *
- * Opt out for a session with `EARLY_STOP_HOOK=0`. Tune the bar with `EARLY_STOP_THRESHOLD`.
+ * Opt out for a session with `EARLY_STOP_HOOK=0`. Tune the bar with `EARLY_STOP_THRESHOLD`; an
+ * answer from the luna fallback is held to at least 0.95 (`decisionThreshold`, applied in `parseNoul`).
  */
 
 import { appendFileSync, existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
