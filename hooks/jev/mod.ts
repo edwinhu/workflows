@@ -1,5 +1,6 @@
 // The per-edit Jev mod: after an Edit/Write/MultiEdit lands, score the file against its rule set's
-// WIRED Jev rules and add one line of context per rule at p(VIOLATED) >= 0.85. Advisory only.
+// WIRED Jev rules and add one line of context per rule at p(VIOLATED) >= 0.85, or >= 0.95 when the
+// luna fallback answered (rules.ts decisionThreshold). Advisory only.
 //
 //   rule set   hooks/jev/rules.ts ruleSetFor: exam question .typ -> exams, skill/agent/command
 //              files, manifests and .planning/ -> authoring, lecture notes -> notes and a lecture
@@ -141,7 +142,7 @@ async function evaluate($: $, { set, dir, register }: Target, file: string, rang
   }
   const ms = (await $.clock.now()) - started
   if (out.unavailable?.length) log($, `${file}: unavailable ${out.unavailable.map(u => `${u.rule} (${u.reason})`).join('; ')}`)
-  log($, `${file}: ${set}${register ? `+${register.split('/').pop()}` : ''} ${(out.verdicts ?? []).map(v => `${v.rule}=${v.p}`).join(' ')} in ${ms} ms`)
+  log($, `${file}: ${set}${register ? `+${register.split('/').pop()}` : ''} ${(out.verdicts ?? []).map(v => `${v.rule}=${v.p}${v.provider === 'openai' ? '(luna)' : ''}`).join(' ')} in ${ms} ms`)
   return contextLines(out.verdicts ?? [], shown(cwd, file), ranges)
 }
 

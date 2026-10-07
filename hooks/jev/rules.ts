@@ -192,12 +192,33 @@ export interface Verdict {
   rule: string
   p: number
   statement?: string
+  /** 'openai' when the answer came from the luna fallback rather than Jev. */
+  provider?: string
 }
 
-/** One line per rule at or above the bar; nothing for the rest. */
+/** The least bar a luna (OpenAI Decisions fallback) answer is judged at: it is the weaker discriminator. */
+export const LUNA_FLOOR = 0.95
+
+/**
+ * The bar one decision is judged at: max(threshold, LUNA_FLOOR) when decisionsCall tagged it
+ * `provider: "openai"`, else the threshold itself. `reply` is decisionsCall's raw stdout, or anything
+ * carrying the reply's provider (a rule-check verdict). Lives here, not in work-hold.ts, because the
+ * mod kit cannot load Node; work-hold.ts re-exports it.
+ */
+export function decisionThreshold(reply: string | { provider?: unknown } | null | undefined, threshold: number): number {
+  let provider: unknown
+  if (typeof reply === 'string') {
+    try {
+      provider = JSON.parse(reply)?.provider
+    } catch {}
+  } else provider = reply?.provider
+  return provider === 'openai' ? Math.max(threshold, LUNA_FLOOR) : threshold
+}
+
+/** One line per rule at or above the bar (decisionThreshold of BLOCK_AT); nothing for the rest. */
 export function contextLines(verdicts: Verdict[], file: string, ranges: Range[]): string[] {
   return verdicts
-    .filter(v => typeof v.p === 'number' && v.p >= BLOCK_AT)
+    .filter(v => typeof v.p === 'number' && v.p >= decisionThreshold(v, BLOCK_AT))
     .sort((a, b) => b.p - a.p)
     .map(v => `Jev ${v.rule}: ${file}:${spanText(ranges)} — ${v.statement ?? 'see the rule'} (p=${v.p.toFixed(2)})`)
 }
