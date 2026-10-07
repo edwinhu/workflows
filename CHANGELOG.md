@@ -6,6 +6,10 @@
 
 - **`gemini-batch` is renamed `gemini-vertex`:** the skill now covers Cloud Flex (≤10 documents, 5da49c61), Priority and synchronous smoke tests, not only Batch; the invariant is the platform — Vertex, never AI Studio — so the name states it. `skills/gemini-batch/` → `skills/gemini-vertex/`, `Skill workflows:gemini-vertex` in the bulk-guard deny/warn text, routing provider id `gemini-vertex` in `scripts/lib/route.ts`, and every cross-reference; "gemini batch", "batch job" and "Gemini Batch API" stay as trigger phrases.
 
+### Fixed
+
+- **`ds-chart-typography` fails a sans-serif chart and a low-DPI raster (A5):** the founder-ceo-ipo v2 theme (`font.family: sans-serif`, Liberation Sans, PNGs at 200 dpi) passed with exit 0. The lint now reads `.mplstyle`, `rcParams`, `matplotlib.rc`, `sns.set_theme` and Altair/pyobsplot font keys, fails a sans or monospace face, an unset `font.family`, and a raster below 300 DPI; `--render` fails a family matplotlib resolves to a sans file or to no installed face. The ds `check.sh` runs it as the `chart-typography` leg. `chart_font` in `.claude-workflows.json` allows a genuinely sans host.
+
 ## [6.38.1] - 2026-10-03
 
 ### Added

@@ -10,3 +10,4 @@ sparse_dot_topn
 pyarrow
 pypdf
 pymupdf
+matplotlib

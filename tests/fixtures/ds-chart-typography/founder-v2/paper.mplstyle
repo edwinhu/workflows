@@ -1,0 +1,32 @@
+# Project chart theme (A5): the one registration every figure script loads with plt.style.use.
+# Host document is an email body (client default Arial); Liberation Sans is metric-identical to Arial.
+font.family: sans-serif
+font.sans-serif: Liberation Sans, Arial, DejaVu Sans
+font.size: 12
+axes.titlesize: 13
+axes.titlelocation: left
+axes.labelsize: 12
+figure.titlesize: 15
+xtick.labelsize: 11
+ytick.labelsize: 11
+xtick.major.size: 0
+ytick.major.size: 0
+xtick.color: 52514e
+ytick.color: 52514e
+text.color: 0b0b0b
+axes.labelcolor: 0b0b0b
+axes.edgecolor: e5e4e0
+axes.spines.top: False
+axes.spines.right: False
+axes.grid: True
+axes.grid.axis: y
+grid.color: e5e4e0
+grid.linewidth: 0.8
+axes.axisbelow: True
+# Okabe-Ito categorical order (Wong 2011): blue, orange, green, sky, vermillion, purple
+axes.prop_cycle: cycler('color', ['0072b2', 'e69f00', '009e73', '56b4e9', 'd55e00', 'cc79a7'])
+figure.facecolor: white
+axes.facecolor: white
+savefig.facecolor: white
+svg.fonttype: path
+svg.hashsalt: founder-ceo-ipo  # fixed element ids, so reruns write identical SVG (E1)

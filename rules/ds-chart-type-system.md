@@ -3,7 +3,7 @@ name: ds-chart-type-system
 applies-to: [ds-delegate]
 ---
 
-**What a script already decides:** `constraints/ds-chart-typography.py` decides the registered theme, per-chart styling, the single palette and vector output. Whether the font matches the host document it cannot see, and that is this rule.
+**What a script already decides:** `constraints/ds-chart-typography.py` decides the registered theme, per-chart styling, the single palette, vector output, a serif face (static, and with `--render` the file matplotlib actually draws) and the 300 DPI raster floor; the ds `check.sh` runs it. Which serif matches the host document it cannot see, and that is this rule.
 
 ## Rule
 
@@ -64,6 +64,8 @@ Colour is A6 (`ds-chart-color.md`); this file is type only.
 
 Find the document's font rather than assuming: read it off the rendered page (marimo sets
 Lora/PT Sans; a Typst deck uses whatever the template declares; a docx uses its style).
+An exhibit sent by email or chat belongs to its manuscript: the host is that manuscript, never the
+channel.
 
 ## Rationale
 
@@ -80,4 +82,6 @@ python3 ${CLAUDE_PLUGIN_ROOT}/constraints/ds-chart-typography.py <file.py|dir>
 
 Exits non-zero on: charts present with no theme registration; per-chart font or axis
 configuration; hex colours outside a single palette block; a matplotlib save of a `.png` with no
-`.svg` save at the same stem in the file.
+`.svg` save at the same stem in the file; a sans or monospace `font.family` (or theme font) or a
+theme that never sets one; a raster saved below 300 DPI; and, with `--render`, a family that
+resolves to a sans file or to no installed face at all.
