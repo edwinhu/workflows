@@ -16,6 +16,18 @@ part OpenCorporates is weakest on and the part corporate-structure work actually
 
 Vendor claims 75M+ entities; the Dewey primary table ships **84,376,737 rows**.
 
+**Coverage is uneven by state (measured 2026-10-07).**
+
+- **Delaware has no status.** All 1,777,879 DE domestic corporations have `STATUS = 'unknown'`; `STATUS_RAW` and `DISSOLVED_ON` are 0% filled and Filings has 0 `us_de` rows. Only identity fields (name, entity number, `FORMED_ON`) are present.
+- **Nevada is a thin slice.** Only 37,319 `us_nv` rows, nearly all entity numbers `NV2023…` formed 2023-02-06..2023-06-06. Status is filled (use `STATUS_RAW`: the enum maps both Revoked and Default to `suspended`), but Revoked/Default have no dated filing and `DISSOLVED_ON` is filled for 1 of 1,827 NV domestic corporations.
+- **It is a snapshot.** The Companies table holds current status; there is no status-change-date column (`AS_OF`/`LAST_CHECKED` are retrieval dates), so "status within N years" outcomes cannot be built from it.
+
+### OpenCorporates limits (checked 2026-10-07)
+
+- **No Delaware status.** OpenCorporates' own register page reports a 0% fill rate for `current_status` in `us_de`, because Delaware's public registry does not publish entity status (Delaware sells status per entity). Nevada (`us_nv`) is 100% filled and updated daily. A Nevada-vs-Delaware status comparison is therefore not possible from OpenCorporates.
+- **The API needs a paid or approved account.** The user's OpenCorporates login (1Password item `opencorporates.com`, vault Shared with Agents) is a web account only: its account page offers "Get an OpenCorporates API account now" and shows no token. Self-serve API plans start at £225/month for 500 calls (also £660/2,500 and £1,200/5,000 per month); universities and research groups can apply for free access. There is no key in agenix.
+- **Do not scrape the website as a substitute** — the API terms and rate limits exist for that use. GovFiles does not fill these gaps either: it also has no Delaware status, carries Nevada only for entities formed around early 2023, and has no CIK identifiers (see the coverage caveat above). For a NV-vs-DE entity-status outcome, neither source works; SEC-side measures (Form 15, last 10-K date) are the comparable alternative.
+
 ## Tables (7)
 
 `GovFiles Companies` is PRIMARY; the other six are SUPPLEMENTARY and every one of them joins on
@@ -26,7 +38,7 @@ the composite key **`(JURISDICTION_CODE, ENTITY_NUMBER)`** — both 100% populat
 | **GovFiles Companies** (primary) | one row per registered entity |
 | GovFiles Company Addresses | one row per address slot (registered / headquarters / mailing) |
 | GovFiles Company Filings | one row per statutory filing (annual reports, amendments) |
-| GovFiles Company Identifiers | one row per external identifier — **incl. SEC CIK and LEI** |
+| GovFiles Company Identifiers | one row per external identifier — FEIN and four state legacy IDs in FL, MA, MI, TX, VT, WA only; **0 `us_sec_cik` rows** (2026-10-07) |
 | GovFiles Company Industry Codes | one row per industry code, **as filed** |
 | GovFiles Company Names | one row per non-current name (former legal name, DBA, alias) |
 | GovFiles Company Relationships | one row per entity-to-entity link — **mostly unusable, see below** |
@@ -43,7 +55,7 @@ dense, so address-based clustering (shared registered agent addresses, mass-regi
 is viable — this is the closest thing to a network view the dataset supports.
 
 **Company Identifiers** — `SCHEME` (100%) + `VALUE` (100%). A tall key-value table; documented
-scheme examples are **`us_fein`, `us_sec_cik`, `lei`**.
+scheme examples are `us_fein`, `us_sec_cik`, `lei`, but the 2026-10-07 snapshot has **0 `us_sec_cik` rows** and only 5 schemes (FEIN plus four state legacy IDs), in 6 states (FL, MA, MI, TX, VT, WA); 0 identifier rows for `us_nv` or `us_de`. The CIK bridge does not exist in practice.
 
 **Company Industry Codes** — `CODE` (100%), `SCHEME` (100%, e.g. `us_naics_2017`, `us_sic_1987`),
 `DESCRIPTION` (62%). Tall, as filed, and **multi-scheme** — one entity can carry both a NAICS and
@@ -177,14 +189,13 @@ of raw data) do not travel with API-sourced rows, which are governed by GovFiles
 
 ## Use cases in this research programme
 
-**The CIK bridge is the highest-value thing here.** `Company Identifiers` carries
-`SCHEME = 'us_sec_cik'`, which links a state registry entity straight to EDGAR — and from there to
-gvkey/permno by the usual routes (`wciklink` in the `wrds` skill). It also carries `lei` and
-`us_fein`. That turns GovFiles from "a big list of companies" into a **linking table between
-state incorporation records and the securities-research identifier space**, which is exactly what
-`fuzzy-name-matching` exists to work around when no shared key is available. Measure the CIK fill
-rate on your sample first — the *table* is 100% populated on `SCHEME`/`VALUE`, but that says
-nothing about how many entities have a CIK row at all.
+**There is no CIK bridge in the 2026-10-07 snapshot.** The documented schemes include `us_sec_cik`
+and `lei`, but `Company Identifiers` has 0 `us_sec_cik` rows and identifiers only in FL, MA, MI, TX,
+VT, WA. Link to the securities-research identifier space by name instead: take EDGAR company names
+from `wrdssec_all.wrds_forms`, match exactly on normalized legal name (see `fuzzy-name-matching`
+for anything looser), and measure the match rate and the multi-candidate share on your sample
+first. In the nevada test, strict name matching reached 82–87% of CIKs for DE but only a 3.8%
+true match for NV movers, because of NV coverage.
 
 Other fits: Delaware-domicile questions via `JURISDICTION_CODE = 'us_de'` + `DOMICILE`
 (`domestic`/`foreign`); formation/dissolution dating for survival analysis (`FORMED_ON` 92%,
@@ -198,15 +209,16 @@ mass-registration / shell detection through shared registered-agent addresses in
 Per the SKILL Iron Law, sample first. Then the composite key drives everything:
 
 ```sql
--- Delaware corporations with an SEC CIK, plus their current registered address
+-- Delaware corporations with an FEIN identifier (illustrative: us_de has no identifier rows in the
+-- 2026-10-07 snapshot, so run this on FL/MA/MI/TX/VT/WA), plus their registered address
 SELECT c.ENTITY_NUMBER, c.LEGAL_NAME, c.STATUS, c.FORMED_ON,
-       i.VALUE AS cik, a.STREET_ADDRESS, a.LOCALITY, a.REGION
+       i.VALUE AS fein, a.STREET_ADDRESS, a.LOCALITY, a.REGION
 FROM companies c
 JOIN identifiers i USING (JURISDICTION_CODE, ENTITY_NUMBER)
 LEFT JOIN addresses a USING (JURISDICTION_CODE, ENTITY_NUMBER)
-WHERE c.JURISDICTION_CODE = 'us_de'
+WHERE c.JURISDICTION_CODE = 'us_fl'
   AND c.LEGAL_FORM = 'corporation'
-  AND i.SCHEME = 'us_sec_cik'
+  AND i.SCHEME = 'us_fein'
   AND a.ADDRESS_KIND = 'registered';
 ```
 
