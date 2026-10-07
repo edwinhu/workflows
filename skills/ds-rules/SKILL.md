@@ -350,6 +350,11 @@ type — hard edges and small serif characters — which publishers hold to a hi
 300 halftone / 500 combination / 1000 line art). Derive the scale factor from the width the
 figure is PLACED at, never guess it, and assert the result:
 
+Find the document's font rather than assuming: read it off the rendered page (marimo sets
+Lora/PT Sans; a Typst deck uses whatever the template declares; a docx uses its style).
+An exhibit sent by email or chat belongs to its manuscript: the host is that manuscript, never the
+channel.
+
 ### A6 — Chart Colour
 
 _Scheme matches the variable — categorical vs ramp, one reserved accent, grey for absence_ (`rules/ds-chart-palette-choice.md`)
