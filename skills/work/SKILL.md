@@ -3,6 +3,8 @@ name: work
 description: "Use when the user says \"work this\", \"run a work loop\", \"do this properly\", \"take this through clarify plan and verify\", \"run it through the gate\", \"/work\", or hands over a substantial change that has no domain workflow of its own and should be planned, approved and independently verified before it lands. NEGATIVE ROUTING: a code change or bug fix is /dev; a dataset, table, figure or number is /ds; long-form prose is /writing; a talk built from a research paper is /workshop; lecture notes or course slides are teaching:notes and teaching:slides; a skill, workflow or plugin in this repo is skill-creator, workflow-creator or plugin-creator. Each of those is this loop plus a domain gate, and work is only the fallback when none of them fits."
 argument-hint: 'the task to run through the loop'
 allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Monitor, PushNotification]
+metadata:
+  rule-skills: none
 ---
 
 # `work` — clarify → plan → goal → workflow → human review
