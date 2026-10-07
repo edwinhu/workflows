@@ -16,6 +16,7 @@ tools: ["Read", "Grep", "Glob", "Edit", "Write", "Bash", "Skill"]
 skills:
   - writing-general
   - ai-anti-patterns
+initialPrompt: /prose-rules
 hooks:
   PreToolUse:
     - matcher: Read|Bash|Edit|Write|MultiEdit

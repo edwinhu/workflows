@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# load-constraints <scope>[,<scope>...] [--dir DIR] [--index]
+# load-constraints <scope>[,<scope>...] [--dir DIR] [--index|--full|--digest]
 #
 # THE one constraint-loading entry point for this plugin, the same way check.sh is THE one gate.
 # The implementation stays in load-constraints.ts: it is the published `constraint-loader`
