@@ -3,6 +3,8 @@ name: writing
 description: ALWAYS use for ANY substantial prose a human will read - "write the article", "draft this section", "outline the paper", "turn these notes into prose", "write up the memo", "draft the comment letter", "write the brief", "expand this into a chapter", "I need a few pages on X", "put this argument in writing", "/writing". Use proactively even when the user asks casually and never says "article" - do not start drafting paragraphs first. NOT for code, data work or course materials.
 argument-hint: 'the document, article or chapter to write'
 allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Monitor]
+metadata:
+  rule-skills: writing-general, ai-anti-patterns
 ---
 
 # writing — a document, run through `work` with a computed grammar and citation gate

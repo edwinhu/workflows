@@ -3,6 +3,8 @@ name: dev
 description: "Use when the user says \"build this feature\", \"implement X\", \"add support for\", \"add a flag for\", \"fix this bug properly\", \"this is broken, fix it\", \"refactor X\", \"write the tests for this\", \"/dev\", or hands over any code change that should ship with a real failing-then-passing test rather than a quick edit. Use proactively the moment a request implies changing code — before reading the codebase to understand the bug, since that reading is part of the run. NEGATIVE ROUTING: a change whose acceptance cannot be one command that fails now and passes later is /work; a dataset, table, figure or number is /ds even when code produces it; a skill, workflow, hook or plugin manifest in this repo is skill-creator, workflow-creator or plugin-creator; a typo or one-line fix is done inline."
 argument-hint: 'the feature, change, or bug to develop'
 allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Monitor]
+metadata:
+  rule-skills: none
 ---
 
 # dev — a code change, run through `work` with a test-first gate

@@ -190,8 +190,9 @@ function fixture(files: Record<string, string>): string {
   return dir
 }
 
+// `rule-skills: none` keeps P19 out of fixtures about other rules; D42 builds its own frontmatter.
 const skillMd = (name: string, body = '') =>
-  ['---', `name: ${name}`, 'description: a fixture skill', '---', '', `# ${name}`, '', body, ''].join('\n')
+  ['---', `name: ${name}`, 'description: a fixture skill', 'metadata:', '  rule-skills: none', '---', '', `# ${name}`, '', body, ''].join('\n')
 
 const read = (f: string) => readFileSync(f, 'utf8')
 
@@ -3901,5 +3902,86 @@ describe('D41 — P18: a worktree or recursive delete at a fixed shared /tmp pat
       'scripts/run.sh': ['# <!-- wc-probe: ignore-fixed-temp -->', `rm -rf ${T}shared`, ''].join('\n'),
     })
     expect(allOf(dir, 'P18')).toEqual([])
+  })
+})
+
+describe('D42 — P19: a workflow\'s persona agents preload its rule skills', () => {
+  /** A throwaway plugin: one workflow dispatching `p19-impl`, its rule skill, and the agent file. */
+  const plugin = (o: { ruleSkills?: string | null, agentSkills?: string[] | null, sibling?: boolean, impl?: string }) => {
+    const fm = ['---', 'name: wf', 'description: a fixture workflow']
+    if (o.ruleSkills != null) fm.push('metadata:', `  rule-skills: ${o.ruleSkills}`)
+    fm.push('---', '', '# wf', '', workArgs([
+      'tasks: []',
+      `implementerAgentType: "${o.impl ?? 'p19-impl'}"`,
+      'verifierAgentType: "Explore"',
+      'lens: { prompt: "judge", refs: [], agentType: "Explore" }',
+    ]), '')
+    const agent = ['---', 'name: p19-impl', 'description: d']
+    if (o.agentSkills) agent.push('skills:', ...o.agentSkills.map(s => `  - ${s}`))
+    agent.push('---', '', 'body', '')
+    const files: Record<string, string> = {
+      '.claude-plugin/plugin.json': '{"name": "p19plug"}',
+      'skills/wf/SKILL.md': fm.join('\n'),
+      'skills/p19-rules/SKILL.md': skillMd('p19-rules'),
+      'user-agents/p19-impl.md': agent.join('\n'),
+    }
+    if (o.sibling) files['skills/wf-rules/SKILL.md'] = skillMd('wf-rules')
+    return join(fixture(files), 'skills', 'wf')
+  }
+
+  test('an agent that lacks the declared preload is a MAJOR, and the CLI exits 1', () => {
+    const dir = plugin({ ruleSkills: 'p19-rules', agentSkills: ['other'] })
+    const found = allOf(dir, 'P19')
+    expect(found.length).toBe(1)
+    expect(found[0].severity).toBe('major')
+    expect(found[0].detail).toContain('"p19-impl"')
+    expect(found[0].detail).toContain('p19-rules')
+    expect(cli(['--target', dir]).code).toBe(1)
+  })
+
+  test('its fixed twin, preloading the skill (plugin-qualified or bare), is clean', () => {
+    expect(allOf(plugin({ ruleSkills: 'p19-rules', agentSkills: ['p19-rules'] }), 'P19')).toEqual([])
+    const dir = plugin({ ruleSkills: 'p19-rules', agentSkills: ['p19plug:p19-rules'] })
+    expect(allOf(dir, 'P19')).toEqual([])
+    expect(cli(['--target', dir]).code).toBe(0)
+  })
+
+  test('a workflow declaring nothing fails, even when it names no persona agent', () => {
+    expect(allOf(plugin({ ruleSkills: null, agentSkills: ['p19-rules'] }), 'P19').length).toBe(1)
+    const found = allOf(plugin({ ruleSkills: null, impl: 'Explore' }), 'P19')
+    expect(found.length).toBe(1)
+    expect(found[0].detail).toContain('declares no domain rule skill')
+  })
+
+  test('rule-skills: none is reported NOT CHECKED, never passed silently', () => {
+    const dir = plugin({ ruleSkills: 'none', agentSkills: null })
+    const r = probe.runProbe(dir)
+    expect(r.findings.filter((f: any) => f.rule.startsWith('P19'))).toEqual([])
+    const note = r.unresolvedRefs.filter((u: any) => u.rule.startsWith('P19'))
+    expect(note.length).toBe(1)
+    expect(note[0].reason).toContain('p19-impl run on dispatch refs only')
+    expect(cli(['--target', dir]).out).toContain('"P19 rule-skill preload" NOT CHECKED')
+  })
+
+  test('a sibling <workflow>-rules skill is the declaration when metadata names none', () => {
+    expect(allOf(plugin({ ruleSkills: null, sibling: true, agentSkills: ['p19-rules'] }), 'P19')[0].detail).toContain('wf-rules')
+    expect(allOf(plugin({ ruleSkills: null, sibling: true, agentSkills: ['wf-rules'] }), 'P19')).toEqual([])
+  })
+
+  test('a missing agent file and a missing rule skill are findings', () => {
+    expect(allOf(plugin({ ruleSkills: 'p19-rules', impl: 'p19-nobody' }), 'P19')[0].detail).toContain('no agent file exists')
+    expect(allOf(plugin({ ruleSkills: 'p19-absent', agentSkills: ['p19-absent'] }), 'P19')[0].detail).toContain('does not exist')
+  })
+
+  test('a <a|b> placeholder is every agent it names', () => {
+    const found = allOf(plugin({ ruleSkills: 'p19-rules', agentSkills: ['p19-rules'], impl: '<p19-impl|p19-nobody>' }), 'P19')
+    expect(found.length).toBe(1)
+    expect(found[0].detail).toContain('"p19-nobody"')
+  })
+
+  test('every workflow this repo ships passes P19', () => {
+    for (const w of ['dev', 'ds', 'elide-case', 'work', 'workflow-creator', 'workshop', 'writing']) {
+      expect([w, allOf(join(SELF_DIR, '..', '..', w), 'P19')]).toEqual([w, []])
+    }
   })
 })

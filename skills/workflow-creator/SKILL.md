@@ -19,6 +19,8 @@ hooks:
       hooks:
         - type: command
           command: "bun ${CLAUDE_PLUGIN_ROOT}/skills/workflow-creator/scripts/validate-skill-write.ts"
+metadata:
+  rule-skills: none
 ---
 
 # workflow-creator — a workflow is a set of parameters, not a program
@@ -165,6 +167,8 @@ A vendored `<domain>-constraints` skill is the same error made eagerly. It looks
 **A written rule that accepted practice breaks is the user's call, and the ruling is recorded in the rule.** Never settle it by loosening the rule or by flagging the practice.
 
 **N independent items are N rows; fix a slow suite before fanning out rows that run it; mint every temp path per run** (P17, P18).
+
+**NO PERSONA AGENT WITHOUT THE WORKFLOW'S RULE SKILL IN ITS `skills:`.** Rules that arrive only as dispatch `refs` reach a farm row or an interactive `--agent` launch never. Declare the skill as frontmatter `metadata:` → `rule-skills: <skill>` (a sibling `<workflow>-rules` skill declares itself; `none` says there are none and prints NOT CHECKED); P19 fails every named agent that does not preload it.
 
 | fact | backs |
 |---|---|
@@ -900,7 +904,7 @@ out of a prompt, which is not an enumeration.
 A fence whose `tasks[]` is empty or absent is skipped entirely — that is what a `readOnly` charter
 declares, and flagging it would fire on every audit block. Marker: `task-coverage`.
 
-### P14-P18 round-shape rules
+### P14-P19 round-shape rules
 
 | rule | fires on | severity | marker |
 |---|---|---|---|
@@ -909,6 +913,7 @@ declares, and flagging it would fire on every audit block. Marker: `task-coverag
 | P16 missing ruleChecks | a fence whose `tasks[].writablePaths` map through `ruleSetOf` (`hooks/jev/rules.ts`) to a set with wired rules, carrying no `ruleChecks` | major | `rule-checks` |
 | P17 serial row loop | a task `work`, attempt or farm-row prompt looping over plural independent items with no dependency named | minor, advisory | `serial-loop` |
 | P18 fixed shared temp path | a worktree add/remove or recursive delete at a literal temp path with no per-run part, on the line or through one assignment | major | `fixed-temp` |
+| P19 rule-skill preload | a SKILL.md with a work-args fence that declares no rule skill, or names a non-built-in `implementerAgentType`/`verifierAgentType`/`agentType` whose agent file is missing or whose `skills:` lacks a declared rule skill | major | none — `rule-skills: none` is the opt-out |
 
 Advisory rules print as `[advisory <severity>]` in both modes and never move the exit code. P15 gates since its 2026-10-02 baseline (15 findings, ds lens and teaching notes scoredChecks) was cleared.
 
@@ -969,6 +974,7 @@ run, alongside `SKILL.md`'s `lens-set-differs prompt` declaration, which is not 
 | Hook command needs the skill directory | `CLAUDE_SKILL_DIR` in `hooks:` | it does not substitute there — absolute path. **P1 now refuses it**, because the hook silently never fires |
 | Probe run came back CLEAN | trust it | check the coverage line — `0 of 0` is now a critical, but so is a subtree behind a dangling symlink |
 | Task or lens has no domain rules | omit `refs` | `refs: []` — absent is refused, empty is a statement |
+| About to name an implementer or reviewer agent without preloading the rule skill | trust the dispatch `refs` to carry the rules | **STOP**: it runs rule-less outside a dispatch. Add the declared `rule-skills` to the agent's `skills:` (P19) |
 | A documented return shape drifts from the script | assume P5 caught it because the suite is green | P5 compares a SKILL.md's shape against the **script its `scriptPath` names** — check the `crossFileTargets` note to see which file the verdict was actually about |
 | A check needs suppressing | invent a rule name for the marker | only `all`/`hooks`/`paths`/`returns`/`workflow-refs`/`refs`/`entry-point`/`dispatch`/`task-coverage`/`shell-leg`/`duplicate-grading`/`rule-checks`/`serial-loop`/`fixed-temp` are honoured; anything else is a `P9` finding, not a suppression. P11 has no `ignore-` form at all — declare the intended difference with `lens-set-differs <field>` |
 | A skill dispatches `work` with its own hand-rolled runner line | copy the invocation into the SKILL.md | that skips the gates `work-dispatch.sh` owns on the way in, and P12 refuses it |

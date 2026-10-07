@@ -2956,6 +2956,8 @@ export interface WorkArgsFence {
   attemptLegs: { key: string | null, line: number, prompt: string | null }[]
   /** 1-based file line of the `lens` value, or null when the fence declares none. */
   lensLine: number | null
+  /** Every agent a leg is dispatched as: implementer, verifier, lens, scoredChecks and attempts. */
+  agentTypes: { key: string, value: string, line: number }[]
 }
 
 /** The `lens` fields P11 compares across two fences of one file. */
@@ -3159,6 +3161,18 @@ export function workArgsFences(text: string): WorkArgsFence[] {
           attemptLegs.push({ key: firstLit(o, 'key'), line: fileLine(o.start), prompt: firstLit(o, 'prompt') })
         }
       }
+      const agentTypes: WorkArgsFence['agentTypes'] = []
+      const pushAgent = (o: ObjectLiteral | undefined, key: string, label: string) => {
+        if (!o) return
+        const sp = findKeyValueSpan(body, masked, o, key)
+        const v = sp ? stringLiteralsIn(body, sp.start, sp.end)[0] : undefined
+        if (v !== undefined) agentTypes.push({ key: label, value: v, line: fileLine(sp!.start) })
+      }
+      pushAgent(obj, 'implementerAgentType', 'implementerAgentType')
+      pushAgent(obj, 'verifierAgentType', 'verifierAgentType')
+      pushAgent(lensObj, 'agentType', 'lens.agentType')
+      if (scoredSpan) for (const o of directElements(literals, scoredSpan, 'agentType')) pushAgent(o, 'agentType', 'scoredChecks[].agentType')
+      if (attemptsSpan) for (const o of directElements(literals, attemptsSpan, 'agentType')) pushAgent(o, 'agentType', 'attempts[].agentType')
       const pdSpan = findKeyValueSpan(body, masked, obj, 'projectDir')
       const pd = pdSpan ? stringLiteralsIn(body, pdSpan.start, pdSpan.end)[0] : undefined
       out.push({
@@ -3175,6 +3189,7 @@ export function workArgsFences(text: string): WorkArgsFence[] {
         scored,
         attemptLegs,
         lensLine: lensSpan ? fileLine(lensSpan.start) : null,
+        agentTypes,
       })
     }
   }
@@ -3837,6 +3852,160 @@ export function checkFixedTempPath(file: string, text: string, exemptions: reado
  * by design; the floor does not vanish, it changes its question — an `agents` run matching no agent
  * file is that mode's vacuous pass and fails. Either way the un-run frontmatter rules are reported.
  */
+/** Agents the harness ships: no file to preload into, so P19 does not judge them. */
+export const BUILTIN_AGENTS: ReadonlySet<string> = new Set(['Explore', 'Plan', 'general-purpose', 'statusline-setup'])
+
+/** The parsed YAML frontmatter, or null when absent or unparseable (P3 reports those). */
+export function frontmatterData(text: string): Record<string, unknown> | null {
+  const fm = parseFrontmatter(text)
+  if (!fm.hasFrontmatter || !fm.ok) return null
+  const open = text.indexOf('\n') + 1
+  const close = text.lastIndexOf('\n---', fm.bodyStart)
+  try {
+    const v = Bun.YAML.parse(text.slice(open, close < open ? open : close))
+    return v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, unknown>) : {}
+  } catch {
+    return null
+  }
+}
+
+/**
+ * A workflow's declared domain rule skills. `metadata.rule-skills` wins: a skill name, a
+ * space/comma-separated string of them, or a YAML list; `none` (or `[]`) says the workflow has none.
+ * Otherwise a sibling `<workflow>-rules` skill is the declaration. Neither is `null`: undeclared.
+ */
+export function declaredRuleSkills(text: string, skillName: string, pluginRoot: string | null): { skills: string[], source: string } | null {
+  const meta = frontmatterData(text)?.metadata
+  const raw = meta && typeof meta === 'object' ? (meta as Record<string, unknown>)['rule-skills'] : undefined
+  if (raw !== undefined && raw !== null) {
+    const list = Array.isArray(raw) ? raw.map(String) : String(raw).split(/[\s,]+/)
+    const skills = list.map(s => s.trim()).filter(s => s && s !== 'none')
+    return { skills, source: 'metadata.rule-skills' }
+  }
+  if (pluginRoot && existsSync(join(pluginRoot, 'skills', `${skillName}-rules`, 'SKILL.md'))) {
+    return { skills: [`${skillName}-rules`], source: `the sibling skill ${skillName}-rules` }
+  }
+  return null
+}
+
+/** `<a|b|c>` is a placeholder for one of three agents; anything else that is not a name is no agent. */
+function agentNamesIn(value: string): string[] {
+  const alt = /^<([^<>]+)>$/.exec(value.trim())
+  const names = alt ? alt[1].split('|') : [value]
+  return names.map(n => n.trim()).filter(n => /^[A-Za-z][\w.-]*(?::[A-Za-z][\w.-]*)?$/.test(n))
+}
+
+/**
+ * P19 rule-skill preload — every persona agent a workflow dispatches preloads its rule skills.
+ *
+ * Rules that arrive only as dispatch `refs` reach the agent only through a dispatch; launched any
+ * other way (a farm row with `agent: ds`, an interactive `--agent`) it runs rule-less. The agent's
+ * frontmatter `skills:` is the one channel every launch mode reads. A workflow with no domain rule
+ * skill says so (`metadata.rule-skills: none`), which is reported as NOT CHECKED rather than passed.
+ */
+export function checkRuleSkillPreload(
+  file: string,
+  text: string,
+  ctx: SkillContext,
+  unresolved: UnresolvedRef[],
+  onRead: (p: string) => void = () => {},
+): Finding[] {
+  if (basename(file) !== 'SKILL.md') return []
+  const fences = workArgsFences(text)
+  if (fences.length === 0) return []
+  const findings: Finding[] = []
+  const skillName = basename(dirname(file))
+  const pluginRoot = ctx.pluginRoot ?? findPluginRootOrNull(dirname(file))
+  let pluginName: string | null = null
+  try {
+    pluginName = JSON.parse(readFileSync(join(pluginRoot ?? '', '.claude-plugin', 'plugin.json'), 'utf8')).name ?? null
+  } catch {}
+  const norm = (s: string) => (pluginName && s.startsWith(`${pluginName}:`) ? s.slice(pluginName.length + 1) : s)
+  const home = homedir()
+
+  const agents = new Map<string, number>()
+  for (const f of fences) {
+    for (const a of f.agentTypes) {
+      for (const n of agentNamesIn(a.value)) if (!BUILTIN_AGENTS.has(n) && !agents.has(n)) agents.set(n, a.line)
+    }
+  }
+
+  const decl = declaredRuleSkills(text, skillName, pluginRoot)
+  if (!decl) {
+    findings.push({
+      rule: 'P19 rule-skill preload',
+      severity: 'major',
+      file,
+      line: 1,
+      detail: `the workflow dispatches ${agents.size ? `persona agent(s) ${[...agents.keys()].join(', ')}` : 'work'} and declares no domain rule skill, so nothing says which rules its agents must carry outside a dispatch`,
+      remedy: `declare it in the frontmatter as metadata.rule-skills (e.g. "rule-skills: ${skillName}-rules"), or create a sibling ${skillName}-rules skill; a workflow with no domain rules says "rule-skills: none"`,
+    })
+    return findings
+  }
+  if (decl.skills.length === 0) {
+    const at = text.search(/^\s+rule-skills\s*:/m)
+    unresolved.push({
+      rule: 'P19 rule-skill preload',
+      file,
+      line: at === -1 ? 1 : lineOf(text, at),
+      token: 'none',
+      reason: `${decl.source} declares no domain rule skill${agents.size ? `; ${[...agents.keys()].join(', ')} run on dispatch refs only` : ''}`,
+    })
+    return findings
+  }
+
+  for (const s of decl.skills) {
+    const [p, n] = norm(s).includes(':') ? norm(s).split(':') : [null, norm(s)]
+    const at = p ? join(home, '.claude', 'skills', p, 'skills', n, 'SKILL.md') : join(pluginRoot ?? '', 'skills', n, 'SKILL.md')
+    if (existsSync(at)) continue
+    findings.push({
+      rule: 'P19 rule-skill preload',
+      severity: 'major',
+      file,
+      line: 1,
+      detail: `${decl.source} names rule skill "${s}", which does not exist at ${at}`,
+      remedy: 'name an existing skill — a preload of a missing skill loads nothing',
+    })
+  }
+
+  for (const [name, line] of agents) {
+    const [p, n] = name.includes(':') ? name.split(':') : [null, name]
+    const candidates = p
+      ? [join(home, '.claude', 'skills', p, 'user-agents', `${n}.md`), join(home, '.claude', 'skills', p, 'agents', `${n}.md`)]
+      : [
+          ...(pluginRoot ? [join(pluginRoot, 'user-agents', `${n}.md`), join(pluginRoot, 'agents', `${n}.md`)] : []),
+          join(home, '.claude', 'agents', `${n}.md`),
+        ]
+    const agentFile = candidates.find(c => existsSync(c))
+    if (!agentFile) {
+      findings.push({
+        rule: 'P19 rule-skill preload',
+        severity: 'major',
+        file,
+        line,
+        detail: `the workflow dispatches agent "${name}", and no agent file exists for it (looked in ${candidates.join(', ')})`,
+        remedy: 'create the agent, or name one that exists — a missing persona falls back to the default agent and its prompt',
+      })
+      continue
+    }
+    onRead(agentFile)
+    const agentText = readTextOrNull(agentFile)
+    const fm = agentText === null ? null : frontmatterData(agentText)
+    const listed = Array.isArray(fm?.skills) ? (fm!.skills as unknown[]).map(x => norm(String(x))) : []
+    const missing = decl.skills.filter(s => !listed.includes(norm(s)))
+    if (missing.length === 0) continue
+    findings.push({
+      rule: 'P19 rule-skill preload',
+      severity: 'major',
+      file,
+      line,
+      detail: `agent "${name}" (${agentFile}) does not preload ${missing.join(', ')} (${decl.source}), so launched outside a dispatch it runs without the workflow's rules`,
+      remedy: `add ${missing.join(', ')} to the agent's frontmatter skills: list`,
+    })
+  }
+  return findings
+}
+
 export type ProbeExpect = 'skill' | 'agents'
 
 export interface ProbeResult {
@@ -4211,6 +4380,9 @@ export function runProbe(
       findings.push(...checkShellOnlyAgentLegs(file, text, fileExemptions))
       findings.push(...checkDuplicateGrading(file, text, ctx, fileExemptions, unresolvedRefs))
       findings.push(...checkMissingRuleChecks(file, text, ctx, fileExemptions))
+      findings.push(...checkRuleSkillPreload(file, text, ctx, unresolvedRefs, p => {
+        if (!isAtOrAbove(root, p) && !crossFileTargets.includes(p)) crossFileTargets.push(p)
+      }))
       findings.push(...checkSerialRowLoop(file, text, fileExemptions))
       // P6/P7 judge what the call CONTAINS, so they read the code view.
       const code = maskNonFenced(text)
@@ -4370,7 +4542,7 @@ function notesFor(result: ProbeResult): string[] {
       `  note: rule "${u.rule}" NOT CHECKED for ${JSON.stringify(u.token)} in ${u.file}${u.line ? `:${u.line}` : ''} — ${u.reason}`,
     )
   }
-  for (const p of result.crossFileTargets) lines.push(`  note: READ OUTSIDE --target (P5 followed a scriptPath): ${p}`)
+  for (const p of result.crossFileTargets) lines.push(`  note: READ OUTSIDE --target (P5 followed a scriptPath, or P19 read an agent): ${p}`)
   // An included agent lives outside --target, so the coverage denominator alone cannot show it.
   for (const p of result.agentsIncluded) lines.push(`  note: INCLUDED via --agent (judged with this skill's context): ${p}`)
   for (const f of result.filesSkipped) lines.push(`  note: NOT SCANNED (unreadable): ${f}`)

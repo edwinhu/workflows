@@ -11,6 +11,8 @@ description: >
   workflows:courtlistener.
 argument-hint: 'the case to excerpt, the insertion point, and the page target'
 allowed-tools: [Bash, Read, Write, Edit, Grep, Glob, AskUserQuestion, EnterPlanMode, ExitPlanMode, Agent, Monitor]
+metadata:
+  rule-skills: none
 ---
 
 # elide-case — a court opinion cut into a student reading, on the work spine
