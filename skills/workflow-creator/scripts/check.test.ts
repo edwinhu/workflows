@@ -316,10 +316,11 @@ test('non-vacuity: every leg of a fixture target prints a count line, so the aud
   expect(audit(combined(r))).toEqual([])
 })
 
+// The real check.sh runs every leg (~1.3 s idle); bun's 5 s default killed it at load 57 (canary, 2026-10-07).
 test('non-vacuity: a real skill in this repo (jev-rules) passes the audit through the real check.sh', () => {
   const r = run(CHECK, ['--target', join(SCRIPTS, '..', '..', 'jev-rules')])
   expect(audit(combined(r))).toEqual([])
-})
+}, 30_000)
 
 test('non-vacuity: a leg that examined nothing says `nothing in scope (...)`, never a bare 0', () => {
   const r = run(harness(), ['--target', target()]) // no .js, no scripts/
