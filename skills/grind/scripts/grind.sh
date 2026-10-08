@@ -49,8 +49,10 @@ grind.sh -- an unattended loop whose only memory is one append-only journal.
                   --exhaust-after N stops offering a subject after N attempts with no progress
                   since its last progress or reopen record (default 3, 0 disables).
                   [--notify CMD|none] [--notify-to SESSION] [--wait-alert N] [--push]
-                  default: agent-msg to the launching session (or --notify-to), plus herdr if
-                  installed; CMD replaces it and gets GRIND_STATE, GRIND_EXIT, GRIND_JOURNAL.
+                  default: the launching session's watcher wakes it from the event stream;
+                  agent-msg only for --notify-to <other session>, or with no stream or no live
+                  watcher there. Plus herdr if installed; CMD replaces it and gets
+                  GRIND_STATE, GRIND_EXIT, GRIND_JOURNAL.
                   A failed notification never changes the exit code.
                   --wait-alert N announces every Nth CONSECUTIVE wait through that same channel
                   without ending the run (default 6, 0 disables); the command also gets
@@ -466,12 +468,26 @@ events_start() {
 # makes the second call a no-op, so the trap and cmd_run cannot both write one.
 emit_done() { emit_event "DONE $(enc "${1:-unknown}") rc=${2:-0}"; EVENTS=; }
 
-# The launching session's watcher already wakes it from the event stream (START/WAIT/DONE), so an
-# agent-msg to that same session only duplicates the wake as a HELD message (no-mode-asserted on a
-# bypassPermissions recipient). agent-msg stays for an explicit --notify-to naming another session
-# and for runs with no stream.
+# The launching session's watcher wakes it from the event stream (START/WAIT/DONE), so an agent-msg
+# to that same session only duplicates the wake as a HELD message (no-mode-asserted on a
+# bypassPermissions recipient). That holds only while a watcher runs there: its beacon
+# $TMPDIR/farm-events/<session>/watcher.alive (hooks/watch/runs.ts BEACON) holds epoch seconds and is
+# fresh within 60 s (BEACON_FRESH_MS = 4 * TICK_MS), checked in TMPDIR and /tmp as early-stop.ts does.
+# agent-msg stays for --notify-to naming another session, for no stream, and for no live watcher.
+watcher_beacon_fresh() {
+  local root ts now
+  now=$(date +%s)
+  for root in "${TMPDIR:-/tmp}" /tmp; do
+    ts=$(tr -d '[:space:]' <"${root%/}/farm-events/$1/watcher.alive" 2>/dev/null) || continue
+    case "$ts" in ''|*[!0-9]*) continue ;; esac
+    [ $((now - ts)) -le 60 ] && [ $((ts - now)) -le 60 ] && return 0
+  done
+  return 1
+}
+
 stream_wakes() {
-  [ -n "$EVENTS_STARTED" ] && [ -n "$GRIND_LAUNCH_SESSION" ] && [ "${1:-}" = "$GRIND_LAUNCH_SESSION" ]
+  [ -n "$EVENTS_STARTED" ] && [ -n "$GRIND_LAUNCH_SESSION" ] && [ "${1:-}" = "$GRIND_LAUNCH_SESSION" ] \
+    && watcher_beacon_fresh "$GRIND_LAUNCH_SESSION"
 }
 
 cmd_run() {

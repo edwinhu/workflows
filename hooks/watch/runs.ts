@@ -10,6 +10,14 @@
 /** A run that finishes later than this after its start is history, not news: the watcher does not wake for it. */
 export const WAKE_HORIZON_MS = 24 * 3600_000
 
+/** Past the wake horizon at `nowMs`? A grind loop runs for days, so its clock is its latest activity
+ *  (the event file's mtime moves with every START, WAIT and DONE line), not its START; a stale file
+ *  from a long-dead session still falls past it. Every other kind measures from START. */
+export function pastHorizon(v: { kind?: string; startedMs: number; fileMtimeMs?: number }, nowMs: number): boolean {
+  const from = v.kind === 'grind' ? Math.max(v.startedMs, v.fileMtimeMs ?? 0) : v.startedMs
+  return !!from && nowMs - from > WAKE_HORIZON_MS
+}
+
 /** The watcher's tick period. */
 export const TICK_MS = 15_000
 
@@ -41,6 +49,8 @@ export type Run = {
   claims: string[]
   /** Epoch seconds from the START line's t=, absent on lines written before it existed. */
   t?: number
+  /** The event file's mtime (ms), set by the watcher's reader; grind measures its wake horizon from it. */
+  fileMtimeMs?: number
   done?: { status: string; detail: string }
   /** The newest WAIT line (grind: a gate shut N passes running). Informational: the run is still live. */
   wait?: { waits: number; why: string; script: string }

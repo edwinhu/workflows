@@ -12,7 +12,7 @@
 // waking itself about its own runs would loop.
 import type { EngineInterface, On } from 'claude-code'
 import {
-  BEACON, classify, parseEvents, statusLine, table, TICK_MS, wakeable, wakeText, waitText, workPhase, workRound, WAKE_HORIZON_MS,
+  BEACON, classify, parseEvents, statusLine, table, TICK_MS, pastHorizon, wakeable, wakeText, waitText, workPhase, workRound,
   type Facts, type Run, type View,
 } from './runs.ts'
 import { setForecastCache } from '../jev/forecast-mod.ts'
@@ -61,6 +61,7 @@ async function readRuns($: EngineInterface, nowMs: number): Promise<Run[]> {
       let text = ''
       try { text = await $.fs.read(file) } catch { continue }
       const parsed = parseEvents(text, file, Number(m[1]), sid)
+      for (const r of parsed) r.fileMtimeMs = ent.mtimeMs
       cache.set(file, { mtimeMs: ent.mtimeMs, size: ent.size, runs: parsed })
       runs.push(...parsed)
     }
@@ -135,7 +136,7 @@ async function wake($: EngineInterface, views: View[], nowMs: number) {
       if (!woke.has(wid)) {
         woke.add(wid)
         const wkey = `notified:${wid}`
-        if (!(await $.store.get(wkey)) && !(v.startedMs && nowMs - v.startedMs > WAKE_HORIZON_MS)) {
+        if (!(await $.store.get(wkey)) && !pastHorizon(v, nowMs)) {
           await $.store.set(wkey, nowMs)
           void $.prompt.submit({ text: waitText(v) })
         }
@@ -146,7 +147,7 @@ async function wake($: EngineInterface, views: View[], nowMs: number) {
     woke.add(v.id)
     const key = `notified:${v.id}`
     if (await $.store.get(key)) continue
-    if (v.startedMs && nowMs - v.startedMs > WAKE_HORIZON_MS) continue
+    if (pastHorizon(v, nowMs)) continue
     // Recorded BEFORE the submit: a reload between the two must not wake twice.
     await $.store.set(key, nowMs)
     // Never awaited: submit resolves when the turn starts, and this tick may run mid-turn.
