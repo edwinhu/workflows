@@ -21,6 +21,15 @@ export const meta = {
 // cosmetic cost, and the only shape the contract permits.
 
 // ---------------------------------------------------------------- args (fail-closed)
+// A large args object can reach the script JSON-encoded as a string; decode it or fail closed.
+if (typeof args === 'string') {
+  let decoded
+  try { decoded = JSON.parse(args) } catch { decoded = undefined }
+  if (!decoded || typeof decoded !== 'object' || Array.isArray(decoded)) {
+    throw new Error(`work: args string did not parse to an object: ${args.slice(0, 120)}`)
+  }
+  args = decoded
+}
 if (!args || typeof args !== 'object') throw new Error('work: args object required')
 const { projectDir, planPath, specHash, goal, tasks } = args
 const attempts = Array.isArray(args.attempts) ? args.attempts : []
