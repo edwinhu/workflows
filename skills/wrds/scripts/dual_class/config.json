@@ -1,0 +1,16 @@
+{
+  "project": "eddyhu-research",
+  "location": "global",
+  "model": "gemini-3.5-flash-lite",
+  "thinking_level": null,
+  "gcs_prefix": "gs://eddyhu-research-batch/dual-class",
+  "wrds_clean_root": "/wrds/sec/wrds_clean_filings",
+  "edgar_rate_per_s": 6,
+  "edgar_rate_ceiling_per_s": 8,
+  "flex_max_rows": 10,
+  "gate": {"min_precision": 0.9, "min_recall": 0.9, "min_scored": 100},
+  "prices_usd_per_mtok": {
+    "gemini-3.5-flash-lite": {"standard": [0.30, 2.50], "batch": [0.15, 1.25], "flex": [0.15, 1.25]},
+    "gemini-3.8-flash": {"standard": [0.75, 3.75], "batch": [0.375, 1.875], "flex": [0.375, 1.875]}
+  }
+}

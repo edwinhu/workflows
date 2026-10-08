@@ -1,0 +1,1859 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ C9lfu2VTpJteNnJNIA/+CXnW0i4X7RK7NsanQF1aIV83rtUCwxrB+6TW77xmcB6s
+ VV+b21CyJKU9AtJJbx2lMg==
+
+<SEC-DOCUMENT>0000108601-00-000002.txt : 20000327
+<SEC-HEADER>0000108601-00-000002.hdr.sgml : 20000327
+ACCESSION NUMBER:		0000108601-00-000002
+CONFORMED SUBMISSION TYPE:	10-K
+PUBLIC DOCUMENT COUNT:		6
+CONFORMED PERIOD OF REPORT:	19991231
+FILED AS OF DATE:		20000324
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			WRIGLEY WILLIAM JR CO
+		CENTRAL INDEX KEY:			0000108601
+		STANDARD INDUSTRIAL CLASSIFICATION:	SUGAR & CONFECTIONERY PRODUCTS [2060]
+		IRS NUMBER:				361988190
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		10-K
+		SEC ACT:		
+		SEC FILE NUMBER:	001-00800
+		FILM NUMBER:		577442
+
+	BUSINESS ADDRESS:	
+		STREET 1:		410 N MICHIGAN AVE
+		STREET 2:		WRIGLEY BUILDING
+		CITY:			CHICAGO
+		STATE:			IL
+		ZIP:			60611
+		BUSINESS PHONE:		3126442121
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>10-K
+<SEQUENCE>1
+<DESCRIPTION>FORM 10-K 12/31/99
+<TEXT>
+
+<PAGE>
+
+SECURITIES AND EXCHANGE COMMISSION
+Washington, D.C. 20549
+
+FORM 10-K
+
+[ X ]			ANNUAL REPORT PURSUANT TO SECTION 13 OR 15(d)
+        OF THE SECURITIES EXCHANGE ACT OF 1934
+
+[   ]			TRANSITION REPORT PURSUANT TO SECTION 13 OR 15(d)
+        OF THE SECURITIES EXCHANGE ACT OF 1934
+
+For the fiscal year ended December 31, 1999       Commission file
+                                                 number 1-800
+
+WM. WRIGLEY JR. COMPANY
+(Exact name of registrant as specified in its charter)
+
+ Delaware					36-1988190
+(State or other jurisdiction of   (I.R.S. Employer
+incorporation or organization)    Identification No.)
+
+410 North Michigan Avenue
+    Chicago, Illinois			     60611
+(Address of principal executive offices)   (Zip Code)
+
+Registrant's telephone number, including area code: (312) 644-2121
+
+Securities registered pursuant to Section 12(b) of the Act:
+
+Name of each exchange on
+Title of each class				     which registered
+
+Common Stock, no par value			New York Stock Exchange
+Chicago Stock Exchange
+
+Securities registered pursuant to Section 12(g) of the Act:
+
+Title of each class
+Class B Common Stock, no par value
+
+Indicate by check mark whether the Registrant (1) has filed all
+reports required to be filed by Section 13 or 15(d) of the Securities
+Exchange Act of 1934 during the preceding 12 months (or for such
+shorter period that the Registrant was required to file such
+reports), and (2) has been subject to such filing requirements for
+the past 90 days.  Yes X.  No  .
+
+Indicate by check mark if disclosure of delinquent filers
+pursuant to Item 405 of Regulation S-K (Section 229.405 of this
+chapter) is not contained herein, and will not be contained, to the
+best of registrant's knowledge, in definitive proxy or information
+statements incorporated by reference in Part III of this Form 10-K or
+any amendment to this Form 10-K. [X]
+
+As of January 31, 2000, there were outstanding 91,865,823 shares
+of Common Stock, no par value, and the aggregate market value of the
+Common Stock (based upon the closing price of the stock on the New
+York Stock Exchange on January 31, 2000) held by non-affiliates was
+approximately $5,631,137,694.  As of January 31, 2000 there were
+outstanding 22,522,373 shares of Class B Common Stock, no par value.
+ Class B Common Stock is not traded on the exchanges, is restricted
+as to transfer or other disposition, and is convertible into Common
+Stock on a share-for-share basis.  Upon such conversion, the
+resulting shares of Common Stock are freely transferable and publicly
+traded.  Assuming all shares of outstanding Class B Common Stock were
+converted into Common Stock, the aggregate market value of Common
+Stock held by non-affiliates on January 31, 2000 (based upon the
+closing price of the stock on the New York Stock Exchange on such
+date) would have been approximately $6,422,599,248. Determination of
+stock ownership by non-affiliates was made solely for the purpose of
+this requirement, and the Registrant is not bound by these
+determinations for any other purpose.
+
+	DOCUMENTS INCORPORATED BY REFERENCE
+
+Portions of the Registrant's Definitive Proxy Statement, dated
+February 4, 2000 for the March 6, 2000 Annual Meeting of
+Stockholders, and of the 1999 Annual Report to Stockholders, are
+incorporated by reference into portions of Parts I, II, III and IV of
+this Report.
+
+<PAGE>
+
+	PART I
+
+Item 1.  Business
+
+(a)  General Development of Business.
+
+(1)  General information.  From 1891 to 1903, the Company was
+operated as a partnership until its incorporation in Illinois as Wm.
+Wrigley, Jr. & Co. in December 1903.  In November 1910, the Company
+was reincorporated under West Virginia law as Wm. Wrigley Jr. Company
+the ("Company"), and in October 1927, was reincorporated under the
+same name under Delaware law.
+
+Throughout its history, the Company has concentrated on one
+principal line of business: manufacturing and marketing quality
+chewing gum products.
+
+(2)  Not applicable.
+
+(b)  Financial Information About Industry Segments.
+
+The Company's principal business of manufacturing and selling
+chewing gum constitutes more than 90% of its consolidated worldwide
+sales and revenues.  All other businesses constitute less than 10% of
+its consolidated revenues, operating profit and identifiable assets.
+ Financial information on segments, as defined under generally
+accepted accounting principles, is set forth on pages 20 and 21 of
+the Company's Annual Report to Stockholder's for the fiscal year
+ended 1999, under the caption "Segment Information" which information
+is incorporated herein by reference.
+
+(c)  Narrative Description of Business.
+
+(1)  Business conducted.  The following is a description of the
+business conducted and intended to be conducted by the Company and
+its wholly-owned associated companies:
+
+(i)  Principal products, markets and methods of
+distribution.  The Company's principal business is manufacturing
+and selling chewing gum, both in the United States and abroad.
+
+The Company's brands manufactured and available in the
+United States are:  WRIGLEY'S SPEARMINT, DOUBLEMINT, JUICY
+FRUIT, BIG RED and WINTERFRESH which account for a majority of
+the Company's sales volume; FREEDENT, a specially formulated
+chewing gum which does not stick to most types of dental work,
+available in three flavors; EXTRA sugarfree chewing gum,
+available in four flavors and as bubble gum; and ECLIPSE a
+sugarfree pellet gum, available in two flavors.
+
+Except for BIG RED and WINTERFRESH, which have limited
+availability overseas, and ECLIPSE, which is currently being
+test marketed in Australia, the above Wrigley brands are also
+commonly available in many international markets. Additional
+brands manufactured and marketed abroad are: ORBIT, EXTRA and
+FREEDENT sugarfree gums in both pellet and stick form in various
+flavors, ARROWMINT, COOL CRUNCH, DULCE 16, EXCEL, JUICY FRUIT
+and P.K chewing gums in sugar coated pellet form, sugarfree
+WRIGLEY'S SPEARMINT, DOUBLEMINT, JUICY FRUIT, AIRWAVES in
+sugarfree pellet form, ICEWHITE sugarfree stick gum and bubble
+gums HUBBA BUBBA in various flavors, BIG BOY and BIG G.
+
+The Company's ten largest markets, by shipments, outside of
+the United States in 1999 were, in alphabetical order,
+Australia, Canada, China, France, Germany, Philippines, Poland,
+Russia, Taiwan and the United Kingdom.
+
+<PAGE>
+
+Chewing gum is manufactured in three factories in the United
+States and twelve factories in other countries. Three domestic wholly
+owned associated  companies also manufacture products other than
+chewing gum.  Amurol Confections Company, in addition to
+manufacturing and marketing children's bubble gum items including
+BUBBLE TAPE, BIG LEAGUE CHEW and other uniquely packaged confections,
+and two adult chewing gum items, STAY ALERT caffeine gum and EVEREST
+powerful mint gum, also has various non-gum items, such as a line of
+suckers, dextrose candy, liquid gel candy and hard roll candies as an
+important part of its total business.  Amurol is also developing
+export markets, currently the largest being Canada, Mexico and Japan.
+ The principal business of the L.A. Dreyfus Company is the production
+of chewing gum base, at one domestic and one overseas factory, for
+the parent and wholly owned associated companies, and for other
+manufacturers of chewing gum and specialty gum products in the United
+States and abroad.  Northwestern Flavors, Inc. processes flavorings
+and rectifies mint oil for the parent and associated companies.
+
+In 1979, the Company organized its domestic converting
+operations under the name of Wrico Packaging Division as a separate
+operating unit of the Company.  This division was created to help
+further the Company's capability to produce improved packaging
+materials.  Currently, Wrico produces about 27% of the Company's
+domestic printed and other wrapping supplies.
+
+The Company markets chewing gum primarily through distributors
+wholesalers, corporate chains and cooperative buying groups that
+distribute the product through retail outlets.  Additional direct
+customers are vending distributors, concessionaires and other
+established customers purchasing in wholesale quantities.  Customer
+orders are usually received by mail, electronically, telephone or
+telefax and are generally shipped by truck from factory warehouses or
+leased warehousing facilities.  Consumer purchases at the retail
+level are generated primarily through the Company's advertisements on
+television and radio, and in newspapers and magazines.
+
+(ii)  New products.  In Europe, EXTRA for Kids, ORBIT for Kids,
+AIRWAVES and ICEWHITE were added to the product line.  In the United
+States, ECLIPSE, a sugarfree pellet product, was introduced in 1999.
+ Additional or improved flavors were also introduced for some product
+lines in various markets.
+
+(iii)  Sources and availability of raw materials.  Raw materials
+blended to make chewing gum base are available from suppliers and in
+the open market.
+
+Sugar, corn syrup, flavoring oils, polyols and aspartame are
+obtained in the open market, or under contracts, from suppliers in
+various countries.  All other ingredients and necessary packaging
+materials are also purchased and available on the open market.
+
+(iv)  Patents and trademarks.  The Company holds numerous
+patents relating to packaging, manufacturing processes and product
+formulas.  Approximately fifty patents relating to product formula
+and sweetener encapsulation, primarily for sugarfree gum and
+continuous chewing gum manufacturing, are deemed of material
+importance to the Company.  Most of these patents expire in the
+countries in which they are registered at various times through the
+year 2017.
+
+Trademarks are of material importance to the Company and are
+registered and maintained for all brands of the Company's chewing gum
+on a worldwide basis.
+
+(v)  Seasonality.  On a consolidated basis, sales normally are
+relatively consistent throughout the year.
+
+(vi)  Working capital items.  Inventory requirements of the
+Company are not materially affected by seasonal or other factors.  In
+general, the Company does not offer its customers extended payment
+terms.  The Company believes these conditions are not materially
+different from those of its competitors.
+
+(vii)  Customers.  The Company's products are distributed
+through more than 3,000 customers throughout the United States alone.
+ No single domestic or foreign customer accounts for as much as 10%
+of consolidated sales or revenues.
+
+<PAGE>
+
+(viii)  Orders.  It is the general custom of the wholesale trade
+to purchase chewing gum requirements at intervals of approximately
+ten days to two weeks to assure fresh stocks and good turnover.
+Therefore, an order backlog is of no significance to the chewing gum
+business.
+
+(ix)  Government business.  The Company has no material portion
+of its business which may be subject to renegotiation of profits or
+termination of contracts at the election of the Government.
+
+(x)  Competitive conditions.  The chewing gum market is an
+intensely competitive one in the United States and in most
+international markets.  Though detailed figures are not available,
+there are approximately 14 chewing gum manufacturers in the United
+States.  Outside sources estimate that Wrigley brands account for
+approximately 50% of the total chewing gum product unit sales in the
+United States.  The Company's principal competitors in the United
+States are the Warner-Lambert Company and RJR Nabisco Holdings Corp.
+
+Wrigley brands are sold in over 140 countries and territories,
+although in some cases these markets are relatively small.  In most
+international markets, there are two or three major competitors and
+generally a half dozen or more other companies competing for a share
+of the gum market in each instance.
+
+In all markets in which the Company distributes its products,
+principal methods of competition are a combination of competitive
+profit margins to the trade, superior quality, brand recognition,
+product benefit and a fair consumer price.
+
+(xi)  Research and development.  The Company has for many years
+maintained an active in-house research and development program, and
+has also contracted outside services for developing and improving
+Wrigley products, machinery and operations.  In relation to the
+Company's consolidated assets, revenues and aggregate operating
+expenses, amounts expended in these areas during the last three
+fiscal years have not been material.
+
+(xii)  Compliance with environmental laws.  Compliance with
+federal, state and local laws regulating the discharge of materials
+into the environment, or otherwise relating to the protection of the
+environment, has no material effect on capital expenditures, earnings
+or the competitive position of the Company.
+
+(xiii)  Employees. As of December 31, 1999, the Company employed
+approximately 9,300 persons worldwide.
+
+(d)  Financial Information About Foreign and Domestic Operations and
+Export Sales.
+
+Information concerning the Company's operations in different
+geographic areas for the years ended December 31, 1999, 1998 and 1997
+is hereby incorporated by reference from the 1999 Annual Report to
+Stockholders, on pages 20 and 21, under the caption "Segment
+Information," and on pages 24 and 25 under the caption "Results of
+Operations."
+
+Item 2.  Properties
+
+The information below relates to the principal properties of the
+Company which are primarily devoted to chewing gum production or raw
+materials processing.  The Company considers the properties listed
+below to be in good condition, well maintained and suitable to carry
+out the Company's business.  All of the chewing gum factories listed
+below operated at least one full shift throughout the year, all but
+two operated a substantial second shift and eight operated a third
+shift for much of the year.  All properties are owned by the Company
+unless otherwise indicated.  The figures given in the table are
+approximate.
+
+<PAGE>
+
+Floor Area
+Property and
+[... trimmed ...]
+he schedule above were re-elected for a one-year term to
+their positions in the Company.
+
+	PART II
+
+Item 5.  Market for Registrant's Common Stock, Dividend and
+Stockholder
+Information
+
+At December 31, 1999, the Company had two classes of stock
+outstanding: Common Stock, listed on both the New York and Chicago
+Stock Exchanges, and Class B Common Stock, for which there is no
+trading market.  Shares of the Class B Common Stock were issued by
+the Company on April 11, 1986 to stockholders of record on April 4,
+1986.  Class B Common Stock is entitled to ten votes per share, is
+subject to restrictions on transfer or other disposition and is at
+all times convertible, on a share-for-share basis, into shares of
+Common Stock.
+
+As of January 31, 2000, there were 38,138 stockholders of record
+holding Common Stock and 3,594 stockholders of record holding Class
+B Common Stock.  Regular quarterly dividends and any extra cash
+dividends as may be deemed appropriate, which are identical on both
+Common Stock and Class B Common Stock, are declared at scheduled
+meetings of the Board of Directors and announced immediately upon
+declaration.  Information regarding the high and low quarterly sales
+prices for the Common Stock on the New York Stock Exchange, and
+dividends declared per share on a quarterly basis for both classes of
+stock, for the two-year period ended December 31, 1999, is set forth
+in the Company's 1999 Annual Report to Stockholders, on page 27,
+under the captions "Market Prices" and "Dividends" and is
+incorporated herein by reference.
+
+<PAGE>
+
+Item 6.  Selected Financial Data
+
+An eleven-year summary of selected financial data for the
+Company is set forth in the Company's 1999 Annual Report to
+Stockholders under the following captions and page numbers:
+"Operating Data" and "Other Financial Data", on pages 28 and 29, and
+is incorporated herein by reference.
+
+Item 7.  Management's Discussion and Analysis of Financial Condition
+and Results of Operations
+
+Management's discussion and analysis of results of operations
+and financial condition, including a discussion of liquidity and
+capital resources, is set forth in the Company's 1999 Annual Report
+to Stockholders on pages 24 through 26 and is incorporated herein by
+reference.
+
+Item 7A.  Quantitative and Qualitative Disclosures About Market Risk
+
+Disclosure about market risk is set forth on page 26 of the
+Company's 1999 Annual Report to Stockholders under the heading
+"Market Risk" and is incorporated herein by reference.
+
+Item 8.  Financial Statements and Supplementary Data
+
+The Company's audited consolidated financial statements,
+accounting policies and notes to consolidated financial statements,
+with the report of independent auditors, at December 31, 1999 and
+1998 and for each of the three years in the period ended December 31,
+1999 are set forth in the Company's 1999 Annual Report to
+Stockholders on pages 9 through 23 and selected unaudited quarterly
+data-consolidated results, for the years ended December 31, 1999 and
+1998 are set forth in the Company's 1999 Annual Report to
+Stockholders on page 27, and all such pages are incorporated herein
+by reference.
+
+Item 9.  Changes in and Disagreements with Accountants on Accounting
+and
+Financial Disclosure
+
+None.
+
+	PART III
+
+Item 10.  Directors and Executive Officers of the Registrant
+
+Information regarding directors and nominees for directorship is
+set forth in the Company's definitive Proxy Statement, dated February
+4, 2000, for the Annual Meeting of Stockholders on March 6, 2000, on
+pages 2 and 3, under the caption "Election of Directors" and is
+incorporated herein by reference.  For information concerning the
+Company's executive officers, see "Executive Officers of the
+Registrant" set forth in Part I hereof.
+
+Item 11.  Executive Compensation
+
+Information regarding the compensation of directors and
+executive officers is set forth in the Company's definitive Proxy
+Statement, dated February 4, 2000, for the Annual Meeting of
+Stockholders on March 6, 2000, on pages 6 and 7, and 11 through 18
+under the general captions "Compensation of Directors" and "Executive
+Compensation", respectively, and is incorporated herein by reference.
+
+Item 12.  Security Ownership of Certain Beneficial Owners and
+Management
+
+Information regarding security ownership of certain beneficial
+owners, of all directors and nominees, of the named executive
+officers, and of directors and executive officers as a group, is set
+forth in the Company's definitive Proxy Statement, dated February 4,
+2000, for the Annual Meeting of Stockholders on March 6, 2000, on
+pages 4 through 6 under the captions "Security Ownership of Directors
+and Executive Officers" and "Security Ownership of Certain Beneficial
+Owners" and is incorporated herein by reference.
+
+<PAGE>
+
+Item 13.  Certain Relationships and Related Transactions
+
+Information regarding certain relationships and related
+transactions is hereby incorporated by reference from the Company's
+definitive Proxy Statement, dated February 4, 2000, for the Annual
+Meeting of Stockholders on March 6, 2000 under the following caption
+and page number: "Security Ownership of Certain Beneficial Owners",
+on page 5, regarding the Offield family and Mr. Wrigley, Jr.
+
+	PART IV
+
+Item 14.  Exhibits, Financial Statement Schedule, and Reports on Form
+8-K
+
+      (1) 1,2.  Financial Statements and Financial Statement Schedule
+
+The data listed in the accompanying Index to Financial
+Statements and Financial Statement Schedule, on page F-1 hereof, is
+filed as part of this Report.
+
+3.  Exhibits
+
+The exhibits listed in the accompanying Index to Exhibits, on
+page F-3 hereof, are filed as part of this Report or are incorporated
+by reference herein as indicated thereon.
+
+     (b)  Not Applicable.
+
+     (c)  Exhibits are attached hereto.
+
+     (d)  See (a) 1, 2 above.
+
+
+<PAGE>
+
+	SIGNATURES
+
+Pursuant to the requirements of Section 13 or 15(d) of the
+Securities Exchange Act of 1934, as amended, the Registrant has duly
+caused this Form 10-K Report to be signed on its behalf by the
+undersigned, thereunto duly authorized.
+
+Date:  March 24, 2000					WM. WRIGLEY JR. COMPANY
+     (Registrant)
+
+By: /s/ RONALD V. WATERS
+    Ronald V. Waters
+ Senior Vice President and
+  Chief Financial Officer
+
+Pursuant to the requirements of the Securities Exchange Act of
+1934, as amended, this Report on Form 10-K has been signed below by
+the following persons on behalf of the Registrant and in the
+capacities and on the dates indicated.
+
+Signature				Title
+
+         *            		President, Chief
+William Wrigley, Jr.		Executive Officer,
+							Director
+
+/s/ RONALD V. WATERS  		Senior Vice President and
+Ronald V. Waters			Chief Financial Officer
+
+/s/ REUBEN GAMORAN    		Controller
+Reuben Gamoran			(Principal Accounting Officer)
+
+         *            		Director
+Thomas A. Knowlton
+
+         *            		Director
+Penny Pritzker
+
+         *            		Director
+Melinda R. Rich
+
+         *            		Director	*By  /s/    HOWARD MALOVANY
+Steven B. Sample		                     Howard Malovany
+ Attorney-in-Fact
+         *            		Director
+Alex Shumate							Date:  March 24, 2000
+
+         *            		Director
+Richard K. Smucker
+
+
+<PAGE>
+
+Exhibit 23.
+
+	CONSENT OF INDEPENDENT AUDITORS
+
+
+We consent to the incorporation by reference in this Annual Report on
+Form 10-K of Wm. Wrigley Jr. Company of our report dated January 24,
+2000, included in the 1999 Annual Report to Stockholders of Wm.
+Wrigley Jr. Company.
+
+Our audits also included the financial statement schedule of Wm.
+Wrigley Jr. Company listed in Item 14(a).  This schedule is the
+responsibility of the Company's management.  Our responsibility is to
+express an opinion based on our audits.  In our opinion, the
+financial statement schedule referred to above, when considered in
+relation to the basic financial statements taken as a whole, presents
+fairly in all material respects the information set forth therein.
+
+We also consent to the incorporation by reference in the Registration
+Statements pertaining to the Special Investment and Savings Plan for
+Wrigley Employees (33-15061 (1987) and 33-43738 (1991)), the Wm.
+Wrigley Jr. Company Management Incentive Plan (33-22788 (1988)) and
+the 1997 Management Incentive Plan (333-48715 (1998)), respectively,
+of our report dated January 24, 2000, with respect to the
+consolidated financial statements and consolidated financial
+statement schedule of Wm. Wrigley Jr. Company included or
+incorporated by reference in this Annual Report on Form 10-K for the
+year ended December 31, 1999.
+
+
+
+
+ /s/ERNST & YOUNG LLP
+    Ernst & Young LLP
+
+
+Chicago, Illinois
+March  24, 2000
+
+
+<PAGE>
+<TABLE>
+
+
+	WM. WRIGLEY JR. COMPANY
+
+
+	INDEX TO FINANCIAL STATEMENTS
+	AND FINANCIAL STATEMENT SCHEDULES
+	(Item 14(a))
+
+
+		                Reference
+		Form	         Annual Report
+		10-K	              to
+		Report            Stockholders
+<S>													<C>			<C>
+Data incorporated by reference from the 1999 Annual Report
+ to Stockholders of Wm. Wrigley Jr. Company:
+   Consolidated balance sheet at December 31, 1999 and 1998......						10-11
+   For the years ended December 31, 1999, 1998 and 1997:
+       Consolidated statement of earnings........................						    9
+       Consolidated statement of cash flows......................						   12
+       Consolidated statement of stockholders' equity
+       		including comprehensive income....................						   13
+       Accounting policies and notes to consolidated financial
+   
+</DOCUMENT>
+<DOCUMENT>
+<TYPE>EX-13
+<SEQUENCE>2
+<DESCRIPTION>1999 AR TO STKHLDRS OF THE REGISTRANT
+<TEXT>
+
+
+
+<PAGE>
+
+
+THE GLOBE AND SPEAR
+WM. WRIGLEY JR. COMPANY ANNUAL REPORT 1999
+
+The Wrigley Spear has been associated with the established brands
+of Wrigley's chewing gum since it was first used in 1893 and is
+recognized by consumers worldwide as a symbol of quality.
+
+Back in the early 1970's, to reflect the Company's growing
+international presence, a Wrigley artist first depicted the Spear
+encircling the globe. The Globe and Spear is now a registered
+trademark of the Wm. Wrigley Jr. Company. Wrigley brands are
+produced in 14 factories around the world and sold in over 140
+countries. Wrigley's chewing gum represents a truly American
+product known throughout the world and enjoyed daily by millions.
+
+
+
+<TABLE>
+<CAPTION>
+
+<C>	<S>
+	CONTENTS
+
+2	Wrigley at a Glance
+4	President's Letter
+8	Highlights
+9	Consolidated Statement of Earnings
+10	Consolidated Balance Sheet
+12	Consolidated Statement of Cash Flows
+13	Consolidated Statement of Stockholders' Equity Including Comprehensive Income
+14	Accounting Policies and Notes to Consolidated Financial Statements
+22	Report of Management
+23	Report of Independent Auditors
+24	Management's Discussion and Analysis
+27	Quarterly Data
+28	Selected Financial Data
+31	Elected Officers
+32	Board of Directors
+34	Stockholder Information
+36	Corporate Facilities and Principal Associated Companies
+</TABLE>
+
+<PAGE>
+<TABLE>
+<CAPTION>
+
+WRIGLEY at a glance
+
+<C>				<C>						<C>
+
+CHEWING GUM/BUBBLE GUM
+Company:			Wrigley
+Countries Served:	Over 140
+Website:			www.wrigley.com
+
+Major Brands:		[Airwaves Logo]				[Hubba Bubba Logo]
+				[Big Red Logo]				[Ice White Logo]
+				[Doublemint Logo]			[Juicy Fruit Logo]
+				[Eclipse Logo]				[Orbit Logo]
+				[Excel Logo]				[P.K. Logo]
+				[Extra Logo]				[Wrigley's Spearmint Logo]
+				[Freedent Logo]				[Winterfresh Logo]
+
+
+BUBBLE GUM/CONFECTIONS
+Company:			Amurol Confections
+Countries Served:	Over 50
+Websites:			www.bubblegum.com
+				www.confections.com
+
+Major Brands:		[Big League Chew Logo]		[Bubble Tape Logo]
+				[Blasters Logo]				[Bug City Candy Tarts Logo]
+				[Bubble Jug Bubble Gum Logo]	[Everest Powerful Mint Gum Logo]
+
+
+GUM BASE
+Company:			L.A. Dreyfus
+Website:			www.ladreyfus.com
+
+
+
+FLAVORING
+Company:			Northwestern Flavors
+
+</TABLE>
+
+
+
+<PAGE>
+
+[WRIGLEY LETTERHEAD]
+
+TO THE STOCKHOLDERS AND EMPLOYEES OF THE WM. WRIGLEY JR. COMPANY
+
+At the Wrigley Company, we have always chosen to look to the future
+rather than focus on the past. At the beginning of a new era,
+however, some reflection on the past will help provide an
+understanding of the foundation that has been laid to allow the
+Company to take full advantage of promising opportunities on the
+horizon.
+
+In many ways, 1999 was a transitional year for us, as we came to
+grips with a number of changes both within and outside the Company.
+We also faced a wide range of market conditions that affected our
+business performance.
+
+The U.S. chewing gum market had lost momentum over the past few
+years. Wrigley shipment trends reached a low point in mid-1999, as
+our second quarter U.S. volume experienced a sharp drop from the
+prior year, reflecting competitive activity and retail inventory
+consolidations. Our management and marketing teams took a fresh
+look at the situation and revised our business plans for the second
+half of 1999. With some new trade initiatives, additional
+advertising investments, and a recharged sales team, we were able
+to inject new vitality into our U.S. business. Strong shipment
+increases during the second half of the year offset the volume
+shortfall experienced through June. This initial business momentum
+is encouraging and puts us on stronger footing heading into 2000,
+particularly with new product initiatives and new advertising
+efforts planned for the U.S. market throughout the year.
+
+Turning to our overseas business, we weathered some economic
+upheavals in Russia without slowing down our plant construction in
+St. Petersburg or reducing the size of our hard-working local team.
+As market conditions have improved, the same employee enthusiasm
+and entrepreneurial spark that helped Wrigley products become top-
+sellers in Russia prior to the current economic turmoil are again
+being applied to advance our business interests. While Russia
+remains unsettled because its economy and government are still in
+transition, we continue to be positive about the long-term market
+prospects.
+
+Our business in the Philippines, also complicated by difficult
+economic conditions, improved during the second half of 1999,
+though it was below 1998 levels for the full year. At our new and
+expanded factory, located in Antipolo City, our Philippine
+associates continue to gear up production capacity to serve
+recovering export markets across Southeast Asia.
+
+<PAGE>
+
+Overall, our international operations remained an engine of growth
+for our business. Excluding Russia and the Philippines,
+international volume increased by a healthy 6%. The biggest
+contributors to the gain were existing products in a mix of
+developed and emerging markets--China, Poland, France, and Vietnam-
+- -which averaged growth in excess of 20%. New product rollouts also
+continued, particularly across Europe, as Airwaves(R) and Ice
+White(R) were made available to a growing number of markets.
+
+The continuing shift of our business base to international markets
+has served the Company well overall, but there are risks associated
+with operating a truly global enterprise. In addition to political
+risk, highlighted by this past year's conflict in the Balkans,
+there is currency risk. Over the long haul, the ebbs and flows of
+currency fluctuations tend to even out. During the past couple of
+years, however, currency devaluations have reduced the impact of
+our solid underlying international volume growth when overseas
+sales and earnings results were translated back to U.S. dollars.
+While we expect currency changes to remain an issue as we go
+forward, we think the potential benefits of expanding the
+international presence of Wrigley brands far outweigh the risks.
+
+The common thread of each new action initiated during 1999 was a
+focus on growth. Our Company's greatest assets are its people and
+its brands, and we sought out ways to support our people and
+invigorate our brands. As in past years, I spent a good portion of
+1999 on the road. At each and every Wrigley location I visited, our
+global associates continued to impress me with their ideas, energy,
+and commitment to the business.
+
+Through the whirlwind of events and activities of the last twelve
+months, the most enduring image in my mind is that of my father. No
+one worked longer or harder or with more passion for the Company
+than William Wrigley. It was a privilege to have worked and learned
+at his side for the past fourteen years, and no one feels his loss
+more deeply than do I.
+
+The overall vitality of the Company is a testimonial to the hard
+work and vision of my father, grandfather and great grandfather.
+William Wrigley Jr., the Company's founder and the ultimate
+salesman, took chance after chance in order to make Wrigley a
+household name across the United States and gain toeholds in
+various international markets. My grandfather, Philip K. Wrigley,
+guided the Company through the hardships of the Great Depression
+and the shortages of World War II; and with innovative advertising
+and an increasing focus on world markets, he firmly established our
+Company's foundation. My father, William Wrigley, made the Company
+truly global - consolidating its strength in the U.S. home market,
+while dramatically increasing its presence across Europe, Asia and
+the Pacific.
+
+<PAGE>
+
+Their record of accomplishments is both a marvelous legacy and a
+daunting challenge. As a result of these three leaders and the
+dedicated teams of employees who supported them, Wrigley brands are
+well known, widely respected and readily available around the
+world.
+
+But, in today's marketplace, we need to do even more. It is
+critical that our brands, our people and, therefore, our business
+continue to grow and evolve. Our corporate vision and challenge is
+to "weave Wrigley brands into the fabric of everyday life around
+the world." In order to reap the rewards of this long-range
+perspective, everyone across our global organization--whether in
+production, sales, research and development, finance, or the
+supporting groups for these activities--will have to push and
+stretch as never before.
+
+For our business to thrive in the future, we must steadfastly hold
+to certain values that have been keys to our historic success,
+while changing our pace and mode of operation. The Company's
+foundation remains one of talented people, quality products,
+widespread distribution, bold merchandising and effective
+advertising. Our corporate culture remains one that affords people
+trust, dignity and respect. In terms of change, an intensified
+sense of urgency will help us respond to the ever more competitive
+business environment we face. Also essential for advancing the
+Wrigley Company's business around the world and achieving long-term
+success are a spirit of innovation, a willingness to take measured
+risk, and strong global communications. In addition, we must make
+sure that we have a deep understanding of our trade customers and
+our ultimate consumers. To reinforce our relationships with the
+trade and consumers, we must also put responsibility and
+accountability in the hands of those closest to them. Some of these
+principles and practices are already being employed, but they need
+to become instinctive throughout our organization. As the year 2000
+unfolds, we will strive to have this model for success pervade all
+our operations.
+
+As we step forward into this new year, challenges and opportunities
+abound.  We have a very solid base of business upon which to build.
+While we remain focused on producing strong operating results, we
+must also properly develop our longer-term, strategic business
+opportunities. The growth we seek is the kind that can carry us
+across generations. We always strive to increase shareholder value,
+but we do so with a time horizon that goes beyond the next quarter
+and can range beyond the next year. Our design is to constantly
+invest for the future while harvesting the results of previous
+investments.  Though we establish growth targets, there can be some
+variability in results depending upon the particular investments
+required to ensure the long-term vitality of the business.
+
+<PAGE>
+
+In recent years, we stepped up capital investments in order to
+create sufficient capacity to deliver the right products to the
+right places and to meet projected demand.  For the first time in
+five years, capital spending declined in 1999, and it is expected
+to moderate again in 2000. Although we are making a major
+investment to enable the manufacturing of sugarfree pellet
+products, such as Eclipse(R), in the United States, no new plants
+are scheduled for construction in the coming year. It is important
+to note, however, that other significant investments--in people,
+information technology, product development and advertising--will
+be required to address new opportunities and stimulate business
+growth.
+
+Times of transition and challenge can either weaken or strengthen
+an organization. Our Company has gained vitality despite the
+difficulties of this past year, primarily because so many
+individuals have risen to the occasion and performed above and
+beyond the call of duty. In addition to friends and family, the
+employees and stockholders of this Company have provided me with
+tremendous support, and I am deeply appreciative of all your good
+wishes.
+
+Now, the year of transition is over, and a new era has begun.
+While mindful of the many competitive and economic challenges the
+Company faces, I am energized by the possibilities and the
+potential of our business. With your continued support, I look
+forward to the accelerated evolution and aggressive expansion of
+our Company and our brands around the world.
+
+Sincerely,
+
+[WRIGLEY, JR. SIGNATURE]
+
+William Wrigley, Jr.
+
+
+
+
+<PAGE>
+
+HIGHLIGHTS OF OPERATIONS
+
+<TABLE>
+<CAPTION>
+
+	1999	1998
+	In thousands of dollars except for per share amounts
+<S>	<C>		<C>
+NET SALES	$	2,061,602	$	2,004,719
+
+Earnings before factory sale	$	308,183	$	297,738
+
+- --Per Share of Common Stock (basic and diluted)$	2.66	$	2.57
+
+NET EARNINGS	$	308,183	$	304,501
+
+- --Per Share of Common Stock (basic and diluted)$	2.66	$	2.63
+
+DIVIDENDS PAID	$	153,812	$	150,835
+
+- --Per Share of Common Stock	$	1.33	$	1.30
+
+ADDITIONS TO PROPERTY, PLANT AND EQUIPMENT	$	127,733	$	148,027
+
+STOCKHOLDERS' EQUITY	$	1,138,775	$	1,157,032
+
+RETURN ON AVERAGE EQUITY		26.8%		28.4%
+
+STOCKHOLDERS AT CLOSE OF YEAR		38,626		38,052
+
+AVERAGE SHARES OUTSTANDING (000)		115,861		115,964
+
+For additional historical financial data see page 28.
+</TABLE>
+
+
+<PAGE>
+
+CONSOLIDATED STATEMENT OF EARNINGS
+
+<TABLE>
+<CAPTION>
+	1999	1998	1997
+	In thousands of dollars except for per share amounts
+<S>		<C>			<C>			<C>
+EARNINGS
+REVENUES:
+Net sales	$	2,061,602		2,004,719		1,937,021
+Investment and other income		   17,636		   18,636		   17,153
+		Total revenues		2,079,238		2,023,355		1,954,174
+COSTS AND EXPENSES:
+Cost of sales		  854,931		  848,363		  847,366
+Costs (Gains) related to factory closure and sale			---	  (10,404)		    3,300
+Selling, distribution and general administrative		  779,168		  743,902		  708,310
+Interest			      709		      615		      958
+		Total costs and expenses		1,634,808		1,582,476		1,559,934
+EARNINGS BEFORE INCOME TAXES		  444,430		  440,879	  	394,240
+INCOME TAXES		  136,247	  	136,378		  122,614
+NET EARNINGS	$	  308,183		  304,501		  271,626
+PER SHARE AMOUNTS
+NET EARNINGS PER SHARE OF COMMON STOCK
+	(BASIC AND DILUTED)	$	2.66		2.63		2.34
+DIVIDENDS PAID PER SHARE OF COMMON STOCK	$	1.33		1.30		1.17
+
+
+See accompanying accounting policies and notes.
+
+</TABLE>
+
+
+<PAGE>
+CONSOLIDATED BALANCE SHEET
+
+<TABLE>
+<CAPTION>
+	1999		1998
+	         
+[... trimmed ...]
+Preferred Stock--no par value
+	Authorized:  20,000 shares
+	Issued:  None
+Common Stock--no par value
+	Common Stock
+	Authorized: 400,000 shares
+	Issued: 1999--93,607 SHARES; 1998--93,007 shares		12,481		12,401
+	Class B Common Stock--convertible
+	Authorized: 80,000 shares
+	Issued and outstanding:
+	1999--22,614 SHARES; 1998--23,214 shares		3,015		3,095
+Additional paid-in capital		273		272
+Retained earnings		1,322,137		1,184,617
+Common Stock in treasury, at cost
+	(1999--1,725 SHARES; 1998--111 shares)		(125,712)		(6,712)
+Accumulated other comprehensive income--
+	Foreign currency translation adjustment		(100,270)		(61,339)
+	Unrealized holding gains on marketable equity
+	securities		26,851		24,698
+					(73,419)		(36,641)
+	Total stockholders' equity		1,138,775		1,157,032
+	TOTAL LIABILITIES AND STOCKHOLDERS' EQUITY	$	1,547,745		1,520,855
+
+See accompanying accounting policies and notes.
+</TABLE>
+
+
+<PAGE>
+
+CONSOLIDATED STATEMENT OF CASH FLOWS
+
+<TABLE>
+<CAPTION>
+
+	1999	1998	1997
+	In thousands of dollars
+<S>		<C>		<C>		<C>
+OPERATING ACTIVITIES
+Net earnings	$	308,183		304,501		271,626
+	Adjustments to reconcile net earnings to
+		net cash provided by operating activities:
+	Depreciation		61,225		55,774		50,439
+	(Gain) Loss on sales of
+		property, plant and equipment		390		168		(1,141)
+	Gain related to factory sale		--  		(10,404)		--
+	(Increase) Decrease in:
+		Accounts receivable		(21,174)		(12,297)		(19,977)
+		Inventories		(9,894)		(6,299)		(26,916)
+		Other current assets		2,807		1,310		(19,053)
+		Other assets and deferred charges		(22,277)		(17,350)		11,123
+	Increase (Decrease) in:
+		Accounts payable		13,519		4,499		1,549
+		Accrued expenses		9,734		(3,869)		16,182
+		Income and other taxes payable		2,649		(4,445)		1,779
+		Deferred income taxes		2,024		9,826		(2,608)
+		Other noncurrent liabilities		10,850		2,433		11,475
+Net cash provided by operating activities		358,036		323,847		294,478
+
+INVESTING ACTIVITIES
+	Additions to property, plant and equipment		(127,733)		(148,027)		(126,509)
+	Proceeds from property retirements		7,909		10,662		6,888
+	Purchases of short-term investments		(32,078)		(109,292)		(156,553)
+	Maturities of short-term investments		150,300		92,676		153,550
+Net cash used in investing activities		(1,602)		(153,981)		(122,624)
+
+FINANCING ACTIVITIES
+	Dividends paid		(153,812)		(150,835)		(135,680)
+	Common Stock purchased		(121,268)		(7,679)		(3,676)
+Net cash used in financing activities		(275,080)		(158,514)		(139,356)
+Effect of exchange rate changes
+	on cash and cash equivalents		(7,540)		(3,407)		(7,104)
+Net increase in cash and cash equivalents		73,814		7,945		25,394
+Cash and cash equivalents at beginning of year		214,572		206,627		181,233
+Cash and cash equivalents at end of year	$	288,386		214,572		206,627
+
+SUPPLEMENTAL CASH FLOW INFORMATION
+	Income taxes paid	$	130,562		133,530		126,925
+	Interest paid	$	709		1,164		900
+	Interest and dividends received	$	17,579		19,458		16,598
+
+
+See accompanying accounting policies and notes.
+</TABLE>
+
+
+<PAGE>
+
+CONSOLIDATED STATEMENT OF STOCKHOLDERS' EQUITY
+INCLUDING COMPREHENSIVE INCOME
+
+<TABLE>
+<CAPTION>
+
+										Total
+		Common			Class B	Additional		Common	Other	Stock-
+		Shares	Common		Common	Paid-In	Retained	Stock in	Comprehensive	Holders'
+		Outstanding	Stock		Stock	Capital	Earnings	Treasury	Income	Equity
+																	In thousands of dollars and shares
+<S>	                           <C>       <C>          <C>          <C>       <C>          <C>           <C>             <C>
+BALANCE DECEMBER 31, 1996	91,815	$12,275	3,221	238	898,512	(12,911)	(3,904)	897,431
+Net earnings					271,626			271,626
+Other comprehensive income:
+	Currency translation							(50,318)	(50,318)
+	Unrealized holding gain on
+		marketable equity securities,
+		net of $2,748 tax							5,103	5,103
+
+	Total comprehensive income								226,411
+Dividends to shareholders					(137,999)			(137,999)
+Treasury share purchases	(56)					(3,676)		(3,676)
+Options exercised and
+	stock awards granted	55			(12)		3,224		3,212
+Conversion from
+	Class B Common to
+	Common	479	64	(64)					--
+BALANCE DECEMBER 31, 1997	92,293	12,339	3,157	226	1,032,139	(13,363)	(49,119)	985,379
+Net earnings					304,501			304,501
+Other comprehensive income:
+	Currency translation							3,695	3,695
+	Unrealized holding gain on
+		marketable equity securities,
+		net of $4,729 tax							8,783	8,783
+
+	Total comprehensive income								316,979
+Dividends to shareholders					(152,023)			(152,023)
+Treasury share sales,
+	net of purchases	104					4,078		4,078
+Options exercised and
+	stock awards granted	37			46		2,573		2,619
+Conversion from
+	Class B Common to
+	Common	462	62	(62)					--
+BALANCE DECEMBER 31, 1998	92,896	12,401	3,095	272	1,184,617	(6,712)	(36,641)	1,157,032
+Net earnings					308,183			308,183
+Other comprehensive income:
+	Currency translation							(38,931)	(38,931)
+	Unrealized holding gain on
+		marketable equity securities,
+		net of $1,160 tax							2,153	2,153
+	Total comprehensive income								271,405
+Dividends to shareholders					(170,663)			(170,663)
+Treasury share purchases	(1,637)					(120,861)		(120,861)
+Options exercised and
+	stock awards granted	23			1		1,861		1,862
+Conversion from
+	Class B Common to
+	Common	600	80	(80)					--
+BALANCE DECEMBER 31, 1999	91,882	$12,481	3,015	273	1,322,137	(125,712)	(73,419)	1,138,775
+
+See accompanying accounting policies and notes.
+</TABLE>
+
+
+<PAGE>
+
+ACCOUNTING POLICIES AND NOTES TO CONSOLIDATED FINANCIAL STATEMENTS
+
+Dollar amounts in thousands except for per share figures
+
+CONSOLIDATION AND DESCRIPTION OF BUSINESS
+
+The consolidated financial statements include the accounts of the
+Wm. Wrigley Jr. Company and its associated companies (the Company).
+The Company's principal business is manufacturing and selling
+chewing gum.  All other businesses constitute less than 10% of
+combined revenues, operating profit and identifiable assets.
+Preparation of financial statements in conformity with generally
+accepted accounting principles requires management to make
+estimates and assumptions that affect assets, liabilities, revenues
+and expenses.  Actual results may vary from those estimates.
+Certain amounts reported in 1997 and 1998 have been reclassified to
+conform to the 1999 presentation.
+
+FACTORY SALE
+
+In the first quarter of 1998, the Company sold its real estate
+holding in Santa Cruz, California and recorded a pretax gain of
+approximately $10,404 and net earnings of approximately $6,763 or
+$.06 per share.  Proceeds from the sale of $7,434 are included in
+proceeds from property retirements in the consolidated statement of
+cash flows.
+
+CASH AND CASH EQUIVALENTS
+
+The Company considers all highly-liquid investments with original
+maturity of three months or less to be cash equivalents.
+
+ADVERTISING
+
+The Company expenses all advertising costs in the year incurred.
+Advertising expense was $303,220 in 1999, $291,344 in 1998 and
+$279,689 in 1997.
+
+INVESTMENTS IN DEBT & EQUITY SECURITIES
+
+The Company's investments in debt securities, which typically
+mature in one year or less, are held to maturity and are valued at
+amortized cost, which approximates fair value. The aggregate fair
+val
+[... trimmed ...]
+tatements of
+earnings and cash flows will be materially impacted by this
+statement upon adoption.
+
+
+COMMON STOCK
+
+In addition to its Common Stock, the Company has Class B Common
+Stock outstanding. Each share of Class B Common Stock has ten
+votes, is restricted as to transfer or other disposition and is
+convertible at any time into one share of Common Stock.
+
+Additional paid-in capital primarily represents the excess of fair
+market value of Common Stock issued from treasury on the date the
+shares of stock were awarded over the average acquisition cost of
+the shares.
+
+Treasury Stock may be acquired for the Company's Management
+Incentive Plan (1997 MIP) or under a resolution adopted by the
+Board of Directors. On August 18, 1993, the Board of Directors
+authorized a share repurchase program to purchase up to $100,000 of
+shares in the open market. On October 27, 1999, the Company's Board
+of Directors authorized an additional $200,000 in share
+repurchases. During 1999, the Company purchased 1,608,800 shares at
+an aggregate price of $118,819 under the 1993 and 1999 authorities.
+No shares were repurchased prior to 1999 under the 1993 authority.
+
+During the fourth quarter of 1999, in connection with the stock
+repurchase program, the Company sold put options to an independent
+third party that entitle the holder of the options to sell shares
+of Company Common Stock to the Company on certain dates at
+specified prices. On December 31, 1999, two options were
+outstanding (representing 250,000 shares in aggregate) with a
+strike price of $83.47 per share. The put options expire between
+March 2000 and June 2000. The outstanding put options permit a net
+share settlement at the Company's option and do not result in a put
+option liability on the balance sheet.
+
+<PAGE>
+
+ACCOUNTING POLICIES AND NOTES (CONTINUED)
+
+STOCK BASED COMPENSATION PLANS
+
+On March 5, 1997, stockholders approved the 1997 MIP. The 1997 MIP
+authorizes the granting of up to 5,000,000 shares of the Company's
+new or reissued Common Stock. The 1997 MIP was designed to provide
+key employees the opportunity to participate in the long-term
+growth and profitability of the Company through cash and equity-
+based incentives. In accordance with the 1997 MIP, shares of
+Wrigley stock or deferral share units may be granted under the
+Wrigley Stock Option program or awarded under the Long-Term Stock
+Grant and Stock Award programs. Deferral share units are also
+awarded to non-employee directors. Options outstanding have been
+granted at prices which are equal to the fair market value of the
+stock on the date of grant. Generally, options vest over a four-
+year period and expire ten years from the date of grant. No options
+were granted or outstanding during 1998 or 1997. The status of the
+Company's Stock Option program is summarized below:
+
+
+
+<TABLE>
+<CAPTION>
+		WEIGHTED-AVERAGE
+	NUMBER OF SHARES	EXERCISE PRICE
+
+<S>                                      <C>                <C>
+Outstanding at December 31, 1998	--	--
+Granted	551,000	$86.0600
+Exercised	--	--
+Cancelled	12,000	$87.5625
+
+Outstanding at December 31, 1999	539,000	$86.0266
+
+</TABLE>
+
+
+
+The Company applies Accounting Principles Board Opinion No. 25 and
+related interpretations in accounting for stock based compensation
+plans. Accordingly, as the exercise price equaled the fair market
+value on the date of grant, no compensation cost has been
+recognized for the Stock Option program.  Compensation costs for
+other stock based compensation plans were not material. Had
+compensation cost for the Stock Option program been determined
+based on fair value of the options at the date of grant, consistent
+with SFAS No. 123, the Company's net earnings and earnings per
+share would have been reduced as follows:
+
+
+
+<TABLE>
+<CAPTION>
+
+		BASIC AND DILUTED
+	NET EARNINGS	EARNINGS PER SHARE
+
+<S>                                      <C>                  <C>
+As reported	$308,183	$2.66
+
+Pro forma	$306,965	$2.65
+
+</TABLE>
+
+
+
+
+The fair value of each option on the date of grant is estimated
+using the Black-Scholes option-pricing model.  The weighted average
+fair value of each option granted using the model was $25.29 in
+1999.  The table below summarizes the key assumptions for 1999:
+
+
+<TABLE>
+<CAPTION>
+
+	INTEREST RATE	DIVIDEND YIELD	EXPECTED VOLATILITY	EXPECTED LIFE
+<S>           <C>                  <C>              <C>              <C>
+	6.00%	1.60%	22.6%	6 years
+
+</TABLE>
+
+
+	The table below summarizes key information about stock options
+at December 31, 1999:
+
+<TABLE>
+<CAPTION>
+
+			OUTSTANDING STOCK OPTIONS	EXERCISABLE STOCK OPTIONS
+
+		WEIGHTED-AVG	WEIGHTED		WEIGHTED-
+RANGE OF		REMAINING	AVERAGE		AVERAGE
+EXERCISE		CONTRACTUAL	EXERCISE		EXERCISE
+PRICES	SHARES	LIFE	PRICE	SHARES	PRICE
+<S>         <C>             <C>         <C>            <C>            <C>
+
+$70-79	82,000	10	77.8388	--	--
+
+$80-89	457,000	10	87.4983	--	--
+
+</TABLE>
+
+
+<PAGE>
+
+INCOME TAXES
+
+Deferred income taxes reflect the net tax effects of temporary
+differences between the carrying amounts of assets and liabilities
+for financial reporting purposes and the amounts used for income
+tax purposes. Components of net deferred tax balances are as
+follows:
+
+
+
+<TABLE>
+<CAPTION>
+
+	1999	1998
+<S>                                               <C>              <C>
+
+Accrued Compensation, Pension and
+     Postretirement Benefits	$	26,111	25,592
+Depreciation		(15,583)	(14,300)
+Unrealized Holding Gains		(14,459)	(13,297)
+Factory Closure and Related Costs		54	239
+All Other--Net		218	629
+
+Net Deferred Tax Liability	$	(3,659)	(1,137)
+
+</TABLE>
+
+Balance sheet classifications of deferred taxes are as follows:
+
+<TABLE>
+<CAPTION>
+	1999	1998
+<S>                                              <C>         <C>
+
+Deferred Tax Asset--
+	Current	$	15,141	15,027
+	Noncurrent		26,862	25,522
+
+Deferred Tax Liability--
+	Current		(699)	(1,374)
+	Noncurrent		(44,963)	(40,312)
+
+Net Deferred Tax Liability	$	(3,659)	(1,137)
+</TABLE>
+
+
+
+Applicable U.S. income and foreign withholding taxes have not been
+provided on approximately $498,703 of undistributed earnings of
+international associated companies at December 31, 1999. These
+earnings are considered to be permanently invested and, under the
+tax laws, are not subject to such taxes until distributed as
+dividends. Tax on such potential distributions would be
+substantially offset by foreign tax credits. If the earnings were
+not considered permanently invested, approximately $40,000 of
+deferred income taxes would be provided.
+
+Income taxes are based on pre-tax earnings which are distributed
+geographically as follows:
+
+
+
+<TABLE>
+<CAPTION>
+
+	1999	1998	1997
+<S>                                <C>           <C>        <C>
+
+Domestic	$	154,240	188,472	172,391
+
+Foreign		290,190	252,407	221,849
+	$	444,430	440,879	394,240
+
+</TABLE>
+
+
+
+Reconciliation of the provision for income taxes computed at the
+U.S. Federal statutory rate of 35% for 1999, 1998, and 1997 to the
+reported provision for income taxes is as follows:
+
+
+
+<TABLE>
+<CAPTION>
+
+
+	1999	1998	1997
+<S>                                <C>          <C>        <C>
+
+Provision at U.S. Federal
+    Statutory Rate	$	1
+[... trimmed ...]
+ general can be
+found on our Internet home page at the following address--
+http://www.wrigley.com.
+
+CAPITAL STOCK
+
+Common Stock of the Wm. Wrigley Jr. Company is traded on the New
+York and Chicago Stock Exchanges. The Company's symbol is WWY.
+
+Class B Common Stock, issued to stockholders of record on April 4,
+1986, has restricted transferability and is not traded on the New
+York Stock Exchange. It is at all times convertible, on a share-
+for-share basis, into Common Stock and once converted is freely
+transferable and publicly traded. Class B Common Stock also has the
+same rights as Common Stock with respect to cash dividends and
+treatment upon liquidation.
+
+DIVIDENDS
+
+Regular quarterly dividends are paid in advance on the first
+business day of February, May, August, and November with the record
+date for each payment falling on or about the 15th of the prior
+month.
+
+DIRECT DIVIDEND DEPOSIT SERVICE
+
+The Direct Dividend Deposit Service allows stockholders to receive
+cash dividends through electronic deposits into their checking or
+savings account.
+
+DIVIDEND REINVESTMENT PLAN
+
+The Dividend Reinvestment Plan (DRP) is open to all stockholders of
+record. The DRP is administered First Chicago Trust Company, a
+division of EquiServe and uses cash dividends on both Common Stock
+and Class B Common Stock, along with voluntary cash contributions,
+to purchase additional shares of Common Stock. Cash contributions
+can be made monthly for a minimum of $50 and a maximum of $5,000.
+
+All shares purchased through the DRP are retained in a DRP account,
+so there are no certificates that could be lost, misplaced, or
+stolen. Additionally, once a DRP account is established, a
+participant can deposit any Wrigley stock certificates held outside
+the DRP into the account for safekeeping. The Company pays all
+brokerage and administrative costs associated with the DRP.
+
+Over 29,000 or 77% of the Company's stockholders of record
+currently participate in the DRP. A brochure fully describing the
+DRP and its enrollment procedure is available upon request.
+
+
+CONSOLIDATION OF MULTIPLE ACCOUNTS
+
+To avoid receiving duplicate mailings, stockholders with more than
+one Wrigley account may want to consolidate their shares. For more
+information, please contact the Company.
+
+ELECTRONIC RECEIPT OF PROXY MATERIALS AND PROXY VOTING
+
+If you are a stockholder of record and would like to receive your
+copy of the annual report and proxy statement via the Internet in
+the future, you need to complete an online consent form at the
+following address--
+http://www.econsent.com/wwy. If there are problems with accessing
+the form or any questions about it, please contact First Chicago
+Trust Company.
+
+<PAGE>
+
+STOCK CERTIFICATES
+
+For security and tax purposes, stockholders should keep a record of
+all of their stock certificates. The record should be kept in a
+separate place from the certificates themselves and should contain
+the following information for each certificate: exact registration,
+number of shares, certificate number, date of certificate and the
+original cost of the shares. If a stock certificate is lost or
+stolen, notification should be sent to the Company immediately. The
+transfer agent has two requirements to be met before a new
+certificate will be issued--a completed affidavit and payment for
+an indemnity bond based on the current market value of the lost or
+stolen stock. The replacement of a certificate will take about
+seven to ten days. Even if a certificate is lost or stolen, the
+stockholder will continue to receive dividends on those shares
+while the new certificate is being issued.
+
+A transfer of stock is required when the shares are sold or when
+there is any change in name or ownership of the stock. To be
+accepted for transfer, the stockholder's signature on the
+certificate or stock power must receive a Medallion Signature
+Guarantee by a qualified financial institution that participates in
+the Medallion Guarantee program. A verification by a notary public
+is not sufficient. Anytime a certificate is mailed, it should be
+sent registered mail, return receipt requested.
+
+COMPANY PUBLICATIONS
+
+The Company's 1999 annual report to the Securities and Exchange
+Commission on Form 10-K is expected to be available on or about
+April 5, 2000.
+
+Other publications that are currently available include:
+
+  The Wrigley Way: Continuing our Legacy of Social Responsibility
+  The Story of Chewing Gum and the Wm. Wrigley Jr. Company
+  A Historical Look at the Wrigley Building
+
+Requests for these publications should be addressed to Corporate
+Communications at the main office of the Company. They are also
+available for review at our Internet home page
+(http://www.wrigley.com).
+
+
+TRANSFER AGENT AND REGISTRAR
+
+First Chicago Trust Company,
+a division of EquiServe
+P. O. Box 2500
+Jersey City, NJ 07303-2500
+1-800-446-2617
+Internet: http://www.equiserve.com
+
+
+<PAGE>
+
+CORPORATE FACILITIES AND PRINCIPAL ASSOCIATED COMPANIES--1999
+
+CORPORATE FACILITIES
+
+HEADQUARTERS
+Wrigley Building
+410 North Michigan Avenue
+Chicago, Illinois 60611
+
+PRODUCTION FACILITIES
+Chicago, Illinois
+Gainesville, Georgia
+
+PRINCIPAL ASSOCIATED COMPANIES
+
+DOMESTIC
+
+AMUROL CONFECTIONS COMPANY*
+Yorkville, Illinois 60560
+
+FOUR-TEN CORPORATION
+Chicago, Illinois 60611
+
+L. A. DREYFUS COMPANY*
+Edison, New Jersey 08820
+
+NORTHWESTERN FLAVORS, INC.*
+West Chicago, Illinois 60185
+
+
+INTERNATIONAL
+
+THE WRIGLEY COMPANY PTY. LIMITED*
+Sydney, Australia
+
+WRIGLEY AUSTRIA GES.M.B.H.*
+Salzburg, Austria
+
+WRIGLEY BULGARIA EOOD
+Sofia, Bulgaria
+
+WRIGLEY CANADA*
+Don Mills, Ontario, Canada
+
+WRIGLEY CHEWING GUM COMPANY LTD.*
+Guangzhou, Guangdong,
+People's Republic of China
+
+WRIGLEY ZAGREB D.O.O.
+Zagreb, Croatia
+
+WRIGLEY S.R.O.
+Prague, Czech Republic
+
+THE WRIGLEY COMPANY LIMITED*
+Plymouth, England, U.K.
+
+OY WRIGLEY SCANDINAVIA AB
+Turku, Finland
+
+WRIGLEY FRANCE S.N.C.*
+Biesheim, France
+
+WRIGLEY G.M.B.H.
+Munich, Germany
+
+WRIGLEY N.V.
+Amsterdam, Holland
+
+THE WRIGLEY COMPANY (H.K.) LIMITED
+Hong Kong
+
+WRIGLEY HUNGARIA, KFT.
+Budapest, Hungary
+
+WRIGLEY INDIA PRIVATE LIMITED*
+Bangalore, Karnataka, India
+
+WRIGLEY ISRAEL LTD.
+Herzeliya-Pituach, Israel
+
+WRIGLEY & COMPANY LTD., JAPAN
+Tokyo, Japan
+
+
+
+THE WRIGLEY COMPANY (EAST AFRICA) LIMITED*
+Nairobi, Kenya
+
+THE WRIGLEY COMPANY (MALAYSIA) SDN. BHD.
+Kuala Lumpur, Malaysia
+
+THE WRIGLEY COMPANY (N.Z.) LIMITED
+Auckland, New Zealand
+
+WRIGLEY SCANDINAVIA AS
+Oslo, Norway
+
+THE WRIGLEY COMPANY (P.N.G.) LTD.
+Port Moresby, Papua New Guinea
+
+WRIGLEY PHILIPPINES, INC.*
+Antipolo City, Philippines
+
+WRIGLEY POLAND SP. ZO.O.*
+Poznan, Poland
+
+WRIGLEY ROMANIA PRODUSE ZAHAROASE SRL
+Bucharest, Romania
+
+OOO WRIGLEY
+Moscow, Russia
+St. Petersburg, Russia*
+
+WRIGLEY SLOVAKIA S.R.O.
+Banska Bystrica, Slovakia
+
+WRIGLEY D.O.O.
+Ljubljana, Slovenia
+
+WRIGLEY CO., S.A.
+Santa Cruz de Tenerife
+Canary Islands, Spain
+
+WRIGLEY SCANDINAVIA AB
+Stockholm, Sweden
+
+WRIGLEY TAIWAN LIMITED*
+Taipei, Taiwan, R.O.C.
+
+WRIGLEY GIDA TICARET LIMITED SIRKETI
+Istanbul, Turkey
+
+WRIGLEY UKRAINE TZOV
+Kiev, Ukraine
+
+*Denotes production facility.
+
+
+
+
+
+
+
+</TEXT>
+
+</DOCUMENT>
+<DOCUMENT>
+<TYPE>EX-21
+<SEQUENCE>3
+<DESCRIPTION>SUBSIDIARIES OF THE REGISTRANT
+<TEXT>
+
+<PAGE>
+<TABLE>
+
+Parents and Subsidiaries of Registrant
+<S>                                                    <C>
+                                                       State or Country
+         Name of Company                               of Corporation
+
+Wm. Wrigley Jr. Company..............................  Delaware
+  Companies included in consolidation -- all 100%
+  owned by Parent Company:
+Northwestern Flavors, Inc. ..........................  Illinois
+L.A. Dreyfus Company ................................  Delaware
+Four-Ten Corporation ................................  Illinois
+Amurol Confections Company ..........................  Illinois
+Wrigley Enterprises, Inc. ...........................  Delaware
+The Wrigley Company Pty. Limited ....................  Australia
+Wrigley Austria Ges.m.b.H. ..........................  Austria
+Wrigley Bulgaria EOOD ...............................  Bulgaria
+Wrigley Canada ......................................  Canada
+Wrigley (Cayman) Ltd. ...............................  Cayman Islands
+Wrigley Chewing Gum Co. Ltd. ........................  People's Republic of China
+Wrigley Taiwan, Limited .............................  Republic of China
+Wrigley Zagreb d.o.o ................................  Croatia
+Wrigley s.r.o. ......................................  Czech Republic
+The Wrigley Company Limited .........................  England
+Wrigley France SNC .
+[trimmed]
+</DOCUMENT>
+<DOCUMENT>
+<TYPE>EX-24
+<SEQUENCE>4
+<DESCRIPTION>POWER OF ATTORNEY
+<TEXT>
+
+<PAGE>
+
+I understand that the information I am furnishing to you herein
+will be used by the Company in the preparation of its 2000 Proxy
+Statement or its Annual Report to the SEC on Form 10-K for the year
+ended December 31, 1999, or both.
+
+If I am a nominee for director, I shall be deemed to have
+consented, by virtue of executing this questionnaire, to being
+named as such in the Proxy Statement and to serve if elected.  I
+also understand that should I discontinue my principal position,
+association or other identification that existed outside of the
+Company at the time of my most recent election to the Board of the
+Company, other than by reason of disability or retirement in
+accordance with the policies relative to that position, I shall
+tender my resignation as a director for consideration by the
+Nominating Committee and the full Board promptly following the date
+of my discontinuance of such position, association or
+identification.  Further, should I consider any new or additional
+association or affiliation, such as directorships or similar
+positions by whatever title, with public or privately-held
+commercial enterprises, or should any preexisting association or
+affiliation substantially alter the nature of its activities or
+purposes, I shall advise the Chairman of the Board, and if there is
+no Chairman, the Chief Executive Officer of the Company, so that
+any potential conflict of interest or obligation
+[trimmed]
+</DOCUMENT>
+<DOCUMENT>
+<TYPE>EX-99
+<SEQUENCE>5
+<DESCRIPTION>FORWARD-LOOKING STATEMENTS
+<TEXT>
+
+
+<PAGE>
+
+	FORWARD-LOOKING STATEMENTS
+
+From time to time, the Company may publish forward-looking statements
+relating to such matters as anticipated financial performance,
+business prospects and operations, capital expenditures,
+technological developments, new products, research and development
+activities and similar matters.  The Private Securities Litigation
+Reform Act of 1995 provides a safe harbor for forward-looking
+statements.  In order to comply with the terms of the safe harbor,
+the Company notes that a variety of important factors could cause the
+Company's actual results and experience to differ materially from the
+anticipated results or other expectations expressed in the Company's
+forward-looking statements.  The important factors that may influence
+the operations, performance, development and results of the Company's
+business include the following:
+
+- -	In those markets where the Company maintains market leadership,
+it will most likely retain preferred retail space allocation
+which enhance results.
+
+- -	Availability, pricing and sourcing of raw materials has been
+relatively stable and a competitive advantage but the inability
+to maintain this stability could modify results.
+
+- -	The Company has historically been successful marketing to
+different segments of the population.  Failure to adequately
+anticipate and react to changing demographics and product
+preferences could negatively af
+[trimmed]
+</DOCUMENT>
+<DOCUMENT>
+<TYPE>EX-27
+<SEQUENCE>6
+<DESCRIPTION>1999 FM 10K FDS
+<TEXT>
+
+<TABLE> <S> <C>
+
+<ARTICLE> 5
+<MULTIPLIER> 1,000
+
+<S>                             <C>
+<PERIOD-TYPE>                   12-MOS
+<FISCAL-YEAR-END>                          DEC-31-1999
+<PERIOD-START>                              JAN-1-1999
+<PERIOD-END>                               DEC-31-1999
+<CASH>                                         288,386
+<SECURITIES>                                    61,729
+<RECEIVABLES>                                  190,914
+<ALLOWANCES>                                     9,194
+<INVENTORY>                                    257,670
+<CURRENT-ASSETS>                               803,746
+<PP&E>                                       1,062,775
+<DEPRECIATION>                                 503,635
+<TOTAL-ASSETS>                               1,547,745
+<CURRENT-LIABILITIES>                          251,825
+<BONDS>                                              0
+<PREFERRED-MANDATORY>                                0
+<PREFERRED>                                          0
+<COMMON>                                        15,496
+<OTHER-SE>                                   1,123,279
+<TOTAL-LIABILITY-AND-EQUITY>                 1,547,745
+<SALES>                                      2,061,602
+<TOTAL-REVENUES>                             2,079,238
+<CGS>                                          854,931
+<TOTAL-COSTS>                                1,634,808
+<OTHER-EXPENSES>                       
+[trimmed]
+</DOCUMENT>

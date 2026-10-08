@@ -1,0 +1,755 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ TY9yD447n8vFXAE8exBYcw/rT9Z18mULKvc9wOLoSMbpHTpeO1nmWx3Sa2OfSB+b
+ sYAGWNd4lZQ8M2i1w5gx+A==
+
+<SEC-DOCUMENT>0000013573-03-000007.txt : 20030926
+<SEC-HEADER>0000013573-03-000007.hdr.sgml : 20030926
+<ACCEPTANCE-DATETIME>20030926150550
+ACCESSION NUMBER:		0000013573-03-000007
+CONFORMED SUBMISSION TYPE:	10-K
+PUBLIC DOCUMENT COUNT:		2
+CONFORMED PERIOD OF REPORT:	20030629
+FILED AS OF DATE:		20030926
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			BOWL AMERICA INC
+		CENTRAL INDEX KEY:			0000013573
+		STANDARD INDUSTRIAL CLASSIFICATION:	SERVICES-AMUSEMENT & RECREATION SERVICES [7900]
+		IRS NUMBER:				540646173
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			0629
+
+	FILING VALUES:
+		FORM TYPE:		10-K
+		SEC ACT:		1934 Act
+		SEC FILE NUMBER:	001-07829
+		FILM NUMBER:		03912312
+
+	BUSINESS ADDRESS:	
+		STREET 1:		6446 EDSALL RD
+		CITY:			ALEXANDRIA
+		STATE:			VA
+		ZIP:			22312
+		BUSINESS PHONE:		7039416300
+
+	MAIL ADDRESS:	
+		STREET 1:		P O BOX 1288
+		CITY:			SPRINGFIELD
+		STATE:			VA
+		ZIP:			22151
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>10-K
+<SEQUENCE>1
+<FILENAME>r10kjn03.txt
+<DESCRIPTION>FORM 10-K AND ANNUAL REPORT FOR YEAR ENDED JUNE 29, 2003
+<TEXT>
+
+                        SECURITIES AND EXCHANGE COMMISSION
+                              Washington, D.C. 20549
+
+                                   FORM 10-K
+
+                ANNUAL REPORT PURSUANT TO SECTION 13 or 15(d) OF
+                      THE SECURITIES EXCHANGE ACT OF 1934
+
+  For the fiscal year ended June 29, 2003        Commission file Number 1-7829
+
+                             BOWL AMERICA INCORPORATED
+               (Exact name of registrant as specified in its charter.)
+
+          MARYLAND                                       54-0646173
+  (State of Incorporation)                (I.R.S. Employer Identification No.)
+
+              6446 Edsall Road, Alexandria, Virginia         22312
+             (Address of principal executive offices)     (Zip Code)
+
+                                (703)941-6300
+              Registrant's telephone number, including area code
+
+Securities Registered Pursuant to Section 12(b) of the Act:
+
+     Title of Class                                  Name of Exchange on
+                                                       which registered
+
+Common stock (par value $.10)                       American Stock Exchange
+
+     Indicate by check mark whether the registrant (1) has filed all reports
+required to be filed by Section 13 or 15(d) of the Securities Exchange Act of
+1934 during the preceding 12 months (or for such shorter period that the
+registrant was required to file such reports), and (2) has been subject to
+such filing requirements for the past 90 days.  YES [X] NO [ ]
+
+     Indicate by check mark if disclosure of delinquent filers pursuant to
+Item 405 of Regulation S-K, Section 229.405 of this Chapter, is not contained
+herein, and will not be contained to the best of registrant's knowledge, in
+definitive Proxy or information statements incorporated by reference in Part
+III of this Form 10-K or any amendments to this Form 10-K.  YES [X] NO [ ]
+
+     Indicate by check mark whether the registrant is an accelerated filer (as
+Defined in Exchange Act Rule 12 b-2).  YES [ ]  NO [X]
+
+     As of August 18, 2003, 3,670,112 Class A common shares were outstanding,
+and the aggregate market value of the common shares (based upon the closing
+price of these shares on the American Stock Exchange) of Bowl America
+Incorporated held by nonaffiliates was approximately $47 million; 1,468,462
+Class B common shares were outstanding.  Class B common shareholders have the
+right to convert their Class B common to Class A common stock on a share for
+share basis. If the Class B shares were converted to Class A shares as of
+August 18, 2003, the total aggregate market value for both classes of common
+stock would be approximately $66 million.  (This includes the amount of
+shares held by all officers and directors as a group and by anyone known to
+own more than 5% of the stock.)
+
+<PAGE>
+
+                         DOCUMENTS INCORPORATED BY REFERENCE
+
+     Portions of registrant's definitive proxy statements, which will be filed
+with the Commission not later than 120 days after June 29, 2003 are
+incorporated into Part III of this Form 10-K. Portions of Bowl America's 2003
+Annual Report to shareholders are incorporated by reference in Part II,
+Items 5,6,7 and 8.
+
+<PAGE>
+
+
+                            BOWL AMERICA INCORPORATED
+
+                        INDEX TO FISCAL 2003 10-K FILING
+
+                                    PART I
+                                                                         Page
+Cover Page
+Documents Incorporated by Reference
+Index
+
+ITEM 1. Business
+        (a)   General Development of Business                               1
+        (b)   Financial Information about Industry Segments                 1
+        (c)   Narrative Description of Business                             1
+        (d)   Foreign Operations                                            1
+
+ITEM 2. Properties                                                          2
+
+ITEM 3. Legal Proceedings                                                   2
+
+ITEM 4. Submission of Matters to a Vote of Security Holders                 2
+
+                                    PART II
+
+ITEM 5. Market for Registrant's Common Equity and Related
+        Stockholder Matters                                                 2
+
+ITEM 6. Selected Financial Data                                             2
+
+ITEM 7. Management's Discussion and Analysis of Financial Condition and
+        Results of Operations                                               2
+
+ITEM 7a.Quantitative and Qualitative Disclosure About Market Risk           2
+
+ITEM 8. Financial Statements and Supplementary Data                         3
+
+ITEM 9. Changes in and Disagreements with Accountants and
+        Financial Disclosure                                                3
+
+ITEM 9A.Controls and Procedures                                             3
+                                    PART III
+
+ITEM 10.Directors and Executive Officers of the Registrant                  3
+
+ITEM 11.Executive Compensation                                              3
+
+ITEM 12.Security Ownership of Certain Beneficial Owners and Management
+        and Related Stockholder Matters
+
+        (a) Security Ownership of Certain Beneficial Owners                 3
+        (b) Security Ownership of Management                                3
+        (c) Changes in Control                                              3
+        (d) Securities Authorized for Issuance Under Equity
+            Compensation Plans                                              3
+
+                           BOWL AMERICA INCORPORATED
+
+                        INDEX TO FISCAL 2003 10-K FILING
+
+                                   PART III
+                                  (Continued)
+                                                                          Page
+ITEM 13.Certain Relationships and Related Transactions
+        (a) Transactions with Management and Others                         3
+        (b) Certain Business Relationships                                  3
+        (c) Indebtedness of Management                                      3
+        (d) Transactions with Promoters                                     3
+
+ITEM 14.Principal Accountant Fees and Services                              3
+
+                                   PART IV
+
+ITEM 15.Exhibits, Financial Statements and Reports on Form 8-K
+        (a)1. Financial Statements                                          4
+        (a)2. Exhibits                                                      4
+        (b)   Reports on Form 8-K                                           4
+
+Signatures                                                                5-6
+
+<PAGE>
+
+
+                                   PART I
+ITEM 1.  BUSINESS
+
+         (a)   General Development of Business
+
+         Bowl America Incorporated (herein referred to as the Company) was
+incorporated in 1958.  The Company commenced business with one bowling center
+in 1958, and at the end of the past fiscal year, the Company and its wholly-
+owned subsidiaries operated 18 bowling centers.
+         In May of fiscal year 2003 the Company closed Bowl America Silver
+Spring, operating in a negative cash flow position, after reaching an agreement
+For the sale of the building and ground lease.  Consummation of the sale of
+that center was effected on August 25, 2003, subsequent to the end of the
+fiscal year.
+
+         (b)   Financial Information about Industry Segments
+
+         The Company operates in one segment.  Its principal source of
+revenue consists of fees charged for the use of bowling lanes and other
+facilities and from the sale of food and beverages for consumption on the
+premises.  Merchandise sales, including food and beverages, were approximately
+30% of operating revenues.  The balance of operating revenues (approximately
+70%) represents fees for bowling and related services.
+
+         (c)   Narrative Description of Business
+
+         As of September 1, 2003 the Registrant and its subsidiaries operated
+10 bowling centers in the greater metropolitan area of Washington, D.C., one
+bowling center in the greater metropolitan area of Baltimore, Maryland, one
+bowling center in Orlando, Florida, three bowling centers in the greater
+metropolitan area of Jacksonville, Florida, and three bowling centers in the
+greater metropolitan area of Richmond, Virginia.  These 18 bowling centers
+contain a total of 716 lanes.
+         These establishments are fully air-conditioned with facilities for
+service of food and beverages, game rooms, rental lockers, and playroom
+facilities.  All centers provide shoes for rental, and bowling balls are
+provided free.  In addition, each center retails bowling accessories.  Most
+locations are equipped for glow-in-the-dark bowling, popular for parties and
+non-league bowling.
+         The bowling equipment essential for the Company's operation is
+readily available.  The major source of its equipment is Brunswick Corporation.
+         The bowling business is a seasonal one, and most of the business takes
+place from October through May.  It is highly competitive, but the Company has
+managed to maintain its position in the field.  The principal method of
+competition is the quality of service furnished to the Company's customers.
+Its primary competitors are two large bowling equipment manufacturers,
+Brunswick Corporation and AMF Bowling Worldwide, Inc.
+         Compliance with federal, state and local environmental protection laws
+has not materially affected the Company.
+         The number of persons employed by the Company and its subsidiaries is
+approximately 700.
+
+         (d)   Foreign Operations
+
+         The Company has no foreign operations.
+<PAGE>
+
+ITEM 2.  PROPERTIES
+
+         The Company's general offices are located at 6446 Edsall Road,
+Alexandria, Virginia 22312.  Two of the Company's bowling centers are located
+in leased premises, and the remaining seventeen centers are owned by the
+Company.  The Company's leases expire from 2009 through 2014.  The specific
+locations of the bowling centers are discussed under Item 1 (c).
+
+ITEM 3.  LEGAL PROCEEDINGS
+
+         There are no material pending legal proceedings other than ordinary
+routine litigation incidental to the business.
+
+ITEM 4.  SUBMISSION OF MATTERS TO A VOTE OF SECURITY HOLDERS
+
+         No matters were submitted to a vote of security holders during the
+fourth quarter ended June 29, 2003.
+
+                                   PART II
+
+ITEM 5.  MARKET FOR THE REGISTRANT'S COMMON STOCK AND RELATED SECURITY HOLDER
+         MATTERS
+
+         The information set forth in the section entitled "Market
+Information", "Holders", and "Dividends" on page 3 of the Company's June 29,
+2003 Annual Report is incorporated by reference herein.
+
+ITEM 6.  SELECTED FINANCIAL DATA
+
+         The information set forth in the section entitled "Selected Financial
+Data" on page 3 of the Company's June 29, 2003 Annual Report is incorporated by
+reference herein.  Such information should be read in conjunction with the
+audited financial statements.
+
+ITEM 7.  MANAGEMENT'S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND
+         RESULTS OF OPERATIONS
+
+         The information set forth in the section entitled "Management's
+Discussion and Analysis of Financial Condition and Results of Operations" on
+page 2 of the Company's June 29, 2003 Annual Report is incorporated by
+reference herein.
+
+ITEM 7a. QUANTITATIVE AND QUALITATIVE DISCLOSURES ABOUT MARKET RISK
+
+         Interest Rate Risk.  Our short-term investments and certain cash
+equivalents are subject to interest rate risk.  We manage this risk by
+maintaining an investment portfolio of available-for-sale instruments with high
+credit quality and relatively short average maturities.  The fair value of
+marketable debt securities held was $9,505,768 and $8,183,932 at June 29, 2003
+and June 30, 2002, respectively.  The fair value of certain fixed rate debt
+securities will change depending on movements in interest rates.  Declines in
+interest rates will affect our interest income.  Based on our portfolio of debt
+securities at June 29, 2003, a 10% decline in the average yield would not have
+a material impact on our interest income.
+
+
+
+ITEM 8.  FINANCIAL STATEMENTS AND SUPPLEMENTARY DATA
+
+         The Consolidated Financial Statements and related notes thereto, the
+Independent Auditors' Report and the Selected Quarterly Financial Data
+(unaudited), as contained on pages 4 through 12 of the Company's June 29, 2003
+Annual Report, are incorporated by reference herein.
+
+ITEM 9.  CHANGES IN AND DISAGREEMENTS WITH ACCOUNTANTS ON ACCOUNTING
+         AND FINANCIAL DISCLOSURE
+
+         None
+
+ITEM 9A. CONTROLS AND PROCEDURES
+
+         The Company's Chief Executive Officer and Chief Financial Officer have
+concluded that the Company's disclosure controls and procedures are effective
+based on their evaluation of such controls and procedures as of the end of the
+period covered by this report, based on their evaluation of these controls and
+procedures in accordance with Rule 13a-15(b) under the Securities Exchange Act
+of 1934.  There were no changes in the Company's internal control over financial
+reporting identified in connection with the evaluation required by Rule
+13a-15(d) under the Securities Exchange Act of 1934 that occurred during the
+fourth quarter of the Company's fiscal year ended June 29, 2003 that has
+materially affected, or is reasonably likely to materially affect, the Company's
+internal control over financial reporting.
+
+                                   PART III
+
+ITEM 10. DIRECTORS AND EXECUTIVE OFFICERS OF THE REGISTRANT
+
+         Pursuant to General Instruction G(3) of Form 10-K, the information
+called for by this item regarding directors is hereby incorporated by reference
+from the Company's definitive proxy statement to be filed pursuant to
+Regulation 14A not later than 120 days after the end of the fiscal year covered
+by this report.
+
+ITEM 11. EXECUTIVE COMPENSATION
+
+         Pursuant to General Instruction G(3) of Form 10-K, the information
+called for by this item is hereby incorporated by reference from the Company's
+definitive proxy statement to be filed pursuant to Regulation 14A not later
+than 120 days after the end of the fiscal year covered by this report.
+
+ITEM 12. SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS AND MANAGEMENT
+         AND RELATED STOCKHOLDER MATTERS
+
+         Pursuant to General Instruction G(3) of Form 10-K, the information
+called for by this item is hereby incorporated by reference from the Company's
+definitive proxy statement to be filed pursuant to Regulation 14A not later
+than 120 days after the end of the fiscal year covered by this report.
+
+ITEM 13. CERTAIN RELATIONSHIPS AND RELATED TRANSACTIONS
+
+         Pursuant to General Instruction G(3) of Form 10-K, the information
+called for by this item is hereby incorporated by reference from the Company's
+definitive proxy statement to be filed pursuant to Regulation 14A not later
+than 120 days after the end of the fiscal year covered by this report.
+
+ITEM 14.  PRINCIPAL ACCOUNTANT FEES AND EXPENSES
+
+          Pursuant to General Instruction G(3) of Form 10-K, the information
+called for by this item is hereby incorporated by reference from the Company's
+definitive proxy statement to be filed pursuant to Regulation 14A not later
+than 120 days after the end of the fiscal year covered by this report.
+
+<PAGE>
+
+                                   PART IV
+
+ITEM 15. EXHIBITS, FINANCIAL STATEMENTS AND REPORTS ON FORM 8-K
+
+         (a)1.  Financial Statements
+
+                The following consolidated financial statements of Bowl America
+  Incorporated and its subsidiaries are incorporated by reference in Part II,
+  Item 8:
+
+               Independent auditors' report
+
+               Consolidated balance sheets - June 29, 2003 and June 30, 2002
+
+               Consolidated statements of earnings and comprehensive earnings -
+               years ended June 29, 2003, June 30, 2002, and July 1, 2001
+
+               Consolidated statements of stockholders' equity - years ended
+               June 29, 2003, June 30, 2002, and July 1, 2001
+
+               Consolidated statements of cash flows - years ended
+               June 29, 2003, June 30, 2002, and July 1, 2001
+
+               Notes to the consolidated financial statements - years ended
+               June 29, 2003, June 30, 2002, and July 1, 2001
+
+         (a)2. Exhibits:
+
+               3(a) Articles of Incorporation of the Registrant and amendments
+               through December 1988 thereto (Incorporated by reference from
+               exhibit number 3 to the Annual Report for 1989 on Form 10-K for
+               fiscal year ended July 2, 1989.)
+
+               3(b) Amendment to and restatement of Article FIFTH (b) III 2.2
+               of the Registrant's Articles of Incorporation (Incorporated by
+               reference from the Registrant's Form 8-K filed December 9, 1994.)
+
+               3(c) By-laws of the Registrant (Incorporated by reference from
+               exhibit 3 to the Annual Report for 1989 on Form 10-K for fiscal
+               year ended July 2, 1989.)
+
+               21  Subsidiaries of registrant (Incorporated by reference from
+               exhibit number 1 to the Registrant's Annual Report on Form 10-K
+               for fiscal year ended June 30, 2002.
+
+               31.1  Written statement of Chief Executive Officer (Rule 13a-14a
+               Certification)
+               31.2  Written statement of Chief Financial Officer (Rule 13a-14a
+               Certification)
+               32    Written statement of Chief Executive and Chief Financial
+               Officers (Section 1350 Certifications)
+
+         (b)   Reports on Form 8-K:
+
+               None
+
+<PAGE>
+
+                             BOWL AMERICA INCORPORATED
+
+                                   SIGNATURES
+
+         Pursuant to the requirements of Section 13 or 15(d) of the Securities
+Exchange Act of 1934, the Company has duly caused this report to be signed on
+its behalf by the undersigned thereunto duly authorized.
+
+BOWL AMERICA INCORPORATED
+
+
+Leslie H. Goldberg
+President and Principal Executive
+& Operating Officer
+
+Date:  September 25, 2003
+
+
+
+Cheryl A. Dragoo
+Chief Financial Officer,
+Assistant Treasurer and Controller
+Principal Accounting Officer
+
+Date:  September 25, 2003
+
+
+<PAGE>
+
+
+                             BOWL AMERICA INCORPORATED
+
+                                     SIGNATURES
+
+         Pursuant to the requirements of the Securities Exchange Act of 1934,
+this report has been signed below by the following persons on behalf of the
+registrant and in the capacities and the dates indicated.
+
+Name, Title, Capacity
+
+
+Leslie H. Goldberg
+President, Principal Executive
+& Operating Officer & Director
+
+Date:  September 25, 2003
+
+Ruth Macklin                                A. Joseph Levy
+Senior Vice President-Treasurer             Senior Vice President-Secretary
+and Director                                and Director
+
+Date:  September 25, 2003                   Date:  September 25, 2003
+
+Warren T. Braham                            Stanley H. Katzman
+Director                                    Director
+
+Date:  September 25, 2003                   Date:  September 25, 2003
+
+Allan L. Sher                               Merle Fabian
+Director                                    Director
+
+Date:  September 25, 2003                   Date:  September 25, 2003
+
+Irvin Clark
+Director
+
+Date:  September 25, 2003
+
+
+
+<PAGE>
+
+
+                               BOWL AMERICA INCORPORATED
+                                 PRESIDENT'S LETTER
+
+September 22, 2003
+
+Dear Fellow Owners:
+
+       I concluded last year's Annual Report with another commercial for our
+30-year old dividend policy.  Specifically, I said that, "More and more
+respected voices are now supporting dividends as a method of rewarding ownership
+and promoting corporate honesty.  Dividends have the benefit of being paid in
+cash, not accounting fantasy.  The disadvantage is that they are subject to
+double taxation.  But tax laws can and should be changed."
+
+       Imagine my surprise when the tax treatment of dividends did change.  I
+hope this is only the first step on the part of public policy makers in
+recognizing the advantages of investors profiting from owning businesses rather
+than profiting from selling pieces of paper.  A dividend allows an owner to
+profit without selling his assets.  If you have to sell your stake to profit,
+you face a problem of buying something to replace it.  If you think you will get
+a fair shake on that transaction, please count the number of stock exchange
+members who make the newspapers for violating your trust.
+
+       In the classic "fox guarding the henhouse" approach, it is the stock
+exchanges that decide the standards for corporate governance of public
+companies.  The current panacea is control of companies by "independent"
+directors.  I favor "dependent" control on boards.  This has nothing to do with
+honesty.  Honesty is not based on the dependence or independence of individual
+board members.  My preference is, however, related to the fact that the
+"dependent" directors will be more likely to share in any loss caused by their
+decision making.  If a director shares with the other owners the risk of loss
+from collapse of the enterprise, he or she is more likely to focus on the
+company's survival.
+
+       It is, therefore, satisfying that our policy of increasing dividends at a
+rate greater than inflation has survived for 31 years and that we have already
+started on year thirty-two.  Our conservative financial management gives us a
+cushion for the future, but we would clearly prefer to find additional bowling
+center opportunities for a portion of that cushion.
+
+       An emphasis on survival does not mean the avoidance of prudent risk.  We
+have been aggressively working to improve the profitability of our existing
+centers.  We are seeing signs of our broadening appeal to age groups we
+previously underserved.  Our Glow-in-the-Dark bowling continues to be successful
+and our "All You Can Bowl Nights" made an important contribution to earnings in
+the second half of the year.  Furthermore, we have grown more sophisticated in
+our promotion of bowling parties.  In fact, the web site www.bowlingparty.com
+belongs to Bowl America and will be running beginning this holiday season.
+
+       As often happens, precipitation has influenced our results.  While the
+winter storms closed us down in the North, we gained throughout the spring and
+the first part of fiscal year 2004 from a record number of rainy days.
+Customers substituted bowling for outdoor activities.  However Hurrica
+[... trimmed ...]
+taling approximately $226,800 for the
+purchase of bowling pins to be delivered after July 1, 2003.
+
+7.  STOCKHOLDERS' EQUITY
+    The Class A shares have one vote per share voting power.  The Class B
+shares may vote ten votes per share and are convertible to Class A shares at
+the option of the stockholder.
+
+    At June 29, 2003 and June 30, 2002, the Company had $41,956 and $43,956,
+respectively, in employee loans related to the issuance of shares.  These
+loans are secured by the shares of the Company's common stock acquired and are
+full recourse notes.  The notes bear interest at rates of 5% to 6 1/2% and are
+payable over a term of three years from the date of the agreements which range
+from 2001 to 2003.  These employee loans have been recorded as a reduction of
+additional paid-in capital.
+
+    The Company distributed a 5% stock dividend on July 26, 2001, where
+Class A and B stockholders received one share of common stock for each
+twenty shares of Class A and Class B common stock held as of the date of record.
+
+8.  PROFIT-SHARING AND ESOP PLAN
+    The Company has a profit-sharing plan which, generally, covers all
+individuals who were employed at the end of the fiscal year and had one thousand
+or more hours of service during that fiscal year.  The Plan provides for Company
+contributions as determined by the Board of Directors.  For the years ended
+June 29, 2003, June 30, 2002, and July 1, 2001, contributions in the amount of
+$145,000, $165,000, and $160,000, respectively, were charged to operating
+expense.
+
+    Effective March 31, 1987, the Company adopted an Employee Stock Ownership
+Plan (ESOP) which generally covers all employees who on the last day of the
+fiscal year or December 29 have been employed for one year with at least one
+thousand hours of service.  The Plan provides for Company contributions as
+determined by the Board of Directors.  Prior to fiscal year 1995, the
+contributions were allocated to participants based on compensation and years
+of service.  Contributions since fiscal year 1995 are allocated based on
+compensation only in order to comply with Internal Revenue Service code
+requirements.  The value of the Company's contributions to the Plan for fiscal
+years 2003, 2002, and 2001 was $145,000, $162,600, and $165,100, respectively.
+
+                                     -10-
+<PAGE>
+
+9.  INCOME TAXES
+    The significant components of the Company's deferred tax assets and
+liabilities were as follows:
+                                                June 29,         June 30,
+                                                  2003             2002
+         Deferred tax assets:
+            Other                                95,000           64,000
+                                              _________        _________
+         Total deferred tax assets               95,000           64,000
+
+         Deferred tax liabilities:
+            Property, plant and equipment       582,200          596,000
+            Unrealized gain on available-
+              for-sale securities             1,157,000        1,199,000
+            Prepaid expenses                    198,000          140,000
+            Other                                  -              57,000
+                                              _________        _________
+         Total deferred tax liabilities       1,937,200        1,992,000
+                                              _________        _________
+         Net deferred income taxes           $1,842,200       $1,928,000
+
+    Income tax expense differs from the amounts computed by applying the U.S.
+Federal income tax rate to income before tax for the following reasons:
+<TABLE>
+<CAPTION>
+                                 For the Years Ended
+                              2003     %          2002     %          2001    %
+<S>                     <C>         <C>     <C>         <C>    <C>         <C>
+Taxes computed at
+ statutory rate         $1,900,000  34.0%   $2,045,000  34.0%  $2,016,000  34.0%
+State income taxes, net
+ of Federal income tax
+ benefit                   161,000   2.9       175,000   2.9       85,000   1.4
+Dividends received
+ exclusion                 (40,000) (.72)      (22,000) (.36)     (37,000) (.62)
+All other-net              (16,000) (.28)      (24,000) (.41)      (4,000) (.07)
+                         _________  ____     _________  ____    _________  ____
+                        $2,005,000  35.9%   $2,174,000  36.1%  $2,060,000  34.7%
+</TABLE>
+
+10. RELATED PARTIES
+    At June 29, 2003 and June 30, 2002, the Company had recorded $99,600 and
+$102,200, respectively, in deferred compensation payable to one officer and
+one major shareholder.  The amounts are payable over the next ten years.
+Deferred compensation payable to non-related parties was a total of $59,500 at
+June 29, 2003 and $57,100 at June 30, 2002.  The current portion of these
+amounts, $25,632 at June 29, 2003 and $26,800 at June 30, 2002 is included in
+accrued expenses.
+
+11. SELECTED QUARTERLY FINANCIAL DATA (UNAUDITED)
+    The following summary represents the results of operations for each of the
+quarters in fiscal years 2003 and 2002 (dollars in thousands, except for
+earnings per share):
+
+<TABLE>
+<CAPTION>
+
+                                              Earnings
+                         Operating Operating   Before             Earnings
+                         Revenues   Income     Income      Net        Per
+                                               Taxes    Earnings    Share
+<S>                       <C>        <C>       <C>       <C>         <C>
+2003
+June 29, 2003             $6,878     $  942    $1,047    $  682      $.14
+March 30, 2003             8,845      2,436     2,567     1,640       .31
+December 29, 2002          7,527      1,479     1,602     1,024       .20
+September 29, 2002         6,126        256       372       237       .05
+
+2002
+June 30, 2002             $6,603     $  693    $  845    $  519      $.10
+March 31, 2002             8,997      2,535     2,711     1,738       .33
+December 30, 2001          7,867      1,694     1,832     1,174       .23
+September 30, 2001         6,434        472       605       388       .08
+</TABLE>
+Per share amounts have been adjusted to reflect both the 5% stock dividend
+distributed on July 26, 2001 and the 5% stock dividend distributed on
+July 26, 2000.
+
+                                     -11-
+
+<PAGE>
+
+
+INDEPENDENT AUDITORS' REPORT
+
+To the Board of Directors and Stockholders
+Bowl America Incorporated
+Alexandria, Virginia
+
+    We have audited the accompanying consolidated balance sheets of Bowl
+America Incorporated and subsidiaries ("the Company")as of June 29, 2003 and
+June 30, 2002, and the related consolidated statements of earnings and
+comprehensive earnings, stockholders' equity and cash flows for each of the
+three fiscal years in the period ended June 29, 2003. These financial statements
+are the responsibility of the Company's management. Our responsibility is to
+express an opinion on these financial statements based on our audits.
+
+    We conducted our audits in accordance with auditing standard
+</DOCUMENT>
+<DOCUMENT>
+<TYPE>EX-20
+<SEQUENCE>3
+<FILENAME>pr0303.txt
+<DESCRIPTION>PRESS RELEASE DATED SEPTEMBER 26, 2003
+<TEXT>
+
+
+
+For Immediate Release                                           May 14, 2003
+
+    Snow Contributed to Third Quarter Earnings Decline at Bowl America
+
+Bowl America Incorporated reported that per share earnings for its third
+quarter, which ended March 30, 2003, declined from $.33 a year ago to $.31
+During the quarter the Company operated one fewer center than last year.
+In addition heavy snowstorms resulted in closings at the Company's northern
+bowling centers and high snow removal costs.  Non-peak time promotions
+increased the number of games bowled, but at a reduced price per game.  The
+increased lineage continued into the fourth quarter.
+
+In May, Bowl America closed its only remaining money-losing bowling center
+and entered into a contract for the sale of the property for $2,300,000.
+The transaction will close prior to August 30, 2003, on a date selected by
+Bowl America.
+
+The $.12 quarterly dividend paid today made this the thirty-first consecutive
+year of increased dividends, a record which ranks 63rd among 11,200 companies
+surveyed for Mergent's list of dividend achievers.
+
+Bowl America operates eighteen bowling centers in Maryland, Virginia and
+Florida and its stock trades on the American Stock Exchange with the symbol
+BWLA.  The Company's SEC Form 10-Q is available at www.sec.gov on the
+Edgar System.
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-E
+[trimmed]
+</DOCUMENT>
