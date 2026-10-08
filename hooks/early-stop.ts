@@ -130,9 +130,12 @@ export function latestUserTurn(jsonl: string): Turn | null {
   return null
 }
 
-/** The user's own words that set a standing, unattended mandate, not a one-off request. */
+/**
+ * The user's own words that set a standing, unattended mandate, not a one-off request. Only a clear
+ * sign-off counts; a bare word like "overnight" or "keep going" talks about the mode as readily as it sets it.
+ */
 const STANDING =
-  /don'?t ask|do not ask|no questions|whatever you think|do whatever|go(ing)? to (bed|sleep)|overnight|asleep|while i'?m (away|out|gone|sleeping)|until (it'?s|its|you'?re|everything'?s|they'?re) (done|finished|complete)|keep going|don'?t stop|do not stop|all night|autonomous|without (asking|checking in)|until i (say|get back|return)|full discretion|take it from here|i'?ll be back|\/goal/i
+  /don'?t ask|do not ask|whatever you think|do whatever|go(ing)? to (bed|sleep)|asleep|while i'?m (away|out|gone|sleeping)|work (on this )?(overnight|autonomously)|without (asking|checking in)|until i (get back|return)|full discretion/i
 
 /** What the assistant's tick, wake and local-command traffic looks like when its origin tag is absent. */
 const NOT_TYPED = /^(\s*<pasted_content|\s*(Spawned agent |Relaunched from the |User rulings?[: (]|From the \w+ session|New task \(from )|and\? \(|<task-notification>|<bash-|<local-command|The [\w-]+ plugin sent a message|This session is being continued|Caveat:)/
@@ -182,8 +185,9 @@ export interface JudgeContext {
  * The deterministic facts the judge cannot see in a wake-up message: the standing mandate the user
  * typed hours ago, and whether the heartbeat that re-enters the session still exists. One pass over
  * the transcript, newest entries scanned for the typed messages, every entry for the cron ledger.
+ * `holdGoal` is the goal of this session's armed `/overnight` hold, see `overnightHoldGoal`.
  */
-export function judgeContext(jsonl: string): JudgeContext {
+export function judgeContext(jsonl: string, holdGoal?: string | null): JudgeContext {
   const lines = jsonl.split('\n')
   let standing: string | null = null
   let latest: string | null = null
@@ -240,6 +244,8 @@ export function judgeContext(jsonl: string): JudgeContext {
       break
     }
   }
+  // An armed /overnight hold is a mandate in force: its goal stands in when no typed message sets one.
+  if (standing === null && holdGoal) standing = holdGoal
   const alive = [...created].some((id) => !cancelled.has(id))
   const hours =
     latestAt && lastAt ? Math.max(0, (Date.parse(lastAt) - Date.parse(latestAt)) / 3_600_000) : null
@@ -275,6 +281,16 @@ export function workHoldArmed(session: string): boolean {
     return lastLedgerEntry(ledgerPath(session))?.verb.startsWith('armed') === true
   } catch {
     return false
+  }
+}
+
+/** The goal of this session's armed `/overnight` hold, or null: the hold itself is the mandate. */
+export function overnightHoldGoal(session: string): string | null {
+  try {
+    const h = JSON.parse(readFileSync(statePath(session), 'utf8')) as { origin?: string; goal?: string }
+    return h.origin === 'overnight' ? h.goal || 'overnight hold' : null
+  } catch {
+    return null
   }
 }
 
@@ -522,7 +538,7 @@ function main(): void {
     turn = jsonl ? latestUserTurn(jsonl) : null
     if (turn) {
       try {
-        ctx = judgeContext(jsonl)
+        ctx = judgeContext(jsonl, overnightHoldGoal(session))
       } catch {
         /* the old two-part state still judges */
       }

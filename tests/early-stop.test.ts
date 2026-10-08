@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
 import { useTmp } from './helpers/tmp.ts'
-import { DEFAULT_THRESHOLD, INSTRUCTIONS, judgeContext, judgeState, latestUserTurn, noWakeUnderMandate, typedByHuman } from '../hooks/early-stop.ts'
+import { DEFAULT_THRESHOLD, INSTRUCTIONS, judgeContext, overnightHoldGoal, judgeState, latestUserTurn, noWakeUnderMandate, typedByHuman } from '../hooks/early-stop.ts'
 
 const mkTmp = useTmp()
 
@@ -819,6 +819,36 @@ test('"do whatever…" and "do not ask…" are mandates, not questions', () => {
   const at = '2026-10-07T01:00:00.000Z'
   expect(judgeContext(human('u1', 'Do whatever you think is best, I\'m going to bed', at)).standing).not.toBeNull()
   expect(judgeContext(human('u1', 'do not ask questions, work overnight', at)).standing).not.toBeNull()
-  expect(judgeContext(human('u1', 'Keep going overnight', at)).standing).not.toBeNull()
   expect(judgeContext(human('u1', 'do i need to work overnight', at)).standing).toBeNull()
+})
+
+test('only clear sign-off phrases set a standing mandate: talk about overnight mode and bare words do not', () => {
+  const at = '2026-10-07T01:00:00.000Z'
+  for (const t of [
+    'i mean i could just have a skill called overnight that i invoke myself',
+    'and that has trigger words',
+    'the overnight cron stopped',
+    'keep going',
+    'make it autonomous',
+  ]) expect(judgeContext(human('u1', t, at)).standing).toBeNull()
+})
+
+test('every incident mandate text in the calibration fixture is still a mandate, plus the canonical sign-offs', () => {
+  const at = '2026-10-07T01:00:00.000Z'
+  const cases = JSON.parse(readFileSync(join(ROOT, 'tests/fixtures/early-stop-cal/cases.json'), 'utf8')).cases as {
+    incident: boolean
+    context: { standing: string | null }
+  }[]
+  // 10 incident cases; the tenth carries no mandate (the leg's known miss), so nine texts, two distinct
+  const texts = cases.filter((c) => c.incident && c.context.standing).map((c) => c.context.standing as string)
+  expect(texts.length).toBe(9)
+  for (const t of [...texts, "Grind away I'm going to bed", "Do whatever you think is best, I'm going to bed", 'do not ask questions, work overnight'])
+    expect(judgeContext(human('u1', t, at)).standing).not.toBeNull()
+})
+
+test('an armed overnight hold is a mandate in force: its goal stands in, and a typed mandate still wins', () => {
+  const at = '2026-10-07T01:00:00.000Z'
+  expect(judgeContext(human('u1', 'fix the parser', at), 'ship the parser').standing).toBe('ship the parser')
+  expect(judgeContext(human('u1', MANDATE, at), 'ship the parser').standing).toBe(MANDATE)
+  expect(overnightHoldGoal('no-such-session-for-hold')).toBeNull()
 })
