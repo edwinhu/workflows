@@ -2102,3 +2102,30 @@ test('invalid blockAt throws', async () => {
     expect(String(r.error)).toMatch(/blockAt must be a number in \(0,1\]/)
   }
 })
+
+// ---------------------------------------------------------------- args delivered as a JSON string
+// A large args object reached the real harness JSON-encoded (1007-nevada-otc, 93 KB). run() spreads
+// args per stage, so a string cannot go through it; compile the script as the harness does and call
+// the PLAN stage directly.
+import { readFileSync } from 'node:fs'
+import { WORKFLOW } from './workflow-harness.mjs'
+const planStage = a => {
+  const src = readFileSync(WORKFLOW, 'utf8').replace('export const meta =', 'const meta =')
+  const fn = new (Object.getPrototypeOf(async function () {}).constructor)('args', 'agent', 'phase', 'parallel', 'pipeline', 'log', src)
+  const no = () => { throw new Error('plan stage dispatched') }
+  return fn(a, no, () => {}, no, no, () => {})
+}
+
+test('args as a JSON string of a valid args object behaves exactly like the object', async () => {
+  const obj = { ...baseArgs, tasks: [task({ redCommand: 'bun test x' })], round: { plan: true } }
+  const fromObj = await planStage(obj)
+  expect(fromObj.stage).toBe('plan')
+  expect(await planStage(JSON.stringify(obj))).toEqual(fromObj)
+})
+
+test('a non-JSON or non-object args string throws the decode error, naming the string head', async () => {
+  const bad = 'not json ' + 'x'.repeat(200)
+  await expect(planStage(bad)).rejects.toThrow(`work: args string did not parse to an object: ${bad.slice(0, 120)}`)
+  await expect(planStage('[1,2]')).rejects.toThrow(/args string did not parse to an object/)
+  await expect(planStage('null')).rejects.toThrow(/args string did not parse to an object/)
+})
