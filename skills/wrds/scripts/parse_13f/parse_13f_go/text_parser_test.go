@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"strings"
 	"testing"
 )
@@ -709,9 +710,9 @@ func TestFindCUSIPTokenFallbackCOMCusip(t *testing.T) {
 // F4: Reject tokens ending with SH/PR/PRN as CUSIPs
 func TestRejectSHSuffixAsCUSIP(t *testing.T) {
 	tests := []struct {
-		name     string
-		line     string
-		wantOK   bool
+		name   string
+		line   string
+		wantOK bool
 	}{
 		{
 			name:   "166239SH is not a CUSIP",
@@ -771,7 +772,7 @@ func TestPreprocessDigitsPRN(t *testing.T) {
 func TestP3bPriceStrippedSingleNumber(t *testing.T) {
 	tests := []struct {
 		name       string
-		line       string   // already upper-cased and price-stripped
+		line       string // already upper-cased and price-stripped
 		cusipRaw   string
 		wantShares int64
 	}{
@@ -1298,5 +1299,96 @@ func TestParseLineBCSStandardPattern(t *testing.T) {
 	}
 	if h.sharesType != "SH" {
 		t.Errorf("sharesType = %q, want SH", h.sharesType)
+	}
+}
+
+// --- cover-page amendment checkbox -----------------------------------------
+
+func TestCoverAmendmentTypeBoxStyles(t *testing.T) {
+	cases := []struct {
+		name, cover, want string
+	}{
+		{"square X new", "<TEXT> This Amendment (Check only one): [ ] is a restatement [X] adds new holdings entries", "NEW HOLDINGS"},
+		{"square x restatement", "<TEXT> [x] is a restatement [ ] adds new holdings entries", "RESTATEMENT"},
+		{"empty brackets", "<TEXT> [] is a restatement [x] adds new holdings entries", "NEW HOLDINGS"},
+		{"x with trailing space", "<TEXT> [x ] is a restatement [ ] adds new holdings entries", "RESTATEMENT"},
+		{"pipe x", "<TEXT> |x| is a restatement |_| adds new holdings entries", "RESTATEMENT"},
+		{"pipe underscore empty", "<TEXT> |_| is a restatement |x| adds new holdings entries", "NEW HOLDINGS"},
+		{"double spaces", "<TEXT> [ ]  is  a  restatement.\n[x]  adds  new holdings entries.", "NEW HOLDINGS"},
+		{"box after label", "<TEXT> This amendment is a restatement [x]. Other text", "RESTATEMENT"},
+		{"neither", "<TEXT> [ ] is a restatement [ ] adds new holdings entries", ""},
+		{"both", "<TEXT> [x] is a restatement [x] adds new holdings entries", ""},
+		{"no box", "<TEXT> This Amendment is a restatement.", ""},
+		{"word elsewhere ignored", "<TEXT> [ ] is a restatement [ ] adds new holdings entries\nSUMMARY PAGE restatement", ""},
+		{"box only after summary ignored", "<TEXT> cover\nREPORT SUMMARY [x] is a restatement", ""},
+	}
+	for _, c := range cases {
+		if got := coverAmendmentType([]byte(c.cover)); got != c.want {
+			t.Errorf("%s: got %q, want %q", c.name, got, c.want)
+		}
+	}
+}
+
+// Fixtures in testdata/ are the cover pages (to just past "SUMMARY PAGE") cut
+// from scratch/rs_audit/edgar_txt (20 files, the rs_audit set, including Pequot
+// 0001071955-03-000074 with double spaces) and scratch/rs_label/txt (neither,
+// both and no-box cases). Expected values are the checked box read by eye from
+// each cover, cross-checked against the Python cover parser.
+func TestCoverAmendmentTypeFixtures(t *testing.T) {
+	const (
+		R = "RESTATEMENT"
+		N = "NEW HOLDINGS"
+	)
+	want := map[string]string{
+		// rs_audit amendments: all tick "adds new holdings entries"
+		"0001273087-07-000016": N, "0001273087-08-000010": N, "0001071955-03-000074": N,
+		"0000315066-08-003243": N, "0001139734-11-000006": N, "0000080255-12-000538": N,
+		"0000732812-13-000017": N, "0000769993-07-000775": N, "0000070858-09-000052": N,
+		"0000038777-06-000142": N,
+		// rs_audit base filings: seven tick neither box, two tick restatement
+		"0001273087-07-000014": "", "0001273087-08-000009": "", "0000315066-08-003227": "",
+		"0001139734-09-000059": "", "0000080255-12-000535": "", "0000732812-13-000012": "",
+		"0000070858-08-000243": "", "0000038777-05-000621": "",
+		"0001071955-03-000067": R, "0000769993-07-000728": R,
+		// rs_label: neither, both, no box
+		"0000009015-01-500018": "", "0000009015-04-000074": "", "0000009634-09-000006": "",
+		"0000009015-07-000022": "", "0000036104-12-000056": "", "0000036104-12-000060": "",
+		"0000064782-05-000067": "",
+	}
+	for acc, w := range want {
+		b, err := os.ReadFile("testdata/cover_" + acc + ".txt")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got := coverAmendmentType(b); got != w {
+			t.Errorf("%s: got %q, want %q", acc, got, w)
+		}
+	}
+}
+
+// End to end through parseText: Pequot's amendment prints "is a restatement"
+// as an unticked option label, so the old substring test said RESTATEMENT.
+func TestParseTextAmendmentTypeFromCover(t *testing.T) {
+	cover, err := os.ReadFile("testdata/cover_0001071955-03-000074.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	filing := "<SEC-DOCUMENT>\n<SEC-HEADER>\nACCESSION NUMBER:\t\t0001071955-03-000074\n" +
+		"CONFORMED SUBMISSION TYPE:\t13F-HR/A\nFILED AS OF DATE:\t\t20031114\n" +
+		"CONFORMED PERIOD OF REPORT:\t20030930\nFILER:\n\tCOMPANY DATA:\n" +
+		"\t\tCOMPANY CONFORMED NAME:\t\t\tPEQUOT TEST\n\t\tCENTRAL INDEX KEY:\t\t\t0001234567\n" +
+		"</SEC-HEADER>\n<DOCUMENT>\n<TYPE>13F-HR/A\n" + string(cover) + "\n<TABLE>\n" +
+		"NAME OF ISSUER         TITLE OF CLASS         CUSIP       VALUE   SHARES  SH/PRN  INVDISC\n" +
+		"APPLE INC              COM                    037833100   50000   100000  SH      SOLE\n" +
+		"</TABLE>\n</DOCUMENT>\n</SEC-DOCUMENT>\n"
+	res, err := parseText([]byte(filing), "/test/pequot.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Rows) != 1 {
+		t.Fatalf("got %d rows, want 1", len(res.Rows))
+	}
+	if got := res.Rows[0].AmendmentType; got != "NEW HOLDINGS" {
+		t.Errorf("AmendmentType = %q, want NEW HOLDINGS", got)
 	}
 }
