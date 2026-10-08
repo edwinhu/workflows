@@ -19,9 +19,19 @@ State coverage does not match the pitch. Measured 2026-10-07 and re-checked 2026
 - **No CIK bridge.** See Company Identifiers below: 0 `us_sec_cik` rows.
 - **It is a snapshot.** The Companies table holds current status; there is no status-change-date column (`AS_OF`/`LAST_CHECKED` are retrieval dates), so "status within N years" outcomes cannot be built from it.
 
-Before using a state, profile it: row count by `FORMED_ON` year and `STATUS_RAW` fill for that
-`JURISDICTION_CODE`. Re-run `recheck_20261008/r1_profile.py` after a Dewey refresh to see whether
-Nevada has been loaded in full.
+**The vendor documents per-state scope** at `https://docs.govfiles.dev/bulk/coverage` (State /
+Code / Notes, no counts; read 2026-10-08). Read it before using any state. Notes that change what a
+state can support:
+
+- `us_nv`: "Covers a limited business-license/entity cohort, not the full corporate registry." The 37K rows are the documented scope, not a load failure.
+- `us_de`: "Complete coverage." This means entity records; status is still all `unknown`, because Delaware does not publish it.
+- `us_tx`: "Comptroller taxable entities only."
+- Partial entity coverage: `us_il` (no LPs, LLLPs or LLPs), `us_ks` (after Feb 2024), `us_ky` (after 2021), `us_me` (after Jan 2024), `us_ma` (some card-file records missing), `us_mo`, `us_or`; `us_ak` holds active and noncompliant entities only.
+- Field gaps (formation dates, addresses, parties, filing history) are listed per state; e.g. `us_az` and `us_ok` collect no formation dates, `us_pa` no filing history.
+
+Before using a state, read its note there, then profile it: row count by `FORMED_ON` year and
+`STATUS_RAW` fill for that `JURISDICTION_CODE`. Re-run `recheck_20261008/r1_profile.py` after a
+Dewey refresh, and re-read the coverage page, to see whether Nevada has been loaded in full.
 
 ## GovFiles vs OpenCorporates
 
