@@ -17,7 +17,7 @@ labelling/classifier rounds on the JKL16 dual-class list (hidden-figures `scratc
    `jev`: `typesafe/jev-1.13` through the OpenRouter decisions endpoint, one `noul` question, P(dual). `hybrid` (**recommended
    default**): Jev on every row; Gemini 3.8 Flash (thinking LOW) only on rows with 0.2 ≤ P < 0.8; the label is Gemini's inside the band
    and Jev's outside. Costs and the head-to-head are below.
-3. **Calibrate** (`calibrate.py`, `fixtures/labels.csv`): precision / recall / kappa on 270 labels; **a full batch is refused
+3. **Calibrate** (`calibrate.py`, `fixtures/labels.csv`, or `--labels PATH`): precision / recall / kappa on 270 labels; **a full batch is refused
    until the newest calibration of that backend, under the same backend / models / thinking level / Jev question hash / threshold /
    band / prompt / schema / labels, has precision ≥ 0.9 and recall ≥ 0.9**.
 
@@ -126,3 +126,5 @@ Jev is not exactly reproducible; the confidence intervals are wide (a single fil
 The request line is now `{"request": …, "request_id": "<accession>"}`; Vertex echoes `request_id` at the top level of each output line, which
 `request_id_of` reads, keeping the `FILING_ID:` line in the echoed request text as a cross-check (they must agree). Verified live: 270 of 270 and 22 of 22
 output lines carried the top-level `request_id`, and both jobs reconciled with 0 missing and 0 duplicate.
+
+**Run isolation.** Each batch submit writes to `gs://…/dual-class/<run-dir>-<sha8 of abs path + time>/`, saved in `job.json`; `collect` reads only that `dest`. A missing `google-genai` stops gemini/hybrid runs before any paid call (`uv run --with google-genai`).

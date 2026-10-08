@@ -23,7 +23,7 @@ produced the label), `backend` and `run_config`.
 Retry policy: Flex capacity errors (429/503) back off 4 tries; a 400 (e.g. recitation refusal) is recorded as an error row
 and the loop continues. Every row is appended to results.jsonl as soon as it returns.
 """
-import argparse, json, os, re, subprocess, sys, time
+import argparse, hashlib, importlib.util, json, os, re, subprocess, sys, time
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -149,6 +149,53 @@ def gcs(cfg, *a):
     subprocess.run(['gcloud', 'storage', *a, '--project', cfg['project']], check=True)
 
 
+def run_prefix(run_dir, now=None):
+    """GCS folder for one submit: <run-dir name>-<8 hex of sha256(absolute run dir + submit timestamp)>. Two run dirs with one
+    basename, or two submits from one dir, never share a folder; job.json records the result, collect reads only that."""
+    run_dir = Path(run_dir).resolve()
+    stamp_ = now or time.strftime('%Y%m%dT%H%M%S', time.gmtime()) + f'{time.time_ns() % 10**9:09d}'
+    return f"{run_dir.name}-{hashlib.sha256(f'{run_dir}|{stamp_}'.encode()).hexdigest()[:8]}"
+
+
+def genai_available():
+    try:
+        return importlib.util.find_spec('google.genai') is not None
+    except ModuleNotFoundError:   # no `google` package at all
+        return False
+
+
+def require_genai(backend):
+    """Exit 1 before any paid call when the Gemini side of `backend` cannot import google-genai."""
+    if backend in ('gemini', 'hybrid') and not genai_available():
+        raise SystemExit(f"backend {backend} needs the google-genai package, which this interpreter lacks. Nothing was spent. "
+                         'Re-run the same command as: uv run --with google-genai python <script>.py ...')
+
+
+def list_outputs(cfg, dest):
+    """URIs of the .jsonl objects under `dest` (recursive gcloud listing)."""
+    r = subprocess.run(['gcloud', 'storage', 'ls', '-r', dest, '--project', cfg['project']], check=True, capture_output=True, text=True)
+    return sorted(u for u in r.stdout.split() if u.endswith('.jsonl'))
+
+
+def fetch_job_outputs(cfg, dest, out):
+    """Download exactly the objects under this job's own `dest` into `out`; any listed object outside `dest` is ignored (counted
+    on stdout). Returns the local files, which are the only ones collect reads."""
+    dest = dest.rstrip('/') + '/'
+    uris = list_outputs(cfg, dest)
+    own = [u for u in uris if u.startswith(dest)]
+    if len(own) != len(uris):
+        print(f'collect: ignored {len(uris) - len(own)} listed objects outside {dest}')
+    if not own:
+        raise SystemExit(f'collect: no .jsonl output under {dest}')
+    files = []
+    for u in own:
+        local = Path(out) / u[len(dest):]
+        local.parent.mkdir(parents=True, exist_ok=True)
+        gcs(cfg, 'cp', u, str(local))
+        files.append(local)
+    return sorted(files)
+
+
 def submit_batch(rows, cfg, run_dir, display, calibrating=False, runs_dir=None, backend='gemini', cleared=None, check_rows=None,
                  bundles_name='bundles.jsonl'):
     """Submit `rows` to Vertex Batch with the Gemini side of `backend`. Gate (or fixture) check first, before any write or call,
@@ -167,13 +214,14 @@ def submit_batch(rows, cfg, run_dir, display, calibrating=False, runs_dir=None, 
     reqs = [build_request(r, g) for r in rows]
     rp = run_dir / 'requests.jsonl'
     common.write_jsonl(rp, reqs)
-    src = f"{g['gcs_prefix']}/{run_dir.name}/requests.jsonl"
-    dest = f"{g['gcs_prefix']}/{run_dir.name}/output/"
+    prefix = run_prefix(run_dir)
+    src = f"{g['gcs_prefix']}/{prefix}/requests.jsonl"
+    dest = f"{g['gcs_prefix']}/{prefix}/output/"
     gcs(g, 'cp', str(rp), src)
     client = make_client(g)
     job = client.batches.create(model='publishers/google/models/' + g['model'], src=src,
                                 config={'display_name': display, 'dest': dest})
-    (run_dir / 'job.json').write_text(json.dumps(dict(name=job.name, display=display, src=src, dest=dest, n=len(rows),
+    (run_dir / 'job.json').write_text(json.dumps(dict(name=job.name, display=display, src=src, dest=dest, prefix=prefix, n=len(rows),
                                                       model=g['model'], backend=backend, bundles_file=bundles_name),
                                                  indent=1, sort_keys=True))
     if used is not None:
@@ -255,6 +303,7 @@ def collect(run_dir, cfg, wait=True):
     job = json.loads((run_dir / 'job.json').read_text())
     backend = job.get('backend', 'gemini')
     g = common.gemini_cfg(cfg, backend)
+    require_genai(backend)
     client = make_client(g)
     while True:
         j = client.batches.get(name=job['name'])
@@ -266,9 +315,12 @@ def collect(run_dir, cfg, wait=True):
         raise SystemExit(f'job not finished: {j.state.value}')
     out = run_dir / 'output'
     out.mkdir(exist_ok=True)
-    gcs(g, 'cp', '-r', j.dest.gcs_uri.rstrip('/') + '/*', str(out))
+    own_dest = job['dest'].rstrip('/') + '/'
+    if j.dest and j.dest.gcs_uri and not j.dest.gcs_uri.startswith(own_dest):
+        raise SystemExit(f'job {job["name"]} reports output {j.dest.gcs_uri}, outside the dest recorded at submit ({own_dest})')
+    files = fetch_job_outputs(g, own_dest, out)
     lines = []
-    for f in sorted(out.rglob('*.jsonl')):
+    for f in files:
         lines += [json.loads(l) for l in f.read_text().splitlines() if l.strip()]
     rows = load_bundles(run_dir / job.get('bundles_file', 'bundles.jsonl'))
     results, missing = parse_batch_lines(lines, rows, g)
@@ -300,6 +352,7 @@ def run_backend(rows, cfg, rd, backend, mode, max_spend=None, abort_floor=None, 
             calibrate.require_fixture_subset([r['filing_id'] for r in rows], cfg)
         else:
             cleared = calibrate.require_gate(runs_dir or rd.parent, cfg, backend)
+    require_genai(backend)   # before the Jev stage spends anything
     g = common.gemini_cfg(cfg, backend)
     if backend == 'gemini':
         if mode == 'flex':
@@ -358,6 +411,7 @@ def main(argv=None):
         sp.choices[name].add_argument('--max-spend', type=float, help='USD cap on Jev spend this run; required for jev and hybrid')
         sp.choices[name].add_argument('--abort-floor', type=float, help='abort when OpenRouter credits remaining < this (config jev.abort_floor_usd)')
     sp.choices['batch'].add_argument('--display', default='dual-class'); sp.choices['batch'].add_argument('--calibrating', action='store_true')
+    sp.choices['batch'].add_argument('--labels', help='labels CSV the calibration was scored against (default fixtures/labels.csv)')
     sp.choices['batch'].add_argument('--runs-dir', help='where calibration.json files are looked for (default: parent of run-dir)')
     sp.choices['cost'].add_argument('--out-tokens', type=int, default=250)
     p = sp.add_parser('collect'); p.add_argument('--run-dir', required=True); p.add_argument('--config'); p.add_argument('--no-wait', action='store_true')
@@ -368,6 +422,9 @@ def main(argv=None):
     backend = a.backend or cfg['backend']
     if a.cmd == 'cost':
         cost_cmd(a.bundles, cfg, a.out_tokens, backend); return 0
+    if getattr(a, 'labels', None):
+        import calibrate
+        calibrate.set_labels(a.labels)
     rows = load_bundles(a.bundles, a.limit)
     rd = Path(a.run_dir or Path(a.bundles).parent); rd.mkdir(parents=True, exist_ok=True)
     if a.cmd == 'dry-run':
