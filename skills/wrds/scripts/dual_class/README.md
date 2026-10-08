@@ -71,6 +71,12 @@ uv run --with google-genai python classify.py batch --backend hybrid --max-spend
 uv run --with google-genai python classify.py collect --run-dir runs/full1          # not needed for --backend jev (results.jsonl is written at once)
 ```
 
+Each batch submit uses its own GCS folder, `<run-dir name>-<8 hex of sha256(absolute run dir + submit time)>`, recorded as `prefix`/`src`/`dest` in `job.json`;
+`collect` lists and downloads only objects under that saved `dest` (foreign objects are ignored and counted) and fails if the job reports output outside it.
+`--labels PATH` (calibrate `prepare`/`submit`/`score`/`gate`, classify `batch`) scores against another labels CSV instead of `fixtures/labels.csv`; its sha is in the
+fingerprint, so a calibration made on one label file does not open the gate under another. Pass the same `--labels` to the gated `classify.py batch`.
+A gemini or hybrid command run without `google-genai` exits 1 before the Jev stage or any GCS call, naming `uv run --with google-genai`.
+
 `--backend jev` needs no Google credentials and no `collect`. Hybrid `flex` (≤10 filings) runs the band rows through Flex instead of Batch.
 
 Output rows (`results.jsonl`, sorted by `filing_id`): `backend`, `run_config`, `p_yes` (Jev probability; null for `gemini`),

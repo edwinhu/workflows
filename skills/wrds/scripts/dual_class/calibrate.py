@@ -2,6 +2,7 @@
 """calibrate.py: score the classifier against fixtures/labels.csv and hold the gate on full batch runs.
 
   prepare --run-dir D --source {edgar,wrds}   extract bundles for every labelled filing -> D/bundles.jsonl (free; 270 fetches)
+  (prepare, submit, score and gate take --labels PATH: a labels CSV in place of fixtures/labels.csv; its sha is in the fingerprint)
   submit  --run-dir D [--backend B] [--max-spend USD]   run D/bundles.jsonl with the gate bypassed (calibration only; PAID).
                                                gemini: Vertex batch (then classify.py collect). jev: synchronous, results at once.
                                                hybrid: Jev on all, Vertex batch of the band rows (then classify.py collect).
@@ -28,7 +29,17 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import common
 from schema import SCHEMA
 
-LABELS = common.PKG / 'fixtures' / 'labels.csv'
+DEFAULT_LABELS = common.PKG / 'fixtures' / 'labels.csv'
+LABELS = DEFAULT_LABELS   # the label file in force; --labels PATH replaces it for the process (set_labels)
+
+
+def set_labels(path):
+    """Point the scorer, the fixture check and the fingerprint at another labels CSV (its sha enters the fingerprint)."""
+    global LABELS
+    p = Path(path)
+    if not p.is_file():
+        raise SystemExit(f'--labels {path}: no such file')
+    LABELS = p.resolve()
 
 
 def wilson(k, n, z=1.959964):
@@ -75,8 +86,8 @@ def metrics(pairs, seed=0, draws=2000):
                 kappa=k, kappa_ci=kci)
 
 
-def load_labels(path=LABELS):
-    with open(path, newline='') as f:
+def load_labels(path=None):
+    with open(path or LABELS, newline='') as f:
         return list(csv.DictReader(f))
 
 
@@ -246,9 +257,12 @@ def main(argv=None):
     p.add_argument('--abort-floor', type=float, help='abort when OpenRouter credits remaining < this (config jev.abort_floor_usd)')
     p = sp.add_parser('score'); p.add_argument('--run-dir', required=True); p.add_argument('--backend', choices=['gemini', 'jev', 'hybrid'])
     p = sp.add_parser('gate'); p.add_argument('--runs-dir', required=True); p.add_argument('--backend', choices=['gemini', 'jev', 'hybrid'])
+    for name in ('prepare', 'submit', 'score', 'gate'):
+        sp.choices[name].add_argument('--labels', help='labels CSV (default fixtures/labels.csv)')
     ap.add_argument('--config')
     a = ap.parse_args(argv)
     cfg = common.load_config(a.config)
+    set_labels(a.labels or DEFAULT_LABELS)
     if a.cmd == 'prepare':
         import extract
         rd = Path(a.run_dir); rd.mkdir(parents=True, exist_ok=True)
