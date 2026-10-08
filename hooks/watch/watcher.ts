@@ -12,7 +12,7 @@
 // waking itself about its own runs would loop.
 import type { EngineInterface, On } from 'claude-code'
 import {
-  BEACON, classify, parseEvents, statusLine, table, TICK_MS, wakeable, wakeText, workPhase, workRound, WAKE_HORIZON_MS,
+  BEACON, classify, parseEvents, statusLine, table, TICK_MS, wakeable, wakeText, waitText, workPhase, workRound, WAKE_HORIZON_MS,
   type Facts, type Run, type View,
 } from './runs.ts'
 import { setForecastCache } from '../jev/forecast-mod.ts'
@@ -129,6 +129,19 @@ async function snapshot($: EngineInterface): Promise<{ views: View[]; nowMs: num
 
 async function wake($: EngineInterface, views: View[], nowMs: number) {
   for (const v of wakeable(views)) {
+    // A live run's newest WAIT alert wakes once per waits value: the run stays running.
+    if (v.state === 'running' && v.wait) {
+      const wid = `${v.id}:wait:${v.wait.waits}`
+      if (!woke.has(wid)) {
+        woke.add(wid)
+        const wkey = `notified:${wid}`
+        if (!(await $.store.get(wkey)) && !(v.startedMs && nowMs - v.startedMs > WAKE_HORIZON_MS)) {
+          await $.store.set(wkey, nowMs)
+          void $.prompt.submit({ text: waitText(v) })
+        }
+      }
+      continue
+    }
     if (v.state === 'running' || woke.has(v.id)) continue
     woke.add(v.id)
     const key = `notified:${v.id}`

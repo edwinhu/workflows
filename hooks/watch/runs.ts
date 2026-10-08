@@ -42,6 +42,8 @@ export type Run = {
   /** Epoch seconds from the START line's t=, absent on lines written before it existed. */
   t?: number
   done?: { status: string; detail: string }
+  /** The newest WAIT line (grind: a gate shut N passes running). Informational: the run is still live. */
+  wait?: { waits: number; why: string; script: string }
 }
 
 export type Kind = 'farm' | 'work-round' | 'work-loop' | 'grind'
@@ -66,7 +68,7 @@ export function dec(s: string): string {
   try { return decodeURIComponent(s) } catch { return s }
 }
 
-const LINE = /^(\w[\w-]*): (START|CLAIM|DONE) (\S+)(?: (.*))?$/
+const LINE = /^(\w[\w-]*): (START|CLAIM|DONE|WAIT) (\S+)(?: (.*))?$/
 
 function fields(rest: string): Record<string, string> {
   const f: Record<string, string> = {}
@@ -99,6 +101,12 @@ export function parseEvents(text: string, file: string, pid: number, sid: string
       const r = runs.find(x => x.label === label && !x.done)
       const p = fields(rest).path
       if (r && p && !r.claims.includes(p)) r.claims.push(p)
+    } else if (verb === 'WAIT') {
+      const open = runs.filter(x => !x.done)
+      const r = open.find(x => x.label === label) ?? (open.length === 1 ? open[0] : undefined)
+      const f = fields(rest)
+      const n = f.waits !== undefined && /^\d+$/.test(f.waits) ? Number(f.waits) : undefined
+      if (r && n !== undefined) r.wait = { waits: n, why: f.why ?? '', script: f.script ?? '' }
     } else {
       const open = runs.filter(x => !x.done)
       const byLabel = open.find(x => x.label === label)
@@ -271,6 +279,13 @@ const LOOP_EXITS: Record<string, string> = {
   '0': 'gate passed', '1': 'dispatch died with no verdict', '2': 'bad arguments or result refused',
   '3': 'redispatch refused at Tier 1', '5': 'NOT CONVERGING', '6': 'loop cap reached, gate failing',
   '7': 'plan defect escalates to a human', '8': 'read-only run reached its verdict',
+}
+
+/** The prompt that wakes the session for a grind loop whose gate keeps waiting. */
+export function waitText(v: View): string {
+  const w = v.wait!
+  return `grind loop ${v.label} waiting: ${w.waits} consecutive gate waits, still running. Why: ${w.why || '(the gate printed nothing)'}. ` +
+    `Status: bash ${w.script || 'grind.sh'} status --journal ${v.out}`
 }
 
 /** The prompt that wakes the session for a finished or dead run. */
