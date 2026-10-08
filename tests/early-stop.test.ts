@@ -852,3 +852,55 @@ test('an armed overnight hold is a mandate in force: its goal stands in, and a t
   expect(judgeContext(human('u1', MANDATE, at), 'ship the parser').standing).toBe(MANDATE)
   expect(afkHoldGoal('no-such-session-for-hold')).toBeNull()
 })
+
+// ---- an armed afk hold: work-hold.ts never blocks a check-less one, so this hook speaks for it ----
+
+/** What arm.sh writes: a check-less afk hold, in the hook's TMPDIR. */
+function afkHoldFile(dir: string, sid: string, extra: Record<string, unknown> = {}) {
+  writeFileSync(join(dir, `work-hold-${sid}.json`), JSON.stringify({
+    check: '', goal: 'Afk mandate: ship the parser.', origin: 'afk',
+    startedAt: Math.floor(Date.now() / 1000), ceilingMinutes: 600, maxRounds: 1500, rounds: 0, ...extra,
+  }))
+}
+
+test('afk hold, no wake left: the no-wake block sends questions to the morning report, not AskUserQuestion', () => {
+  const { dir, transcript } = mandateSession()
+  afkHoldFile(dir, 'afk-nowake')
+  const r = runHook(childEnv(dir, DEAD), stopPayload('afk-nowake', transcript, 'All done, nothing is running.'))
+  expect(r.out).toContain('"decision":"block"')
+  expect(r.out).toContain('morning report')
+  expect(r.out).toContain('do not use AskUserQuestion until the ceiling')
+  expect(r.out).not.toContain('ask with AskUserQuestion')
+}, 30000)
+
+test('afk hold, judged early stop: the afk BLOCK_REASON variant', async () => {
+  const port = 18961
+  const srv = stubDecisions(port, 0.99)
+  await settle()
+  // A live heartbeat, so the no-wake leg stays quiet and the judge is asked.
+  const { dir, transcript } = mandateSession([cronCreate('bbbb2222', '2026-10-07T01:01:00.000Z')])
+  afkHoldFile(dir, 'afk-judged')
+  const r = runHook(childEnv(dir, decisionsAt(port)), stopPayload('afk-judged', transcript))
+  srv.kill()
+  expect(r.out).toContain('"decision":"block"')
+  expect(r.out).toContain('Do not end a turn while work the user asked for is still owed')
+  expect(r.out).toContain('write the open questions into the morning report')
+  expect(r.out).not.toContain('say what blocks and use AskUserQuestion')
+}, 30000)
+
+test('an afk hold past its ceiling, or with a check, still stands this hook down', async () => {
+  const port = 18962
+  const srv = stubDecisions(port, 0.99)
+  await settle()
+  const past = fixture()
+  afkHoldFile(past.dir, 'afk-past', { startedAt: Math.floor(Date.now() / 1000) - 7200, ceilingMinutes: 60 })
+  const rPast = runHook(childEnv(past.dir, decisionsAt(port)), stopPayload('afk-past', past.transcript))
+  const checked = fixture()
+  afkHoldFile(checked.dir, 'afk-check', { check: 'bun test' })
+  const rCheck = runHook(childEnv(checked.dir, decisionsAt(port)), stopPayload('afk-check', checked.transcript))
+  srv.kill()
+  expect(rPast.out).toBe('')
+  expect(rCheck.out).toBe('')
+  expect(readFileSync(join(past.dir, 'early-stop.log'), 'utf8')).toContain('work-hold is armed')
+  expect(readFileSync(join(checked.dir, 'early-stop.log'), 'utf8')).toContain('work-hold is armed')
+}, 30000)
