@@ -941,7 +941,7 @@ describe('the pass branch writes DISTINCT verbs, because a green check is not a 
     })
     srv.kill()
     expect(r.entry?.verb).toBe(PASSED_GOAL_MET)
-    expect(r.stderr).toContain('objective is met')
+    expect(r.stderr).toContain('objective met')
     expect(r.stderr).toContain('classifier judged the goal MET')
     // Conditional, because the cron is now optional: the monitor is the wake and a session may
     // have raised no cron at all.
