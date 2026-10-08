@@ -950,3 +950,20 @@ def test_abstract_noun_gate_spares_the_hedge_fund_term_of_art():
     assert "abstract-noun-gate" not in _labels_for(
         "The ratio gates whether the effect appears at all."
     )
+
+
+# turn-to-starting-with: 1/14,294,148 over both halves. "Today we turn to X, starting with Y" is a
+# lecture-outline signpost; the corpus's one hit is the exception. The negatives are near-misses the
+# corpus proved human -- bare imperative `start with`, the participle as a date/sample anchor, and
+# the first-person-plural `Let us start with` -- none of which has the `turn to ..., starting with` shape.
+@pytest.mark.parametrize(("verdict", "sentence"), [
+    ("fire",  "Today we turn to misappropriation, starting with O'Hagan, the most famous lawyer insider trading case."),
+    ("clean", "Start with price accuracy."),
+    ("clean", "The sample covers firms starting with the 1990 cohort."),
+    ("clean", "Let us start with the classical theory."),
+])
+def test_turn_to_starting_with_leaves_the_human_near_misses_alone(tmp_path, verdict, sentence):
+    draft = tmp_path / f"turn-{abs(hash(sentence))}.md"
+    draft.write_text(sentence + "\n")
+    labels = _labels(PA.audit_document(draft))
+    assert ("turn-to-starting-with" in labels) == (verdict == "fire"), f"{sentence!r} -> {labels}"

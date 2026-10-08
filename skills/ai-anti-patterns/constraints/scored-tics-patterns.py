@@ -32,4 +32,5 @@ _TIC_PATTERNS = [
     ('\\bthe reason (should sit|sits) in plain view\\b|\\bworth (stating|saying) plainly\\b', 'ai-tic·sev2·announce-candour'),
     ('\\b(is|was) the (argument|payoff|teachable point|whole question|larger rule|aggressive part)\\s*[.:]', 'ai-tic·sev2·the-x-is-the-y'),
     ('\\b(liability|pleading|standing|scienter|materiality|threshold|demand|independence|eligibility|jurisdictional|procedural|evidentiary|disclosure|causation) gate\\b', 'ai-tic·sev2·abstract-noun-gate'),
+    ('\\b(turn|move)(s|ed)? to [^.]{1,60}, starting with\\b', 'ai-tic·sev2·turn-to-starting-with'),
 ]
