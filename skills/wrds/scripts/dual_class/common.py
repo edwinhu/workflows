@@ -10,6 +10,30 @@ def load_config(path=None):
     return json.loads(Path(path or PKG / 'config.json').read_text())
 
 
+def gemini_cfg(cfg, backend):
+    """The config the Gemini side of a backend runs with: hybrid overrides model and thinking level (config `hybrid`)."""
+    if backend == 'hybrid':
+        return dict(cfg, model=cfg['hybrid']['model'], thinking_level=cfg['hybrid']['thinking_level'])
+    return cfg
+
+
+def run_config(cfg, backend):
+    """Every setting that changes a backend's labels; None for fields the backend does not use. Stamped on result rows and
+    folded into the calibration fingerprint, so a changed model, thinking level, Jev model, question text, threshold or band
+    closes the gate."""
+    if backend not in ('gemini', 'jev', 'hybrid'):
+        raise ValueError(f'unknown backend {backend!r}')
+    g = gemini_cfg(cfg, backend); gem = backend in ('gemini', 'hybrid'); jev = backend in ('jev', 'hybrid')
+    if jev:
+        import jev as _jev
+    return {'backend': backend,
+            'model': g['model'] if gem else None, 'thinking_level': g.get('thinking_level') if gem else None,
+            'jev_model': cfg['jev']['model'] if jev else None,
+            'question_sha256': _jev.QUESTION_SHA256 if jev else None,
+            'threshold': cfg['jev']['threshold'] if jev else None,
+            'band': [cfg['hybrid']['band_lo'], cfg['hybrid']['band_hi']] if backend == 'hybrid' else None}
+
+
 def sha256_file(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 

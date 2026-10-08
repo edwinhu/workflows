@@ -11,11 +11,15 @@ labelling/classifier rounds on the JKL16 dual-class list (hidden-figures `scratc
    up to three capital-stock / equity notes (main document after Item 8, and EX-13), and 600-char windows around voting phrases
    (main, EX-13, EX-3). Absent sections are marked in the bundle text, never skipped. Sources: `wrds` clean filings, `edgar`
    complete submissions, `local` copies. Output is JSONL, one row per input filing, sorted, with the `rule_v3` verdict attached.
-2. **Classify** (`classify.py`, `prompt.md`): Gemini on Vertex with a response schema `{dual: "true"|"false"|"unclear",
-   classes[{name, votes_per_share, shares_outstanding}], evidence_quote, location}`. Flex for ≤10 filings, Batch beyond. Default
-   model `gemini-3.5-flash-lite` (cheapest listed Flash, `gemini-vertex/references/models-and-pricing.md`).
+2. **Classify** (`classify.py --backend gemini|jev|hybrid`, `jev.py`, `prompt.md`). `gemini`: Gemini on Vertex with a response schema
+   `{dual: "true"|"false"|"unclear", classes[{name, votes_per_share, shares_outstanding}], evidence_quote, location}`; Flex for ≤10
+   filings, Batch beyond; model `gemini-3.5-flash-lite` (cheapest listed Flash, `gemini-vertex/references/models-and-pricing.md`).
+   `jev`: `typesafe/jev-1.13` through the OpenRouter decisions endpoint, one `noul` question, P(dual). `hybrid` (**recommended
+   default**): Jev on every row; Gemini 3.8 Flash (thinking LOW) only on rows with 0.2 ≤ P < 0.8; the label is Gemini's inside the band
+   and Jev's outside. Costs and the head-to-head are below.
 3. **Calibrate** (`calibrate.py`, `fixtures/labels.csv`): precision / recall / kappa on 270 labels; **a full batch is refused
-   until the newest calibration for this model + prompt + schema + labels has precision ≥ 0.9 and recall ≥ 0.9**.
+   until the newest calibration of that backend, under the same backend / models / thinking level / Jev question hash / threshold /
+   band / prompt / schema / labels, has precision ≥ 0.9 and recall ≥ 0.9**.
 
 `rule_v3.py` is the free baseline: the deterministic cover-passage classifier frozen in jkl4 (md5
 `f9aa198cede864761403a174ac251349`, byte-identical copy; a test pins the hash). It is run on the whole submission, which is
@@ -56,8 +60,17 @@ primary = exact or para_1seg; loose adds tokens spread over segments):
 Dual evidence is in the bundle for 109 of 112 (97.3%) dual filings; the three exceptions are two split-across-segment cases (counts
 on the cover, vote sentence in a note; content present) and one real miss: jkl4 id 69 (EXX, Class B elects two-thirds of the
 directors), whose weak `elect … directors` window was dropped by the rule requiring a `vot` string. Single-label misses are mostly
-paraphrased quotes. Exact-string matches alone are 43%, so exact is a lower bound. The first change to consider is relaxing the weak
-filter. Two rules were set during the 10-filing test before validation (R5 prose test, R6 weak filter); none was tuned after it.
+paraphrased quotes. Exact-string matches alone are 43%, so exact is a lower bound. Two rules were set during the 10-filing test
+before validation (R5 prose test, R6 weak filter); none was tuned after it.
+
+**R6 change after that validation (2026-10-08).** A weak `elect … directors` window that lacks `vot` is now kept when it names a share
+class (`Class A–E`, `Series A–B`, `common stock`); the digit-ratio filter and the `vot` rule for other weak hits are unchanged. Effect
+on the 270 calibration filings (raw submissions fetched once from EDGAR, old rule = HEAD `sections.py`): mean bundle 14,427 → 14,520
+chars (+93, +0.65%); 38 filings changed, one shrank by 7 chars (a window displaced inside the 6,000-char cap), largest increase
++1,939; mean windows 1.92 → 2.06; max bundle 35,296. The three test fixtures are unchanged (10,316 chars mean, no weak elect windows).
+EXX (`0000950130-97-001416`, +1,300 chars) now carries both "elect two-thirds" sentences; the `gemini` calibration scored it a true
+positive where the earlier run returned `unclear` (one run each, so this is suggestive, not a controlled effect). Fixture:
+`tests/fixtures/0000950130-97-001416.txt`.
 
 ## `rule_v3` baseline (jkl4, measured 2026-10-07)
 
@@ -74,8 +87,42 @@ scored rows dual) is not the population rate and precision/recall are unweighted
 the first 400 KB for most filings and from the full submission for 20 in jkl4. jkl2's British Telecom row is labelled dual with per-share
 votes unverified. A second-labeller set can be appended with a new `source_set`.
 
-## Not yet measured
+## Backends: calibration and head-to-head (measured 2026-10-08)
 
-The LLM classifier has had exactly one live call (Ford FY1996 → `dual: "true"`, Common Stock one vote and Class B Stock 40% of the
-general voting power, quote verbatim in the bundle, 5,005 prompt / 234 output tokens on Flex). Its precision, recall and kappa on the
-fixtures are unknown until `calibrate.py` is run; the gate stays closed until then.
+**Same package, same 270 labels** (`fixtures/labels.csv`; 263 scored, 7 `unres` excluded), bundles from the package extractor after the
+R6 change (mean 14,520 chars), EDGAR source, `unclear`/error = negative. Run dirs `hidden-figures/scratch/borderline3/pkgcal2/runs/{jev,gemini,hybrid}`.
+
+| Backend | TP | FP | FN | Precision [Wilson 95%] | Recall [Wilson 95%] | Kappa | Measured cost (270) | Projected 8,794 |
+|---|---|---|---|---|---|---|---|---|
+| `jev` (P ≥ 0.5) | 116 | 3 | 1 | 0.975 [0.928, 0.991] | 0.991 [0.953, 0.999] | 0.969 | $0.051 | $1.64 |
+| `gemini` (3.5 Flash-Lite, Batch) | 117 | 6 | 0 | 0.951 [0.898, 0.978] | 1.000 [0.968, 1.000] | 0.954 | $0.248 | $8.06 |
+| `hybrid` (Jev + 3.8 Flash LOW on 22 band rows) | 117 | 1 | 0 | 0.992 [0.954, 0.999] | 1.000 [0.968, 1.000] | 0.992 | $0.103 | ≈ $3.3 |
+| `rule_v3` (free) | 117 | 12 | 0 | 0.907 [0.844, 0.946] | 1.000 [0.968, 1.000] | 0.909 | free | free |
+
+All three model backends open their gates (≥ 0.9 / ≥ 0.9). Dollars are Jev's reported `usage.cost` and Gemini tokens × config Batch prices
+(the cloud bill was not read). The hybrid band held 22 of 270 rows (8.1%); the single remaining hybrid error is
+`0001193125-11-042614` (one Silver Lake Class B share electing up to two directors, which the label calls single and the definition counts as
+dual). The Jev stage was run twice (the `jev` run and the hybrid run): `p_yes` differed on 115 of 270 rows (max 0.14), with identical
+threshold labels and identical band membership.
+
+**Earlier head-to-head on the production extract (hidden-figures note 6c, 270 gold filings with `unres` counted as not dual, 3.8 Flash
+batch):** Jev 1.13 precision 0.921 / recall 0.991 ($1.64 projected); Gemini 3.8 Flash LOW 0.967 / 0.991 ($17.06); MEDIUM 0.975 / 0.991 ($21.93).
+All nine Jev–Gemini disagreements had Jev P between 0.49 and 0.79, and sending only 0.2 ≤ P < 0.8 (9.6% of filings) to Gemini LOW reproduced
+Gemini LOW on that set. The package numbers above are not comparable cell-for-cell with that table: `unres` rows are excluded here (about half
+of Jev's false positives in 6c were `unres` rows or jkl3 rows labelled from the first 400 KB only), the Jev state is the package bundle text rather than the 6c rendering, and the package
+`gemini` backend is the cheaper 3.5 Flash-Lite, not 3.8 Flash.
+
+**Recommendation: `hybrid`.** Jev alone is the cheapest and, on these labels, already more precise than 3.5 Flash-Lite, but it returns no
+quote or class table and its errors cluster at P between 0.4 and 0.8; routing exactly that band to a stronger model removed two of its three
+false positives and kept recall at 1.000 for about twice Jev's cost and 41% of Gemini 3.5 Flash-Lite's. Use `gemini` when every row needs a verbatim quote.
+**Caveats:** the band was chosen from the earlier 270-filing analysis and scored again on the same filings (in-sample; [0.3, 0.8) and [0.4, 0.85)
+gave the same result there); labels are one reader's pass, and 150 of the 270 were used to develop `rule_v3`; the three backends were run once each;
+Jev is not exactly reproducible; the confidence intervals are wide (a single filing moves precision by about 0.01).
+
+## Batch request shape (bug fixed 2026-10-08)
+
+`classify.build_request` first emitted `{"request": …, "metadata": {"request_id": …}}`. Vertex Batch rejected the job (FAILED, no output):
+`code=3 … The column or property "metadata" in the specified input data is of unsupported type. Supported types … [STRING, INTEGER, FLOAT, BOOLEAN, TIMESTAMP, DATE, DATETIME, NUMERIC]`.
+The request line is now `{"request": …, "request_id": "<accession>"}`; Vertex echoes `request_id` at the top level of each output line, which
+`request_id_of` reads, keeping the `FILING_ID:` line in the echoed request text as a cross-check (they must agree). Verified live: 270 of 270 and 22 of 22
+output lines carried the top-level `request_id`, and both jobs reconciled with 0 missing and 0 duplicate.

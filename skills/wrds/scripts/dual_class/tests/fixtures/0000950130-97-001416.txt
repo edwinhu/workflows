@@ -1,0 +1,440 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ NhdCP6Zt99ncM4YutebyeUjGTSook3b0Rq43j1H7qsIsY066qfx45BV7oj/TwF6O
+ h9MFY3hhhL2fpB3U3Tte4A==
+
+<SEC-DOCUMENT>0000950130-97-001416.txt : 19970401
+<SEC-HEADER>0000950130-97-001416.hdr.sgml : 19970401
+ACCESSION NUMBER:		0000950130-97-001416
+CONFORMED SUBMISSION TYPE:	10-K405
+PUBLIC DOCUMENT COUNT:		2
+CONFORMED PERIOD OF REPORT:	19961231
+FILED AS OF DATE:		19970331
+SROS:			AMEX
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			EXX INC/NV/
+		CENTRAL INDEX KEY:			0000089261
+		STANDARD INDUSTRIAL CLASSIFICATION:	GAMES, TOYS & CHILDREN'S VEHICLES (NO DOLLS & BICYCLES) [3944]
+		IRS NUMBER:				880325271
+		STATE OF INCORPORATION:			NV
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		10-K405
+		SEC ACT:		1934 Act
+		SEC FILE NUMBER:	001-05654
+		FILM NUMBER:		97569516
+
+	BUSINESS ADDRESS:	
+		STREET 1:		3900 PARADISE ROAD SUITE 109
+		CITY:			LAS VEGAS
+		STATE:			NV
+		ZIP:			89109
+		BUSINESS PHONE:		7027378811
+
+	MAIL ADDRESS:	
+		STREET 1:		3900 PARADISE RD
+		STREET 2:		SUITE 109
+		CITY:			LAS VEGAS
+		STATE:			NV
+		ZIP:			89109
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	SFM CORP
+		DATE OF NAME CHANGE:	19920703
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>10-K405
+<SEQUENCE>1
+<DESCRIPTION>FORM 10-K
+<TEXT>
+
+<PAGE>
+ 
+                      SECURITIES AND EXCHANGE COMMISSION
+                             Washington, DC 20549
+                                   FORM 10-K
+
+
+(Mark One)
+
+  X  Annual report pursuant to Section 13 or 15(d) of the Securities Exchange 
+- -----
+Act of 1934
+
+For the fiscal year ended  December 31, 1996  or
+                          ------------------
+     Transition report pursuant to Section 13 or 15(d) of the Securities 
+- -----
+Exchange Act of 1934
+
+For the transition period from_________________________to______________________
+
+ Commission file number                      1-5654
+                              -------------------------------------------------
+
+
+
+                                   EXX  INC.
+- --------------------------------------------------------------------------------
+            (Exact Name of Registrant as Specified in its Charter)
+
+          Nevada                                       88-0325271
+- -------------------------------             ------------------------------------
+(State or Other Jurisdiction of             (I.R.S. Employer Identification No.)
+ Incorporation or Organization)
+
+1350 East Flamingo Road, Suite 689
+Las Vegas, Nevada                                             89119-5263  
+- ----------------------------------                        ----------------
+(Address of Principal Executive Offices)                      (Zip Code)
+
+                                 702-598-3223
+- --------------------------------------------------------------------------------
+             (Registrant's Telephone Number, Including Area Code)
+
+Securities registered pursuant to Section 12(b) of the Act:
+                                                  Name of Each Exchange 
+      Title of each class                         on Which Registered
+- -------------------------------                   -------------------
+
+Common Stock Par Value $.01 Class A               American Stock Exchange
+- -----------------------------------               -----------------------
+
+Common Stock Par Value $.01 Class B               American Stock Exchange
+- -----------------------------------               -----------------------
+
+Securities registered pursuant to Section 12(g) of the Act:
+
+                                        None
+- --------------------------------------------------------------------------------
+
+Indicate by check mark whether the registrant: (1) has filed all reports 
+required to be filed by Section 13 or 15(d) of the Securities Exchange Act of 
+1934 during the preceding 12 months (or for such shorter period that the 
+registrant was required to file such reports), and (2) has been subject to such 
+filing requirements for the past 90 days. Yes   X     No   
+                                               ---      ---
+Indicate by check mark if disclosure of delinquent filers pursuant to Item 405 
+of Regulation S-K is not contained herein, and will not be contained, to the 
+best of registrant's knowledge, in definitive proxy or information statements 
+incorporated by reference on Part III of this Form 10-K or any amendment to 
+this Form 10-K. [X]
+
+Number of shares of Common Stock, Par Value $.01 per share, outstanding as of 
+March 21, 1997: 2,027,942 Class A shares and 667,314 Class B 
+                ---------                    -------
+shares(exclusive of 759,376 Class A shares  and 261,792 Class B shares 
+                    -------                     -------
+held in registrant's treasury).  Of the shares outstanding, 1,084,208 Class 
+                                                            ---------
+A shares and 352,736 Class B shares are held by non-affiliates.  The market 
+             -------
+value of the shares held by non-affiliates is $4,761,502 based on $3.375 and 
+$3.125 per share, respectively of the closing price of the registrant's Class A 
+and Class B common stock on the American Stock Exchange on March 21, 1997.
+
+Documents incorporated by reference are:  Registrant's Proxy Statement dated  
+April, 1997 for the Annual Meeting of Stockholders to be held in May, 1997, 
+Form S-4 Registration Statement dated July 25, 1994, Form S-4 Amendment No. 1 
+dated August 16, 1994, Form 8-K Report dated February 3, 1997, and Form 8-K 
+Report dated October 28, 1994, and Form 10-K Report dated March 28, 1996.
+<PAGE>
+ 
+                                    PART 1 
+                                    ------
+
+
+Item 1.  Business.
+- -----------------
+
+            EXX INC ("EXX") is the holding Company resulting from the 
+Reorganization of SFM Corporation ("SFM") as approved by its shareholders at a 
+special meeting on October 18, 1994 and effective on October 21, 1994.  The 
+purpose of adapting a holding company structure was to enhance the Company's 
+ability to obtain new financing by enabling potential investors to clearly 
+focus on the strengths and diversity of EXX's businesses and to protect each of 
+EXX's businesses to the extent possible from the business risks which arise out 
+of its other businesses.
+
+            As part of the reorganization each outstanding share of SFM Common 
+stock was converted into three shares of EXX Class A Common Stock and one share 
+of EXX Class B Common Stock.  The new stock is substantially identical to the 
+old stock in rights and privileges except that holders of outstanding shares of 
+Class B Common Stock have the right to elect two-thirds or the next rounded 
+number of directors in excess of two-thirds if the number of Directors is not 
+divisible by three, and the holders of outstanding shares of the Class A Common 
+Stock have the right to elect the remaining directors of the Company.
+
+            Under the Reorganization SFM became a wholly-owned subsidiary of 
+EXX and each of SFM's wholly-owned subsidiaries became wholly-owned 
+subsidiaries of EXX with each subsidiary retaining its assets and liabilities 
+and continuing its business.  In order to effect the transactions, SFM 
+distributed as a dividend to EXX all the outstanding stock of each of its 
+subsidiaries as well as SFM's cash, cash equivalents and certain promissory 
+notes.
+
+            EXX through its subsidiaries, is engaged in the design, production 
+and sale of consumer goods in the form of "impulse toys", watches and kites.  
+In addition, it is engaged in the design, production and sale of electric 
+motors geared toward the (OEM) original equipment market, and the design, 
+production and sale of cable pressurization equipment sold to the 
+telecommunications industry. It formerly manufactured machine tools and machine 
+tool replacement parts.  It continues to receive royalty income from machine 
+tools and replacement parts as part payment for its sale of a subsidiary's 
+assets.  Continuing operations are conducted through five wholly-owned 
+subsidiaries.
+
+            Henry Gordy International, Inc. ("Gordy") was formed during the 
+            -------------------------------
+third quarter of 1987 to conduct the business associated with certain assets 
+purchased from Henry Gordy, Inc. and Gordy International, Inc.
+
+            Gordy markets a line of "impulse" toys through a national network 
+of commissioned sales representatives, together with its own sales staff.  Its 
+products are distributed directly or through wholesalers to a wide range of 
+retail outlets including, but not limited to, toy stores, department stores, 
+discount chains, drug stores and supermarkets.
+
+                                       2
+<PAGE>
+ 
+            The majority of the merchandise is manufactured in the Far East to 
+Gordy's specifications and shipped as required.  No difficulties have been 
+encountered in obtaining sources for the products, nor are any expected for the 
+current year.
+
+            Inventories are maintained against anticipated orders.  Gordy 
+believes that its practices relating to all working capital items, including 
+its inventory practices, do not materially differ from those used by other 
+companies in similar endeavors and comparable in size to Gordy.
+
+            Gordy operates in a highly competitive market.  It competes with 
+many other companies, some of which have substantially greater resources and 
+assets than Gordy.
+
+            In February, 1994, Hi-Flier Inc., a newly formed subsidiary of SFM, 
+purchased the assets of Hi-Flier Manufacturing Co., a leader in the kite 
+business for more than seventy years.  This acquisition strengthened our toy 
+segment by providing product lines that compliment those of the Henry Gordy 
+International Inc. subsidiary.  
+
+            The Howell Electric Motors Division ("Howell") is engaged in 
+            -----------------------------------
+the manufacture and sale of alternating current, fractional and small integral 
+motors ranging from 1/4 to 10 horsepower.  Howell's product line consists of 
+such specialty items as blower motors designed for use in air conditioning 
+systems, flat-type motors used in floor scrubbing and polishing machines, and 
+motor pump assemblies used in food machinery products and a variety of other 
+applications.  In recent years, a substantial portion of Howell's sales have 
+been to the floor care service industry and the food machinery industry, and 
+have been effected through Howell's own marketing personnel and several 
+independent sales representatives working on a commission basis.
+
+            The principal raw materials used by Howell are steel, copper, 
+aluminum and grey-iron or aluminum casting, all of which are purchased from 
+various suppliers on a competitive basis.  During the period covered by this 
+report, Howell experienced no significant difficulty in obtaining these raw 
+materials, and, barring some presently unforeseen event, Howell does not expect 
+to encounter any difficulties in obtaining such supplies during the current 
+year.
+
+            Raw material inventories for Howell are maintained largely against 
+known requirements, i.e., they are held against firm orders, or, in the case of 
+certain items with a variety of applications to Howell's products, are held 
+against anticipated orders.  Inventories of finished goods consist 
+predominately of products ready for shipment.  Howell believes that its 
+practices relating to all working capital items, including its inventory 
+practices, do not materially differ from those used by other companies in 
+similar endeavors and comparable in size to Howell.
+
+            Howell is in a highly competitive business, and believes that it is 
+not a very significant factor in the industry.  It competes with many other 
+companies which have significantly greater assets and resources.
+
+                                       3
+<PAGE>
+ 
+            In April, 1994, TX Systems Inc., a newly formed subsidiary of SFM, 
+acquired the operating assets and businesses of TX Technologies, Inc. and TX 
+Software, Inc.  These companies were engaged in the Cable Pressurization and 
+Monitoring Systems business.  The TX Systems Inc. acquisition together with the 
+activities of another newly formed subsidiary - TX Technology Corp. - broadened 
+our activities in the capital goods segment, allowing us entry to the dynamic 
+and rapidly growing telecommunications industry.  The TX Companies operate the 
+cable pressurization and monitoring system business.
+
+            Material Customers.
+            ------------------
+
+            The registrant's business is not dependent to a material extent on 
+any single customer or group of customers.
+
+            Employees.
+            ---------
+
+            The registrant employs approximately 145 full-time employees, of 
+whom approximately 63 are employed by Howell, 15 by TX Technology Corp., 65 by 
+Gordy, and 2 for all other activities of the registrant combined.
+
+Item 2.  Properties.
+- -------------------
+
+            SFM Corp., the registrant's wholly owned subsidiary,  owns a brick 
+and masonry building in Plainfield, New Jersey containing approximately 120,000 
+square feet of manufacturing area and 10,000 square feet of office space, where 
+the operations of Howell and Gordy are located.  This facility is held by the 
+registrant subject to a mortgage securing the registrant's line of credit.  
+(See Note 7 to the Consolidated Financial Statements page F-14).
+
+            The registrant through subsidiaries currently leases 11,000 square 
+feet of warehousing and office space in Randolph, New Jersey for its 
+telecommunication operations.  In addition, the registrant's subsidiaries lease 
+office and/or showroom space in New York City, Dallas, Texas and Las Vegas, 
+Nevada.
+
+            The registrant considers its facilities and the equipment contained 
+therein adequate and suitable to meet its current and foreseeable requirements.
+
+Item 3.  Legal Proceedings.
+- --------------------------
+
+            None other than in the normal course of business
+
+Item 4.  Submission of Matters to a Vote of Security Holders.
+- ------------------------------------------------------------
+
+            Not applicable.
+
+                                       4
+<PAGE>
+ 
+                                        Part II
+                                        -------
+
+
+
+Item 5.  Market for the Registrant's Common Stock and Related Security Holder 
+- ------------------------------------------------------------------------------
+Matters.
+- -------
+
+
+            Principal Market:  American Stock Exchange
+            ------------------------------------------
+
+            Quarterly Price Information 
+            ---------------------------
+<TABLE> 
+<CAPTION> 
+
+                                 1996                                   1995           
+                   --------------------------------       -----------------------------------
+                        Class A         Class B             Class A            Class B
+                        -------         -------             -------            -------
+                     High   Low      High     Low          High    Low    
+y reclassified
+  to note payable, officer                      $     -      $692,000     $351,000
+                                                ==================================
+</TABLE> 
+
+                                                                             F-7
+<PAGE>
+ 
+[GRAPHIC] EXX INC AND SUBSIDIARIES
+
+NOTES TO CONSOLIDATED FINANCIAL STATEMENTS
+
+- --------------------------------------------------------------------------------
+
+
+
+
+ 1.   Nature of Operations    EXX INC and Subsidiaries (collectively the
+                              Company) operate primarily in the toy and electro
+                              mechanical industries. Operations in the toy
+                              industry involve the design, production and
+                              distribution of consumer goods in the form of
+                              impulse toys, watches and kites, which are
+                              primarily imported from the Far East. Operations
+                              in the electro mechanical equipment industry
+                              primarily involve the design, production and sale
+                              of capital goods, such as electric motors and
+                              cable pressurization equipment, for the
+                              telecommunications industry. The Company's electro
+                              mechanical products are incorporated into
+                              customers' products or are used to maintain
+                              customers' equipment.
+
+
+ 2.   Summary of significant
+       accounting policies    Reorganization
+
+                              In October 1994, the stockholders of SFM
+                              Corporation (SFM) approved a plan of
+                              reorganization, whereby SFM was merged, on a tax-
+                              free basis, into a subsidiary of EXX INC.
+                              Simultaneous with this merger, each share of
+                              common stock of SFM was converted into three
+                              shares of EXX INC Class A common stock and one
+                              share of EXX INC Class B common stock. The EXX INC
+                              stock was substantially identical to the former
+                              SFM stock in rights and privileges, except that
+                              holders of Class B common stock have the right to
+                              elect two-thirds or the next higher rounded number
+                              of directors and the holders of the Class A common
+                              stock have the right to elect the remaining
+                              directors of the Company. This merger has been
+                              accounted for in a manner similar to a pooling of
+                              interests.
+
+                              Principles of Consolidation
+
+                              The consolidated financial statements include the
+                              accounts of EXX INC and its wholly owned
+                              subsidiaries. All material intercompany accounts
+                              and transactions have been eliminated in
+                              consolidation.
+
+                                                                             F-8
+<PAGE>
+ 
+[GRAPHIC] EXX INC AND SUBSIDIARIES
+
+
+NOTES TO CONSOLIDATED FINANCIAL STATEMENTS
+- --------------------------------------------------------------------------------
+
+ 2.   Summary of significant
+       accounting policies
+       (continued)            Cash, Cash Equivalents and Short-Term Investments
+
+                              The Company considers all highly liquid debt
+                              instruments purchased with a maturity of three
+                              months or less to be cash equivalents. As of
+                              December 31, 1996, and at various times during the
+                              year, balances of cash at financial institutions
+                              exceeded the federally insured limit. The Company
+                              has not experienced any losses in such accounts
+                              and believes it is not subject to any significant
+                              credit risk on cash and cash equivalents. The
+                              Company's short-term investments are comprised of
+                              readily marketable debt securities with remaining
+                              maturities of more than 90 days at the time of
+                              purchase. Where the remaining maturity is more
+                              than one year, the securities are still classified
+                              as short-term investments as the Company's
+                              intention is to convert them into cash within one
+                              year.
+
+            
+</TEXT>
+</DOCUMENT>

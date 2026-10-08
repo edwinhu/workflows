@@ -12,5 +12,8 @@
   "prices_usd_per_mtok": {
     "gemini-3.5-flash-lite": {"standard": [0.30, 2.50], "batch": [0.15, 1.25], "flex": [0.15, 1.25]},
     "gemini-3.8-flash": {"standard": [0.75, 3.75], "batch": [0.375, 1.875], "flex": [0.375, 1.875]}
-  }
+  },
+  "backend": "hybrid",
+  "jev": {"model": "typesafe/jev-1.13", "threshold": 0.5, "abort_floor_usd": 10, "workers": 8, "est_usd_per_mtok_in": 0.042},
+  "hybrid": {"model": "gemini-3.8-flash", "thinking_level": "LOW", "band_lo": 0.2, "band_hi": 0.8, "band_share_est": 0.096}
 }
