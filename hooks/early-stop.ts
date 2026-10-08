@@ -35,7 +35,7 @@
  * through that file's exported `decisionsCall`/`parseNoul`. There is exactly one Decisions transport
  * in this plugin and this hook does not add a second.
  *
- * Opt out for a session with `EARLY_STOP_HOOK=0`. Tune the bar with `EARLY_STOP_THRESHOLD`; an
+ * Opt out for a session with `EARLY_STOP_HOOK=0`. Tune the bar with `EARLY_STOP_THRESHOLD` (default 0.7); an
  * answer from the luna fallback is held to at least 0.95 (`decisionThreshold`, applied in `parseNoul`).
  */
 
@@ -51,12 +51,22 @@ import {
 /** Blocks allowed per user turn. Two is one more chance than the session gets by itself. */
 export const MAX_BLOCKS_PER_TURN = 2
 
+/**
+ * The bar on Jev's probability. 0.7, not the 0.8 it was: on the 62-stop calibration set
+ * (tests/fixtures/early-stop-cal, scripts/early-stop-cal.ts) no bar separates EARLY from LEGIT stops, and 0.7 is
+ * where the new input catches the most early stops per false block (7 of 19 EARLY, 6 of 43 LEGIT, both runs).
+ */
+export const DEFAULT_THRESHOLD = 0.7
+
 /** The Decisions question key. One question, one bit. */
 export const QUESTION_KEY = 'early_stop'
 
 /** Characters of the user's request and of the final message the judge is shown. */
 export const REQUEST_CHARS = 2000
 export const MESSAGE_CHARS = 4000
+/** Characters of the standing mandate and of the latest typed message. */
+export const MANDATE_CHARS = 1500
+export const TYPED_CHARS = 600
 
 const tmp = (): string => process.env.TMPDIR || tmpdir()
 
@@ -118,6 +128,102 @@ export function latestUserTurn(jsonl: string): Turn | null {
     return { marker: typeof e.uuid === 'string' && e.uuid ? e.uuid : 'unknown', request: msg.content }
   }
   return null
+}
+
+/** The user's own words that set a standing, unattended mandate, not a one-off request. */
+const STANDING =
+  /don'?t ask|do not ask|no questions|whatever you think|do whatever|go(ing)? to (bed|sleep)|overnight|asleep|while i'?m (away|out|gone|sleeping)|until (it'?s|its|you'?re|everything'?s|they'?re) (done|finished|complete)|keep going|don'?t stop|do not stop|all night|autonomous|without (asking|checking in)|until i (say|get back|return)|full discretion|take it from here|i'?ll be back|\/goal/i
+
+/** What the assistant's tick, wake and local-command traffic looks like when its origin tag is absent. */
+const NOT_TYPED = /^(and\? \(|<task-notification>|<bash-|<local-command|The [\w-]+ plugin sent a message|This session is being continued|Caveat:)/
+
+/**
+ * Was this `type:"user"` string entry typed by the human? The harness tags it: `origin.kind` is
+ * `human` for typed and queued input, and `task-notification`, `plugin` or `auto-continuation`
+ * for everything it injects. A cron tick is `isMeta` and never reaches here. Older transcripts
+ * carry no tag, so the text shape decides there.
+ */
+export function typedByHuman(e: Record<string, unknown>, text: string): boolean {
+  if (NOT_TYPED.test(text)) return false
+  const kind = (e.origin as { kind?: unknown } | undefined)?.kind
+  if (typeof kind === 'string') return kind === 'human'
+  const turn = e.turnOrigin
+  return typeof turn === 'string' ? turn === 'human' : e.promptSource === undefined
+}
+
+export interface JudgeContext {
+  /** The newest typed message that carries a standing instruction, if any. */
+  standing: string | null
+  /** The newest typed message at all, when it is a different message. */
+  latestTyped: string | null
+  /** Hours from that typed message to the end of the transcript. */
+  hoursSinceTyped: number | null
+  /** Recurring CronCreate jobs created and not yet cancelled. */
+  heartbeatAlive: boolean
+  /** A CronDelete returned "Cancelled job" since the turn's request. */
+  deletedThisTurn: boolean
+}
+
+/**
+ * The deterministic facts the judge cannot see in a wake-up message: the standing mandate the user
+ * typed hours ago, and whether the heartbeat that re-enters the session still exists. One pass over
+ * the transcript, newest entries scanned for the typed messages, every entry for the cron ledger.
+ */
+export function judgeContext(jsonl: string): JudgeContext {
+  const lines = jsonl.split('\n')
+  let standing: string | null = null
+  let latest: string | null = null
+  let latestAt = ''
+  let lastAt = ''
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const line = lines[i]
+    if (!line.trim()) continue
+    if (!lastAt) lastAt = line.match(/"timestamp":"([^"]+)"/)?.[1] ?? ''
+    if (!line.includes('"type":"user"') || !line.includes('"content":"')) continue
+    let e: Record<string, unknown>
+    try {
+      e = JSON.parse(line)
+    } catch {
+      continue
+    }
+    const text = (e?.message as { content?: unknown } | undefined)?.content
+    if (e?.type !== 'user' || typeof text !== 'string' || e.isMeta || e.isSidechain) continue
+    if (e.toolUseResult !== undefined && e.toolUseResult !== null) continue
+    if (!typedByHuman(e, text)) continue
+    if (latest === null) {
+      latest = text
+      latestAt = typeof e.timestamp === 'string' ? e.timestamp : ''
+    }
+    if (STANDING.test(text)) {
+      standing = text
+      break
+    }
+  }
+  const created = new Set<string>()
+  const cancelled = new Set<string>()
+  let requestAt = -1
+  let deletedThisTurn = false
+  const turn = latestUserTurn(jsonl)
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]
+    if (turn && requestAt < 0 && line.includes(turn.marker) && line.includes('"type":"user"')) requestAt = i
+    if (!line.includes('Scheduled recurring job') && !line.includes('Cancelled job')) continue
+    for (const m of line.matchAll(/Scheduled recurring job ([0-9a-f]+)/g)) created.add(m[1])
+    for (const m of line.matchAll(/Cancelled job ([0-9a-f]+)/g)) {
+      cancelled.add(m[1])
+      if (requestAt >= 0 && i > requestAt) deletedThisTurn = true
+    }
+  }
+  const alive = [...created].some((id) => !cancelled.has(id))
+  const hours =
+    latestAt && lastAt ? Math.max(0, (Date.parse(lastAt) - Date.parse(latestAt)) / 3_600_000) : null
+  return {
+    standing,
+    latestTyped: latest !== null && latest !== standing ? latest : null,
+    hoursSinceTyped: Number.isFinite(hours) ? hours : null,
+    heartbeatAlive: alive,
+    deletedThisTurn,
+  }
 }
 
 /**
@@ -230,15 +336,24 @@ function tail(s: string, n: number): string {
   return t.length > n ? `…${t.slice(-n)}` : t
 }
 
-/** What the judge reads: what was asked, and the message that ends the turn. */
-export function judgeState(request: string, message: string): string {
-  return [
-    "THE USER'S LATEST REQUEST:",
-    tail(request, REQUEST_CHARS),
-    '',
-    "THE ASSISTANT'S FINAL MESSAGE, which ENDS the turn:",
-    tail(message, MESSAGE_CHARS),
-  ].join('\n')
+/** What the judge reads: the standing mandate, what was just asked, and the message that ends the turn. */
+export function judgeState(request: string, message: string, ctx?: JudgeContext): string {
+  const parts: string[] = []
+  if (ctx?.standing) parts.push("THE USER'S STANDING MANDATE (typed by the user, still in force):", tail(ctx.standing, MANDATE_CHARS), '')
+  if (ctx?.latestTyped) parts.push("THE USER'S LATEST TYPED MESSAGE:", tail(ctx.latestTyped, TYPED_CHARS), '')
+  parts.push(ctx ? 'THE NEWEST REQUEST (may be an automated wake-up, not the user):' : "THE USER'S LATEST REQUEST:", tail(request, REQUEST_CHARS), '')
+  if (ctx?.standing) {
+    parts.push(
+      'FACTS READ FROM THE TRANSCRIPT:',
+      `- A recurring heartbeat cron is ${ctx.heartbeatAlive ? 'ALIVE: it will wake this session' : 'NOT alive: nothing will wake this session'}.`,
+      `- This turn ${ctx.deletedThisTurn ? 'DELETED a cron job' : 'did not delete a cron job'}.`,
+    )
+    if (ctx.hoursSinceTyped !== null)
+      parts.push(`- The user's last typed message was ${ctx.hoursSinceTyped.toFixed(1)} hours before this stop.`)
+    parts.push('')
+  }
+  parts.push("THE ASSISTANT'S FINAL MESSAGE, which ENDS the turn:", tail(message, MESSAGE_CHARS))
+  return parts.join('\n')
 }
 
 /** The question. Both halves matter: a legitimate ending must not read as one of the four. */
@@ -249,7 +364,15 @@ export const INSTRUCTIONS =
   '(3) a list of decisions, none of which blocks the rest of the work; (4) stopping because a ' +
   'milestone felt like a good place to report. It is FALSE when the assistant asks a genuinely ' +
   'blocking question, reports work that is actually finished, is waiting on a background job that is ' +
-  'still running, or when the message is a plan approval or an AskUserQuestion hand-off.'
+  'still running, or when the message is a plan approval or an AskUserQuestion hand-off. The newest ' +
+  'request may be an automated wake-up (a cron tick, a plugin or task notification), not the user. ' +
+  'When a STANDING MANDATE is shown, the user typed an autonomous or overnight instruction ("do ' +
+  'whatever you think is best", "don\'t ask me questions") and that mandate, not the wake-up, is the ' +
+  'work the user asked for. Then ending the turn is early when the final message leaves queued or ' +
+  'next items unfinished, even though the newest request is only a tick or a wake-up, and even when ' +
+  'the message says it is idle, says nothing is running, or parks work as waiting on the user ' +
+  'without a question only the user can answer. The FACTS say whether the heartbeat cron that would ' +
+  're-enter the session is alive or was just deleted.'
 
 /** The CLAUDE.md rule in two sentences, then what to do instead of stopping. */
 export const BLOCK_REASON =
@@ -351,8 +474,17 @@ function main(): void {
 
   const transcriptPath = typeof payload.transcript_path === 'string' ? payload.transcript_path : ''
   let turn: Turn | null = null
+  let ctx: JudgeContext | undefined
   try {
-    turn = transcriptPath ? latestUserTurn(readFileSync(transcriptPath, 'utf8')) : null
+    const jsonl = transcriptPath ? readFileSync(transcriptPath, 'utf8') : ''
+    turn = jsonl ? latestUserTurn(jsonl) : null
+    if (turn) {
+      try {
+        ctx = judgeContext(jsonl)
+      } catch {
+        /* the old two-part state still judges */
+      }
+    }
   } catch {
     turn = null
   }
@@ -367,8 +499,8 @@ function main(): void {
   if (spent >= MAX_BLOCKS_PER_TURN)
     return allowNow(session, turn.marker, `cap: ${spent} blocks already this turn`)
 
-  const threshold = Number(process.env.EARLY_STOP_THRESHOLD || 0.8)
-  const r = decisionsCall(judgeState(turn.request, message), {
+  const threshold = Number(process.env.EARLY_STOP_THRESHOLD || DEFAULT_THRESHOLD)
+  const r = decisionsCall(judgeState(turn.request, message, ctx), {
     [QUESTION_KEY]: { type: 'noul', instructions: INSTRUCTIONS },
   }, { caller: 'early-stop', session })
   if (r.stdout === null) return allowNow(session, turn.marker, `judge unavailable: ${r.unavailable}`)
