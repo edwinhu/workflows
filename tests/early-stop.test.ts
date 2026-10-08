@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
 import { useTmp } from './helpers/tmp.ts'
-import { DEFAULT_THRESHOLD, INSTRUCTIONS, judgeContext, overnightHoldGoal, judgeState, latestUserTurn, noWakeUnderMandate, typedByHuman } from '../hooks/early-stop.ts'
+import { DEFAULT_THRESHOLD, INSTRUCTIONS, judgeContext, afkHoldGoal, judgeState, latestUserTurn, noWakeUnderMandate, typedByHuman } from '../hooks/early-stop.ts'
 
 const mkTmp = useTmp()
 
@@ -850,5 +850,5 @@ test('an armed overnight hold is a mandate in force: its goal stands in, and a t
   const at = '2026-10-07T01:00:00.000Z'
   expect(judgeContext(human('u1', 'fix the parser', at), 'ship the parser').standing).toBe('ship the parser')
   expect(judgeContext(human('u1', MANDATE, at), 'ship the parser').standing).toBe(MANDATE)
-  expect(overnightHoldGoal('no-such-session-for-hold')).toBeNull()
+  expect(afkHoldGoal('no-such-session-for-hold')).toBeNull()
 })

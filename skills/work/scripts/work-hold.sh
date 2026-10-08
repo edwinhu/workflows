@@ -5,7 +5,7 @@
 # that has to be TYPED into the session instead needs the pane idle, and a session working
 # back-to-back never goes idle, so it never lands.
 #
-#   work-hold.sh '<check command>' [--goal '<objective>'] [--run DIR] [--rounds N] [--minutes M] [--origin overnight]
+#   work-hold.sh '<check command>' [--goal '<objective>'] [--run DIR] [--rounds N] [--minutes M] [--origin afk]
 #   work-hold.sh --goal '<objective>' [--run DIR] [--rounds N] [--minutes M]
 #   work-hold.sh --status | --disarm
 #
@@ -332,7 +332,7 @@ fi
 # routine dispatch, and grind is not the alternative to a run that is already detached. The advice is
 # for a hand-armed long hold, which is what is left when --run is absent.
 case "$MINUTES$ROUNDS" in *[!0-9]*) ;; *)
-  if [ -z "$RUN" ] && [ "$ORIGIN" != overnight ] && { [ "$MINUTES" -gt 120 ] || [ "$ROUNDS" -gt 4 ]; }; then
+  if [ -z "$RUN" ] && [ "$ORIGIN" != afk ] && [ "$ORIGIN" != overnight ] && { [ "$MINUTES" -gt 120 ] || [ "$ROUNDS" -gt 4 ]; }; then
     GRIND="$(cd "$(dirname "$(readlink -f "$0")")/../../.." && pwd)/skills/grind/scripts/grind.sh"
     {
       echo "WARNING: this is a LONG hold ($ROUNDS rounds / $MINUTES minutes; the defaults are 4 and 120)."

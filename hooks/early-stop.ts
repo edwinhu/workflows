@@ -185,7 +185,7 @@ export interface JudgeContext {
  * The deterministic facts the judge cannot see in a wake-up message: the standing mandate the user
  * typed hours ago, and whether the heartbeat that re-enters the session still exists. One pass over
  * the transcript, newest entries scanned for the typed messages, every entry for the cron ledger.
- * `holdGoal` is the goal of this session's armed `/overnight` hold, see `overnightHoldGoal`.
+ * `holdGoal` is the goal of this session's armed `/afk` hold, see `afkHoldGoal`.
  */
 export function judgeContext(jsonl: string, holdGoal?: string | null): JudgeContext {
   const lines = jsonl.split('\n')
@@ -244,7 +244,7 @@ export function judgeContext(jsonl: string, holdGoal?: string | null): JudgeCont
       break
     }
   }
-  // An armed /overnight hold is a mandate in force: its goal stands in when no typed message sets one.
+  // An armed /afk hold is a mandate in force: its goal stands in when no typed message sets one.
   if (standing === null && holdGoal) standing = holdGoal
   const alive = [...created].some((id) => !cancelled.has(id))
   const hours =
@@ -284,11 +284,12 @@ export function workHoldArmed(session: string): boolean {
   }
 }
 
-/** The goal of this session's armed `/overnight` hold, or null: the hold itself is the mandate. */
-export function overnightHoldGoal(session: string): string | null {
+/** The goal of this session's armed `/afk` hold, or null: the hold itself is the mandate. */
+export function afkHoldGoal(session: string): string | null {
   try {
     const h = JSON.parse(readFileSync(statePath(session), 'utf8')) as { origin?: string; goal?: string }
-    return h.origin === 'overnight' ? h.goal || 'overnight hold' : null
+    // 'overnight' is the pre-rename origin; a hold armed under it is still a mandate for one release.
+    return h.origin === 'afk' || h.origin === 'overnight' ? h.goal || 'afk hold' : null
   } catch {
     return null
   }
@@ -538,7 +539,7 @@ function main(): void {
     turn = jsonl ? latestUserTurn(jsonl) : null
     if (turn) {
       try {
-        ctx = judgeContext(jsonl, overnightHoldGoal(session))
+        ctx = judgeContext(jsonl, afkHoldGoal(session))
       } catch {
         /* the old two-part state still judges */
       }

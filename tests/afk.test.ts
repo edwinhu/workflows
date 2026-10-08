@@ -1,26 +1,27 @@
 /**
- * /overnight: arm.sh computes the ceiling to 09:00 and arms a check-less hold; work-hold.ts lets an
- * overnight-origin hold yield to this session's live owned runs and leaves other holds alone.
+ * /afk: arm.sh computes the ceiling to 09:00 and arms a check-less hold; work-hold.ts lets an
+ * afk-origin hold yield to this session's live owned runs and leaves other holds alone.
  *
- * Run: bun test tests/overnight.test.ts
+ * Run: bun test tests/afk.test.ts
  */
 import { describe, expect, setDefaultTimeout, test } from 'bun:test'
 import { spawnSync } from 'node:child_process'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { judgeContext } from '../hooks/early-stop.ts'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
 import { useTmp } from './helpers/tmp.ts'
 
 setDefaultTimeout(60_000)
 const mkTmp = useTmp()
 const REPO = join(import.meta.dir, '..')
-const ARM = join(REPO, 'skills/overnight/scripts/arm.sh')
+const ARM = join(REPO, 'skills/afk/scripts/arm.sh')
 const HOLD = join(REPO, 'skills/work/scripts/work-hold.sh')
 const HOOK = join(REPO, 'hooks/work-hold.ts')
-const SID = 'overnight-test'
+const SID = 'afk-test'
 
 function world() {
-  const tmp = mkTmp('overnight-')
+  const tmp = mkTmp('afk-')
   mkdirSync(join(tmp, 'farm-events', SID), { recursive: true })
   return { tmp, state: join(tmp, `work-hold-${SID}.json`) }
 }
@@ -28,7 +29,7 @@ type W = ReturnType<typeof world>
 const env = (w: W, extra: Record<string, string> = {}) =>
   ({ ...HERMETIC_ENV, TMPDIR: w.tmp, WORK_HOLD_COMPACT_WINDOW: '0', CLAUDE_CODE_SESSION_ID: SID, ...extra })
 const arm = (w: W, now: string, args: string[] = [SID, 'ship the thing']) =>
-  spawnSync('bash', [ARM, ...args], { encoding: 'utf8', timeout: 60_000, env: env(w, { OVERNIGHT_NOW: now }) })
+  spawnSync('bash', [ARM, ...args], { encoding: 'utf8', timeout: 60_000, env: env(w, { AFK_NOW: now }) })
 const stop = (w: W) =>
   spawnSync('bun', [HOOK], { input: JSON.stringify({ session_id: SID }), encoding: 'utf8', timeout: 60_000, env: env(w) })
 const read = (w: W) => JSON.parse(readFileSync(w.state, 'utf8'))
@@ -44,12 +45,12 @@ describe('arm.sh ceiling', () => {
       const w = world()
       const r = arm(w, now)
       expect(r.status).toBe(0)
-      expect(r.stdout).toContain('overnight hold armed until')
+      expect(r.stdout).toContain('afk hold armed until')
       const s = read(w)
       expect(s.ceilingMinutes).toBe(minutes)
       expect(s.check).toBe('')
-      expect(s.origin).toBe('overnight')
-      expect(s.goal).toContain('Overnight mandate: ship the thing.')
+      expect(s.origin).toBe('afk')
+      expect(s.goal).toContain('Afk mandate: ship the thing.')
       expect(s.maxRounds).toBeGreaterThanOrEqual(1440)
     })
   }
@@ -98,14 +99,14 @@ describe('arm.sh refusals', () => {
   })
 })
 
-describe('work-hold.ts overnight allow rule', () => {
+describe('work-hold.ts afk allow rule', () => {
   const armHold = (w: W, origin: string[]) =>
-    spawnSync('bash', [HOLD, '--goal', 'Overnight mandate: t. Met only when done.', '--minutes', '600', '--rounds', '1500', ...origin],
+    spawnSync('bash', [HOLD, '--goal', 'Afk mandate: t. Met only when done.', '--minutes', '600', '--rounds', '1500', ...origin],
       { encoding: 'utf8', timeout: 60_000, env: env(w) })
 
   test('live owned run + fresh beacon: allow, no round counted', () => {
     const w = world()
-    expect(armHold(w, ['--origin', 'overnight']).status).toBe(0)
+    expect(armHold(w, ['--origin', 'afk']).status).toBe(0)
     liveRun(w); beacon(w)
     const r = stop(w)
     expect(r.stdout.trim()).toBe('')
@@ -114,7 +115,7 @@ describe('work-hold.ts overnight allow rule', () => {
 
   test('no live run: the normal path is taken (a round is counted or a block issued)', () => {
     const w = world()
-    expect(armHold(w, ['--origin', 'overnight']).status).toBe(0)
+    expect(armHold(w, ['--origin', 'afk']).status).toBe(0)
     beacon(w)
     stop(w)
     const s = read(w)
@@ -123,18 +124,46 @@ describe('work-hold.ts overnight allow rule', () => {
 
   test('live run but no watcher beacon: normal path', () => {
     const w = world()
-    expect(armHold(w, ['--origin', 'overnight']).status).toBe(0)
+    expect(armHold(w, ['--origin', 'afk']).status).toBe(0)
     liveRun(w)
     stop(w)
     expect(read(w).rounds).toBeGreaterThan(0)
   })
 
-  test('a non-overnight hold is unchanged by a live run', () => {
+  test('a hold armed under the pre-rename origin "overnight" still yields to a live run', () => {
+    const w = world()
+    expect(armHold(w, ['--origin', 'overnight']).status).toBe(0)
+    liveRun(w); beacon(w)
+    expect(stop(w).stdout.trim()).toBe('')
+    expect(read(w).rounds).toBe(0)
+  })
+
+  test('a non-afk hold is unchanged by a live run', () => {
     const w = world()
     expect(armHold(w, []).status).toBe(0)
     expect(read(w).origin).toBeUndefined()
     liveRun(w); beacon(w)
     stop(w)
     expect(read(w).rounds).toBeGreaterThan(0)
+  })
+})
+
+describe('"overnight" alone never triggers /afk', () => {
+  test('the skill description has no bare "overnight" trigger', () => {
+    const fm = readFileSync(join(REPO, 'skills/afk/SKILL.md'), 'utf8').split('---')[1]
+    const desc = /^description:\s*"(.*)"\s*$/m.exec(fm)![1]
+    const triggers = desc.split(/\. NOT for/)[0].replace(/^Use when the user says /, '')
+    const quoted = triggers.replace(/^'|'$/g, '').split(/',\s+(?:or\s+)?'/).map((q) => q.toLowerCase())
+    expect(quoted).toContain('/afk')
+    expect(quoted).not.toContain('overnight')
+    expect(quoted.filter((q) => q.includes('overnight'))).toEqual(['work on this overnight'])
+  })
+
+  test('STANDING does not match finance talk about overnight', () => {
+    const at = '2026-10-07T01:00:00.000Z'
+    const human = (text: string) =>
+      JSON.stringify({ type: 'user', uuid: 'u1', timestamp: at, origin: { kind: 'human' }, message: { role: 'user', content: text } })
+    for (const t of ["let's study overnight returns", 'compute overnight returns for SPY', 'the overnight rate rose'])
+      expect(judgeContext(human(t)).standing).toBeNull()
   })
 })
