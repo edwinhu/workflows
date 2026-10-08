@@ -4,13 +4,17 @@
 // It never runs check.sh against this skill itself: check.sh's suite leg runs
 // `bun test <target>/scripts/*.test.ts`, which is this file, and a self-target would recurse.
 // Every case below points a COPY of check.sh at a throwaway fixture target instead.
-import { afterAll, expect, test } from 'bun:test'
+import { afterAll, expect, setDefaultTimeout, test } from 'bun:test'
 import { spawnSync } from 'node:child_process'
 import { chmodSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync, copyFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 const SCRIPTS = import.meta.dir
+
+// Every case spawns a check.sh that runs seven legs; bun's 5 s default kills one at load and strands
+// the leg's leg-o/leg-e temp files in TMPDIR (the run's leak guard then fails).
+setDefaultTimeout(30_000)
 const CHECK = join(SCRIPTS, 'check.sh')
 
 const trash: string[] = []
