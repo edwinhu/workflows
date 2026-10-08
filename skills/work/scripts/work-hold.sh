@@ -6,7 +6,7 @@
 # back-to-back never goes idle, so it never lands.
 #
 #   work-hold.sh '<check command>' [--goal '<objective>'] [--run DIR] [--rounds N] [--minutes M] [--origin afk]
-#   work-hold.sh --goal '<objective>' [--run DIR] [--rounds N] [--minutes M]
+#   work-hold.sh --goal '<objective>' [--run DIR] [--rounds N] [--minutes M] [--behind]
 #   work-hold.sh --status | --disarm
 #
 # The SECOND form is CHECK-LESS: the judge alone on the goal. A plan that states no computable goal
@@ -16,6 +16,9 @@
 #
 # --run DIR is the work run this hold watches. While that run is in flight (args.json with no
 # non-empty result.json) the hook ALLOWS the stop and counts no round.
+#
+# --behind queues the new hold LAST instead of on top, replacing nothing: arm.sh uses it to record the
+# afk mandate behind a hold it did not arm, so the mandate takes over when that hold releases.
 #
 # Every red Stop counts a round and blocks. A hold is for SHORT work this session drives; a long
 # unattended loop with a computable target belongs to grind, which gets fresh context per iteration.
@@ -153,12 +156,13 @@ esac
 CHECK=""
 case "${1-}" in --goal) ;; *) CHECK="$1"; shift ;; esac
 ROUNDS=4; MINUTES=120
-GOAL=""; RUN=""; ORIGIN=""
+GOAL=""; RUN=""; ORIGIN=""; BEHIND=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --goal)    GOAL="${2-}"; shift 2 ;;
     --run)     RUN="${2-}"; shift 2 ;;
     --origin)  ORIGIN="${2-}"; shift 2 ;;
+    --behind)  BEHIND=1; shift ;;
     --rounds)  ROUNDS="${2-}"; shift 2 ;;
     --minutes) MINUTES="${2-}"; shift 2 ;;
     *) echo "work-hold: unknown flag $1" >&2; exit 2 ;;
@@ -219,7 +223,7 @@ fi
 
 # The holds already armed, so a refusal below can put them back rather than delete them with the new one.
 PRIOR_STATE=$(cat "$STATE" 2>/dev/null || true)
-python3 - "$STATE" "$CHECK" "$ROUNDS" "$MINUTES" "${GOAL:-}" "$AUTHORITY_CLAUSE" "$CONTINUATION_CLAUSE" "${RUN:-}" "${ORIGIN:-}" <<'PY'
+python3 - "$STATE" "$CHECK" "$ROUNDS" "$MINUTES" "${GOAL:-}" "$AUTHORITY_CLAUSE" "$CONTINUATION_CLAUSE" "${RUN:-}" "${ORIGIN:-}" "${BEHIND:-}" <<'PY'
 import hashlib, json, os, re, sys, time
 path, check, rounds, minutes = sys.argv[1:5]
 goal = sys.argv[5] if len(sys.argv) > 5 else ""
@@ -227,6 +231,7 @@ authority = sys.argv[6] if len(sys.argv) > 6 else ""
 continuation = sys.argv[7] if len(sys.argv) > 7 else ""
 run = sys.argv[8] if len(sys.argv) > 8 else ""
 origin = sys.argv[9] if len(sys.argv) > 9 else ""
+behind = (sys.argv[10] if len(sys.argv) > 10 else "") == "1"
 
 def digest(f):
     try:
@@ -269,7 +274,12 @@ try:
     prior = json.load(open(path))
 except Exception:
     prior = None
-if isinstance(prior, dict):
+if isinstance(prior, dict) and behind:
+    prior.setdefault("queued", [])
+    prior["queued"] = [q for q in prior["queued"] if isinstance(q, dict)] + [state]
+    print(f"  queued behind: {label(prior)} (takes over when the holds ahead of it release)")
+    state = prior
+elif isinstance(prior, dict):
     compact = prior.pop("compact", None)
     olds = [prior] + [q for q in (prior.pop("queued", None) or []) if isinstance(q, dict)]
     new_run = state.get("run", "")
@@ -355,7 +365,9 @@ case "$MINUTES$ROUNDS" in *[!0-9]*) ;; *)
   fi ;;
 esac
 
-if [ -n "$CHECK" ]; then
+if [ -n "$BEHIND" ] && [ -n "$PRIOR_STATE" ]; then
+  echo "hold: QUEUED behind the armed hold — evaluated once the holds ahead of it release"
+elif [ -n "$CHECK" ]; then
   echo "hold: ARMED on \`$CHECK\` (currently exits $RC)"
 else
   echo "hold: ARMED check-less — the judge alone on the goal"

@@ -289,16 +289,22 @@ export function workHoldArmed(session: string): boolean {
 /**
  * This session's armed `/afk` hold before its ceiling, or null. `silent` is a hold `work-hold.ts`
  * never blocks for (no check, no run), so this hook speaks in its place.
+ *
+ * An afk hold QUEUED behind another (arm.sh over a borrowed hold) is the mandate too, but never
+ * `silent`: the hold on top is the one `work-hold.ts` evaluates and it speaks for the session, so
+ * this hook still stands down. Once that hold releases the afk hold is promoted and reads as above.
  */
 export function afkHold(session: string, nowSeconds = Math.floor(Date.now() / 1000)): { goal: string; silent: boolean } | null {
+  type H = { origin?: string; goal?: string; check?: string; run?: string; startedAt: number; ceilingMinutes: number }
+  // 'overnight' is the pre-rename origin; a hold armed under it is still a mandate for one release.
+  const live = (h: H) =>
+    (h.origin === 'afk' || h.origin === 'overnight') &&
+    !ceilingReached({ ...h, rounds: 0, maxRounds: Infinity }, nowSeconds)
   try {
-    const h = JSON.parse(readFileSync(statePath(session), 'utf8')) as {
-      origin?: string; goal?: string; check?: string; run?: string; startedAt: number; ceilingMinutes: number
-    }
-    // 'overnight' is the pre-rename origin; a hold armed under it is still a mandate for one release.
-    if (h.origin !== 'afk' && h.origin !== 'overnight') return null
-    if (ceilingReached({ ...h, rounds: 0, maxRounds: Infinity }, nowSeconds)) return null
-    return { goal: h.goal || 'afk hold', silent: !h.check?.trim() && !h.run }
+    const h = JSON.parse(readFileSync(statePath(session), 'utf8')) as H & { queued?: H[] }
+    if (live(h)) return { goal: h.goal || 'afk hold', silent: !h.check?.trim() && !h.run }
+    const q = (h.queued ?? []).find(x => x && typeof x === 'object' && live(x))
+    return q ? { goal: q.goal || 'afk hold', silent: false } : null
   } catch {
     return null
   }
