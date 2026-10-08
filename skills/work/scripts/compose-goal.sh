@@ -91,8 +91,9 @@ ESCAPES=$(printf 'the rounds field in %s/args.json reads %s or more — `jq -r .
 # ignores the model's own stop:true, and NOTHING in a shell can remove it — CronDelete is a model
 # tool, there is no cron CLI, and a session-scoped cron lives in memory rather than in
 # .claude/scheduled_tasks.json. So the teardown must be an instruction the session acts on, and the
-# goal is the one text it re-reads every turn. Without this the loop keeps ticking after PASS.
-TEARDOWN='When this goal closes, cancel the run loop with CronDelete — it is a cron and does not stop on its own.'
+# goal is the one text it re-reads every turn. The session's mandate can outlive this goal, so it
+# cancels only when nothing else is owed, and CronDelete asks the user to confirm.
+TEARDOWN='When this goal closes, cancel the run loop with CronDelete only if the session owes nothing else (no other open work, no standing overnight/autonomous mandate); CronDelete asks the user to confirm.'
 
 # STANDING AUTHORITY and CONTINUATION — G10 and G11, and they were MISSING until 2026-09-16.
 # The chokepoint linted without --unattended, so the two rules that exist to stop an unattended

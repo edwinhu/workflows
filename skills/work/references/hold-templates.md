@@ -43,8 +43,10 @@ model tool with no CLI, a session-scoped cron lives in memory rather than on dis
 fires when the objective is met. Measured 2026-09-16: a heartbeat with nothing telling it to stop
 re-ran a satisfied check twice more before a human noticed. The hook says it on release — on
 `passed-goal-met` or expiry, never on `passed-unjudged`, where a green check is all that happened.
-`cron-delete-guard.ts` denies `CronDelete` while the hold is still ARMED, and `work-abandon.sh` is the
-user's way out.
+The release says to leave the heartbeat in place while the session has other open work or a standing
+(overnight/autonomous) mandate, and to retire it only when nothing else is owed; `CronDelete` then asks
+the user to confirm. `cron-delete-guard.ts` denies `CronDelete` while the hold is still ARMED, and
+`work-abandon.sh` is the user's way out.
 
 ## The unattended-brief template
 

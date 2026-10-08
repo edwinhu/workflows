@@ -155,6 +155,12 @@ export function ledgerPath(session: string): string {
 export const PASSED_GOAL_MET = 'passed-goal-met'
 export const PASSED_UNJUDGED = 'passed-unjudged'
 
+// Appended to every release that ends a run. The session's mandate can outlive the run.
+const HEARTBEAT_NOTE =
+  `Leave the heartbeat cron in place if the session has other open work or a standing ` +
+  `(overnight/autonomous) mandate. Retire it only when nothing else is owed, and CronDelete then ` +
+  `asks the user to confirm.`
+
 /**
  * A readOnly run's loop ended on a verdict, PASS or FAIL, and that verdict is the answer — no task
  * exists to change it, so holding for another round holds for nothing.
@@ -1670,8 +1676,7 @@ function main(): void {
     if (c)
       release(
         'expired',
-        `${c}, with the run still in flight. Hold released UNMET — say so, and if a heartbeat cron ` +
-          `exists, end it with CronDelete now: a cron outlives the work and nothing else can end it.`,
+        `${c}, with the run still in flight. Hold released UNMET — say so. ${HEARTBEAT_NOTE}`,
       )
     allowStop()
   }
@@ -1684,8 +1689,7 @@ function main(): void {
     release(
       VERDICT_REACHED,
       `the read-only run ${s.run} reached its verdict (${verdict}) — hold released. Report that ` +
-        `verdict and what it found; fixing it is a separate writing run. If a heartbeat cron exists, ` +
-        `end it with CronDelete now.`,
+        `verdict and what it found; fixing it is a separate writing run. ${HEARTBEAT_NOTE}`,
     )
 
   const exit = checkless
@@ -1709,8 +1713,8 @@ function main(): void {
         if (c)
           release(
             'expired',
-            `${c}, with the goal last judged NOT met (${j.reason}). Hold released UNMET — say so, ` +
-              `and if a heartbeat cron exists, end it with CronDelete now.`,
+            `${c}, with the goal last judged NOT met (${j.reason}). Hold released UNMET — say so. ` +
+              HEARTBEAT_NOTE,
           )
         block(
           (checkless
@@ -1730,8 +1734,8 @@ function main(): void {
           if (c)
             release(
               'expired',
-              `${c}, with the goal never judged (${j.reason}). Hold released UNMET — say so, and if ` +
-                `a heartbeat cron exists, end it with CronDelete now.`,
+              `${c}, with the goal never judged (${j.reason}). Hold released UNMET — say so. ` +
+                HEARTBEAT_NOTE,
             )
           block(
             `hold: judge unavailable (${j.reason}), and this hold has no check — nothing has ` +
@@ -1758,16 +1762,14 @@ function main(): void {
     release(
       PASSED_GOAL_MET,
       (checkless ? `the classifier judged the goal MET (${judged})` : `\`${s.check}\` exits 0 and the classifier judged the goal MET (${judged})`) +
-        ` — objective met, hold released. If a heartbeat cron exists, END IT NOW with CronDelete: a ` +
-        `cron outlives the work and nothing else can end it.`,
+        ` — the run's objective is met, hold released. ` + HEARTBEAT_NOTE,
     )
   }
   // (d) A ceiling on a red check: released, and the verdict is UNMET.
   if (d.action === 'expired')
     release(
       'expired',
-      `${d.reason}. Hold released UNMET — say so, and if a heartbeat cron exists, end it with ` +
-        `CronDelete now: a cron outlives the work and nothing else can end it.`,
+      `${d.reason}. Hold released UNMET — say so. ${HEARTBEAT_NOTE}`,
     )
 
   const firstB = firstBlock()

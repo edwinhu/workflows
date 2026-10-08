@@ -85,4 +85,4 @@ else
 fi
 
 # (c) What the caller came for.
-echo "work-abandon: CronDelete on this run's heartbeat is now allowed."
+echo "work-abandon: CronDelete on this run's heartbeat is now allowed (it asks the user to confirm)."
