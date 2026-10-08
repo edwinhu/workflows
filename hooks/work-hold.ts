@@ -40,6 +40,7 @@ import { dirname, join } from 'node:path'
 import { homedir, tmpdir } from 'node:os'
 import { holdStateName } from './guards/hold.ts'
 import { decisionThreshold } from './jev/rules.ts'
+import { liveOwnedRuns, watcherActive } from './early-stop.ts'
 
 export { decisionThreshold }
 
@@ -55,6 +56,8 @@ interface State {
   run?: string
   authority?: string
   continuation?: string
+  /** `overnight` when /overnight armed it: such a hold yields to this session's live owned runs. */
+  origin?: string
   goalPrompted?: boolean
   checkFiles?: Record<string, string>
   startedAt: number      // epoch seconds
@@ -1662,6 +1665,18 @@ function main(): void {
       reason: noted(reason + (clauses ? `\n${clauses}` : '')),
     }))
     process.exit(0)
+  }
+
+  // (a0) AN OVERNIGHT HOLD WITH NO --run: the session's own farm/work/grind runs are the work, and the
+  // watcher wakes the session when they land. Forcing a round here would only invent busy-work, so
+  // allow the stop and count nothing (the clock still runs). Same rule early-stop.ts applies.
+  if (s.origin === 'overnight' && !s.run) {
+    const live = liveOwnedRuns(session)
+    if (live.length && watcherActive(session)) {
+      const c = ceilingReached({ ...s, rounds: 0 }, now)
+      if (c) release('expired', `${c}, with owned runs still live. Hold released UNMET — say so. ${HEARTBEAT_NOTE}`)
+      allowStop()
+    }
   }
 
   // (a) THE RUN IS IN FLIGHT: allow the stop, count nothing. A round is being worked by a detached

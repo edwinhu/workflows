@@ -5,7 +5,7 @@
 # that has to be TYPED into the session instead needs the pane idle, and a session working
 # back-to-back never goes idle, so it never lands.
 #
-#   work-hold.sh '<check command>' [--goal '<objective>'] [--run DIR] [--rounds N] [--minutes M]
+#   work-hold.sh '<check command>' [--goal '<objective>'] [--run DIR] [--rounds N] [--minutes M] [--origin overnight]
 #   work-hold.sh --goal '<objective>' [--run DIR] [--rounds N] [--minutes M]
 #   work-hold.sh --status | --disarm
 #
@@ -153,11 +153,12 @@ esac
 CHECK=""
 case "${1-}" in --goal) ;; *) CHECK="$1"; shift ;; esac
 ROUNDS=4; MINUTES=120
-GOAL=""; RUN=""
+GOAL=""; RUN=""; ORIGIN=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --goal)    GOAL="${2-}"; shift 2 ;;
     --run)     RUN="${2-}"; shift 2 ;;
+    --origin)  ORIGIN="${2-}"; shift 2 ;;
     --rounds)  ROUNDS="${2-}"; shift 2 ;;
     --minutes) MINUTES="${2-}"; shift 2 ;;
     *) echo "work-hold: unknown flag $1" >&2; exit 2 ;;
@@ -218,13 +219,14 @@ fi
 
 # The holds already armed, so a refusal below can put them back rather than delete them with the new one.
 PRIOR_STATE=$(cat "$STATE" 2>/dev/null || true)
-python3 - "$STATE" "$CHECK" "$ROUNDS" "$MINUTES" "${GOAL:-}" "$AUTHORITY_CLAUSE" "$CONTINUATION_CLAUSE" "${RUN:-}" <<'PY'
+python3 - "$STATE" "$CHECK" "$ROUNDS" "$MINUTES" "${GOAL:-}" "$AUTHORITY_CLAUSE" "$CONTINUATION_CLAUSE" "${RUN:-}" "${ORIGIN:-}" <<'PY'
 import hashlib, json, os, re, sys, time
 path, check, rounds, minutes = sys.argv[1:5]
 goal = sys.argv[5] if len(sys.argv) > 5 else ""
 authority = sys.argv[6] if len(sys.argv) > 6 else ""
 continuation = sys.argv[7] if len(sys.argv) > 7 else ""
 run = sys.argv[8] if len(sys.argv) > 8 else ""
+origin = sys.argv[9] if len(sys.argv) > 9 else ""
 
 def digest(f):
     try:
@@ -244,6 +246,8 @@ state = {"check": check, "startedAt": int(time.time()),
          "ceilingMinutes": int(minutes), "maxRounds": int(rounds), "rounds": 0,
          "checkFiles": files, "goal": goal,
          "authority": authority, "continuation": continuation}
+if origin:
+    state["origin"] = origin
 # Absolute, because the hook runs from whatever cwd the Stop happens in.
 if run:
     state["run"] = os.path.abspath(os.path.expanduser(run))
@@ -328,7 +332,7 @@ fi
 # routine dispatch, and grind is not the alternative to a run that is already detached. The advice is
 # for a hand-armed long hold, which is what is left when --run is absent.
 case "$MINUTES$ROUNDS" in *[!0-9]*) ;; *)
-  if [ -z "$RUN" ] && { [ "$MINUTES" -gt 120 ] || [ "$ROUNDS" -gt 4 ]; }; then
+  if [ -z "$RUN" ] && [ "$ORIGIN" != overnight ] && { [ "$MINUTES" -gt 120 ] || [ "$ROUNDS" -gt 4 ]; }; then
     GRIND="$(cd "$(dirname "$(readlink -f "$0")")/../../.." && pwd)/skills/grind/scripts/grind.sh"
     {
       echo "WARNING: this is a LONG hold ($ROUNDS rounds / $MINUTES minutes; the defaults are 4 and 120)."
