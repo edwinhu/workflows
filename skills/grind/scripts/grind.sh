@@ -436,6 +436,7 @@ NOTIFY= NOTIFY_TO= NOTIFY_JOURNAL= PUSH=
 # directory the launching session's watcher does not read.
 GRIND_LAUNCH_SESSION=${CLAUDE_CODE_SESSION_ID:-}
 EVENTS=       # the event file, once started; empty means every emit is a no-op
+EVENTS_STARTED= # set once events_start wrote a START; unlike EVENTS, emit_done leaves it set
 EVENTS_OFF=   # --no-events
 
 # Byte-identical to farm.sh's and farm-alive.sh's copies: the three are one protocol. Encoding
@@ -456,6 +457,7 @@ events_start() {
   dir="${TMPDIR:-/tmp}/farm-events${GRIND_LAUNCH_SESSION:+/$GRIND_LAUNCH_SESSION}"
   mkdir -p "$dir" 2>/dev/null || return 0
   EVENTS="$dir/$$.ndjson"
+  EVENTS_STARTED=1
   emit_event "START $(enc "grind $(basename -- "$journal")") cwd=$(enc "$PWD") journal=$(enc "$journal") "
 }
 
@@ -463,6 +465,14 @@ events_start() {
 # stopped are endings, and a monitor that saw only START would report them as deaths. Clearing EVENTS
 # makes the second call a no-op, so the trap and cmd_run cannot both write one.
 emit_done() { emit_event "DONE $(enc "${1:-unknown}") rc=${2:-0}"; EVENTS=; }
+
+# The launching session's watcher already wakes it from the event stream (START/WAIT/DONE), so an
+# agent-msg to that same session only duplicates the wake as a HELD message (no-mode-asserted on a
+# bypassPermissions recipient). agent-msg stays for an explicit --notify-to naming another session
+# and for runs with no stream.
+stream_wakes() {
+  [ -n "$EVENTS_STARTED" ] && [ -n "$GRIND_LAUNCH_SESSION" ] && [ "${1:-}" = "$GRIND_LAUNCH_SESSION" ]
+}
 
 cmd_run() {
   local rc=0
@@ -502,11 +512,16 @@ push_phone() {
 # A failure here is warned about and swallowed, for the same reason the terminal notification's is.
 notify_waiting() {
   local waits=$1 why=$2 j=$3
+  # First, so the stream carries the alert even if a later channel stalls. The watcher wakes the
+  # launching session once per distinct waits= value.
+  emit_event "WAIT $(enc "grind $(basename -- "$j")") waits=$waits why=$(enc "${why:-}") script=$(enc "$SELF") "
   [ "$NOTIFY" = none ] || push_phone "grind loop waiting: $waits consecutive gate waits. Why: ${why:-(the gate printed nothing)}. Journal $j"
   case "$NOTIFY" in
     none) return 0 ;;
     '')
-      if command -v agent-msg >/dev/null 2>&1; then
+      if stream_wakes "$NOTIFY_TO"; then
+        :
+      elif command -v agent-msg >/dev/null 2>&1; then
         if [ -n "$NOTIFY_TO" ]; then
           agent-msg send "$NOTIFY_TO" \
             "grind loop waiting: $waits consecutive gate waits, still running. Why: ${why:-(the gate printed nothing)}. Journal $j" \
@@ -529,7 +544,9 @@ notify_waiting() {
 notify_default() {
   local to=$1 last
   last=$(tail -n 1 -- "$GRIND_JOURNAL" 2>/dev/null | cut -c1-200)
-  if command -v agent-msg >/dev/null 2>&1; then
+  if stream_wakes "$to"; then
+    :
+  elif command -v agent-msg >/dev/null 2>&1; then
     if [ -n "$to" ]; then
       agent-msg send "$to" "grind loop ended: $GRIND_STATE (exit $GRIND_EXIT). Journal $GRIND_JOURNAL. Status: bash $SELF status --journal $GRIND_JOURNAL" \
         </dev/null || warn "agent-msg to $to failed; the run's own verdict stands"
@@ -655,10 +672,9 @@ run_loop() {
         waits=$((waits + 1))
         # Every Nth wait, not just the Nth: a gate stuck shut for a week is worth saying twice.
         if [ "$wait_alert" -gt 0 ] && [ "$((waits % wait_alert))" -eq 0 ]; then
+          # notify_waiting also files the WAIT line, at this same cadence: a line per wait would
+          # bury the monitor under a gate that stays shut for a week.
           notify_waiting "$waits" "$why" "$journal"
-          # Same cadence, deliberately: a line per wait would bury the monitor under a gate that
-          # stays shut for a week, which is the case this whole stream exists to survive.
-          emit_event "WAIT waits=$waits why=$(enc "${why:-}") "
         fi
         [ "$sleep_s" -gt 0 ] && sleep "$sleep_s"
         continue

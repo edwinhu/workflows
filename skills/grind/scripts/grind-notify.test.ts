@@ -19,7 +19,7 @@
  */
 import { describe, expect, test, afterAll } from 'bun:test'
 import { spawnSync } from 'node:child_process'
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync, existsSync, chmodSync, symlinkSync } from 'node:fs'
+import { readdirSync, mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync, existsSync, chmodSync, symlinkSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { grindEnv } from './grind-test-env'
@@ -202,12 +202,12 @@ describe('grind.sh --notify', () => {
     }
   }
 
-  test('by default it agent-msgs the launching session, and pops herdr when herdr is present', () => {
+  test('with no event stream it agent-msgs the launching session, and pops herdr when herdr is present', () => {
     const d = workdir('grind-notify-default')
     const { journal, args } = finishing(d)
     const { env, log } = stubPath(d, ['agent-msg', 'herdr'])
 
-    const r = run(d, args, { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+    const r = run(d, [...args, '--no-events'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
     expect(r.status).toBe(0)
     const calls = readFileSync(log, 'utf8')
@@ -216,12 +216,44 @@ describe('grind.sh --notify', () => {
     expect(calls).toMatch(/^herdr notification show .*done/m)
   })
 
+  test('with the event stream live for the launch session the ending sends no agent-msg, but still pops herdr', () => {
+    const d = workdir('grind-notify-stream')
+    const { journal, args } = finishing(d)
+    const { env, log } = stubPath(d, ['agent-msg', 'herdr'])
+
+    const r = run(d, args, { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+
+    expect(r.status).toBe(0)
+    const calls = readFileSync(log, 'utf8')
+    expect(calls).not.toMatch(/^agent-msg /m)
+    expect(calls).toMatch(/^herdr notification show .*done/m)
+    // The ending reaches the session through the stream instead.
+    const f = join(d, 'farm-events', 'sess-launch')
+    const lines = readFileSync(join(f, readdirSync(f).find(n => /^\d+\.ndjson$/.test(n))!), 'utf8')
+    expect(lines).toContain('grind: START ')
+    expect(lines).toMatch(/grind: DONE done rc=0/)
+    expect(lines).toContain(`journal=${journal}`)
+  })
+
+  test('--notify-to naming another session still agent-msgs it even with the stream live', () => {
+    const d = workdir('grind-notify-stream-other')
+    const { args } = finishing(d)
+    const { env, log } = stubPath(d, ['agent-msg'])
+
+    const r = run(d, [...args, '--notify-to', 'other-session'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+
+    expect(r.status).toBe(0)
+    const calls = readFileSync(log, 'utf8')
+    expect(calls).toMatch(/^agent-msg send other-session .*done/m)
+    expect(calls).not.toMatch(/^agent-msg send sess-launch/m)
+  })
+
   test('--push also sends a phone push through claude, because agent-msg to an idle session can be dropped', () => {
     const d = workdir('grind-notify-push')
     const { args } = finishing(d)
     const { env, log } = stubPath(d, ['agent-msg', 'claude'])
 
-    const r = run(d, [...args, '--push'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+    const r = run(d, [...args, '--no-events', '--push'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
     expect(r.status).toBe(0)
     const calls = readFileSync(log, 'utf8')
@@ -234,18 +266,18 @@ describe('grind.sh --notify', () => {
     const { args } = finishing(d)
     const { env, log } = stubPath(d, ['agent-msg', 'claude'])
 
-    const r = run(d, args, { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+    const r = run(d, [...args, '--no-events'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
     expect(r.status).toBe(0)
     expect(readFileSync(log, 'utf8')).not.toMatch(/^claude /m)
   })
 
-  test('without herdr on PATH the default sends agent-msg alone', () => {
+  test('without herdr on PATH the no-stream default sends agent-msg alone', () => {
     const d = workdir('grind-notify-noherdr')
     const { args } = finishing(d)
     const { env, log } = stubPath(d, ['agent-msg'])
 
-    const r = run(d, args, { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+    const r = run(d, [...args, '--no-events'], { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
     expect(r.status).toBe(0)
     const calls = readFileSync(log, 'utf8')

@@ -351,3 +351,27 @@ test('a loop.exit older than the loop\'s START never classifies the live loop as
   expect(seen.submits).toEqual([])
   expect(seen.statuses.at(-1)).toContain('work 1004-x round 1/3')
 })
+
+test('a live grind loop\'s WAIT wakes once per new waits value, never twice for the same one', async ($, on) => {
+  const G = `${dir(SID)}/700.ndjson`
+  const head = `grind: START grind%20j.jsonl cwd=/w journal=/w/j.jsonl t=${T0} \n`
+  const wait = (n: number) => `grind: WAIT grind%20j.jsonl waits=${n} why=grid%20busy script=/p/grind.sh \n`
+  const tree: Tree = { [G]: head + wait(2) }
+  const { seen, clock } = world(on, tree, { alive: [700] })
+  await start($)
+  await clock.settle()
+  await clock.advance(15_000)
+  expect(seen.submits).toEqual([
+    'grind loop grind j.jsonl waiting: 2 consecutive gate waits, still running. Why: grid busy. Status: bash /p/grind.sh status --journal /w/j.jsonl',
+  ])
+  await clock.advance(15_000)
+  expect(seen.submits.length).toBe(1)
+  tree[G] += wait(4)
+  await clock.advance(15_000)
+  expect(seen.submits.length).toBe(2)
+  expect(seen.submits[1]).toContain('waiting: 4 consecutive gate waits')
+  await clock.advance(15_000)
+  expect(seen.submits.length).toBe(2)
+  // still live: no DONE-style wake
+  expect(seen.statuses.at(-1)).toContain('grind j.jsonl')
+})

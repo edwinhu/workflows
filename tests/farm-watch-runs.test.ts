@@ -11,7 +11,7 @@ import { chmodSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSyn
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
-import { beaconFresh, classify, parseEvents, statusLine, table, wakeable, wakeText, type Facts } from '../hooks/watch/runs.ts'
+import { beaconFresh, classify, parseEvents, statusLine, table, wakeable, wakeText, waitText, type Facts } from '../hooks/watch/runs.ts'
 
 const REPO = join(import.meta.dir, '..')
 const FARM = join(REPO, 'skills', 'farm-out', 'scripts', 'farm.sh')
@@ -177,8 +177,8 @@ test('a beacon is fresh for four ticks, and only digits count', () => {
 test('the mod kit tests pass (scripts/mod-test.sh -> claude plugin test)', () => {
   if (spawnSync('bash', ['-c', 'command -v claude'], { timeout: 130_000 }).status !== 0) return
   const r = spawnSync('bash', [join(REPO, 'scripts', 'mod-test.sh')], { encoding: 'utf8', timeout: 120_000 })
-  // 16 watcher (4 of them the Jev forecast band) + 9 guards (hooks/mod-tests/guards.test.ts) + 18 per-edit Jev (hooks/mod-tests/jev.test.ts)
-  expect(r.stdout + r.stderr).toMatch(/\b43 pass\b/)
+  // 17 watcher (4 of them the Jev forecast band) + 9 guards (hooks/mod-tests/guards.test.ts) + 18 per-edit Jev (hooks/mod-tests/jev.test.ts)
+  expect(r.stdout + r.stderr).toMatch(/\b44 pass\b/)
   expect(r.stdout + r.stderr).toMatch(/\b0 fail\b/)
   expect(r.status).toBe(0)
 }, 130_000)
@@ -203,5 +203,33 @@ describe('a stale loop.exit never decides a live loop', () => {
     const v = classify(runs, { ...base, loopExitAt: new Map([[`${R}/loop.exit`, (T + 5) * 1000]]) })
     expect(v[0]!.state).toBe('done')
     expect(v[0]!.loopExit).toBe('1')
+  })
+})
+
+describe('WAIT lines (grind: a gate shut N passes running)', () => {
+  const START = 'grind: START grind%20j.jsonl cwd=/w journal=/w/j.jsonl t=1800000000 \n'
+  const wait = (n: number, why: string) =>
+    `grind: WAIT grind%20j.jsonl waits=${n} why=${why} script=/p/grind.sh \n`
+
+  test('parses the newest WAIT onto its run and leaves the run live', () => {
+    const [r] = parseEvents(START + wait(2, 'grid%20busy') + wait(4, 'still%20busy'), '/e/9.ndjson', 9, SID)
+    expect(r!.wait).toEqual({ waits: 4, why: 'still busy', script: '/p/grind.sh' })
+    expect(r!.done).toBeUndefined()
+    const [v] = classify([r!], facts({ alive: new Set([9]) }))
+    expect(v!.state).toBe('running')
+  })
+
+  test('a WAIT never closes or opens a run, and a malformed one is ignored', () => {
+    const runs = parseEvents(START + 'grind: WAIT grind%20j.jsonl waits=x why=a \n', '/e/9.ndjson', 9, SID)
+    expect(runs.length).toBe(1)
+    expect(runs[0]!.wait).toBeUndefined()
+  })
+
+  test('waitText names the streak, the why and the status command', () => {
+    const [r] = parseEvents(START + wait(6, 'grid%20busy'), '/e/9.ndjson', 9, SID)
+    const [v] = classify([r!], facts({ alive: new Set([9]) }))
+    expect(waitText(v!)).toBe(
+      'grind loop grind j.jsonl waiting: 6 consecutive gate waits, still running. Why: grid busy. ' +
+      'Status: bash /p/grind.sh status --journal /w/j.jsonl')
   })
 })

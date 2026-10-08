@@ -183,11 +183,13 @@ describe('grind.sh — the loop files itself in the launching session\'s event s
 
     const { lines } = eventFile(eventDir)
     const waits = lines.filter(l => l.startsWith('grind: WAIT '))
+    const SELF = /script=(\S+) $/.exec(waits[0] ?? '')?.[1]
+    expect(SELF).toMatch(/grind\.sh$/)
     // Six waits, alert every 2 — three lines, not six.
     expect(waits).toEqual([
-      'grind: WAIT waits=2 why=grid%20busy:%203%20jobs ',
-      'grind: WAIT waits=4 why=grid%20busy:%203%20jobs ',
-      'grind: WAIT waits=6 why=grid%20busy:%203%20jobs ',
+      `grind: WAIT grind%20journal.jsonl waits=2 why=grid%20busy:%203%20jobs script=${SELF} `,
+      `grind: WAIT grind%20journal.jsonl waits=4 why=grid%20busy:%203%20jobs script=${SELF} `,
+      `grind: WAIT grind%20journal.jsonl waits=6 why=grid%20busy:%203%20jobs script=${SELF} `,
     ])
   })
 
