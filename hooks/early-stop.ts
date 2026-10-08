@@ -153,7 +153,11 @@ export function typedByHuman(e: Record<string, unknown>, text: string): boolean 
 
 /** A short question ("did you use overnight autonomous?") talks about a mandate; it does not set one. */
 const MONITOR_LIVE_MS = 45 * 60_000
-const INTERROGATIVE = /^(how|what|why|when|where|which|who|is|are|was|were|do|does|did|can|could|should|would|will|has|have)\b/i
+const INTERROGATIVE = new RegExp(
+  '^(?:(?:how|what|why|when|where|which|who)\\b' +
+    '|(?:is|are|was|were|do|does|did|can|could|should|would|will|has|have)\\s+(?:i|you|we|it|they|he|she|this|that|there|the|my|your|our)\\b)',
+  'i',
+)
 const isQuestion = (t: string): boolean => {
   const s = t.trim()
   return s.length < 200 && (s.endsWith('?') || INTERROGATIVE.test(s))

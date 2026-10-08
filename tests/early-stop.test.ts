@@ -814,3 +814,11 @@ test('an unpunctuated question about overnight mode is not a mandate', () => {
   expect(judgeContext(human('u1', '  Can you work overnight', at)).standing).toBeNull()
   expect(judgeContext(human('u1', 'going to bed, work autonomously', at)).standing).not.toBeNull()
 })
+
+test('"do whatever…" and "do not ask…" are mandates, not questions', () => {
+  const at = '2026-10-07T01:00:00.000Z'
+  expect(judgeContext(human('u1', 'Do whatever you think is best, I\'m going to bed', at)).standing).not.toBeNull()
+  expect(judgeContext(human('u1', 'do not ask questions, work overnight', at)).standing).not.toBeNull()
+  expect(judgeContext(human('u1', 'Keep going overnight', at)).standing).not.toBeNull()
+  expect(judgeContext(human('u1', 'do i need to work overnight', at)).standing).toBeNull()
+})
