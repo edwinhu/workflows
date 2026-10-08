@@ -806,3 +806,11 @@ test('the mandate is a typed instruction: pasted prompts, relays and questions a
   expect(judgeContext(human('u1', 'did you use overnight autonomous?', at)).standing).toBeNull()
   expect(judgeContext(human('u1', 'ok i\'m going to bed work overnight autonomously', at)).standing).not.toBeNull()
 })
+
+test('an unpunctuated question about overnight mode is not a mandate', () => {
+  const at = '2026-10-07T01:00:00.000Z'
+  expect(judgeContext(human('u1', 'how do i activate overnight mode', at)).standing).toBeNull()
+  expect(judgeContext(human('u1', 'did you use overnight autonomous', at)).standing).toBeNull()
+  expect(judgeContext(human('u1', '  Can you work overnight', at)).standing).toBeNull()
+  expect(judgeContext(human('u1', 'going to bed, work autonomously', at)).standing).not.toBeNull()
+})
