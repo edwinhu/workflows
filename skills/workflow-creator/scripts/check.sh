@@ -246,7 +246,9 @@ else
       while [ "$i" -lt "$SHARDS" ]; do
         shard=(); j=$i
         while [ "$j" -lt "$n" ]; do shard+=("${suite[$j]}"); j=$(( j + SHARDS )); done
-        bun test "${shard[@]}" >"$tdir/bun$i.out" 2>&1 &
+        # A target's tests spawn its own check.sh (7 legs); bun's 5 s default kills one at load and
+        # strands that leg's leg-o/leg-e temp files. The budget is a ceiling, not a delay.
+        bun test --timeout "${CHECK_TEST_TIMEOUT_MS:-30000}" "${shard[@]}" >"$tdir/bun$i.out" 2>&1 &
         pids+=($!)
         i=$(( i + 1 ))
       done

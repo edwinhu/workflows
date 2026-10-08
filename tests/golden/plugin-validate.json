@@ -11,7 +11,8 @@
     "validate` echoes the resolved absolute path of its target into stdout. The harness runs the",
     "python and the ts implementation in two DIFFERENT temp sandboxes, so any output containing the",
     "sandbox path would differ spuriously. Absolute targets outside the sandbox are identical for",
-    "both runs. Fixture-based cases are therefore restricted to the branches whose output is empty."
+    "both runs. Fixture-based cases are therefore restricted to the branches whose output is empty.",
+    "The asana-named cases run against a fixture plugin (a manifest with no version) under <SANDBOX>; `claude` is the stub in scripts/hook-golden-stubs, so no installed plugin, mise shim or claude version reaches the output."
   ],
   "cases": [
     {
@@ -56,13 +57,17 @@
         "hook_event_name": "PostToolUse",
         "tool_name": "Edit",
         "tool_input": {
-          "file_path": "/home/eh/.claude/plugins/marketplaces/claude-plugins-official/external_plugins/asana/skills/demo/SKILL.md"
+          "file_path": "<SANDBOX>/skills/demo/SKILL.md"
         }
       },
       "tsExpected": {
-        "stdoutSha256": "d5ef2f3e74bc6ade52d6e28b90d7854405f7dabe8ba725aff7e3524a86d3bc58",
+        "stdoutSha256": "1e1515f60a2d283de363fa29f86ab4b8737dc9b290604808c42ececea40c8043",
         "exit": 0,
         "fs": {}
+      },
+      "fixture": {
+        ".claude-plugin/plugin.json": "{\"name\":\"demo\"}\n",
+        "skills/demo/SKILL.md": "x\n"
       }
     },
     {
@@ -73,13 +78,17 @@
         "hook_event_name": "PostToolUse",
         "tool_name": "Edit",
         "tool_input": {
-          "file_path": "/home/eh/.claude/plugins/marketplaces/claude-plugins-official/external_plugins/asana/hooks/hooks.json"
+          "file_path": "<SANDBOX>/hooks/hooks.json"
         }
       },
       "tsExpected": {
-        "stdoutSha256": "98106eeb262f55737d0ec1f9c1137313e5a7f08592616493b7d1afcd026bf37f",
+        "stdoutSha256": "9e7583ff94a8a0ad9c8ee528589ea960f04b56892ce01aea97420c48ec035a8f",
         "exit": 0,
         "fs": {}
+      },
+      "fixture": {
+        ".claude-plugin/plugin.json": "{\"name\":\"demo\"}\n",
+        "hooks/hooks.json": "x\n"
       }
     },
     {
@@ -90,13 +99,17 @@
         "hook_event_name": "PostToolUse",
         "tool_name": "Write",
         "tool_input": {
-          "file_path": "/home/eh/.claude/plugins/marketplaces/claude-plugins-official/external_plugins/asana/agents/demo.md"
+          "file_path": "<SANDBOX>/agents/demo.md"
         }
       },
       "tsExpected": {
-        "stdoutSha256": "838e63d1bd7a70fac4a5a736aeda195616e5fb58910a9a362bc67782d10fb32b",
+        "stdoutSha256": "e5d8367bdf36c1e67269fdf46f1805ee1ba7cb478c21520e26fc1756bc5b7995",
         "exit": 0,
         "fs": {}
+      },
+      "fixture": {
+        ".claude-plugin/plugin.json": "{\"name\":\"demo\"}\n",
+        "agents/demo.md": "x\n"
       }
     },
     {
@@ -107,13 +120,17 @@
         "hook_event_name": "PostToolUse",
         "tool_name": "Edit",
         "tool_input": {
-          "file_path": "/home/eh/.claude/plugins/marketplaces/claude-plugins-official/external_plugins/asana/commands/demo.md"
+          "file_path": "<SANDBOX>/commands/demo.md"
         }
       },
       "tsExpected": {
-        "stdoutSha256": "4f3d15915db0033fc86da4686adbb4dec588575aa17948082084afdb219271d1",
+        "stdoutSha256": "5c391c42d2b2543205d81261e6fc625ed87cf95507f9730deede1980f8f8cdba",
         "exit": 0,
         "fs": {}
+      },
+      "fixture": {
+        ".claude-plugin/plugin.json": "{\"name\":\"demo\"}\n",
+        "commands/demo.md": "x\n"
       }
     },
     {
@@ -128,7 +145,7 @@
         }
       },
       "tsExpected": {
-        "stdoutSha256": "d96af44c4060a84060f2a0e281a97d8cd71e82552cd1286aa6e1cd20a02e71be",
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "exit": 0,
         "fs": {}
       }

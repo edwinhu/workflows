@@ -280,17 +280,37 @@ function reset(dir: string, fixture: Record<string, string> | undefined): void {
  * the inverse of the `<REPO>` substitution `normalise()` applies to stdout, so a case round-trips
  * from whatever path it runs at.
  */
-function resolveRepoToken<T>(value: T): T {
+function resolveRepoToken<T>(value: T, sandbox?: string): T {
   if (value === undefined) return value;
-  return JSON.parse(JSON.stringify(value).split("<REPO>").join(REPO)) as T;
+  let text = JSON.stringify(value).split("<REPO>").join(REPO);
+  if (sandbox) text = text.split("<SANDBOX>").join(sandbox);
+  return JSON.parse(text) as T;
+}
+
+/**
+ * The env every case runs under: the caller's, minus what leaks the machine in.
+ *
+ * `claude` resolves through mise shims on this box, so a real run printed mise's install banner and
+ * wrote a claude-<uid> dir into TMPDIR; and the plugin-validate cases named a plugin that only
+ * exists in one user's ~/.claude/plugins. The stub dir goes first on PATH so `claude plugin
+ * validate` is a deterministic stand-in, and mise's variables are dropped so nothing re-activates it.
+ */
+const STUB_BIN = join(REPO, "scripts", "hook-golden-stubs");
+function hermeticBase(): Record<string, string> {
+  const env: Record<string, string> = {};
+  for (const [k, v] of Object.entries(process.env)) {
+    if (v !== undefined && !/^(__)?MISE_/.test(k)) env[k] = v;
+  }
+  env.PATH = `${STUB_BIN}:${env.PATH ?? ""}`;
+  return env;
 }
 
 async function run(cmd: string[], c: Case, cwd: string): Promise<RunResult> {
   const before = snapshot(cwd);
   const proc = Bun.spawn(cmd, {
     cwd,
-    env: { ...process.env, ...resolveRepoToken(c.env ?? {}), CLAUDE_PROJECT_DIR: cwd },
-    stdin: c.stdin === undefined ? "ignore" : new TextEncoder().encode(JSON.stringify(resolveRepoToken(c.stdin))),
+    env: { ...hermeticBase(), ...resolveRepoToken(c.env ?? {}, cwd), CLAUDE_PROJECT_DIR: cwd },
+    stdin: c.stdin === undefined ? "ignore" : new TextEncoder().encode(JSON.stringify(resolveRepoToken(c.stdin, cwd))),
     stdout: "pipe",
     stderr: "pipe",
   });

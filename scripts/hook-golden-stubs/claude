@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Stand-in for `claude plugin validate <target>` on the hook-golden PATH, so plugin-validate's
+# goldens do not depend on this machine's claude version, mise shims, or installed plugins.
+# Mirrors the real verdict shapes: missing target -> error, exit 1; manifest without a
+# "version" -> one warning, exit 0; otherwise a clean pass.
+[ "$1 $2" = "plugin validate" ] || { echo "claude stub: only 'plugin validate' is supported" >&2; exit 2; }
+target=$3
+kind=plugin
+case $target in *marketplace.json) kind=marketplace ;; esac
+echo "Validating $kind manifest: $target"
+echo
+if [ ! -f "$target" ]; then
+  echo "✘ Found 1 error:"
+  echo
+  echo "  ❯ file: File not found: $target"
+  echo
+  echo "✘ Validation failed"
+  exit 1
+fi
+if ! grep -q '"version"' "$target"; then
+  echo "⚠ Found 1 warning:"
+  echo
+  echo "  ❯ version: No version specified. Consider adding a version following semver (e.g., \"1.0.0\")"
+  echo
+  echo "✔ Validation passed with warnings"
+  exit 0
+fi
+echo "✔ Validation passed"

@@ -1,9 +1,31 @@
 import { describe, expect, test } from "bun:test";
-import { existsSync, readFileSync, realpathSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 const ROOT = realpathSync(join(import.meta.dir, ".."));
 const TARGET_VERSION = "6.40.2";
+
+// A Workflow tool script is `export const meta = {...}` followed by a body that may `return`; the
+// runtime runs that body inside an async function. `node --check` on the file as written parses it as
+// an ES module, where the body's top-level `return` is a SyntaxError on any Node that sniffs
+// `export` (v26). So check the shape the runtime consumes: meta at module scope, body wrapped.
+// Same split as tests/helpers/workflow-module.mjs.
+function checkWorkflowScript(path: string) {
+  const source = readFileSync(path, "utf8");
+  const header = /^export const meta = \{[\s\S]*?\n\}\n/.exec(source);
+  if (!header) {
+    return { exitCode: 1, stdout: Buffer.alloc(0), stderr: Buffer.from("no `export const meta = {...}` block") };
+  }
+  const dir = mkdtempSync(join(tmpdir(), "wf-check-"));
+  try {
+    const file = join(dir, "script.mjs");
+    writeFileSync(file, `${header[0]}export const result = await (async () => {${source.slice(header[0].length)}\n})()\n`);
+    return Bun.spawnSync(["node", "--check", file], { timeout: 120_000, stdout: "pipe", stderr: "pipe" });
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
 
 type Capability = {
   name: string;
@@ -139,7 +161,7 @@ describe("public extension contract integration", () => {
       // Each probe runs in its own subprocess: the failure mode under test is EXITING, and an
       // in-process import would take this runner down with it rather than failing an assertion.
       const probe = isWorkflowScript
-        ? Bun.spawnSync(["node", "--check", absolute], { timeout: 120_000, stdout: "pipe", stderr: "pipe" })
+        ? checkWorkflowScript(absolute)
         : Bun.spawnSync(["bun", "-e", `await import(${JSON.stringify(absolute)}); process.stdout.write("OK");`], { timeout: 120_000, stdout: "pipe", stderr: "pipe" });
       if (isWorkflowScript) scripts += 1; else modules += 1;
       expect(`${capability.name}: exit ${probe.exitCode}`).toBe(`${capability.name}: exit 0`);
