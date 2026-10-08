@@ -597,6 +597,85 @@ func parseContinuationLine(line string) (sole, shared, none int64, ok bool) {
 }
 
 // parseText parses a pre-2013Q3 text/SGML 13F filing.
+// Cover-page amendment checkbox ("This Amendment (Check only one):
+// [x] is a restatement / [x] adds new holdings entries").
+//
+// A box is a bracket pair ([] | | () {} //) of at most 4 characters, directly
+// before (preferred) or after the option label. It is checked when it holds
+// anything other than whitespace and underscores: [x] [X] [x ] |x| checked;
+// [] [ ] |_| |__| empty.
+var (
+	coverBoxPat    = `[\[\|\(\{/]\s*([^\[\]\|\(\)\{\}/]{0,4}?)\s*[\]\|\)\}/]`
+	coverLabelR    = `is\s+a\s+restat\w*`
+	coverLabelN    = `adds?\s+new\s+(?:holding|\w+\s+entries)` // 2nd form: filer typos ("ADDS NEW ENDINGS ENTRIES")
+	coverBeforeR   = regexp.MustCompile(`(?i)(?:` + coverBoxPat + `)\s*` + coverLabelR)
+	coverAfterR    = regexp.MustCompile(`(?i)` + coverLabelR + `[\s\.:;,]*(?:` + coverBoxPat + `)`)
+	coverBeforeN   = regexp.MustCompile(`(?i)(?:` + coverBoxPat + `)\s*` + coverLabelN)
+	coverAfterN    = regexp.MustCompile(`(?i)` + coverLabelN + `[\s\.:;,]*(?:` + coverBoxPat + `)`)
+	coverSummaryRe = regexp.MustCompile(`(?i)SUMMARY\s+PAGE|REPORT\s+SUMMARY`)
+	coverSpaceRe   = regexp.MustCompile(`\s+`)
+)
+
+// coverText returns the whitespace-collapsed cover page: text after the first
+// <TEXT> tag up to "SUMMARY PAGE" / "REPORT SUMMARY" (else the first 20000
+// bytes), capped at 20000 bytes. Collapsing is needed because some filers
+// (e.g. Pequot 0001071955-03-000074) put double spaces between words.
+func coverText(buf []byte) string {
+	body := buf
+	if i := bytes.Index(buf, []byte("<TEXT>")); i >= 0 {
+		body = buf[i:]
+	}
+	if len(body) > 60000 {
+		body = body[:60000]
+	}
+	if loc := coverSummaryRe.FindIndex(body); loc != nil {
+		body = body[:loc[0]]
+	} else if len(body) > 20000 {
+		body = body[:20000]
+	}
+	c := coverSpaceRe.ReplaceAllString(string(body), " ")
+	if len(c) > 20000 {
+		c = c[:20000]
+	}
+	return c
+}
+
+// coverBoxChecked reports whether the option's box is found (found) and
+// ticked (checked). A missing option label counts as not found.
+func coverBoxChecked(cover string, before, after *regexp.Regexp) (found, checked bool) {
+	m := before.FindStringSubmatch(cover)
+	if m == nil {
+		m = after.FindStringSubmatch(cover)
+		if m == nil {
+			return false, false
+		}
+	}
+	inner := strings.TrimSpace(strings.ReplaceAll(m[1], "_", ""))
+	return true, inner != ""
+}
+
+// coverAmendmentType reads the cover-page checkbox of a text-era 13F-HR/A.
+// It returns "RESTATEMENT" when only the restatement box is ticked and
+// "NEW HOLDINGS" when only the new-holdings box is ticked.
+//
+// Empty-string policy: it returns "" (NULL downstream) when the type cannot be
+// read unambiguously: no box next to either option label, neither box ticked,
+// or both ticked. The word "restatement" appearing elsewhere in the filing is
+// deliberately ignored; guessing a type from it was the original bug, since
+// the unticked option label is printed on every amendment.
+func coverAmendmentType(buf []byte) string {
+	cover := coverText(buf)
+	_, rChecked := coverBoxChecked(cover, coverBeforeR, coverAfterR)
+	_, nChecked := coverBoxChecked(cover, coverBeforeN, coverAfterN)
+	switch {
+	case rChecked && !nChecked:
+		return "RESTATEMENT"
+	case nChecked && !rChecked:
+		return "NEW HOLDINGS"
+	}
+	return ""
+}
+
 // buf is the full file content. filePath is for diagnostics.
 func parseText(buf []byte, filePath string) (*ParseResult, error) {
 	result := &ParseResult{
@@ -631,12 +710,7 @@ func parseText(buf []byte, filePath string) (*ParseResult, error) {
 	isAmendment := strings.Contains(result.Meta.FormType, "/A")
 	amendmentType := ""
 	if isAmendment {
-		upper := strings.ToUpper(string(buf))
-		if strings.Contains(upper, "RESTATEMENT") {
-			amendmentType = "RESTATEMENT"
-		} else if strings.Contains(upper, "NEW HOLDINGS") {
-			amendmentType = "NEW HOLDINGS"
-		}
+		amendmentType = coverAmendmentType(buf)
 	}
 
 	// Determine column swap.
