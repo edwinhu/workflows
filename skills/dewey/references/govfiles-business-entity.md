@@ -10,7 +10,7 @@ Cite as: `GovFiles. (2026). GovFiles Companies [Dataset]. Dewey Data. https://do
 
 The vendor pitch is registry data from all 50 Secretary of State offices, normalized, with the
 value as filed kept beside the normalized one, and dead entities (dissolved, revoked, withdrawn,
-merged) included. Vendor claims 75M+ entities; the Dewey primary table ships **84,376,737 rows**.
+merged) included. Vendor claims 75M+ entities; the Dewey primary table ships **98,599,097 rows** across 51 jurisdictions on the 2026-09-23 refresh (84,376,737 on an earlier one). The total says nothing about any one state: Florida 12.8M, California 9.2M, New York 7.0M, Delaware 5.7M, Texas 3.3M, Wyoming 1.6M, the next-smallest state Alaska 105K, and **Nevada 37K**, against 1.69M Nevada entities in the 2023 OpenCorporates snapshot (`~/projects/nevada/scratch/entity_status/profile_companies_by_jur.csv`).
 State coverage does not match the pitch. Measured 2026-10-07 and re-checked 2026-10-08 on the
 2026-09-23 refresh (`AS_OF` 2026-05..07; scripts in `~/projects/nevada/scratch/entity_status/`):
 
@@ -188,7 +188,7 @@ promise. Either the cadence has not held or the stamp is not being updated; eith
 
 ## Delivery & refresh
 
-- Format **Parquet**, primary table **4.83 GB / 84.4M rows / 18 columns**, region US.
+- Format **Parquet**, primary table **4.83 GB / 84.4M rows / 18 columns** (dataset page as first read; 98.6M rows on the 2026-09-23 refresh), region US.
 - **Refreshed monthly as a FULL SNAPSHOT that replaces the prior one** — there is no incremental
   feed and no vendor-side history of snapshots. If you need a point-in-time panel, **you** must
   retain each month's pull; `AS_OF` is the per-record retrieval stamp, not a version key.
