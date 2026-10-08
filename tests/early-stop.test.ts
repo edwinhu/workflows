@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
 import { useTmp } from './helpers/tmp.ts'
-import { DEFAULT_THRESHOLD, INSTRUCTIONS, judgeContext, afkHoldGoal, judgeState, latestUserTurn, noWakeUnderMandate, typedByHuman } from '../hooks/early-stop.ts'
+import { DEFAULT_THRESHOLD, INSTRUCTIONS, judgeContext, afkHold, afkHoldGoal, judgeState, latestUserTurn, noWakeUnderMandate, typedByHuman } from '../hooks/early-stop.ts'
 
 const mkTmp = useTmp()
 
@@ -904,3 +904,68 @@ test('an afk hold past its ceiling, or with a check, still stands this hook down
   expect(readFileSync(join(past.dir, 'early-stop.log'), 'utf8')).toContain('work-hold is armed')
   expect(readFileSync(join(checked.dir, 'early-stop.log'), 'utf8')).toContain('work-hold is armed')
 }, 30000)
+
+// ---- an afk hold queued behind a borrowed work-run hold (nevada e83fb488, 2026-10-08) ----
+
+const HOLD_SH = join(ROOT, 'skills/work/scripts/work-hold.sh')
+const ARM_SH = join(ROOT, 'skills/afk/scripts/arm.sh')
+const WORK_HOLD = join(ROOT, 'hooks/work-hold.ts')
+
+/** A work run with its verdict on disk, held by a non-afk hold whose check is `test -f <dir>/DONE`. */
+function borrowedHold(dir: string, sid: string) {
+  const run = join(dir, 'runs', '1007-nevada-otc')
+  mkdirSync(run, { recursive: true })
+  writeFileSync(join(run, 'args.json'), JSON.stringify({ planPath: '/plans/otc.md' }))
+  writeFileSync(join(run, 'result.json'), '{"overallPass":true}')
+  const env = { ...childEnv(dir), CLAUDE_CODE_SESSION_ID: sid, WORK_HOLD_COMPACT_WINDOW: '0' }
+  const sh = (args: string[], extra: Record<string, string> = {}) =>
+    Bun.spawnSync(['bash', ...args], { env: { ...env, ...extra }, stdout: 'pipe', stderr: 'pipe', timeout: 60_000 })
+  expect(sh([HOLD_SH, `test -f ${join(dir, 'DONE')}`, '--run', run, '--minutes', '600']).exitCode).toBe(0)
+  const now = new Date()
+  const armed = sh([ARM_SH, sid, 'ship the parser'], { AFK_NOW: `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}` })
+  expect(armed.stdout.toString()).toContain('queued behind')
+  return { run, env }
+}
+
+test('(c) a non-afk hold on top with an afk hold queued: this hook stands down, and the queued mandate is recognised', async () => {
+  const port = 18963
+  const srv = stubDecisions(port, 0.99)
+  await settle()
+  const { dir, transcript } = mandateSession([cronCreate('cccc3333', '2026-10-07T01:01:00.000Z')])
+  const { run } = borrowedHold(dir, 'afk-queued')
+  const r = runHook(childEnv(dir, decisionsAt(port)), stopPayload('afk-queued', transcript))
+  srv.kill()
+  expect(r.out).toBe('')
+  expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).toContain('work-hold is armed')
+  expect(JSON.parse(readFileSync(join(dir, 'work-hold-afk-queued.json'), 'utf8')).run).toBe(run)
+  const prev = process.env.TMPDIR
+  process.env.TMPDIR = dir
+  try {
+    const a = afkHold('afk-queued')
+    expect(a?.goal).toContain('Afk mandate: ship the parser.')
+    expect(a?.silent).toBe(false)
+    // A queued afk hold past its own ceiling is no mandate.
+    expect(afkHold('afk-queued', Math.floor(Date.now() / 1000) + 25 * 3600)).toBeNull()
+  } finally {
+    process.env.TMPDIR = prev
+  }
+}, 60000)
+
+test('(d) after the borrowed hold releases, the promoted afk hold makes this hook use AFK_BLOCK_REASON', async () => {
+  const port = 18964
+  const srv = stubDecisions(port, 0.99)
+  await settle()
+  const { dir, transcript } = mandateSession([cronCreate('dddd4444', '2026-10-07T01:01:00.000Z')])
+  const { env } = borrowedHold(dir, 'afk-promoted')
+  writeFileSync(join(dir, 'DONE'), '')
+  const rel = Bun.spawnSync(['bun', WORK_HOLD], {
+    env, stdin: Buffer.from(JSON.stringify({ session_id: 'afk-promoted' })), stdout: 'pipe', stderr: 'pipe', timeout: 60_000,
+  })
+  expect(rel.stdout.toString().trim()).toBe('')
+  expect(JSON.parse(readFileSync(join(dir, 'work-hold-afk-promoted.json'), 'utf8')).origin).toBe('afk')
+  const r = runHook(childEnv(dir, decisionsAt(port)), stopPayload('afk-promoted', transcript))
+  srv.kill()
+  expect(r.out).toContain('"decision":"block"')
+  expect(r.out).toContain('write the open questions into the morning report')
+  expect(r.out).not.toContain('say what blocks and use AskUserQuestion')
+}, 60000)

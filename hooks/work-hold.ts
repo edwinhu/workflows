@@ -44,7 +44,7 @@ import { liveOwnedRuns, watcherActive } from './early-stop.ts'
 
 export { decisionThreshold }
 
-interface State {
+export interface State {
   /** The goal check. EMPTY means a check-less, Jev-only hold: the goal is the whole objective. */
   check: string
   goal?: string
@@ -87,17 +87,28 @@ interface State {
   queued?: State[]
 }
 
+/**
+ * An afk mandate with no run: (a0) allows every Stop under it, and it is never in flight. On top of
+ * another hold it would keep that hold from ever being evaluated before its 09:00 ceiling, so it
+ * waits LAST and is promoted only when nothing else is held.
+ */
+export function afkMandate(h: { origin?: string; run?: string }): boolean {
+  return (h.origin === 'afk' || h.origin === 'overnight') && !h.run
+}
+
+const mandatesLast = (hs: State[]): State[] => [...hs.filter(h => !afkMandate(h)), ...hs.filter(afkMandate)]
+
 /** Swap queued hold `i` to the top. The container fields (compact, queued) stay with the top. */
 export function promote(s: State, i: number): State {
   const q = [...(s.queued ?? [])]
   const [next] = q.splice(i, 1)
   const { queued: _q, compact, ...prev } = s
-  return { ...next, queued: [...q, prev as State], compact }
+  return { ...next, queued: mandatesLast([...q, prev as State]), compact }
 }
 
-/** Drop the top hold and promote the first queued one. */
+/** Drop the top hold and promote the first queued one, an afk mandate only when nothing else is left. */
 export function nextHold(s: State): State {
-  const [next, ...rest] = s.queued ?? []
+  const [next, ...rest] = mandatesLast(s.queued ?? [])
   return { ...next, queued: rest, compact: s.compact }
 }
 
@@ -106,8 +117,13 @@ export function nextHold(s: State): State {
  * A run in flight is being worked elsewhere; a held run with its verdict in is the session's work.
  */
 export function activeHold(s: State): State {
-  if (!s.queued?.length || !inFlight(s)) return s
-  const i = s.queued.findIndex(q => !inFlight(q))
+  if (!s.queued?.length) return s
+  if (afkMandate(s)) {
+    const j = s.queued.findIndex(q => !afkMandate(q))
+    return j < 0 ? s : promote(s, j)
+  }
+  if (!inFlight(s)) return s
+  const i = s.queued.findIndex(q => !inFlight(q) && !afkMandate(q))
   return i < 0 ? s : promote(s, i)
 }
 
@@ -117,7 +133,7 @@ export function dropRun(s: State, run: string): { state: State | null; dropped: 
   const keep = all.filter(h => h.run !== run)
   if (keep.length === all.length) return { state: s, dropped: false }
   if (!keep.length) return { state: null, dropped: true }
-  const [top, ...rest] = keep.map(({ queued: _q, compact: _c, ...h }) => h as State)
+  const [top, ...rest] = mandatesLast(keep.map(({ queued: _q, compact: _c, ...h }) => h as State))
   return { state: { ...top, queued: rest, compact: s.compact }, dropped: true }
 }
 
