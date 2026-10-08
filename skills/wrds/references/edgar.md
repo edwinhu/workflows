@@ -749,6 +749,17 @@ def extract_10k_section(text: str, section: str) -> str | None:
 5. **Respect SEC rate limits** when downloading documents (10 requests/second)
 6. **Use WRDS file access** for bulk downloads when available
 
+## Start with the pre-parsed header table: `wrdssec_all.wrds_forms_reg`
+
+WRDS already parses every filing's SGML header, all forms, into `wrdssec_all.wrds_forms_reg` (also a view in `wrdssec`; about 27.9M rows; current to within about one business day). Query it before writing or running any header scanner. One row per accession × header registrant block, with `regrole` (FILER, SUBJECT COMPANY, FILED BY, …), `regcik`, `regconame`, `regsic`, `regfye`, `regstate_inc` (state of incorporation), `regstreet_hdq`/`regcity_hdq`/`regstate_hdq`/`regzip_hdq` (business address), `regfconame`/`regfchangedate` (former name and change date), `regirs`, `fdate`.
+
+- No `form` column: join `wrdssec_all.wrds_forms` on `accession` and `cik = regcik`.
+- Alias duplicates within `(accession, regcik, regrole)`: dedupe on `regseq`.
+- Normalize states with `upper(btrim(...))`.
+- It reads the same header field the `scan_covers` `state_incorp*` profiles read, so the values agree. It shares their limits: the header state lags a legal reincorporation (307–481 days in the cases checked) and is blank where the filer omitted it — re-parsing fixes neither; date moves from the filing text.
+
+Reach for `scan_headers` / `scan_covers` only for what this table does not carry: fields WRDS does not parse (series/class blocks, period of report, cover-page or body text), or filings newer than its vintage.
+
 ## Self-built SEC index via SGE (fallback for WRDS lag / secondary CIKs)
 
 **When to use:**
@@ -972,7 +983,7 @@ qsub -t 1-20 \
 | Parser | Source | Extracts | Input | Accuracy |
 |--------|--------|----------|-------|----------|
 | `quorum` (profile) | `scan_covers/profiles_quorum.go` + `profiles/quorum/` | Bylaw quorum threshold from DEF 14A | DEF 14A, DEFM14A | 96.6% explicit parse |
-| `state_incorp` (profile) | `scan_covers/profiles_state_incorp.go` | State of incorp + HQ state from 10-K SGML header | 10-K filings | 98.4% vs Barzuza et al. |
+| `state_incorp` (profile) | `scan_covers/profiles_state_incorp.go` | State of incorp + HQ state from 10-K SGML header — for header state and HQ, start with the pre-parsed `wrdssec_all.wrds_forms_reg` (all forms) instead | 10-K filings | 98.4% vs Barzuza et al. |
 | `blockholders_13dg` (profile) | `scan_covers/profiles_blockholders_13dg.go` | Item 12 + max ownership % | SC 13D/G | — |
 | `proxy_advisors` (profile) | `scan_covers/profiles_proxy_advisors.go` | ISS/GL/EJ mentions | 485BPOS/APOS | — |
 | `tender_sc_to` (profile) | `scan_covers/profiles_tender_sc_to.go` | Tender offer cover fields | SC TO-* | — |
