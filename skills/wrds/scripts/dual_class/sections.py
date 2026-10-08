@@ -7,7 +7,8 @@ R3 cover = main doc start .. first Item 1 heading located >=500 chars in (else f
 R4 item5 = first 'Item 5 ... market' heading whose next Item 6 heading is >=300 chars later, to that Item 6 (else Item 7 or +8000), cap 8000.
 R5 capnotes = heading-like short lines (<=90 chars, starts uppercase, <=25 chars after the keyword, no digits after it, no dot leaders) naming capital stock / common stock / stockholders' equity in main doc after Item 8 (or after 50% of doc if Item 8 absent) or anywhere in EX-13;
    prose test (digit ratio <0.12 in next 1000 chars and >=3 lines of >=60 chars in next 1500); priority capital stock > equity > common stock; <=3, non-overlapping, 6000 chars each.
-R6 windows = (weak hits dropped if digit ratio>=0.12 or window lacks 'vot') 600 chars around vote phrases in main, EX-13, EX-3*; skip hits overlapping R3-R5 spans or an earlier window; strong phrases before weak;
+R6 windows = (weak hits dropped if digit ratio>=0.12 or window lacks 'vot', except an 'elect ... directors' hit whose window names a share
+   class: Class A-E / Series A-B / common stock, kept without 'vot') 600 chars around vote phrases in main, EX-13, EX-3*; skip hits overlapping R3-R5 spans or an earlier window; strong phrases before weak;
    order strong/weak, then doc rank, then position; total cap 6000 (10 windows).
 """
 import re, html
@@ -80,6 +81,8 @@ def capnotes(t, start_at, doc_label, taken):
     return out
 
 VOTE_S = re.compile(r"(?i)votes?\s+per\s+share|\b(?:one|two|three|four|five|six|seven|eight|nine|ten|twenty|fifty|\d+)\s+votes?\b|one[\s-]+tenth\s+(?:of\s+)?(?:one\s+|a\s+)?vote|non[\s-]?voting|no\s+voting\s+rights|limited\s+voting|super[\s-]?voting|(?:without|no)\s+(?:the\s+)?right\s+to\s+vote")
+ELECT = re.compile(r"(?i)elect")
+SHARE_CLASS = re.compile(r"(?i)\bclass\s+[a-e]\b|\bseries\s+[ab]\b|\bcommon\s+stock\b")
 VOTE_W = re.compile(r"(?i)\belect(?:s|ed|ion\s+of)?\b[^.]{0,80}?\bdirectors?\b|\bclass\s+[ab]\b")
 
 def extract(raw):
@@ -117,7 +120,9 @@ def extract(raw):
                 a = max(0, m.start() + (m.end() - m.start()) // 2 - 300); b = min(len(tx), a + 600)
                 if any(a < e and b > s for s, e in sp): continue
                 w = tx[a:b]
-                if strength == 1 and (sum(c.isdigit() for c in w) / max(len(w), 1) >= 0.12 or 'vot' not in w.lower()): continue  # weak hits: no numeric tables, must mention vot*
+                if strength == 1:   # weak hits: no numeric tables; must mention vot*, or be an elect-directors hit that names a share class
+                    if sum(c.isdigit() for c in w) / max(len(w), 1) >= 0.12: continue
+                    if 'vot' not in w.lower() and not (ELECT.match(m.group()) and SHARE_CLASS.search(w)): continue
                 hits.append((strength, rank, a, b, lab, m.group().strip()[:40], tx))
     hits.sort(key=lambda h: (h[0], h[1], h[2]))
     wins = []; tot = 0; taken = {}

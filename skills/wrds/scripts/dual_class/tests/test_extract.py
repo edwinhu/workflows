@@ -90,3 +90,35 @@ def test_edgar_refuses_without_user_agent_and_above_ceiling(monkeypatch):
     monkeypatch.setenv('SEC_USER_AGENT', 'T t@example.org')
     with pytest.raises(SystemExit):
         extract.run([dict(filing_id='x', accession='x', cik='1')], 'edgar', dict(cfg, edgar_rate_per_s=9))
+
+
+ACC_EXX = '0000950130-97-001416'
+
+
+def test_exx_elect_directors_window_without_vot_is_kept():
+    """EXX Inc FY1996 (jkl4 id 69): Class B elects two-thirds of the directors, no 'vot' string in the window. R6 used to drop it."""
+    b = bundle(ACC_EXX)
+    ws = [w for w in b['sections']['windows'] if 'two-thirds' in w['text']]
+    assert ws and all(not w['strong'] and 'vot' not in w['text'].lower() for w in ws)
+    assert 'Class B Common Stock have the right to elect two-thirds' in b['bundle_text']
+
+
+def _windows(body):
+    import sections
+    return sections.extract('<DOCUMENT><TYPE>10-K\n<TEXT>\n' + body + '\n</TEXT></DOCUMENT>')[0]['windows']
+
+
+FILLER = 'The registrant describes its business in plain prose here. ' * 40
+PRE = FILLER * 5   # past the 8,000-char cover span
+
+
+def test_weak_elect_window_needs_a_share_class_or_vot():
+    assert _windows(PRE + 'The board is chosen as follows: holders elect two of the directors of the Company. ' + FILLER) == []
+    kept = _windows(PRE + 'Holders of Series B shares elect two of the directors of the Company. ' + FILLER)
+    assert len(kept) == 1 and kept[0]['strong'] is False
+    assert len(_windows(PRE + 'The holders of common stock elect the directors of the Company. ' + FILLER)) == 1
+    assert len(_windows(PRE + 'Shareholders vote to elect the directors of the Company. ' + FILLER)) == 1
+
+
+def test_bare_class_mention_does_not_open_a_window_without_vot():
+    assert _windows(PRE + 'Class A shares are listed on the exchange. ' + FILLER) == []

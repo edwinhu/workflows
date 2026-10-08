@@ -102,8 +102,10 @@ def test_flex_refuses_more_than_ten_rows():
         classify.run_flex([{}] * 11, CFG, '/nonexistent/x')
 
 
-def results(labels, dual_for):
-    return [{'filing_id': r['filing_id'], 'status': 'ok', 'quote_verified': True, 'parsed': {'dual': dual_for(r)}} for r in labels]
+def results(labels, dual_for, backend='hybrid'):
+    rc = common.run_config(CFG, backend)
+    return [{'filing_id': r['filing_id'], 'status': 'ok', 'quote_verified': True, 'parsed': {'dual': dual_for(r)},
+             'backend': backend, 'run_config': rc} for r in labels]
 
 
 def test_score_perfect_and_audit():
@@ -151,3 +153,88 @@ def test_score_command_writes_calibration_that_opens_the_gate(tmp_path, capsys):
     assert calibrate.main(['gate', '--runs-dir', str(tmp_path)]) == 0
     (tmp_path / 'empty').mkdir()
     assert calibrate.main(['gate', '--runs-dir', str(tmp_path / 'empty')]) == 4
+
+
+def with_cfg(**over):
+    """CFG copy with nested overrides, e.g. with_cfg(jev={'threshold': 0.6})."""
+    c = json.loads(json.dumps(CFG))
+    for k, v in over.items():
+        c[k] = dict(c[k], **v) if isinstance(v, dict) else v
+    return c
+
+
+def test_fingerprint_fields_per_backend():
+    g, j, h = (calibrate.fingerprint(CFG, b) for b in ('gemini', 'jev', 'hybrid'))
+    assert g['backend'] == 'gemini' and g['model'] == CFG['model'] and g['jev_model'] is None and g['band'] is None
+    assert j['backend'] == 'jev' and j['jev_model'] == 'typesafe/jev-1.13' and j['model'] is None and j['prompt_sha256'] is None
+    assert len(j['question_sha256']) == 64 and j['threshold'] == 0.5 and j['band'] is None
+    assert h['model'] == 'gemini-3.8-flash' and h['thinking_level'] == 'LOW' and h['band'] == [0.2, 0.8] and h['jev_model'] == j['jev_model']
+    assert calibrate.fingerprint(CFG) == h          # default backend is hybrid
+
+
+@pytest.mark.parametrize('backend,over', [
+    ('jev', dict(jev={'model': 'typesafe/jev-9'})), ('jev', dict(jev={'threshold': 0.6})),
+    ('hybrid', dict(jev={'threshold': 0.6})), ('hybrid', dict(hybrid={'band_lo': 0.3})), ('hybrid', dict(hybrid={'band_hi': 0.7})),
+    ('hybrid', dict(hybrid={'model': 'gemini-3.5-flash-lite'})), ('hybrid', dict(hybrid={'thinking_level': 'MEDIUM'})),
+    ('gemini', dict(model='gemini-3.8-flash')), ('gemini', dict(thinking_level='LOW')),
+])
+def test_changed_setting_closes_that_backends_gate(backend, over):
+    fp = calibrate.fingerprint(CFG, backend)
+    c = {'fingerprint': fp, 'model_metrics': {'n': 263, 'precision': 0.95, 'recall': 0.95}}
+    assert calibrate.evaluate_gate(c, CFG, fp)[0]
+    ok, why = calibrate.evaluate_gate(c, with_cfg(**over), calibrate.fingerprint(with_cfg(**over), backend))
+    assert not ok and any('stale' in w for w in why)
+
+
+def test_changed_question_text_closes_jev_gate(monkeypatch):
+    import jev
+    fp = calibrate.fingerprint(CFG, 'jev')
+    monkeypatch.setattr(jev, 'QUESTION_SHA256', 'f' * 64)
+    ok, why = calibrate.evaluate_gate({'fingerprint': fp, 'model_metrics': {'n': 263, 'precision': 1, 'recall': 1}}, CFG,
+                                      calibrate.fingerprint(CFG, 'jev'))
+    assert not ok and any('question_sha256' in w for w in why)
+
+
+def test_jev_gate_ignores_prompt_and_other_backends_calibrations(tmp_path):
+    for b, when in (('jev', '2026-10-01T00:00:00Z'), ('gemini', '2026-10-09T00:00:00Z')):
+        write(tmp_path, b, {'fingerprint': calibrate.fingerprint(CFG, b), 'scored_at': when,
+                            'model_metrics': {'n': 263, 'precision': 0.95 if b == 'jev' else 0.5, 'recall': 0.95}})
+    assert calibrate.require_gate(tmp_path, CFG, 'jev')['_path'].endswith('jev/calibration.json')   # newer gemini one is not 'newest'
+    with pytest.raises(SystemExit) as e:
+        calibrate.require_gate(tmp_path, CFG, 'gemini')
+    assert e.value.code == 4
+    with pytest.raises(SystemExit) as e:
+        calibrate.require_gate(tmp_path, CFG, 'hybrid')       # none calibrated for hybrid
+    assert e.value.code == 4
+    assert calibrate.main(['gate', '--runs-dir', str(tmp_path), '--backend', 'jev']) == 0
+    assert calibrate.main(['gate', '--runs-dir', str(tmp_path), '--backend', 'hybrid']) == 4
+
+
+def test_score_refuses_rows_from_other_settings_or_unstamped(tmp_path):
+    labels = calibrate.load_labels()
+    perfect = lambda r: 'true' if r['label'] == 'dual' else 'false'
+    rd = tmp_path / 'r'; rd.mkdir()
+    common.write_jsonl(rd / 'results.jsonl', results(labels, perfect, 'jev'))
+    with pytest.raises(SystemExit):
+        calibrate.cmd_score(rd, with_cfg(jev={'threshold': 0.7}))     # rows made at 0.5, config now 0.7
+    with pytest.raises(SystemExit):
+        calibrate.cmd_score(rd, CFG, 'gemini')                       # asked backend differs
+    common.write_jsonl(rd / 'results.jsonl', [{k: v for k, v in r.items() if k not in ('backend', 'run_config')} for r in results(labels, perfect)])
+    with pytest.raises(SystemExit):
+        calibrate.cmd_score(rd, CFG)
+
+
+def test_score_command_for_jev_rows_and_spend(tmp_path, capsys):
+    labels = calibrate.load_labels()
+    rows = results(labels, lambda r: 'true' if r['label'] == 'dual' else 'false', 'jev')
+    for r in rows:
+        r.update(backend_used='jev', p_yes=0.9, model='typesafe/jev-1.13', usage={'prompt_tokens': 4000, 'output_tokens': 20, 'cost_usd': 0.0002})
+    rd = tmp_path / 'j'; rd.mkdir()
+    common.write_jsonl(rd / 'results.jsonl', rows)
+    assert calibrate.cmd_score(rd, CFG) == 0
+    out = capsys.readouterr().out
+    assert 'backend jev' in out and "label produced by {'jev': 270}" in out and 'GATE OPEN' in out and 'spend: jev $0.0540' in out
+    cal_ = json.loads((rd / 'calibration.json').read_text())
+    assert cal_['fingerprint']['backend'] == 'jev' and cal_['dual_true_rows'] == 0     # Jev has no quote to verify
+    assert calibrate.main(['gate', '--runs-dir', str(tmp_path), '--backend', 'jev']) == 0
+    assert calibrate.main(['gate', '--runs-dir', str(tmp_path), '--backend', 'gemini']) == 4

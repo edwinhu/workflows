@@ -22,7 +22,9 @@ def test_request_shape_has_no_sampling_params_and_carries_id():
     r = classify.build_request(ROW, CFG)
     gc = r['request']['generationConfig']
     assert set(gc) == {'responseMimeType', 'responseSchema'} and gc['responseSchema'] == SCHEMA
-    assert r['metadata'] == {'request_id': ROW['filing_id']}
+    # Vertex batch rejects a nested 'metadata' object (code 3); the join id is a scalar top-level column
+    assert r['request_id'] == ROW['filing_id'] and 'metadata' not in r
+    assert {k for k, v in r.items() if not isinstance(v, (str, int, float, bool))} == {'request'}
     t = r['request']['contents'][0]['parts'][0]['text']
     assert t.startswith('FILING_ID: 0000108601-00-000002') and ROW['bundle_text'] in t
     assert 'DUAL-CLASS' in r['request']['systemInstruction']['parts'][0]['text']
@@ -59,7 +61,7 @@ def line(rid, with_meta=True, status='', response=None):
     req = {'contents': [{'role': 'user', 'parts': [{'text': f'FILING_ID: {rid}\n\nbody'}]}]}
     d = {'request': req, 'response': response if response is not None else resp(GOOD, camel=True), 'status': status}
     if with_meta:
-        d['metadata'] = {'request_id': rid}
+        d['request_id'] = rid
     return d
 
 
@@ -91,3 +93,21 @@ def test_cost_formula():
     c = common.estimate_cost(1000, 12000, 250, CFG['model'], 'batch', CFG, prompt_chars=4000)
     in_tok = (12000 + 4000 + len(json.dumps(SCHEMA))) / 4
     assert abs(c['usd'] - 1000 * (in_tok * 0.15 + 250 * 1.25) / 1e6) < 1e-9
+
+
+def test_request_id_read_from_top_level_with_filing_id_fallback_and_conflict_check():
+    import pytest
+    rid = '0000000001-99-000000'
+    assert classify.request_id_of(line(rid)) == rid                           # echoed request_id
+    assert classify.request_id_of(line(rid, with_meta=False)) == rid          # FILING_ID in the echoed request text
+    only_id = {'request_id': rid, 'response': {}}                             # no echoed request
+    assert classify.request_id_of(only_id) == rid
+    with pytest.raises(ValueError):
+        classify.request_id_of(dict(line(rid), request_id='0000000009-99-000009'))
+    with pytest.raises(ValueError):
+        classify.request_id_of({'response': {}})
+
+
+def test_result_rows_carry_p_yes_and_backend_used():
+    r = classify.result_row(ROW, resp(GOOD), 'm', 'flex')
+    assert r['p_yes'] is None and r['backend_used'] == 'gemini'
