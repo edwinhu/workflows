@@ -305,3 +305,36 @@ describe('a DISARMED hold is inert', () => {
     expect(existsSync(join(dir, `work-hold-${sid}.json`))).toBe(false)
   })
 })
+
+describe('a check-less, run-less afk hold is never judged: the ceiling clock is its only release', () => {
+  test('before the ceiling: allow, no round, and no request reaches the judge', async () => {
+    const dir = mkTmp('judgefacts-')
+    const log = join(dir, 'jev.log')
+    writeFileSync(log, '')
+    const port = 18838
+    const srv = stubJev(port, 0.1, log)
+    await Bun.sleep(700)
+    const r = stop(dir, 'afk-quiet', { origin: 'afk' }, port)
+    srv.kill()
+    expect(r.status).toBe(0)
+    expect(r.stdout).toBe('')
+    expect(r.state.rounds).toBe(0)
+    expect(readFileSync(log, 'utf8')).toBe('')
+  }, 30000)
+
+  test('past the ceiling: released `expired`, still without asking the judge', async () => {
+    const dir = mkTmp('judgefacts-')
+    const log = join(dir, 'jev.log')
+    writeFileSync(log, '')
+    const port = 18839
+    const srv = stubJev(port, 0.1, log)
+    await Bun.sleep(700)
+    const r = stop(dir, 'afk-done', { origin: 'overnight', startedAt: Math.floor(Date.now() / 1000) - 3600, ceilingMinutes: 30 }, port)
+    srv.kill()
+    expect(r.stdout).toBe('')
+    expect(r.stderr).toContain('Hold released UNMET')
+    expect(r.state).toBeNull()
+    expect(lastLedgerEntry(join(dir, 'work-hold-afk-done.releases.log'))?.verb).toBe('expired')
+    expect(readFileSync(log, 'utf8')).toBe('')
+  }, 30000)
+})

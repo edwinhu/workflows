@@ -28,8 +28,9 @@ function world() {
 type W = ReturnType<typeof world>
 const env = (w: W, extra: Record<string, string> = {}) =>
   ({ ...HERMETIC_ENV, TMPDIR: w.tmp, WORK_HOLD_COMPACT_WINDOW: '0', CLAUDE_CODE_SESSION_ID: SID, ...extra })
-const arm = (w: W, now: string, args: string[] = [SID, 'ship the thing']) =>
-  spawnSync('bash', [ARM, ...args], { encoding: 'utf8', timeout: 60_000, env: env(w, { AFK_NOW: now }) })
+const arm = (w: W, now: string, args: string[] = [SID, 'ship the thing'], extra: Record<string, string> = {}) =>
+  spawnSync('bash', [ARM, ...args], { encoding: 'utf8', timeout: 60_000, env: env(w, { AFK_NOW: now, ...extra }) })
+const strict = { AFK_STRICT: '1' }
 const stop = (w: W) =>
   spawnSync('bun', [HOOK], { input: JSON.stringify({ session_id: SID }), encoding: 'utf8', timeout: 60_000, env: env(w) })
 const read = (w: W) => JSON.parse(readFileSync(w.state, 'utf8'))
@@ -63,12 +64,51 @@ describe('arm.sh ceiling', () => {
 })
 
 describe('arm.sh refusals', () => {
-  test('missing session id: non-zero, nothing armed', () => {
+  test('missing session id: exit 2 under AFK_STRICT, nothing armed', () => {
     const w = world()
-    const r = arm(w, '23:30', [])
+    const r = arm(w, '23:30', [], strict)
     expect(r.status).toBe(2)
-    expect(r.stderr).toContain('Not armed')
+    expect(r.stdout).toContain('Not armed')
     expect(r.stdout).not.toContain('armed until')
+  })
+
+  // The SKILL.md `!` line drops the whole skill body on a non-zero exit (session b1d38d9b, 2026-10-08).
+  test('every refusal exits 0 by default and says "Not armed" on stdout', () => {
+    const w = world()
+    const none = arm(w, '23:30', [])
+    expect(none.status).toBe(0)
+    expect(none.stdout).toContain('Not armed')
+    writeFileSync(join(w.tmp, 'farm-events', SID, `${process.pid}.ndjson`), 'grind: START grind%20j.jsonl cwd=/x journal=/j \n')
+    const grind = arm(w, '23:30')
+    expect(grind.status).toBe(0)
+    expect(grind.stdout).toContain('grind loop')
+    expect(grind.stdout).toContain('Not armed')
+    expect(Bun.file(w.state).size).toBe(0)
+  })
+
+  test('a flag-like session id is rejected with usage; no hold file for it', () => {
+    for (const sid of ['--help', '-x']) {
+      const w = world()
+      const r = arm(w, '23:30', [sid])
+      expect(r.status).toBe(0)
+      expect(r.stdout).toContain('usage: arm.sh <session-id>')
+      expect(r.stdout).toContain('Not armed')
+      expect(Bun.file(join(w.tmp, `work-hold-${sid}.json`)).size).toBe(0)
+      expect(arm(w, '23:30', [sid], strict).status).toBe(2)
+    }
+  })
+
+  test('already armed by another goal: says the afk mandate is NOT recorded, exits 0, changes nothing', () => {
+    const w = world()
+    expect(spawnSync('bash', [HOLD, 'exit 1', '--goal', 'the OTC run lands', '--minutes', '600'],
+      { encoding: 'utf8', timeout: 60_000, env: env(w) }).status).toBe(0)
+    const before = readFileSync(w.state, 'utf8')
+    const r = arm(w, '23:30')
+    expect(r.status).toBe(0)
+    expect(r.stdout).toContain('already armed')
+    expect(r.stdout).toContain('afk mandate is NOT recorded')
+    expect(r.stdout).toContain('heartbeat')
+    expect(readFileSync(w.state, 'utf8')).toBe(before)
   })
 
   test('idempotent: a second call prints status and changes nothing', () => {
@@ -79,15 +119,16 @@ describe('arm.sh refusals', () => {
     expect(r.status).toBe(0)
     expect(r.stdout).toContain('already armed')
     expect(r.stdout).toContain('hold: ARMED')
+    expect(r.stdout).not.toContain('NOT recorded')
     expect(readFileSync(w.state, 'utf8')).toBe(before)
   })
 
   test('a live grind loop refuses and arms nothing', () => {
     const w = world()
     writeFileSync(join(w.tmp, 'farm-events', SID, `${process.pid}.ndjson`), 'grind: START grind%20j.jsonl cwd=/x journal=/j \n')
-    const r = arm(w, '23:30')
+    const r = arm(w, '23:30', [SID, 'ship the thing'], strict)
     expect(r.status).toBe(3)
-    expect(r.stderr).toContain('grind loop')
+    expect(r.stdout).toContain('grind loop')
     expect(Bun.file(w.state).size).toBe(0)
   })
 
@@ -113,21 +154,33 @@ describe('work-hold.ts afk allow rule', () => {
     expect(read(w).rounds).toBe(0)
   })
 
-  test('no live run: the normal path is taken (a round is counted or a block issued)', () => {
+  // A check-less afk hold is never judged: its goal is not decidable, so the clock is its only release.
+  test('no check, no live run: allow, no round counted, no judgement recorded', () => {
     const w = world()
     expect(armHold(w, ['--origin', 'afk']).status).toBe(0)
     beacon(w)
-    stop(w)
+    const r = stop(w)
+    expect(r.stdout.trim()).toBe('')
     const s = read(w)
-    expect(s.rounds + (s.history ?? []).length).toBeGreaterThan(0)
+    expect(s.rounds).toBe(0)
+    expect(s.history ?? []).toEqual([])
   })
 
-  test('live run but no watcher beacon: normal path', () => {
+  test('no check, live run but no watcher beacon: allow, no round counted', () => {
     const w = world()
     expect(armHold(w, ['--origin', 'afk']).status).toBe(0)
     liveRun(w)
-    stop(w)
-    expect(read(w).rounds).toBeGreaterThan(0)
+    expect(stop(w).stdout.trim()).toBe('')
+    expect(read(w).rounds).toBe(0)
+  })
+
+  test('an afk hold WITH a check keeps the normal path (a round is counted)', () => {
+    const w = world()
+    expect(spawnSync('bash', [HOLD, 'exit 1', '--goal', 'Afk mandate: t.', '--minutes', '600', '--rounds', '1500', '--origin', 'afk'],
+      { encoding: 'utf8', timeout: 60_000, env: env(w) }).status).toBe(0)
+    const r = stop(w)
+    expect(r.stdout).toContain('"decision":"block"')
+    expect(read(w).rounds).toBe(1)
   })
 
   test('a hold armed under the pre-rename origin "overnight" still yields to a live run', () => {

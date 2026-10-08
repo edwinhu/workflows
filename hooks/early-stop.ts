@@ -25,7 +25,9 @@
  *      blocked stop as a `type:"user"` entry with `isMeta:true`, which `latestUserTurn` skips, so
  *      this hook's own blocks cannot rotate the key that caps them.
  *   3. NEVER DOUBLE-BLOCKS WITH `work-hold`. An armed hold is already holding the session on an
- *      objective and speaks for itself; this one stands down for the duration.
+ *      objective and speaks for itself; this one stands down for the duration. The exception is an
+ *      afk hold with no check and no run before its ceiling: `work-hold.ts` allows every such stop,
+ *      so this hook speaks for it, with reasons that never send the model to AskUserQuestion.
  *   4. NEVER BLOCKS WHILE THE WATCHER WILL WAKE THE SESSION. When a farm or work run this session
  *      launched is still live and the watcher mod (`hooks/watch/watcher.ts`) is running here — its
  *      beacon is fresh — the owed work is in flight and its finish arrives as a `$.prompt.submit`, so a
@@ -43,7 +45,7 @@ import { appendFileSync, existsSync, readdirSync, readFileSync, statSync, writeF
 import { createHash } from 'node:crypto'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
-import { decisionsCall, lastLedgerEntry, ledgerPath, parseNoul, statePath } from './work-hold.ts'
+import { ceilingReached, decisionsCall, lastLedgerEntry, ledgerPath, parseNoul, statePath } from './work-hold.ts'
 import {
   BEACON, beaconFresh, classify, dirname, parseEvents, wakeable, WAKE_HORIZON_MS, type Facts, type Run,
 } from './watch/runs.ts'
@@ -284,15 +286,27 @@ export function workHoldArmed(session: string): boolean {
   }
 }
 
-/** The goal of this session's armed `/afk` hold, or null: the hold itself is the mandate. */
-export function afkHoldGoal(session: string): string | null {
+/**
+ * This session's armed `/afk` hold before its ceiling, or null. `silent` is a hold `work-hold.ts`
+ * never blocks for (no check, no run), so this hook speaks in its place.
+ */
+export function afkHold(session: string, nowSeconds = Math.floor(Date.now() / 1000)): { goal: string; silent: boolean } | null {
   try {
-    const h = JSON.parse(readFileSync(statePath(session), 'utf8')) as { origin?: string; goal?: string }
+    const h = JSON.parse(readFileSync(statePath(session), 'utf8')) as {
+      origin?: string; goal?: string; check?: string; run?: string; startedAt: number; ceilingMinutes: number
+    }
     // 'overnight' is the pre-rename origin; a hold armed under it is still a mandate for one release.
-    return h.origin === 'afk' || h.origin === 'overnight' ? h.goal || 'afk hold' : null
+    if (h.origin !== 'afk' && h.origin !== 'overnight') return null
+    if (ceilingReached({ ...h, rounds: 0, maxRounds: Infinity }, nowSeconds)) return null
+    return { goal: h.goal || 'afk hold', silent: !h.check?.trim() && !h.run }
   } catch {
     return null
   }
+}
+
+/** The goal of this session's armed `/afk` hold, or null: the hold itself is the mandate. */
+export function afkHoldGoal(session: string): string | null {
+  return afkHold(session)?.goal ?? null
 }
 
 function pidAlive(pid: number): boolean {
@@ -439,6 +453,22 @@ export const NO_WAKE_REASON =
   'running job), so ending now idles until the user returns. Take the next queued item, or CronCreate a ' +
   'heartbeat that names the standing objective; if nothing at all is left, say so and ask with AskUserQuestion.'
 
+/** Under an armed afk hold the user is asleep until the ceiling, so no reason sends them a question. */
+const AFK_NO_QUESTIONS =
+  'if nothing can move without the user, write the open questions into the morning report and take the ' +
+  'next item you can move; do not use AskUserQuestion until the ceiling.'
+
+/** `BLOCK_REASON` under an armed afk hold. */
+export const AFK_BLOCK_REASON =
+  'Do not end a turn while work the user asked for is still owed. A message with no tool call stops ' +
+  'the work until they come back. Take the next step now; ' + AFK_NO_QUESTIONS
+
+/** `NO_WAKE_REASON` under an armed afk hold. */
+export const AFK_NO_WAKE_REASON =
+  'Under the afk mandate this session has no wake left (no heartbeat, no running job), so ending now ' +
+  'idles until the user returns. Take the next queued item, or CronCreate a heartbeat that names the ' +
+  'standing objective; ' + AFK_NO_QUESTIONS
+
 interface Counter {
   turn: string
   blocks: number
@@ -521,7 +551,8 @@ function main(): void {
   // No session id, no per-session counter — and an uncapped block is the loop this must not become.
   if (!session) return allowNow('-', '-', 'no session id: the per-turn cap cannot be keyed')
 
-  if (workHoldArmed(session))
+  const afk = afkHold(session)
+  if (workHoldArmed(session) && !afk?.silent)
     return allowNow(session, '-', 'a work-hold is armed: it speaks for this session')
 
   const live = liveOwnedRuns(session)
@@ -539,7 +570,7 @@ function main(): void {
     turn = jsonl ? latestUserTurn(jsonl) : null
     if (turn) {
       try {
-        ctx = judgeContext(jsonl, afkHoldGoal(session))
+        ctx = judgeContext(jsonl, afk?.goal ?? null)
       } catch {
         /* the old two-part state still judges */
       }
@@ -565,7 +596,7 @@ function main(): void {
       return allowNow(session, turn.marker, 'counter unwritable: cannot cap, so not blocking')
     }
     audit(session, turn.marker, '-', 'block', `no wake under mandate: ${spent + 1}/${MAX_BLOCKS_PER_TURN} this turn`)
-    process.stdout.write(JSON.stringify({ decision: 'block', reason: NO_WAKE_REASON }))
+    process.stdout.write(JSON.stringify({ decision: 'block', reason: afk ? AFK_NO_WAKE_REASON : NO_WAKE_REASON }))
     process.exit(0)
   }
 
@@ -593,7 +624,7 @@ function main(): void {
   }
 
   audit(session, turn.marker, p, 'block', `${spent + 1}/${MAX_BLOCKS_PER_TURN} this turn`)
-  process.stdout.write(JSON.stringify({ decision: 'block', reason: BLOCK_REASON }))
+  process.stdout.write(JSON.stringify({ decision: 'block', reason: afk ? AFK_BLOCK_REASON : BLOCK_REASON }))
   process.exit(0)
 }
 

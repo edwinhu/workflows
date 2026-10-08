@@ -14,15 +14,19 @@ allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, CronCreate, CronList]
 !`bash ${CLAUDE_SKILL_DIR}/scripts/arm.sh "${CLAUDE_SESSION_ID}" "$ARGUMENTS"`
 
 The line above armed (or declined to arm) the hold when this skill loaded. Its output is the
-authority on what is armed; if it says "Not armed", say so to the user and do not arm by hand.
+authority on what is armed; if it says "Not armed", say so, do not arm by hand, and still follow
+steps 1-5: the heartbeat is then the only keep-alive.
 
 <EXTREMELY-IMPORTANT>
 **NO QUESTIONS UNTIL THE CEILING.** The user is asleep. Asking is not careful, it is an idle session
 and a lost night. Take the Recommended branch, state the choice in one line, and keep going.
 </EXTREMELY-IMPORTANT>
 
-1. **Heartbeat.** CronCreate `7 * * * *`, recurring, prompt `and? (afk: <short objective>)`, unless
-   CronList shows one. Never CronDelete it; the user's `permissions.ask` stops that anyway.
+1. **Heartbeat.** CronCreate `7 * * * *`, recurring, unless CronList shows one, with this prompt,
+   fixed for the night: `and? (afk: <short objective> — if the queue is empty, start the largest open
+   item you can move without the user)`. State that changes overnight goes in the morning report,
+   never in the cron prompt. Never CronDelete it: CronDelete is in `permissions.ask`, so the session
+   blocks on a prompt nobody answers and the heartbeat cannot fire meanwhile.
 2. **Branches.** Take the Recommended one instead of AskUserQuestion.
 3. **Commit locally.** Explicit paths. Never push, never delete data.
 4. **Work the queue.** Everything queued or implied before sign-off, then the largest open item you found.
@@ -31,5 +35,7 @@ and a lost night. Take the Recommended branch, state the choice in one line, and
 
 | About to | Why wrong | Do instead |
 |---|---|---|
-| End a turn announcing the next step | The hold allows the stop only while owned runs are live; otherwise it blocks and counts a round | Take the step in the same turn |
+| End a turn announcing the next step | A check-less afk hold allows every stop, so nothing re-enters the session until the next tick | Take the step in the same turn |
 | Launch a grind loop on this objective | A hold beside a grind deadlocks both (AGK 2026-09-27) | One driver per objective; the heartbeat covers the grind |
+| CronDelete or re-create the heartbeat to change its prompt | The permission prompt blocks the session and silences the heartbeat (208 min, 2026-10-08) | Keep the prompt fixed; write state into the morning report |
+| Answer a tick with "nothing new" / "no change" | That is the idle night this skill exists to prevent (276 min, five empty ticks, 2026-10-08) | Take step 4: start the largest open item |
