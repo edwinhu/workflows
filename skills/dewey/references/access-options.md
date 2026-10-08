@@ -13,6 +13,29 @@ Dewey delivers data as **partitioned files** (Parquet or CSV.gz), not SQL result
 | **R** | `deweyr` | R workflows | `download_dewey()` (uv-managed), `download_dewey_duck()` |
 | **MCP server** | `api.deweydata.io/mcp` | discovery, schema, sampling from inside Claude | 9 tools — see `mcp.md` |
 
+## Projects: the access unit (web app, measured 2026-10-08)
+
+Bulk API access to a table requires adding it to a **project**. Each project has one API URL per table (`https://api.deweydata.io/api/v1/external/data/prj_...`); the API key is used with that URL.
+
+**Limits on the UVA subscription:**
+
+- 3 active projects. At 3 of 3, "New Project" is disabled everywhere: on `/projects` ("You have reached your maximum number of active projects. Update or archive existing project statuses to create a new project.") and inside the add-to-project modal.
+- At most 5 datasets per project. Several tables from one dataset count as ONE: Nevada entity status shows "Total Datasets 2/5" with 3 GovFiles tables plus 4 BrightQuery tables. A full project shows "(this project has reached its dataset limit)".
+- The "Personal Project" accepts only free tables.
+- Project terms: "the use of this data is limited to this specific project and for academic purposes only". Pick or describe the project to match the research use.
+
+**Add-to-project flow:**
+
+1. Dataset page `/data/<Provider>/<dataset>?datasetSlug=<table>`: table selector, Get Sample, Get Data.
+2. PRIMARY table: Get Data opens "Customize Data" (filters, columns, preview) with "Add Table to Project", which leads to "Select projects" (file type, checkboxes, Continue).
+3. SUPPLEMENTARY table: Get Data opens `Get Data from "<table>"` (file type select, project checkboxes, Save).
+4. After saving the app goes to `/get-data/<projectId>/<slug>?skipCustomization=true`, offering "Download File(s) (<fmt>) N files (zipped)" and "Bulk API".
+5. Bulk API shows the API URL, "Issue New Key" and a deweypy one-liner: `uvx --python 3.13 --from deweypy dewey --api-key KEY speedy-download <prj_id>`. A key is displayed once and issuing a new one may revoke the old one: ask the user before rotating.
+
+A "Data Request Form" modal that appears beside the download dialog is not a block: see `brightquery-delaware-stock-filings.md`.
+
+**Driving the app over CDP:** chrome-devtools click-by-uid times out on these Radix modals ("did not become interactive"); `element.click()` through `evaluate_script` works. The table-selector options are not in the DOM until opened, so navigate by `datasetSlug`. Iframes of app pages are blocked. Use `evaluate_script` with `filePath` to capture an API URL without printing it.
+
 ## Partitioning and date filtering
 
 Most Dewey datasets are **date-partitioned** (a file per day/week/month). The two universal levers:
