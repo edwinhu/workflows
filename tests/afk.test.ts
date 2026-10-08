@@ -1,5 +1,5 @@
 /**
- * /afk: arm.sh computes the ceiling to 09:00 and arms a check-less hold; work-hold.ts lets an
+ * /afk: arm.sh computes the ceiling (18:00 by day, else 09:00) and arms a check-less hold; work-hold.ts lets an
  * afk-origin hold yield to this session's live owned runs and leaves other holds alone.
  *
  * Run: bun test tests/afk.test.ts
@@ -42,7 +42,7 @@ const beacon = (w: W) =>
   writeFileSync(join(w.tmp, 'farm-events', SID, 'watcher.alive'), `${Math.floor(Date.now() / 1000)}\n`)
 
 describe('arm.sh ceiling', () => {
-  for (const [now, minutes] of [['23:30', 570], ['02:00', 420], ['08:30', 60], ['12:00', 1260]] as const) {
+  for (const [now, minutes] of [['23:30', 570], ['02:00', 420], ['08:30', 60], ['12:00', 360]] as const) {
     test(`${now} -> ${minutes} minutes`, () => {
       const w = world()
       const r = arm(w, now)
@@ -56,6 +56,28 @@ describe('arm.sh ceiling', () => {
       expect(s.maxRounds).toBeGreaterThanOrEqual(1440)
     })
   }
+
+  // A daytime /afk at 09:45 armed a 23 h hold (2026-10-08); the ceiling now follows the working day.
+  for (const [now, minutes, until] of [
+    ['09:45', 495, '18:00'], ['17:30', 60, '18:30'], ['18:30', 870, '09:00'], ['23:00', 600, '09:00'], ['08:30', 60, '09:30'],
+  ] as const) {
+    test(`${now} -> ${minutes} minutes, prints until ${until}`, () => {
+      const w = world()
+      const r = arm(w, now)
+      expect(r.status).toBe(0)
+      expect(r.stdout).toContain(`afk hold armed until ${until} (`)
+      expect(read(w).ceilingMinutes).toBe(minutes)
+    })
+  }
+
+  test('a queued daytime /afk gets the same 18:00 ceiling', () => {
+    const w = world()
+    expect(spawnSync('bash', [HOLD, 'exit 1', '--goal', 'the OTC run lands', '--minutes', '600'],
+      { encoding: 'utf8', timeout: 60_000, env: env(w) }).status).toBe(0)
+    const r = arm(w, '09:45')
+    expect(r.stdout).toContain('(ceiling 18:00,')
+    expect(read(w).queued[0].ceilingMinutes).toBe(495)
+  })
 
   test('no objective defaults the goal text', () => {
     const w = world()
