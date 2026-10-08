@@ -142,8 +142,8 @@ const NOT_TYPED = /^(\s*<pasted_content|\s*(Spawned agent |Relaunched from the |
 
 /**
  * Was this `type:"user"` string entry typed by the human? The harness tags it: `origin.kind` is
- * `human` for typed and queued input, and `task-notification`, `plugin` or `auto-continuation`
- * for everything it injects. A cron tick is `isMeta` and never reaches here. Older transcripts
+ * `human` for typed and queued input, and a non-human kind (a task notification, a plugin, an
+ * auto-continuation) for everything it injects. A cron tick is `isMeta` and never reaches here. Older transcripts
  * carry no tag, so the text shape decides there.
  */
 export function typedByHuman(e: Record<string, unknown>, text: string): boolean {
