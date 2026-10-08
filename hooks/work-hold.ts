@@ -1670,11 +1670,18 @@ function main(): void {
   // (a0) AN AFK HOLD WITH NO --run: the session's own farm/work/grind runs are the work, and the
   // watcher wakes the session when they land. Forcing a round here would only invent busy-work, so
   // allow the stop and count nothing (the clock still runs). Same rule early-stop.ts applies.
+  // With no check either, the goal is the afk mandate's prose, which no judge can decide (hidden-figures
+  // 2026-10-08: 42 blocks at 1-53%, each one wasted turn). The judge is never asked, no round counts,
+  // and the ceiling clock is the only release; early-stop.ts speaks for such a hold instead.
   if ((s.origin === 'afk' || s.origin === 'overnight') && !s.run) {
     const live = liveOwnedRuns(session)
-    if (live.length && watcherActive(session)) {
+    if ((live.length && watcherActive(session)) || checkless) {
       const c = ceilingReached({ ...s, rounds: 0 }, now)
-      if (c) release('expired', `${c}, with owned runs still live. Hold released UNMET — say so. ${HEARTBEAT_NOTE}`)
+      if (c)
+        release(
+          'expired',
+          `${c}${live.length ? ', with owned runs still live' : ''}. Hold released UNMET — say so. ${HEARTBEAT_NOTE}`,
+        )
       allowStop()
     }
   }
