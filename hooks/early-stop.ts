@@ -153,7 +153,11 @@ export function typedByHuman(e: Record<string, unknown>, text: string): boolean 
 
 /** A short question ("did you use overnight autonomous?") talks about a mandate; it does not set one. */
 const MONITOR_LIVE_MS = 45 * 60_000
-const isQuestion = (t: string): boolean => t.trim().length < 200 && t.trim().endsWith('?')
+const INTERROGATIVE = /^(how|what|why|when|where|which|who|is|are|was|were|do|does|did|can|could|should|would|will|has|have)\b/i
+const isQuestion = (t: string): boolean => {
+  const s = t.trim()
+  return s.length < 200 && (s.endsWith('?') || INTERROGATIVE.test(s))
+}
 
 export interface JudgeContext {
   /** The newest typed message that carries a standing instruction, if any. */
