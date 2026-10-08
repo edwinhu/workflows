@@ -146,7 +146,7 @@ Five domain requirements on the plan:
 - **`refs` on every task row and on the lens** — required, may be empty. `work`'s spine does not validate it;
   `wc-probe` P7 refuses an absent key in THIS file, so a live run assembled from an approved plan is
   unchecked. Write `refs: []` to state "no domain rules" rather than omitting the key.
-- **Batch extraction strategy.** A task whose work is per-document LLM coding or extraction is a task that LAUNCHES a `gemini-vertex` job on pre-cut excerpts (with a 1-request synchronous test first). It is never an agent reading the documents.
+- **Batch extraction strategy.** A task whose work is per-document LLM coding or extraction is a task that LAUNCHES a `gemini-vertex` job on pre-cut excerpts (with a 1-request synchronous test first). It is never an agent reading the documents. Dual-class share status of a 10-K is already built: `wrds/scripts/dual_class/` (extractor + gated classifier; `wrds/references/dual-class.md`).
 
 ## Phase 3 — GOAL
 
