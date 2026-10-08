@@ -42,6 +42,7 @@ After logging in, mint an **API key** (Connections → Add Connection → API Ke
 |----------|-------------|
 | **LinkUp** | Job postings & labor-market activity — 342M postings back to 2007, plus full description text, extracted salary (Jun 2026), structured fields, remote/FT-PT tags, ONET codes. See `linkup-job-postings.md`. |
 | **GovFiles** | US business-entity registry — all 50 Secretary of State offices, 98.6M rows incl. dissolved (2026-09-23 refresh), very uneven by state. No DE status, NV only ~2023 formations, no CIK ids (2026-09 refresh); for Nevada status use the OpenCorporates bulk snapshot. See `govfiles-business-entity.md` (includes the comparison). |
+| **Lightcast** (company-data, office-data) | Global company and office directory, ~290M company / ~292M office rows, one current table (refresh 2026-08). Firmographics (employee/revenue bands, industry, website, current address), status and date-closed fields of undocumented provenance, undated previous names. No CIK, CUSIP, LEI, DUNS or state of incorporation; ticker only inside COMPANY_STOCK_EXCHANGES. Must be added to a Dewey project before download. Assessed 2026-10-08: ~/projects/nevada/scratch/lightcast_profile/report.md. |
 | **People Data Labs** | Aggregated employee insights by company |
 | **WageScape** | Salary / wage data |
 | **Rhetorik** | Company technographics & office locations |
