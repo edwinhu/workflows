@@ -932,9 +932,14 @@ test('(c) a non-afk hold on top with an afk hold queued: this hook stands down, 
   const srv = stubDecisions(port, 0.99)
   await settle()
   const { dir, transcript } = mandateSession([cronCreate('cccc3333', '2026-10-07T01:01:00.000Z')])
-  const { run } = borrowedHold(dir, 'afk-queued')
-  const r = runHook(childEnv(dir, decisionsAt(port)), stopPayload('afk-queued', transcript))
-  srv.kill()
+  let run = ''
+  let r: ReturnType<typeof runHook>
+  try {
+    run = borrowedHold(dir, 'afk-queued').run
+    r = runHook(childEnv(dir, decisionsAt(port)), stopPayload('afk-queued', transcript))
+  } finally {
+    srv.kill()
+  }
   expect(r.out).toBe('')
   expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).toContain('work-hold is armed')
   expect(JSON.parse(readFileSync(join(dir, 'work-hold-afk-queued.json'), 'utf8')).run).toBe(run)
@@ -956,15 +961,19 @@ test('(d) after the borrowed hold releases, the promoted afk hold makes this hoo
   const srv = stubDecisions(port, 0.99)
   await settle()
   const { dir, transcript } = mandateSession([cronCreate('dddd4444', '2026-10-07T01:01:00.000Z')])
-  const { env } = borrowedHold(dir, 'afk-promoted')
-  writeFileSync(join(dir, 'DONE'), '')
-  const rel = Bun.spawnSync(['bun', WORK_HOLD], {
-    env, stdin: Buffer.from(JSON.stringify({ session_id: 'afk-promoted' })), stdout: 'pipe', stderr: 'pipe', timeout: 60_000,
-  })
-  expect(rel.stdout.toString().trim()).toBe('')
-  expect(JSON.parse(readFileSync(join(dir, 'work-hold-afk-promoted.json'), 'utf8')).origin).toBe('afk')
-  const r = runHook(childEnv(dir, decisionsAt(port)), stopPayload('afk-promoted', transcript))
-  srv.kill()
+  let r: ReturnType<typeof runHook>
+  try {
+    const { env } = borrowedHold(dir, 'afk-promoted')
+    writeFileSync(join(dir, 'DONE'), '')
+    const rel = Bun.spawnSync(['bun', WORK_HOLD], {
+      env, stdin: Buffer.from(JSON.stringify({ session_id: 'afk-promoted' })), stdout: 'pipe', stderr: 'pipe', timeout: 60_000,
+    })
+    expect(rel.stdout.toString().trim()).toBe('')
+    expect(JSON.parse(readFileSync(join(dir, 'work-hold-afk-promoted.json'), 'utf8')).origin).toBe('afk')
+    r = runHook(childEnv(dir, decisionsAt(port)), stopPayload('afk-promoted', transcript))
+  } finally {
+    srv.kill()
+  }
   expect(r.out).toContain('"decision":"block"')
   expect(r.out).toContain('write the open questions into the morning report')
   expect(r.out).not.toContain('say what blocks and use AskUserQuestion')
