@@ -30,7 +30,7 @@ Bulk API access to a table requires adding it to a **project**. Each project has
 2. PRIMARY table: Get Data opens "Customize Data" (filters, columns, preview) with "Add Table to Project", which leads to "Select projects" (file type, checkboxes, Continue).
 3. SUPPLEMENTARY table: Get Data opens `Get Data from "<table>"` (file type select, project checkboxes, Save).
 4. After saving the app goes to `/get-data/<projectId>/<slug>?skipCustomization=true`, offering "Download File(s) (<fmt>) N files (zipped)" and "Bulk API".
-5. Bulk API shows the API URL, "Issue New Key" and a deweypy one-liner: `uvx --python 3.13 --from deweypy dewey --api-key KEY speedy-download <prj_id>`. A key is displayed once and issuing a new one may revoke the old one: ask the user before rotating.
+5. Bulk API shows the API URL, "Issue New Key" and a deweypy one-liner: `uvx --python 3.13 --from deweypy dewey --api-key KEY speedy-download <prj_id>`. The panel shows the live key (readonly "API Key" textbox and the one-liner), so never print or grep a `take_snapshot` of this page. "Issue New Key" revokes the previous key immediately (measured 2026-10-08: the old key returned 401 `{"detail":"Invalid API key."}` on every project, even after a click that looked interrupted). Ask the user before rotating, and after a rotation update every copy (local key file, rjds, agenix).
 
 A "Data Request Form" modal that appears beside the download dialog is not a block: see `brightquery-delaware-stock-filings.md`.
 
