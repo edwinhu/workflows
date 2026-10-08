@@ -394,6 +394,7 @@ Working code from real projects:
 - **`scripts/inventory_schemas.py`** - Inventory every accessible WRDS PostgreSQL schema, its tables, and row counts — run this before guessing at a table name
 - **`scripts/scan_covers/`** - Generic profile-based Go framework for EDGAR extraction (SGE sharding, NFS concurrency, path construction, form-type filtering). Add a `profiles_*.go`, never a new standalone binary — see the Iron Law above.
 - **`scripts/parse_13f/`, `scripts/scan_headers/`, `scripts/sec_index/`** - Companion EDGAR tooling: 13F table parsing, SEC header scanning, index building
+- **`scripts/dual_class/`** - Dual-class common stock from 10-K text (WRDS clean filings or EDGAR): deterministic passage extractor + Gemini-on-Vertex classifier (Flex ≤10, gated Batch), plus `--backend jev|gemini|hybrid`; calibrated on 270 hand labels + 180 second-labeller filings (hybrid precision 0.992 / recall 1.000) — see `references/dual-class.md`
 
 ### Local Sample Notebooks
 
