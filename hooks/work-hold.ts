@@ -1777,7 +1777,7 @@ function main(): void {
     release(
       PASSED_GOAL_MET,
       (checkless ? `the classifier judged the goal MET (${judged})` : `\`${s.check}\` exits 0 and the classifier judged the goal MET (${judged})`) +
-        ` — the run's objective is met, hold released. ` + HEARTBEAT_NOTE,
+        ` — the run's objective met, hold released. ` + HEARTBEAT_NOTE,
     )
   }
   // (d) A ceiling on a red check: released, and the verdict is UNMET.
