@@ -50,7 +50,7 @@ Auto-generated map of the Dewey catalog under the institutional subscription —
 | BrightQuery | Stock Time Series - Daily | snapshot | 1.3B | 11 | 6GB | DL |
 | BrightQuery | Stock Time Series - Most Recent | snapshot | 406K | 13 | 19MB | DL |
 | Capology | Professional Football Salary Data | snapshot | 152K | 33 | 9MB | DL |
-| GovFiles | Business Entity | snapshot | 84.4M | 18 | 4.8GB | DL |
+| GovFiles | Business Entity | snapshot | 98.6M (2026-09) | 18 | 4.8GB | DL |
 | LinkUp | Company Analytics | 2007-08→2026-05 | 123.3M | 7 |  | DL |
 | LinkUp | Company and Ticker Reference | snapshot | 201K | 7 |  | DL |
 | LinkUp | Job Records | 2007-08→2026-05 | 342.0M | 15 |  | DL |

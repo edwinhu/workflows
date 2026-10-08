@@ -119,7 +119,7 @@ Institutional login (to browse the catalog / create the key) is via **UVA NetBad
 | **Veraset** | Movement | Device-level mobility (institutional license only) |
 | **PassBy** | Foot Traffic | Per-POI foot-traffic analytics |
 | Consumer Edge / PDI | Spend / transactions | Card & product-level purchasing |
-| **GovFiles** | US Business Entity | Secretary of State registries, 84.4M entities incl. dissolved; uneven by state (NV ~2023 formations only, no DE status) |
+| **GovFiles** | US Business Entity | Secretary of State registries, 98.6M rows incl. dissolved; uneven by state (NV 37K rows, ~2023 formations only; no DE status) |
 | **Exchange Data International** | Global Equity Corporate Actions (WCA/RCAN) | Dividends, splits, mergers, tenders — 2001→, global, w/ CUSIP/SEDOL/ISIN/FIGI bridges |
 | LinkUp | Job postings | Labor-market activity, scraped from employer career sites (2007→) |
 | ATTOM / Dwellsy / RentHub | Real estate | Property records, rentals |
