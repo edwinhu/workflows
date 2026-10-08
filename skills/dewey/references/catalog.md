@@ -4,6 +4,8 @@ Auto-generated map of the Dewey catalog under the institutional subscription —
 
 > Pick a dataset here → look up its columns in `schemas.json` (or MCP `get_dataset_schema`) → `read_sample` → bulk pull (SKILL Iron Law). Regenerate via the MCP sweep (see `mcp.md`). **GovFiles / Business Entity was added by hand after the last sweep** — the next regeneration should pick it up from the platform and this note can go.
 
+> The BrightQuery Legal Entity, Corporate Status, Stock * rows are tables of the Delaware Stock Filings dataset; sizes here predate the 2026-10-08 measurements in `brightquery-delaware-stock-filings.md`, which win.
+
 ## Categories
 
 - **Company Insights** — 79 datasets (58 downloadable)

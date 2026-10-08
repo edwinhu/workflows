@@ -72,6 +72,8 @@ This is not negotiable. Skipping the sample-and-filter step is NOT HELPFUL — D
 - **Use `deweypy.get_dataset_files`, not `deweydatapy.get_meta/get_file_list`** — the latter's `external-api/v3` endpoint is dead (returns non-JSON / 500 → `JSONDecodeError`), confirmed 2026-06-10. See `references/deweypy-client.md`.
 - **The download service throws transient HTTP 500s on individual presigned URLs**, and one bad file aborts a whole-batch DuckDB `COPY read_csv([...])`. For filtered pulls: chunk (~20 files), retry per chunk re-minting fresh URLs, fall back to per-file skip; restartable via per-chunk parquet. Set `SET http_timeout=120000; SET http_retries=3;`. Worked example in `references/deweypy-client.md`.
 - **Some providers gate access behind extra terms** (e.g. ConsumerEdge): the web "Get Data" flow shows an "I acknowledge…additional terms" modal you must accept once before the dataset is usable / its `prj_` path mints. Don't auto-accept a provider license without the user's OK.
+- **Bulk access is per project, with limits** (3 active projects, 5 datasets each; tables of one dataset count once; "New Project" disabled at 3/3). Add the table to a project, then read its API URL there. Never rotate a key ("Issue New Key") without the user's OK. Flow and limits: `references/access-options.md`.
+- **A "Data Request Form ... requires an institutional Dewey license" modal is not a block** (BrightQuery Delaware Stock Filings): the table is added anyway. Cancel it, never submit without the user's OK, and check the project's dataset list. `references/brightquery-delaware-stock-filings.md`.
 - **MCP tools load only at session start.** After `claude mcp add … dewey-prod`, the `search_datasets`/`sample_dataset`/etc. tools are NOT available in the current session — start a new session to use them.
 
 ### Red Flags — STOP Immediately If You're About To:
@@ -147,9 +149,10 @@ Core POI schema — **columns are UPPERCASE**, `NAICS_CODE` is a **string**, `BR
 
 ### Reference Files
 
-- **`references/access-options.md`** — all download methods (UI, deweypy, deweydatapy, DuckDB, MCP, R), 24h link expiry, partitioning, reading data on disk
+- **`references/access-options.md`** — all download methods (UI, deweypy, deweydatapy, DuckDB, MCP, R), projects (limits, add-to-project flow, Bulk API/key, CDP tips), 24h link expiry, partitioning, reading data on disk
 - **`references/deweypy-client.md`** — `deweypy` (modern CLI + `auth`/`download`) and `deweydatapy` (`get_meta`, `get_file_list`, `read_sample`, `download_files0/1`) function reference; `deweyr` for R
 - **`references/duckdb.md`** — selective remote-Parquet pulls, `COPY TO … PARTITION_BY` pattern, querying downloaded files
+- **`references/brightquery-delaware-stock-filings.md`** — BrightQuery Delaware Stock Filings: 9 tables with measured rows/size, Stock Class Get Data disabled, private-company/Delaware-parent scope, 2019-2023 window, the Data Request Form non-block
 - **`references/govfiles-business-entity.md`** — GovFiles US business-entity registry: all 7 table schemas w/ fill rates, Identifiers (documented CIK/LEI bridge is empty in the 2026-10 snapshot; FEIN in 6 states only), the missing officers/parties table, the ungraphable Relationships table (1% counterparty key), `FILED_ON` sentinel dates, **launched Jun 2026 / empty changelog — which sparse fields may backfill and which won't**, worked DuckDB join
 - **`references/linkup-job-postings.md`** — LinkUp: 12 tables across 2 products (incl. **Extracted Salary, Job Descriptions, Structured Fields, Remote Tag** — added Jun 2026, NOT in the stale `catalog.csv`), join keys (`COMPANY_ID`/`JOB_HASH`/`BASE_HASH`/`REQID`), salary top-coding at 12k/1M, point-in-time ticker joins, the scrape-log structural-break trap, worked firm-quarter vacancy panel
 - **`references/edi-corporate-actions.md`** — EDI WCA/RCAN corporate actions: event grain (options=ORs, serials=ANDs), identifier hierarchy + outturn ids, generic label/value slots, future-dated rows, Notes-table coverage gap, worked dividend/CUSIP query + `EVENTCD` enumeration
