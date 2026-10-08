@@ -51,6 +51,7 @@ Download links are **presigned URLs valid for 24 hours**.
 
 - `download_files0` / `get_file_list` then `download_files` — collects **all** links upfront. Fine for short jobs; a multi-day pull will hit expired links partway through.
 - `download_files1` — paginates and **refreshes links as it goes**. Use this for large, long-running downloads.
+- **Gotcha — User-Agent:** presigned URLs on `downloads.deweydata.io` returned HTTP 403 to Python-urllib's default User-Agent and 200 with `User-Agent: Mozilla/5.0` (measured 2026-10-08; not checked whether deweypy itself is affected).
 
 ## Reading data already on disk
 
