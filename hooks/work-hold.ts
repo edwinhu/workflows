@@ -56,7 +56,7 @@ interface State {
   run?: string
   authority?: string
   continuation?: string
-  /** `overnight` when /overnight armed it: such a hold yields to this session's live owned runs. */
+  /** `afk` when /afk armed it (`overnight` is the pre-rename spelling, still honored for one release): such a hold yields to this session's live owned runs. */
   origin?: string
   goalPrompted?: boolean
   checkFiles?: Record<string, string>
@@ -1667,10 +1667,10 @@ function main(): void {
     process.exit(0)
   }
 
-  // (a0) AN OVERNIGHT HOLD WITH NO --run: the session's own farm/work/grind runs are the work, and the
+  // (a0) AN AFK HOLD WITH NO --run: the session's own farm/work/grind runs are the work, and the
   // watcher wakes the session when they land. Forcing a round here would only invent busy-work, so
   // allow the stop and count nothing (the clock still runs). Same rule early-stop.ts applies.
-  if (s.origin === 'overnight' && !s.run) {
+  if ((s.origin === 'afk' || s.origin === 'overnight') && !s.run) {
     const live = liveOwnedRuns(session)
     if (live.length && watcherActive(session)) {
       const c = ceilingReached({ ...s, rounds: 0 }, now)

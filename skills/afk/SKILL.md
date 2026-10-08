@@ -1,12 +1,12 @@
 ---
-name: overnight
-description: "Use when the user says 'overnight', 'going to bed', 'I'm going to sleep', 'work autonomously', 'don't ask me questions', 'while I'm away', 'keep going until done', or '/overnight'."
+name: afk
+description: "Use when the user says '/afk', 'afk', 'going to bed', 'I'm going to sleep', 'work autonomously', 'work on this overnight', 'don't ask me questions', 'while I'm away', or 'do whatever you think is best'. NOT for questions about overnight returns, rates or anything financial; NOT for asking how the mode works."
 argument-hint: "[standing objective]"
 user-invocable: true
 allowed-tools: [Bash, Read, Edit, Write, Grep, Glob, CronCreate, CronList]
 ---
 
-# overnight — a standing mandate until 09:00
+# afk — a standing mandate until 09:00
 
 **What this skill carries** — grep `references/` for any subject the names below miss:
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
@@ -21,7 +21,7 @@ authority on what is armed; if it says "Not armed", say so to the user and do no
 and a lost night. Take the Recommended branch, state the choice in one line, and keep going.
 </EXTREMELY-IMPORTANT>
 
-1. **Heartbeat.** CronCreate `7 * * * *`, recurring, prompt `and? (overnight: <short objective>)`, unless
+1. **Heartbeat.** CronCreate `7 * * * *`, recurring, prompt `and? (afk: <short objective>)`, unless
    CronList shows one. Never CronDelete it; the user's `permissions.ask` stops that anyway.
 2. **Branches.** Take the Recommended one instead of AskUserQuestion.
 3. **Commit locally.** Explicit paths. Never push, never delete data.
