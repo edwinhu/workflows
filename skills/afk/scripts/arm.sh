@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Arm the afk work hold for one session, until the next 09:00 local time.
+# Arm the afk work hold for one session: until 18:00 when armed in [09:00, 18:00), else the next 09:00.
 #
 #   arm.sh <session-id> [objective text…]
 #
@@ -59,9 +59,14 @@ done
 
 NOW="${AFK_NOW:-$(date +%H:%M)}"
 cur=$(( 10#${NOW%%:*} * 60 + 10#${NOW##*:} ))
-ceiling=$(( (540 - cur + 1440) % 1440 ))
-[ "$ceiling" -gt 0 ] || ceiling=1440
-# Between 05:00 and 09:00 with under an hour left, a 60-minute floor keeps the hold from expiring at once.
+if [ "$cur" -ge 540 ] && [ "$cur" -lt 1080 ]; then
+  # A daytime /afk ends with the working day, not at the next morning.
+  ceiling=$(( 1080 - cur ))
+else
+  ceiling=$(( (540 - cur + 1440) % 1440 ))
+  [ "$ceiling" -gt 0 ] || ceiling=1440
+fi
+# Within an hour of either ceiling, a 60-minute floor keeps the hold from expiring at once.
 if [ "$cur" -ge 300 ] && [ "$ceiling" -lt 60 ]; then ceiling=60; fi
 # Rounds count blocked Stops only; one Stop a minute for the longest ceiling (24 h) is 1440, so 1500
 # never binds before the clock does.
@@ -75,7 +80,8 @@ fi
 [ -f "$STATE" ] || refuse 4 "$OUT
 afk: work-hold.sh exited 0 but wrote no state. Not armed."
 
-until_at="$(date -d "+${ceiling} minutes" +%H:%M 2>/dev/null || echo 09:00)"
+end=$(( (cur + ceiling) % 1440 ))
+until_at="$(printf '%02d:%02d' $(( end / 60 )) $(( end % 60 )))"
 if [ -n "$BEHIND" ]; then
   echo "afk hold queued behind the armed $AHEAD; it takes over when that one releases (ceiling $until_at, $ROUNDS rounds)"
   bash "$HOLD" --status
