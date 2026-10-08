@@ -38,11 +38,11 @@ Dewey is **not** a SQL warehouse like WRDS. Data is delivered as **partitioned P
 ### IRON LAW: NEVER GUESS, INVENT, OR HARDCODE THE API KEY
 
 <EXTREMELY-IMPORTANT>
-The Dewey API key belongs to the **user's** account (`app.deweydata.io` → Connections → Add Connection → API Key). It is shown **once**. You do not have it and cannot derive it.
+The Dewey API key belongs to the **user's** account (`app.deweydata.io` → Connections → Add Connection → API Key). You cannot derive it. Keys are `akv1_` + 35 chars (40 bytes).
 
-- **ALWAYS** ask the user for the key before any real data pull. No exceptions.
+- **ALWAYS** look for an existing key first: `DEWEY_API_KEY` env, then `~/.config/dewey/apikey` (also on rjds at the same path; agenix `dewey-api-key.age` → `DEWEY_API_KEY_FILE`). **Validate before any pull**: `GET https://api.deweydata.io/api/v1/external/data/<prj_id>/files?page=1` with header `X-API-Key`; 200 = valid, 401 `Invalid API key.` = revoked/wrong (`Authorization: Bearer` is the wrong scheme and gives a misleading 401). Ask the user only when no key exists or it 401s.
 - **NEVER** write a placeholder like `apikey = "your_api_key"` and run it — it will 401 and waste a round trip. Read from `DEWEY_API_KEY` env var or a gitignored file (`~/.config/dewey/apikey`).
-- **NEVER** commit the key, echo it back, or paste it into a script that gets committed.
+- **NEVER** commit the key, echo it back, print it, or paste it into a script that gets committed.
 
 **Guessing or hardcoding the key is NOT HELPFUL — every call 401s, and a committed key is a security incident the user must rotate.**
 </EXTREMELY-IMPORTANT>
@@ -72,7 +72,7 @@ This is not negotiable. Skipping the sample-and-filter step is NOT HELPFUL — D
 - **Use `deweypy.get_dataset_files`, not `deweydatapy.get_meta/get_file_list`** — the latter's `external-api/v3` endpoint is dead (returns non-JSON / 500 → `JSONDecodeError`), confirmed 2026-06-10. See `references/deweypy-client.md`.
 - **The download service throws transient HTTP 500s on individual presigned URLs**, and one bad file aborts a whole-batch DuckDB `COPY read_csv([...])`. For filtered pulls: chunk (~20 files), retry per chunk re-minting fresh URLs, fall back to per-file skip; restartable via per-chunk parquet. Set `SET http_timeout=120000; SET http_retries=3;`. Worked example in `references/deweypy-client.md`.
 - **Some providers gate access behind extra terms** (e.g. ConsumerEdge): the web "Get Data" flow shows an "I acknowledge…additional terms" modal you must accept once before the dataset is usable / its `prj_` path mints. Don't auto-accept a provider license without the user's OK.
-- **Bulk access is per project, with limits** (3 active projects, 5 datasets each; tables of one dataset count once; "New Project" disabled at 3/3). Add the table to a project, then read its API URL there. Never rotate a key ("Issue New Key") without the user's OK. Flow and limits: `references/access-options.md`.
+- **Bulk access is per project, with limits** (3 active projects, 5 datasets each; tables of one dataset count once; "New Project" disabled at 3/3). Add the table to a project, then read its API URL there. "Issue New Key" revokes the previous key immediately (a click that looked interrupted still went through): never rotate without the user's OK, and after a rotation update every copy (local file, rjds, agenix). The Bulk API panel renders the LIVE key (readonly "API Key" textbox and the deweypy one-liner), so a `take_snapshot` of a get-data page contains it: never print or grep such a snapshot; capture the key with `evaluate_script` + `filePath` straight into the key file. Flow and limits: `references/access-options.md`.
 - **A "Data Request Form ... requires an institutional Dewey license" modal is not a block** (BrightQuery Delaware Stock Filings): the table is added anyway. Cancel it, never submit without the user's OK, and check the project's dataset list. `references/brightquery-delaware-stock-filings.md`.
 - **MCP tools load only at session start.** After `claude mcp add … dewey-prod`, the `search_datasets`/`sample_dataset`/etc. tools are NOT available in the current session — start a new session to use them.
 
@@ -81,7 +81,7 @@ This is not negotiable. Skipping the sample-and-filter step is NOT HELPFUL — D
 - **Call `download_files*` without first calling `get_meta` + `read_sample`** → STOP. Meta + sample first.
 - **Download a dataset with no `start_date`/`end_date` / partition filter** → STOP. Scope the date range.
 - **Load a whole remote dataset into a DataFrame** → STOP. Use DuckDB `COPY TO … (FORMAT PARQUET, PARTITION_BY …)` to persist a filtered subset to disk.
-- **Run a pull with `apikey="your_api_key"` or any guessed key** → STOP. Ask the user; read from env/file.
+- **Run a pull with `apikey="your_api_key"` or any guessed key** → STOP. Read env/file and validate; ask the user only if none exists or it 401s.
 - **Write the API key into a script you'll commit** → STOP. Env var or gitignored file only.
 
 ## Access Method Decision Table
