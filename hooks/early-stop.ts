@@ -35,7 +35,7 @@
  * through that file's exported `decisionsCall`/`parseNoul`. There is exactly one Decisions transport
  * in this plugin and this hook does not add a second.
  *
- * Opt out for a session with `EARLY_STOP_HOOK=0`. Tune the bar with `EARLY_STOP_THRESHOLD` (default 0.7); an
+ * Opt out for a session with `EARLY_STOP_HOOK=0`. Tune the bar with `EARLY_STOP_THRESHOLD` (default 0.8); an
  * answer from the luna fallback is held to at least 0.95 (`decisionThreshold`, applied in `parseNoul`).
  */
 
@@ -52,11 +52,11 @@ import {
 export const MAX_BLOCKS_PER_TURN = 2
 
 /**
- * The bar on Jev's probability. 0.7, not the 0.8 it was: on the 62-stop calibration set
- * (tests/fixtures/early-stop-cal, scripts/early-stop-cal.ts) no bar separates EARLY from LEGIT stops, and 0.7 is
- * where the new input catches the most early stops per false block (7 of 19 EARLY, 6 of 43 LEGIT, both runs).
+ * The bar on Jev's probability. On the 62-stop calibration set (tests/fixtures/early-stop-cal,
+ * scripts/early-stop-cal.ts) no bar separates EARLY from LEGIT stops, so the bar stays high and the
+ * deterministic `noWakeUnderMandate` leg catches the stops the judge cannot.
  */
-export const DEFAULT_THRESHOLD = 0.7
+export const DEFAULT_THRESHOLD = 0.8
 
 /** The Decisions question key. One question, one bit. */
 export const QUESTION_KEY = 'early_stop'
@@ -135,7 +135,7 @@ const STANDING =
   /don'?t ask|do not ask|no questions|whatever you think|do whatever|go(ing)? to (bed|sleep)|overnight|asleep|while i'?m (away|out|gone|sleeping)|until (it'?s|its|you'?re|everything'?s|they'?re) (done|finished|complete)|keep going|don'?t stop|do not stop|all night|autonomous|without (asking|checking in)|until i (say|get back|return)|full discretion|take it from here|i'?ll be back|\/goal/i
 
 /** What the assistant's tick, wake and local-command traffic looks like when its origin tag is absent. */
-const NOT_TYPED = /^(and\? \(|<task-notification>|<bash-|<local-command|The [\w-]+ plugin sent a message|This session is being continued|Caveat:)/
+const NOT_TYPED = /^(\s*<pasted_content|\s*(Spawned agent |Relaunched from the |User rulings?[: (]|From the \w+ session|New task \(from )|and\? \(|<task-notification>|<bash-|<local-command|The [\w-]+ plugin sent a message|This session is being continued|Caveat:)/
 
 /**
  * Was this `type:"user"` string entry typed by the human? The harness tags it: `origin.kind` is
@@ -151,6 +151,10 @@ export function typedByHuman(e: Record<string, unknown>, text: string): boolean 
   return typeof turn === 'string' ? turn === 'human' : e.promptSource === undefined
 }
 
+/** A short question ("did you use overnight autonomous?") talks about a mandate; it does not set one. */
+const MONITOR_LIVE_MS = 45 * 60_000
+const isQuestion = (t: string): boolean => t.trim().length < 200 && t.trim().endsWith('?')
+
 export interface JudgeContext {
   /** The newest typed message that carries a standing instruction, if any. */
   standing: string | null
@@ -160,6 +164,8 @@ export interface JudgeContext {
   hoursSinceTyped: number | null
   /** Recurring CronCreate jobs created and not yet cancelled. */
   heartbeatAlive: boolean
+  /** A Monitor event arrived in the last 45 minutes: a persistent monitor is still watching and will wake it. */
+  monitorLive: boolean
   /** A CronDelete returned "Cancelled job" since the turn's request. */
   deletedThisTurn: boolean
 }
@@ -194,7 +200,7 @@ export function judgeContext(jsonl: string): JudgeContext {
       latest = text
       latestAt = typeof e.timestamp === 'string' ? e.timestamp : ''
     }
-    if (STANDING.test(text)) {
+    if (STANDING.test(text) && !isQuestion(text)) {
       standing = text
       break
     }
@@ -214,6 +220,18 @@ export function judgeContext(jsonl: string): JudgeContext {
       if (requestAt >= 0 && i > requestAt) deletedThisTurn = true
     }
   }
+  let monitorLive = false
+  const endMs = Date.parse(lastAt)
+  for (let i = lines.length - 1; i >= 0 && Number.isFinite(endMs); i--) {
+    const line = lines[i]
+    if (!line.includes('Monitor event')) continue
+    const at = Date.parse(line.match(/"timestamp":"([^"]+)"/)?.[1] ?? '')
+    if (Number.isFinite(at) && endMs - at > MONITOR_LIVE_MS) break
+    if (line.includes('<task-notification>') && line.includes('"type":"user"')) {
+      monitorLive = true
+      break
+    }
+  }
   const alive = [...created].some((id) => !cancelled.has(id))
   const hours =
     latestAt && lastAt ? Math.max(0, (Date.parse(lastAt) - Date.parse(latestAt)) / 3_600_000) : null
@@ -222,8 +240,18 @@ export function judgeContext(jsonl: string): JudgeContext {
     latestTyped: latest !== null && latest !== standing ? latest : null,
     hoursSinceTyped: Number.isFinite(hours) ? hours : null,
     heartbeatAlive: alive,
+    monitorLive,
     deletedThisTurn,
   }
+}
+
+/**
+ * Does a stop leave the session with no way to be woken under a standing mandate? The user typed an
+ * overnight or autonomous instruction, no heartbeat cron is alive, and no owned run is live, so ending
+ * the turn idles the session until the user returns. Deterministic: no judge is consulted.
+ */
+export function noWakeUnderMandate(ctx: JudgeContext | undefined, liveRuns: readonly string[]): boolean {
+  return !!ctx?.standing && !ctx.heartbeatAlive && !ctx.monitorLive && liveRuns.length === 0
 }
 
 /**
@@ -380,6 +408,12 @@ export const BLOCK_REASON =
   'the work until they come back. Take the next step now; if nothing can move without the user, say ' +
   'what blocks and use AskUserQuestion.'
 
+/** The block reason for `noWakeUnderMandate`. */
+export const NO_WAKE_REASON =
+  'Under a standing overnight/autonomous instruction this session has no wake left (no heartbeat, no ' +
+  'running job), so ending now idles until the user returns. Take the next queued item, or CronCreate a ' +
+  'heartbeat that names the standing objective; if nothing at all is left, say so and ask with AskUserQuestion.'
+
 interface Counter {
   turn: string
   blocks: number
@@ -498,6 +532,17 @@ function main(): void {
   const spent = read.kind === 'spent' ? read.blocks : 0
   if (spent >= MAX_BLOCKS_PER_TURN)
     return allowNow(session, turn.marker, `cap: ${spent} blocks already this turn`)
+
+  if (noWakeUnderMandate(ctx, live)) {
+    try {
+      writeFileSync(counter, JSON.stringify({ turn: turn.marker, blocks: spent + 1 } satisfies Counter))
+    } catch {
+      return allowNow(session, turn.marker, 'counter unwritable: cannot cap, so not blocking')
+    }
+    audit(session, turn.marker, '-', 'block', `no wake under mandate: ${spent + 1}/${MAX_BLOCKS_PER_TURN} this turn`)
+    process.stdout.write(JSON.stringify({ decision: 'block', reason: NO_WAKE_REASON }))
+    process.exit(0)
+  }
 
   const threshold = Number(process.env.EARLY_STOP_THRESHOLD || DEFAULT_THRESHOLD)
   const r = decisionsCall(judgeState(turn.request, message, ctx), {

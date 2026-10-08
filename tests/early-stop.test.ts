@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
 import { useTmp } from './helpers/tmp.ts'
-import { INSTRUCTIONS, judgeContext, judgeState, latestUserTurn, typedByHuman } from '../hooks/early-stop.ts'
+import { DEFAULT_THRESHOLD, INSTRUCTIONS, judgeContext, judgeState, latestUserTurn, noWakeUnderMandate, typedByHuman } from '../hooks/early-stop.ts'
 
 const mkTmp = useTmp()
 
@@ -703,4 +703,106 @@ test('the judge input is bounded and the instructions keep the four ways and the
   expect(s.length).toBeLessThan(2000 + 4000 + 1500 + 600 + 1000)
   for (const phrase of ['(1) a summary', '(4) stopping because', 'genuinely blocking question', 'AskUserQuestion hand-off', 'STANDING MANDATE'])
     expect(INSTRUCTIONS).toContain(phrase)
+})
+
+// ---- the bar and the deterministic leg: a stop that leaves no wake under a standing mandate ----
+
+test('the threshold default is 0.8', () => {
+  expect(DEFAULT_THRESHOLD).toBe(0.8)
+})
+
+/** A transcript whose typed mandate is followed by `extra` entries, then a plugin wake that started this turn. */
+function mandateSession(extra: string[] = []) {
+  const dir = mkTmp('earlystop-leg-')
+  const path = join(dir, 'transcript.jsonl')
+  writeFileSync(path, [
+    human('u1', MANDATE, '2026-10-07T01:00:00.000Z'),
+    ...extra,
+    wake('u2', 'The workflows plugin sent a message:\nfarm run x finished', '2026-10-07T06:00:00.000Z'),
+  ].join('\n') + '\n')
+  return { dir, transcript: path }
+}
+
+const LEG_LOG = 'no wake under mandate'
+
+test('leg fires: mandate, no heartbeat, no owned run -> BLOCK before the judge, logged with its own prefix', () => {
+  const { dir, transcript } = mandateSession()
+  const r = runHook(childEnv(dir, DEAD), stopPayload('leg-fire', transcript, 'All done, nothing is running.'))
+  expect(r.out).toContain('"decision":"block"')
+  expect(r.out).toContain('no wake left')
+  expect(r.out).toContain('CronCreate')
+  const log = readFileSync(join(dir, 'early-stop.log'), 'utf8')
+  expect(log).toContain(LEG_LOG)
+  expect(log).not.toContain('judge unavailable')
+}, 30000)
+
+test('leg counts toward the same cap: two blocks per user turn, then the third stop is allowed', () => {
+  const { dir, transcript } = mandateSession()
+  const env = childEnv(dir, DEAD)
+  const outs = [1, 2, 3].map(() => runHook(env, stopPayload('leg-cap', transcript)).out)
+  expect(outs[0]).toContain('"decision":"block"')
+  expect(outs[1]).toContain('"decision":"block"')
+  expect(outs[2]).toBe('')
+  expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).toContain('cap: 2 blocks already this turn')
+}, 60000)
+
+test('leg stays quiet with a live heartbeat cron', () => {
+  const { dir, transcript } = mandateSession([cronCreate('aaaa1111', '2026-10-07T01:01:00.000Z')])
+  const r = runHook(childEnv(dir, DEAD), stopPayload('leg-cron', transcript))
+  expect(r.out).toBe('')
+  expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).not.toContain(LEG_LOG)
+}, 30000)
+
+test('leg stays quiet with no standing mandate', () => {
+  const { dir, transcript } = fixture()
+  const r = runHook(childEnv(dir, DEAD), stopPayload('leg-nomandate', transcript))
+  expect(r.out).toBe('')
+  expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).not.toContain(LEG_LOG)
+}, 30000)
+
+test('leg stays quiet with a live owned run: the watcher allows it earlier, and a beaconless run still counts', () => {
+  const a = mandateSession()
+  farmEvents(a.dir, 'leg-run', process.pid, [START('alpha')])
+  beacon(a.dir, 'leg-run')
+  const withWatcher = runHook(childEnv(a.dir, { ...DEAD, CLAUDE_CODE_ENTRYPOINT: 'cli', CLAUDE_CODE_EXECPATH: fakeClaude(a.dir, '2.1.287') }), stopPayload('leg-run', a.transcript))
+  expect(withWatcher.out).toBe('')
+  expect(readFileSync(join(a.dir, 'early-stop.log'), 'utf8')).toContain('owned runs live, the watcher wakes the session')
+
+  const b = mandateSession()
+  farmEvents(b.dir, 'leg-run2', process.pid, [START('beta')])
+  const noWatcher = runHook(childEnv(b.dir, DEAD), stopPayload('leg-run2', b.transcript))
+  expect(noWatcher.out).toBe('')
+  expect(readFileSync(join(b.dir, 'early-stop.log'), 'utf8')).not.toContain(LEG_LOG)
+}, 60000)
+
+test('EARLY_STOP_HOOK=0 opts out of the leg too', () => {
+  const { dir, transcript } = mandateSession()
+  const r = runHook(childEnv(dir, { ...DEAD, EARLY_STOP_HOOK: '0' }), stopPayload('leg-optout', transcript))
+  expect(r.out).toBe('')
+}, 30000)
+
+test('noWakeUnderMandate: the three facts, each one alone defeating it', () => {
+  const ctx = judgeContext(human('u1', MANDATE, '2026-10-07T01:00:00.000Z'))
+  expect(noWakeUnderMandate(ctx, [])).toBe(true)
+  expect(noWakeUnderMandate(ctx, ['alpha'])).toBe(false)
+  expect(noWakeUnderMandate({ ...ctx, heartbeatAlive: true }, [])).toBe(false)
+  expect(noWakeUnderMandate({ ...ctx, monitorLive: true }, [])).toBe(false)
+  expect(noWakeUnderMandate({ ...ctx, standing: null }, [])).toBe(false)
+  expect(noWakeUnderMandate(undefined, [])).toBe(false)
+})
+
+test('a Monitor event in the last 45 minutes is a live wake; an older one is not', () => {
+  const note = (ts: string) => entry({ type: 'user', uuid: 'n', timestamp: ts, origin: { kind: 'task-notification' }, message: { role: 'user', content: '<task-notification>\n<summary>Monitor event: "farm-out runs"</summary>\n<event>grind: ITER i=3</event>' } })
+  const end = wake('w', 'The workflows plugin sent a message:\nx', '2026-10-07T06:00:00.000Z')
+  const m = human('u1', MANDATE, '2026-10-07T01:00:00.000Z')
+  expect(judgeContext([m, note('2026-10-07T05:40:00.000Z'), end].join('\n')).monitorLive).toBe(true)
+  expect(judgeContext([m, note('2026-10-07T04:00:00.000Z'), end].join('\n')).monitorLive).toBe(false)
+})
+
+test('the mandate is a typed instruction: pasted prompts, relays and questions about a mandate are not one', () => {
+  const at = '2026-10-07T01:00:00.000Z'
+  expect(judgeContext(human('u1', '\n\n<pasted_content id="a">\nkeep going until it is done\n</pasted_content>', at)).standing).toBeNull()
+  expect(judgeContext(human('u1', 'From the tools session: keep going, do whatever you think', at)).standing).toBeNull()
+  expect(judgeContext(human('u1', 'did you use overnight autonomous?', at)).standing).toBeNull()
+  expect(judgeContext(human('u1', 'ok i\'m going to bed work overnight autonomously', at)).standing).not.toBeNull()
 })
