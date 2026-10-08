@@ -82,7 +82,7 @@ function world(on: any, tree: Tree, opts: { alive?: number[]; store?: Map<string
     const names = Object.keys(tree).filter(p => p.startsWith(prefix)).map(p => p.slice(prefix.length))
     if (!names.length) return { deny: `ENOENT ${e.path}` }
     const direct = [...new Set(names.map(n => n.split('/')[0]))]
-    return { value: direct.map(n => ({ name: n, kind: 'file', size: (tree[prefix + n] ?? '').length, mtimeMs: NOW - 1000, isLink: false })) }
+    return { value: direct.map(n => ({ name: n, kind: 'file', size: (tree[prefix + n] ?? '').length, mtimeMs: opts.mtimes?.[prefix + n] ?? NOW - 1000, isLink: false })) }
   })
   on('fs.read', ($: any, e: any) => (e.path in tree ? { value: tree[e.path] } : { deny: `ENOENT ${e.path}` }))
   on('fs.write', ($: any, e: any) => { tree[e.path] = e.text; return { value: undefined } })
@@ -374,4 +374,39 @@ test('a live grind loop\'s WAIT wakes once per new waits value, never twice for 
   expect(seen.submits.length).toBe(2)
   // still live: no DONE-style wake
   expect(seen.statuses.at(-1)).toContain('grind j.jsonl')
+})
+
+const DAY = 24 * 3600_000
+const OLD = `grind: START grind%20j.jsonl cwd=/w journal=/w/j.jsonl t=${T0 - 3 * 86400} \n`
+
+test('a grind started 3 days ago with a fresh DONE wakes once', async ($, on) => {
+  const tree: Tree = { [`${dir(SID)}/710.ndjson`]: OLD + 'grind: DONE done rc=0\n' }
+  const { seen, clock } = world(on, tree)
+  await start($)
+  await clock.settle()
+  await clock.advance(15_000)
+  await clock.advance(15_000)
+  expect(seen.submits.length).toBe(1)
+  expect(seen.submits[0]).toContain('grind j.jsonl')
+})
+
+test('a fresh WAIT on a 3-day-old live grind wakes once', async ($, on) => {
+  const tree: Tree = { [`${dir(SID)}/711.ndjson`]: OLD + 'grind: WAIT grind%20j.jsonl waits=6 why=grid%20busy script=/p/grind.sh \n' }
+  const { seen, clock } = world(on, tree, { alive: [711] })
+  await start($)
+  await clock.settle()
+  await clock.advance(15_000)
+  await clock.advance(15_000)
+  expect(seen.submits.length).toBe(1)
+  expect(seen.submits[0]).toContain('waiting: 6 consecutive gate waits')
+})
+
+test('a stale event file from a long-dead grind session wakes nobody', async ($, on) => {
+  const f = `${dir(SID)}/712.ndjson`
+  const tree: Tree = { [f]: OLD + 'grind: DONE done rc=0\n' }
+  const { seen, clock } = world(on, tree, { mtimes: { [f]: NOW - 2 * DAY } })
+  await start($)
+  await clock.settle()
+  await clock.advance(15_000)
+  expect(seen.submits).toEqual([])
 })

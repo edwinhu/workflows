@@ -216,10 +216,32 @@ describe('grind.sh --notify', () => {
     expect(calls).toMatch(/^herdr notification show .*done/m)
   })
 
-  test('with the event stream live for the launch session the ending sends no agent-msg, but still pops herdr', () => {
+  /** A watcher beacon for `session` in this test's TMPDIR, `ageSec` old. */
+  function beacon(d: string, session: string, ageSec: number) {
+    const f = join(d, 'farm-events', session)
+    mkdirSync(f, { recursive: true })
+    writeFileSync(join(f, 'watcher.alive'), String(Math.floor(Date.now() / 1000) - ageSec))
+  }
+
+  test('a stale or missing watcher beacon means the ending is agent-msg\'d even with the stream live', () => {
+    for (const [name, age] of [['missing', null], ['stale', 600]] as const) {
+      const d = workdir(`grind-notify-nobeacon-${name}`)
+      const { args } = finishing(d)
+      const { env, log } = stubPath(d, ['agent-msg'])
+      if (age !== null) beacon(d, 'sess-launch', age)
+
+      const r = run(d, args, { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
+
+      expect(r.status).toBe(0)
+      expect(readFileSync(log, 'utf8')).toMatch(/^agent-msg send sess-launch .*done/m)
+    }
+  })
+
+  test('with the event stream and a fresh watcher beacon for the launch session the ending sends no agent-msg, but still pops herdr', () => {
     const d = workdir('grind-notify-stream')
     const { journal, args } = finishing(d)
     const { env, log } = stubPath(d, ['agent-msg', 'herdr'])
+    beacon(d, 'sess-launch', 5)
 
     const r = run(d, args, { ...env, CLAUDE_CODE_SESSION_ID: 'sess-launch' })
 
