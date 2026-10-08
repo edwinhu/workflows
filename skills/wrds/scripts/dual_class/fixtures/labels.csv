@@ -1,0 +1,271 @@
+filing_id,cik,fyear,form,path,label,quote,source_set
+0000007084-11-000028,7084,2011,10-K,edgar/data/7084/0000007084-11-000028.txt,single,,jkl2
+0000009342-02-000012,9342,2001,10-K,edgar/data/9342/0000009342-02-000012.txt,single,"Cover: 33,964,718 shares of common stock",jkl4
+0000009779-98-000036,9779,1998,10-K,edgar/data/9779/0000009779-98-000036.txt,dual,Shares of Class A common stock are entitled to one vote per share ... Class B ... ten votes per share,jkl4
+0000012208-05-000010,12208,2004,10-K,edgar/data/12208/0000012208-05-000010.txt,dual,"Each share of Class A is entitled to one-tenth of a vote on most matters, and each share of Class B is entitled to one vote",jkl3
+0000013573-03-000007,13573,2003,10-K,edgar/data/13573/0000013573-03-000007.txt,dual,The Class A shares have one vote per share voting power. The Class B shares may vote ten votes per share,jkl4
+0000013573-95-000011,13573,1995,10-K405,edgar/data/13573/0000013573-95-000011.txt,dual,The Class A shares have one vote per share voting power. The Class B shares may vote ten votes per share,jkl4
+0000014693-08-000060,14693,2007,10-K,edgar/data/14693/0000014693-08-000060.txt,dual,"Class A Common Stock (voting) 56,570,292; Class B Common Stock (nonvoting) 64,023,374",jkl4
+0000016918-01-500005,16918,2000,10-K,edgar/data/16918/0000016918-01-500005.txt,dual,Holders of Class B Convertible Common Stock are entitled to ten votes per share. Holders of Class A Common Stock are entitled to one vote per share,jkl3
+0000016918-02-000009,16918,2001,10-K,edgar/data/16918/0000016918-02-000009.txt,dual,Holders of Class B Convertible Common Stock are entitled to ten votes per share. Holders of Class A Common Stock are entitled to one vote per share,jkl4
+0000018255-12-000005,18255,2011,10-K,edgar/data/18255/0000018255-12-000005.txt,dual,"holders of Class A Common Stock are entitled to one vote per share, whereas the holders of Class B Common Stock are entitled to ten votes per share",jkl4
+0000025885-98-000019,25885,1997,10-K,edgar/data/25885/0000025885-98-000019.txt,dual,Class A Common stockholders are entitled to one vote per share ... Class B Common stockholders are entitled to one-tenth vote per share,jkl3
+0000026058-02-000009,26058,2001,10-K,edgar/data/26058/0000026058-02-000009.txt,single,"Cover: 33,053,386 shares of Common Stock",jkl4
+0000029332-99-000002,29332,1998,10-K405,edgar/data/29332/0000029332-99-000002.txt,dual,Holders of Class B Common Stock have the right to twenty votes per share,jkl3
+0000037996-97-000008,37996,1996,10-K405,edgar/data/37996/0000037996-97-000008.txt,dual,"1,118,857,214 shares of Common Stock and 70,852,076 shares of Class B Stock; holders of Common Stock were entitled to one vote per share and had 60% of the general voting power",jkl3
+0000040934-00-000010,40934,1999,10-K,edgar/data/40934/0000040934-00-000010.txt,dual,"Class A Common Stock (voting) 209,885; Class B Common Stock (non-voting) 1,411,279",jkl4
+0000063296-03-000027,63296,2003,10-K,edgar/data/63296/0000063296-03-000027.txt,single,"shares of common stock outstanding: Class A Common Stock 32,042,917 shares; Class B (ten votes) no longer outstanding after September 2001",jkl3
+0000064079-96-000002,64079,1995,10-K,edgar/data/64079/0000064079-96-000002.txt,dual,"Common + Class A Common (British Telecom) both listed as voting stock; class rights differ, per-share votes not verified",jkl2
+0000072423-98-000004,72423,1997,10-K405,edgar/data/72423/0000072423-98-000004.txt,dual,"Each share of Special Common Stock has 10 votes on all matters submitted to a stockholder vote (full filing, note 6)",jkl3
+0000080984-00-000002,80984,1999,10-K,edgar/data/80984/0000080984-00-000002.txt,dual,The Company's Common Stock has one vote per share and Class B Stock has ten votes per share,jkl4
+0000088790-98-000002,88790,1997,10-K,edgar/data/88790/0000088790-98-000002.txt,single,"there were 5,225,760 of the Company's common shares outstanding",jkl3
+0000088948-09-000012,88948,2008,10-K,edgar/data/88948/0000088948-09-000012.txt,dual,"holders of Class B Common Stock retain a full vote per share, whereas the holders of Class A Common Stock have voting rights of 1/20th of one vote per share",jkl4
+0000100493-02-000026,100493,2002,10-K,edgar/data/100493/0000100493-02-000026.txt,dual,Holders of Class B stock are entitled to 10 votes per share while holders of Class A stock are entitled to one vote per share,jkl4
+0000107140-11-000016,107140,2010,10-K,edgar/data/107140/0000107140-11-000016.txt,dual,each share of Class A stock is entitled to one tenth of one vote and each share of Class B stock is entitled to one vote (full filing),jkl3
+0000108601-00-000002,108601,1999,10-K,edgar/data/108601/0000108601-00-000002.txt,dual,Class B Common Stock is entitled to ten votes per share,jkl3
+0000355199-04-000007,355199,2003,10-K,edgar/data/355199/0000355199-04-000007.txt,single,"Cover: Common Stock 15,471,233 shares",jkl4
+0000701345-98-000005,701345,1997,10-K405,edgar/data/701345/0000701345-98-000005.txt,single,"Cover: 91,646,000 shares of Common Stock (1,000 subsidiary shares)",jkl4
+0000719866-98-000005,719866,1997,10-K,edgar/data/719866/0000719866-98-000005.txt,dual,"Class B shareholder is entitled to elect one member of the Board but cannot vote for the election of other directors (borderline: differing voting rights, not differing votes per share)",jkl4
+0000720032-97-000003,720032,1996,10-K405,edgar/data/720032/0000720032-97-000003.txt,dual,"Each share of Class A Common Stock is entitled to one-twentieth of one vote per share, while each share of the Class B Common Stock is entitled to one vote per share",jkl3
+0000743530-98-000095,58361,1998,10-K,edgar/data/58361/0000743530-98-000095.txt,dual,Class B Common Stock has ten votes per share ... Common Stock (which has one vote per share),jkl3
+0000791350-98-000014,791350,1998,10-K,edgar/data/791350/0000791350-98-000014.txt,single,,jkl2
+0000791905-97-000011,791905,1997,10-K,edgar/data/791905/0000791905-97-000011.txt,single,"Cover: 3,252,151 shares of Common Stock",jkl4
+0000796486-95-000006,796486,1994,10-K,edgar/data/796486/0000796486-95-000006.txt,dual,each share of Class A Common Stock entitled to one vote and each share of Class B Common Stock entitled to ten votes (full filing),jkl3
+0000808450-00-000007,808450,2000,10-K,edgar/data/808450/0000808450-00-000007.txt,single,"the number of shares outstanding of the registrant's common stock was 59,220,372",jkl3
+0000812700-94-000019,812700,1994,10-K,edgar/data/812700/0000812700-94-000019.txt,dual,Class A 1 vote / Class B 10 votes (10-K text),jkl2
+0000815097-97-000001,815097,1996,10-K,edgar/data/815097/0000815097-97-000001.txt,dual,Class A Common Stock; one vote per share ... Class B Common Stock; five votes per share,jkl4
+0000867773-08-000017,867773,2007,10-K,edgar/data/867773/0000867773-08-000017.txt,dual,our class B common stock has 8 votes per share compared to one vote per share for our class A common stock,jkl3
+0000887730-98-000006,887730,1997,10-K,edgar/data/887730/0000887730-98-000006.txt,dual,"Common Stock 38,090,762 and Non-Voting Common Stock 1,096,610 outstanding",jkl4
+0000890566-98-001952,807877,1998,10-K405,edgar/data/807877/0000890566-98-001952.txt,dual,Class B Common Stock has 60% and Class A and Class C Common Stock have 40% of the votes,jkl4
+0000890566-99-000440,879884,1998,10-K,edgar/data/879884/0000890566-99-000440.txt,single,Holders of the Company's common stock are entitled to one vote per share (single class),jkl4
+0000891618-99-001005,1052837,1998,10-K405,edgar/data/1052837/0000891618-99-001005.txt,single,Each holder of common stock is entitled to one vote for each share held,jkl3
+0000893220-00-000353,1066284,1999,10-K405,edgar/data/1066284/0000893220-00-000353.txt,single,"Cover: 27,439,497 shares of Common Stock",jkl4
+0000895759-98-000024,855433,1997,10-K,edgar/data/855433/0000895759-98-000024.txt,dual,Each share of Class B common stock ... entitles the holder to ten votes (Class A common stock entitles the holder to one vote per share),jkl3
+0000897069-05-000574,9534,2004,10-K,edgar/data/9534/0000897069-05-000574.txt,dual,Shares of Class B Common Stock have ten (10) votes per share; Class A Common Stock (non-voting),jkl4
+0000897101-00-000315,27996,1999,10-K405,edgar/data/27996/0000897101-00-000315.txt,single,"Cover: 72,218,276 shares of common stock, one class",jkl4
+0000897101-09-000401,719413,2008,10-K,edgar/data/719413/0000897101-09-000401.txt,single,,jkl2
+0000898430-00-000889,1026816,1999,10-K,edgar/data/1026816/0000898430-00-000889.txt,single,"Cover: 201,526,319 shares of common stock",jkl4
+0000898430-95-002505,762131,1995,10-K,edgar/data/762131/0000898430-95-002505.txt,unres,"Cover lists Common Stock (5,657,115, held by Zeneca) and Callable Puttable Common Stock (5,638,082); no per-share vote statement anywhere in the filing",jkl4
+0000898432-05-000340,811933,2004,10-K,edgar/data/811933/0000898432-05-000340.txt,single,,jkl2
+0000899243-01-502027,805020,2001,10-K,edgar/data/805020/0000899243-01-502027.txt,single,"Cover: 7,072,546 shares of Common Stock",jkl4
+0000899243-99-000632,908652,1998,10-K,edgar/data/908652/0000899243-99-000632.txt,single,"Cover: 28,865,000 shares of common stock",jkl4
+0000899733-00-000030,891504,1999,10-K,edgar/data/891504/0000899733-00-000030.txt,dual,"Common Stock 23,197,477; Nonvoting Common Stock 395,000 (two common classes, one without vote)",jkl3
+0000899797-03-000139,8063,2002,10-K,edgar/data/8063/0000899797-03-000139.txt,dual,"Class B Stock is identical to Common Stock, except Class B Stock has ten votes per share",jkl4
+0000903100-02-000082,1058290,2001,10-K,edgar/data/1058290/0000903100-02-000082.txt,dual,Class A 1 vote / Class B 10 votes (10-K text),jkl2
+0000906318-03-000060,93456,2002,10-K,edgar/data/93456/0000906318-03-000060.txt,dual,"Each of the 23,420,272 shares of Common outstanding has one vote, while each of the 4,725,000 outstanding shares of Class A is entitled to five votes (full filing)",jkl3
+0000906555-98-000015,812900,1997,10-K405,edgar/data/812900/0000906555-98-000015.txt,single,,jkl2
+0000908737-98-000354,884719,1997,10KSB,edgar/data/884719/0000908737-98-000354.txt,single,All common stock issued and outstanding has full voting rights,jkl3
+0000909012-06-000331,93389,2005,10-K,edgar/data/93389/0000909012-06-000331.txt,single,"18,470,891 outstanding shares of the registrant's common stock, par value $2.00 per share (Series A Preferred, none outstanding)",jkl3
+0000909567-08-000415,1397187,2007,10-K,edgar/data/1397187/0000909567-08-000415.txt,single,common + exchangeable shares + special voting share; one listed class,jkl2
+0000910391-99-000003,910391,1998,10-K,edgar/data/910391/0000910391-99-000003.txt,single,"Cover: one class of common stock, 15,856,292 shares",jkl4
+0000910680-96-000320,728389,1996,10-K,edgar/data/728389/0000910680-96-000320.txt,single,"Cover: one Common Stock 4,806,907 shares",jkl4
+0000912057-00-011217,1039213,1999,10KSB,edgar/data/1039213/0000912057-00-011217.txt,dual,Each share of Class A Common Stock is entitled to one vote and each share of Class B Common Stock is entitled to five votes,jkl3
+0000912057-00-012511,716133,1999,10-K,edgar/data/716133/0000912057-00-012511.txt,single,"Cover: 202,550,808 Common Shares; only preferred shares are non-voting",jkl4
+0000912057-01-505811,40972,2000,10-K,edgar/data/40972/0000912057-01-505811.txt,single,"Cover: 28,509,554 shares of the Common Stock",jkl4
+0000912057-01-506031,886138,2000,10-K,edgar/data/886138/0000912057-01-506031.txt,single,"17,613,237 shares of the registrant's Common Stock and 220,000 shares of Convertible Preferred Stock, Series B, were outstanding",jkl3
+0000912057-01-507335,863456,2000,10-K,edgar/data/863456/0000912057-01-507335.txt,dual,The Class B Common Stock has two votes per share while Class A Common Stock has one vote per share,jkl3
+0000912057-01-533721,793279,2001,10-K,edgar/data/793279/0000912057-01-533721.txt,single,"Cover: 10,810,717 shares of common stock",jkl4
+0000912057-02-013057,1006637,2001,10-K,edgar/data/1006637/0000912057-02-013057.txt,dual,"The Company has three classes of common stock. Holders of each share of Class A Common Stock have 15 votes (full filing, note 9)",jkl3
+0000912057-95-001479,706539,1994,10-K,edgar/data/706539/0000912057-95-001479.txt,single,"Common Stock, $.01 par value 40,025,293 (only class listed)",jkl3
+0000912057-96-005617,107203,1995,10-K,edgar/data/107203/0000912057-96-005617.txt,single,"Each share of Common Stock shall have one vote (single class; cover 25,649,790 shares)",jkl4
+0000912057-97-032057,751085,1997,10-K,edgar/data/751085/0000912057-97-032057.txt,single,,jkl2
+0000912057-99-010927,935036,1999,10-K,edgar/data/935036/0000912057-99-010927.txt,single,"32,623,131 shares of the Company's Class A Common Stock outstanding (only class listed; no second common class in text)",jkl3
+0000914190-98-000449,838171,1998,10KSB,edgar/data/838171/0000914190-98-000449.txt,single,"Each shareholder shall have one (1) vote for each share having voting power; 7,841,045 shares of Common Stock",jkl3
+0000914760-06-000103,1002135,2005,10-K,edgar/data/1002135/0000914760-06-000103.txt,dual,Class A common stock is entitled to one vote per share while Class B common stock is entitled to four votes per share,jkl3
+0000915324-99-000011,915324,1999,10-K,edgar/data/915324/0000915324-99-000011.txt,single,"Cover: 11,709,544 shares of Common Stock",jkl4
+0000922423-95-000040,103730,1994,10-K,edgar/data/103730/0000922423-95-000040.txt,dual,Class B Stock carries ten votes per share while the Common Stock carries one vote per share,jkl3
+0000925751-98-000004,51548,1997,10-K,edgar/data/51548/0000925751-98-000004.txt,dual,Each share of Class A Common Stock entitles the holder to one-fifth (1/5) vote ... Class B,jkl3
+0000926044-00-000128,56362,2000,10-K,edgar/data/56362/0000926044-00-000128.txt,dual,Each share of common stock entitles the holder to one vote ... Class B common stock entitles the holder to ten votes,jkl4
+0000926044-02-000100,790818,2001,10-K,edgar/data/790818/0000926044-02-000100.txt,single,"Cover: 20,200,166 shares of common stock",jkl4
+0000926044-95-000034,56362,1995,10-K,edgar/data/56362/0000926044-95-000034.txt,dual,Each share of Class B common stock entitles the holder to ten votes ... common stock entitles the holder thereof to one vote,jkl3
+0000927016-99-000183,918578,1998,10-K405,edgar/data/918578/0000927016-99-000183.txt,single,"Class B common stock 5,063 outstanding in 1997, none in 1998 (balance sheet shows --); cover lists only Class A",jkl4
+0000927356-01-000383,837290,2000,10-K405,edgar/data/837290/0000927356-01-000383.txt,single,A holder of the common stock ... shall be entitled to one vote for each and every share (single common class),jkl4
+0000928385-02-001285,1085098,2001,10-K,edgar/data/1085098/0000928385-02-001285.txt,dual,The Class A is entitled to one vote for each share and the Class B is entitled to ten votes for each share,jkl4
+0000930413-97-000435,866729,1996,10-K,edgar/data/866729/0000930413-97-000435.txt,dual,Common Stock voting limited to electing one-fifth of the directors; remainder elected by the holders of Class A Stock,jkl4
+0000930413-98-000693,926366,1997,10KSB,edgar/data/926366/0000930413-98-000693.txt,single,"there were 8,447,104 shares of Common Stock of the Issuer issued and outstanding",jkl3
+0000930661-01-000844,710597,2000,10KSB,edgar/data/710597/0000930661-01-000844.txt,dual,"3,478,086 Voting Common Stock; There were 112,492 shares of non-voting common stock outstanding as of March 15, 2001",jkl3
+0000930661-98-000717,860730,1997,10-K,edgar/data/860730/0000930661-98-000717.txt,dual,"621,527,226 shares of the Registrant's Common Stock and 21,000,000 shares of the Registrant's Nonvoting Common Stock",jkl3
+0000932384-02-000189,312842,2002,10KSB,edgar/data/312842/0000932384-02-000189.txt,single,"9,115,200 common shares (the registrant's only class of voting stock) were outstanding",jkl3
+0000940986-99-000002,940986,1998,10KSB,edgar/data/940986/0000940986-99-000002.txt,single,"State the number of shares outstanding ... 4,138,845 at March 17, 1999",jkl3
+0000946489-98-000002,946489,1997,10-K,edgar/data/946489/0000946489-98-000002.txt,dual,"6,508,752 shares of voting Common Stock and 296,638 shares of non-voting Class A Common Stock",jkl4
+0000946644-00-000002,946644,1999,10-K,edgar/data/946644/0000946644-00-000002.txt,single,"Cover: 27,806,572 shares of Common Stock",jkl4
+0000946670-97-000014,946670,1996,10-K,edgar/data/946670/0000946670-97-000014.txt,single,"Cover: 879,571 shares of common stock",jkl4
+0000948640-99-000002,948640,1998,10-K,edgar/data/948640/0000948640-99-000002.txt,single,"Cover: 7,956,521 shares of Common Stock",jkl4
+0000950109-01-500284,720032,2000,10-K,edgar/data/720032/0000950109-01-500284.txt,single,Each share of common stock is entitled to one vote per share (classes combined into single class),jkl3
+0000950109-96-004013,815094,1995,10-K,edgar/data/815094/0000950109-96-004013.txt,dual,Each share of Common Stock has a voting right of one vote ... Each share of Class A Common Stock has a voting right of 10 votes per share,jkl4
+0000950112-96-000853,736768,1995,10-K,edgar/data/736768/0000950112-96-000853.txt,dual,Class A ... one vote per share and ... Class C Common Stock are entitled to ten votes per share. Holders of Class B Common Stock do not have voting rights,jkl3
+0000950116-03-002181,1135338,2002,10-K,edgar/data/1135338/0000950116-03-002181.txt,dual,"PCC's Class B common stock is entitled to 10 votes per share, and its Class A common stock is entitled to one vote per share",jkl3
+0000950116-95-000079,93444,1994,10-K405,edgar/data/93444/0000950116-95-000079.txt,single,"The number of shares of Registrant's Common Stock outstanding on March 6, 1995 was 5,650,333",jkl3
+0000950116-96-001209,894738,1996,10KSB,edgar/data/894738/0000950116-96-001209.txt,dual,Each share of Class B Common Stock is entitled to six votes per share and each share of Class A Common Stock ... one vote per share,jkl3
+0000950117-02-000649,30697,2001,10-K,edgar/data/30697/0000950117-02-000649.txt,single,"Class A Common Stock (the only outstanding class of the registrant's common equity) 20,455,403 shares",jkl4
+0000950117-98-000643,78890,1997,10-K405,edgar/data/78890/0000950117-98-000643.txt,dual,Holders of Brink's Stock at all times have one vote per share. Holders of Burlington Stock and Minerals Stock have .739 and .244 vote per share (full filing),jkl3
+0000950123-00-003039,43952,1999,10-K405,edgar/data/43952/0000950123-00-003039.txt,dual,a holder of each share of Class B Common Stock is entitled to ten votes on all matters submitted to stockholders,jkl3
+0000950123-02-002711,48898,2001,10-K,edgar/data/48898/0000950123-02-002711.txt,dual,"Class A Common $.01 par value (20 votes per share); Class B Common $.01 par value (1 vote per share) (full filing cover, Section 12(b) table)",jkl3
+0000950123-03-003333,43952,2002,10-K,edgar/data/43952/0000950123-03-003333.txt,dual,a holder of each share of Class B Common Stock is entitled to ten votes on all matters submitted to stockholders,jkl3
+0000950123-04-003254,872589,2003,10-K,edgar/data/872589/0000950123-04-003254.txt,dual,"Class A Stockholders are entitled to ten votes per share, while Common Stockholders are entitled to one vote per share",jkl4
+0000950123-05-009786,879573,2004,10-K,edgar/data/879573/0000950123-05-009786.txt,single,"Cover: 104,172,007 shares of common stock",jkl4
+0000950123-07-002533,1306830,2006,10-K,edgar/data/1306830/0000950123-07-002533.txt,single,"Cover: 158,668,666 shares of Series A Common Stock (only series)",jkl4
+0000950123-07-002818,48898,2006,10-K,edgar/data/48898/0000950123-07-002818.txt,dual,Voting rights per share: Class A Common - twenty; Class B Common - one,jkl4
+0000950123-08-002151,1076405,2007,10-K,edgar/data/1076405/0000950123-08-002151.txt,dual,Holders of our common stock are entitled to one vote per share and holders of our Class B common stock are entitled to 250 votes per share,jkl4
+0000950123-09-013619,922717,2008,10-K,edgar/data/922717/0000950123-09-013619.txt,dual,holders of Class B common stock have six votes per share,jkl4
+0000950123-99-002306,48569,1998,10-K,edgar/data/48569/0000950123-99-002306.txt,single,"there were 2,273,817 shares of common stock of the registrant outstanding",jkl3
+0000950123-99-002453,48898,1998,10-K,edgar/data/48898/0000950123-99-002453.txt,dual,Voting rights per share: Class A Common - twenty; Class B Common - one,jkl3
+0000950124-02-000964,106532,2001,10-K405,edgar/data/106532/0000950124-02-000964.txt,dual,The Class B Common Stock has 10 votes per share ... shares equally with the Common Stock in cash dividends,jkl3
+0000950124-97-001255,880285,1996,10-K,edgar/data/880285/0000950124-97-001255.txt,single,"Partnership (Lakehead Pipe Line Partners, L.P.): units, not common classes",jkl4
+0000950124-99-001947,880285,1998,10-K405,edgar/data/880285/0000950124-99-001947.txt,single,"Partnership (Lakehead Pipe Line Partners, L.P.): units not common stock classes",jkl4
+0000950128-97-000656,943452,1996,10-K,edgar/data/943452/0000950128-97-000656.txt,single,"37,488,733 shares of Common Stock of the registrant were issued and outstanding",jkl3
+0000950128-98-001167,1024478,1998,10-K405,edgar/data/1024478/0000950128-98-001167.txt,single,"189,674,156 shares of registrant's Common Stock, par value $1 per share, were outstanding",jkl3
+0000950129-00-002028,311995,1999,10-K405,edgar/data/311995/0000950129-00-002028.txt,dual,"The Class A shares have full voting rights, whereas the Class B shares have no voting rights, except as provided by law",jkl3
+0000950129-04-001233,1116030,2003,10-K,edgar/data/1116030/0000950129-04-001233.txt,dual,holders of class B common stock are entitled to ten votes per share and the holders of common stock are entitled to one vote per share (full filing),jkl3
+0000950129-06-002659,8818,2005,10-K,edgar/data/8818/0000950129-06-002659.txt,single,"Cover: 109,763,770 shares of common stock",jkl4
+0000950129-96-000217,319687,1995,10-K,edgar/data/319687/0000950129-96-000217.txt,dual,Each share of Class A is entitled to 10 votes per share and each share of Class B is entitled to one vote per share,jkl4
+0000950129-98-000886,805023,1997,10-K405,edgar/data/805023/0000950129-98-000886.txt,single,"The number of shares outstanding of the issuer's common stock, $.01 par value, was 13,294,880 shares",jkl3
+0000950130-03-002052,1084421,2002,10-K,edgar/data/1084421/0000950130-03-002052.txt,dual,"two classes of common stock -- Class A which carries one vote per share and Class B which carries ten votes per share (full filing, risk factors)",jkl3
+0000950130-03-002769,1074874,2002,10KSB,edgar/data/1074874/0000950130-03-002769.txt,single,"16,569,261 shares of Common Stock outstanding; Class A Stock is convertible preferred (converted to common 2003-03-31)",jkl3
+0000950130-97-001416,89261,1996,10-K405,edgar/data/89261/0000950130-97-001416.txt,dual,"holders of outstanding shares of Class B Common Stock have the right to elect two-thirds of directors, and holders of Class A the remaining directors",jkl4
+0000950130-98-001436,783233,1997,10-K405,edgar/data/783233/0000950130-98-001436.txt,single,"Cover/Item 1: ACC Common Stock only; Class B Common Stock only authorized, not outstanding",jkl4
+0000950131-98-004476,65270,1997,10-K,edgar/data/65270/0000950131-98-004476.txt,dual,"Common Stock, Class A ... entitled to one-tenth of one vote per share; Class B full votes",jkl4
+0000950133-00-001264,824169,1999,10-K,edgar/data/824169/0000950133-00-001264.txt,dual,"Class A Common Stock and Class B Non-Voting Common Stock, 357,213,460 and 17,830,000",jkl3
+0000950133-98-001180,1004232,1997,10-K405,edgar/data/1004232/0000950133-98-001180.txt,single,"The number of shares of the Registrant's Common Stock outstanding as of March 20, 1998 was 11,787,313",jkl3
+0000950133-99-001350,1000694,1998,10-K405,edgar/data/1000694/0000950133-99-001350.txt,single,,jkl2
+0000950134-02-011421,2135,2002,10-K,edgar/data/2135/0000950134-02-011421.txt,dual,"Our Class A common stock ... is entitled to one vote per share. Our Class B common stock is entitled to ten votes per share (full filing, note 10)",jkl3
+0000950134-06-005273,869561,2005,10-K,edgar/data/869561/0000950134-06-005273.txt,dual,Holders of Class A common stock are entitled to one vote for each share owned while holders of Class B common stock are entitled to ten votes (full filing),jkl3
+0000950134-07-018984,1377789,2007,10-K,edgar/data/1377789/0000950134-07-018984.txt,unres,"Class A Common Stock 25,455,168; Class B Common Stock 32,913,377; Harris holds all Class B and ""can appoint separately, as a class, five of nine directors""; per-share votes not seen in first 400KB",jkl3
+0000950134-08-004758,1134203,2007,10-K,edgar/data/1134203/0000950134-08-004758.txt,single,Class A entitled to one vote for each share; holders of Class B common stock are entitled to one vote for each share and vote as a single class with Class A,jkl4
+0000950134-96-000216,742550,1995,10KSB40,edgar/data/742550/0000950134-96-000216.txt,single,"Cover: 2,134,820 shares of Common Stock",jkl4
+0000950134-98-001423,947268,1997,10-K405,edgar/data/947268/0000950134-98-001423.txt,dual,Balance sheet: Class A Convertible Common Stock 34.1M issued; Class B and Class C Convertible Non-Voting Common Stock 3.8M and 1.4M issued (cover lists only Class A),jkl4
+0000950134-98-002816,924174,1997,10-K,edgar/data/924174/0000950134-98-002816.txt,single,"48,745,957 shares of the registrant's common stock, which is the only class of voting stock of the registrant outstanding",jkl3
+0000950134-99-002390,948072,1998,10-K,edgar/data/948072/0000950134-99-002390.txt,single,"the Registrant had 6,265,812 shares of its common stock outstanding",jkl3
+0000950135-01-500919,1068885,2000,10-K405,edgar/data/1068885/0000950135-01-500919.txt,dual,"7,064,434 shares of voting common stock and 6,972,656 shares of non-voting common stock",jkl3
+0000950135-04-001305,812708,2003,10-K,edgar/data/812708/0000950135-04-001305.txt,single,"Class A Common Stock, $.001 par value, and Class B Common Stock ... outstanding as of March 1, 2004 was 31,889,147 and 0, respectively",jkl3
+0000950136-00-000446,1029443,1999,10-K,edgar/data/1029443/0000950136-00-000446.txt,single,"Cover: 60,892,099 shares of common stock, one class",jkl4
+0000950136-08-000935,801351,2007,10-K,edgar/data/801351/0000950136-08-000935.txt,single,"Cover: 45,135,161 shares of Common Stock",jkl4
+0000950137-00-001372,43362,1999,10-K,edgar/data/43362/0000950137-00-001372.txt,single,,jkl2
+0000950137-07-002405,908255,2006,10-K,edgar/data/908255/0000950137-07-002405.txt,single,"Cover: 57,972,874 shares of voting common stock outstanding; no second class",jkl4
+0000950137-07-003973,3116,2006,10-K,edgar/data/3116/0000950137-07-003973.txt,single,,jkl2
+0000950137-97-001155,40461,1996,10-K,edgar/data/40461/0000950137-97-001155.txt,dual,Each Class B share is entitled to 15 votes ... (Common Stock one vote),jkl4
+0000950144-00-003838,922865,1999,10-K405,edgar/data/922865/0000950144-00-003838.txt,dual,The disproportionate voting rights between our classes of stock; Class B 94.1% of the total voting power,jkl3
+0000950144-03-004001,1052958,2002,10-K,edgar/data/1052958/0000950144-03-004001.txt,single,"Cover: 36,165,876 shares of Common Stock",jkl4
+0000950144-05-002650,1072048,2004,10-K,edgar/data/1072048/0000950144-05-002650.txt,single,"registrant had only one outstanding class of common stock, 46,521,078 shares",jkl4
+0000950144-95-000933,822419,1994,10-K405,edgar/data/822419/0000950144-95-000933.txt,dual,Class A common stockholders are entitled to one vote per share and the Class B common stockholders are entitled to five votes per share,jkl3
+0000950144-97-003221,715787,1996,10-K405,edgar/data/715787/0000950144-97-003221.txt,dual,holders of Interface's Class B common stock are entitled to elect a majority of Interface's board of directors (credit agreement text),jkl4
+0000950144-98-003041,922865,1997,10-K,edgar/data/922865/0000950144-98-003041.txt,dual,"disproportionate voting rights between the Class A Common Stock and the Class B Common Stock; Class B (3,435,000 shares) holds ~94% of voting power",jkl4
+0000950144-98-007988,1016503,1997,10-K405,edgar/data/1016503/0000950144-98-007988.txt,single,"7,743,194 (one class)",jkl3
+0000950144-99-003292,1062515,1998,10-K405,edgar/data/1062515/0000950144-99-003292.txt,single,"Cover: 55,759,497 shares of common stock",jkl4
+0000950144-99-003444,799088,1998,10-K,edgar/data/799088/0000950144-99-003444.txt,dual,"Each share of Class A Common Stock entitles the holder to one vote per share, whereas a share of Class B Common Stock entitles the holder to ten votes per share",jkl4
+0000950144-99-003522,860730,1998,10-K405,edgar/data/860730/0000950144-99-003522.txt,dual,"621,233,662 shares of Voting Common Stock and 21,000,000 shares of Nonvoting Common Stock",jkl4
+0000950144-99-012212,729284,1999,10-K405,edgar/data/729284/0000950144-99-012212.txt,dual,"Each share of Class A Common Stock is entitled to one-tenth vote and each share of Class B Common Stock is entitled to one full vote (full filing, note 10)",jkl3
+0000950147-03-000776,1042291,2002,10-K,edgar/data/1042291/0000950147-03-000776.txt,single,"The number of shares of Common Stock of the registrant ... outstanding at June 13, 2003 was 15,773,471",jkl3
+0000950148-03-000439,795266,2002,10-K,edgar/data/795266/0000950148-03-000439.txt,single,"Cover: Common Stock 48,038,196 shares (one class)",jkl4
+0000950148-97-000693,783265,1996,10-K,edgar/data/783265/0000950148-97-000693.txt,dual,Class B Common Stock is non-voting other than as required by law (Common Stock voting),jkl4
+0000950148-97-000954,873979,1996,10KSB,edgar/data/873979/0000950148-97-000954.txt,single,"Number of shares of Common Stock outstanding as of March 31, 1997: 1,094,262 (preferred nonvoting)",jkl3
+0000950150-00-000257,29002,1999,10-K405,edgar/data/29002/0000950150-00-000257.txt,single,,jkl2
+0000950152-00-002229,902274,1999,10-K405,edgar/data/902274/0000950152-00-002229.txt,single,,jkl2
+0000950152-01-500583,782126,2000,10-K,edgar/data/782126/0000950152-01-500583.txt,single,"The number of shares of the registrant's Common Stock outstanding as of March 13, 2001 was 3,223,039",jkl3
+0000950152-01-501312,768835,2000,10-K,edgar/data/768835/0000950152-01-501312.txt,single,"Common stock 113,279,379 outstanding; no shares of Non-Voting Common Stock outstanding (none issued)",jkl4
+0000950152-01-501456,5133,2000,10-K405,edgar/data/5133/0000950152-01-501456.txt,dual,Class A shares have one vote per share and Class B shares have ten votes per share,jkl4
+0000950152-01-501490,34151,2000,10-K405,edgar/data/34151/0000950152-01-501490.txt,dual,The Company's Class A common shares have voting rights while Class B common shares have no voting rights,jkl4
+0000950152-02-003748,768835,2001,10-K,edgar/data/768835/0000950152-02-003748.txt,single,"Big Lots, Inc.; cover share statement not captured; no second common class seen in first 400KB",jkl3
+0000950152-05-002186,23111,2004,10-K,edgar/data/23111/0000950152-05-002186.txt,single,,jkl2
+0000950152-96-003264,754128,1995,10-K405,edgar/data/754128/0000950152-96-003264.txt,single,"The number of shares outstanding of the Registrant's common stock, $.24 par value, was 8,197,970",jkl3
+0000950152-97-002249,854709,1996,10-K,edgar/data/854709/0000950152-97-002249.txt,dual,Class A common shares ... 1 vote per share; Class B common shares ... 10 votes,jkl3
+0000950152-97-003431,721675,1996,10-K,edgar/data/721675/0000950152-97-003431.txt,dual,Holders of Class A Common Stock have one-tenth vote per share and are entitled to elect 25% of the Board ... Holders of Class B Common Stock have one vote,jkl4
+0000950152-97-008251,27425,1997,10-K405,edgar/data/27425/0000950152-97-008251.txt,single,,jkl2
+0000950152-98-002513,93456,1997,10-K,edgar/data/93456/0000950152-98-002513.txt,dual,"Each of the 23,693,364 shares of Common outstanding has one vote, while each of the 4,725,000 shares of Class A is entitled to five votes",jkl4
+0000950152-99-002710,860235,1998,10-K,edgar/data/860235/0000950152-99-002710.txt,single,,jkl2
+0000950152-99-004924,5133,1998,10-K405,edgar/data/5133/0000950152-99-004924.txt,dual,Class A shares have one vote per share and Class B shares have ten votes per share,jkl4
+0000950153-00-000073,1030839,1999,10-K405,edgar/data/1030839/0000950153-00-000073.txt,single,"No other capital stock is outstanding ... 20,820,181 shares of the registrant's Common Stock outstanding",jkl3
+0000950153-03-002409,929887,2003,10-K,edgar/data/929887/0000950153-03-002409.txt,dual,Apollo Education Group Class A common stock holders are not entitled to any voting rights; Class B is the voting stock,jkl4
+0000950156-96-000186,79225,1995,10-K,edgar/data/79225/0000950156-96-000186.txt,dual,Class A voting common stock ... Class B non-voting common stock,jkl3
+0000950168-00-000898,317540,1999,10-K,edgar/data/317540/0000950168-00-000898.txt,unres,"Common Stock 6,392,252; Class B Common Stock 2,341,077 (convertible share for share); votes not seen in first 400KB",jkl3
+0001005477-00-004937,882509,1999,10KSB,edgar/data/882509/0001005477-00-004937.txt,single,"5,333,249 shares of the Registrant's Common Stock were outstanding",jkl3
+0001005477-97-000952,920854,1996,10KSB,edgar/data/920854/0001005477-97-000952.txt,single,"Cover: 6,265,000 shares of Common Stock",jkl4
+0001012704-00-000043,1012704,1999,10-K,edgar/data/1012704/0001012704-00-000043.txt,single,"Cover: 14,929,552 shares of common stock",jkl4
+0001016504-04-000069,1016504,2004,10-K,edgar/data/1016504/0001016504-04-000069.txt,single,"Common Stock, $.002 par value 12,505,990 Shares",jkl3
+0001016843-99-000407,1022701,1998,10KSB40,edgar/data/1022701/0001016843-99-000407.txt,single,"8,824,800 shares ... of the issuer's Common Stock",jkl3
+0001018848-01-000002,1018848,2000,10-K,edgar/data/1018848/0001018848-01-000002.txt,single,"Cover: 85,140,155 shares of Common Stock",jkl4
+0001019687-02-001346,866535,2001,10-K,edgar/data/866535/0001019687-02-001346.txt,single,,jkl2
+0001021162-12-000011,1021162,2011,10-K,edgar/data/1021162/0001021162-12-000011.txt,single,"Cover: 49,825,972 shares of Common Stock",jkl4
+0001035704-02-000158,1035002,2001,10-K405,edgar/data/1035002/0001035704-02-000158.txt,single,"104,915,970 shares of the registrant's common stock were issued and outstanding",jkl3
+0001036050-01-000491,1089872,2000,10-K,edgar/data/1089872/0001036050-01-000491.txt,unres,"5,955,578 shares of Class A common stock and 5,400,000 shares of Class B common stock; per-share votes not seen in first 400KB",jkl3
+0001047021-98-000004,1047021,1997,10-K,edgar/data/1047021/0001047021-98-000004.txt,unres,"Common Stock, Class A 8,163,270; Common Stock, Class B 44,426,299; per-share votes not seen in first 400KB",jkl3
+0001047469-03-010520,814361,2002,10-K,edgar/data/814361/0001047469-03-010520.txt,dual,"shares of Class A Common Stock carry one vote per share, while shares of Class B Common Stock carry ten votes per share",jkl4
+0001047469-03-013149,1025573,2002,10-K,edgar/data/1025573/0001047469-03-013149.txt,single,"the registrant had 12,876,720 shares of Common Stock outstanding",jkl3
+0001047469-03-031987,1059581,2003,10-K,edgar/data/1059581/0001047469-03-031987.txt,dual,"Class A common stock has ten votes for each share ... Class B common stock has one vote for each share (full filing, note 8)",jkl3
+0001047469-04-010111,1085869,2003,10KSB,edgar/data/1085869/0001047469-04-010111.txt,single,"Cover: 15,087,566 shares of common stock",jkl4
+0001047469-04-011984,1025573,2003,10-K,edgar/data/1025573/0001047469-04-011984.txt,single,,jkl2
+0001047469-04-012009,1039160,2003,10-K,edgar/data/1039160/0001047469-04-012009.txt,single,"Cover: 4,780,195 shares of common stock",jkl4
+0001047469-05-006676,98677,2004,10-K,edgar/data/98677/0001047469-05-006676.txt,dual,each share of Class B Common Stock has ten votes per share (compared to one vote per share of Common Stock),jkl4
+0001047469-05-007862,1289460,2004,10-K,edgar/data/1289460/0001047469-05-007862.txt,dual,"Class A / Class B, Class B 10 votes (10-K text)",jkl2
+0001047469-08-002539,1080131,2007,10-K,edgar/data/1080131/0001047469-08-002539.txt,dual,"Each share of Class A Common Stock has a single vote ... Each share of Class B Common Stock has 20 votes (full filing, note 11)",jkl3
+0001047469-10-002531,909494,2009,10-K,edgar/data/909494/0001047469-10-002531.txt,single,"Cover: 59,793,116 shares of common stock, one class",jkl4
+0001047469-12-001904,891103,2011,10-K,edgar/data/891103/0001047469-12-001904.txt,dual,"common stock, with one vote per share, and Class B common stock, with ten votes per share",jkl4
+0001047469-98-010660,1001082,1997,10-K,edgar/data/1001082/0001047469-98-010660.txt,dual,Holders of Class A and Class C Common Stock are entitled to one vote per share and holders of Class B Common Stock are entitled to ten votes per share,jkl3
+0001047469-98-011752,924146,1997,10-K,edgar/data/924146/0001047469-98-011752.txt,single,"there were 19,412,850 shares of the registrant's common stock, par value $0.01 per share, outstanding (Class B converted at the 1997 IPO)",jkl3
+0001047469-98-012603,921506,1997,10-K,edgar/data/921506/0001047469-98-012603.txt,single,"The number of shares of Common Stock outstanding as of March 10, 1998 was 11,047,323",jkl3
+0001047469-98-013005,906908,1997,10-K,edgar/data/906908/0001047469-98-013005.txt,single,"Cover: single Common Stock 15,183,597 shares; non-voting convertible preferred only",jkl4
+0001047469-99-009467,883324,1998,10-K,edgar/data/883324/0001047469-99-009467.txt,single,"5,911,208 shares of Class A Common Stock and no shares of Class B Common Stock outstanding",jkl3
+0001047469-99-011782,314865,1998,10-K,edgar/data/314865/0001047469-99-011782.txt,dual,The Common Stock has a 1/10 per share voting right compared to one vote per share for the Class A Common Stock,jkl3
+0001047469-99-012529,891285,1998,10-K,edgar/data/891285/0001047469-99-012529.txt,single,,jkl2
+0001047469-99-013011,903129,1998,10-K,edgar/data/903129/0001047469-99-013011.txt,unres,"Cover lists only 2,510,089 shares of Class A Common Stock outstanding; text refers to escrowed ""Class B Shares"" held by Dr. Bell, vote rights not stated in first 400KB",jkl3
+0001049606-05-000005,1049606,2004,10-K,edgar/data/1049606/0001049606-05-000005.txt,dual,Class A and Class B are identical except for certain voting rights; Holders of Class A Common Stock are entitled to one vote per share; CompX Group holds all Class B,jkl3
+0001050502-08-000285,727207,2008,10KSB,edgar/data/727207/0001050502-08-000285.txt,single,"Cover: 10,226,210 shares of Common Stock",jkl4
+0001068800-06-001777,890923,2006,10-K,edgar/data/890923/0001068800-06-001777.txt,single,"Cover: 26,970,642 shares of Common Stock",jkl4
+0001095811-00-000826,1050606,1999,10-K,edgar/data/1050606/0001095811-00-000826.txt,dual,Holders of Class A common stock are entitled to one vote per share and holders of Class B common stock are entitled to ten votes per share,jkl4
+0001095811-00-001002,1013606,1999,10-K,edgar/data/1013606/0001095811-00-001002.txt,single,"Cover: ~12,021,000 shares of Common Stock",jkl4
+0001095811-00-001871,797721,1999,10-K405,edgar/data/797721/0001095811-00-001871.txt,single,"Cover: 10,860,717 shares of Common Stock",jkl4
+0001103837-10-000020,1103837,2009,10-K,edgar/data/1103837/0001103837-10-000020.txt,dual,"super-voting nature of the Class B Common Stock (Class A 74.1M, Class B 30.7M outstanding)",jkl4
+0001104659-04-026881,1001250,2004,10-K,edgar/data/1001250/0001104659-04-026881.txt,dual,Holders of Class A Common Stock are entitled to one vote per share and holders of Class B Common Stock are entitled to ten votes per share,jkl4
+0001104659-04-027480,103096,2004,10-K,edgar/data/103096/0001104659-04-027480.txt,single,"there were 13,898,147 shares of common stock of the registrant outstanding",jkl3
+0001104659-04-034382,1003078,2004,10-K,edgar/data/1003078/0001104659-04-034382.txt,dual,Class A common stock (one vote per share) ... Class B common stock (ten votes per share) (full filing balance sheet),jkl3
+0001104659-05-030142,820738,2004,10KSB,edgar/data/820738/0001104659-05-030142.txt,single,"the Registrant had 19,776,006 shares of its common stock outstanding",jkl3
+0001104659-07-068479,1178575,2007,10-K,edgar/data/1178575/0001104659-07-068479.txt,single,"7,069,050 Common Units and 3,123,750 Subordinated Units were outstanding (limited partnership units, no common-stock classes with differing votes shown)",jkl3
+0001104659-10-012021,70415,2009,10-K,edgar/data/70415/0001104659-10-012021.txt,single,"Cover: one Common Stock 18,603,322; Class B (ten votes) eliminated in 2006",jkl4
+0001104659-11-001739,1157758,2010,10-K,edgar/data/1157758/0001104659-11-001739.txt,single,,jkl2
+0001110550-10-000016,89140,2009,10-K,edgar/data/89140/0001110550-10-000016.txt,single,"Cover: 2,237,371 common shares",jkl4
+0001135017-11-000007,1135017,2010,10-K,edgar/data/1135017/0001135017-11-000007.txt,unres,"Kinder Morgan Management LLC: two voting shares (held by Kinder Morgan G.P.) plus 91.9M listed shares with limited voting; paired/controlling-entity structure, vote per share not stated",jkl4
+0001144204-04-003965,916529,2003,10-K,edgar/data/916529/0001144204-04-003965.txt,single,"Cover: 62,312,796 shares, one class",jkl4
+0001144204-05-009430,1086740,2004,10-K,edgar/data/1086740/0001144204-05-009430.txt,single,"Class A Common Stock, $0.001 par value 29,961,086 (only class outstanding listed as capital stock)",jkl3
+0001144204-06-012161,1086740,2005,10-K,edgar/data/1086740/0001144204-06-012161.txt,single,"Cover: only Class A Common Stock 30,000,982 outstanding",jkl4
+0001144204-11-021832,1338401,2010,10-K,edgar/data/1338401/0001144204-11-021832.txt,single,"As of March 31, 2011, we had 12,032,193 shares of common stock outstanding",jkl3
+0001144204-11-066031,1156295,2011,10-K,edgar/data/1156295/0001144204-11-066031.txt,single,,jkl2
+0001157523-08-001787,84748,2007,10-K,edgar/data/84748/0001157523-08-001787.txt,single,"Rogers has no non-voting common equity. The number of shares outstanding of capital stock ... was 17,914,172",jkl3
+0001169232-07-001623,350737,2006,10-K,edgar/data/350737/0001169232-07-001623.txt,single,"Cover: 7,621,316 shares of common stock",jkl4
+0001185185-11-001000,1326205,2010,10-K,edgar/data/1326205/0001185185-11-001000.txt,single,,jkl2
+0001185185-12-000480,942126,2011,10-K,edgar/data/942126/0001185185-12-000480.txt,dual,Each holder of Class A common stock is entitled to one vote ... Class B common stock is entitled to ten votes for each share,jkl4
+0001193125-03-098040,50493,2003,10-K,edgar/data/50493/0001193125-03-098040.txt,dual,holders of Class A Common Stock have one vote per share and the holders of Class B Common Stock have ten votes per share,jkl4
+0001193125-04-031835,1077688,2003,10-K,edgar/data/1077688/0001193125-04-031835.txt,single,"Common stock, no par value 14,475,300",jkl3
+0001193125-04-081781,886137,2003,10-K,edgar/data/886137/0001193125-04-081781.txt,dual,"Holders of Class A Common Stock are entitled to one vote for each share held of record, and holders of Class B Common Stock are entitled to ten votes (full filing)",jkl3
+0001193125-04-212844,58361,2004,10-K,edgar/data/58361/0001193125-04-212844.txt,dual,"Class B Common Stock has ten votes per share ... Common Stock (which has one vote per share) (full filing, note 8)",jkl3
+0001193125-05-040899,858470,2004,10-K,edgar/data/858470/0001193125-05-040899.txt,single,"Cover: 32,414,760 shares of Common Stock",jkl4
+0001193125-05-077726,1108320,2004,10-K,edgar/data/1108320/0001193125-05-077726.txt,single,exchangeable shares of subsidiary; one listed class,jkl2
+0001193125-05-229490,1168478,2005,10-K,edgar/data/1168478/0001193125-05-229490.txt,single,Classes A/B/C; B and C voted together as a group; per-share vote difference not shown in text read -> treated non-dual,jkl2
+0001193125-06-040130,2488,2005,10-K,edgar/data/2488/0001193125-06-040130.txt,single,"480,887,662 shares of common stock, $0.01 par value per share",jkl3
+0001193125-06-052513,1206264,2005,10-K,edgar/data/1206264/0001193125-06-052513.txt,single,,jkl2
+0001193125-06-058227,1262200,2005,10KSB,edgar/data/1262200/0001193125-06-058227.txt,single,"6,502,211 shares of the registrant's Common Stock were outstanding",jkl3
+0001193125-06-068024,818813,2005,10-K,edgar/data/818813/0001193125-06-068024.txt,single,Class A Common Stock issued; non-voting Class B Common Stock not held by any holders of record (none outstanding),jkl4
+0001193125-07-255013,1140859,2007,10-K,edgar/data/1140859/0001193125-07-255013.txt,single,"The number of shares of common stock of AmerisourceBergen Corporation outstanding as of October 31, 2007 was 167,961,153",jkl3
+0001193125-08-014540,920760,2007,10-K,edgar/data/920760/0001193125-08-014540.txt,dual,"Class A common stock entitles holders to one vote per share and the Class B common stock entitles holders to ten votes per share (full filing, notes)",jkl3
+0001193125-08-058871,1396546,2007,10-K,edgar/data/1396546/0001193125-08-058871.txt,dual,Class A common stock entitled to one vote per share; one share of Class B common stock entitled to a number of votes equal to ... (full filing),jkl3
+0001193125-08-073400,28917,2007,10-K,edgar/data/28917/0001193125-08-073400.txt,dual,"Holders of Class A are empowered as a class to elect one-third of the Board, holders of Class B two-thirds",jkl4
+0001193125-08-161503,318833,2007,10-K,edgar/data/318833/0001193125-08-161503.txt,single,,jkl2
+0001193125-08-210243,1002902,2008,10-K,edgar/data/1002902/0001193125-08-210243.txt,single,"there were 3,409,488 shares of common stock of the registrant issued and outstanding",jkl3
+0001193125-09-013746,815097,2008,10-K,edgar/data/815097/0001193125-09-013746.txt,single,"Carnival Corporation had outstanding 625,374,532 shares of its Common Stock (paired plc with one Special Voting Share, not a second common class)",jkl3
+0001193125-09-042891,1056087,2008,10-K,edgar/data/1056087/0001193125-09-042891.txt,dual,Holders of Class B are entitled to one vote per share ... Holders of Class A Common Stock are entitled to one-tenth of a vote per share (full filing note),jkl3
+0001193125-09-055379,799088,2008,10-K,edgar/data/799088/0001193125-09-055379.txt,single,"12,820,890 shares of common stock were outstanding",jkl3
+0001193125-10-040534,1452575,2009,10-K,edgar/data/1452575/0001193125-10-040534.txt,single,"there were 204,500,000 shares of common stock outstanding",jkl3
+0001193125-10-046124,1056087,2009,10-K,edgar/data/1056087/0001193125-10-046124.txt,dual,Holders of Class B are entitled to one vote per share ... Holders of Class A Common Stock are entitled to one-tenth of a vote per share,jkl4
+0001193125-10-046761,886163,2009,10-K,edgar/data/886163/0001193125-10-046761.txt,single,"the Registrant had 117,335,286 shares of Common Stock outstanding",jkl3
+0001193125-10-053542,1134203,2009,10-K,edgar/data/1134203/0001193125-10-053542.txt,single,"the registrant had 39,586,535 shares of Class A common stock outstanding (only class on cover)",jkl3
+0001193125-11-030900,1324424,2010,10-K,edgar/data/1324424/0001193125-11-030900.txt,dual,"Expedia stockholders are entitled to one vote for each share of common stock, ten votes for each share of Class B common stock",jkl4
+0001193125-11-042614,1322705,2010,10-K,edgar/data/1322705/0001193125-11-042614.txt,single,"one share of Class B Common Stock (Silver Lake) entitled to vote for up to two directors; common stock one vote per share. BORDERLINE: special-purpose single share, not a per-share vote difference on general matters (full filing)",jkl3
+0001193125-11-056439,1469372,2010,10-K,edgar/data/1469372/0001193125-11-056439.txt,dual,Class A 1 vote / Class B 10 votes (10-K text),jkl2
+0001193125-11-277309,1467373,2011,10-K,edgar/data/1467373/0001193125-11-277309.txt,single,Each Class A ordinary share and each Class X ordinary share entitles its holder to one vote (equal votes per share),jkl4
+0001193125-12-078045,23111,2011,10-K,edgar/data/23111/0001193125-12-078045.txt,single,"Cover: single Common Stock 18,534,614 shares",jkl4
+0001193125-12-078446,912513,2011,10-K,edgar/data/912513/0001193125-12-078446.txt,single,"Cover: 45,818,398 shares of common stock",jkl4
+0001193125-12-087592,105016,2011,10-K,edgar/data/105016/0001193125-12-087592.txt,dual,"shares of Class B Common Stock have ten (10) votes per share (full submission, voting agreement exhibit)",jkl3
+0001193125-12-119442,317540,2011,10-K,edgar/data/317540/0001193125-12-119442.txt,dual,The Class B Common Stock is entitled to 20 votes per share and the Common Stock is entitled to one vote per share,jkl4
+0001193125-12-300790,713425,2011,10-K,edgar/data/713425/0001193125-12-300790.txt,dual,own 100% of our outstanding Class B common shares ... giving them the right to elect a majority of the Board of Directors,jkl4
+0001206774-10-000366,103730,2009,10-K,edgar/data/103730/0001206774-10-000366.txt,dual,"holders of common stock are entitled to one vote for each share held, while the holders of Class B common stock are entitled to 10 votes for each share held",jkl3
+0001362310-07-000368,1233426,2006,10-K,edgar/data/1233426/0001362310-07-000368.txt,single,"Cover: 28,837,760 shares of common stock; Class B/nonvoting members' interests are predecessor LLC units",jkl4
+0001362310-09-002970,1413609,2008,10-K,edgar/data/1413609/0001362310-09-002970.txt,single,"the registrant had outstanding 25,000,000 shares of common stock",jkl3

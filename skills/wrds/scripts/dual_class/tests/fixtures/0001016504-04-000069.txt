@@ -1,0 +1,1080 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ P2CRraBcrRakzUQafAXuhFNGqa7ySrdkem+Ca1aK6ksRD8/rku4H29+3/+oJEYq7
+ bWgtCnOitHR18NGVi8r9XQ==
+
+<SEC-DOCUMENT>0001016504-04-000069.txt : 20040928
+<SEC-HEADER>0001016504-04-000069.hdr.sgml : 20040928
+<ACCEPTANCE-DATETIME>20040928155446
+ACCESSION NUMBER:		0001016504-04-000069
+CONFORMED SUBMISSION TYPE:	10-K
+PUBLIC DOCUMENT COUNT:		6
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040928
+DATE AS OF CHANGE:		20040928
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			INTEGRATED BIOPHARMA INC
+		CENTRAL INDEX KEY:			0001016504
+		STANDARD INDUSTRIAL CLASSIFICATION:	PHARMACEUTICAL PREPARATIONS [2834]
+		IRS NUMBER:				133035216
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		10-K
+		SEC ACT:		1934 Act
+		SEC FILE NUMBER:	001-31668
+		FILM NUMBER:		041049925
+
+	BUSINESS ADDRESS:	
+		STREET 1:		201 ROUTE 22
+		CITY:			HILLSIDE
+		STATE:			NJ
+		ZIP:			07205
+		BUSINESS PHONE:		9739260816
+
+	MAIL ADDRESS:	
+		STREET 1:		201 ROUTE 22
+		CITY:			HILLSIDE
+		STATE:			NJ
+		ZIP:			07205
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	INTEGRATED HEALTH TECHNOLOGIES INC
+		DATE OF NAME CHANGE:	20020912
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	CHEM INTERNATIONAL INC
+		DATE OF NAME CHANGE:	19960716
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>10-K
+<SEQUENCE>1
+<FILENAME>inb10qsep30_2004.txt
+<DESCRIPTION>INTEGRATED BIOPHARMA, INC.
+<TEXT>
+                                  UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                              Washington D.C. 20549
+                                  ------------
+
+                                   FORM 10-KSB
+
+                     Annual Report Under Section 13 or 15(d)
+                     of the Securities Exchange Act of 1934
+
+For the fiscal year ended June 30, 2004         Commission File Number 000-28876
+
+
+                           INTEGRATED BIOPHARMA, INC.
+                  (f/k/a Integrated Health Technologies, Inc.)
+            (Exact name of small business registrant in its charter)
+
+                  Delaware                                  22-2407475
+         (State or other jurisdiction of                 (I.R.S. Employer
+         incorporation or organization)                 Identification No.)
+
+        225 Long Ave., Hillside, New Jersey                  07205
+        (Address of principal executive offices)           (Zip code)
+
+Registrant's telephone number: (888) 319-6962
+
+Securities registered under Section 12(b) of the Exchange Act:
+
+        Title of Each Class            Name of Each Exchange on Which Registered
+Common Stock, $.002 par value per share        American Stock Exchange
+
+Securities registered under Section 12(g) of the Exchange Act:  None
+
+Indicate by check mark whether the Registrant (1) has filed all reports required
+to be filed by Section 13 or 15(d) of the Securities and Exchange Act of 1934
+during the preceding 12 months (or for such shorter period that the Registrant
+was required to file such reports), and (2) has been subject to such filing
+requirements for the past 90 days.
+
+                           Yes  |X|         No  | |
+
+Indicate by check mark if disclosure of delinquent filers pursuant to Item 405
+of Regulation S-K is not contained herein, and will not be contained, to the
+best of Registrant's knowledge, in definitive proxy or information statements
+incorporated by reference in Part III of this Form 10-KSB or any amendment to
+this Form 10-KSB.
+
+                           Yes  |X|         No  | |
+
+Registrant's revenues for the fiscal year ended June 30, 2004 were $25,282,790.
+
+The aggregate market value of the voting stock held by non-affiliates of the
+Registrant based on the trading price of the Registrant's Common Stock on August
+27, 2004 was $20,808,898.
+
+The number of shares outstanding of each of the Registrant's classes of common
+equity, as of the latest practicable date:
+
+               Class                          Outstanding at August 27, 2004
+   Common Stock, $.002 par value                    12,505,990 Shares
+
+                       DOCUMENTS INCORPORATED BY REFERENCE
+
+The information required by part III will be incorporated by reference from
+certain portions of a definitive Proxy Statement which is expected to be filed
+by the Registrant within 120 days after the close of its fiscal year.
+
+
+<PAGE>
+
+
+                   INTEGRATED BIOPHARMA, INC. AND SUBSIDIARIES
+
+                            FORM 10-KSB ANNUAL REPORT
+
+                                      INDEX
+
+
+Part I                                                                  Page
+
+Item 1.  Description of Business                                        1
+
+Item 2.  Description of Property                                        7
+
+Item 3.  Legal Proceedings                                              7
+
+Item 4.  Submission of Matters to a Vote of Security Holders            8
+
+Part II
+
+Item 5.  Market for Common Equity, Related Stockholder Matters
+         and Small Business Issuer Purchases of Equity Securities       9
+
+Item 6.  Management's Discussion and Analysis or Plan of Operation      11
+
+Item 7.  Financial Statements                                           17
+
+Item 8.  Changes in and Disagreements with Accountants on Accounting
+         and Financial Disclosure                                       17
+
+Item 8A. Controls and Procedures                                        17
+
+Item 8B. Other Information                                              19
+
+Part III
+
+Item 9.  Directors and Executive Officers of the Registrant             20
+
+Item 10. Executive Compensation                                         20
+
+Item 11. Security Ownership of Certain Beneficial Owners and Management
+         and Related Stockholder Matters                                20
+
+Item 12. Certain Relationships and Related Transactions                 20
+
+Item 13. Exhibits, List and Reports on Form 8-K                         20
+
+Item 14. Principal Accountant Fees and Services                         22
+
+Signatures
+
+
+<PAGE>
+
+                                     PART I
+
+Disclosure Regarding Forward-Looking Statements
+
+All statements other than statements of historical fact, in this Form 10-KSB,
+including without limitation, the statements under "Management's Discussion and
+Analysis of Plan of Operation" and "Description of Business" are, or may be
+deemed to be, forward-looking statements. Such forward-looking statements
+involve known and unknown risks, uncertainties and other factors which may cause
+the actual results, performance or achievements of Integrated BioPharma, Inc. or
+industry results, to be materially different from any future results,
+performance or achievements expressed or implied by such forward-looking
+statements. Such factors including, among others, changes in general economic
+and business conditions; loss of market share through competition; introduction
+of competing products by other companies; the timing of regulatory approval and
+the introduction of new products by Integrated BioPharma, Inc.; changes in
+industry capacity; pressure on prices from competition or from purchasers of
+Integrated BioPharma, Inc.'s products; regulatory changes in the pharmaceutical
+manufacturing industry and nutraceutical industry; regulatory obstacles to the
+introduction of new technologies or products that are important to Integrated
+BioPharma, Inc.; availability of qualified personnel; the loss of any
+significant customers or suppliers; and other factors both referenced and not
+referenced in this Report. When used in this Report, the words "estimate",
+"project", "anticipate", "except", "intend", "believe" and similar expressions
+are intended to identify forward-looking statements within the meaning of the
+Private Securities Litigation Reform Act of 1995.
+
+Item 1.   Description of Business
+
+General
+
+Integrated BioPharma, Inc., a Delaware corporation (together with its
+subsidiaries, the "Company") is engaged primarily in manufacturing, marketing
+and sales of vitamins, nutritional supplements and herbal products, including
+vitamins sold as single entity supplements, in multi-vitamin combinations and in
+varying potency levels and in different packaging sizes. The Company was
+previously known as Integrated Health Technologies, Inc. and, prior to that, as
+Chem International, Inc.
+
+The Company's subsidiary, Manhattan Drug Company, Inc. ("Manhattan Drug"),
+manufactures the vitamins and nutritional supplements for sale to distributors,
+multilevel marketers and specialized health-care providers. The Company also
+manufactures such products for sale under its own private brand, "Vitamin
+Factory", through mail order. On August 31, 2000, the Company began the
+distribution and sale of fine chemicals through its subsidiary IHT Health
+Products, Inc.
+
+On February 21, 2003, the Company completed a merger with NuCycle Acquisition
+Corp. (together with its wholly-owned subsidiary NuCycle Therapy, Inc.,
+"NuCycle") pursuant to which the Company acquired NuCycle in exchange for the
+shareholders of NuCycle receiving from the Company 368,833 shares of its common
+stock and 25% of the after-tax profits of NuCycle until the shareholders of
+NuCycle have received, in the aggregate, an additional $5,000,000 commencing
+with the first fiscal quarter following the date of the merger. As of June 30,
+2004 the likelihood of such additional payments was not probable and
+accordingly, no such amount was recorded or accrued. NuCycle is engaged in the
+development and sale of nutritional formulations based on plant-derived minerals
+through patented hyperaccumulation technology. The NuCycle transaction also
+allows the Company to enter the field of genetically engineered human
+therapeutics through NuCycle's expertise and a grant from the National Cancer
+Institute.
+
+On July 22, 2003, the Company acquired 97% of the shares of common stock of
+Paxis Pharmaceuticals, Inc. ("Paxis"). Paxis manufactures and distributes
+
+                                       1
+
+<PAGE>
+
+Paclitaxel, which is the primary chemotherapeutic agent in the treatment of
+breast cancer, at its Boulder, Colorado manufacturing facility. Paxis acquired
+from Hauser Inc. ("Hauser") its cGMP-(current good manufacturing practices)
+compliant Paclitaxel production facilities, processing equipment, and
+intellectual assets. Paxis also purchased intellectual property (the
+"Technology") from Hauser. On October 8, 2003, the Company acquired the
+remaining three (3%) percent of Paxis in exchange for 66,666 shares of its
+common stock valued at $542,728. The stock was valued on the basis of the
+average closing price as reported on the American Stock Exchange for the five
+(5) trading days immediately preceding the closing date and five (5) trading
+days after.
+
+Paxis has completed setting up its manufacturing facilities and operations and
+has built up a raw material inventory of approximately $2,600,000 to support
+manufacturing. Paxis has not had any revenues to date. Additional capital will
+be needed by Paxis to begin selling bulk Paclitaxel. Paxis is subject to various
+risks associated with a start-up operation, including, among others, setting up
+and operating manufacturing facilities, complying with regulatory requirements
+for manufacturing pharmaceutical products, manufacturing cGMP API Paclitaxel,
+marketing and selling the cGMP API Paclitaxel to customers, and operating
+profitably. The Company can give no assurance that Paxis can be operated
+profitably.
+
+Paxis has entered into a joint venture as of July 16, 2003 with Chatham Biotec,
+Ltd. ("Chatham"), a Canadian company which harvests and dries biomass, to form a
+Canadian-based joint venture to produce extract and intermediate precursor
+Paclitaxel from Canadian Taxus biomass. Chatham supplies the Canadian biomass
+and the joint venture processes it, using Paxis' extraction expertise in a
+facility currently controlled by the joint venture. The joint venture supplies
+Paxis' requirements for extract at cost, from which Paxis produces its
+Paclitaxel and related products. The joint venture may sell extract and
+intermediate products to third parties. The Company can give no assurance that
+the joint venture can be operated successfully.
+
+On October 22, 2003, the Company completed the acquisition of various assets
+related to the Naturally Aloe(TM), Naturally Noni(TM) and Avera Sport(TM)
+product lines from Aloe Commodities International, Inc. ("Aloe"). The assets
+included trademarks, copyrights, art work, formula for the products, labels,
+customer lists, goodwill, inventories and books and records. Pursuant to the
+terms of a purchase agreement dated October 22, 2003 by and between the Company
+and Aloe, the purchase price for the Transferred Assets was $2,597,880, with
+$872,470 paid at closing and $1,725,410 paid in 203,085 shares of the Company's
+common stock valued on the basis of the average closing price as reported on the
+American Stock Exchange for the five (5) trading days immediately preceding the
+closing date and five (5) trading days after. Such shares shall be held in
+escrow for a period of one (1) year from the closing date and released pursuant
+to the terms of and Escrow Agreement between and among the Company, Aloe and
+Vial, Hamilton, Koch & Knox, L.L.P.
+
+Listing of Common Stock on American Stock Exchange
+
+On April 16, 2003, the common stock of the Company began trading on the American
+Stock Exchange under the trading symbol, "INB".
+
+
+Offering of Series B Redeemable Convertible Preferred Stock
+
+On April 20, 2004, in connection with its private offering of its Series B
+Convertible Preferred Stock, par value $0.002 per share (the "Series B"), the
+Company issued 750 shares of the Series B, at a purchase price of $10,000 per
+share of Series B, and warrants for 375,000 shares of its common stock with an
+exercise price of $14.00 per share. The Series B are convertible at the option
+
+                                       2
+
+<PAGE>
+
+
+of each Investor into shares of common stock at a conversion price of $10.00 per
+share, subject to anti-dilution and other customary adjustments. To date, 50
+shares of Series B have been converted into common stock. The Series B are
+redeemable by the Company on the third anniversary of the issuance. The Company
+also issued Additional Investment Rights to the Investors, entitling them over
+the next 18 months to purchase an aggregate of 375 additional Series B Preferred
+Shares and Warrants to purchase an additional 187,500 shares of common stock.
+
+Offering of Common Stock and Warrant
+
+On May 3, 2004, the Company completed a private placement of securities in
+which the Company sold 500,000 shares of common stock and a warrant to purchase
+50,000 shares of common stock with an exercise price of $14 for a purchase price
+of $5,000,000.
+
+Development and Supply Agreement
+
+On March 13, 1998, the Company signed a development and supply agreement with
+Herbalife International of America, Inc. ("Herbalife") whereby the Company will
+develop, manufacture and supply certain nutritional products to Herbalife which,
+agreement was renewed through December 31, 2006. The agreement provides that
+Herbalife is required to purchase a minimum quantity of Supplied Products each
+year of $18,000,000 for the term of the agree
+[... trimmed ...]
+
+                                       8
+
+<PAGE>
+
+
+
+
+                                     PART II
+
+Item 5. Market for Common Equity, Related Stockholder Matters and Small Business
+Issuer Purchases of Equity Securities
+
+Market Information
+
+On April 16, 2003 the Company began trading on the American Stock Exchange using
+the symbol INB for its common stock.
+
+Set forth below are the high and low closing prices of the Common Stock as
+reported on the Electronic Bulletin Board for the period July 1, 2002 through
+April 15, 2003 and on the American Stock Exchange for the period April 16, 2003
+through June 30, 2004:
+
+                                   HIGH               LOW
+COMMON STOCK [IHTC/INB]
+
+FISCAL YEAR ENDED JUNE 30, 2003
+First Quarter                      $ 0.60             $ 0.42
+Second Quarter                     $ 0.51             $ 0.32
+Third Quarter                      $ 3.47             $ 0.42
+Fourth Quarter                     $ 7.48             $ 3.11
+
+FISCAL YEAR ENDED JUNE 30, 2004
+First Quarter                      $ 9.10             $ 6.65
+Second Quarter                     $12.28             $ 7.84
+Third Quarter                      $13.15             $10.25
+Fourth Quarter                     $15.12             $ 7.91
+
+
+Holders
+
+As of June 30, 2004, there were approximately 900 holders of record of the
+Company's Common Stock.
+
+Dividends
+
+The Company has not declared or paid a dividend with respect to its Common Stock
+during fiscal year ended June 30, 2004 or June 30, 2003 nor does the Company
+anticipate paying dividends in the foreseeable future.
+
+The Company has paid dividends of $101,692 with respect to its Series B
+Redeemable Convertible Preferred Stock during the fiscal year ended June 30,
+2004.
+
+The following table provides information as of June 30, 2004 about the Company's
+equity compensation plans.
+
+                                       9
+
+<PAGE>
+
+<TABLE>
+<CAPTION>
+
+                                Equity Compensation Plan Information
+
+                            Number of securities to    Weighted-average exercise   Number of securities remaining
+                            be issued upon exercise      price of outstanding      available for future issuance
+                            of outstanding options,      options, warrants and     under equity compensation plans
+                              warrants and rights               rights             (excluding securities reflected
+                                      (a)                         (b)              in column (a))
+<S>                                <C>                           <C>                       <C>
+Equity compensation plans
+approved by security
+holders                            5,683,261                     $2.41                     1,869,739
+
+Equity compensation plans
+not approved by security
+holders                                   --                        --                            --
+                                   ---------                     -----                     ---------
+Total                              5,683,261                     $2.41                     1,869,739
+                                   =========                     =====                     =========
+</TABLE>
+
+Recent Sales of Unregistered Securities
+
+During the past fiscal year ended June 30, 2004, the Company sold the following
+securities which were not registered under the Securities Act of 1933, as
+amended (the "Securities Act"):
+
+On May 3, 2004, the Company issued 500,000 shares of its common stock, par value
+$.002 per share, to Damon DeSantis, in exchange for $5,000,000. Mr. DeSantis
+also received a warrant to purchase 50,000 shares of common stock at an exercise
+price of $14 per share.
+
+The above investor is an accredited investor as defined under Rule 506 of
+Regulation D promulgated under the Securities Act. The above security was issued
+by the Company without registration under the Securities Act in reliance upon
+Section 4(2) of the Securities Act and Regulation D promulgated thereunder.
+
+                                       10
+
+<PAGE>
+
+
+Item 6.
+
+MANAGEMENT'S DISCUSSION AND ANALYSIS OR PLAN OF OPERATION
+
+Certain statements set forth under this caption constitute "forward-looking
+statements". See "Disclosure Regarding Forward-Looking Statements" on page 1 of
+this Report for additional factors relating to such statements.
+
+Critical Accounting Estimates
+
+Allowances for Doubtful Accounts and Sales Returns
+
+The Company makes judgments as to its ability to collect outstanding receivables
+and provides allowances for the portion of receivables when collection becomes
+doubtful. Provisions are made based upon a specific review of all significant
+outstanding invoices. The Company continuously monitors payments from its
+customers and maintains allowances for doubtful accounts for estimated losses in
+the period they become known.
+
+The Company's sales policy is to require customers to provide purchase orders
+establishing selling prices and shipping terms. Shipping terms are F.O.B.
+shipping point with title and risk of loss passing to the customer at point of
+shipment.
+
+The Company's return policy is to only accept returns for defective products. If
+defective products are returned, it is the Company's agreement with its
+customers that the Company cure the defect and reship the product. The policy is
+that when the product is shipped the Company makes an estimate of any potential
+returns or allowances.
+
+If the historical data the Company uses to calculate the allowance provided for
+doubtful accounts does not reflect the future ability to collect outstanding
+receivables, additional provisions for doubtful accounts may be needed and the
+future results of operations could be materially affected. In recording any
+additional allowances, a respective charge against income is reflected in the
+general and administrative expenses, and would reduce the operating results in
+the period in which the increase is recorded.
+
+Inventory Valuation
+
+Inventories are stated at the lower of cost or market ("LCM"), which reflects
+management's estimates of net realizable value. The Company is a contract
+manufacturer and distributor, and only produces finished goods or purchases raw
+materials on a purchase order basis. Consequently, the Company has minimal risk
+for slow-moving or obsolete inventory. Raw materials are ordered from suppliers
+when needed to complete customers' orders. Detail inventory levels and
+composition are reviewed and evaluated for potential overstock or obsolescence
+in light of current operations and sales. Any appropriate reserve is recorded on
+a current basis.
+
+Mail order inventory is expiration date sensitive. The Company reviews this
+inventory and considers sales levels (by SKU), term to expiration date,
+potential for retesting to extend expiration date and evaluates potential for
+obsolescence or overstock.
+
+Intangible Assets
+
+Purchased intangibles consisting of patents and unpatented technological
+expertise, intellectual property, license fees and trade names purchased as part
+of business acquisitions are presented net of related accumulated amortization
+and are being amortized on a straight-line basis over the remaining useful
+lives.
+
+                                       11
+
+
+<PAGE>
+
+
+MANAGEMENT'S DISCUSSION AND ANALYSIS OR PLAN OF OPERATION
+
+Critical Accounting Estimates [Continued]
+
+The Company records impairment losses on other intangible assets when events and
+circumstances indicate that such assets might be impaired and the estimated fair
+value of the asset is less than its recorded amount in accordance with SFAS No.
+144, "Accounting for the Impairment or Disposal of Long-Lived Assets." The
+Company reviews the value of its long-lived assets for impairment whenever
+events or changes in business circumstances indicate that the carrying amount of
+the assets may not be fully recoverable or that the useful lives of these assets
+are no longer appropriate. Conditions that would necessitate an impairment
+assessment include material adverse changes in operations, significant adverse
+differences in actual results in comparison with initial valuation forecasts
+prepared at the time of acquisition, a decision to abandon certain acquired
+products, services or marketplaces, or other significant adverse changes that
+would indicate the carrying amount of the recorded asset might not be
+recoverable.
+
+Results of Operations
+
+Year ended June 30, 2004 Compared to the Year ended June 30, 2003
+
+The Company's net loss for the year ended June 30, 2004 was $(5,340,147) as
+compared to net income of $894,117 for the year ended June 30, 2003. This
+decrease in net income of approximately $6,200,000 is primarily the result of an
+increase in gross profit of approximately $760,000, offset by an increase in
+selling and administrative expenses of approximately $7,700,000 of which
+approximately $6,200,000 are made up of Paxis Pharmaceuticals, Inc. start up
+costs, and a decrease in Federal and State income taxes of approximately
+$680,000. The Company's net loss applicable to common stockholders was
+$(6,401,839) for the year ended June 30, 2004 as compared to net income
+applicable to common stockholders of $894,117 for the year ended June 30, 2003.
+The additional decrease in net loss applicable to common stockholders from net
+loss is attributable to the deemed dividend from the beneficial conversion
+feature of Series B preferred stock of $960,000 and Series B preferred stock
+dividends of $101,692.
+
+Sales for the years ended June 30, 2004 and 2003 were $25,282,790 and
+$22,235,306, respectively, an increase of approximately 14%. Gross profit for
+the year ended June 30, 2004 was $762,952 higher than gross profit for the year
+ended June 30, 2003. Both the increase in sales and gross profit can be
+attributed the change in the product mix. For the year ended June 30, 2004 the
+Company had sales to one customer, who accounted for 58% of net sales in 2004
+and 65% in 2003. The loss of this customer would have an adverse affect on the
+Company's operations.
+
+Manufacturing sales for the year ended June 30, 2004 and 2003 were $21,461,700
+and $18,595,476, respectively, an increase of $2,866,224 or 15%. The increase in
+sales can be primarily attributed to the acquisition in fiscal 2004 of new
+product lines from Aloe Commodities International, Inc. ("Aloe").
+
+The Company has an agreement with DSM Nutritional Products, Inc. (a successor to
+Roche Vitamins, Inc.). Sales under this agreement were $2,333,529 for the year
+ended June 30, 2004 as compared to $2,283,457 for the year ended June 30, 2003,
+an increase of 2%.
+
+The Company offers distribution and sale of fine chemicals through a subsidiary,
+IHT Health Products, Inc. Sales for the twelve months ended June 30, 2004
+totaled $1,470,628 as compared to $2,139,828 for the twelve months ended June
+30, 2003, a decrease of $669,200 or 31%.
+
+                                       12
+
+<PAGE>
+
+
+MANAGEMENT'S DISCUSSION AND ANALYSIS OR PLAN OF OPERATION
+
+Results of Operations [Continued]
+
+On February 21, 2003 the Company acqui
+[... trimmed ...]
+ancial statements filed as part of this report, see the index
+to financial statements at page F-1.
+
+Item 8. Changes in and Disagreements with Accountants on Accounting and
+Financial Disclosure
+
+None.
+
+Item 8 A. Controls and Procedures
+
+Evaluation of Our Disclosure Controls and Internal Controls
+
+As of the end of the period covered by this Annual Report, the Company evaluated
+the effectiveness of the design and operation of its disclosure controls and
+procedures ("Disclosure Controls") and its internal controls and procedures for
+financial reporting ("Internal Controls"). This evaluation (the "Controls
+Evaluation") was done under the supervision and with the participation of the
+Company's management, including its Chief Executive Officer ("CEO") and
+Controller/Principal Financial Officer ("PFO"). Rules adopted by the SEC require
+that in this section of the Annual Report, the Company present the conclusions
+of its CEO and the PFO about the effectiveness of its Disclosure Controls and
+Internal Controls based on and as of the date of the Controls Evaluation.
+
+                                       17
+
+<PAGE>
+
+
+MANAGEMENT'S DISCUSSION AND ANALYSIS OR PLAN OF OPERATION
+
+Results of Operations [Continued]
+
+CEO and PFO Certifications
+
+Appearing as exhibits to this Annual Report are "Certifications" of the CEO and
+the PFO. The Certifications are required pursuant to Section 302 of the
+Sarbanes-Oxley Act of 2002 (the "Section 302 Certifications"). This section of
+the Annual Report contains information concerning the Controls Evaluation
+referred to in the Section 302 Certifications and this information should be
+read in conjunction with the Section 302 Certifications for a more complete
+understanding of the topics presented.
+
+Disclosure Controls and Internal Controls
+
+Disclosure Controls are procedures that are designed with the objective of
+ensuring that information required to be disclosed in our reports filed under
+the Securities Exchange Act of 1934 ("Exchange Act"), such as this Annual
+Report, is recorded, processed, summarized and reported within the time periods
+specified in the SEC's rules and forms. Disclosure Controls are also designed
+with the objective of ensuring that such information is accumulated and
+communicated to the Company's management, including the CEO and PFO, as
+appropriate to allow timely decisions regarding required disclosure. Internal
+Controls are procedures which are designed with the objective of providing
+reasonable assurance that (1) the Company's transactions are properly
+authorized, recorded and reported; and (2) the Company's assets are safeguarded
+against unauthorized or improper use, to permit the preparation of the Company's
+financial statements in conformity with generally accepted accounting
+principles.
+
+Limitations on the Effectiveness of Controls
+
+The Company's management, including the CEO and PFO, does not expect that our
+Disclosure Controls or its Internal Controls will prevent all errors and fraud.
+A control system, no matter how well conceived and operated, can provide only
+reasonable, not absolute, assurance that the objectives of the control system
+are met. Further, the design of a control system must reflect the fact that
+there are resource constraints, and the benefits of controls must be considered
+relative to their costs. Because of the inherent limitations in all control
+systems, no evaluation of controls can provide absolute assurance that all
+control issues and instances of fraud, if any, within the Company have been
+detected.
+
+Scope of the Controls Evaluation
+
+The CEO/PFO evaluation of our Disclosure Controls and Internal Controls included
+a review of the controls' objectives and design, the controls' implementation by
+the Company and the effect of the controls on the information generated for use
+in this Annual Report. In the course of the Controls Evaluation, management
+sought to identify data errors, controls problems or acts of fraud and to
+confirm that appropriate corrective action, including process improvements, were
+being undertaken. This type of evaluation will be done on a quarterly basis so
+that the conclusions concerning controls effectiveness can be reported in the
+Company's Quarterly Reports on Form 10-QSB and Annual Report on Form 10-KSB. The
+overall goals of these various review and evaluation activities are to monitor
+the Company's Disclosure Controls and Internal Controls and to make
+modifications as necessary; the Company's intent in this regard is that the
+Disclosure Controls and the Internal Controls will be maintained as dynamic
+systems that change (including with improvements and corrections) as conditions
+warrant.
+
+                                       18
+
+<PAGE>
+
+
+MANAGEMENT'S DISCUSSION AND ANALYSIS OR PLAN OF OPERATION
+
+Results of Operations [Continued]
+
+Among other matters, management sought in its evaluation to determine whether
+there were any "significant deficiencies" or "material weaknesses" in the
+Company's Internal Controls, or whether the Company had identified any acts of
+fraud involving personnel who have a significant role in its Internal Controls.
+In the professional auditing literature, "significant deficiencies" are referred
+to as "reportable conditions"; these are control issues that could have a
+significant adverse effect on the ability to record, process, summarize and
+report financial data in the financial statements. A "material weakness" is
+defined in the auditing literature as a particularly serious reportable
+condition where the internal control does not reduce to a relatively low level
+the risk that misstatements caused by error or fraud may occur in amounts that
+would be material in relation to the financial statements and not be detected
+within a timely period by employees in the normal course of performing their
+assigned functions.
+
+In accordance with SEC requirements, the CEO and PFO note that, during the
+fiscal year covered by this Annual Report, there has been no change in Internal
+Controls that could significantly affect Internal Controls, including any
+corrective actions with regard to significant deficiencies and material
+weaknesses.
+
+Conclusions
+
+Based upon the Controls Evaluation, the Company's CEO and PFO have concluded
+that, as of the end of the period covered by this Annual Report, the Company's
+Disclosure Controls are effective to ensure that material information relating
+to its company is made known to management, including the CEO and PFO,
+particularly during the period when its periodic reports are being prepared, and
+that its Internal Controls are effective to provide reasonable assurance that
+its financial statements are fairly presented in conformity with generally
+accepted accounting principles.
+
+Item 8 B. Other Information
+
+None.
+
+                                       19
+
+
+<PAGE>
+
+
+
+                                    PART III
+
+Item 9. Directors and Executive Officers of the Registrant.
+
+Incorporated by reference from the Company's Proxy Statement for Annual Meeting
+of Stockholders to be filed with the Securities and Exchange Commission within
+120 days after the close of the fiscal year ended June 30, 2004.
+
+Item 10. Executive Compensation
+
+Incorporated by reference from the Company's Proxy Statement for Annual Meeting
+of Stockholders to be filed with the Securities and Exchange Commission within
+120 days after the close of the fiscal year ended June 30, 2004.
+
+Item 11. Security Ownership of Certain Beneficial Owners and Management and
+Related Stockholder Matters
+
+Incorporated by reference from the Company's Proxy Statement for Annual Meeting
+of Stockholders to be filed with the Securities and Exchange Commission within
+120 days after the close of the fiscal year ended June 30, 2004.
+
+Item 12. Certain Relationships and Related Transactions
+
+Incorporated by reference from the Company's Proxy Statement for Annual Meeting
+of Stockholders to be filed with the Securities and Exchange Commission within
+120 days after the close of the fiscal year ended June 30, 2004.
+
+Item 13. Exhibits, List     and Reports on Form 8-K
+
+(a)   Exhibits and Index
+
+(1)   A list of the  financial  statements  filed as part of this report is
+      set forth in the index to financial  statements  at Page F-1 and is
+      incorporated herein by reference.
+
+(2)   An index of exhibits incorporated by reference or filed with this
+      Report is provided below.
+
+Number                            Description
+
+ 2.1  Purchase Agreement dated as of February 1, 2003 by and between Integrated
+      Health Technologies, Inc. (n/k/a Integrated BioPharma, Inc.) and Trade
+      Investment Services, L.L.C. re: Natex Georgia, LLC. (1)
+
+ 2.2  Purchase Agreement dated as of February 1, 2003 by and between Integrated
+      Health Technologies, Inc. (n/k/a Integrated BioPharma, Inc.) and Trade
+      Investment Services, L.L.C. re: TisorEx, Inc. (n/k/a Paxis
+      Pharmaceuticals, Inc.). (1)
+
+ 2.3  Assignment Agreement dated as of July 1, 2003 by and between Integrated
+      BioPharma, Inc., Trade Investment Services L.L.C., Vasili Patarkalishvili,
+      VAP LLC, The James S. Friedlander Revocable Trust, Aqela LLC and Natela
+      Patarkalishvili (2)
+
+ 2.4  Assignment and Assumption Agreement dated as of July 1, 2003 by and among
+      Integrated BioPharma, Inc., Trade Investment Services L.L.C., and Paxis
+      Pharmaceuticals, Inc. (2)
+
+ 2.5  Agreement and Plan of Merger dated as of February 21, 2003 between and
+      among Integrated BioPharma, Inc. (f/k/a Integrated Health Technologies,
+      Inc.), NAC-NJ Acquisition Corp. and NuCycle Acquisition Corp. (3)
+
+ 3.1  Certificate of Incorporation of Integrated BioPharma, Inc., as amended (4)
+
+ 3.2  By-Laws of Registrant (5)
+                                       20
+
+<PAGE>
+
+
+ 4.1  Certificate  of Designation of Series and  Determination  of Rights and
+      Preferences of Series A Convertible Preferred Stock of Integrated
+      BioPharma, Inc. dated June 25, 2003 (4)
+
+ 4.2  Certificate of Designations, Preferences and Rights of Series B Redeemable
+      Convertible  Preferred Stock of Integrated BioPharma, Inc. dated April 20,
+      2004 (6)
+
+ 4.3  Form of Warrant for Series B Redeemable Convertible Preferred Stock
+      investors (6)
+
+ 4.4  Form of Additional Investment Right for Series B Redeemable Convertible
+      Preferred Stock investors (6)
+
+10.1  Lease Agreement, dated August 3, 1994, between the Company and Hillside 22
+      Realty Associates, L.L.C. (7)
+
+10.2  Lease Agreement between the Company and Vitamin Realty Associates, dated
+      January 10, 1997 (8)
+
+10.3  Manufacturing Agreement between Chem International, Inc. and Herbalife
+      International of America, Inc. dated April 9, 1998 (9)
+
+10.4  Integrated Health Technologies, Inc. 2001 Stock Option Plan (10)
+
+10.5  Subscription Agreement dated June 25, 2003 by and between Integrated
+      BioPharma, Inc. and Carl DeSantis re: Series A Convertible Preferred Stock
+      Offering (4)
+
+10.6  Investor Rights Agreement dated as of June 25, 2003 by and between
+      Integrated BioPharma, Inc. and Carl DeSantis re: Series A Convertible
+      Preferred Stock Offering (4)
+
+10.7  Warrant Agreement by and between Integrated BioPharma, Inc. and Carl
+      DeSantis dated June 30, 2003 (4)
+
+10.8  Promissory Note dated August 6, 2003 by and between Integrated BioPharma,
+      Inc. and Bank of America (4)
+
+10.9  Securities Purchase Agreement dated April 19, 2004 by and between
+      Integrated BioPharma, Inc. and the Buyers listed therein re: Series B
+      Redeemable Convertible Preferred Stock Offering (6)
+
+10.10 Registration Rights Agreement dated April 19, 2004 by and between
+      Integrated BioPharma, Inc. and the Buyers listed therein re: Series B
+      Redeemable Convertible Preferred Stock Offering (6)
+
+21    Subsidiaries of the Registrant (11)
+
+31.1  Certification of Periodic Report by Chief Executive Officer Pursuant to
+      Rule 13a-14 and 15d-14 of the Securities Exchange Act of 1934, as adopted
+      pursuant to Section 302 of the Sarbanes-Oxley Act of 2002 (11)
+
+31.2  Certification of Periodic Report by Chief Financial Officer Pursuant to
+      Rule 13a-14 and 15d-14 of the Securities Exchange Act of 1934, as adopted
+      pursuant to Section 302 of the Sarbanes-Oxley Act of 2002 (11)
+
+32.1  Certification of Periodic Report by Chief Executive Officer Pursuant to 18
+      U.S.C. Section 1350, as adopted pursuant to Section 906 of the
+      Sarbanes-Oxley Act of 2002 (11)
+
+32.2  Certification of Periodic Report by Chief Financial Officer Pursuant to 18
+      U.S.C. Section 1350, as adopted pursuant to Section 906 of the
+      Sarbanes-Oxley Act of 2002 (11)
+
+- --------------------------
+
+(1)   Incorporated herein by reference to the Company's Current Report on Form
+      8-K filed with the SEC on February 26, 2003.
+
+(2)   Incorporated herein by reference to the Company's Current Report on Form
+      8-K filed with the SEC on August 6, 2003.
+
+(3)   Incorporated herein by reference to the Company's Current Report on Form
+      8-K filed with the SEC on February 24, 2003.
+
+(4)   Incorporated herein by reference to the Company's Annual Report on Form
+      10-KSB for the fiscal year ended June 30, 2003, filed with the SEC on
+      September 29, 2003.
+
+(5)   Incorporated herein by reference to the Company's Registration Statement
+      on Form SB-2, Registration No. 333-5240-NY.
+
+(6)   Incorporated herein by reference to the Company's Current Report on Form
+      8-K filed with the SEC on April 21, 2004.
+
+                                       21
+<PAGE>
+
+
+(7)   Incorporated herein by reference to Amendment No. 1 to the Company's
+      Registration Statement on Form SB-2, Registration No. 333-5240-NY
+</DOCUMENT>
+<DOCUMENT>
+<TYPE>EX-21
+<SEQUENCE>2
+<FILENAME>exhibit21.txt
+<DESCRIPTION>INTEGRATED BIOPHARMA, INC.
+<TEXT>
+                                                                      Exhibit 21
+
+                           Integrated BioPharma, Inc.
+                              List of Subsidiaries
+
+
+
+Manhattan Drug Company, Inc.
+Gero Industries, Inc. - Inactive
+Media Consultants, Inc. - Inactive
+Vitamin Factory, Inc.
+Connaught Press, Inc. - Inactive
+Designer Nutrition Labs, Inc. - Inactive
+AgroLabs, Inc. (f/k/a Integrated Health Ideas)
+Bioscience Technologies, Inc. - Inactive
+IHT Health Products, Inc.
+IHT Properties, Inc.
+NuCycle Therapy, Inc.
+Paxis Pharmaceuticals, Inc.
+
+</TEXT>
+
+[trimmed]
+</DOCUMENT>
+<DOCUMENT>
+<TYPE>EX-32
+<SEQUENCE>3
+<FILENAME>exhibit32_2.txt
+<DESCRIPTION>INTEGRATED BIOPHARMA, INC.
+<TEXT>
+                                                                    Exhibit 32.2
+
+                        CERTIFICATION OF PERIODIC REPORT
+                        --------------------------------
+                      As adopted pursuant to Section 906 of
+                         the Sarbanes-Oxley Act of 2002
+
+I, Eric Friedman, the Vice President and Chief Financial Officer of Integrated
+BioPharma, Inc. (the "Company"), certify, pursuant to Section 906 of the
+Sarbanes-Oxley Act of 2002, 18 U.S.C. Section 1350, that:
+
+(1)      the Annual Report on Form 10-KSB of the Company for the annual period
+         ended June 30, 2004 (the "Report") fully complies with the requirements
+         of Section 13(a) or 15(d) of the Securities Exchange Act of 1934 (15
+         U.S.C. 78m or 78o(d)); and
+
+(2)      the information  contained in the Report fairly presents,  in all
+         material  respects,  the financial  condition and results of
+         operations of the Company.
+
+Dated:   September 28, 2004
+
+
+                                  By: /s/ Eric Friedman
+                                  ---------------------
+                                  Eric Friedman
+                                  Vice President and Chief Financial Officer
+
+
+</TEXT>
+
+[trimmed]
+</DOCUMENT>
+<DOCUMENT>
+<TYPE>EX-32
+<SEQUENCE>4
+<FILENAME>exhibit32_1.txt
+<DESCRIPTION>INTEGRATED BIOPHARMA, INC.
+<TEXT>
+                                                                    Exhibit 32.1
+
+                        CERTIFICATION OF PERIODIC REPORT
+                        --------------------------------
+                      As adopted pursuant to Section 906 of
+                         the Sarbanes-Oxley Act of 2002
+
+I, E. Gerald Kay, the Chief Executive Officer of Integrated BioPharma,  Inc.
+(the "Company"),  certify,  pursuant to Section 906 of the Sarbanes-Oxley Act of
+2002, 18 U.S.C. Section 1350, that:
+
+(1)      the Annual Report on Form 10-KSB of the Company for the annual period
+         ended June 30, 2004 (the "Report") fully complies with the requirements
+         of Section 13(a) or 15(d) of the Securities Exchange Act of 1934 (15
+         U.S.C. 78m or 78o(d)); and
+
+(2)      the information  contained in the Report fairly presents,  in all
+         material  respects,  the financial  condition and results of
+         operations of the Company.
+
+Dated:   September 28, 2004
+
+
+                                  By: /s/ E. Gerald Kay
+                                  ---------------------
+                                  E. Gerald Kay
+                                  Chief Executive Officer
+
+</TEXT>
+
+[trimmed]
+</DOCUMENT>
+<DOCUMENT>
+<TYPE>EX-31
+<SEQUENCE>5
+<FILENAME>exhibit31_2.txt
+<DESCRIPTION>INTEGRATED BIOPHARMA, INC.
+<TEXT>
+
+                                                                    Exhibit 31.2
+
+                    Certification of Chief Financial Officer
+                    ----------------------------------------
+       Pursuant to Rules 13a-14 and 15d-14 of the Securities Exchange Act,
+      As Adopted Pursuant to Section 302 of the Sarbanes-Oxley Act of 2002
+
+I, Eric Friedman, certify that:
+
+1.       I have reviewed this annual report on Form 10-KSB of Integrated
+         BioPharma, Inc.;
+
+2.       Based on my knowledge, this report does not contain any untrue
+         statement of a material fact or omit to state a material fact necessary
+         to make the statements made, in light of the circumstances under which
+         such statements were made, not misleading with respect to the period
+         covered by this report;
+
+3.       Based on my knowledge, the financial statements, and other financial
+         information included in this report, fairly present in all material
+         respects the financial condition, results of operations and cash flows
+         of the registrant as of, and for, the periods presented in this report;
+
+4.       The small business issuer's other certifying officer(s) and I are
+         responsible for establishing and maintaining disclosure controls
+         and procedures (as defined in Exchange Act Rules 13a-15(e) and
+         15d-15(e)) 
+[trimmed]
+</DOCUMENT>
+<DOCUMENT>
+<TYPE>EX-31
+<SEQUENCE>6
+<FILENAME>exhibit31_1.txt
+<DESCRIPTION>INTEGRATED BIOPHARMA, INC.
+<TEXT>
+
+                                                                    Exhibit 31.1
+
+                    Certification of Chief Executive Officer
+                    ----------------------------------------
+       Pursuant to Rules 13a-14 and 15d-14 of the Securities Exchange Act,
+      As Adopted Pursuant to Section 302 of the Sarbanes-Oxley Act of 2002
+
+
+I, E. Gerald Kay certify that:
+
+1.       I have reviewed this annual report on Form 10-KSB of Integrated
+         BioPharma, Inc.;
+
+2.       Based on my knowledge, this report does not contain any untrue
+         statement of a material fact or omit to state a material fact necessary
+         to make the statements made, in light of the circumstances under which
+         such statements were made, not misleading with respect to the period
+         covered by this report;
+
+3.       Based on my knowledge, the financial statements, and other financial
+         information included in this report, fairly present in all material
+         respects the financial condition, results of operations and cash flows
+         of the registrant as of, and for, the periods presented in this report;
+
+4.       The small business issuer's other certifying officer(s) and I are
+         responsible for establishing and maintaining disclosure controls
+         and procedures (as defined in Exchange Act Rules 13a-15(e) and
+         15d-15(e)) 
+[trimmed]
+</DOCUMENT>
