@@ -41,7 +41,7 @@ After logging in, mint an **API key** (Connections → Add Connection → API Ke
 | Provider | Description |
 |----------|-------------|
 | **LinkUp** | Job postings & labor-market activity — 342M postings back to 2007, plus full description text, extracted salary (Jun 2026), structured fields, remote/FT-PT tags, ONET codes. See `linkup-job-postings.md`. |
-| **GovFiles** | US business-entity registry — all 50 Secretary of State offices, 84.4M entities incl. dissolved. Better dead-shell coverage than OpenCorporates; no DE status, NV mostly 2023 formations, no CIK ids (2026-10 snapshot). See `govfiles-business-entity.md`. |
+| **GovFiles** | US business-entity registry — all 50 Secretary of State offices, 84.4M entities incl. dissolved. No DE status, NV only ~2023 formations, no CIK ids (2026-09 refresh); for Nevada status use the OpenCorporates bulk snapshot. See `govfiles-business-entity.md` (includes the comparison). |
 | **People Data Labs** | Aggregated employee insights by company |
 | **WageScape** | Salary / wage data |
 | **Rhetorik** | Company technographics & office locations |

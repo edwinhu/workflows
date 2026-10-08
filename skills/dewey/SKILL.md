@@ -1,7 +1,7 @@
 ---
 name: dewey
 version: 1.0
-description: Use when "query Dewey Data", "deweydata.io", "SafeGraph places/patterns/spend", "Advan foot traffic", "POI / points of interest", "mobility data", "dataplor", "Veraset", "PassBy", "crypto/Bitcoin ATM locations", "GovFiles", "business entity / Secretary of State registry data", "OpenCorporates alternative", "LinkUp job postings", "job-postings panel", "Exchange Data International / EDI", "WCA / RCAN corporate actions", "global corporate actions (dividends, splits, mergers, tenders)", or any pull from the Dewey Data academic marketplace (UVA/NYU Platform Subscription) via the deweypy/deweydatapy client, DuckDB, or the Dewey MCP server.
+description: Use when "query Dewey Data", "deweydata.io", "SafeGraph places/patterns/spend", "Advan foot traffic", "POI / points of interest", "mobility data", "dataplor", "Veraset", "PassBy", "crypto/Bitcoin ATM locations", "GovFiles", "business entity / Secretary of State registry data", "OpenCorporates bulk data or entity status", "LinkUp job postings", "job-postings panel", "Exchange Data International / EDI", "WCA / RCAN corporate actions", "global corporate actions (dividends, splits, mergers, tenders)", or any pull from the Dewey Data academic marketplace (UVA/NYU Platform Subscription) via the deweypy/deweydatapy client, DuckDB, or the Dewey MCP server.
 user-invocable: false
 ---
 
@@ -119,7 +119,7 @@ Institutional login (to browse the catalog / create the key) is via **UVA NetBad
 | **Veraset** | Movement | Device-level mobility (institutional license only) |
 | **PassBy** | Foot Traffic | Per-POI foot-traffic analytics |
 | Consumer Edge / PDI | Spend / transactions | Card & product-level purchasing |
-| **GovFiles** | US Business Entity | All 50 Secretary of State registries — 84.4M entities incl. dissolved (OpenCorporates alternative) |
+| **GovFiles** | US Business Entity | Secretary of State registries, 84.4M entities incl. dissolved; uneven by state (NV ~2023 formations only, no DE status) |
 | **Exchange Data International** | Global Equity Corporate Actions (WCA/RCAN) | Dividends, splits, mergers, tenders — 2001→, global, w/ CUSIP/SEDOL/ISIN/FIGI bridges |
 | LinkUp | Job postings | Labor-market activity, scraped from employer career sites (2007→) |
 | ATTOM / Dwellsy / RentHub | Real estate | Property records, rentals |
