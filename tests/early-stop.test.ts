@@ -4,6 +4,7 @@ import { dirname, join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
 import { useTmp } from './helpers/tmp.ts'
+import { INSTRUCTIONS, judgeContext, judgeState, latestUserTurn, typedByHuman } from '../hooks/early-stop.ts'
 
 const mkTmp = useTmp()
 
@@ -586,3 +587,120 @@ test('secreg e3b75752: live owned runs on 2.1.287 but NO beacon (mods never load
   expect(r.out).toContain('"decision":"block"')
   expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).not.toContain('the watcher wakes the session')
 }, 30000)
+
+// ---- the judge input: the standing mandate and the heartbeat fact (no network) ----
+
+const entry = (o: Record<string, unknown>) => JSON.stringify(o)
+const human = (uuid: string, text: string, ts: string, extra: Record<string, unknown> = {}) =>
+  entry({ type: 'user', uuid, timestamp: ts, origin: { kind: 'human' }, message: { role: 'user', content: text }, ...extra })
+const wake = (uuid: string, text: string, ts: string) =>
+  entry({ type: 'user', uuid, timestamp: ts, origin: { kind: 'plugin', name: 'workflows' }, message: { role: 'user', content: text } })
+const tick = (uuid: string, ts: string) =>
+  entry({ type: 'user', uuid, timestamp: ts, isMeta: true, turnOrigin: 'scheduled', message: { role: 'user', content: 'and? (work run x)' } })
+const toolResult = (ts: string, text: string) =>
+  entry({ type: 'user', timestamp: ts, toolUseResult: { id: 'x' }, message: { role: 'user', content: [{ type: 'tool_result', content: text }] } })
+
+const MANDATE = "I'm gonna go to bed. Just do whatever you think is best, don't ask me questions."
+
+test('mandate selection skips ticks, plugin wakes, task notifications and relays: the typed standing message wins', () => {
+  const t = [
+    human('u1', MANDATE, '2026-10-07T01:00:00.000Z'),
+    human('u2', 'and? (grind scratch/x)', '2026-10-07T02:00:00.000Z'),
+    tick('u3', '2026-10-07T03:00:00.000Z'),
+    wake('u4', 'The workflows plugin sent a message:\ngrind loop x finished', '2026-10-07T04:00:00.000Z'),
+    entry({ type: 'user', uuid: 'u5', timestamp: '2026-10-07T05:00:00.000Z', origin: { kind: 'task-notification' }, message: { role: 'user', content: '<task-notification>\n<task-id>b</task-id>' } }),
+    entry({ type: 'user', uuid: 'u6', timestamp: '2026-10-07T06:00:00.000Z', message: { role: 'user', content: '<bash-stdout>do whatever you think</bash-stdout>' } }),
+  ].join('\n')
+  const c = judgeContext(t)
+  expect(c.standing).toBe(MANDATE)
+  expect(c.latestTyped).toBeNull() // the only typed message IS the mandate
+  expect(latestUserTurn(t)?.marker).toBe('u6') // the cap's turn key is untouched by this change
+  expect(c.hoursSinceTyped).toBeCloseTo(5, 1)
+})
+
+test('a later typed message that is not a mandate is shown beside the older mandate', () => {
+  const t = [
+    human('u1', MANDATE, '2026-10-07T01:00:00.000Z'),
+    human('u2', 'why is the figure jagged', '2026-10-07T09:00:00.000Z'),
+    wake('u3', 'The workflows plugin sent a message:\nrun done', '2026-10-07T09:30:00.000Z'),
+  ].join('\n')
+  const c = judgeContext(t)
+  expect(c.standing).toBe(MANDATE)
+  expect(c.latestTyped).toBe('why is the figure jagged')
+  const s = judgeState('The workflows plugin sent a message:\nrun done', 'Nothing left.', c)
+  expect(s).toContain("STANDING MANDATE")
+  expect(s).toContain(MANDATE)
+  expect(s).toContain('why is the figure jagged')
+  expect(s.indexOf('STANDING MANDATE')).toBeLessThan(s.indexOf('NEWEST REQUEST'))
+  expect(s.indexOf('NEWEST REQUEST')).toBeLessThan(s.indexOf("FINAL MESSAGE"))
+})
+
+test('no standing instruction anywhere: no mandate section, the latest typed message still shows', () => {
+  const c = judgeContext(human('u1', 'fix the parser', '2026-10-07T01:00:00.000Z'))
+  expect(c.standing).toBeNull()
+  expect(c.latestTyped).toBe('fix the parser')
+  expect(judgeState('fix the parser', 'done', c)).not.toContain('STANDING MANDATE')
+})
+
+test('typedByHuman: the origin tag decides, text shape only when the tag is absent', () => {
+  expect(typedByHuman({ origin: { kind: 'human' } }, 'hello')).toBe(true)
+  expect(typedByHuman({ origin: { kind: 'plugin' } }, 'hello')).toBe(false)
+  expect(typedByHuman({ origin: { kind: 'human' } }, 'and? (work run x)')).toBe(false)
+  expect(typedByHuman({}, '<task-notification>\n<task-id>')).toBe(false)
+  expect(typedByHuman({}, 'plain old transcript line')).toBe(true)
+  expect(typedByHuman({ promptSource: 'sdk', turnOrigin: 'sdk' }, 'headless prompt')).toBe(false)
+})
+
+const cronCreate = (id: string, ts: string) =>
+  toolResult(ts, `Scheduled recurring job ${id} (Every hour at :07). Session-only (not written to disk, dies when Claude exits).`)
+const cronDelete = (id: string, ts: string) => toolResult(ts, `Cancelled job ${id}.`)
+
+test('heartbeat cron: alive = created minus cancelled; a refused delete leaves it alive', () => {
+  const base = [human('u1', MANDATE, '2026-10-07T01:00:00.000Z'), cronCreate('aaaa1111', '2026-10-07T01:01:00.000Z')]
+  expect(judgeContext(base.join('\n')).heartbeatAlive).toBe(true)
+  const refused = toolResult('2026-10-07T02:00:00.000Z', 'PreToolUse:CronDelete hook error: A hold is ARMED')
+  expect(judgeContext([...base, refused].join('\n')).heartbeatAlive).toBe(true)
+  expect(judgeContext([...base, cronDelete('aaaa1111', '2026-10-07T02:00:00.000Z')].join('\n')).heartbeatAlive).toBe(false)
+  expect(judgeContext(human('u1', 'hi', '2026-10-07T01:00:00.000Z')).heartbeatAlive).toBe(false)
+})
+
+test('a replaced heartbeat stays alive; deleting only the new one does not', () => {
+  const t = [
+    human('u1', MANDATE, '2026-10-07T01:00:00.000Z'),
+    cronCreate('aaaa1111', '2026-10-07T01:01:00.000Z'),
+    cronCreate('bbbb2222', '2026-10-07T02:01:00.000Z'),
+    cronDelete('aaaa1111', '2026-10-07T02:01:05.000Z'),
+  ].join('\n')
+  expect(judgeContext(t).heartbeatAlive).toBe(true)
+  expect(judgeContext(`${t}\n${cronDelete('bbbb2222', '2026-10-07T03:00:00.000Z')}`).heartbeatAlive).toBe(false)
+})
+
+test('deletedThisTurn is true only for a delete AFTER the turn request', () => {
+  const before = [
+    human('u1', MANDATE, '2026-10-07T01:00:00.000Z'),
+    cronCreate('aaaa1111', '2026-10-07T01:01:00.000Z'),
+    cronDelete('aaaa1111', '2026-10-07T01:02:00.000Z'),
+    wake('u2', 'The workflows plugin sent a message:\nrun done', '2026-10-07T03:00:00.000Z'),
+  ].join('\n')
+  expect(judgeContext(before).deletedThisTurn).toBe(false)
+  const during = [
+    human('u1', MANDATE, '2026-10-07T01:00:00.000Z'),
+    cronCreate('aaaa1111', '2026-10-07T01:01:00.000Z'),
+    wake('u2', 'The workflows plugin sent a message:\nrun done', '2026-10-07T03:00:00.000Z'),
+    cronDelete('aaaa1111', '2026-10-07T03:01:00.000Z'),
+  ].join('\n')
+  const c = judgeContext(during)
+  expect(c.deletedThisTurn).toBe(true)
+  expect(c.heartbeatAlive).toBe(false)
+  const s = judgeState('x', 'y', c)
+  expect(s).toContain('NOT alive')
+  expect(s).toContain('DELETED a cron job')
+})
+
+test('the judge input is bounded and the instructions keep the four ways and the exemptions', () => {
+  const long = 'do whatever you think. ' + 'x'.repeat(20000)
+  const s = judgeState('r'.repeat(20000), 'm'.repeat(20000), judgeContext(human('u1', long, '2026-10-07T01:00:00.000Z')))
+  expect(s.length).toBeLessThan(2000 + 4000 + 1500 + 600 + 1000)
+  for (const phrase of ['(1) a summary', '(4) stopping because', 'genuinely blocking question', 'AskUserQuestion hand-off', 'STANDING MANDATE'])
+    expect(INSTRUCTIONS).toContain(phrase)
+})
