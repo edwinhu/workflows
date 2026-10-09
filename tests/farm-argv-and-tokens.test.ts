@@ -48,15 +48,20 @@ test('a --workflow dispatch with a 300 KB args payload never puts it on argv', (
   const args = join(root, 'args.json')
   writeFileSync(args, JSON.stringify({ projectDir: '/x', marker: 'ARGS-SENTINEL', pad: 'y'.repeat(300_000) }))
   // the stub delivers the artifact so the run is judged on transport alone
-  const stubbed = rig(`printf '{}\\n' > "${out}"`)
+  const stubbed = rig(`printf '{}\\n' > "${out}"
+r=\${0%/bin/claude-code}; cp -- "$(grep -o 'scriptPath [^ ]*' "$r/stdin" | head -1 | cut -d' ' -f2)" "$r/called.js"`)
   const res = spawnSync('bash', [FARM, '--provider', 'claude', '--no-cron', '--workflow', wf, '--args', args,
     '--out', out, '--cwd', stubbed.cwd], { encoding: 'utf8', env: stubbed.env, timeout: 120_000 })
   expect(res.stdout + res.stderr).not.toContain('Argument list too long')
   expect(res.status, res.stderr).toBe(0)
   expect(Number(stubbed.read('argv-bytes'))).toBeLessThan(4096)
+  // The payload rides in the script the child is told to call, never in the prompt a model
+  // would have to retype (tests/farm-workflow-args.test.ts proves the script delivers it intact).
   const stdin = stubbed.read('stdin')
-  expect(stdin).toContain('ARGS-SENTINEL')
-  expect(stdin).toContain('y'.repeat(300_000))
+  expect(stdin).not.toContain('ARGS-SENTINEL')
+  const called = stubbed.read('called.js')
+  expect(called).toContain('ARGS-SENTINEL')
+  expect(called).toContain('y'.repeat(300_000))
 })
 
 // Observed 2026-10-02: a row with 6 tool calls reported W=0, and so had every real DONE event on disk.
