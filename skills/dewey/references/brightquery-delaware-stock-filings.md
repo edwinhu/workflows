@@ -87,3 +87,9 @@ On Continue (primary table) or Save (supplementary table), a modal "Data Request
 - Cancel the form. Never submit it without the user's OK.
 - Verify access in the project's dataset list, not from the modal.
 - Add-to-project flow and project limits: `access-options.md`.
+
+## Delaware entity status (checked 2026-10-08)
+
+- `le` status: one undated current snapshot, not a Delaware standing measure. Its Delaware-labelled forfeitures carry California FTB/SOS codes, it has no `Void` value among Delaware corporations, and it reads active for 97.8% of matched firms whose last EDGAR filing predates 2015.
+- Delaware franchise-tax standing (`Good Standing` plus tax, penalty and interest fields, tax years 2019-2023 in a 25-row MCP sample) is only in the **Corporate Status** table, which must be added to a Dewey project first (Dewey reported "This table is not ready for download yet"), and it appears to cover only entities with a monitored Delaware ultimate parent.
+- Linking our Delaware controls: 61.7% of distinct control CIKs match (EIN against the EDGAR header IRS number, ticker, then name), with 15% disagreement between methods. Profile: `~/projects/nevada/scratch/profile_brightquery/report.md`.
