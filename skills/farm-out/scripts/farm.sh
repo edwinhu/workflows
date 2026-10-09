@@ -337,8 +337,8 @@ Write your deliverable to EXACTLY this path, literally as written, creating pare
   # No --permission-mode: the runner inherits the user's default (auto), which keeps hard_deny --
   # the FERPA and licensed-data rules -- applying inside a dispatched run. The farmOutOnly policy
   # that used to fight this lives in main-thread-guard.sh now, and a hook can read FARM_OUT_CHILD.
-  # The prompt goes on STDIN, never argv: Linux caps one argv string at 128 KiB, and a --workflow
-  # prompt inlines its args file (a 168 KB one died "Argument list too long", exit 126).
+  # The prompt goes on STDIN, never argv: Linux caps one argv string at 128 KiB (a 168 KB
+  # prompt died "Argument list too long", exit 126).
   # Cross-provider guard: gemini and codex children are told not to call a model API themselves.
   local guard=""
   if [ "$provider" = "gemini" ] || [ "$provider" = "codex" ]; then
@@ -650,15 +650,27 @@ CRONMSG
   # The child calls the Workflow tool; we never run the script ourselves. The long
   # instruction is not padding: Workflow returns a task id IMMEDIATELY and keeps running
   # in the background, so a child that ends its turn there takes the whole run down.
-  wf_args="no args"
-  [ -n "$ARGSFILE" ] && wf_args="exactly these args:
-$(cat "$ARGSFILE")"
-  out=$(run_one workflow "Call the Workflow tool with scriptPath $WORKFLOW and ${wf_args}. Do not write your own script and do not alter the args.
+  # Args never pass through the child model: retyped args garbled above ~30 KB (a 93 KB set
+  # arrived as a string, a 32.8 KB one failed to parse). A script has no file access, so the
+  # args ride as a JSON string literal in a generated wrapper that hands them to the real
+  # script through workflow() -- the child calls the wrapper with no args at all.
+  wf_script=$WORKFLOW wf_wrapper=""
+  if [ -n "$ARGSFILE" ]; then
+    wf_wrapper=$(mktemp -t farm-out.XXXXXX.workflow.js)
+    { printf 'export const meta = { name: %s, description: %s }\n' \
+        "$(basename -- "$WORKFLOW" .js | jq -Rj tojson)" "$(printf 'farm.sh: %s with args from %s' "$WORKFLOW" "$ARGSFILE" | jq -Rsj tojson)"
+      printf 'return await workflow({ scriptPath: %s }, JSON.parse(%s))\n' \
+        "$(printf '%s' "$WORKFLOW" | jq -Rsj tojson)" "$(jq -Rsj tojson < "$ARGSFILE")"
+    } > "$wf_wrapper"
+    wf_script=$wf_wrapper
+  fi
+  out=$(run_one workflow "Call the Workflow tool with scriptPath $wf_script and no args. Do not write your own script and do not pass any args.
 
 CRITICAL — Workflow returns IMMEDIATELY with a task id and then keeps running in the background. If you end your turn at that point the session exits and the entire run is destroyed. You MUST NOT end your turn until the workflow has actually returned. It may take 20-60 minutes.
 After calling Workflow, stay alive by polling: run \`sleep 120\` via Bash, then check whether it finished (ToolSearch for \"select:TaskList,TaskGet,TaskOutput\" and use those, or read the workflow transcript directory named in the Workflow result). Repeat for as long as it takes. Never emit a final text message while the workflow is still running.
 
 When it returns, write the SCRIPT'S OWN RETURN VALUE to $OUT as a single JSON document using the Write tool — verbatim, no commentary, no summarising. The Workflow tool wraps it: the tool result is an envelope {summary, agentCount, logs, totalTokens, result, …} and the script's return value is the object under its \`result\` key. Write THAT object, unwrapped, as the whole document. Do not write the envelope, and do not add a \`result\` key of your own. If Workflow throws, write {\"error\": \"<exact error text>\"} to that same path. Do not retry with invented arguments." "" "" "$BUDGET" "${FARM_MAX_TURNS:-250}" "$PROVIDER" "" "${EXPECT[@]:-}" "$OUT")
+  [ -z "$wf_wrapper" ] || rm -f -- "$wf_wrapper"
   # Non-empty is not structured: a child that wrote its summary would pass the artifact
   # check and hand prose to the caller as the workflow's return value.
   if printf '%s' "$out" | jq -e '.ok' >/dev/null 2>&1; then
