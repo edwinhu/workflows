@@ -8,8 +8,8 @@ description: "Use when the user says 'Lexis Public Records', 'Secretary of State
 **What this skill carries** — grep `references/` for any subject the names below miss:
 !`d=${CLAUDE_SKILL_DIR}; command -v skill-toc >/dev/null 2>&1 && exec skill-toc "$d"; s=$HOME/.claude/skills/plugin-utils/bin/skill-toc; [ -x "$s" ] && exec "$s" "$d"; echo "(skill-toc unavailable: references and scripts are NOT listed here — install the plugin-utils plugin, or start a new session so its bin/ reaches PATH)"`
 
-**There is no Lexis case-retrieval procedure here.** Nobody has driven the Lexis UI, so there are no
-measured selectors, endpoints or steps to follow.
+**There is no Lexis case-retrieval procedure here.** Nobody has driven the Lexis+ case-law UI, so
+there are no measured selectors, endpoints or steps to follow for it.
 
 **Use `workflows:westlaw`.** It is measured end to end and produces a publisher-keyed DOCX with star
 pagination — the same artifact a Lexis route would be built to produce. If the case is available on
@@ -21,7 +21,7 @@ Business records only; the account has no DPPA/GLBA permissible use, so person-l
 
 - **Delaware is not covered.** The jurisdiction dropdown has 50 states without it; do not look for Delaware status on Lexis.
 - **Clear the form before every search.** It keeps the previous terms, and a stale company name ANDs with a new charter number into zero results.
-- **Pacing is a hard limit:** one search at a time, at least 20 s apart, 100 per run (the script refuses less/more). No bulk export; this is for validation samples, not dataset construction.
+- **Pacing is a hard limit:** one search at a time, at least 20 s apart, 100 per run by default and never more than 300 (the script refuses a shorter delay or a larger cap). No bulk export; this is for validation samples, not dataset construction.
 
 | About to | Why wrong | Do instead |
 |---|---|---|
