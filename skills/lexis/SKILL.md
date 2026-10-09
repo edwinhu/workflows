@@ -18,6 +18,7 @@ Westlaw, the answer to "get it from Lexis" is to get it from Westlaw.
 ## Public Records (measured)
 
 Business records only; the account has no DPPA/GLBA permissible use, so person-level sources are closed. Facts, field ids and the worked example: `${CLAUDE_SKILL_DIR}/references/public-records.md` — read it before touching the UI. Entity lookups by filing number: `bun ${CLAUDE_SKILL_DIR}/scripts/corp-lookup.ts <in.csv> <out.csv> [--full]` (CDP :9222, signed-in tab, resumable).
+Judgments & liens by company/FEIN: `bun ${CLAUDE_SKILL_DIR}/scripts/jnl-lookup.ts <in.csv> <out.csv> [--max-records N] [--no-strict]` (one row per record, 50 per query by default; filter on `debtor` afterwards, strict search did not narrow Troika).
 
 - **Delaware is not covered.** The jurisdiction dropdown has 50 states without it; do not look for Delaware status on Lexis.
 - **Clear the form before every search.** It keeps the previous terms, and a stale company name ANDs with a new charter number into zero results.
