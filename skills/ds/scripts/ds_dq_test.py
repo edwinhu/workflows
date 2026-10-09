@@ -346,3 +346,119 @@ def test_a_malformed_plan_still_emits_json_on_stdout(tmp_path: Path):
     payload = json.loads(proc.stdout)
     assert payload["_error"]["status"] == "FAIL"
     assert payload["_error"]["reason_source"] == "runner"
+
+
+# ------------------------------------------------------------------------------------------------
+# --declarations: the FAILs a Data Outputs declaration alone would cure, found before dispatch
+# ------------------------------------------------------------------------------------------------
+# nevada stage1 round 2 (2026-10-07) spent a 1-2.7 h round failing ds-dq on columns the plan never
+# declared — quote text, filing URLs, numerator/denominator on median and SE rows, an event list
+# held to both edges of its window — and passed on the SAME files once the declarations went in.
+
+
+@pytest.fixture
+def undeclared(tmp_path: Path) -> Path:
+    """The four nevada shapes, each curable by a declaration and by nothing in the data."""
+    out = tmp_path / "data"
+    out.mkdir()
+    pl.DataFrame(
+        {
+            "statistic": ["share", "share", "median", "median", "se", "se", "diff", "diff", "n", "n"],
+            "group": ["nv", "de"] * 5,
+            "value": [0.1, 0.2, 3.0, 4.0, 0.01, 0.02, 0.1, 0.2, 10.0, 20.0],
+            "numerator": [1, 4, None, None, None, None, None, None, None, None],
+            "denominator": [10, 20, None, None, None, None, None, None, None, None],
+        }
+    ).write_csv(out / "table.csv")
+    pl.DataFrame(
+        {
+            "accession": [f"0000-{i}" for i in range(10)],
+            "fdate": pl.date_range(pl.date(2026, 9, 1), pl.date(2026, 10, 2), "3d", eager=True)[:9].append(
+                pl.Series([date(2026, 10, 2)])),
+            "url": [f"https://sec.gov/{i}" for i in range(10)],
+            "model": ["gemini-3"] * 10,
+        }
+    ).write_csv(out / "backfill.csv")
+    pl.DataFrame(
+        {
+            "event_id": list(range(4)),
+            "effective_date": [date(1994, 3, 11), date(2001, 1, 1), date(2015, 6, 1), date(2026, 9, 18)],
+        }
+    ).write_parquet(out / "events.parquet")
+    return tmp_path
+
+
+def declarations(root: Path, plan: str) -> tuple[int, dict]:
+    proc = subprocess.run(
+        [sys.executable, str(RUNNER), "--declarations", "--plan", "-", "--project-dir", str(root)],
+        input=plan, capture_output=True, text=True, check=False,
+    )
+    return proc.returncode, json.loads(proc.stdout)
+
+
+UNDECLARED_PLAN = (
+    "## Data Outputs\n\n"
+    "| Path | Grain | Key Columns | Required Window |\n"
+    "|---|---|---|---|\n"
+    "| data/table.csv | one row per statistic x group | statistic, group | n/a |\n"
+    "| data/backfill.csv | one row per filing | accession | fdate: 2026-09-01..2026-10-02 |\n"
+    "| data/events.parquet | one row per event | event_id | effective_date: 1994-01-01..2026-10-02 |\n"
+    "| data/not_built_yet.parquet | one row per id | id | n/a |\n"
+)
+
+DECLARED_PLAN = (
+    "## Data Outputs\n\n"
+    "| Path | Grain | Key Columns | Required Window |\n"
+    "|---|---|---|---|\n"
+    "| data/table.csv | one row per statistic x group | pk: statistic, group; sparse: numerator, denominator | n/a |\n"
+    "| data/backfill.csv | one row per filing | pk: accession; freetext: url; constant: model | fdate: 2026-09-01..2026-10-02 |\n"
+    "| data/events.parquet | one row per event; an event list searched over the window | pk: event_id | n/a |\n"
+    "| data/not_built_yet.parquet | one row per id | id | n/a |\n"
+)
+
+
+def test_declarations_names_every_gap_a_declaration_would_cure(undeclared: Path):
+    rc, payload = declarations(undeclared, UNDECLARED_PLAN)
+    assert rc == 1, payload
+    gaps = {(o["path"], g["check"], g.get("column")) for o in payload["outputs"] for g in o["gaps"]}
+    assert ("data/table.csv", "DQ2", "numerator") in gaps
+    assert ("data/table.csv", "DQ2", "denominator") in gaps
+    assert ("data/backfill.csv", "DQ5", "url") in gaps
+    assert ("data/backfill.csv", "DQ1", "model") in gaps
+    assert ("data/events.parquet", "COV", "effective_date") in gaps
+    by_path = {o["path"]: o for o in payload["outputs"]}
+    # The suggested cell is the plan text to paste, and with it the artifact passes outright.
+    assert by_path["data/table.csv"]["key_columns"] == "pk: statistic, group; sparse: numerator, denominator"
+    assert by_path["data/table.csv"]["passes_once_declared"] is True
+    assert by_path["data/events.parquet"]["required_window"] == "n/a"
+    assert by_path["data/events.parquet"]["passes_once_declared"] is True
+    # Not on disk yet: nothing to read, so nothing claimed either way.
+    assert by_path["data/not_built_yet.parquet"]["exists"] is False
+    assert by_path["data/not_built_yet.parquet"]["gaps"] == []
+
+
+def test_declarations_is_clean_when_the_plan_declares_them(undeclared: Path):
+    rc, payload = declarations(undeclared, DECLARED_PLAN)
+    assert rc == 0, payload
+    assert all(not o["gaps"] for o in payload["outputs"]), payload
+
+
+def test_declarations_never_offers_a_declaration_for_a_real_defect(tmp_path: Path):
+    # A duplicated PK and an all-null column are data defects: no annotation exempts them, so they
+    # are the round's to fix and must not surface as a missing declaration.
+    (tmp_path / "d").mkdir()
+    pl.DataFrame({"id": [1, 1, 2], "empty": [None, None, None], "x": [1.0, 2.0, 3.0]}).write_parquet(
+        tmp_path / "d" / "bad.parquet")
+    plan = (
+        "## Data Outputs\n\n| Path | Grain | Key Columns | Required Window |\n|---|---|---|---|\n"
+        "| d/bad.parquet | one row per id | id | n/a |\n"
+    )
+    rc, payload = declarations(tmp_path, plan)
+    assert rc == 0, payload
+    assert payload["outputs"][0]["gaps"] == []
+
+
+def test_declarations_reports_an_unparseable_table_as_json(tmp_path: Path):
+    rc, payload = declarations(tmp_path, "## Data Outputs\n\nno table here at all\n")
+    assert rc == 2, payload
+    assert payload["_error"]["status"] == "FAIL"
