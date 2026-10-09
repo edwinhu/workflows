@@ -109,7 +109,7 @@ async function run(args: string[], env: Record<string, string>) {
   const p = Bun.spawn(['bun', ROUTE, ...args], {
     env: {
       ...base, ROUTE_PROXY_URL: `${DEAD}/v1/models`, ROUTE_PRICES_URL: `${DEAD}/prices`,
-      ROUTE_RANKINGS_URL: `${DEAD}/rankings`, ROUTE_AA_URL: `${DEAD}/aa`,
+      ROUTE_RANKINGS_URL: `${DEAD}/rankings`, ROUTE_AA_URL: `${DEAD}/aa`, ROUTE_SLOP_URL: `${DEAD}/`,
       WORK_HOLD_DECISIONS_URL: `${DEAD}/`, WORK_HOLD_JUDGE_TOKEN: 'test-token', ...env,
     },
     stdout: 'pipe', stderr: 'pipe',

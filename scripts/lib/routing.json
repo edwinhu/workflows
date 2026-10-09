@@ -1,6 +1,6 @@
 {
   "_comment": "The farm-out routing table, read by scripts/lib/route.ts. kinds are hand-edited and reviewed; candidate availability, price and asOf change ONLY through `bun scripts/lib/route.ts --refresh`, the only sanctioned way to update them, and its diff is reviewed before commit. Models are pinned full ids: an unpinned wrapper slot is wrapper-local and can name another family.",
-  "asOf": "2026-10-02",
+  "asOf": "2026-10-08",
   "candidates": {
     "sonnet": {
       "provider": "claude",
@@ -13,9 +13,14 @@
         "completion": 0.00001
       },
       "signals": {
-        "usageRank": 62,
+        "usageRank": 38,
         "intelligenceIndex": 56,
-        "asOf": "2026-10-02"
+        "asOf": "2026-10-08",
+        "slopVariant": "claude-sonnet-5-5",
+        "slopIntelligence": 56.0001286580794,
+        "slopCost": 5.4608525948098325,
+        "onFrontier": true,
+        "slopAsOf": "2026-10-08T02:04:01.676Z"
       }
     },
     "opus": {
@@ -29,9 +34,14 @@
         "completion": 0.00002
       },
       "signals": {
-        "usageRank": 31,
+        "usageRank": 20,
         "intelligenceIndex": 57.6,
-        "asOf": "2026-10-02"
+        "asOf": "2026-10-08",
+        "slopVariant": "claude-opus-5-5",
+        "slopIntelligence": 57.6223698102963,
+        "slopCost": 5.982012019521066,
+        "onFrontier": true,
+        "slopAsOf": "2026-10-08T02:04:01.676Z"
       }
     },
     "flash": {
@@ -45,9 +55,14 @@
         "completion": 0.00000375
       },
       "signals": {
-        "usageRank": 27,
+        "usageRank": 35,
         "intelligenceIndex": 39.1,
-        "asOf": "2026-10-02"
+        "asOf": "2026-10-08",
+        "slopVariant": "gemini-3-7-flash",
+        "slopIntelligence": 39.0594566404896,
+        "slopCost": 0.9253359372385677,
+        "onFrontier": false,
+        "slopAsOf": "2026-10-08T02:04:01.676Z"
       }
     },
     "luna": {
@@ -61,9 +76,14 @@
         "completion": 5e-7
       },
       "signals": {
-        "usageRank": 19,
+        "usageRank": 11,
         "intelligenceIndex": 38.1,
-        "asOf": "2026-10-02"
+        "asOf": "2026-10-08",
+        "slopVariant": "gpt-6-luna",
+        "slopIntelligence": 38.1245186869738,
+        "slopCost": 0.06782295669812205,
+        "onFrontier": true,
+        "slopAsOf": "2026-10-08T02:04:01.676Z"
       }
     },
     "sol": {
@@ -77,9 +97,14 @@
         "completion": 0.00001
       },
       "signals": {
-        "usageRank": 66,
+        "usageRank": 40,
         "intelligenceIndex": 51.8,
-        "asOf": "2026-10-02"
+        "asOf": "2026-10-08",
+        "slopVariant": "gpt-6-1-sol",
+        "slopIntelligence": 51.8332597011541,
+        "slopCost": 0.7241670655535033,
+        "onFrontier": true,
+        "slopAsOf": "2026-10-08T02:04:01.676Z"
       }
     },
     "flash38": {
@@ -95,7 +120,12 @@
       "signals": {
         "usageRank": 13,
         "intelligenceIndex": 40.9,
-        "asOf": "2026-10-02"
+        "asOf": "2026-10-08",
+        "slopVariant": "gemini-3-8-flash",
+        "slopIntelligence": 40.9262321765904,
+        "slopCost": 1.2427947606950427,
+        "onFrontier": false,
+        "slopAsOf": "2026-10-08T02:04:01.676Z"
       }
     }
   },
