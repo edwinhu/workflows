@@ -91,5 +91,11 @@ On Continue (primary table) or Save (supplementary table), a modal "Data Request
 ## Delaware entity status (checked 2026-10-08)
 
 - `le` status: one undated current snapshot, not a Delaware standing measure. Its Delaware-labelled forfeitures carry California FTB/SOS codes, it has no `Void` value among Delaware corporations, and it reads active for 97.8% of matched firms whose last EDGAR filing predates 2015.
-- Delaware franchise-tax standing (`Good Standing` plus tax, penalty and interest fields, tax years 2019-2023 in a 25-row MCP sample) is only in the **Corporate Status** table, which must be added to a Dewey project first (Dewey reported "This table is not ready for download yet"), and it appears to cover only entities with a monitored Delaware ultimate parent.
+- Delaware franchise-tax standing (`Good Standing` plus tax, penalty and interest fields, tax years 2019-2023 in a 25-row MCP sample) is only in the **Corporate Status** table (profiled below); it covers only entities with a monitored Delaware ultimate parent.
 - Linking our Delaware controls: 61.7% of distinct control CIKs match (EIN against the EDGAR header IRS number, ticker, then name), with 15% disagreement between methods. Profile: `~/projects/nevada/scratch/profile_brightquery/report.md`.
+
+### Corporate Status table (profiled 2026-10-08 after adding it to project 36625)
+
+- Adding it: the Get Data project picker works with `element.click()`; the Data Request Form that opens beside it was cancelled, and the table still showed in the project list.
+- Delaware standing as ONE snapshot received 2022-11-01..2023-01-15, stamped on tax years 2010-2020 (same value in 99.7% of multi-year entities); no status for tax years 2022-2024; `AR_STATUS` empty. Values include `Good Standing`, `Void, AR's or Tax Delinquent` (16,976 rows), `Cancelled, Failure to Pay Tax`, `Forfeited/Cancelled, Failure to appoint a R/A`, `Cease Good Standing`, `AR Delinquent`. 8.8% duplicate rows. Fees (due, penalty, interest) vary by tax year.
+- Nevada project controls: 54.2% of control CIKs have a status row; latest status 78.5% Good Standing, 4.1% Void. Profile: `~/projects/nevada/scratch/profile_brightquery/corporate_status/report.md`.
