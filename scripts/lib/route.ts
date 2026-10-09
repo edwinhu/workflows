@@ -48,8 +48,25 @@
  *                      creator slug equals the slug's prefix and the AA model slug has the same
  *                      tokens (lowercase, split on - . _ /) as the slug's model part, in any order;
  *                      the highest index wins when several AA entries match.
- *   asOf               the date of the last refresh in which either source answered.
- * No match is null. A source with no key, or one that fails, leaves that field as it was and says so
+ *   asOf               the date of the last refresh in which any source answered.
+ * Signals from slopalytics, for EVERY candidate (matched on `model`, not the slug), one request for
+ * its index.html ($ROUTE_SLOP_URL, default https://slopalytics.com/) and one for the bundle that
+ * page's <script src="/assets/index-*.js"> names. The dataset is the object literal starting
+ * `{fetchedAt:` in that bundle, read by a literal parser here (never evaluated):
+ *   slopVariant        the matched variant id. Normalize the model (lowercase, dots -> dashes); then
+ *                      (1) the variant with exactly that id; else (2) strip a trailing effort suffix
+ *                      (EFFORT_SUFFIX below) and take the variant of that family whose `effort`
+ *                      equals the suffix; else (3) that family's max-effort (highest effortOrder)
+ *                      variant. Deprecated variants match too. `gemini-3.8-flash-high` ->
+ *                      family gemini-3-8-flash, effort high; `gpt-6.1-sol` -> gpt-6-1-sol (its max).
+ *   slopIntelligence   that variant's `intelligence`; slopCost its `cost` ($ per task).
+ *   onFrontier         the variant is on the Pareto line: non-deprecated, intelligence and cost both
+ *                      known, and no other such variant has intelligence >= and cost <= with one
+ *                      strictly better.
+ *   slopAsOf           the dataset's `fetchedAt`.
+ * An unmatched candidate gets nulls and onFrontier false; a failed fetch or parse leaves all five
+ * as they were, warned on stderr.
+ * For usageRank and intelligenceIndex, no match is null. A source with no key, or one that fails, leaves that field as it was and says so
  * on stderr; it never fails the refresh. Keys are read at RUNTIME and never written anywhere:
  * $OPENROUTER_API_KEY / $ARTIFICIAL_ANALYSIS_API_KEY; then the agenix secret $ROUTE_OPENROUTER_KEY_FILE
  * / $ROUTE_AA_KEY_FILE (defaults $XDG_RUNTIME_DIR/agenix/openrouter-api-key and
@@ -58,13 +75,25 @@
  * token loaded when unset.
  *
  * --propose reads signals, prices and availability and prints suggested `kinds` changes; the user
- * decides and hand-edits the table. Its rule, per kind, exactly:
- *   pick       PROTECTED when it is the user's Claude default for the kind (judgement:
- *              claude-opus-5-5; script and review: claude-sonnet-5-5) — never proposed away.
- *              Otherwise replaced by the AVAILABLE candidate of the SAME provider whose
- *              intelligenceIndex is strictly higher than the pick's and whose price.prompt is <=
- *              the pick's (both indexes and both prices known). Price is a FILTER only; among the
- *              eligible the order is RANK ORDER below. A replaced pick becomes a fallback.
+ * decides and hand-edits the table.
+ *   PARETO LINE (decided 2026-10-08): model choice follows slopalytics' Pareto line, intelligence
+ *              against $ per task. slopalytics (https://slopalytics.com) is Theo's (t3.gg) view of
+ *              Artificial Analysis data; its line is "non-dominated variants: no other visible
+ *              variant is both better and cheaper". Cross-provider moves are allowed (the rule
+ *              before this was same-provider only).
+ * Its rule, per kind, exactly:
+ *   pick       judgement: PROTECTED while its pick is claude-opus-5-5 — never proposed away.
+ *              Otherwise, when the pick has slopIntelligence and slopCost, replaced by an
+ *              AVAILABLE candidate that DOMINATES it: slopIntelligence >= the pick's and slopCost
+ *              <= the pick's, at least one strictly, both of its values known. script and review
+ *              stay on a Claude model: only a candidate of provider claude may replace their pick
+ *              (e.g. an Opus effort variant over Sonnet, when the table has one). Several
+ *              dominators: slopIntelligence descending, then slopCost ascending, then RANK ORDER.
+ *              FALLBACK, only when the pick has no slop signals: the rule before 2026-10-08 —
+ *              script and review PROTECTED while their pick is claude-sonnet-5-5; otherwise the
+ *              AVAILABLE candidate of the SAME provider whose intelligenceIndex is strictly higher
+ *              and whose price.prompt is <= the pick's (both known), in RANK ORDER.
+ *              A replaced pick becomes a fallback.
  *   fallbacks  the same members (never added, never dropped), available ones in RANK ORDER,
  *              unavailable ones after them in table order.
  *   RANK ORDER (decided 2026-10-02: the AA ranking comes before popularity), applied to every
@@ -90,8 +119,18 @@
  *              model's effort suffix, then catalog order.
  * A source that fails (or no AA key) is reported on stderr and discovery is skipped; the proxy is
  * asked first, so a dead proxy costs no key lookup. The rankings source alone failing (or keyless)
- * is warned on stderr and leaves every usageRank null; discovery still runs. --json prints
- * {proposals, discoveries}.
+ * is warned on stderr and leaves every usageRank null; discovery still runs.
+ *
+ * FRONTIER, advisory, from the proxy catalog and a fresh slopalytics fetch (no key; a failure skips
+ * only this part): every frontier variant whose lab the proxy serves (owned_by anthropic ->
+ * anthropic, openai -> openai, antigravity or google -> google) and that no candidate names (its
+ * matched variant, by the rule above, or its normalized model) prints as
+ *   'frontier: <variant> (intelligence a, $b/task) not in table'.
+ * EFFORT, advisory: for script and review, each such unnamed anthropic variant (non-deprecated, both
+ * values known) that dominates the pick's matched variant prints as 'effort: kind <k>: <variant> …
+ * would dominate …'. It is never a proposal: farm.sh passes a row's --model and no --effort, and the
+ * proxy lists no anthropic-owned effort ids, so a candidate cannot select one (checked 2026-10-08).
+ * --json prints {proposals, discoveries, frontier, effort}.
  */
 import { existsSync, readFileSync, realpathSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
@@ -114,6 +153,11 @@ export interface Signals {
   usageRank: number | null
   intelligenceIndex: number | null
   asOf: string
+  slopVariant?: string | null
+  slopIntelligence?: number | null
+  slopCost?: number | null
+  onFrontier?: boolean
+  slopAsOf?: string
 }
 
 export interface Table {
@@ -192,6 +236,11 @@ function validateTable(t: unknown, p: string): asserts t is Table {
       const numOrNull = (v: unknown) => v === null || typeof v === 'number'
       if (!isObj(s) || !numOrNull(s.usageRank) || !numOrNull(s.intelligenceIndex) || typeof s.asOf !== 'string')
         bad(`candidate ${id}: signals must be {usageRank, intelligenceIndex: number|null, asOf: string}`)
+      const absentOr = (v: unknown, ok: (v: unknown) => boolean) => v === undefined || ok(v)
+      if (!absentOr(s.slopVariant, v => v === null || typeof v === 'string') || !absentOr(s.slopIntelligence, numOrNull) ||
+        !absentOr(s.slopCost, numOrNull) || !absentOr(s.onFrontier, v => typeof v === 'boolean') ||
+        !absentOr(s.slopAsOf, v => typeof v === 'string'))
+        bad(`candidate ${id}: slop signals must be {slopVariant: string|null, slopIntelligence, slopCost: number|null, onFrontier: boolean, slopAsOf: string}`)
     }
   }
 
@@ -525,6 +574,7 @@ function applySignals(
     const k = slugKey(c.openrouter)
     const prev = c.signals ?? { usageRank: null, intelligenceIndex: null, asOf }
     c.signals = {
+      ...prev,
       usageRank: ranks ? (ranks.get(k) ?? null) : prev.usageRank,
       intelligenceIndex: intelligence ? (intelligence.get(k) ?? null) : prev.intelligenceIndex,
       asOf,
@@ -577,6 +627,202 @@ async function fetchSignals(): Promise<{ ranks: Map<string, number> | null; inte
   return { ranks: ranks?.ranks ?? null, intelligence }
 }
 
+// ------------------------------------------------------------------------------ slopalytics
+
+const DEFAULT_SLOP_URL = 'https://slopalytics.com/'
+
+export interface SlopVariant {
+  id: string
+  family: string
+  lab: string
+  effort: string | null
+  effortOrder: number | null
+  deprecated: boolean
+  intelligence: number | null
+  cost: number | null
+}
+
+export interface SlopData {
+  fetchedAt: string
+  models: SlopVariant[]
+}
+
+/**
+ * Parse the JS object literal at `src[start]`: objects with bare or quoted keys, arrays, backtick,
+ * double- and single-quoted strings, numbers (a leading "." included), !0/!1, true/false/null and
+ * `void 0`. Anything else, an interpolating template string among it, is an error: remote code is
+ * read as data, never run.
+ */
+export function parseJsLiteral(src: string, start = 0): { value: unknown; end: number } {
+  let i = start
+  const fail = (why: string): never => {
+    throw new Error(`literal parse: ${why} at offset ${i}`)
+  }
+  const ws = () => {
+    while (i < src.length && /\s/.test(src[i])) i++
+  }
+  const str = (): string => {
+    const q = src[i++]
+    let out = ''
+    while (i < src.length && src[i] !== q) {
+      if (q === '`' && src[i] === '$' && src[i + 1] === '{') fail('template interpolation')
+      if (src[i] === '\\') {
+        const e = src[i + 1]
+        const map: Record<string, string> = { n: '\n', t: '\t', r: '\r', b: '\b', f: '\f', v: '\v', 0: '\0' }
+        if (e === 'u') {
+          const hex = src[i + 2] === '{' ? src.slice(i + 3, src.indexOf('}', i)) : src.slice(i + 2, i + 6)
+          out += String.fromCodePoint(parseInt(hex, 16))
+          i += src[i + 2] === '{' ? hex.length + 4 : 6
+          continue
+        }
+        if (e === 'x') {
+          out += String.fromCharCode(parseInt(src.slice(i + 2, i + 4), 16))
+          i += 4
+          continue
+        }
+        out += map[e] ?? e
+        i += 2
+        continue
+      }
+      out += src[i++]
+    }
+    if (src[i] !== q) fail('unterminated string')
+    i++
+    return out
+  }
+  const value = (): unknown => {
+    ws()
+    const c = src[i]
+    if (c === '{') {
+      i++
+      const o: Record<string, unknown> = {}
+      for (;;) {
+        ws()
+        if (src[i] === '}') { i++; return o }
+        let key: string
+        if (src[i] === '"' || src[i] === "'" || src[i] === '`') key = str()
+        else {
+          const m = /^[A-Za-z_$][\w$]*|^\d+/.exec(src.slice(i, i + 256))
+          if (!m) fail('expected a key')
+          key = m![0]
+          i += key.length
+        }
+        ws()
+        if (src[i++] !== ':') fail('expected ":"')
+        o[key] = value()
+        ws()
+        if (src[i] === ',') i++
+        else if (src[i] !== '}') fail('expected "," or "}"')
+      }
+    }
+    if (c === '[') {
+      i++
+      const a: unknown[] = []
+      for (;;) {
+        ws()
+        if (src[i] === ']') { i++; return a }
+        a.push(value())
+        ws()
+        if (src[i] === ',') i++
+        else if (src[i] !== ']') fail('expected "," or "]"')
+      }
+    }
+    if (c === '"' || c === "'" || c === '`') return str()
+    if (src.startsWith('!0', i)) { i += 2; return true }
+    if (src.startsWith('!1', i)) { i += 2; return false }
+    for (const [w, v] of [['true', true], ['false', false], ['null', null], ['void 0', null]] as const)
+      if (src.startsWith(w, i) && !/[\w$]/.test(src[i + w.length] ?? '')) { i += w.length; return v }
+    const m = /^-?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?/.exec(src.slice(i, i + 64))
+    if (m) { i += m[0].length; return Number(m[0]) }
+    return fail(`unexpected ${JSON.stringify(src.slice(i, i + 20))}`)
+  }
+  const v = value()
+  return { value: v, end: i }
+}
+
+/** The dataset embedded in a slopalytics bundle. Throws when it is absent or not the expected shape. */
+export function parseSlopBundle(bundle: string): SlopData {
+  const at = bundle.indexOf('{fetchedAt:')
+  if (at < 0) throw new Error('no {fetchedAt: literal in the bundle')
+  const { value } = parseJsLiteral(bundle, at)
+  if (!isObj(value) || typeof value.fetchedAt !== 'string' || !Array.isArray(value.models))
+    throw new Error('dataset has no fetchedAt string or models array')
+  const num = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? v : null)
+  const models: SlopVariant[] = []
+  for (const m of value.models) {
+    if (!isObj(m) || typeof m.id !== 'string' || typeof m.family !== 'string') continue
+    models.push({
+      id: m.id, family: m.family, lab: typeof m.lab === 'string' ? m.lab : '',
+      effort: typeof m.effort === 'string' ? m.effort : null, effortOrder: num(m.effortOrder),
+      deprecated: m.deprecated === true, intelligence: num(m.intelligence), cost: num(m.cost),
+    })
+  }
+  if (!models.length) throw new Error('dataset has no usable models')
+  return { fetchedAt: value.fetchedAt, models }
+}
+
+/** b dominates a: intelligence >= and cost <=, one of them strictly. Both must be fully known. */
+function dominates(b: { intelligence: number | null; cost: number | null }, a: { intelligence: number | null; cost: number | null }) {
+  if (a.intelligence === null || a.cost === null || b.intelligence === null || b.cost === null) return false
+  return b.intelligence >= a.intelligence && b.cost <= a.cost && (b.intelligence > a.intelligence || b.cost < a.cost)
+}
+
+/** The Pareto line: non-deprecated variants with both values known that no other such variant dominates. */
+export function slopFrontier(models: SlopVariant[]): Set<string> {
+  const ms = models.filter(m => !m.deprecated && m.intelligence !== null && m.cost !== null)
+  return new Set(ms.filter(a => !ms.some(b => b !== a && dominates(b, a))).map(m => m.id))
+}
+
+/** The variant a candidate's model runs as, by the matching rule in the header. */
+export function matchSlop(model: string, models: SlopVariant[]): SlopVariant | null {
+  const n = model.toLowerCase().replace(/\./g, '-')
+  const exact = models.find(m => m.id === n)
+  if (exact) return exact
+  const effort = n.match(EFFORT_SUFFIX)?.[1]
+  const fam = models.filter(m => m.family === n.replace(EFFORT_SUFFIX, ''))
+  if (!fam.length) return null
+  const sameEffort = effort ? fam.find(m => m.effort === effort) : undefined
+  return sameEffort ?? fam.reduce((a, b) => ((b.effortOrder ?? -1) > (a.effortOrder ?? -1) ? b : a))
+}
+
+/** One request for index.html, one for the bundle it names. Null, with the reason to `warn`, on any failure. */
+async function fetchSlop(warn: (msg: string) => void, what: string): Promise<SlopData | null> {
+  const url = process.env.ROUTE_SLOP_URL || DEFAULT_SLOP_URL
+  try {
+    const get = async (u: string) => {
+      const res = await fetch(u, { signal: AbortSignal.timeout(30_000) })
+      if (!res.ok) throw new Error(`${u}: HTTP ${res.status}`)
+      return res.text()
+    }
+    const html = await get(url)
+    const src = html.match(/<script[^>]*\bsrc="([^"]*\/assets\/index-[^"]*\.js)"/)?.[1]
+    if (!src) throw new Error(`${url} names no /assets/index-*.js bundle`)
+    return parseSlopBundle(await get(new URL(src, url).href))
+  } catch (e) {
+    warn(`${what}: slopalytics ${url} failed (${(e as Error).message})`)
+    return null
+  }
+}
+
+/** Every candidate's slop signals from one dataset. A null dataset leaves them as they were. */
+function applySlop(table: Table, slop: SlopData | null, asOf: string): void {
+  if (!slop) return
+  const frontier = slopFrontier(slop.models)
+  for (const c of Object.values(table.candidates)) {
+    const v = matchSlop(c.model, slop.models)
+    const prev = c.signals ?? { usageRank: null, intelligenceIndex: null, asOf }
+    c.signals = {
+      ...prev,
+      asOf,
+      slopVariant: v?.id ?? null,
+      slopIntelligence: v?.intelligence ?? null,
+      slopCost: v?.cost ?? null,
+      onFrontier: v ? frontier.has(v.id) : false,
+      slopAsOf: slop.fetchedAt,
+    }
+  }
+}
+
 /** Replace the file in one rename, so a reader never sees half a table. A symlinked path keeps its link. */
 function writeTable(path: string, table: Table): void {
   const real = realpathSync(path)
@@ -617,10 +863,13 @@ async function refreshCli(tableArg?: string): Promise<number> {
   }
 
   const { ranks, intelligence } = await fetchSignals()
+  const slop = await fetchSlop(msg => process.stderr.write(`route --refresh: ${msg}\n`), 'slop signals left unchanged')
+  if (slop) process.stdout.write(`Source: slopalytics (https://slopalytics.com), Artificial Analysis data fetched ${slop.fetchedAt}.\n`)
 
   const before = JSON.parse(JSON.stringify(table.candidates)) as Table['candidates']
   const lost = applyRefresh(table, catalog, prices, localDate())
   applySignals(table, ranks, intelligence, localDate())
+  applySlop(table, slop, localDate())
   try {
     writeTable(path, table)
   } catch (e) {
@@ -632,8 +881,8 @@ async function refreshCli(tableArg?: string): Promise<number> {
     if (b.available !== c.available) process.stdout.write(`${id}: available ${b.available} -> ${c.available}\n`)
     if (JSON.stringify(b.price) !== JSON.stringify(c.price))
       process.stdout.write(`${id}: price ${JSON.stringify(b.price)} -> ${JSON.stringify(c.price)}\n`)
-    for (const f of ['usageRank', 'intelligenceIndex'] as const)
-      if (c.signals && (b.signals?.[f] ?? null) !== c.signals[f])
+    for (const f of ['usageRank', 'intelligenceIndex', 'slopVariant', 'slopIntelligence', 'slopCost', 'onFrontier'] as const)
+      if (c.signals && c.signals[f] !== undefined && (b.signals?.[f] ?? null) !== c.signals[f])
         process.stdout.write(`${id}: ${f} ${JSON.stringify(b.signals?.[f] ?? null)} -> ${JSON.stringify(c.signals[f])}\n`)
   }
   process.stdout.write(`route --refresh: wrote ${path} (asOf ${table.asOf})\n`)
@@ -652,12 +901,14 @@ async function refreshCli(tableArg?: string): Promise<number> {
 
 // --------------------------------------------------------------------------------- propose
 
-/** The user's Claude defaults (decided 2026-10-02): --propose never moves these picks. */
+/** The user's Claude defaults (decided 2026-10-02): the pre-Pareto rule never moves these picks. */
 const PROTECTED_PICKS: Partial<Record<Kind, string>> = {
   judgement: 'claude-opus-5-5',
   script: 'claude-sonnet-5-5',
   review: 'claude-sonnet-5-5',
 }
+/** Kinds whose pick stays on a Claude model under the Pareto rule (decided 2026-10-08). */
+const CLAUDE_ONLY: readonly string[] = ['script', 'review']
 
 export interface Proposal {
   kind: string
@@ -695,7 +946,25 @@ export function propose(table: Table): Proposal[] {
     let newPick = pick
     const pi = idx(pick)
     const pp = pc.price?.prompt
-    if (PROTECTED_PICKS[kind as Kind] !== pc.model && pi !== null && pp !== undefined) {
+    const slop = (id: string) => ({ intelligence: cand(id).signals?.slopIntelligence ?? null, cost: cand(id).signals?.slopCost ?? null })
+    const ps = slop(pick)
+    if (ps.intelligence !== null && ps.cost !== null) {
+      if (!(kind === 'judgement' && pc.model === PROTECTED_PICKS.judgement)) {
+        const dom = Object.keys(table.candidates)
+          .filter(id => id !== pick && cand(id).available && dominates(slop(id), ps) &&
+            (!CLAUDE_ONLY.includes(kind) || cand(id).provider === 'claude'))
+          .sort((a, b) => slop(b).intelligence! - slop(a).intelligence! || slop(a).cost! - slop(b).cost! || rankCmp(rank(a), rank(b)))
+        if (dom.length) {
+          newPick = dom[0]
+          const d = cand(newPick)
+          reasons.push(
+            `${newPick} dominates ${pick} on the slopalytics Pareto line (${d.signals!.slopVariant} intelligence ` +
+              `${slop(newPick).intelligence!.toFixed(1)} >= ${ps.intelligence.toFixed(1)}, $${slop(newPick).cost!.toFixed(3)}/task <= ` +
+              `$${ps.cost.toFixed(3)}/task)${d.provider === pc.provider ? '' : `, cross-provider ${pc.provider} -> ${d.provider}`}`,
+          )
+        }
+      }
+    } else if (PROTECTED_PICKS[kind as Kind] !== pc.model && pi !== null && pp !== undefined) {
       const better = Object.keys(table.candidates)
         .filter(id => {
           const c = cand(id)
@@ -794,19 +1063,74 @@ export function discover(
 }
 
 /** The three sources, one request each. Null (with the reason on stderr) when any cannot answer. */
-async function discoverySources(): Promise<
-  [CatalogEntry[], Map<string, PriceEntry['pricing']>, Map<string, number>, Map<string, number>] | null
-> {
+export interface FrontierNote {
+  variant: string
+  lab: string
+  intelligence: number
+  cost: number
+}
+
+export interface EffortNote {
+  kind: string
+  pick: string
+  pickVariant: string
+  pickIntelligence: number
+  pickCost: number
+  variant: string
+  intelligence: number
+  cost: number
+}
+
+const LAB_OF_OWNER: Record<string, string> = { anthropic: 'anthropic', openai: 'openai', antigravity: 'google', google: 'google' }
+
+/** The FRONTIER and EFFORT rules in the header. Pure: never writes the table. */
+export function frontierNotes(table: Table, catalog: CatalogEntry[], slop: SlopData): { frontier: FrontierNote[]; effort: EffortNote[] } {
+  const onLine = slopFrontier(slop.models)
+  const named = new Set<string>()
+  for (const c of Object.values(table.candidates)) {
+    named.add(c.model.toLowerCase().replace(/\./g, '-'))
+    const v = matchSlop(c.model, slop.models)
+    if (v) named.add(v.id)
+  }
+  const labs = new Set(catalog.map(m => LAB_OF_OWNER[m.owned_by]).filter(Boolean))
+  const known = (m: SlopVariant) => !m.deprecated && m.intelligence !== null && m.cost !== null && !named.has(m.id)
+  const frontier = slop.models
+    .filter(m => onLine.has(m.id) && labs.has(m.lab) && !named.has(m.id))
+    .sort((a, b) => a.cost! - b.cost!)
+    .map(m => ({ variant: m.id, lab: m.lab, intelligence: m.intelligence!, cost: m.cost! }))
+  const effort: EffortNote[] = []
+  for (const kind of CLAUDE_ONLY) {
+    const entry = table.kinds[kind as Kind]
+    if (!entry) continue
+    const pv = matchSlop(table.candidates[entry.pick].model, slop.models)
+    if (!pv || pv.intelligence === null || pv.cost === null) continue
+    for (const m of slop.models.filter(m => m.lab === 'anthropic' && known(m) && dominates(m, pv)).sort((a, b) => b.intelligence! - a.intelligence!))
+      effort.push({
+        kind, pick: entry.pick, pickVariant: pv.id, pickIntelligence: pv.intelligence, pickCost: pv.cost,
+        variant: m.id, intelligence: m.intelligence!, cost: m.cost!,
+      })
+  }
+  return { frontier, effort }
+}
+
+/** The proxy catalog, once per --propose. Null, said on stderr, when it cannot answer: all discovery is skipped. */
+async function proposeCatalog(): Promise<CatalogEntry[] | null> {
+  const proxyUrl = process.env.ROUTE_PROXY_URL || DEFAULT_PROXY_URL
+  try {
+    return toCatalog(await fetchListing(proxyUrl, 10_000, { Authorization: `Bearer ${PROXY_TOKEN}` }))
+  } catch (e) {
+    process.stderr.write(`route --propose: discovery skipped: proxy catalog ${proxyUrl} unreachable (${(e as Error).message})\n`)
+    return null
+  }
+}
+
+/** The other three sources, one request each. Null (with the reason on stderr) when any cannot answer. */
+async function discoverySources(
+  catalog: CatalogEntry[],
+): Promise<[CatalogEntry[], Map<string, PriceEntry['pricing']>, Map<string, number>, Map<string, number>] | null> {
   const skip = (why: string) => {
     process.stderr.write(`route --propose: discovery skipped: ${why}\n`)
     return null
-  }
-  const proxyUrl = process.env.ROUTE_PROXY_URL || DEFAULT_PROXY_URL
-  let catalog: CatalogEntry[]
-  try {
-    catalog = toCatalog(await fetchListing(proxyUrl, 10_000, { Authorization: `Bearer ${PROXY_TOKEN}` }))
-  } catch (e) {
-    return skip(`proxy catalog ${proxyUrl} unreachable (${(e as Error).message})`)
   }
   const pricesUrl = process.env.ROUTE_PRICES_URL || DEFAULT_PRICES_URL
   let prices: Map<string, PriceEntry['pricing']>
@@ -836,23 +1160,34 @@ async function proposeCli(tableArg: string | undefined, json: boolean): Promise<
     return refuse(`route --propose: ${(e as Error).message}`)
   }
   const proposals = propose(table)
-  const sources = await discoverySources()
+  const catalog = await proposeCatalog()
+  const sources = catalog ? await discoverySources(catalog) : null
   const discoveries = sources ? discover(table, ...sources) : []
+  const slop = catalog ? await fetchSlop(msg => process.stderr.write(`route --propose: ${msg}\n`), 'frontier skipped') : null
+  const { frontier, effort } = catalog && slop ? frontierNotes(table, catalog, slop) : { frontier: [], effort: [] }
   if (json) {
-    process.stdout.write(`${JSON.stringify({ proposals, discoveries })}\n`)
+    process.stdout.write(`${JSON.stringify({ proposals, discoveries, frontier, effort })}\n`)
     return 0
   }
-  if (!proposals.length && !discoveries.length) {
+  if (!proposals.length && !discoveries.length && !frontier.length && !effort.length) {
     process.stdout.write('route --propose: no change proposed\n')
     return 0
   }
   const chain = (e: { pick: string; fallbacks: string[] }) => `${e.pick} [${e.fallbacks.join(', ')}]`
+  const per = (i: number, c: number) => `intelligence ${i.toFixed(1)}, $${c.toFixed(3)}/task`
   for (const p of proposals) process.stdout.write(`kind ${p.kind}: ${chain(p.from)} -> ${chain(p.to)} — ${p.reason}\n`)
   for (const d of discoveries)
     process.stdout.write(
       `candidate ${d.candidate}: model ${d.from} -> ${d.to} (index ${d.index.from} -> ${d.index.to}, ` +
         `price ${d.price.from} -> ${d.price.to}); openrouter ${d.openrouter}\n`,
     )
+  for (const f of frontier) process.stdout.write(`frontier: ${f.variant} (${per(f.intelligence, f.cost)}) not in table\n`)
+  for (const e of effort)
+    process.stdout.write(
+      `effort: kind ${e.kind}: ${e.variant} (${per(e.intelligence, e.cost)}) would dominate ${e.pick} as ${e.pickVariant} ` +
+        `(${per(e.pickIntelligence, e.pickCost)}); not proposed: farm.sh passes no --effort, so no candidate can select it\n`,
+    )
+  if (slop) process.stdout.write(`Source: slopalytics (https://slopalytics.com), Artificial Analysis data fetched ${slop.fetchedAt}.\n`)
   process.stdout.write(
     `route --propose: advisory only; ${path} not written. Accept by editing its kinds (or a discovered ` +
       'candidate\'s model and openrouter) by hand.\n',

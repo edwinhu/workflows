@@ -79,7 +79,7 @@ async function propose(table: string, env: Record<string, string>, json = true) 
     env: {
       ...base, TMPDIR: dir, FARM_OUTCOMES: join(dir, 'outcomes.jsonl'),
       ROUTE_PROXY_URL: `${DEAD}/v1/models`, ROUTE_PRICES_URL: `${DEAD}/prices`, ROUTE_AA_URL: `${DEAD}/aa`,
-      ROUTE_RANKINGS_URL: `${DEAD}/rankings`, ARTIFICIAL_ANALYSIS_API_KEY: AA_KEY, OPENROUTER_API_KEY: OR_KEY,
+      ROUTE_RANKINGS_URL: `${DEAD}/rankings`, ROUTE_SLOP_URL: `${DEAD}/`, ARTIFICIAL_ANALYSIS_API_KEY: AA_KEY, OPENROUTER_API_KEY: OR_KEY,
       ROUTE_AA_KEY_FILE: join(dir, 'no-key'), ROUTE_OPENROUTER_KEY_FILE: join(dir, 'no-key'), ...env,
     },
     stdout: 'pipe', stderr: 'pipe',
