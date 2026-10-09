@@ -8,7 +8,9 @@
  *
  * Every rule here answers a question about the plan's own structured fields with no agent and no
  * repo access. A rule belongs here only if two readers must reach the same verdict from the plan
- * text alone; anything needing the tree is TIER 2 (pre-flight execution).
+ * text alone; anything needing the tree is TIER 2 (pre-flight execution). One exception, R23: it
+ * READS the artifacts a ds plan's `## Data Outputs` declares (it executes nothing), because this is
+ * the gate both work-dispatch.sh and work-redispatch.sh run, and a round-2 dispatch is where it pays.
  *
  * Accepts a work args object as well as a plan file so a round's dispatched arguments can be
  * linted directly — that is also what the rule corpus was validated against.
@@ -55,6 +57,8 @@ type Plan = {
   runSizingText?: string
   /** The whole plan markdown, when one is reachable: the file itself, or `planPath` from the args. */
   planText?: string
+  /** Root the `## Data Outputs` paths resolve against (R23). Default: the ds check's `--project-dir`, else cwd. */
+  projectDir?: string
   /** Rows whose cell count differs from their header's, recorded at parse where the count exists. */
   tableArity?: { id: string; row: number; got: number; want: number; text: string }[]
 }
@@ -880,6 +884,33 @@ const lint = (p: Plan): Finding[] => {
         )
     })
 
+  // R23 — ds-dq FAILs that only a `## Data Outputs` declaration can cure, on artifacts already on
+  // disk. nevada stage1 round 2 (2026-10-07) spent a 1-2.7 h round on exactly these and passed on
+  // the same files once declared. A task whose work cites the check id and the column claims the
+  // fix is data, not declaration: reported, not blocking.
+  if (p.planText && /^##\s+Data Outputs\s*$/m.test(p.planText)) {
+    const owned = (path: string, check: string, col: string) =>
+      p.tasks.some(t => coveredBy(path, t.writablePaths) && new RegExp(`\\b${check}\\b`).test(t.work) &&
+        new RegExp(`\\b${col.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`).test(t.work))
+    const r = dataOutputGaps(p)
+    if ('error' in r)
+      add(r.unchecked ? 'data-outputs-unchecked' : 'data-outputs-unparseable', 'major', '## Data Outputs',
+        r.unchecked ? `nothing checked the declared artifacts: ${r.error}`
+          : `ds-dq cannot read this table, so the ds gate will exit 2 at the end of the round: ${r.error}`)
+    else
+      for (const o of r.outputs)
+        for (const g of o.gaps)
+          add(
+            'data-outputs-undeclared',
+            owned(o.path, g.check, g.column) ? 'minor' : 'major',
+            `data output ${o.path}`,
+            `ds-dq would FAIL ${g.check} on \`${g.column}\` in the artifact already on disk, for lack of a declaration (${g.check === 'COV' ? g.cure : `\`${g.cure}\``})` +
+              (o.passes_once_declared ? '; declared, it passes every computed check' : '') +
+              `. If it is by design, declare it; if it is a defect a task fixes this round, cite ${g.check} and \`${g.column}\` in that task's work`,
+            `Key Columns: ${o.key_columns} | Required Window: ${o.required_window}`,
+          )
+  }
+
   // R22 — `goalCheck` is the string the dispatch ARMS A HOLD ON, so it is linted by the linter that
   // owns holds rather than by a second copy of those rules here. Only CRITICAL findings block: the
   // rest are hold-lint's advisory tier and the arm prints them itself. Reported at dispatch because
@@ -898,6 +929,37 @@ const lint = (p: Plan): Finding[] => {
   }
 
   return f
+}
+
+type DataOutputGaps =
+  | { error: string; unchecked?: true }
+  | {
+      outputs: {
+        path: string
+        gaps: { check: string; column: string; cure: string }[]
+        key_columns: string
+        required_window: string
+        passes_once_declared: boolean | null
+      }[]
+    }
+
+/**
+ * `ds-dq.py --declarations` over the plan text — the ds runner itself, so the Key Columns grammar
+ * has one parser. Out of process for the same reason as hold-lint, and fails closed the same way.
+ */
+const dataOutputGaps = (p: Plan): DataOutputGaps => {
+  const { spawnSync } = require('node:child_process')
+  const dq = require('node:path').join(import.meta.dir, '..', '..', 'ds', 'scripts', 'ds-dq.py')
+  const dsCmd = p.mechanicalChecks.find(m => /--project-dir\s/.test(m.cmd))?.cmd
+  const root = p.projectDir ?? dsCmd?.match(/--project-dir\s+(\S+)/)?.[1] ?? process.cwd()
+  const r = spawnSync('uv', ['run', '--quiet', '--no-project', '--with', 'polars', 'python3', dq, '--declarations', '--plan', '-', '--project-dir', root],
+    { input: p.planText, encoding: 'utf8', timeout: 120_000 })
+  try {
+    const j = JSON.parse(r.stdout)
+    if (j._error) return { error: j._error.detail }
+    if (Array.isArray(j.outputs)) return j
+  } catch {}
+  return { unchecked: true, error: `ds-dq --declarations did not run (${r.error?.message ?? `exit ${r.status}`}): ${(r.stderr ?? '').trim().slice(-200)}` }
 }
 
 /**

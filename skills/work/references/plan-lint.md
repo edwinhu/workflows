@@ -42,6 +42,13 @@ runnable command in a task's `acceptance`. A `redCommand` already green (`red-no
 `acceptance-green-at-baseline` (major) — nothing there distinguishes "the work landed" from "the
 work was never started".
 
+`data-outputs-undeclared` (R23, `major`) is tier 1's one read of the tree: for a plan with a
+`## Data Outputs` table it runs `ds-dq.py --declarations` over the declared artifacts already on disk and
+reports each DQ1/DQ2/DQ5/COV FAIL a declaration alone would cure, with the Key Columns cell to paste. It
+sits here because plan-lint is the gate both dispatch and redispatch run, and a round-2 dispatch over
+round-1 artifacts is where it pays. A task whose `work` cites the check id and the column claims the fix
+is data, not declaration, and the finding drops to `minor`. Unparseable table: `data-outputs-unparseable`.
+
 ## What each tier cannot do
 
 Tier 1 cannot tell a missing artifact from one already in the tree — that is tier 2. Tier 2 cannot
