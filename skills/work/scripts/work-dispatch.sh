@@ -1069,6 +1069,8 @@ print(f"  readOnly={ro} tasks={len(t)} active={impl} verifiers={ver} lens={lens}
 print(f"  scripted (no agent): red-before={red} acceptanceCmd={acc} mech={mech} rule-checks={rule}")
 print(f"  fan-out floor {floor} vs maxAgents {a.get('maxAgents', 50)}")
 PY
+# The agents row's token budget, the number work-round.sh passes farm.sh --budget.
+printf '  '; bash "$SKILL/scripts/work-budget.sh" "$out" || exit 1
 red_summary "$out"
 
 # The shape `dependsOn` will actually produce, layered by plan-lint.ts the way workflow.js layers it.
