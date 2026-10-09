@@ -1,8 +1,9 @@
-// Human-paced Lexis Public Records Judgments & Liens lookup by company (and FEIN).
-// usage: bun jnl-lookup.ts <in.csv> <out.csv> [--max-records N] [--no-strict] [--limit N] [--min-delay S] [--max-delay S] [--dump DIR]
-//   in.csv   columns `company[,fein]`
+// Human-paced Lexis Public Records Judgments & Liens lookup by company and/or FEIN.
+// usage: bun jnl-lookup.ts <in.csv> <out.csv> [--max-records N] [--no-strict] [--fein-only] [--limit N] [--min-delay S] [--max-delay S] [--dump DIR]
+//   in.csv   columns `company[,fein]`; a row with an empty company and a fein runs a FEIN-only search (company field left blank)
 //   out.csv  appended, resumable: queries already present (company+fein) are skipped; one row per returned record
 //   --max-records N  records kept per query (default 50, max 500); result pages are followed only until N
+//   --fein-only      ignore the company column wherever a fein is present (name+FEIN does not narrow in Lexis); rows without a fein are skipped
 //   --no-strict      leave Strict Search off (default: on, as the form checkbox)
 //   --dump DIR       also save each page's raw text (debugging the parser)
 // Drives the signed-in Lexis tab on CDP 127.0.0.1:9222 (open r3.lexis.com/laprma/JnL.aspx first).
@@ -13,7 +14,7 @@ import { readFileSync, existsSync, appendFileSync, writeFileSync, mkdirSync } fr
 const MIN_FLOOR_S = 20, DEFAULT_MAX_S = 45, DEFAULT_CAP = 100, HARD_CAP = 300, DEFAULT_RECORDS = 50, MAX_RECORDS = 500
 const args = process.argv.slice(2)
 const flag = (n: string) => { const i = args.indexOf(n); if (i < 0) return undefined; const v = args[i + 1]; args.splice(i, v === undefined || v.startsWith('--') ? 1 : 2); return v ?? '' }
-const usage = 'usage: bun jnl-lookup.ts <in.csv> <out.csv> [--max-records N] [--no-strict] [--limit N] [--min-delay S] [--max-delay S] [--dump DIR]'
+const usage = 'usage: bun jnl-lookup.ts <in.csv> <out.csv> [--max-records N] [--no-strict] [--fein-only] [--limit N] [--min-delay S] [--max-delay S] [--dump DIR]'
 if (args.includes('--help') || args.includes('-h')) { console.log(usage); process.exit(0) }
 const strict = flag('--no-strict') === undefined
 const maxRecords = Number(flag('--max-records') ?? DEFAULT_RECORDS)
@@ -21,6 +22,8 @@ const limit = Number(flag('--limit') ?? DEFAULT_CAP)
 const minS = Number(flag('--min-delay') ?? MIN_FLOOR_S)
 const maxS = Number(flag('--max-delay') ?? Math.max(DEFAULT_MAX_S, minS))
 const dumpDir = flag('--dump')
+const feinOnly = args.includes('--fein-only')
+if (feinOnly) args.splice(args.indexOf('--fein-only'), 1)
 const [inPath, outPath] = args
 const die = (m: string): never => { console.error(m); process.exit(2) }
 if (!inPath || !outPath) die(usage)
@@ -81,6 +84,7 @@ if (args[0] === '--parse-file') { console.log(JSON.stringify(parseResults(readFi
 const [head, ...body] = parseCsv(readFileSync(inPath, 'utf8'))
 const hl = head.map(h => h.trim().toLowerCase()), ci = hl.indexOf('company'), fi = hl.indexOf('fein')
 if (ci < 0) die('input needs a header column: company[,fein]')
+if (feinOnly && fi < 0) die('refusing: --fein-only needs a fein column in the input')
 const cols = ['query_company', 'query_fein', 'strict', 'n_results', 'rank', 'debtor', 'filing_date', 'amount', 'type', 'filing_number', 'filing_office', 'creditor', 'released', 'release_date', 'checked_at']
 const key = (c: string, f: string) => `${c}|${f}`
 const done = new Set<string>()
@@ -130,14 +134,15 @@ const waitFor = async (expr: string, prevText = '', timeoutMs = 30000) => {
 let count = 0, qn = 0
 for (const r of body) {
   const company = (r[ci] ?? '').trim(), fein = (fi >= 0 ? r[fi] ?? '' : '').trim()
-  if (!company || done.has(key(company, fein))) continue
+  if ((!company && !fein) || (feinOnly && !fein) || done.has(key(company, fein))) continue
+  const qCompany = feinOnly || !company ? '' : company  // what goes into the form
   if (count >= limit) { console.log(`cap reached: ${limit} per run`); break }
   qn++
   await call('Page.navigate', { url: 'https://r3.lexis.com/laprma/JnL.aspx' })
   await sleep(4000 + Math.random() * 3000)
   const b0 = await evaluate(blocked)
   if (b0) { console.error(`stopping: ${b0}; resolve in the browser and re-run`); break }
-  const ok = await evaluate(fillAndSubmit(company, fein))
+  const ok = await evaluate(fillAndSubmit(qCompany, fein))
   if (ok !== 'ok') { console.error(`stopping: search form not available (${ok}); sign in to Lexis and re-run`); break }
   let pg = await waitFor(readPage)
   const b1 = await evaluate(blocked)
@@ -160,7 +165,7 @@ for (const r of body) {
   const rows = kept.length ? kept.map(k => [...base, String(k.rank), k.debtor, k.filing_date, k.amount, k.type, k.filing_number, k.filing_office, k.creditor, k.released, k.release_date, now])
     : [[...base, '', '', '', '', '', '', '', '', '', '', now]]
   rows.forEach(row => appendFileSync(outPath, row.map(csv).join(',') + '\n'))
-  console.log(`${company}: ${n} results, kept ${kept.length}${kept.length >= maxRecords && n > kept.length ? ' (max-records)' : ''}`)
+  console.log(`${company || '(fein-only)'} ${fein}: ${n} results, kept ${kept.length}${kept.length >= maxRecords && n > kept.length ? ' (max-records)' : ''}`)
   count++
   await pace()
 }
