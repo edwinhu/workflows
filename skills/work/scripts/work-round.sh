@@ -44,7 +44,11 @@ step "1/5 agents (farm.sh --workflow)"
 # JEV_EDIT_MOD=1: the implementers are headless farm children, which the per-edit Jev mod (hooks/jev/)
 # skips unless asked; they are the ones its feedback is for. The lens row below stays without it.
 # --no-cron: the dispatcher (work-dispatch.sh) already printed this run's one backstop cron.
-JEV_EDIT_MOD=1 bash "$FARM" --provider "$HOST" --workflow "$SKILL/workflow.js" --args "$ARGS" --out "$RAW" --cwd "$CWD" --no-cron
+# --budget: this one row hosts every implementer and verifier, so it scales with the plan.
+budget_line=$(bash "$HERE/work-budget.sh" "$ARGS") || die "work-budget.sh could not size the round"
+echo "work-round: $budget_line"
+JEV_EDIT_MOD=1 bash "$FARM" --provider "$HOST" --workflow "$SKILL/workflow.js" --args "$ARGS" --out "$RAW" --cwd "$CWD" --no-cron \
+  --budget "$(awk '{print $2}' <<<"$budget_line")"
 frc=$?
 jq -e '.stage == "agents"' "$RAW" >/dev/null 2>&1 \
   || die "agents stage left no agents-stage $RAW (farm.sh exit $frc); see the log above"
