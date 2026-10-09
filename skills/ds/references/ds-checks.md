@@ -16,6 +16,10 @@ the runner reports it as `MODEL-EVALUATED` rather than `PASS` so that no reader 
 for a computation. A runner that printed `PASS` for M1 would recreate the self-certification these
 checks exist to remove.
 
+Before dispatch, plan-lint runs `ds-dq.py --declarations` over the artifacts already on disk and blocks on any
+DQ1, DQ2, DQ5 or COV FAIL that only a `## Data Outputs` declaration (`constant:`, `sparse:`, `freetext:`, the
+window) would cure.
+
 ## Check Matrix
 
 | Check ID | Description | Runner | Implement | Review | Fix |
