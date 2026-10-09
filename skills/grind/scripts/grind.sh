@@ -17,8 +17,9 @@
 #      declares success, or is mistaken for the loop's own bookkeeping. `stop` is the operator's
 #      command and is refused from inside an iteration, and `status` reports the run's outcome from
 #      the last LOOP-owned record, so nothing the agent appends afterwards erases it.
-#   3. A key recorded as a floor is injected into EVERY later prompt as an exclusion. Without that,
-#      an amnesiac iteration re-diagnoses the same dead item every pass, for a week.
+#   3. A key recorded as a floor is injected into EVERY later prompt as an exclusion, until a reopen
+#      naming that key retracts it. Without that, an amnesiac iteration re-diagnoses the same dead
+#      item every pass, for a week.
 #
 # And the property that makes an append-only log worth having: a record that does not fit in one
 # atomic write is REFUSED -- never split, never truncated -- and every reader skips unparseable
@@ -46,6 +47,8 @@ grind.sh -- an unattended loop whose only memory is one append-only journal.
   grind.sh run    --journal J --check CMD --prompt-file F [--gate CMD] [--runner R]
                   [--model M] [--max-iters N] [--sleep S] [--stall-after K]
                   [--exhaust-after N]
+                  --stall-after K stops the run after K consecutive iterations that append no
+                  progress record; attempts and notes are not progress (default 3, 0 disables).
                   --exhaust-after N stops offering a subject after N attempts with no progress
                   since its last progress or reopen record (default 3, 0 disables).
                   [--notify CMD|none] [--notify-to SESSION] [--wait-alert N] [--push]
@@ -162,14 +165,15 @@ check_agent_record() {
       return 2; }
   fi
 
-  # A reopen is the ONLY thing that puts an exhausted subject back in front of an iteration, so it
-  # has to name what it reopens and what changed. A reopen with neither would reset the count on the
-  # strength of nothing, which is how a subject that is genuinely dead gets re-attempted forever --
-  # the same non-convergence a keyless floor causes, read from the other side.
+  # A reopen is the ONLY thing that puts an exhausted subject or a floored key back in front of an
+  # iteration, so it has to name what it reopens and what changed. A reopen with neither would reset
+  # the count on the strength of nothing, which is how a subject that is genuinely dead gets
+  # re-attempted forever -- the same non-convergence a keyless floor causes, read from the other side.
+  # `subject` resets that subject's attempt count; `key` retracts the floor filed under that key.
   if [ "$kind" = reopen ]; then
-    jq -e -s '.[0].subject | (type == "string" or type == "number") and (tostring | test("[^[:space:]]"))' \
+    jq -e -s '.[0] | [.subject, .key] | any((type == "string" or type == "number") and (tostring | test("[^[:space:]]")))' \
       >/dev/null 2>&1 <<<"$rec" || {
-      printf 'grind: refused: a reopen needs a non-empty subject and a non-empty rerunReason; it resets that subject'"'"'s attempt count, so it must say which subject and what changed\n' >&2
+      printf 'grind: refused: a reopen needs a non-empty subject (resets its attempt count) or key (retracts that floor), and a non-empty rerunReason saying what changed\n' >&2
       return 2; }
     jq -e -s '.[0].rerunReason | type == "string" and test("[^[:space:]]")' \
       >/dev/null 2>&1 <<<"$rec" || {
@@ -197,9 +201,18 @@ JQ_SCAN='
   | ([$r | to_entries[] | select(.value.kind == "stop") | .key
        | select($ls == null or . > $ls)] | length) as $stops
   | ([$r[] | select(.kind == "start") | .pid | numbers] | last) as $pid
-  | ([$r[] | select(.kind == "floor") | select(.key != null)
-       | {key: (.key | clean), why: ((.why // "") | clean)}]
-     | group_by(.key) | map(.[0])) as $floors
+  # A reopen carrying the key of a floor retracts that floor; a floor filed after the reopen is live
+  # again. Journal position decides, never a timestamp: the order lines landed is the only order an
+  # append-only file guarantees.
+  | ([$r | to_entries[] | select(.value.kind == "reopen") | select(.value.key != null)
+       | {i: .key, key: (.value.key | clean)}]) as $retracts
+  | ([$r | to_entries[] | select(.value.kind == "floor") | select(.value.key != null)
+       | {i: .key, key: (.value.key | clean), why: ((.value.why // "") | clean)}]
+     | group_by(.key) | map(
+         .[0].key as $k
+         | ([$retracts[] | select(.key == $k) | .i] | max) as $lr
+         | [.[] | select($lr == null or .i > $lr)] | .[0] // empty
+         | {key, why})) as $floors
   # Notes are the steering channel and are read in journal order, newest last, with NO dedupe by
   # key: a second note about the same key corrects the first rather than duplicating it. Only the
   # newest $notemax survive, so a loop steered for a week does not grow its own prompt without end.
@@ -257,8 +270,9 @@ NOTE_MAX=10
 # newest subjects, because the block is a working set rather than a history -- the journal is the
 # history. The excerpt is cut so one chatty attempt cannot crowd out twenty-nine other subjects.
 SUBJECT_MAX=30
-# Also caps a floor's `why` in the prompt: floors are never retired, so unbounded reasons are the
-# one block that grows until the whole -p argument overruns MAX_ARG_STRLEN and every exec fails.
+# Also caps a floor's `why` in the prompt: floors are retired only by an explicit reopen, so unbounded
+# reasons are the one block that grows until the whole -p argument overruns MAX_ARG_STRLEN and every
+# exec fails.
 PROMPT_EXCERPT_MAX=200
 
 # Attempts on ONE subject since its last reset before the prompt stops offering it. 0 disables the
@@ -385,15 +399,18 @@ build_prompt() {
 GRIND_PROTOCOL: the journal file at GRIND_JOURNAL is your ONLY write channel to this loop.
   $SELF append --journal $j '{"kind":"progress","key":"...","note":"..."}'
   $SELF append --journal $j '{"kind":"floor","key":"...","why":"..."}'
-progress = you moved the goal. Iterations that record none are counted consecutively and the loop
-stops after --stall-after of them, so record one whenever you actually moved -- filing a floor
+progress = you moved the goal. Iterations that record none are counted consecutively -- an attempt
+or a note is not progress -- and the loop stops after --stall-after of them, so record one whenever you actually moved -- filing a floor
 counts, but append the progress record too. floor = this key is dead for good; every later
 iteration is handed it as an exclusion, which is the only reason this loop converges.
 Any record may carry "subject": the family the work is about (a CIK, a shard, a fixture), which is
 what groups your attempt with the earlier ones in GRIND_SUBJECTS -- use the SAME subject string an
 existing line already uses rather than inventing a new one. To pick a subject listed EXHAUSTED,
-first append {"kind":"reopen","subject":"...","rerunReason":"what changed"}; a reopen without both
-of those is refused.
+first append {"kind":"reopen","subject":"...","rerunReason":"what changed"}. To work a key listed in
+GRIND_FLOORS -- because something changed, or an operator note withdraws the floor -- first append
+{"kind":"reopen","key":"<the floor's key>","rerunReason":"what changed"}, which retracts that floor;
+filing the floor again closes it again. A reopen with no rerunReason, or with neither a subject nor
+a key, is refused.
 One JSON object on one line, under $ATOMIC_BOUND bytes, or the append is refused and nothing is
 written. kind must be one of [$AGENT_KINDS], and a floor without a non-empty key is refused.
 The loop owns [$LOOP_KINDS] and appending any of those is refused: you report what you FOUND, never
@@ -579,7 +596,7 @@ notify_default() {
 
 run_loop() {
   local journal= check= gate= promptfile= model= runner=""
-  local max_iters=0 sleep_s=60 stall_after=0 wait_alert=6 budget_total=0
+  local max_iters=0 sleep_s=60 stall_after=3 wait_alert=6 budget_total=0
   while [ $# -gt 0 ]; do
     case "$1" in
       --notify)      NOTIFY=${2:?--notify needs a value};           shift 2 ;;

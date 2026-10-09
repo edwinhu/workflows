@@ -128,10 +128,10 @@ comes from `start`. Two files that can disagree about one fact are a bug generat
 | `iter` / `iter_end` | the loop | iteration N began; the runner exited with this code |
 | `wait` | the loop | the gate was red, so the pass cost nothing |
 | `progress` | the agent | the goal moved; this is what `--stall-after` counts back from |
-| `floor` | the agent | this key is dead for good, and every later prompt is handed it |
-| `reopen` | the agent | an exhausted subject is worth another pass, and `rerunReason` says what changed |
+| `floor` | the agent | this key is dead, and every later prompt is handed it until a `reopen` names its key |
+| `reopen` | the agent or operator | with `subject`: an exhausted subject is worth another pass; with `key`: that floor is retracted (a later `floor` on the key closes it again). Always with a non-empty `rerunReason` saying what changed |
 | `done` | the loop | `--check` exited 0 — the only record that means success |
-| `stalled` / `budget` | the loop | `--stall-after` passes with no progress; `--max-iters` spent |
+| `stalled` / `budget` | the loop | `--stall-after` passes in a row with no `progress` (default 3, `0` disables; an `attempt` or `note` is not progress); `--max-iters` spent |
 | `stop` / `stopped` | the operator / the loop | a stop was requested; the loop honoured it |
 
 That split is enforced, not merely described. The agent may append only `progress`, `floor`,
@@ -151,6 +151,11 @@ iteration's choices the way a floor excludes a key. The only way back is a
 count and is refused without both a `subject` and a non-empty `rerunReason`; a `progress` record on
 the subject resets it too. Recording is never refused for exhaustion — an `attempt` on an exhausted
 subject still lands, because the journal must not lie about the work that was done.
+
+A floor is lifted the same way, by key: `{"kind":"reopen","key":"<floor key>","rerunReason":"..."}`
+drops that floor from `floors`, `status` and `GRIND_FLOORS`, ordered by journal position; a `floor`
+filed again afterwards is live again. A `note` cannot lift a floor — an operator withdrawing one
+appends this reopen, or the passes keep honouring it.
 
 Every prompt carries `GRIND_JOURNAL`, `GRIND_SH`, `GRIND_ITER`, `GRIND_FLOORS`, `GRIND_SUBJECTS` and
 `GRIND_NOTES`, so an iteration needs nothing from outside itself:
@@ -197,6 +202,8 @@ grep '"kind":"iter_end"' "$J" | jq -r 'select(.exit != 0) | .i'
 | Arm a hold in a session while a grind loop works the same objective | the hold blocks that session's stop while the grind's gate waits for no round in flight: each waits for the other and neither moves (AGK 2026-09-27) | one driver per objective — grind owns a long loop, and no session holds alongside it |
 | Foreground the loop from a chat session | the Bash tool call caps out and kills the run mid-flight, and the live session is the cost grind removes | `setsid nohup … &`, then `grind.sh status` when you want to know |
 | `kill -9` the loop to end it | the journal then ends on `iter`, and nothing can tell a kill from a crash | `grind.sh stop`, honoured at the next boundary |
+| About to write a pass prompt that says "do one chunk, commit, exit" | each pass re-reads the investigation doc and the journal, so an hour of analysis became 10+ passes (docket-outcomes reached pass 59, ~20M weighted tokens per 14 passes) | tell the pass to finish the deliverable when it can, committing at checkpoints rather than exiting at them |
+| About to ask a pass for regression tests, "contracts" or edge-case hardening beyond what `--check` reads | passes polished instead of finishing, and operator "estimate now" notes took 2-3 passes to land (s220-deterrence) | the pass prompt names the deliverable and the check, nothing else |
 | Read `iter_end` with exit 0 as progress | it says the process ran, not that anything moved | `progress` records, which are what `--stall-after` counts |
 | Launch a loop you will act on without a heartbeat | a `--resume` restores no monitor and no background task, so a resumed session never hears it end | CronCreate an hourly tick at launch, naming the standing objective; keep it past the ending |
 | About to delete the heartbeat cron because a loop/batch ended | the mandate outlives the batch; hidden-figures 2026-10-07 18:17 lost its only wake this way, and the user found it idle 3 h later | leave it; the user ends the mandate, and the delete asks them |
