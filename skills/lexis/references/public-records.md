@@ -94,7 +94,7 @@ Script check 2026-10-09 (`corp-lookup.ts --full`): E0232352011-8 → PERMANENTLY
   - United Rentals (061522496): name 0; FEIN-only 95, same as name+FEIN; 28 of the 40 non-blank debtors contain UNITED RENTALS (70%; 10 rows have a blank parsed debtor).
 - **Use:** FEIN-only is the precise, small query where the FEIN is indexed (and finds former names); it misses firms whose FEIN is not indexed, so run name-only as well and union by `filing_number`. Filter on `debtor` either way.
 
-### Terms and Connectors (Boolean) mode in Judgments & Liens (2026-10-09, form read only — NOT yet live-tested)
+### Terms and Connectors (Boolean) mode in Judgments & Liens (form read 2026-10-09; live-tested 2026-10-09: does NOT narrow)
 
 Read from `JnL.aspx` by DOM inspection, no search submitted. Nothing below about results is measured.
 
@@ -105,7 +105,8 @@ Read from `JnL.aspx` by DOM inspection, no search submitted. Nothing below about
 - **Connectors listed on the page:** `and`, `w/N` (within N words), `and not`, `or`, `pre/N` (precedes by N words). Help: connectors work only in the Additional Terms field; `!` and `*` wildcards; precedence OR, then AND, then AND NOT, left to right. The per-connector articles did not render, and nothing confirms grouping inside a segment (`debtor("X" w/2 (CORP OR CORPORATION))`), so `--debtor-segment` builds none and uses the name without its legal-form suffix.
 - **Help-text caveat:** "Enter terms in at least one field on the form in addition to the Additional Terms field." The Terms tab shows no form fields, so whether an Additional-Terms-only search is accepted is the first thing the live test answers.
 - **Strict Search** (and phonetics/nicknames) is disabled in this mode (`setBoolean`).
-- **Results layout:** unknown. `jnl-lookup.ts --debtor-segment` reuses the form-mode `Results.aspx` parser; check the first run with `--dump`.
+- **Results layout:** the same `Results.aspx` layout as form mode; the parser read it correctly. The Terms line echoes the query, e.g. `Terms:  terms(debtor("SPY"))`.
+- **Live test, 2026-10-09, 2 searches:** `debtor("ARISTOCRAT GROUP")` returned **0** results, where the name search returned 1,460. `debtor("SPY")` returned **1,448**, where the name search returned 777. Of the 50 records read, 3 (6%) were the firm; the rest were SPY LIFESTYLE LLC, SPY PHONE LABS LLC, 473 NORTHERN SPY LLC and the like. The Debtor segment matches substrings as loosely as the form's name field and does not use the quotes as an exact phrase. **Do not use `--debtor-segment` to cut name noise.** Use FEIN-only search, then filter the name-search records on the debtor name. Evidence: nevada `scratch/jnl_otc/FINAL_STATUS.md` and `debtor_test_dump/`.
 
 - **FEIN** (`FeinRecords.aspx`): company name, FEIN, address. Corporation Filings also accepts an FEIN.
 - **Locate a Business (Nationwide)**: company name, TIN, LexID, address, phone, person name.
