@@ -72,6 +72,14 @@ Script check 2026-10-09 (`corp-lookup.ts --full`): E0232352011-8 → PERMANENTLY
 - Measured: company "Troika Media Group" (no strict match) → 244 records. Each row: debtor and address, filing date, amount, certificate number, type (STATE TAX WARRANT, STATE TAX LIEN, CIVIL JUDGMENT, CIVIL NEW FILING/DISMISSAL), filing number and office, release filings where present, creditor (e.g. STATE OF NEW YORK $812,802 warrant 2/3/2022 with release; PULSEPOINT INC civil judgment $20,636 12/15/2020).
 - Results also list related individuals (officers) with LexID. Use Strict Search and restrict to the company debtor.
 
+### Live check of `scripts/jnl-lookup.ts` (2026-10-09, 2 searches, paced)
+
+- **Form:** `#MainContent_Company_CompanyName`, `#MainContent_Company_Fein`, `#MainContent_StrictMatch` (checkbox), `#MainContent_FilingNumber`, `#MainContent_CertificateNumber`, `#MainContent_Address_*`, submit `#MainContent_formSubmit_searchButton`. **`#MainContent_FilingJurisdiction_stateList` was pre-set to NV** on a fresh load (a stale-form trap too); index 0 is "All Available States". The script clears every field and select before each search.
+- **Results list** (`Results.aspx`): header `1 - 10 of 244`, 10 records per page, paged by a Next control (the script follows it only until `--max-records`). Rows start ` N.\t`; header `No. Debtor Address Filing Creditor`. A record is: `debtor \t address lines + COUNTY`; `\tFiling Date:`, `Amount:`, `Certificate Number:` (when present); then one block per sub-filing, each an all-caps type line + `Filing Number:` / `Filing Date:` / `Filing Office:`; then `\t<creditor>`; then optional related debtors (`\tNAME \t address`, or `LexID(sm):` individuals). The original filing and its release sit side by side (`STATE TAX WARRANT` + `STATE TAX WARRANT RELEASE`, `CIVIL JUDGMENT` + `CIVIL JUDGMENT RELEASE`, `CIVIL NEW FILING` + `CIVIL DISMISSAL`), in either order; the filing date of the release is the release date. Old rows (1991 `JUDGMENTS DOCKET`) have no Filing Number. Some rows have no Amount.
+- **Troika Media Group, strict on:** 244 records, the same count as the earlier non-strict measurement (244). Strict did not narrow it. Debtors in the first 50 (by date, newest first): TROIKA INC 13, TROIKA INTERNATIONAL INC 8, TROIKA MEDIA GROUP INC 4, TROIKA LLC 4, TROIKA PRODUCTIONS INC 2, TROIKA MEDIA GROUP 1, TROIKA MEDIA LLC 1, and 8 individuals (LexID rows) where TROIKA is the *creditor* (Greenville SC magistrate civil filings). Types in those 50: STATE TAX WARRANT 14, STATE TAX LIEN 10, COUNTY TAX LIEN 8, CIVIL NEW FILING 7, CIVIL JUDGMENT 5, JUDGMENTS DOCKET 2, small claims 1. Only ~6 of the 50 are the Troika Media Group entity: **filter on the debtor name after the fact**; the output keeps `debtor` for that. Whether the checkbox reached the server is not shown: the Terms line (`company(Troika Media Group) state(ALL) filing jurisdiction(ALL)`) does not echo it. Search by FEIN (`query_fein`) to narrow reliably.
+- **Real Brands, Inc.** (Nevada C12141-1992, REVOKED): 6 records, all Broward County FL: state tax liens (2014, 2017), civil judgments (2015 $70,610; 2017 $33,000, released), a civil new filing. A revoked Nevada shell's liens are in its operating state, not Nevada.
+- Pacing for result pages: each Next click waits the same 20-45 s as a search, so 50 records cost five paced requests.
+
 ## Other sources
 
 - **UCC Filings** (`Ucc.aspx`): company/person name, address, filing number. Segments: Assignee, Debtors, Filing Date, Filing Jurisdiction, Filing Number, Filing Status, Secured Party (+Addr).
@@ -87,4 +95,4 @@ Script check 2026-10-09 (`corp-lookup.ts --full`): E0232352011-8 → PERMANENTLY
 ## Limits
 
 - One search at a time; no bulk export.
-- Keep scripted use human-paced (≥ 20 s between searches) and small — validation samples, not dataset construction. `scripts/corp-lookup.ts` enforces a 20 s floor and a per-run cap.
+- Keep scripted use human-paced (≥ 20 s between searches) and small — validation samples, not dataset construction. `scripts/corp-lookup.ts` and `scripts/jnl-lookup.ts` enforce a 20 s floor and a per-run cap.
