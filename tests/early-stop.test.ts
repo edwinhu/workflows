@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
 import { useTmp } from './helpers/tmp.ts'
-import { DEFAULT_THRESHOLD, INSTRUCTIONS, judgeContext, afkHold, afkHoldGoal, judgeState, latestUserTurn, noWakeUnderMandate, typedByHuman } from '../hooks/early-stop.ts'
+import { DEFAULT_THRESHOLD, INSTRUCTIONS, judgeContext, mandateCeilingMs, NO_WAKE_REASON, afkHold, afkHoldGoal, judgeState, latestUserTurn, noWakeUnderMandate, typedByHuman } from '../hooks/early-stop.ts'
 
 const mkTmp = useTmp()
 
@@ -601,6 +601,7 @@ const toolResult = (ts: string, text: string) =>
   entry({ type: 'user', timestamp: ts, toolUseResult: { id: 'x' }, message: { role: 'user', content: [{ type: 'tool_result', content: text }] } })
 
 const MANDATE = "I'm gonna go to bed. Just do whatever you think is best, don't ask me questions."
+const NY = 'America/New_York'
 
 test('mandate selection skips ticks, plugin wakes, task notifications and relays: the typed standing message wins', () => {
   const t = [
@@ -618,21 +619,30 @@ test('mandate selection skips ticks, plugin wakes, task notifications and relays
   expect(c.hoursSinceTyped).toBeCloseTo(5, 1)
 })
 
-test('a later typed message that is not a mandate is shown beside the older mandate', () => {
+test('a later typed message ends the older mandate: the user is back, and it shows as the latest typed message', () => {
   const t = [
     human('u1', MANDATE, '2026-10-07T01:00:00.000Z'),
     human('u2', 'why is the figure jagged', '2026-10-07T09:00:00.000Z'),
     wake('u3', 'The workflows plugin sent a message:\nrun done', '2026-10-07T09:30:00.000Z'),
   ].join('\n')
-  const c = judgeContext(t)
-  expect(c.standing).toBe(MANDATE)
+  const c = judgeContext(t, null, NY)
+  expect(c.standing).toBeNull()
   expect(c.latestTyped).toBe('why is the figure jagged')
   const s = judgeState('The workflows plugin sent a message:\nrun done', 'Nothing left.', c)
-  expect(s).toContain("STANDING MANDATE")
-  expect(s).toContain(MANDATE)
+  expect(s).not.toContain('STANDING MANDATE')
   expect(s).toContain('why is the figure jagged')
-  expect(s.indexOf('STANDING MANDATE')).toBeLessThan(s.indexOf('NEWEST REQUEST'))
+  expect(s.indexOf('LATEST TYPED MESSAGE')).toBeLessThan(s.indexOf('NEWEST REQUEST'))
   expect(s.indexOf('NEWEST REQUEST')).toBeLessThan(s.indexOf("FINAL MESSAGE"))
+})
+
+test('a later typed message that is itself a mandate keeps one in force', () => {
+  const again = 'going to bed again, work autonomously'
+  const t = [
+    human('u1', MANDATE, '2026-10-07T01:00:00.000Z'),
+    human('u2', again, '2026-10-07T02:00:00.000Z'),
+    wake('u3', 'The workflows plugin sent a message:\nrun done', '2026-10-07T03:00:00.000Z'),
+  ].join('\n')
+  expect(judgeContext(t, null, NY).standing).toBe(again)
 })
 
 test('no standing instruction anywhere: no mandate section, the latest typed message still shows', () => {
@@ -978,3 +988,81 @@ test('(d) after the borrowed hold releases, the promoted afk hold makes this hoo
   expect(r.out).toContain('write the open questions into the morning report')
   expect(r.out).not.toContain('say what blocks and use AskUserQuestion')
 }, 60000)
+
+// ---- a typed mandate lapses: the user typed again, or its afk ceiling passed (23a5bbb6, 2026-10-08) ----
+
+/** The 23a5bbb6 shape: signed off 2026-10-06 23:30 EDT, then two days of interactive typing, no heartbeat. */
+const STALE_MANDATE = "ok i'm going to bed work overnight autonomously subject to a $50 gemini spend cap"
+
+function staleSession(lines: string[]) {
+  const dir = mkTmp('earlystop-stale-')
+  const path = join(dir, 'transcript.jsonl')
+  writeFileSync(path, lines.join('\n') + '\n')
+  return { dir, transcript: path, env: { ...childEnv(dir, DEAD), TZ: NY } }
+}
+
+test('regression 23a5bbb6: a mandate typed 2026-10-06 23:30 with typed messages on 10-07 and 10-08 is not live -> ALLOW', () => {
+  const lines = [
+    human('u1', STALE_MANDATE, '2026-10-07T03:30:00.000Z'),
+    wake('u2', 'The workflows plugin sent a message:\nfarm run x finished', '2026-10-07T06:00:00.000Z'),
+    human('u3', "let's do a pre-post 2008 binscatter with a linear regression line (mean)", '2026-10-07T18:05:00.000Z'),
+    human('u4', 'now the same figure by size tercile', '2026-10-08T14:00:00.000Z'),
+    wake('u5', 'The workflows plugin sent a message:\nfarm run y finished', '2026-10-08T15:00:00.000Z'),
+  ]
+  expect(judgeContext(lines.join('\n'), null, NY).standing).toBeNull()
+  const { dir, transcript, env } = staleSession(lines)
+  const r = runHook(env, stopPayload('stale-regress', transcript, 'All done, nothing is running.'))
+  expect(r.out).toBe('')
+  const log = readFileSync(join(dir, 'early-stop.log'), 'utf8')
+  expect(log).not.toContain(LEG_LOG)
+  expect(log).toContain('judge unavailable')
+}, 30000)
+
+test('twin: a mandate typed 30 minutes ago, nothing typed since, no heartbeat -> still BLOCKS', () => {
+  const now = Date.now()
+  const iso = (ms: number) => new Date(ms).toISOString()
+  const { dir, transcript, env } = staleSession([
+    human('u1', STALE_MANDATE, iso(now - 30 * 60_000)),
+    wake('u2', 'The workflows plugin sent a message:\nfarm run x finished', iso(now)),
+  ])
+  const r = runHook(env, stopPayload('stale-twin', transcript, 'All done, nothing is running.'))
+  expect(r.out).toContain('"decision":"block"')
+  expect(JSON.parse(r.out).reason).toBe(NO_WAKE_REASON)
+  expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).toContain(LEG_LOG)
+}, 30000)
+
+test('ceiling: a mandate with nothing typed since, evaluated after the next 09:00 -> ALLOW; just before it, live', () => {
+  const at = (end: string) => [
+    human('u1', STALE_MANDATE, '2026-10-07T03:30:00.000Z'),
+    wake('u2', 'The workflows plugin sent a message:\nfarm run x finished', end),
+  ]
+  expect(judgeContext(at('2026-10-07T12:59:00.000Z').join('\n'), null, NY).standing).toBe(STALE_MANDATE)
+  expect(judgeContext(at('2026-10-07T13:00:00.000Z').join('\n'), null, NY).standing).toBeNull()
+  const { dir, transcript, env } = staleSession(at('2026-10-07T13:30:00.000Z'))
+  const r = runHook(env, stopPayload('stale-ceiling', transcript, 'All done, nothing is running.'))
+  expect(r.out).toBe('')
+  expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).not.toContain(LEG_LOG)
+}, 30000)
+
+test('an armed afk hold still stands in when the typed mandate has lapsed', () => {
+  const t = [
+    human('u1', STALE_MANDATE, '2026-10-07T03:30:00.000Z'),
+    human('u2', 'thanks', '2026-10-07T12:00:00.000Z'),
+  ].join('\n')
+  expect(judgeContext(t, 'Afk mandate: ship it.', NY).standing).toBe('Afk mandate: ship it.')
+})
+
+test('mandateCeilingMs agrees with arm.sh minute for minute, across the 05:00, 09:00 and 18:00 edges', () => {
+  for (const hhmm of ['23:30', '00:10', '04:59', '05:30', '08:30', '08:59', '09:00', '12:00', '17:45', '18:00', '21:15']) {
+    const dir = mkTmp('earlystop-arm-')
+    const sid = `arm-${hhmm.replace(':', '')}`
+    const p = Bun.spawnSync(['bash', ARM_SH, sid, 'x'], {
+      env: { ...childEnv(dir), CLAUDE_CODE_SESSION_ID: sid, AFK_NOW: hhmm, AFK_STRICT: '1' }, stdout: 'pipe', stderr: 'pipe', timeout: 60_000,
+    })
+    expect(p.exitCode).toBe(0)
+    const armed = JSON.parse(readFileSync(join(dir, `work-hold-${sid}.json`), 'utf8')).ceilingMinutes
+    const [h, m] = hhmm.split(':').map(Number)
+    const typed = Date.UTC(2026, 9, 7, h + 4, m) // EDT is UTC-4 on 2026-10-07
+    expect([hhmm, (mandateCeilingMs(typed, NY) - typed) / 60_000]).toEqual([hhmm, armed])
+  }
+}, 120000)

@@ -168,8 +168,26 @@ const isQuestion = (t: string): boolean => {
   return s.length < 200 && (s.endsWith('?') || INTERROGATIVE.test(s))
 }
 
+/**
+ * When a typed mandate lapses: the ceiling `skills/afk/scripts/arm.sh` gives an afk hold armed at the
+ * same local minute — 18:00 when typed in [09:00, 18:00), else the next 09:00, never under 60 minutes
+ * after 05:00. arm.sh is bash, so the rule is mirrored here and pinned to it by tests/early-stop.test.ts.
+ */
+export function mandateCeilingMs(typedAtMs: number, timeZone?: string): number {
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
+    .formatToParts(new Date(typedAtMs))
+  const part = (t: string) => Number(parts.find((p) => p.type === t)?.value)
+  const cur = part('hour') * 60 + part('minute')
+  let ceiling = cur >= 540 && cur < 1080 ? 1080 - cur : (540 - cur + 1440) % 1440 || 1440
+  if (cur >= 300 && ceiling < 60) ceiling = 60
+  return typedAtMs + ceiling * 60_000
+}
+
 export interface JudgeContext {
-  /** The newest typed message that carries a standing instruction, if any. */
+  /**
+   * The newest typed message that carries a standing instruction, if it is still live: no typed message
+   * after it (the user came back) and the end of the transcript before `mandateCeilingMs`.
+   */
   standing: string | null
   /** The newest typed message at all, when it is a different message. */
   latestTyped: string | null
@@ -189,11 +207,14 @@ export interface JudgeContext {
  * the transcript, newest entries scanned for the typed messages, every entry for the cron ledger.
  * `holdGoal` is the goal of this session's armed `/afk` hold, see `afkHoldGoal`.
  */
-export function judgeContext(jsonl: string, holdGoal?: string | null): JudgeContext {
+export function judgeContext(jsonl: string, holdGoal?: string | null, timeZone?: string): JudgeContext {
   const lines = jsonl.split('\n')
   let standing: string | null = null
+  let standingAt = ''
   let latest: string | null = null
   let latestAt = ''
+  let latestIdx = -1
+  let standingIdx = -1
   let lastAt = ''
   for (let i = lines.length - 1; i >= 0; i--) {
     const line = lines[i]
@@ -213,11 +234,25 @@ export function judgeContext(jsonl: string, holdGoal?: string | null): JudgeCont
     if (latest === null) {
       latest = text
       latestAt = typeof e.timestamp === 'string' ? e.timestamp : ''
+      latestIdx = i
     }
     if (STANDING.test(text) && !isQuestion(text)) {
       standing = text
+      standingAt = typeof e.timestamp === 'string' ? e.timestamp : ''
+      standingIdx = i
       break
     }
+  }
+  // A typed mandate is live only until the user types again or its ceiling passes. An unreadable
+  // timestamp cannot be placed before the ceiling, so it fails open like everything else here.
+  if (standing !== null) {
+    const typedMs = Date.parse(standingAt)
+    const endMs = Date.parse(lastAt)
+    if (
+      latestIdx !== standingIdx ||
+      !Number.isFinite(typedMs) || !Number.isFinite(endMs) ||
+      endMs >= mandateCeilingMs(typedMs, timeZone)
+    ) standing = null
   }
   const created = new Set<string>()
   const cancelled = new Set<string>()
