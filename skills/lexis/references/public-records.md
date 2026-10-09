@@ -120,3 +120,4 @@ Read from `JnL.aspx` by DOM inspection, no search submitted. Nothing below about
 
 - One search at a time; no bulk export.
 - Keep scripted use human-paced (≥ 20 s between searches) and small — validation samples, not dataset construction. `scripts/corp-lookup.ts` and `scripts/jnl-lookup.ts` enforce a 20 s floor and a per-run cap.
+- J&L state leak: Lexis keeps Terms-and-Connectors mode and its textarea server-side, so a form/FEIN search after a `--debtor-segment` run silently re-ran the old Boolean query (FEIN 826008492 returned the debtor("SPY") list). `jnl-lookup.ts` now clicks `#FormSearchTab`, clears the terms textarea, reads back `#BooleanMode`/`#FormRadio`/textarea and stops with `mismatch:` before submit, and also stops if the results `Terms:` line contains `terms(`.

@@ -148,13 +148,20 @@ const fillAndSubmitDebtor = (query: string) => `(() => {
   if (ta.value !== ${JSON.stringify(query)}) return 'mismatch:' + ta.value
   go.click(); return 'ok' })()`
 
+// Form mode: the server keeps Terms-and-Connectors mode and its textarea between searches, so a form search after a
+// --debtor-segment run silently re-runs the old Boolean query. Switch to the Form tab, clear the terms state, read it back, refuse on mismatch.
 const fillAndSubmit = (company: string, fein: string) => `(() => {
   const c = document.querySelector('#MainContent_Company_CompanyName'), f = document.querySelector('#MainContent_Company_Fein'), s = document.querySelector('#MainContent_StrictMatch')
-  if (!c || !f || !s) return 'noform:' + document.title
+  const tab = document.querySelector('#FormSearchTab'), fr = document.querySelector('#FormRadio'), bm = document.querySelector('#BooleanMode'), ta = document.querySelector('#AdditionalTermsContent_AdditionalTerms_additionalTermsTextBox')
+  if (!c || !f || !s || !tab || !fr || !bm || !ta) return 'noform:' + document.title
+  tab.click(); fr.checked = true; bm.checked = false
+  ta.value = ''
+  document.querySelectorAll('#restrictByFrom,#restrictByTo,#segmentInput').forEach(e => { e.value = '' })
   document.querySelectorAll('input[type=text],input:not([type]),input[type=search]').forEach(e => { e.value = '' })
   document.querySelectorAll('input[type=checkbox]').forEach(e => { e.checked = false })
   document.querySelectorAll('select').forEach(e => { e.selectedIndex = 0 })
   c.value = ${JSON.stringify(company)}; f.value = ${JSON.stringify(fein)}; s.checked = ${strict}
+  if (bm.checked || !fr.checked || ta.value !== '') return 'mismatch: BooleanMode=' + bm.checked + ' FormRadio=' + fr.checked + ' terms=' + JSON.stringify(ta.value)
   document.querySelector('#MainContent_formSubmit_searchButton').click(); return 'ok' })()`
 
 const readPage = `(() => { const t = document.body.innerText
@@ -181,8 +188,10 @@ for (const r of body) {
   const b0 = await evaluate(blocked)
   if (b0) { console.error(`stopping: ${b0}; resolve in the browser and re-run`); break }
   const ok = await evaluate(debtorMode ? fillAndSubmitDebtor(company) : fillAndSubmit(qCompany, fein))
+  if (ok.startsWith('mismatch:')) { console.error(`stopping: ${ok}`); break }
   if (ok !== 'ok') { console.error(`stopping: search form not available (${ok}); sign in to Lexis and re-run`); break }
   let pg = await waitFor(readPage)
+  if (!debtorMode && /Terms:[^\n]*terms\(/i.test(pg?.text ?? '')) { console.error(`stopping: mismatch: form search returned a Boolean results page (${(pg.text.match(/Terms:[^\n]*/) ?? [''])[0]})`); break }
   const b1 = await evaluate(blocked)
   if (b1 && !pg?.ready) { console.error(`stopping: ${b1}; resolve in the browser and re-run`); break }
   const kept: Rec[] = []; let total: number | null = null, pageNo = 1
