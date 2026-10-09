@@ -1,9 +1,12 @@
 // Human-paced Lexis Public Records Judgments & Liens lookup by company and/or FEIN.
-// usage: bun jnl-lookup.ts <in.csv> <out.csv> [--max-records N] [--no-strict] [--fein-only] [--limit N] [--min-delay S] [--max-delay S] [--dump DIR]
+// usage: bun jnl-lookup.ts <in.csv> <out.csv> [--max-records N] [--no-strict] [--fein-only | --debtor-segment] [--dry-run] [--limit N] [--min-delay S] [--max-delay S] [--dump DIR]
 //   in.csv   columns `company[,fein]`; a row with an empty company and a fein runs a FEIN-only search (company field left blank)
 //   out.csv  appended, resumable: queries already present (company+fein) are skipped; one row per returned record
 //   --max-records N  records kept per query (default 50, max 500); result pages are followed only until N
 //   --fein-only      ignore the company column wherever a fein is present (name+FEIN does not narrow in Lexis); rows without a fein are skipped
+//   --debtor-segment Terms-and-Connectors search on the Debtor segment only: debtor("NAME WITHOUT LEGAL-FORM SUFFIX"), built through the page's own Add button; the fein column is ignored.
+//                    Same output schema; query_company holds the query string (so rows never collide with form-mode rows), strict is `n/a`. Use a separate out.csv. NOT yet live-tested.
+//   --dry-run        print the exact query per input row and exit; no browser, no out.csv needed
 //   --no-strict      leave Strict Search off (default: on, as the form checkbox)
 //   --dump DIR       also save each page's raw text (debugging the parser)
 // Drives the signed-in Lexis tab on CDP 127.0.0.1:9222 (open r3.lexis.com/laprma/JnL.aspx first).
@@ -14,7 +17,7 @@ import { readFileSync, existsSync, appendFileSync, writeFileSync, mkdirSync } fr
 const MIN_FLOOR_S = 20, DEFAULT_MAX_S = 45, DEFAULT_CAP = 100, HARD_CAP = 300, DEFAULT_RECORDS = 50, MAX_RECORDS = 500
 const args = process.argv.slice(2)
 const flag = (n: string) => { const i = args.indexOf(n); if (i < 0) return undefined; const v = args[i + 1]; args.splice(i, v === undefined || v.startsWith('--') ? 1 : 2); return v ?? '' }
-const usage = 'usage: bun jnl-lookup.ts <in.csv> <out.csv> [--max-records N] [--no-strict] [--fein-only] [--limit N] [--min-delay S] [--max-delay S] [--dump DIR]'
+const usage = 'usage: bun jnl-lookup.ts <in.csv> <out.csv> [--max-records N] [--no-strict] [--fein-only | --debtor-segment] [--dry-run] [--limit N] [--min-delay S] [--max-delay S] [--dump DIR]'
 if (args.includes('--help') || args.includes('-h')) { console.log(usage); process.exit(0) }
 const strict = flag('--no-strict') === undefined
 const maxRecords = Number(flag('--max-records') ?? DEFAULT_RECORDS)
@@ -24,9 +27,14 @@ const maxS = Number(flag('--max-delay') ?? Math.max(DEFAULT_MAX_S, minS))
 const dumpDir = flag('--dump')
 const feinOnly = args.includes('--fein-only')
 if (feinOnly) args.splice(args.indexOf('--fein-only'), 1)
+const debtorMode = args.includes('--debtor-segment')
+if (debtorMode) args.splice(args.indexOf('--debtor-segment'), 1)
+const dryRun = args.includes('--dry-run')
+if (dryRun) args.splice(args.indexOf('--dry-run'), 1)
 const [inPath, outPath] = args
 const die = (m: string): never => { console.error(m); process.exit(2) }
-if (!inPath || !outPath) die(usage)
+if (!inPath || (!outPath && !dryRun)) die(usage)
+if (debtorMode && feinOnly) die('refusing: --debtor-segment and --fein-only are different searches')
 if (!(minS >= MIN_FLOOR_S)) die(`refusing: --min-delay ${minS} is below the ${MIN_FLOOR_S} s floor`)
 if (!(maxS >= minS)) die('refusing: --max-delay is below --min-delay')
 if (!(limit >= 1) || limit > HARD_CAP) die(`refusing: --limit ${limit} outside 1..${HARD_CAP}`)
@@ -42,6 +50,15 @@ const parseCsv = (text: string) => text.replace(/^﻿/, '').split(/\r?\n/).filte
   out.push(cur); return out
 })
 const csv = (s: string) => /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s
+
+// Debtor-segment query, exactly what the page's Add button builds for Debtor + input: value.replace('()', '(' + input + ')').
+// Legal-form suffix is dropped (trailing, repeatable): the connector/OR-group syntax (`w/N`, `or`) is listed on the page but its
+// grouping inside a segment is unconfirmed, so no suffix OR group is built.
+const SUFFIX = /[\s,]+(?:INC|INCORPORATED|CORP|CORPORATION|CO|COMPANY|LTD|LIMITED|LLC|L\.L\.C|LP|L\.P|LLP|PLC|NV|N\.V|SA|AG)\.?$/i
+const stripSuffix = (name: string) => { let n = name.replace(/["]/g, ' ').replace(/\s+/g, ' ').trim(), prev = ''
+  while (n !== prev) { prev = n; const m = n.replace(/[.,\s]+$/, '').replace(SUFFIX, ''); if (m.trim()) n = m.trim() }
+  return n.replace(/[.,\s]+$/, '') }
+const debtorQuery = (company: string) => `debtor("${stripSuffix(company)}")`
 
 // ---- results parsing (pure; exercised offline with --parse-file) ----
 type Rec = { rank: number; debtor: string; filing_date: string; amount: string; type: string; filing_number: string; filing_office: string; creditor: string; released: string; release_date: string }
@@ -85,6 +102,12 @@ const [head, ...body] = parseCsv(readFileSync(inPath, 'utf8'))
 const hl = head.map(h => h.trim().toLowerCase()), ci = hl.indexOf('company'), fi = hl.indexOf('fein')
 if (ci < 0) die('input needs a header column: company[,fein]')
 if (feinOnly && fi < 0) die('refusing: --fein-only needs a fein column in the input')
+if (dryRun) {
+  for (const r of body) { const company = (r[ci] ?? '').trim(), fein = (fi >= 0 ? r[fi] ?? '' : '').trim()
+    if (debtorMode) { if (company) console.log(`${company}\t${debtorQuery(company)}`) }
+    else if ((company || fein) && !(feinOnly && !fein)) console.log(`${company}\t${fein}\tform: company=${JSON.stringify(feinOnly || !company ? '' : company)} fein=${JSON.stringify(fein)} strict=${strict}`) }
+  process.exit(0)
+}
 const cols = ['query_company', 'query_fein', 'strict', 'n_results', 'rank', 'debtor', 'filing_date', 'amount', 'type', 'filing_number', 'filing_office', 'creditor', 'released', 'release_date', 'checked_at']
 const key = (c: string, f: string) => `${c}|${f}`
 const done = new Set<string>()
@@ -112,6 +135,19 @@ const pace = () => sleep((minS + Math.random() * (maxS - minS)) * 1000)
 const blocked = `(() => { const t = document.title + ' ' + document.body.innerText.slice(0, 600); if (/captcha|verify you are human|unusual activity/i.test(t) || document.querySelector('iframe[src*="recaptcha"],iframe[src*="captcha"]')) return 'captcha: ' + document.title; if (/sign in|session has expired|access denied/i.test(t)) return 'sign-in: ' + document.title; return '' })()`
 
 // Clears every field first (the form keeps the previous search; jurisdiction defaults to a stale state), then sets company/FEIN/strict.
+// Debtor mode: select Terms and Connectors (the page's own tab sets the BooleanMode radio), build the query with the Add button, verify it, submit.
+const fillAndSubmitDebtor = (query: string) => `(() => {
+  const tab = document.querySelector('#TermsTab'), ta = document.querySelector('#AdditionalTermsContent_AdditionalTerms_additionalTermsTextBox'), dd = document.querySelector('#AdditionalTermsContent_AdditionalTerms_segmentsDropDown'), inp = document.querySelector('#segmentInput'), add = document.querySelector('#segmentAddButton'), go = document.querySelector('#AdditionalTermsContent_formSubmitTerms_searchButton')
+  if (!tab || !ta || !dd || !inp || !add || !go) return 'noform:' + document.title
+  document.querySelectorAll('input[type=text],input:not([type]),input[type=search],textarea').forEach(e => { e.value = '' })
+  document.querySelectorAll('input[type=checkbox]').forEach(e => { e.checked = false })
+  document.querySelectorAll('select').forEach(e => { e.selectedIndex = 0 })
+  tab.click()
+  if (!document.querySelector('#BooleanMode').checked) return 'noboolean'
+  dd.value = 'debtor()'; inp.value = ${JSON.stringify(query.slice('debtor('.length, -1))}; add.click()
+  if (ta.value !== ${JSON.stringify(query)}) return 'mismatch:' + ta.value
+  go.click(); return 'ok' })()`
+
 const fillAndSubmit = (company: string, fein: string) => `(() => {
   const c = document.querySelector('#MainContent_Company_CompanyName'), f = document.querySelector('#MainContent_Company_Fein'), s = document.querySelector('#MainContent_StrictMatch')
   if (!c || !f || !s) return 'noform:' + document.title
@@ -133,7 +169,9 @@ const waitFor = async (expr: string, prevText = '', timeoutMs = 30000) => {
 
 let count = 0, qn = 0
 for (const r of body) {
-  const company = (r[ci] ?? '').trim(), fein = (fi >= 0 ? r[fi] ?? '' : '').trim()
+  const company0 = (r[ci] ?? '').trim(), fein = debtorMode ? '' : (fi >= 0 ? r[fi] ?? '' : '').trim()
+  if (debtorMode && !company0) continue
+  const company = debtorMode ? debtorQuery(company0) : company0  // debtor mode: the query string is the resume key
   if ((!company && !fein) || (feinOnly && !fein) || done.has(key(company, fein))) continue
   const qCompany = feinOnly || !company ? '' : company  // what goes into the form
   if (count >= limit) { console.log(`cap reached: ${limit} per run`); break }
@@ -142,7 +180,7 @@ for (const r of body) {
   await sleep(4000 + Math.random() * 3000)
   const b0 = await evaluate(blocked)
   if (b0) { console.error(`stopping: ${b0}; resolve in the browser and re-run`); break }
-  const ok = await evaluate(fillAndSubmit(qCompany, fein))
+  const ok = await evaluate(debtorMode ? fillAndSubmitDebtor(company) : fillAndSubmit(qCompany, fein))
   if (ok !== 'ok') { console.error(`stopping: search form not available (${ok}); sign in to Lexis and re-run`); break }
   let pg = await waitFor(readPage)
   const b1 = await evaluate(blocked)
@@ -161,7 +199,7 @@ for (const r of body) {
     if (b2 && !pg?.ready) { console.error(`stopping: ${b2}; resolve in the browser and re-run`); process.exit(1) }
   }
   const n = total ?? kept.length, now = new Date().toISOString()
-  const base = [company, fein, strict ? 'yes' : 'no', String(n)]
+  const base = [company, fein, debtorMode ? 'n/a' : strict ? 'yes' : 'no', String(n)]
   const rows = kept.length ? kept.map(k => [...base, String(k.rank), k.debtor, k.filing_date, k.amount, k.type, k.filing_number, k.filing_office, k.creditor, k.released, k.release_date, now])
     : [[...base, '', '', '', '', '', '', '', '', '', '', now]]
   rows.forEach(row => appendFileSync(outPath, row.map(csv).join(',') + '\n'))

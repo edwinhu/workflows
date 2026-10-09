@@ -94,6 +94,19 @@ Script check 2026-10-09 (`corp-lookup.ts --full`): E0232352011-8 → PERMANENTLY
   - United Rentals (061522496): name 0; FEIN-only 95, same as name+FEIN; 28 of the 40 non-blank debtors contain UNITED RENTALS (70%; 10 rows have a blank parsed debtor).
 - **Use:** FEIN-only is the precise, small query where the FEIN is indexed (and finds former names); it misses firms whose FEIN is not indexed, so run name-only as well and union by `filing_number`. Filter on `debtor` either way.
 
+### Terms and Connectors (Boolean) mode in Judgments & Liens (2026-10-09, form read only — NOT yet live-tested)
+
+Read from `JnL.aspx` by DOM inspection, no search submitted. Nothing below about results is measured.
+
+- **Selecting it:** the visible control is the `Terms and Connectors` tab (`a#TermsTab`); clicking it checks the hidden radio `#BooleanMode` (`name=ctl00$MainContent$searchType`, `value=BooleanMode`; the other is `#FormRadio`, default). In this mode the form fields (company, FEIN, strict) are hidden; only the Additional Terms area is visible.
+- **Fields:** terms textarea `#AdditionalTermsContent_AdditionalTerms_additionalTermsTextBox` (name `ctl00$AdditionalTermsContent$AdditionalTerms$additionalTermsTextBox`); segment dropdown `#AdditionalTermsContent_AdditionalTerms_segmentsDropDown`, segment text `#segmentInput`, `#segmentAddButton`; restrict-by dropdown `#AdditionalTermsContent_AdditionalTerms_restrictByDropDown` (Amount / Filing Date / Release Date / Satisfied Date), `#restrictByFrom`, `#restrictByTo`, `#restrictByAddButton`; submit `#AdditionalTermsContent_formSubmitTerms_searchButton` (the form-mode button `#MainContent_formSubmit_searchButton` is a different control).
+- **Segment values** (option value = text): `address()`, `amount()`, `attorney()`, `certificate-number()`, `creditor()`, `creditor-address()`, `debtor()`, `debtor-address()`, `filing-date(is )`, `filing-number()`, `filing-office()`, `filing-state()`, `irs-serial-number()`, `name()`, `release-date(is )`, `satisfied-date(is )`, `status()`, `type()`.
+- **Syntax, from the page's own Add handler** (`segmentAddButton` click): the segment's `()` becomes `(<input>)`; successive segments are joined with ` AND `. Typing `"ARISTOCRAT GROUP"` (with the quotes) in the segment box and adding Debtor produced `debtor("ARISTOCRAT GROUP")` in the textarea; adding Creditor `X` after it gave `debtor("ARISTOCRAT GROUP") AND creditor(X)`. The handler adds no quotes itself, so the quotes in `debtor("...")` are ours; that quoted form is the standard Lexis phrase delimiter but **the page's help does not say so** (unconfirmed).
+- **Connectors listed on the page:** `and`, `w/N` (within N words), `and not`, `or`, `pre/N` (precedes by N words). Help: connectors work only in the Additional Terms field; `!` and `*` wildcards; precedence OR, then AND, then AND NOT, left to right. The per-connector articles did not render, and nothing confirms grouping inside a segment (`debtor("X" w/2 (CORP OR CORPORATION))`), so `--debtor-segment` builds none and uses the name without its legal-form suffix.
+- **Help-text caveat:** "Enter terms in at least one field on the form in addition to the Additional Terms field." The Terms tab shows no form fields, so whether an Additional-Terms-only search is accepted is the first thing the live test answers.
+- **Strict Search** (and phonetics/nicknames) is disabled in this mode (`setBoolean`).
+- **Results layout:** unknown. `jnl-lookup.ts --debtor-segment` reuses the form-mode `Results.aspx` parser; check the first run with `--dump`.
+
 - **FEIN** (`FeinRecords.aspx`): company name, FEIN, address. Corporation Filings also accepts an FEIN.
 - **Locate a Business (Nationwide)**: company name, TIN, LexID, address, phone, person name.
 
