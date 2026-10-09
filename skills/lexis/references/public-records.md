@@ -52,6 +52,7 @@ Rows are numbered `1.\t` with tab-separated columns. Each record carries `Name T
 - Filing Number, Name, Business Type, **Status and Status Date**, Place Incorporated, Date Incorporated, Date Last Seen
 - Registered Agent type
 - **Annual Report Filings**: each filed date and filing number, plus the next **Due Date** (a missed one shows here)
+  - Dating a default from it (measured 2026-10-09 on 19 Nevada entities revoked or in default in 2023): for Revoked and Permanently Revoked records the Due Date is the missed list, so default starts the next day. For **Default** records the Due Date can be blank or roll forward to a future list (seen: due 06/30/2026 on an entity in default since 2023); use **Status Date** as the default start instead. For an entity **Active again**, the Due Date is its next list, and an earlier default date cannot be recovered from the record. Status Date is the date of the *current* status only: a revoked entity later made permanent shows the permanent-revocation date.
 - Stock Information (authorized shares)
 - **Officers** (name, title, status ACTIVE/INACTIVE, date, address) and Historical Contacts
 - **Filing History** (date, type, ref no., description): amendments with old/new authorized capital, certificates of designation of preferred stock, registered-agent changes/resignations
