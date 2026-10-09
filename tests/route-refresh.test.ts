@@ -69,6 +69,7 @@ async function refresh(args: string[], env: Record<string, string>) {
     // Dummy keys keep the signal sources off `op`; their dead URLs keep them off the network.
     env: { ...base, ROUTE_PROXY_URL: DEAD, ROUTE_PRICES_URL: 'http://127.0.0.1:1/prices',
       ROUTE_RANKINGS_URL: 'http://127.0.0.1:1/rankings', ROUTE_AA_URL: 'http://127.0.0.1:1/aa',
+      ROUTE_SLOP_URL: 'http://127.0.0.1:1/',
       OPENROUTER_API_KEY: 'test-or-key', ARTIFICIAL_ANALYSIS_API_KEY: 'test-aa-key',
       WORK_HOLD_DECISIONS_URL: 'http://127.0.0.1:1/', WORK_HOLD_JUDGE_TOKEN: 'test-token',
       // `bun test` runs in UTC while a bare `bun` child runs in the system zone, so from 20:00 to
