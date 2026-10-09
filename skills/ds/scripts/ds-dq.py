@@ -31,6 +31,7 @@ NOT A HOOK
 
 USAGE
     ds-dq.py --plan .planning/<plan>.md [--project-dir DIR]
+    ds-dq.py --declarations --plan <plan.md | -> [--project-dir DIR]
     ds-dq.py --output data/panel.parquet --grain "firm-year" --keys "gvkey,fyear" \
              --window "datadate: 2005-01-01..2025-12-31"
 """
@@ -499,6 +500,96 @@ def check_output(path: Path, keys_spec: str, window_spec: str) -> dict:
 
 
 # --------------------------------------------------------------------------------------------
+# Declaration gaps (--declarations): the FAILs only a `## Data Outputs` declaration can cure
+# --------------------------------------------------------------------------------------------
+# Run by plan-lint before dispatch over artifacts already on disk. A gap is a FAIL that an
+# annotation exempts and nothing in the data could fix short of dropping the column: DQ1 on one
+# repeated non-null value (`constant:`), DQ2 (`sparse:`), DQ5 (`freetext:`), and COV on data that
+# exists but does not reach both edges (`n/a` for an event list, or the span it is meant to cover).
+# Duplicated keys, empty columns and missing files are data defects and never appear here.
+
+
+def _keys_cell(pk: list[str], event: list[str], ann: dict[str, list[str]]) -> str:
+    parts = [f"pk: {', '.join(pk)}"] if pk else []
+    if event:
+        parts.append(f"event: {', '.join(event)}")
+    for label in ("sparse", "freetext", "constant"):
+        if ann[label]:
+            parts.append(f"{label}: {', '.join(ann[label])}")
+    return "; ".join(parts)
+
+
+def declaration_gaps(path: Path, keys_spec: str, window_spec: str) -> dict:
+    out = {"exists": path.exists(), "gaps": [], "key_columns": keys_spec,
+           "required_window": window_spec, "passes_once_declared": None}
+    if not path.exists():
+        return out
+    try:
+        df = load_frame(path)
+    except Exception:  # noqa: BLE001 - unreadable is a data defect, reported by the real run
+        return out
+    if df.height == 0:
+        return out
+
+    pk, event = parse_keys(keys_spec)
+    ann = parse_annotations(keys_spec)
+    add = {"constant": [], "sparse": [], "freetext": []}
+
+    if check_dq1(df, ann["constant"])["status"] == "FAIL":
+        add["constant"] = [c for c in df.columns if c not in ann["constant"]
+                           and df[c].n_unique() == 1 and df[c].null_count() == 0]
+    if check_dq2(df, ann["sparse"])["status"] == "FAIL":
+        # An all-null column still FAILs DQ1 when declared sparse: a defect, not a gap.
+        add["sparse"] = [c for c in df.columns if c not in ann["sparse"]
+                         and HIGH_NULL_THRESHOLD < df[c].null_count() / df.height < 1]
+    dq5 = check_dq5(df, pk, event, ann["freetext"])
+    if dq5["status"] == "FAIL":
+        add["freetext"] = [part.split("=", 1)[0].strip() for part in dq5["evidence"].split(";")]
+
+    window = window_spec
+    cov = check_cov(df, window_spec)
+    cov_gap = None
+    if cov["status"] == "FAIL" and cov["evidence"].startswith("column="):
+        col = cov["evidence"].split()[0].split("=", 1)[1]
+        cov_gap = {"check": "COV", "column": col, "detail": cov["detail"],
+                   "cure": "Required Window `n/a` (an event list need not reach both edges; state the "
+                           "search bound in Grain), or the span the data is meant to cover"}
+        window = "n/a"
+
+    for label, check in (("constant", "DQ1"), ("sparse", "DQ2"), ("freetext", "DQ5")):
+        for col in add[label]:
+            out["gaps"].append({"check": check, "column": col, "cure": f"{label}: {col}"})
+            ann[label] = ann[label] + [col]
+    if cov_gap:
+        out["gaps"].append(cov_gap)
+    if not out["gaps"]:
+        return out
+
+    out["key_columns"] = _keys_cell(pk, event, ann) if any(add.values()) else keys_spec
+    out["required_window"] = window
+    cured = check_output(path, out["key_columns"], window)
+    out["passes_once_declared"] = not any(
+        isinstance(e, dict) and e.get("status") == "FAIL" for e in cured.values())
+    return out
+
+
+def run_declarations(plan_text: str, root: Path) -> int:
+    try:
+        rows = parse_data_outputs(plan_text)
+    except ValueError as exc:
+        print(json.dumps({"_error": {"status": "FAIL", "detail": str(exc), "reason_source": "runner"}}))
+        return 2
+    outputs = []
+    for row in rows:
+        path = Path(row["path"])
+        resolved = path if path.is_absolute() else root / path
+        outputs.append({"path": row["path"],
+                        **declaration_gaps(resolved, row["key columns"], row["required window"])})
+    print(json.dumps({"outputs": outputs}, indent=2))
+    return 1 if any(o["gaps"] for o in outputs) else 0
+
+
+# --------------------------------------------------------------------------------------------
 # CLI
 # --------------------------------------------------------------------------------------------
 
@@ -519,6 +610,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--grain", default="", help="Declared row grain for --output (recorded, not computed against).")
     parser.add_argument("--keys", default="", help="Key Columns for --output: `a, b` or `pk: a, b; event: c, d`.")
     parser.add_argument("--window", default="n/a", help="Required Window for --output: `n/a` or `[col: ]YYYY-MM-DD..YYYY-MM-DD`.")
+    parser.add_argument("--declarations", action="store_true",
+                        help="With --plan (`-` reads stdin): report only the FAILs a Data Outputs declaration "
+                             "would cure, over artifacts already on disk. Exit 1 if any, 2 if the table is unparseable.")
     return parser
 
 
@@ -529,6 +623,13 @@ def main(argv: list[str] | None = None) -> int:
     if bool(args.plan) == bool(args.output):
         print("ds-dq.py: supply exactly one of --plan or --output", file=sys.stderr)
         return 2
+
+    if args.declarations:
+        if not args.plan:
+            print("ds-dq.py: --declarations needs --plan", file=sys.stderr)
+            return 2
+        text = sys.stdin.read() if args.plan == "-" else Path(args.plan).expanduser().read_text(encoding="utf-8")
+        return run_declarations(text, root)
 
     if args.output:
         rows = [{"path": args.output, "grain": args.grain, "key columns": args.keys, "required window": args.window}]
