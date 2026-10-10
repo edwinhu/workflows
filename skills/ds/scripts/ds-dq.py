@@ -664,6 +664,9 @@ def main(argv: list[str] | None = None) -> int:
         }
 
     print(json.dumps(report, indent=2, sort_keys=False))
+    # check.sh merges stdout into stderr. A report over the 8 KB buffer goes out at once but print()'s
+    # trailing newline stays buffered, so without this flush the count line lands glued to the `}`.
+    sys.stdout.flush()
     # The non-vacuity count line (work/scripts/leg-counts.sh): a plan declaring no output examined none.
     computed = sum(1 for output in report.values() for k, e in output.items()
                    if not k.startswith("_") and isinstance(e, dict) and e.get("status") in ("PASS", "FAIL"))

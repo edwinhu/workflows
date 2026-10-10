@@ -276,6 +276,26 @@ def test_cli_exits_zero_on_a_clean_output(clean: Path):
     assert report["M1"]["status"] == "MODEL-EVALUATED"
 
 
+def test_check_sh_ds_dq_leg_passes_when_every_output_passes(clean: Path, tmp_path: Path):
+    """check.sh sends ds-dq's stdout and stderr to one file. A report over 8 KB went out unbuffered
+    while print()'s trailing newline stayed in the buffer, so the stderr count line landed glued to
+    the closing brace, the leg audit missed it, and an all-PASS run exited 2 (COULD-NOT-CHECK)."""
+    rows = f"| {clean} | firm-year | pk: gvkey | n/a |\n" + "".join(
+        f"| out{i}.parquet | firm-year | pk: gvkey | n/a |\n" for i in range(8))
+    for i in range(8):
+        (tmp_path / f"out{i}.parquet").write_bytes(clean.read_bytes())
+    plan = tmp_path / "plan.md"
+    plan.write_text("# Plan\n\n## Data Outputs\n\n| Path | Grain | Key Columns | Required Window |\n"
+                    "|---|---|---|---|\n" + rows + "\n## Next\n")
+    proc = subprocess.run(
+        ["bash", str(RUNNER.parent / "check.sh"), "--plan", str(plan), "--project-dir", str(tmp_path)],
+        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, check=False,
+    )
+    lines = proc.stdout.splitlines()
+    assert "leg ds-dq exit=0" in lines, proc.stdout[-3000:]
+    assert any(line.startswith("ds-dq: 9 data output(s) examined") for line in lines), proc.stdout[-3000:]
+
+
 def test_a_declared_output_that_does_not_exist_is_a_fail(tmp_path: Path):
     checks = run(tmp_path / "absent.parquet")
     assert checks["DQ1"]["status"] == "FAIL"
