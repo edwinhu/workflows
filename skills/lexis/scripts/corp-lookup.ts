@@ -3,12 +3,14 @@
 //   in.csv   columns `jurisdiction,number` (state name as in the Filing Jurisdiction dropdown)
 //   out.csv  appended, resumable: rows already present (jurisdiction+number) are skipped
 //   --full   also open the Full view: Status Date, Date Incorporated, last annual list filed, missed Due Date,
-//            filing_history (JSON [{date,type,description}]) and last default / revocation / reinstatement dates
-// Drives the signed-in Lexis tab on CDP 127.0.0.1:9222 (open r3.lexis.com/laprma/CorporateFilings.aspx first).
+//            filing_history (JSON [{date,type,description}]), last default / revocation / reinstatement dates and
+//            annual_lists (JSON [{due_date,filed_date}]: one row per Annual Report Filings entry, filed or missed)
+// Drives the signed-in Lexis tab on CDP 127.0.0.1:9222 (open advance.lexis.com/publicrecordshome first; the search form is a
+// cross-origin r3.lexis.com/laprma iframe, and navigating straight to CorporateFilings.aspx gives a Lexis System Error).
 // Limits live here, not just in the docs: delay floor 20 s (default random 20-45 s), cap 100 entities per run (max 300).
 // Stops on a sign-in page or CAPTCHA. Delaware is not covered by Lexis and is refused without a search.
 import { readFileSync, existsSync, appendFileSync } from 'node:fs'
-import { parseFilingHistory, deriveDates } from './corp-history.ts'
+import { parseFilingHistory, deriveDates, parseAnnualLists } from './corp-history.ts'
 
 const MIN_FLOOR_S = 20, DEFAULT_MAX_S = 45, DEFAULT_CAP = 100, HARD_CAP = 300
 const args = process.argv.slice(2)
@@ -35,13 +37,13 @@ const parseCsv = (text: string) => text.replace(/^﻿/, '').split(/\r?\n/).filte
   }
   out.push(cur); return out
 })
-const BLANK = ['', '', '', '', '', '', '', '']
+const BLANK = ['', '', '', '', '', '', '', '', '']
 const csv = (s: string) => /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s
 
 const [head, ...body] = parseCsv(readFileSync(inPath, 'utf8'))
 const ji = head.map(h => h.trim().toLowerCase()).indexOf('jurisdiction'), ni = head.map(h => h.trim().toLowerCase()).indexOf('number')
 if (ji < 0 || ni < 0) die('input needs header columns: jurisdiction,number')
-const cols = ['jurisdiction', 'number', 'found', 'status', 'name', 'n_results', 'checked_at', ...(full ? ['status_date', 'date_incorporated', 'last_annual_list', 'due_date', 'filing_history', 'last_default_date', 'last_revocation_date', 'last_reinstatement_date'] : [])]
+const cols = ['jurisdiction', 'number', 'found', 'status', 'name', 'n_results', 'checked_at', ...(full ? ['status_date', 'date_incorporated', 'last_annual_list', 'due_date', 'filing_history', 'last_default_date', 'last_revocation_date', 'last_reinstatement_date', 'annual_lists'] : [])]
 const key = (j: string, n: string) => `${j}|${n}`
 const done = new Set<string>()
 if (existsSync(outPath)) {
@@ -51,18 +53,29 @@ if (existsSync(outPath)) {
 } else appendFileSync(outPath, cols.join(',') + '\n')
 
 const targets: any[] = await (await fetch('http://127.0.0.1:9222/json/list')).json()
-const lexis = targets.filter(t => t.type === 'page' && t.url.includes('r3.lexis.com/laprma'))
-const page = lexis.find(t => /corporate filings/i.test(t.title)) ?? lexis[0]
-if (!page) die('open a Lexis Public Records tab (r3.lexis.com/laprma/CorporateFilings.aspx) first')
+const page = targets.find(t => t.type === 'page' && t.url.includes('advance.lexis.com/publicrecordshome'))
+if (!page) die('open the Lexis Public Records home page (advance.lexis.com/publicrecordshome) in the signed-in tab first')
 const ws = new WebSocket(page.webSocketDebuggerUrl)
 await new Promise(r => ws.addEventListener('open', r, { once: true }))
 let msgId = 0
+let ctxs: any[] = []
+ws.addEventListener('message', e => { const m = JSON.parse(String(e.data))
+  if (m.method === 'Runtime.executionContextCreated') ctxs.push(m.params.context)
+  if (m.method === 'Runtime.executionContextDestroyed') ctxs = ctxs.filter(c => c.id !== m.params.executionContextId)
+  if (m.method === 'Runtime.executionContextsCleared') ctxs = [] })
 const call = (method: string, params: any = {}) => new Promise<any>((resolve, reject) => {
   const id = ++msgId
   const h = (e: MessageEvent) => { const m = JSON.parse(String(e.data)); if (m.id !== id) return; ws.removeEventListener('message', h); m.error ? reject(new Error(m.error.message)) : resolve(m.result) }
   ws.addEventListener('message', h); ws.send(JSON.stringify({ id, method, params }))
 })
-const evaluate = async (expr: string) => (await call('Runtime.evaluate', { expression: expr, returnByValue: true, awaitPromise: true })).result.value
+await call('Runtime.enable')
+await new Promise(r => setTimeout(r, 800))
+// evaluate inside the r3.lexis.com/laprma iframe (cross-origin to the advance.lexis.com shell)
+const evaluate = async (expr: string) => {
+  const c = ctxs.filter(c => /r3\.lexis\.com/.test(c.origin) && c.auxData?.isDefault !== false).pop()
+  if (!c) return 'noctx'
+  return (await call('Runtime.evaluate', { expression: expr, contextId: c.id, returnByValue: true, awaitPromise: true })).result.value
+}
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 const blocked = `(() => { const t = document.title + ' ' + document.body.innerText.slice(0, 600); if (/captcha|verify you are human|unusual activity/i.test(t) || document.querySelector('iframe[src*="recaptcha"],iframe[src*="captcha"]')) return 'captcha: ' + document.title; if (/sign in|session has expired|access denied/i.test(t)) return 'sign-in: ' + document.title; return '' })()`
 
@@ -104,8 +117,12 @@ for (const r of body) {
     appendFileSync(outPath, [jur, num, found, status, name, String(n), new Date().toISOString(), ...(full ? extra : [])].map(csv).join(',') + '\n')
   if (/^delaware$/i.test(jur)) { row('unsupported_jurisdiction', '', '', 0, BLANK); console.log(`${num}: Delaware is not covered by Lexis`); continue }
 
-  await call('Page.navigate', { url: 'https://r3.lexis.com/laprma/CorporateFilings.aspx' })
-  await sleep(4000 + Math.random() * 3000)
+  // Enter via the home page and click 'Corporation Filings' (direct navigation to CorporateFilings.aspx gives a System Error)
+  await call('Page.navigate', { url: page.url })
+  await sleep(6000 + Math.random() * 2000)
+  const clicked = await evaluate(`(() => { const a = [...document.querySelectorAll('a')].find(a => a.innerText.trim() === 'Corporation Filings'); if (!a) return 'nolink:' + document.title; a.click(); return 'ok' })()`)
+  if (clicked !== 'ok') { console.error(`stopping: Corporation Filings link not found (${clicked}); sign in to Lexis and re-run`); break }
+  await sleep(5000 + Math.random() * 2000)
   const b0 = await evaluate(blocked)
   if (b0) { console.error(`stopping: ${b0}; resolve in the browser and re-run`); break }
   const ok = await evaluate(fillAndSubmit(jur, num))
@@ -121,7 +138,7 @@ for (const r of body) {
     await evaluate(`__doPostBack('ctl00$MainContent$resultsViewLinks$fullListButton','')`)
     const f = await waitFor(readFull)
     const hist = parseFilingHistory(f?.text ?? ''), d = deriveDates(hist)
-    extra = [f?.statusDate ?? '', f?.dateInc ?? '', f?.lastAnnual ?? '', f?.due ?? '', JSON.stringify(hist), d.last_default_date, d.last_revocation_date, d.last_reinstatement_date]
+    extra = [f?.statusDate ?? '', f?.dateInc ?? '', f?.lastAnnual ?? '', f?.due ?? '', JSON.stringify(hist), d.last_default_date, d.last_revocation_date, d.last_reinstatement_date, JSON.stringify(parseAnnualLists(f?.text ?? ''))]
   }
   row(found, res?.hit?.status ?? '', res?.hit?.name ?? '', res?.n ?? 0, extra)
   console.log(`${jur} ${num}: ${found} ${res?.hit?.status ?? ''}${full ? ' ' + extra.join(' | ') : ''}`)

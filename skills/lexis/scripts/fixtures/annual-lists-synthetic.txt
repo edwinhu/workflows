@@ -1,0 +1,54 @@
+EXAMPLE HOLDINGS INC.
+Status:	ACTIVE
+Date Incorporated:	03/12/2010
+
+Annual Report Filings
+Filing 1	
+
+
+
+Filed Date:	01/10/2024
+
+Filing Number:	20240000001-11
+
+Filing 2	
+
+
+
+Filed Date:	03/05/2023
+
+Filing Number:	20230000002-22
+
+Comments:	03/23
+
+Filing 3	
+
+
+
+Due Date:	03/31/2022
+
+Filing 4	
+
+
+
+Due Date:	03/31/2021
+
+Filing 5	
+
+
+
+Filed Date:	04/02/2020
+
+Filing Number:	20200000003-33
+
+Filing 6	
+
+
+
+Filed Date:	03/11/2019
+
+Filing Number:	20190000004-44
+
+Stock Information
+Stock
+Authorized shares	1,000
