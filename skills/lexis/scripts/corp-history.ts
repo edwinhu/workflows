@@ -37,3 +37,24 @@ export function deriveDates(rows: { date: string; type: string }[]) {
     last_reinstatement_date: last(reinst, /reinstat/i),
   }
 }
+
+// Annual Report Filings section of the Full view: blocks headed `Filing N`, each holding either
+// `Filed Date:\tMM/DD/YYYY` (+ `Filing Number:`, optional `Comments:`) or, for a missed list, `Due Date:\tMM/DD/YYYY`.
+// Returns one row per block, newest first as listed; the date that does not apply is ''.
+export type AnnualList = { due_date: string; filed_date: string }
+const AL_END = /^(Stock Information|Important:|Officers?\b|Historical Contacts|Registered Agent|Filing History)/i
+
+export function parseAnnualLists(text: string): AnnualList[] {
+  const m = /^Annual Report Filings\s*$/im.exec(text)
+  if (!m) return []
+  const out: AnnualList[] = []
+  for (const raw of text.slice(m.index).split(/\r?\n/).slice(1)) {
+    const l = raw.trim()
+    if (!l) continue
+    if (AL_END.test(l)) break
+    if (/^Filing \d+$/i.test(l)) { out.push({ due_date: '', filed_date: '' }); continue }
+    const d = /^(Filed|Due) Date:\s*(\d{2}\/\d{2}\/\d{4})$/i.exec(l)
+    if (d && out.length) out[out.length - 1][d[1].toLowerCase() === 'filed' ? 'filed_date' : 'due_date'] = d[2]
+  }
+  return out.filter(r => r.due_date || r.filed_date)
+}

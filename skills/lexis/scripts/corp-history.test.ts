@@ -37,3 +37,23 @@ test('Reinstatement-after-revocation type is not a revocation', () => {
   expect(d.last_revocation_date).toBe('')
   expect(d.last_reinstatement_date).toBe('01/01/2021')
 })
+
+import { parseAnnualLists } from './corp-history.ts'
+const al = readFileSync(new URL('./fixtures/annual-lists-synthetic.txt', import.meta.url), 'utf8')
+
+test('annual lists: filed and missed blocks in page order, section stops at Stock Information', () => {
+  expect(parseAnnualLists(al)).toEqual([
+    { due_date: '', filed_date: '01/10/2024' },
+    { due_date: '', filed_date: '03/05/2023' },
+    { due_date: '03/31/2022', filed_date: '' },
+    { due_date: '03/31/2021', filed_date: '' },
+    { due_date: '', filed_date: '04/02/2020' },
+    { due_date: '', filed_date: '03/11/2019' },
+  ])
+})
+
+test('annual lists: dates after the section ends are ignored; missing section yields []', () => {
+  expect(parseAnnualLists('Annual Report Filings\nFiling 1\t\nFiled Date:\t01/02/2020\nStock Information\nFiling 2\t\nFiled Date:\t01/02/2021')).toHaveLength(1)
+  expect(parseAnnualLists('Status: ACTIVE\nDate Incorporated: 01/01/2000')).toEqual([])
+  expect(parseAnnualLists('Annual Report Filings\nStock Information')).toEqual([])
+})
