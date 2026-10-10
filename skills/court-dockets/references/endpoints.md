@@ -126,6 +126,34 @@ Headers: JSON content-type/accept, `X-Requested-With: XMLHttpRequest`, and
 - `document/{id}/body` returns `{"body":null,"document_format":"PDF"}`: **full text is not served.**
   The text in search snippets is index text, not a retrievable body.
 
+### Facets and the Nevada worked example (measured 2026-10-09)
+
+`bl_docket_list.py --discover` prints these from `results_page.components.facets`. Values go in
+`criteria.facets` as string lists (`"state_court_county_id":["84","85"]`).
+
+| field | meaning | values seen |
+|---|---|---|
+| `content_kind` | content type | `2` = Court Dockets (always set) |
+| `state_kind` | state | `29` = Nevada |
+| `court_id` | court | `138` = Nevada District Court; Del. Chancery = `41` |
+| `state_court_county_id` | county / sub-court | `84` Clark (NV), `85` Washoe (NV), `202` Judgments & Liens (NY) |
+| `potential_class_action` | BL class-action flag | `True` 47 / `False` 144,655 (Nevada scope) |
+| `docket_entry_filing_type` | filing type present on the docket | `brief` `complaint` `motion` `order` `other` |
+| `nature_of_suit` | federal nature-of-suit code | reported on 2026-10-09; not in the Nevada-scope facet list, so check `--discover` for the court you use |
+
+`country_kind`, `federal_state_foreign_sro` and `state_kind` appear as hidden single-value facets.
+Counts inside a facet's own field are not narrowed by that facet: selected Clark/Washoe read 0.
+`docket_entry_filing_type` goes in the top level of `criteria`, as in the search body above, not
+inside `facets`; the script routes it there.
+
+Nevada Clark + Washoe (`state_court_county_id=84,85`; 448,968 Nevada District Court dockets in
+all), four term searches, 3,923 distinct dockets: `NRS Chapters 78-89` 481; `"Securities (NRS 90)"`
+58; `derivatively` 281; `"Business Court"` 3,690. Unquoted: `Securities (NRS 90)` 65, `derivatively`
+281 vs quoted 51, `Business Court` 17,180 (over the 10,000 wall, so year-sliced). Only `NRS
+Chapters 78-89` is quote-insensitive (481 both ways). The Business Court CSV, sliced by year,
+returned 3,693 rows for 3,690 ids: epoch-ms midnight boundaries double-count a few days, so dedupe
+CSV rows on the id in `Document URL`.
+
 **Session caveat.** BL's `accessToken` cookie is **HttpOnly with an ~8-minute TTL**, refreshed by
 the SPA via `gk-api.bloomberglaw.com/auth/v1/tokenRefresh`. A cookie snapshot (e.g. into `crumb`)
 therefore authenticates for minutes, not hours. Opening BL in a new tab lands on a login page. All

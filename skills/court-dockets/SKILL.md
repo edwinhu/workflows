@@ -29,6 +29,7 @@ Do not hand-roll a harvester. These are working, resumable and manifest-writing:
 | `scripts/harvest_complaints.py` | Lex Machina: docket-search → tag-257 complaint → signed PDF |
 | `scripts/da_grab.py` | Docket Alarm: serial, boring, survives hanging documents |
 | `scripts/fetch_opinion_pdfs.py` | opinion/decision PDFs from a plan parquet |
+| `scripts/bl_docket_list.py` | Bloomberg Law: every docket matching facets + term, as a list (no PDFs) |
 
 Copy them into the project and adapt. Rewriting from the reference doc reproduces bugs that took
 hours to find.
@@ -95,6 +96,17 @@ unredacted baseline. Captions, parties, statutory citations, prayer for relief a
 blocks survive; body allegations may be blacked out. Carry a `source` flag and check the
 `not_stated` rate before using them for content coding.
 </EXTREMELY-IMPORTANT>
+
+## Listing Bloomberg dockets by court, county or search term
+
+`scripts/bl_docket_list.py` collects the docket LIST (ids, parties, judge, case type) for any
+facet + term search, sliced past both silent caps and asserted equal to the API's `remote_count`.
+Run `--discover` first to learn the facet codes (Nevada=29, Clark=84, Washoe=85), then
+`--count-only`, then collect; `--csv` adds the 41-column export and asserts its id set matches.
+Flags and examples are in the script header.
+
+**`--term` is sent verbatim, and quoting changes the result set**: `"Business Court"` returns
+3,690 dockets, `Business Court` 17,180. Write the quoted form into the project's methods note.
 
 ## Vendor facts
 

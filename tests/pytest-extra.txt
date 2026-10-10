@@ -17,6 +17,7 @@
 # The failures said so ("`pypdf` is unimportable, so no page text could be extracted") to a suite
 # nothing ran.
 scripts/cite-fidelity/test_common.py
+skills/court-dockets/tests/test_bl_docket_list.py
 skills/pincite/tests/test_apply.py
 skills/pincite/tests/test_gbooks.py
 skills/pincite/tests/test_gbooks_readwise.py
