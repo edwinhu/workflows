@@ -2,11 +2,13 @@
 // usage: bun corp-lookup.ts <in.csv> <out.csv> [--full] [--limit N] [--min-delay S] [--max-delay S]
 //   in.csv   columns `jurisdiction,number` (state name as in the Filing Jurisdiction dropdown)
 //   out.csv  appended, resumable: rows already present (jurisdiction+number) are skipped
-//   --full   also open the Full view: Status Date, Date Incorporated, last annual list filed, missed Due Date
+//   --full   also open the Full view: Status Date, Date Incorporated, last annual list filed, missed Due Date,
+//            filing_history (JSON [{date,type,description}]) and last default / revocation / reinstatement dates
 // Drives the signed-in Lexis tab on CDP 127.0.0.1:9222 (open r3.lexis.com/laprma/CorporateFilings.aspx first).
 // Limits live here, not just in the docs: delay floor 20 s (default random 20-45 s), cap 100 entities per run (max 300).
 // Stops on a sign-in page or CAPTCHA. Delaware is not covered by Lexis and is refused without a search.
 import { readFileSync, existsSync, appendFileSync } from 'node:fs'
+import { parseFilingHistory, deriveDates } from './corp-history.ts'
 
 const MIN_FLOOR_S = 20, DEFAULT_MAX_S = 45, DEFAULT_CAP = 100, HARD_CAP = 300
 const args = process.argv.slice(2)
@@ -33,12 +35,13 @@ const parseCsv = (text: string) => text.replace(/^﻿/, '').split(/\r?\n/).filte
   }
   out.push(cur); return out
 })
+const BLANK = ['', '', '', '', '', '', '', '']
 const csv = (s: string) => /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s
 
 const [head, ...body] = parseCsv(readFileSync(inPath, 'utf8'))
 const ji = head.map(h => h.trim().toLowerCase()).indexOf('jurisdiction'), ni = head.map(h => h.trim().toLowerCase()).indexOf('number')
 if (ji < 0 || ni < 0) die('input needs header columns: jurisdiction,number')
-const cols = ['jurisdiction', 'number', 'found', 'status', 'name', 'n_results', 'checked_at', ...(full ? ['status_date', 'date_incorporated', 'last_annual_list', 'due_date'] : [])]
+const cols = ['jurisdiction', 'number', 'found', 'status', 'name', 'n_results', 'checked_at', ...(full ? ['status_date', 'date_incorporated', 'last_annual_list', 'due_date', 'filing_history', 'last_default_date', 'last_revocation_date', 'last_reinstatement_date'] : [])]
 const key = (j: string, n: string) => `${j}|${n}`
 const done = new Set<string>()
 if (existsSync(outPath)) {
@@ -84,7 +87,7 @@ const readFull = `(() => { const t = document.body.innerText
   const sec = t.split(/Annual Report/i)[1] || ''
   const dates = [...sec.matchAll(/\\b(\\d{2}\\/\\d{2}\\/\\d{4})\\b/g)].map(m => m[1])
   const due = f(/Due Date:?\\s*(\\d{2}\\/\\d{2}\\/\\d{4})/i)
-  return { ready: /Filing History|Annual Report/i.test(t), statusDate: f(/Status Date:?\\s*(\\d{2}\\/\\d{2}\\/\\d{4})/i), dateInc: f(/Date Incorporated:?\\s*(\\d{2}\\/\\d{2}\\/\\d{4})/i), due, lastAnnual: dates.find(d => d !== due) || '' } })()`
+  return { ready: /Filing History|Annual Report/i.test(t), statusDate: f(/Status Date:?\\s*(\\d{2}\\/\\d{2}\\/\\d{4})/i), dateInc: f(/Date Incorporated:?\\s*(\\d{2}\\/\\d{2}\\/\\d{4})/i), due, lastAnnual: dates.find(d => d !== due) || '', text: t } })()`
 
 const waitFor = async (expr: string, timeoutMs = 30000) => {
   const end = Date.now() + timeoutMs
@@ -99,25 +102,26 @@ for (const r of body) {
   if (count >= limit) { console.log(`cap reached: ${limit} per run`); break }
   const row = (found: string, status = '', name = '', n = 0, extra: string[] = []) =>
     appendFileSync(outPath, [jur, num, found, status, name, String(n), new Date().toISOString(), ...(full ? extra : [])].map(csv).join(',') + '\n')
-  if (/^delaware$/i.test(jur)) { row('unsupported_jurisdiction', '', '', 0, ['', '', '', '']); console.log(`${num}: Delaware is not covered by Lexis`); continue }
+  if (/^delaware$/i.test(jur)) { row('unsupported_jurisdiction', '', '', 0, BLANK); console.log(`${num}: Delaware is not covered by Lexis`); continue }
 
   await call('Page.navigate', { url: 'https://r3.lexis.com/laprma/CorporateFilings.aspx' })
   await sleep(4000 + Math.random() * 3000)
   const b0 = await evaluate(blocked)
   if (b0) { console.error(`stopping: ${b0}; resolve in the browser and re-run`); break }
   const ok = await evaluate(fillAndSubmit(jur, num))
-  if (ok === 'nojurisdiction') { row('unsupported_jurisdiction', '', '', 0, ['', '', '', '']); console.log(`${jur}: not in the Filing Jurisdiction dropdown`); continue }
+  if (ok === 'nojurisdiction') { row('unsupported_jurisdiction', '', '', 0, BLANK); console.log(`${jur}: not in the Filing Jurisdiction dropdown`); continue }
   if (ok !== 'ok') { console.error(`stopping: search form not available (${ok}); sign in to Lexis and re-run`); break }
   const res = await waitFor(readResults(num))
   const b1 = await evaluate(blocked)
   if (b1 && !res?.hit) { console.error(`stopping: ${b1}; resolve in the browser and re-run`); break }
   const found = res?.hit ? (res.hit.reg === num ? 'exact' : 'other') : 'none'
-  let extra = ['', '', '', '']
+  let extra = BLANK
   if (full && found === 'exact') {
     await sleep(3000 + Math.random() * 2000)
     await evaluate(`__doPostBack('ctl00$MainContent$resultsViewLinks$fullListButton','')`)
     const f = await waitFor(readFull)
-    extra = [f?.statusDate ?? '', f?.dateInc ?? '', f?.lastAnnual ?? '', f?.due ?? '']
+    const hist = parseFilingHistory(f?.text ?? ''), d = deriveDates(hist)
+    extra = [f?.statusDate ?? '', f?.dateInc ?? '', f?.lastAnnual ?? '', f?.due ?? '', JSON.stringify(hist), d.last_default_date, d.last_revocation_date, d.last_reinstatement_date]
   }
   row(found, res?.hit?.status ?? '', res?.hit?.name ?? '', res?.n ?? 0, extra)
   console.log(`${jur} ${num}: ${found} ${res?.hit?.status ?? ''}${full ? ' ' + extra.join(' | ') : ''}`)
