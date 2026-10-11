@@ -399,6 +399,23 @@ Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint
   orphaned=$(python3 "$PLUGIN_ROOT/skills/farm-out/scripts/bgjobs.py" reap "$row_id" "$log" 2>/dev/null)
   printf '%s' "$orphaned" | jq -e 'type == "array"' >/dev/null 2>&1 || orphaned='[]'
   failure=$(printf '%s' "$orphaned" | jq -r 'if length > 0 then "ended with background job running: " + (map(.cmd) | join("; ")) else "" end')
+  # Output gate: a row whose persona preloads ds-rules (A5 type system, A6 palette) must leave charts
+  # that pass the chart linters. Nothing else runs them on a farmed row (check.sh covers /ds work runs
+  # only), so a child that followed a styling brief over the rules would otherwise ship unchecked.
+  # A read-only persona (ds-reviewer) writes nothing, so it is skipped: an mtime walk would blame it for a sibling row's figures.
+  # chart-gate.py finds what the row touched; exit 1 = findings, 2 = a linter could not run, and an
+  # unrun check is not a pass -- both fail the row, and the findings are the failure text.
+  local chart_gate="" persona="${agent##*:}"
+  if [[ "$persona" =~ ^[A-Za-z0-9_.-]+$ ]] && grep -qs '^  - ds-rules$' "$PLUGIN_ROOT/user-agents/$persona.md" \
+     && grep -qs '^tools:.*\(Write\|Bash\)' "$PLUGIN_ROOT/user-agents/$persona.md"; then
+    local -a gate_args=(--cwd "$CWD" --stamp "$log.stamp" --log "$log")
+    for _e in "${real_expects[@]:-}"; do [ -n "$_e" ] && gate_args+=(--expect "$_e"); done
+    if ! chart_gate=$(python3 "$PLUGIN_ROOT/skills/farm-out/scripts/chart-gate.py" "${gate_args[@]}" 2>&1); then
+      failure="${failure:+$failure; }chart style gate failed (ds-rules A5/A6): $(printf '%s' "$chart_gate" | head -n 40)"
+    else
+      chart_gate=""
+    fi
+  fi
   mapfile -t missing < <(verify "${expects[@]:-}")
   # verify prints one blank line when nothing is missing; drop it.
   [ "${#missing[@]}" -eq 1 ] && [ -z "${missing[0]}" ] && missing=()
@@ -422,7 +439,7 @@ Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint
         --argjson crossProvider "$cross_provider" \
         --argjson orphaned "$orphaned" --arg failure "$failure" \
         --argjson missing "$(printf '%s\n' "${missing[@]:-}" | jq -Rsc 'split("\n") | map(select(length>0))')" \
-    '{label:$label, ok: (($missing|length)==0 and $exit==0 and ($budgetExceeded | not) and ($crossProvider | not) and ($orphaned|length)==0), exit:$exit,
+    '{label:$label, ok: (($missing|length)==0 and $exit==0 and ($budgetExceeded | not) and ($crossProvider | not) and ($orphaned|length)==0 and ($failure|length)==0), exit:$exit,
       toolCalls:$toolCalls, models:$models, missing:$missing, orphaned:$orphaned, result:$result, tokensW:$tokensW, budgetExceeded:$budgetExceeded, crossProvider:$crossProvider}
      + (if ($failure|length) > 0 then {failure:$failure} else {} end)
      + (if $exit != 0 and ($stderr|length) > 0 then {stderr:$stderr} else {} end)')
@@ -442,7 +459,8 @@ Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint
     elif [ "${#missing[@]}" -gt 0 ] || [ "$gone" = true ] || [ -n "$failure" ]; then
       if ! line=$(printf '%s' "$result" | jq -c --argjson m "$meta" --arg ts "$(now_iso)" --argjson gone "$gone" \
           '. as $r | ([if ($r.missing|length) > 0 then "expect-missing" else empty end, if $gone then "gone" else empty end,
-                      if ($r.orphaned|length) > 0 then "background-orphaned" else empty end]) as $c
+                      if ($r.orphaned|length) > 0 then "background-orphaned" else empty end,
+                      if (($r.failure // "") | startswith("chart style gate") or contains("; chart style gate")) then "chart-style" else empty end]) as $c
            | {type: "verdict", rowId: $m.rowId, verdict: "wrong",
               why: ("auto [\($m.kind // "-")/\($m.route.model // ($r.models[0] // "-"))]: "
                     + ([if ($r.missing|length) > 0 then "expect missing: \($r.missing|join(", "))" else empty end,
@@ -466,6 +484,7 @@ if [ -n "$TASKS" ]; then
   RUN_RAND=$(od -An -N4 -tx1 /dev/urandom 2>/dev/null | tr -d ' \n'); RUN_RAND=${RUN_RAND:-$RANDOM}
   # CDPATH empty: a relative --cwd matched through CDPATH makes cd print it, doubling the value.
   CWD_ABS=$(CDPATH='' cd -- "$CWD" && pwd) || CWD_ABS=$CWD
+  lint_refused=0 lint_msgs=''
   for i in $(seq 0 $((n - 1))); do
     p=$(jq -r ".[$i].prompt" "$TASKS")
     [ "$p" != "null" ] || refuse "--tasks $TASKS: task $i has no string \"prompt\""
@@ -492,10 +511,21 @@ if [ -n "$TASKS" ]; then
       *[$'\n\r\t']*|*[$'\001'-$'\010']*)
         refuse "task $i model contains a control character; not allowed in the event stream" ;;
     esac
+    # Styling belongs to the child's rules (ds-rules A5/A6), never the brief: a brief that dictates
+    # fonts, hex colours or an "X-style look" outranks them in the child's context and wins. Linted
+    # here, with the rest of validation, so a refusal spends nothing. Row field "userStyle" (the
+    # user's verbatim words) is the only override. Matcher: scripts/lib/brief-style-lint.ts.
+    command -v bun >/dev/null || refuse "bun not on PATH: the brief style lint needs it"
+    if ! lint_out=$(bun "$PLUGIN_ROOT/scripts/lib/brief-style-lint.ts" --row "$(jq -c ".[$i]" "$TASKS")" 2>&1); then
+      lint_refused=$((lint_refused + 1)); lint_msgs+="farm: task $i ($l) refused by the brief style lint: $lint_out"$'\n'
+    elif [ -n "$lint_out" ]; then
+      printf 'farm: task %s (%s): %s\n' "$i" "$l" "$lint_out" >&2
+    fi
     ROW_L[i]=$l ROW_P[i]=$p ROW_A[i]=$a ROW_M[i]=$m ROW_B[i]=$b
     # Filesystem-safe and unique: run start, our pid, a random word, the row index.
     ROW_ID[i]="${RUN_STAMP}-$$-${RUN_RAND}-${i}"
   done
+  [ "$lint_refused" -eq 0 ] || { printf '%s' "$lint_msgs" >&2; refuse "farm: $lint_refused of $n row(s) refused by the brief style lint; no row was run"; }
 
   # promptSha256/promptLength cover the RAW row prompt, read from the file rather than from $p
   # (command substitution strips trailing newlines). Length counts UTF-16 units, as route.ts's
