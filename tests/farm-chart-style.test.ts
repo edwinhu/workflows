@@ -1,0 +1,156 @@
+import { test, expect } from 'bun:test'
+import { mkdtempSync, writeFileSync, readFileSync, mkdirSync, chmodSync, rmSync, existsSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { spawnSync } from 'node:child_process'
+
+const ROOT = join(import.meta.dir, '..')
+const FARM = join(ROOT, 'skills', 'farm-out', 'scripts', 'farm.sh')
+const LINT = join(ROOT, 'scripts', 'lib', 'brief-style-lint.ts')
+const GATE = join(ROOT, 'skills', 'farm-out', 'scripts', 'chart-gate.py')
+const FIX = join(ROOT, 'tests', 'fixtures', 'ds-chart-typography')
+
+function lint(row: Record<string, unknown>) {
+  const r = spawnSync('bun', [LINT, '--row', JSON.stringify(row)], { encoding: 'utf8', timeout: 30_000 })
+  return { rc: r.status, err: r.stderr }
+}
+
+const DATA_ONLY = 'Chart Nevada movers against matched Delaware controls: the share with a restatement in years 0 to +5, per venue. ' +
+  'Read /data/nevada/data/output/table_restatements.csv. Style is set by the rules in ds-chart-type-system.md and ds-chart-palette-choice.md; ' +
+  'run `python3 constraints/ds-chart-color.py scratch/wsj_final/`. Print the plotted values.'
+
+// ---- the matcher ---------------------------------------------------------------------------
+
+test('lint refuses a hex colour and names it', () => {
+  const r = lint({ agent: 'ds', prompt: 'Plot restatement shares. Nevada bars in #E9B93B, Delaware #7BA05B.' })
+  expect(r.rc).toBe(2)
+  expect(r.err).toContain('"#E9B93B"')
+  expect(r.err).toContain('belongs to the subagent')
+})
+
+test('lint refuses "use a sans-serif font" and a named face', () => {
+  expect(lint({ agent: 'ds', prompt: 'Make a bar chart of the shares. Use a sans-serif font.' }).rc).toBe(2)
+  const r = lint({ agent: 'ds', prompt: 'Make a bar chart; labels in Helvetica or Liberation Sans.' })
+  expect(r.rc).toBe(2)
+  expect(r.err).toContain('"Helvetica"')
+})
+
+test('lint refuses an X-style look directive', () => {
+  expect(lint({ agent: 'ds', prompt: 'Build WSJ-style simple bar charts of the shares.' }).rc).toBe(2)
+  expect(lint({ agent: 'ds', prompt: 'Give the figures the FT graphics look.' }).rc).toBe(2)
+  expect(lint({ agent: 'ds', prompt: 'Use yellow bars for Nevada.' }).rc).toBe(2)
+})
+
+test('lint passes a brief that names only data and comparisons, and mentions the rule files', () => {
+  expect(lint({ agent: 'ds', prompt: DATA_ONLY })).toEqual({ rc: 0, err: '' })
+})
+
+test('lint ignores fenced and quoted user content and paths', () => {
+  const prompt = 'Chart the shares from the memo.\n\n```\nfont-family: Helvetica; color: #E9B93B\n```\n> the old figure used sans-serif\nRead /home/eh/scratch/serif_fonts/#abc123/report.md and wsj-style.css.'
+  expect(lint({ agent: 'ds', prompt }).rc).toBe(0)
+})
+
+test('lint leaves non-chart rows alone and does not flag issue numbers or newspapers', () => {
+  expect(lint({ prompt: 'Summarise the serif typeface section of the style guide for the memo.' }).rc).toBe(0)
+  expect(lint({ agent: 'ds', prompt: 'Chart the shares; see issue #123 and the New York Times piece, Georgia and Courier filings.' }).rc).toBe(0)
+})
+
+test('userStyle: the user\'s verbatim words in the prompt are the only override', () => {
+  const words = 'Use Helvetica and #E9B93B for Nevada'
+  const prompt = `Chart the shares by venue. The user asked: "${words}".`
+  expect(lint({ agent: 'ds', prompt }).rc).toBe(2)
+  const ok = lint({ agent: 'ds', prompt, userStyle: words })
+  expect(ok.rc).toBe(0)
+  expect(ok.err).toContain('userStyle override accepted')
+  // style outside the quoted span is still refused
+  expect(lint({ agent: 'ds', prompt: prompt + ' Also make it sans-serif.', userStyle: words }).rc).toBe(2)
+  // a userStyle that is not in the prompt (or is empty) is not an override
+  expect(lint({ agent: 'ds', prompt, userStyle: 'something else' }).rc).toBe(2)
+  expect(lint({ agent: 'ds', prompt, userStyle: '' }).rc).toBe(2)
+})
+
+// ---- farm.sh: launch refusal and the output gate -------------------------------------------
+
+// A stub claude-code that records that it ran and, optionally, copies a fixture into its cwd.
+function farm(rows: Record<string, unknown>[], copyFixture?: string) {
+  const root = mkdtempSync(join(tmpdir(), 'farmstyle-'))
+  const cwd = join(root, 'cwd'); const bin = join(root, 'bin')
+  mkdirSync(cwd, { recursive: true }); mkdirSync(bin, { recursive: true })
+  const ran = join(root, 'ran')
+  writeFileSync(join(bin, 'claude-code'), `#!/usr/bin/env bash\n: > "${ran}"\n${copyFixture ? `mkdir -p figs && cp ${copyFixture}/* figs/\n` : ''}printf '{"type":"result","result":"done"}\\n'\n`)
+  chmodSync(join(bin, 'claude-code'), 0o755)
+  const tasks = join(root, 'tasks.json')
+  writeFileSync(tasks, JSON.stringify(rows))
+  const res = spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', cwd], {
+    encoding: 'utf8', timeout: 300_000, cwd: root,
+    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1', FARM_OUTCOMES: join(root, 'outcomes.jsonl'),
+           TMPDIR: root, CLAUDE_CODE_SESSION_ID: 'farm-chart-style-test' } })
+  const out = { status: res.status, stderr: res.stderr, ran: existsSync(ran), rows: JSON.parse(res.stdout || '[]'),
+                outcomes: existsSync(join(root, 'outcomes.jsonl')) ? readFileSync(join(root, 'outcomes.jsonl'), 'utf8') : '' }
+  rmSync(root, { recursive: true, force: true })
+  return out
+}
+
+test('farm.sh refuses a styling brief at launch: exit 2, names the text, no row runs', () => {
+  const r = farm([{ label: 'ok', agent: 'ds', prompt: DATA_ONLY }, { label: 'bad', agent: 'ds', prompt: 'Chart the shares in clean sans-serif with #E9B93B bars.' }])
+  expect(r.status).toBe(2)
+  expect(r.stderr).toContain('task 1 (bad) refused by the brief style lint')
+  expect(r.stderr).toContain('"#E9B93B"')
+  expect(r.stderr).toContain('1 of 2 row(s) refused')
+  expect(r.ran).toBe(false)
+})
+
+test('farm.sh runs a styling brief when the row carries the user\'s verbatim words in userStyle', () => {
+  const words = 'make it sans-serif'
+  const r = farm([{ label: 'u', agent: 'ds', prompt: `Chart the shares. The user said: ${words}.`, userStyle: words }])
+  expect(r.stderr).toContain('userStyle override accepted')
+  expect(r.ran).toBe(true)
+})
+
+const GATE_MSG = 'chart style gate failed'
+
+test('output gate marks a ds row wrong when the child left a sans-serif chart theme', () => {
+  const r = farm([{ label: 'g', agent: 'ds', prompt: DATA_ONLY }], join(FIX, 'founder-v2'))
+  expect(r.ran).toBe(true)
+  const row = r.rows[0]
+  expect(row.ok).toBe(false)
+  expect(row.failure).toContain(GATE_MSG)
+  expect(row.failure).toContain('ds-chart-typography.py')
+  expect(r.stderr).toContain('UNVERIFIED')
+  const verdict = r.outcomes.split('\n').filter(Boolean).map(l => JSON.parse(l)).find(l => l.type === 'verdict')
+  expect(verdict.verdict).toBe('wrong')
+  expect(verdict.checks).toContain('chart-style')
+  expect(verdict.why).toContain(GATE_MSG)
+})
+
+test('output gate passes a compliant serif chart fixture', () => {
+  const r = farm([{ label: 'g', agent: 'ds', prompt: DATA_ONLY }], join(FIX, 'serif-600'))
+  expect(r.rows[0].ok).toBe(true)
+  expect(r.rows[0].failure).toBeUndefined()
+})
+
+test('output gate stays out of rows whose persona does not preload ds-rules', () => {
+  const r = farm([{ label: 'g', agent: 'writing', prompt: 'Draft the memo section on shares.' }], join(FIX, 'founder-v2'))
+  expect(r.rows[0].ok).toBe(true)
+})
+
+// ---- chart-gate.py directly ----------------------------------------------------------------
+
+test('chart-gate sees a chart under a directory named scratch (the colour linter used to prune it)', () => {
+  const root = mkdtempSync(join(tmpdir(), 'chartgate-'))
+  const d = join(root, 'scratch', 'figs'); mkdirSync(d, { recursive: true })
+  writeFileSync(join(d, 'c.py'), 'import matplotlib.pyplot as plt\nfig, ax = plt.subplots()\n')
+  const r = spawnSync('python3', [join(ROOT, 'constraints', 'ds-chart-color.py'), d], { encoding: 'utf8', timeout: 60_000 })
+  expect(r.stdout).toContain('across 1 file(s)')
+  rmSync(root, { recursive: true, force: true })
+})
+
+test('chart-gate with nothing chart-shaped touched is a no-op pass', () => {
+  const root = mkdtempSync(join(tmpdir(), 'chartgate-'))
+  writeFileSync(join(root, 'stamp'), ''); writeFileSync(join(root, 'log'), '')
+  writeFileSync(join(root, 'notes.md'), 'x')
+  const r = spawnSync('python3', [GATE, '--cwd', root, '--stamp', join(root, 'stamp'), '--log', join(root, 'log')], { encoding: 'utf8', timeout: 60_000 })
+  expect(r.status).toBe(0)
+  expect(r.stdout).toContain('nothing to lint')
+  rmSync(root, { recursive: true, force: true })
+})

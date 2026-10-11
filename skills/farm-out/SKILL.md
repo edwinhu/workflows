@@ -188,3 +188,4 @@ Design: `docs/DESIGN-routing.md`.
 | Situation | Wrong move | Right move |
 |---|---|---|
 | Per-document LLM coding/extraction over many files | Use `--tasks` fan-out to have agents read each document | Use `gemini-vertex` for large-scale extraction |
+| Writing style (fonts, hex colours, "X-style look") into a chart brief | The child follows the brief over its rules; `farm.sh` refuses the row | The subagent's rules own style; the brief says what to show. Only the user's verbatim style words go in a row's `userStyle` |

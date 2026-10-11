@@ -2,12 +2,17 @@
 
 ## [Unreleased]
 
+### Added
+
+- **Farmed charts are gated on the chart rules, and a brief can no longer dictate style:** (nevada, 2026-10-11: ~20 figures followed a brief's `#E9B93B`/"clean sans-serif"/"WSJ graphics look" over A5/A6.) `farm.sh --tasks` now refuses at launch (exit 2, no row runs) any chart row whose prompt carries hex/`rgb()` literals, font families, or "X-style look" directives (`scripts/lib/brief-style-lint.ts`; paths, fenced/quoted content and rule-file names are exempt; the row field `userStyle`, the user's verbatim words, is the only override). After a row whose persona preloads `ds-rules` and can write, `chart-gate.py` runs `ds-chart-typography.py --render` and `ds-chart-color.py` on the chart code and figures it touched; findings mark the row `wrong` (`chart-style`). `ds` follows an indexed rule over a conflicting brief and names the conflict.
+
 ### Changed
 
 - **`gemini-batch` is renamed `gemini-vertex`:** the skill now covers Cloud Flex (≤10 documents, 5da49c61), Priority and synchronous smoke tests, not only Batch; the invariant is the platform — Vertex, never AI Studio — so the name states it. `skills/gemini-batch/` → `skills/gemini-vertex/`, `Skill workflows:gemini-vertex` in the bulk-guard deny/warn text, routing provider id `gemini-vertex` in `scripts/lib/route.ts`, and every cross-reference; "gemini batch", "batch job" and "Gemini Batch API" stay as trigger phrases.
 
 ### Fixed
 
+- **`ds-chart-color` no longer reports a clean "0 files" under a `scratch/` directory:** the prune test read the absolute path, so any target inside a project's own `scratch/` was skipped whole.
 - **`ds-chart-typography` fails a sans-serif chart and a low-DPI raster (A5):** the founder-ceo-ipo v2 theme (`font.family: sans-serif`, Liberation Sans, PNGs at 200 dpi) passed with exit 0. The lint now reads `.mplstyle`, `rcParams`, `matplotlib.rc`, `sns.set_theme` and Altair/pyobsplot font keys, fails a sans or monospace face, an unset `font.family`, and a raster below 300 DPI; `--render` fails a family matplotlib resolves to a sans file or to no installed face. The ds `check.sh` runs it as the `chart-typography` leg. `chart_font` in `.claude-workflows.json` allows a genuinely sans host.
 
 ## [6.38.1] - 2026-10-03
