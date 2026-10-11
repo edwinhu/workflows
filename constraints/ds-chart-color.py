@@ -79,8 +79,10 @@ def main() -> int:
     # See ds-chart-typography: a checker about charts is not a chart.
     _PRUNE = {".planning", "scratch", "__pycache__", ".pixi", "worktrees", "node_modules",
               "external", "vendor", "constraints"}
+    # Parts RELATIVE to the target: an absolute path through a project's own scratch/ dir would
+    # otherwise prune every file and report a clean "0 files" over a directory full of charts.
     files = ([p for p in t.rglob("*")
-              if p.suffix in {".py", ".ipynb"} and not _PRUNE & set(p.parts)]
+              if p.suffix in {".py", ".ipynb"} and not _PRUNE & set(p.relative_to(t).parts)]
              if t.is_dir() else [t])
     found = [f for p in files for f in check(p)]
     for f in found:
