@@ -8,7 +8,7 @@ import { caseInput } from '../../skills/work/scripts/rule-calibrate.ts';
 // state must stay under rule-check's 60000-char cap. Scaffolded by the jev-rules skill.
 const ROOT = join(import.meta.dir, '../..');
 const ID = 'T-ECHO-PARA';
-const DIR = existsSync(join(ROOT, 'constraints/jev/typst', `${ID}.py`)) ? 'constraints/jev/typst' : 'constraints/jev/typst/uncalibrated';
+const DIR = existsSync(join(ROOT, 'checks/workshop/rules', `${ID}.py`)) ? 'checks/workshop/rules' : 'checks/workshop/rules/uncalibrated';
 const temps: string[] = [];
 afterAll(() => { for (const d of temps) rmSync(d, { recursive: true, force: true }); });
 

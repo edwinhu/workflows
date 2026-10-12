@@ -1041,7 +1041,7 @@ test('an auditor lens verdict is caught, and is not double-reported as uncommand
 test('a rule verdict is caught by the ruleChecks name or by a hyphenated rule id, command or not', () => {
   const rc = { ruleChecks: { name: 'jev-notes-rules', cmd: 'bun rule-check.ts' } }
   expect(verdict('jev-notes-rules reports N-UNCITED MET', rc)).toHaveLength(1)
-  expect(verdict('`bun rule-check.ts --rules notes` shows N-COLD, N-NARRATION and N-HOLLOW all MET')).toHaveLength(1)
+  expect(verdict('`bun rule-check.ts --workflow notes` shows N-COLD, N-NARRATION and N-HOLLOW all MET')).toHaveLength(1)
 })
 
 test('a bare goal MET, a lens as subject matter, and a ruleChecks name without a verdict are not verdict clauses', () => {
@@ -1054,4 +1054,37 @@ test('a bare goal MET, a lens as subject matter, and a ruleChecks name without a
 test('parseArgs carries ruleChecks through', () => {
   expect(parseArgs({ tasks: [], ruleChecks: { name: 'r', cmd: 'c' } }).ruleChecks).toEqual({ name: 'r', cmd: 'c' })
   expect(parseArgs({ tasks: [] }).ruleChecks).toBeNull()
+})
+
+// ---------------------------------------------------------------- R24: the workflow's checks are reached
+
+// A temporary plugin root whose checks/zz/ holds one constraint, so R24 has a gate to demand. The shapes are
+// teaching's: notes' check.sh calls the runner through a sourced helper function whose source path is
+// computed at run time; slides' check.sh reaches it two scripts down.
+test('R24 credits a check.sh that reaches workflow-check through a helper function or a script it runs, and refuses one that never does', () => {
+  const root = mkdtempSync(join(tmpdir(), 'r24-reach-'))
+  const put = (rel: string, body: string) => { mkdirSync(join(root, rel, '..'), { recursive: true }); writeFileSync(join(root, rel), body) }
+  put('checks/zz/constraints/a.py', 'print("a: 0 file(s) examined — nothing in scope (test)")\n')
+  const s = 'skills/zz/scripts'
+  put(`${s}/helper-call.sh`, '#!/usr/bin/env bash\n. "$(dirname "$LEG_COUNTS_SH")/workflow-check.sh"\nworkflow_check_leg constraints zz "$PROJ" "$@"\n')
+  put(`${s}/nested.sh`, '#!/usr/bin/env bash\nHERE="$(cd "$(dirname "$0")" && pwd)"\nbash "$HERE/verdict.sh" "$@"\n')
+  put(`${s}/verdict.sh`, '#!/usr/bin/env bash\nSCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"\nbash "$SCRIPT_DIR/report.sh" --json "$@"\n')
+  put(`${s}/report.sh`, '#!/usr/bin/env bash\n. "$SCRIPT_DIR/../../../lib/workflow-check.sh"\nOUT=$(workflow_check_leg constraints zz "$PWD" "$@")\n')
+  put('lib/workflow-check.sh', '#!/usr/bin/env bash\nworkflow_check_leg() { "$WORKFLOWS_ROOT/bin/workflow-check" "$2" --constraints-only --project-dir "$3"; }\n')
+  put(`${s}/never.sh`, '#!/usr/bin/env bash\n# workflow-check zz is named only in this comment\nbash "$HERE/other.sh"\n')
+  put(`${s}/other.sh`, '#!/usr/bin/env bash\necho ok\n')
+  put(`${s}/wrong-wf.sh`, '#!/usr/bin/env bash\nworkflow_check_leg constraints yy "$PROJ" "$@"\n')
+  const plan = (script: string) => base({ planText: '---\nworkflow: zz\n---\n\n# P\n', mechanicalChecks: [{ name: 'm', cmd: `bash ${join(root, s, script)} --project-dir /x` }] })
+  const saved = process.env.WORKFLOW_CHECKS_PATH
+  process.env.WORKFLOW_CHECKS_PATH = root
+  try {
+    expect(rules(plan('helper-call.sh'))).not.toContain('workflow-gate-unreached')
+    expect(rules(plan('nested.sh'))).not.toContain('workflow-gate-unreached')
+    expect(rules(plan('never.sh'))).toContain('workflow-gate-unreached')
+    expect(rules(plan('wrong-wf.sh'))).toContain('workflow-gate-unreached')
+  } finally {
+    if (saved === undefined) delete process.env.WORKFLOW_CHECKS_PATH
+    else process.env.WORKFLOW_CHECKS_PATH = saved
+    rmSync(root, { recursive: true, force: true })
+  }
 })

@@ -4,11 +4,11 @@ import { cpSync, mkdtempSync, rmSync, writeFileSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
 
-// The Typst deck/notes rules under constraints/jev/typst: extractor state on every rule's fixture
-// twins (wired and uncalibrated), diff scoping, and rule-check.ts --rules against a stub Jev. No network.
+// The Typst deck/notes rules under checks/workshop/rules: extractor state on every rule's fixture
+// twins (wired and uncalibrated), diff scoping, and rule-check.ts --workflow workshop against a stub Jev. No network.
 const BASE = join(import.meta.dir, "../../..");
-const EVIDENCE = join(BASE, "constraints/jev/evidence.py");
-const TYPST = join(BASE, "constraints/jev/typst");
+const EVIDENCE = join(BASE, "checks/_jev/evidence.py");
+const TYPST = join(BASE, "checks/workshop/rules");
 const UNCAL = join(TYPST, "uncalibrated");
 const FIX = join(BASE, "tests/fixtures/jev/typst");
 const WIRED = ["T-CALLOUT", "T-HOLLOW", "T-STORY", "T-TAKEAWAY", "T-TRANSITION"];
@@ -172,7 +172,7 @@ async function ruleCheck(kase: "vio" | "sat") {
     },
   });
   // async spawn: a spawnSync would block the event loop the stub answers on
-  const proc = Bun.spawn(["bun", join(BASE, "skills/work/scripts/rule-check.ts"), "--project-dir", d, "--rules", TYPST], {
+  const proc = Bun.spawn(["bun", join(BASE, "skills/work/scripts/rule-check.ts"), "--project-dir", d, "--workflow", "workshop"], {
     env: { ...process.env, WORK_HOLD_DECISIONS_URL: `http://localhost:${server.port}/`, WORK_HOLD_JUDGE_TOKEN: "test-token", FARM_OUTCOMES: join(d, ".farm-outcomes.jsonl") },
     stdout: "pipe", stderr: "pipe",
   });
@@ -182,7 +182,7 @@ async function ruleCheck(kase: "vio" | "sat") {
   return { code, out: JSON.parse(stdout.trim().split("\n").pop()!), seen, preamble };
 }
 
-test("T-HOLLOW: rule-check --rules typst blocks the violating notes and passes the compliant ones", async () => {
+test("T-HOLLOW: rule-check --workflow workshop blocks the violating notes and passes the compliant ones", async () => {
   const vio = await ruleCheck("vio");
   expect(vio.seen.sort()).toEqual(WIRED);
   expect(vio.preamble).toStartWith("You are auditing one Typst slide deck and its speaker notes against a written RULE.");

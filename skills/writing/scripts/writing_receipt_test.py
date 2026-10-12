@@ -280,7 +280,7 @@ def assert_receipt(label: str, project: Path, plan_hash: str, style: str) -> Non
        receipt["reviewed_at"] > receipt["approved_at"])
 
     active_text = active_path.read_text(encoding="utf-8")
-    ok(f"{label}: ACTIVE_WORKFLOW.md scopes check-all to writing",
+    ok(f"{label}: ACTIVE_WORKFLOW.md names the writing workflow",
        "workflow: writing" in active_text, active_text)
     ok(f"{label}: ACTIVE_WORKFLOW.md carries the plan's style",
        f"style: {style}" in active_text, active_text)

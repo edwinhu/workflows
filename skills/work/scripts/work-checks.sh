@@ -10,8 +10,10 @@
 #
 # A command that cannot run — timeout, cannot spawn, exit 126/127 — records exitCode -1, which the
 # gate reads as unproven, never as a pass. Output keeps the LAST 60 lines: the evidence is at the end.
-# A rule check's stdout is its last non-empty stdout line, which must parse as a JSON object, else -1;
-# its stderr tail goes to output.
+# A rule check's stdout is its last non-empty stdout line when that parses as a JSON object; else the
+# verdict line rule-check.ts copied to $RULE_CHECK_OUT (a `workflow-check <wf> --rules-only` ruleChecks);
+# else, for a runner that exited 0 saying `nothing in scope`, an empty verdict set carrying that scope;
+# else -1. Its stderr tail (and the runner's report) goes to output.
 # A red-suite file whose sha256 differs from the dispatcher's is a change owned by the task whose
 # writablePaths reach it, else by 'plan'. WORK_CHECK_TIMEOUT (seconds, default 1800) bounds each command.
 # Every command sees WORK_READ_ONLY=1 under args.readOnly, else 0: a gate whose scope differs between a
@@ -24,7 +26,7 @@ set -euo pipefail
 [[ $# -eq 3 ]] || { echo "usage: work-checks.sh ARGS RAW OUT" >&2; exit 2; }
 
 python3 - "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" "$1" "$2" "$3" <<'PY'
-import hashlib, json, os, re, subprocess, sys
+import hashlib, json, os, re, subprocess, sys, tempfile
 from concurrent.futures import ThreadPoolExecutor
 
 sys.path.insert(0, sys.argv[1])
@@ -63,26 +65,45 @@ def run(cmd):
         return max(p.returncode, 2), tail(full)
     return p.returncode, tail(full)
 
-def run_rules(cmd):
+def json_object(line):
     try:
-        p = subprocess.run(['bash', '-c', cmd], cwd=cwd, env=env, capture_output=True, text=True,
-                           errors='replace', timeout=timeout)
-    except subprocess.TimeoutExpired:
-        return -1, '', f'could not run: timed out after {timeout}s: {cmd}'
-    except OSError as e:
-        return -1, '', f'could not run: {e}: {cmd}'
+        return isinstance(json.loads(line), dict)
+    except ValueError:
+        return False
+
+def run_rules(cmd):
+    # RULE_CHECK_OUT: rule-check.ts copies its verdict line there. A ruleChecks of
+    # `workflow-check <wf> --rules-only` prints the runner's leg report, not that line, so the verdicts
+    # are read from the copy; a runner that scored nothing (no rule, or nothing in scope) exits 0 and
+    # writes none, which is an explicit empty scope carried in `scope`, never a silent pass.
+    fd, side = tempfile.mkstemp(prefix='work-rules-', suffix='.json')
+    os.close(fd)
+    try:
+        try:
+            p = subprocess.run(['bash', '-c', cmd], cwd=cwd, env={**env, 'RULE_CHECK_OUT': side}, capture_output=True,
+                               text=True, errors='replace', timeout=timeout)
+        except subprocess.TimeoutExpired:
+            return -1, '', f'could not run: timed out after {timeout}s: {cmd}'
+        except OSError as e:
+            return -1, '', f'could not run: {e}: {cmd}'
+        with open(side, errors='replace') as fh:
+            copied = fh.read().strip()
+    finally:
+        os.unlink(side)
     err = tail(p.stderr or '')
     if p.returncode in (126, 127):
         return -1, tail(p.stdout or ''), f'could not run (exit {p.returncode}): {cmd}\n{err}'
     lines = [l for l in (p.stdout or '').splitlines() if l.strip()]
     line = lines[-1].strip() if lines else ''
-    try:
-        ok = isinstance(json.loads(line), dict)
-    except ValueError:
-        ok = False
-    if not ok:
-        return -1, tail(p.stdout or ''), f'no JSON object on stdout (exit {p.returncode}): {cmd}\n{err}'
-    return p.returncode, line, err
+    if json_object(line):
+        return p.returncode, line, err
+    report = tail(p.stdout or '')
+    if json_object(copied):
+        return p.returncode, copied, (report + '\n' + err).strip()
+    head = lines[0].strip() if lines else ''
+    if p.returncode == 0 and 'nothing in scope' in head:
+        return 0, json.dumps({'verdicts': [], 'unavailable': [], 'scope': head}), (report + '\n' + err).strip()
+    return -1, report, f'no JSON object on stdout and no verdicts at RULE_CHECK_OUT (exit {p.returncode}): {cmd}\n{err}'
 
 jobs = [('red', r['id'], r['command']) for r in plan.get('red') or []] \
      + [('acceptance', r['id'], r['command']) for r in plan.get('acceptance') or []] \

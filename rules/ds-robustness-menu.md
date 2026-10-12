@@ -3,7 +3,7 @@ name: ds-robustness-menu
 applies-to: [ds-delegate]
 ---
 
-**What a script already decides:** `constraints/ds-robustness-checks.py` decides that robustness indicators are present in the regression code. Which check the design calls for is this rule.
+**What a script already decides:** `checks/ds/constraints/ds-robustness-checks.py` decides that robustness indicators are present in the regression code. Which check the design calls for is this rule.
 
 ## Rule
 

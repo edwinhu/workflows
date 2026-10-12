@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # The ONE mechanical entry point for the ds workflow. Its exit code IS the verdict.
 #
-# Four legs, none short-circuiting. ds-gate is this plugin's: the one domain gate (work/scripts/domain-gate.py),
-# which computes what it runs -- every constraints/ds-*.py, ds-dq over the plan's Data Outputs -- so a new
+# Three legs, none short-circuiting. ds-gate is this plugin's: `bin/workflow-check ds --constraints-only`, which
+# runs every constraint under checks/ds/constraints/ (ds-dq over the plan's Data Outputs among them), so a new
 # constraint script is reached with no edit here. Its Jev rules are skipped: this plan's ruleChecks already
-# scores them, and work reads that verdict, so a leg here would pay for it twice. The other two legs are the
+# scores them (`rule-check.ts --workflow ds`), and work reads that verdict, so a leg here would pay for it twice. The other two legs are the
 # PROJECT's own commands, which a plan discovers and passes in -- that is why they are
 # arguments rather than a fixed list:
 # this skill cannot know what a given project runs, but it can still be the single command
@@ -36,7 +36,7 @@ done
 RC=0
 report() { printf 'leg %s exit=%s%s\n' "$1" "$2" "${3:+ ($3)}"; [ "$2" -le "$RC" ] || RC="$2"; }
 
-legcount_run ds-gate python3 "$HERE/../../work/scripts/domain-gate.py" --domain ds --project-dir "$PROJ" --plan "$PLAN" --skip-rules
+legcount_run ds-gate python3 "$HERE/../../../bin/workflow-check" ds --project-dir "$PROJ" --plan "$PLAN" --constraints-only
 report ds-gate "$LEG_STATUS"
 
 if [ -n "$TESTCMD" ]; then legcount_run tests legcount_cmd tests "$PROJ" "$TESTCMD" "$TESTRE"; report tests "$LEG_STATUS"

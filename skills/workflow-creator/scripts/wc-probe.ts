@@ -16,9 +16,10 @@
  */
 
 import { existsSync, readdirSync, readFileSync, realpathSync, statSync } from 'node:fs'
-import { basename, dirname, join, resolve, sep } from 'node:path'
+import { basename, delimiter, dirname, join, resolve, sep } from 'node:path'
 import { homedir } from 'node:os'
-import { RULE_DIRS, TEACHING_SETS, ruleSetOf } from '../../../hooks/jev/rules.ts'
+import { spawnSync } from 'node:child_process'
+import { ruleSetOf } from '../../../hooks/jev/rules.ts'
 
 // ---------------------------------------------------------------- types
 
@@ -3516,7 +3517,7 @@ export const ADVISORY_RULES: ReadonlySet<string> = new Set([
   'P17 serial row loop',
 ])
 
-/** The repository root this probe ships in: where `constraints/jev` and `hooks/jev/rules.ts` live. */
+/** The repository root this probe ships in: where `bin/workflow-check`, `checks/` and `hooks/jev/rules.ts` live. */
 const WORKFLOWS_ROOT = resolve(import.meta.dir, '..', '..', '..')
 
 // A prompt that runs a command as written and reports what it exited with is a shell step in an agent's clothes.
@@ -3616,26 +3617,49 @@ export function wiredRules(dir: string): WiredRule[] | null {
   return out
 }
 
-/** The rules directories a `ruleChecks.cmd` scores: each `--rules`, else rule-check's default. */
+/**
+ * A workflow's rules directories as the layout resolves them (bin/workflow-check <wf> --list), over
+ * this plugin and the audited skill's plugin root, or WORKFLOW_CHECKS_PATH when it is set; null when
+ * the layout has no such workflow. Asked once per workflow and root set.
+ */
+const layoutRuleDirs = new Map<string, string[] | null>()
+export function workflowRuleDirs(wf: string, pluginRoot: string | null): string[] | null {
+  const path = process.env.WORKFLOW_CHECKS_PATH ??
+    [...new Set([WORKFLOWS_ROOT, ...(pluginRoot ? [pluginRoot] : [])])].filter(r => existsSync(join(r, 'checks'))).join(delimiter)
+  const key = `${path}\0${wf}`
+  if (!layoutRuleDirs.has(key)) {
+    const r = spawnSync('python3', [join(WORKFLOWS_ROOT, 'bin', 'workflow-check'), wf, '--list'],
+      { encoding: 'utf8', env: { ...process.env, WORKFLOW_CHECKS_PATH: path } })
+    let dirs: string[] | null = null
+    try {
+      if (r.status === 0) dirs = JSON.parse(r.stdout).ruleDirs
+    } catch {}
+    layoutRuleDirs.set(key, Array.isArray(dirs) ? dirs : null)
+  }
+  return layoutRuleDirs.get(key)!
+}
+
+/**
+ * The rules directories a `ruleChecks.cmd` scores: the workflow it names (`--workflow <wf>` or
+ * `workflow-check <wf>`), resolved through the layout. A placeholder register (`writing/<domain>`)
+ * resolves its parent. A retired `--rules <dir>`, or a command naming no workflow, is unresolved.
+ */
 export function ruleDirsOf(cmd: string, pluginRoot: string | null): { dirs: string[], unresolved: string[] } {
   const dirs: string[] = []
   const unresolved: string[] = []
-  const toks = cmd.split(/\s+/)
-  for (let i = 0; i < toks.length; i++) {
-    if (toks[i] !== '--rules' || !toks[i + 1] || toks[i + 1].startsWith('<')) continue
-    let d = toks[i + 1].replace(/^["']|["']$/g, '')
-    if (d.includes('${CLAUDE_PLUGIN_ROOT}')) {
-      if (!pluginRoot) {
-        unresolved.push(d)
-        continue
-      }
-      d = d.split('${CLAUDE_PLUGIN_ROOT}').join(pluginRoot)
+  const named = [...cmd.matchAll(/(?:--workflow[=\s]+|workflow-check["']?\s+)["']?([^\s"']+)/g)].map(m => m[1])
+  for (const raw of named) {
+    const wf = raw.includes('<') ? raw.slice(0, raw.indexOf('<')).replace(/\/$/, '') : raw
+    if (!wf || /\$/.test(wf)) {
+      unresolved.push(raw)
+      continue
     }
-    if (d.startsWith('~/')) d = join(homedir(), d.slice(2))
-    if (/\$|</.test(d)) unresolved.push(d)
-    else dirs.push(d)
+    const d = workflowRuleDirs(wf, pluginRoot)
+    if (d === null) unresolved.push(raw)
+    else dirs.push(...d)
   }
-  if (dirs.length === 0 && unresolved.length === 0) dirs.push(join(WORKFLOWS_ROOT, 'constraints', 'jev'))
+  for (const m of cmd.matchAll(/--rules\s+(\S+)/g)) unresolved.push(m[1])
+  if (named.length === 0 && unresolved.length === 0) unresolved.push(cmd.trim())
   return { dirs, unresolved }
 }
 
@@ -3650,8 +3674,8 @@ function sentencesOf(prompt: string): string[] {
 /**
  * P15 duplicate grading — an agent grades a rule a calibrated Jev rule already scores.
  *
- * Read per fence that carries `ruleChecks`, against the WIRED rules of the directories its command
- * scores. A scoredChecks entry duplicates a rule when its prompt names the rule id, or a penalty count
+ * Read per fence that carries `ruleChecks`, against the WIRED rules of the workflow its command
+ * scores (the layout's rules directories for it, parents included). A scoredChecks entry duplicates a rule when its prompt names the rule id, or a penalty count
  * key IS the rule's name word (`hollow` for N-HOLLOW). A lens prompt duplicates it when a sentence that
  * does not defer names the id or writes the name word in capitals (`HOLLOW`, `HOLLOWS`). Two graders
  * of one rule disagree, and the uncalibrated one can block where the calibrated one cleared.
@@ -3669,14 +3693,11 @@ export function checkDuplicateGrading(
     if (!f.ruleChecks?.cmd || isExemptAt(exemptions, 'duplicate-grading', f.fenceLine)) continue
     const { dirs, unresolved: un } = ruleDirsOf(f.ruleChecks.cmd, pluginRoot)
     for (const d of un) {
-      unresolved.push({ rule: 'P15 duplicate grading', file, line: f.ruleChecks.line, token: d, reason: 'the --rules directory is not resolvable here' })
+      unresolved.push({ rule: 'P15 duplicate grading', file, line: f.ruleChecks.line, token: d,
+        reason: 'it names no workflow the layout resolves (bin/workflow-check <wf> --list); rule-check --rules is retired' })
     }
     const rules: WiredRule[] = []
-    for (const d of dirs) {
-      const r = wiredRules(d)
-      if (r === null) unresolved.push({ rule: 'P15 duplicate grading', file, line: f.ruleChecks.line, token: d, reason: 'the --rules directory does not exist' })
-      else rules.push(...r)
-    }
+    for (const d of dirs) rules.push(...(wiredRules(d) ?? []))
     const idIn = (s: string, id: string) => new RegExp(`(?<![\\w-])${id.replace(/[-]/g, '\\-')}(?![\\w-])`).test(s)
     const report = (line: number, leg: string, rule: WiredRule, how: string) => findings.push({
       rule: 'P15 duplicate grading',
@@ -3715,10 +3736,10 @@ function samplePath(p: string): string {
  * P16 missing ruleChecks — the deliverable has calibrated Jev rules and the fence scores none.
  *
  * The deliverable is the fence's `tasks[].writablePaths`, mapped through hooks/jev/rules.ts
- * `ruleSetOf` (the per-edit mod's own table) with the skill's name as the workflow cursor. A set
- * whose directory holds a wired rule makes an absent `ruleChecks` a gap: the rules exist, are
- * calibrated, and this run never asks them. A readOnly charter (`tasks: []`) declares no deliverable
- * and is skipped.
+ * `ruleSetOf` (the per-edit mod's own table) with the skill's name as the workflow cursor. The set
+ * is a workflow; one the layout resolves with a wired rule makes an absent `ruleChecks` a gap: the
+ * rules exist, are calibrated, and this run never asks them. A readOnly charter (`tasks: []`)
+ * declares no deliverable and is skipped.
  */
 export function checkMissingRuleChecks(file: string, text: string, ctx: SkillContext, exemptions: readonly Exemption[]): Finding[] {
   const findings: Finding[] = []
@@ -3732,12 +3753,9 @@ export function checkMissingRuleChecks(file: string, text: string, ctx: SkillCon
         if (/[<{$]/.test(p)) continue
         const set = ruleSetOf(samplePath(p), workflow)
         if (!set || sets.has(set)) continue
-        const roots = TEACHING_SETS.has(set) ? [pluginRoot] : [WORKFLOWS_ROOT]
-        for (const root of roots) {
-          if (!root) continue
-          const ids = (wiredRules(join(root, RULE_DIRS[set])) ?? []).map(r => r.id)
-          if (ids.length) sets.set(set, { dir: join(root, RULE_DIRS[set]), ids, path: p })
-        }
+        const dirs = workflowRuleDirs(set, pluginRoot) ?? []
+        const ids = dirs.flatMap(d => (wiredRules(d) ?? []).map(r => r.id))
+        if (ids.length) sets.set(set, { dir: dirs.join(', '), ids, path: p })
       }
     }
     for (const [set, { dir, ids, path }] of sets) {
@@ -3746,8 +3764,8 @@ export function checkMissingRuleChecks(file: string, text: string, ctx: SkillCon
         severity: 'major',
         file,
         line: f.fenceLine,
-        detail: `the fence writes ${path} (Jev rule set "${set}", ${ids.length} wired: ${ids.join(', ')}) and carries no ruleChecks, so no calibrated rule judges the round's changed lines`,
-        remedy: `add ruleChecks: { name, cmd: "bun \${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --project-dir <projectDir> --plan <planPath> --rules ${dir}" }, or declare the exception with <!-- wc-probe: ignore-rule-checks -->`,
+        detail: `the fence writes ${path} (Jev rule set "${set}", ${ids.length} wired under ${dir}: ${ids.join(', ')}) and carries no ruleChecks, so no calibrated rule judges the round's changed lines`,
+        remedy: `name the workflow in the plan's frontmatter (\`workflow: ${set}\`) so work-dispatch.sh fills ruleChecks, or add ruleChecks: { name, cmd: "python3 \${CLAUDE_PLUGIN_ROOT}/bin/workflow-check ${set} --rules-only --project-dir <projectDir> --plan <planPath>" }; declare a genuine exception with <!-- wc-probe: ignore-rule-checks -->`,
       })
     }
   }

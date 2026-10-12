@@ -7,22 +7,23 @@ import { useTmp } from "../../../tests/helpers/tmp.ts";
 
 const mkTmp = useTmp();
 
-// The ds rules under constraints/jev: extractor state on each rule's fixtures, and rule-check.ts
+// The ds rules under checks/ds/rules: extractor state on each rule's fixtures, and rule-check.ts
 // against a local stub Jev. No network.
 
 const WIRED = ["A1", "A4", "DEN", "DQ4", "DQ6", "E7", "M1", "R1", "UNI"];
 const UNCALIBRATED = ["DQ1"];
 const RULES = [...WIRED, ...UNCALIBRATED];
 const BASE_DIR = join(import.meta.dir, "../../..");
-const PY = join(BASE_DIR, "constraints/jev/evidence.py");
-const UNCAL_DIR = join(BASE_DIR, "constraints/jev/uncalibrated");
+const PY = join(BASE_DIR, "checks/_jev/evidence.py");
+const DS_DIR = join(BASE_DIR, "checks/ds/rules");
+const UNCAL_DIR = join(DS_DIR, "uncalibrated");
 const FIX = join(BASE_DIR, "tests/fixtures/jev");
 const made: string[] = [];
 afterAll(() => made.forEach(d => fs.rmSync(d, { recursive: true, force: true })));
 
 async function getEvidence(rule: string, twin: "sat" | "vio") {
     const file = join(FIX, `${rule}/${twin}/test.${rule === "A4" ? "md" : "py"}`);
-    const dir = UNCALIBRATED.includes(rule) ? ["--rules-dir", UNCAL_DIR] : [];
+    const dir = ["--rules-dir", UNCALIBRATED.includes(rule) ? UNCAL_DIR : DS_DIR];
     const { stdout } = await $`python3 ${PY} --files ${file} ${dir}`.quiet();
     return JSON.parse(stdout.toString());
 }
@@ -37,7 +38,7 @@ function twin2(rule: string, kase: "vio2" | "sat2") {
 async function state2(rule: string, kase: "vio2" | "sat2") {
     const { dir, file, plan } = twin2(rule, kase);
     const p = plan ? ["--plan", join(dir, plan)] : [];
-    const { stdout } = await $`python3 ${PY} --root ${dir} --files ${join(dir, file)} ${p}`.quiet();
+    const { stdout } = await $`python3 ${PY} --rules-dir ${DS_DIR} --root ${dir} --files ${join(dir, file)} ${p}`.quiet();
     return JSON.parse(stdout.toString())[rule].state;
 }
 
@@ -119,7 +120,7 @@ async function ruleCheck(rule: string, kase: "vio2" | "sat2") {
             return Response.json({ answers: { q0: { probabilities: { VIOLATED: p }, choice: p > 0.5 ? "VIOLATED" : "SATISFIED" } } });
         },
     });
-    const args = ["--project-dir", d, "--files", join(d, file), ...(plan ? ["--plan", join(d, plan)] : [])];
+    const args = ["--workflow", "ds", "--project-dir", d, "--files", join(d, file), ...(plan ? ["--plan", join(d, plan)] : [])];
     // async spawn: a spawnSync would block the event loop the stub answers on
     const proc = Bun.spawn(["bun", join(import.meta.dir, "rule-check.ts"), ...args], {
         env: { ...process.env, WORK_HOLD_DECISIONS_URL: `http://localhost:${server.port}/`, WORK_HOLD_JUDGE_TOKEN: "test-token", FARM_OUTCOMES: join(d, ".farm-outcomes.jsonl") },
@@ -148,7 +149,7 @@ test('evidence.py labels files relative to --root', async () => {
     fs.mkdirSync(join(tmpDir, 'data', 'output'), { recursive: true });
     const testFile = join(tmpDir, 'data', 'output', 'x.py');
     fs.writeFileSync(testFile, 'a = 1\n');
-    const { stdout } = await $`python3 ${PY} --files ${testFile} --root ${tmpDir}`.quiet();
+    const { stdout } = await $`python3 ${PY} --rules-dir ${DS_DIR} --files ${testFile} --root ${tmpDir}`.quiet();
     const a1State = JSON.parse(stdout.toString())['A1'].state;
     expect(a1State.files.some((f: any) => f.path === 'data/output/x.py')).toBe(true);
 });

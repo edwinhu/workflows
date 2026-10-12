@@ -8,9 +8,11 @@
  *
  * Every rule here answers a question about the plan's own structured fields with no agent and no
  * repo access. A rule belongs here only if two readers must reach the same verdict from the plan
- * text alone; anything needing the tree is TIER 2 (pre-flight execution). One exception, R23: it
+ * text alone; anything needing the tree is TIER 2 (pre-flight execution). Two exceptions. R23
  * READS the artifacts a ds plan's `## Data Outputs` declares (it executes nothing), because this is
  * the gate both work-dispatch.sh and work-redispatch.sh run, and a round-2 dispatch is where it pays.
+ * R24 reads the checks layout (bin/workflow-check <wf> --list) and the script a mechanical check runs,
+ * because the plan's `workflow:` is only kept if its checks are reached, and membership is the tree.
  *
  * Accepts a work args object as well as a plan file so a round's dispatched arguments can be
  * linted directly — that is also what the rule corpus was validated against.
@@ -911,6 +913,32 @@ const lint = (p: Plan): Finding[] => {
           )
   }
 
+  // R24 — the plan's `workflow:` (frontmatter; none is `work`, which has no checks) decides which
+  // checks gate the run, and nothing else may: the layout (bin/workflow-check <wf> --list) names them,
+  // a mechanicalChecks entry must reach `workflow-check <wf>` (directly or through the script it runs,
+  // the workflow's check.sh), and a ruleChecks the plan carries must score that workflow. Otherwise a
+  // plan could name a workflow and run none of its checks. It reads the layout and that script: like
+  // R23, an exception to "no repo access", because the membership it checks lives in the tree.
+  const wf = workflowOf(p.planText)
+  if (wf !== 'work') {
+    const lay = workflowLayout(wf)
+    if ('error' in lay)
+      add('workflow-unknown', 'critical', 'workflow:', `workflow: ${wf} names no workflow the layout has (${lay.error}); name one bin/workflow-check --list resolves, or drop the line for \`workflow: work\`, which has no checks`)
+    else if (lay.constraints.length && !p.mechanicalChecks.some(m => reachesWorkflow(m.cmd, wf, p.projectDir)))
+      add('workflow-gate-unreached', 'major', 'mechanicalChecks',
+        `no mechanicalChecks entry reaches \`workflow-check ${wf}\`, directly or through the script it runs, so ${lay.constraints.length} constraint(s) under checks/ for workflow ${wf} never run in this work run; use the workflow's check.sh (it calls workflow-check ${wf}) or add \`python3 \${CLAUDE_PLUGIN_ROOT}/bin/workflow-check ${wf} --constraints-only --project-dir <projectDir>\``,
+        p.mechanicalChecks.map(m => m.cmd).join(' | ') || '(no mechanicalChecks)')
+  }
+  if (p.ruleChecks) {
+    const named = ruleTargets(p.ruleChecks.cmd)
+    if (wf === 'work' ? named.length > 0 : !named.some(t => covers(t, wf)))
+      add('rulechecks-workflow', 'major', 'args.ruleChecks',
+        wf === 'work'
+          ? `ruleChecks scores workflow ${named.join(', ')} but the plan names no workflow: (it is \`work\`, which has no checks); put that workflow in the plan's frontmatter, and work-dispatch.sh fills ruleChecks from it`
+          : `ruleChecks scores ${named.length ? `workflow ${named.join(', ')}` : 'no workflow (a rules directory, not a workflow)'} but the plan's workflow: is ${wf}; drop it and work-dispatch.sh fills \`workflow-check ${wf} --rules-only\` from workflow:`,
+        p.ruleChecks.cmd)
+  }
+
   // R22 — `goalCheck` is the string the dispatch ARMS A HOLD ON, so it is linted by the linter that
   // owns holds rather than by a second copy of those rules here. Only CRITICAL findings block: the
   // rest are hold-lint's advisory tier and the arm prints them itself. Reported at dispatch because
@@ -931,6 +959,107 @@ const lint = (p: Plan): Finding[] => {
   return f
 }
 
+// ---------------------------------------------------------------- the workflow (R24)
+
+const PLUGIN_ROOT = require('node:path').join(import.meta.dir, '..', '..', '..')
+
+/** `workflow:` from the plan's frontmatter; a plan that names none is `work`, which has no checks. */
+const workflowOf = (md?: string): string => {
+  const fm = /^---[ \t]*\n([\s\S]*?)\n---[ \t]*(?:\n|$)/.exec(md ?? '')
+  return (fm && /^workflow:\s*(\S+)\s*$/m.exec(fm[1])?.[1]) || 'work'
+}
+
+/** What `bin/workflow-check <wf> --list` resolves from the layout, or why it could not. */
+const workflowLayout = (wf: string): { constraints: string[]; rules: string[] } | { error: string } => {
+  const { spawnSync } = require('node:child_process')
+  const r = spawnSync('python3', [require('node:path').join(PLUGIN_ROOT, 'bin', 'workflow-check'), wf, '--list'],
+    { encoding: 'utf8', timeout: 60_000 })
+  try {
+    const j = JSON.parse(r.stdout)
+    if (r.status === 0 && Array.isArray(j.constraints) && Array.isArray(j.rules)) return j
+  } catch {}
+  return { error: (r.stderr || r.error?.message || `exit ${r.status}`).trim().split('\n').pop() }
+}
+
+/** A workflow `target` runs `wf`'s checks when it is `wf` or nested under it (a child inherits its parents). */
+const covers = (target: string, wf: string) => target === wf || target.startsWith(wf + '/')
+
+/** The first argument of every `workflow-check` call in `text`: a workflow name or a `$` expansion. */
+const runnerTargets = (text: string): string[] =>
+  [...text.matchAll(/workflow-check["']?\s+["']?([^\s"';|&)]+)/g)].map(m => m[1])
+
+/** The workflows a ruleChecks command scores: `workflow-check <wf>` or `rule-check.ts --workflow <wf>`. */
+const ruleTargets = (cmd: string): string[] =>
+  [...runnerTargets(cmd), ...[...cmd.matchAll(/--workflow[=\s]+["']?([^\s"']+)/g)].map(m => m[1])]
+
+/**
+ * The workflows a `workflow_check*` shell function is called with: the runner under its shell-identifier
+ * name, as teaching's scripts/checks/workflow-check.sh defines `workflow_check` and `workflow_check_leg`.
+ * Every bare literal argument on the call's line counts, so a leg label before the workflow does not hide it.
+ */
+const helperTargets = (code: string): string[] =>
+  [...code.matchAll(/(?:^|[\s;&|(`])workflow_check\w*[ \t]+([^\n;|&)]*)/gm)]
+    .flatMap(m => m[1].split(/\s+/).map(a => a.replace(/^["']|["']$/g, '')).filter(a => a && !/^[-$]/.test(a)))
+
+/**
+ * The script files `code` runs or sources, resolved against `dir`, the script's own directory: a path
+ * after a leading `$VAR` (`$HERE`, `$SCRIPT_DIR`) is taken relative to it. Only files that exist count.
+ */
+const calledScripts = (code: string, dir: string): string[] => {
+  const fs = require('node:fs')
+  const path = require('node:path')
+  const out = new Set<string>()
+  for (const [tok] of code.matchAll(/[^\s"'`;|&()<>]+\.(?:sh|bash)\b/g)) {
+    const rest = tok.replace(/^\$\{?\w+\}?/, '')
+    const f = rest !== tok ? path.join(dir, rest) : path.isAbsolute(tok) ? tok : path.join(dir, tok)
+    try { if (fs.statSync(f).isFile()) out.add(path.resolve(f)) } catch {}
+  }
+  return [...out]
+}
+
+/**
+ * Does a script's `text` call `workflow-check` for `wf` (or a workflow nested under it)? Comment lines
+ * do not count. A call passing a `$` expansion (writing's check.sh picks `writing` or
+ * `writing/<register>` from the plan's style) reaches `wf` when the script also spells `wf`'s
+ * top-level name as a quoted string (`"writing/` for a nested `wf`). A `workflow_check*` helper call
+ * naming `wf` reaches it too. Given the script's `dir`, the scripts it runs or sources are followed
+ * (teaching's slides check.sh reaches the runner two scripts down).
+ */
+const scriptReaches = (text: string, wf: string, dir?: string, seen: Set<string> = new Set()): boolean => {
+  const code = text.split('\n').filter(l => !/^\s*#/.test(l)).join('\n')
+  const targets = runnerTargets(code)
+  if (targets.some(t => covers(t, wf)) || helperTargets(code).some(t => covers(t, wf))) return true
+  const top = wf.split('/')[0].replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const spelled = new RegExp(`["']${top}${wf.includes('/') ? '/' : '["\'/]'}`)
+  if (targets.some(t => t.startsWith('$')) && spelled.test(code)) return true
+  if (!dir) return false
+  const fs = require('node:fs')
+  const path = require('node:path')
+  for (const f of calledScripts(code, dir)) {
+    if (seen.has(f) || seen.size >= 32) continue
+    seen.add(f)
+    if (scriptReaches(fs.readFileSync(f, 'utf8'), wf, path.dirname(f), seen)) return true
+  }
+  return false
+}
+
+/** Does `cmd` run `workflow-check <wf>` (or a nested workflow), directly or through a script file it names? */
+const reachesWorkflow = (cmd: string, wf: string, projectDir?: string): boolean => {
+  if (runnerTargets(cmd).some(t => covers(t, wf))) return true
+  const fs = require('node:fs')
+  const path = require('node:path')
+  const home = process.env.HOME ?? ''
+  for (const raw of cmd.split(/\s+/)) {
+    const tok = raw.replace(/^["']|["']$/g, '').replace(/\$\{?CLAUDE_PLUGIN_ROOT\}?/g, PLUGIN_ROOT).replace(/^~(?=\/)/, home)
+    if (!/\.(sh|bash|py|ts)$/.test(tok)) continue
+    const file = path.resolve(path.isAbsolute(tok) ? tok : path.join(projectDir ?? process.cwd(), tok))
+    try {
+      if (scriptReaches(fs.readFileSync(file, 'utf8'), wf, path.dirname(file), new Set([file]))) return true
+    } catch {}
+  }
+  return false
+}
+
 type DataOutputGaps =
   | { error: string; unchecked?: true }
   | {
@@ -949,7 +1078,7 @@ type DataOutputGaps =
  */
 const dataOutputGaps = (p: Plan): DataOutputGaps => {
   const { spawnSync } = require('node:child_process')
-  const dq = require('node:path').join(import.meta.dir, '..', '..', 'ds', 'scripts', 'ds-dq.py')
+  const dq = require('node:path').join(PLUGIN_ROOT, 'checks', 'ds', 'constraints', 'ds-dq.py')
   const dsCmd = p.mechanicalChecks.find(m => /--project-dir\s/.test(m.cmd))?.cmd
   const root = p.projectDir ?? dsCmd?.match(/--project-dir\s+(\S+)/)?.[1] ?? process.cwd()
   const r = spawnSync('uv', ['run', '--quiet', '--no-project', '--with', 'polars', 'python3', dq, '--declarations', '--plan', '-', '--project-dir', root],
@@ -1100,4 +1229,4 @@ const main = () => {
 
 if (import.meta.main) main()
 
-export { lint, parseMarkdown, parsePlanMarkdown, parseArgs, runContext, taskGraph, formatGraph, commandsIn, coveredBy, stripLineSuffix, type Plan, type Finding, type TaskGraph }
+export { lint, parseMarkdown, parsePlanMarkdown, parseArgs, runContext, taskGraph, formatGraph, commandsIn, coveredBy, stripLineSuffix, workflowOf, covers, runnerTargets, scriptReaches, type Plan, type Finding, type TaskGraph }

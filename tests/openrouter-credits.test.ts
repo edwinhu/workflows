@@ -84,7 +84,7 @@ describe('(1) a 402 is named as out of credits, in every Decisions caller', () =
 
   test('rule-check: every rule UNAVAILABLE carries the top-up reason, not "missing answers.q0.probabilities"', async () => {
     const s = serve({ status: 402, body: BODY_402 })
-    const r = await run(['bun', join(ROOT, 'skills/work/scripts/rule-check.ts'), '--files', join(ROOT, 'skills/work/scripts/rule-check.ts')],
+    const r = await run(['bun', join(ROOT, 'skills/work/scripts/rule-check.ts'), '--workflow', 'ds', '--files', join(ROOT, 'skills/work/scripts/rule-check.ts')],
       baseEnv(mkTmp('orc-'), { WORK_HOLD_DECISIONS_URL: `${s.url}/` }))
     s.server.stop(true)
     const v = JSON.parse(r.out)

@@ -3,7 +3,7 @@ name: ds-companion-figures
 applies-to: [ds-delegate]
 ---
 
-**What a script already decides:** `constraints/ds-table-figure-pairing.py` decides that a main-result table has a companion figure. Whether the figure tells the table's story is this rule.
+**What a script already decides:** `checks/ds/constraints/ds-table-figure-pairing.py` decides that a main-result table has a companion figure. Whether the figure tells the table's story is this rule.
 
 ## Rule
 

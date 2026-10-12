@@ -3,7 +3,7 @@ name: ds-rate-limit-choice
 applies-to: [ds]
 ---
 
-**What a script already decides:** `constraints/ds-network-politeness.py` decides that a concurrent client states a computed rate. Whether that rate is polite to the host is this rule.
+**What a script already decides:** `checks/ds/constraints/ds-network-politeness.py` decides that a concurrent client states a computed rate. Whether that rate is polite to the host is this rule.
 
 # E7 — Network politeness: state the rate, name the failure mode, prove the fallback ran
 

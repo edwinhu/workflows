@@ -68,7 +68,7 @@ r=\${0%/bin/claude-code}; cp -- "$(grep -o 'scriptPath [^ ]*' "$r/stdin" | head 
 test('a row that streams usage reports non-zero W tokens', () => {
   const r = rig()
   const tasks = join(r.root, 'tasks.json')
-  writeFileSync(tasks, JSON.stringify([{ label: 'r', prompt: 'p' }]))
+  writeFileSync(tasks, JSON.stringify([{ label: 'r', workflow: 'none', prompt: 'p' }]))
   const res = spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', r.cwd],
     { encoding: 'utf8', env: r.env, timeout: 120_000 })
   const row = JSON.parse(res.stdout)[0]
@@ -81,7 +81,7 @@ test('a row that streams usage reports non-zero W tokens', () => {
 test('a row whose turn budget is exceeded is stopped and reported, not run to the end', () => {
   const r = rig()
   const tasks = join(r.root, 'tasks.json')
-  writeFileSync(tasks, JSON.stringify([{ label: 'r', prompt: 'p' }]))
+  writeFileSync(tasks, JSON.stringify([{ label: 'r', workflow: 'none', prompt: 'p' }]))
   const res = spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', r.cwd],
     { encoding: 'utf8', env: { ...r.env, FARM_MAX_TURNS: '1' }, timeout: 120_000 })
   const row = JSON.parse(res.stdout)[0]
@@ -92,7 +92,7 @@ test('a row whose turn budget is exceeded is stopped and reported, not run to th
 test('a runaway child past its turn cap is actually killed, not waited out', () => {
   const r = rig('', `printf '%s' $$ > "\${0%/bin/claude-code}/child-pid"\nexec sleep 45`)
   const tasks = join(r.root, 'tasks.json')
-  writeFileSync(tasks, JSON.stringify([{ label: 'r', prompt: 'p' }]))
+  writeFileSync(tasks, JSON.stringify([{ label: 'r', workflow: 'none', prompt: 'p' }]))
   const t0 = Date.now()
   const res = spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', r.cwd],
     { encoding: 'utf8', env: { ...r.env, FARM_MAX_TURNS: '1' }, timeout: 120_000 })

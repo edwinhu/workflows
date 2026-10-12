@@ -3,7 +3,7 @@ name: writing-inline-headers
 applies-to: [writing-draft, writing-verify, writing-revise]
 ---
 
-**What a script already decides:** `constraints/writing-no-bold-lead.py` delegates to `scripts/prose-audit.py`'s `emphasis·bold-lead`, which decides the detectable form. Scope, and what to write instead, are this rule.
+**What a script already decides:** `checks/writing/constraints/writing-no-bold-lead.py` delegates to `scripts/prose-audit.py`'s `emphasis·bold-lead`, which decides the detectable form. Scope, and what to write instead, are this rule.
 
 ## Rule
 

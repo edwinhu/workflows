@@ -8,7 +8,7 @@
 // `changed`), tests/fixtures/jev/<set>/<ID>/{vio,sat} with IDENTICAL placeholder files (so the stub test
 // fails until real twins replace them), the rule's calibration-manifest entry, and
 // tests/jev-rules/<set>-<ID>.test.ts. Refuses to overwrite any of them. A set the manifest lacks is
-// created when --layout is given.
+// created when --layout is given, as the workflow checks/<set>/ (rules in checks/<set>/rules/).
 // --wire: refuses while a TODO or a placeholder remains, then runs rule-calibrate --set <set> --rule <ID>
 // twice (a third time when any score sits within --margin of a bar) and moves the module into the
 // wired rulesDir only if every invocation passed and no cross-rule hit involves the rule.
@@ -158,7 +158,8 @@ function scaffold(setName: string, id: string, manifestPath: string, layout?: st
   let spec: SetSpec = m.data.sets?.[setName];
   if (!spec) {
     if (layout !== 'files' && layout !== 'diff') die(3, `the manifest has no set "${setName}"; pass --layout files|diff to create it`);
-    spec = { rulesDir: `constraints/jev/${setName}`, uncalibratedDir: `constraints/jev/${setName}/uncalibrated`, layout, rules: {} };
+    // a new set is a workflow: checks/<set>/rules is where bin/workflow-check finds it once wired
+    spec = { rulesDir: `checks/${setName}/rules`, uncalibratedDir: `checks/${setName}/rules/uncalibrated`, layout, rules: {} };
     m.data.sets = { ...(m.data.sets ?? {}), [setName]: spec };
   } else if (layout && layout !== spec.layout) {
     die(3, `set "${setName}" already has layout ${spec.layout}`);

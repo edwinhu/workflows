@@ -201,7 +201,7 @@ async function resolveRef(io: GuardIO, raw: string, filepath: string, pluginRoot
     return null; // No env var reference to validate
   }
 
-  // `{…}` and `<…>` are template placeholders (`constraints/jev/<set>`), not paths.
+  // `{…}` and `<…>` are template placeholders (`checks/<workflow>/rules`), not paths.
   if (resolved.includes("${") || resolved.includes("{") || resolved.includes("<")) return null;
 
   return resolved;

@@ -3,7 +3,7 @@ name: ds-pull-sizing-decision
 applies-to: [ds, ds-fix]
 ---
 
-**What a script already decides:** `constraints/ds-data-pull-profile.py` decides whether the approved PLAN.md RECORDS a raw-versus-aggregate decision. Which decision is right is this rule.
+**What a script already decides:** `checks/ds/constraints/ds-data-pull-profile.py` decides whether the approved PLAN.md RECORDS a raw-versus-aggregate decision. Which decision is right is this rule.
 
 ## Rule
 

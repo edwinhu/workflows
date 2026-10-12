@@ -77,7 +77,7 @@ error: expect(received).not.toContain(expected)
 Expected to not contain: "MISS"
 Received: "MISS in 'SEC v. RIPPLE LABS, INC.':\n  typ: // elide-source: SEC-v-Life-Partners-87-F3d-536-DC-Cir-1996.westlaw.txt\nThe economic reality of the transaction controls, and the label the parties attach to it does not.\n  no prefix of this sentence appears in the source\n\nMISS in 'SEC v. RIPPLE LABS, INC.':\n  typ: // elide-unchecked: reading 4 is declared unchecked in the plan\n  no prefix of this sentence appears in the source\n\n2 sentences checked, 2 not found\nNOTE: a bracketed [ ] span is tried both ways — dropped (an editorial insertion) and kept without its brackets (a case change, `[T]he`); a sentence matching under either reading is counted as found.\n"
 
-      at <anonymous> (/home/eh/projects/workflows/skills/elide-case/scripts/check-quotes.test.ts:186:21)
+      at <anonymous> (skills/elide-case/scripts/check-quotes.test.ts:186:21)
 (fail) check-quotes.py > elide- directive lines are not graded as court text [29.69ms]
 
  10 pass
@@ -107,7 +107,7 @@ Ran 11 tests across 1 file. [523.00ms]
 Run read-only from `/home/eh/areas/secreg`:
 
 ```
-$ bash /home/eh/projects/workflows/skills/elide-case/scripts/check.sh \
+$ bash ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts/check.sh \
     --addendum addenda/02-addendum.typ --docs docs --plan .claude/plans/addendum-02.md
 --- leg plan
 LEG plan: PASS — both interview answers recorded in addendum-02.md; 1 non-court reading(s) declared

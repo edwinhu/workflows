@@ -8,18 +8,14 @@
  *                       (lecture notes, a lecture deck, exam files) is skipped: see isCourseMaterial.
  * A finding already shown to this session, same label on the same line text, is not shown again.
  *
- * ONE PROSE ENGINE, ONE STRUCTURAL ENGINE:
+ * ONE PROSE ENGINE, ONE STRUCTURAL PASS:
  *   1. scripts/prose-audit.py — every prose/AI-tell pattern system, de-duplicated, span-id'd.
- *   2. constraints/run-constraints.py — STRUCTURAL constraints only (bold-lead,
- *      topic-sentences, anchored-numbers, outline-sync): real logic, not regex over prose.
- *
- * WHY check-all's PROSE MODULES ARE SUPPRESSED HERE. This hook used to run a second prose engine
- * beside check-all and suppress the overlap with `PROSE_LINT_SUPERSEDES`, a hand-maintained set of
- * three constraint names. It named the wrong three: the wikipedia-* tables were in both engines and
- * in neither's supersede list, so every AI-tell inside an edited range was reported to the model
- * twice. The second engine is gone; what remains is the suppression list below, which is the whole
- * of the split and is verified by tests/prose-engine-wiring.test.ts. See
- * docs/DESIGN-prose-constraint-architecture.md.
+ *   2. hooks/lib/structural_constraints.py — the writing workflow's STRUCTURAL constraints
+ *      (topic-sentences, anchored-numbers, outline-sync, shortjournal today): real logic, not regex
+ *      over prose. The set is the layout's (bin/workflow-check writing[/<register>] --list) minus
+ *      what prose-audit owns (the modules it reads tables from, and the one that runs it), so no
+ *      list here names a constraint and a new one under checks/writing/constraints/ is run.
+ *      tests/prose-engine-wiring.test.ts pins the split.
  *
  * Neither engine is reimplemented here: both are the same Python scripts, spawned from the same
  * PLUGIN_ROOT-relative paths, so their exact strings and regex tables stay the source of truth.
@@ -34,37 +30,16 @@ import { tmpdir } from "node:os";
 import { authenticatedWritingPlan } from "./lib/writing-plan-context.ts";
 import { join, dirname } from "node:path";
 import { isTypDeckWith, pyName, pyParts, pySuffix } from "./guards/deck.ts";
-import { TEACHING_SETS, ruleSetOf } from "./jev/rules.ts";
+import { isCourseMaterial as courseMaterial } from "./jev/rules.ts";
 
 const PLUGIN_ROOT = dirname(import.meta.dir);
-const CHECK_ALL = join(PLUGIN_ROOT, "constraints", "run-constraints.py");
+const STRUCTURAL = join(PLUGIN_ROOT, "hooks", "lib", "structural_constraints.py");
 const PROSE_AUDIT = join(PLUGIN_ROOT, "scripts", "prose-audit.py");
 
 // Both scripts declare their own dependencies in a `uv run --with …` shebang; spawning them
 // through the interpreter bypasses the shebang, so the deps are named here instead. Without
 // lxml the .docx and wikipedia-* paths die at import; without pyyaml the diction tier does.
 const PY = ["uv", "run", "--with", "lxml", "--with", "pyyaml", "python3"];
-
-/** check-all constraint families that prose-audit.py already owns. A check-all entry name is
- *  `constraints/<stem>` or `skills/<skill>/references/<stem>`.
- *
- *  A DIRECTORY PREFIX IS NOT ENOUGH UNDER `skills/writing/constraints/`. That directory holds two
- *  kinds of module: the three style guides prose-audit.py loads as tables (Strunk, Volokh,
- *  McCloskey) plus `writing-no-bold-lead`, which delegates to the audit outright — and four
- *  STRUCTURAL constraints (`writing-topic-sentences`, `writing-anchored-numbers`,
- *  `writing-outline-sync`, `writing-shortjournal`) that prose-audit.py does not own and that MUST
- *  keep reporting. `"skills/writing/"` would silence all eight, so the four prose entries are named
- *  in full. A new prose table under that directory has to be added here by hand; pc-probe's I5 is
- *  what catches a name that goes stale, which is how the `"skills/writing-"` entry below — correct
- *  until v6.0.0 moved the guides from `skills/writing-{general,legal,econ}/references/` into
- *  `skills/writing/constraints/` — was found still matching nothing. */
-export const PROSE_ENGINE_PREFIXES = [
-  "skills/ai-anti-patterns/",
-  "skills/writing/constraints/strunk-elements-of-style",
-  "skills/writing/constraints/volokh-distilled",
-  "skills/writing/constraints/mccloskey-economical-writing",
-  "skills/writing/constraints/writing-no-bold-lead",
-];
 
 // ---------------------------------------------------------------------------
 // pathlib.Path semantics, only as far as this hook uses them.
@@ -210,41 +185,29 @@ export function runProseAudit(path: string, style: string | null, ranges: Range[
   return out;
 }
 
-export function runCheckAll(projectRoot: string, path: string, ranges: Range[]): string[] {
-  let results: Record<string, unknown> = {};
+/** The workflow whose constraints the structural pass runs: writing, or writing/<register> for a
+ *  plan whose domain is one prose-audit knows (legal, econ). */
+export function writingWorkflow(style: string | null): string {
+  const s = auditStyle(style);
+  return s === "general" ? "writing" : `writing/${s}`;
+}
+
+/** THE structural pass: the layout's writing constraints prose-audit does not own, on this one file,
+ *  their `path:line:` findings kept where they fall inside the edited ranges. */
+export function runStructural(projectRoot: string, path: string, ranges: Range[], style: string | null = null, plan?: string): string[] {
+  let result: { findings?: { constraint: string; line: string }[] };
   try {
-    const { stdout } = runPy([CHECK_ALL, projectRoot]);
-    // Python iterates code POINTS and slices by them; mirror that so an astral char
-    // ahead of the JSON blob cannot shift the cut.
-    const raw = Array.from(stdout.trim());
-    let braceDepth = 0;
-    let jsonEnd = 0;
-    for (let i = 0; i < raw.length; i++) {
-      const ch = raw[i];
-      if (ch === "{") braceDepth += 1;
-      else if (ch === "}") {
-        braceDepth -= 1;
-        if (braceDepth === 0) {
-          jsonEnd = i + 1;
-          break;
-        }
-      }
-    }
-    results = jsonEnd ? JSON.parse(raw.slice(0, jsonEnd).join("")) : {};
+    const proc = Bun.spawnSync(["python3", STRUCTURAL, writingWorkflow(style), "--project-dir", projectRoot,
+      ...(plan ? ["--plan", plan] : []), "--files", path], { stdout: "pipe", stderr: "pipe", timeout: 60_000 });
+    result = JSON.parse(new TextDecoder().decode(proc.stdout));
   } catch {
     return [];
   }
-
-  const lineRe = new RegExp(`drafts/${reEscape(pyName(path))}:(\\d+):`);
+  const lineRe = new RegExp(`(^|/)${reEscape(pyName(path))}:(\\d+):`);
   const out: string[] = [];
-  for (const entry of (results.failed as Record<string, unknown>[]) ?? []) {
-    const name = (entry.name as string) ?? "";
-    // Prose is prose-audit.py's job; check-all contributes only its structural constraints.
-    if (PROSE_ENGINE_PREFIXES.some((p) => name.startsWith(p))) continue;
-    for (const v of (entry.violations as string[]) ?? []) {
-      const m = lineRe.exec(v);
-      if (m && inRanges(parseInt(m[1], 10), ranges)) out.push(v);
-    }
+  for (const f of result.findings ?? []) {
+    const m = lineRe.exec(f.line);
+    if (m && inRanges(parseInt(m[2], 10), ranges)) out.push(f.line);
   }
   return out;
 }
@@ -332,8 +295,7 @@ export function bashTouchedProseFile(cwd: string, command: string): string {
  *  materials. The same predicate routes them away from the writing rules in the per-edit Jev mod,
  *  so the two hooks cannot disagree about what is course material. */
 export function isCourseMaterial(path: string): boolean {
-  const set = ruleSetOf(path, null);
-  return set !== null && TEACHING_SETS.has(set);
+  return courseMaterial(path);
 }
 
 function seenPath(session: string): string {
@@ -392,15 +354,15 @@ async function main(): Promise<void> {
   if (isCourseMaterial(path)) process.exit(0);
 
   let projectRoot: string;
-  let runCheckAllFlag: boolean;
+  let runStructuralFlag: boolean;
   if (suffix === ".md") {
     if (pyName(pyParent(path)) !== "drafts") process.exit(0);
     projectRoot = pyParent(pyParent(path));
-    runCheckAllFlag = true;
+    runStructuralFlag = true;
   } else if (suffix === ".typ") {
     // A deck is NOT skipped. runProseAudit selects the restricted `deck` profile for it.
     projectRoot = pyParent(path);
-    runCheckAllFlag = false; // check-all only scans drafts/*.md
+    runStructuralFlag = false; // the structural constraints read drafts/*.md
   } else {
     process.exit(0);
   }
@@ -415,14 +377,14 @@ async function main(): Promise<void> {
   // an `ai-tic·sev3·rule-bites` hit through nine editing rounds because rule611 has no
   // armed plan in its plans directory. Silence that cannot be distinguished from a pass is not
   // failing safe.
-  if (!writingPlan) runCheckAllFlag = false;
+  if (!writingPlan) runStructuralFlag = false;
   const style = writingPlan?.style || null;
   const ranges = toolName === "Bash" ? gitChangedRanges(path) : editRanges(toolName, toolInput, path);
 
   let violations = runProseAudit(path, style, ranges);
-  if (runCheckAllFlag) violations = violations.concat(runCheckAll(projectRoot, path, ranges));
+  if (runStructuralFlag) violations = violations.concat(runStructural(projectRoot, path, ranges, style, writingPlan?.planPath));
   // Belt and braces on the de-duplication invariant: the audit collapses overlapping spans, and
-  // check-all no longer contributes prose at all, so an identical line reaching here twice would
+  // the structural pass contributes no prose at all, so an identical line reaching here twice would
   // be a wiring regression. Report it once regardless.
   violations = unseen((hookInput.session_id as string) ?? "", path, [...new Set(violations)]);
 

@@ -108,7 +108,7 @@ assertions that previously never executed because their test aborted at an earli
 ### 1. `bun test`
 
 ```
-$ cd /home/eh/projects/workflows/skills/elide-case/scripts && bun test
+$ cd ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts && bun test
 bun test v1.4.0 (34cbb9a40)
 
  40 pass
@@ -140,25 +140,25 @@ Zero filesystem syscalls, of any kind, touch the live course repo during a full 
 lines, all in prose, none reachable by the test runner:
 
 ```
-$ grep -rn 'areas/secreg\|SRC_REPO' /home/eh/projects/workflows/skills/elide-case/
+$ grep -rn 'areas/secreg\|SRC_REPO' ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/
 STAR-FIX.md:9:Evidence, `/home/eh/areas/secreg/docs/SEC-v-Life-Partners-87-F3d-536-DC-Cir-1996.westlaw.txt`
-STAR-FIX.md:88:$ cd /home/eh/areas/secreg && bash /home/eh/projects/workflows/skills/elide-case/scripts/check.sh \
+STAR-FIX.md:88:$ cd /home/eh/areas/secreg && bash ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts/check.sh \
 STAR-FIX.md:159:Nothing else in the repo, and nothing in `~/areas/secreg` or `~/projects/workflows`.
 RETRIEVAL-ROUTING.md:6:`/home/eh/areas/secreg` was modified; secreg was read only.
-RETRIEVAL-ROUTING.md:95:$ cd /home/eh/areas/secreg && bash /home/eh/projects/workflows/skills/elide-case/scripts/check.sh \
-RETRIEVAL-ROUTING.md:146:- Did not modify `/home/eh/projects/workflows` or `/home/eh/areas/secreg`. `git status` in secreg
+RETRIEVAL-ROUTING.md:95:$ cd /home/eh/areas/secreg && bash ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts/check.sh \
+RETRIEVAL-ROUTING.md:146:- Did not modify `${CLAUDE_PLUGIN_ROOT}` or `/home/eh/areas/secreg`. `git status` in secreg
 DIRECTIVE-FIX.md:16:Observed on `/home/eh/areas/secreg/addenda/02-addendum.typ` (read-only; not edited):
 DIRECTIVE-FIX.md:107:Run read-only from `/home/eh/areas/secreg`:
 DIRECTIVE-FIX.md:161:`scripts/check.sh` was not modified. `/home/eh/areas/secreg/addenda/02-addendum.typ` was
 SKILL.md:198:  projectDir: "/home/eh/areas/secreg",          // the COURSE directory — the tree being edited
-SKILL.md:212:      cmd: "bash /home/eh/projects/workflows/skills/elide-case/scripts/check.sh --addendum /home/eh/areas/secreg/addenda/NN-addendum.typ ...
+SKILL.md:212:      cmd: "bash ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts/check.sh --addendum /home/eh/areas/secreg/addenda/NN-addendum.typ ...
 SKILL.md:224:      acceptance: "Every `## Readings In Scope` row has its retrieved text on disk under /home/eh/areas/secreg/docs/ ...
 SKILL.md:244:      acceptance: "python3 .../check-quotes.py /home/eh/areas/secreg/addenda/NN-addendum-<slug>.typ ...
 SKILL.md:260:      acceptance: "python3 .../check-addendum.py /home/eh/areas/secreg/addenda/NN-addendum.typ ...
 GATE-FIXES.md:10:`/home/eh/areas/secreg` was read only; `git status` there shows no change to `addenda/` or
 GATE-FIXES.md:34:On `/home/eh/areas/secreg/addenda/02-addendum.typ`, Ripple reading, against
 GATE-FIXES.md:210:the brief forbids editing anything under `/home/eh/areas/secreg`.
-GATE-FIXES.md:244:$ cd /home/eh/areas/secreg && bash /home/eh/projects/workflows/skills/elide-case/scripts/check.sh \
+GATE-FIXES.md:244:$ cd /home/eh/areas/secreg && bash ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts/check.sh \
 GATE-FIXES.md:283:- Did not edit anything under `/home/eh/areas/secreg`, including the `// elide-source:` line that
 ```
 
@@ -173,7 +173,7 @@ of the skill's documentation, so the measurement that settles it is the scoped g
 ### 3. The real gate, unaffected
 
 ```
-$ cd /home/eh/areas/secreg && bash /home/eh/projects/workflows/skills/elide-case/scripts/check.sh --addendum addenda/02-addendum.typ --docs docs --plan .claude/plans/addendum-02.md
+$ cd /home/eh/areas/secreg && bash ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts/check.sh --addendum addenda/02-addendum.typ --docs docs --plan .claude/plans/addendum-02.md
 --- leg plan
 LEG plan: PASS — both interview answers recorded in addendum-02.md; 1 non-court reading(s) declared
 --- leg compile
@@ -245,7 +245,7 @@ RC=0
 - No file under `/home/eh/areas/secreg` was written. `git status` there after my run shows only the
   user's own pre-existing modifications and untracked files; `addenda/02-addendum.typ` is untouched
   and its three `// elide-source:` lines are exactly as he left them.
-- Nothing under `/home/eh/projects/workflows` was touched.
+- Nothing under `${CLAUDE_PLUGIN_ROOT}` was touched.
 - I did not add a `.westlaw.txt` to the fixture `docs/` dir. That would have restored green while
   leaving the coupling, and the next edit to his addendum would break it again.
 - `check.sh`, `check-quotes.py`, `check-addendum.py` and `check-quotes.test.ts` are unmodified. The

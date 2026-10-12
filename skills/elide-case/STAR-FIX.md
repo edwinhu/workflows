@@ -60,7 +60,7 @@ error: expect(received).toBe(expected)
 Expected: "airman Brian P. Peden"
 Received: "airman *Brian P. Peden"
 
-      at <anonymous> (/home/eh/projects/workflows/skills/elide-case/scripts/check-quotes.test.ts:144:64)
+      at <anonymous> (skills/elide-case/scripts/check-quotes.test.ts:144:64)
 (fail) check-quotes.py > the furniture stripper eats a parallel DOUBLE-asterisk star page [15.52ms]
 
  8 pass
@@ -85,7 +85,7 @@ Ran 9 tests across 1 file. [475.00ms]
 ## Gate output (read-only, after the fix)
 
 ```
-$ cd /home/eh/areas/secreg && bash /home/eh/projects/workflows/skills/elide-case/scripts/check.sh \
+$ cd /home/eh/areas/secreg && bash ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts/check.sh \
     --addendum addenda/02-addendum.typ --docs docs --plan .claude/plans/addendum-02.md
 
 --- leg plan
@@ -140,7 +140,7 @@ regressed nothing.
 
 ## Upstream documentation
 
-`/home/eh/projects/workflows/skills/westlaw/SKILL.md` **already documents the correct pattern**, at
+`${CLAUDE_PLUGIN_ROOT}/skills/westlaw/SKILL.md` **already documents the correct pattern**, at
 line 168:
 
 > Strip with `\*\*?\d+`; a `\*\d+` pattern matches inside `**304` and leaves a stray asterisk, and

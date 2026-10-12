@@ -926,6 +926,42 @@ describe('I12 — the rules/constraints split is physical', () => {
   })
 })
 
+// The checks/<workflow>/ layout: membership is the directory. bin/workflow-check runs every module under
+// checks/<wf>/constraints/ and scores every Jev module under checks/<wf>/rules/, from the plugin that
+// ships it or any plugin root on WORKFLOW_CHECKS_PATH, so no runner in the target names or globs them.
+describe('the checks/<workflow>/ layout — the directory registers the check', () => {
+  const layout = (extra: Record<string, string> = {}) => ({
+    'plugin.json': PLUGIN_JSON,
+    'checks/zz/constraints/zz-lint.py': checkerModule('zz-lint'),
+    'checks/zz/sub/constraints/zz-sub.py': checkerModule('zz-sub'),
+    'checks/zz/rules/Z-ONE.py': 'PROPOSITION = "x"\nCRITERIA = {}\n',
+    ...extra,
+  })
+
+  test('with no discovery runner in the target, a layout constraint is still called (I3)', () => {
+    expect(findingsFor(probe.runProbe(fixture(layout())), 'I3')).toEqual([])
+  })
+
+  test('beside a discovery runner that globs elsewhere, a layout constraint is reachable (I9)', () => {
+    const dir = fixture(layout({ 'constraints/run-constraints.py': runnerModule(), 'constraints/tables.py': checkerModule('tables') }))
+    expect(findingsFor(probe.runProbe(dir), 'I9')).toEqual([])
+  })
+
+  test('a Jev rule module under checks/<wf>/rules/ is not stray code (I12), but a .py in a plain rules/ still is', () => {
+    const dir = fixture(layout({ 'rules/widows.py': checkerModule('widows') }))
+    const i12 = findingsFor(probe.runProbe(dir), 'I12')
+    expect(i12.map((f: any) => f.file.slice(dir.length + 1))).toEqual([join('rules', 'widows.py')])
+  })
+
+  test('a `_` directory under checks/ is not a workflow: a checker there is judged like any other', () => {
+    const dir = fixture(layout({
+      'constraints/run-constraints.py': runnerModule(),
+      'checks/_shared/constraints/stray.py': checkerModule('stray'),
+    }))
+    expect(findingsFor(probe.runProbe(dir), 'I9').map((f: any) => f.file.slice(dir.length + 1))).toEqual([join('checks', '_shared', 'constraints', 'stray.py')])
+  })
+})
+
 describe('I10 — a rule must declare its scope', () => {
   test('a .md in a checker directory with no applies-to frontmatter is a finding', () => {
     const dir = fixture({

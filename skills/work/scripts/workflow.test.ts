@@ -2046,6 +2046,27 @@ test('advisory rule checklist reaches the GREEN lens prompt ranked by p', async 
   expect(idx1).toBeGreaterThan(-1)
 })
 
+test('a rule check that scored nothing in scope says so in scoreTable and the lens digest, never as silence', async () => {
+  // work-checks.sh carries the runner's `nothing in scope (...)` line as `scope` beside an empty verdict set
+  const scope = 'nothing in scope (no file changed under /p)'
+  const stdout = JSON.stringify({ verdicts: [], unavailable: [], scope })
+  const { result, prompts } = await run(
+    { ...baseArgs, tasks: one, ruleChecks: { name: 'rules', cmd: 'x', blockAt: 0.85 } },
+    replies({ rules: { rules: { name: 'rules', exitCode: 0, stdout } } })
+  )
+  expect(result.overallPass).toBe(true)
+  expect(result.scoreTable.ruleScope).toBe(scope)
+  expect(prompts.get('lens')).toContain(`RULE CHECKS SCORED NOTHING: ${scope}`)
+  // a run that scored rules carries no empty-scope line
+  const scored = JSON.stringify({ verdicts: [{ rule: 'R1', p: 0.1, verdict: 'MET' }], unavailable: [] })
+  const other = await run(
+    { ...baseArgs, tasks: one, ruleChecks: { name: 'rules', cmd: 'x', blockAt: 0.85 } },
+    replies({ rules: { rules: { name: 'rules', exitCode: 0, stdout: scored } } })
+  )
+  expect(other.result.scoreTable.ruleScope).toBeUndefined()
+  expect(other.prompts.get('lens')).not.toContain('RULE CHECKS SCORED NOTHING')
+})
+
 test('a dead rule-check runner fails closed', async () => {
   const { result } = await run(
     { ...baseArgs, tasks: one, ruleChecks: { name: 'rules', cmd: 'x' } },

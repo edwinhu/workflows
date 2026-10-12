@@ -3,9 +3,9 @@
  * Load constraint .md prose for a skill, filtered by applies-to frontmatter.
  * TypeScript port of load-constraints.py.
  *
- * Mirrors run-constraints.py's auto-discovery but for .md context injection.
- * Globs rules/*.md, parses applies-to, outputs matching content. constraints/ is code a
- * runner enumerates and holds no prose to load.
+ * Globs rules/*.md, parses applies-to, outputs matching content: the PROSE guidance a skill loads
+ * as context. The deterministic checks are not here — they live under checks/<workflow>/ and
+ * bin/workflow-check runs them; membership there is the directory, never an applies-to list.
  *
  * Usage:
  *     bun scripts/load-constraints.ts workshop
@@ -67,7 +67,7 @@ export function parseFrontmatter(text: string): [Meta, string] {
 /**
  * Check if a skill name matches the applies-to list.
  *
- * Matching is name-boundary aware, mirroring run-constraints.py's `_applies`:
+ * Matching is name-boundary aware:
  *   - "all"          -> matches everything
  *   - entry == skill -> exact match ("ds-plan" ⊃ ds-plan)
  *   - "ds-*"         -> family glob: the ds entry point AND every ds-<phase>

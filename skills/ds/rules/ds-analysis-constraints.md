@@ -5,7 +5,7 @@ applies-to: [ds]
 
 # DS Analysis Constraints
 
-Deterministic rules for data analysis tasks (statistical analysis, modeling, visualization). Each constraint can be verified by a script returning pass/fail. Self-contained files under `${CLAUDE_PLUGIN_ROOT}/constraints/`.
+Deterministic rules for data analysis tasks (statistical analysis, modeling, visualization). Each constraint can be verified by a script returning pass/fail. Self-contained files under `${CLAUDE_PLUGIN_ROOT}/rules/`; the scripts that decide them are `${CLAUDE_PLUGIN_ROOT}/checks/ds/constraints/`.
 
 **Complements (not replaces):** `${CLAUDE_PLUGIN_ROOT}/skills/ds/rules/ds-common-constraints.md` — load both for analysis tasks.
 

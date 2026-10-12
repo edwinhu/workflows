@@ -978,3 +978,24 @@ describe('the red probe skips a task carrying a proven red adjudication', () => 
     expect(r.out).toMatch(/no active task needs a probe/)
   })
 })
+
+describe('the workflow cursor (.planning/ACTIVE_WORKFLOW.md in projectDir)', () => {
+  test('dispatch sets its workflow: line from the plan and keeps the fields another writer put there', () => {
+    const f = fixture({ redCommand: 'bash scripts/check.sh' })
+    script(f.dir, 'check.sh', 'echo "1 failed, 0 passed"\nexit 1')
+    mkdirSync(join(f.dir, '.planning'), { recursive: true })
+    writeFileSync(join(f.dir, '.planning', 'ACTIVE_WORKFLOW.md'), '---\nworkflow: writing\nstyle: legal\n---\n\nScoping marker.\n')
+    const r = dispatch(f, '--no-red-probe', '--no-mech-probe', '--no-suite-lint')
+    expect(r.code, r.out).toBe(0)
+    // the fixture plan names no workflow, which is `work`
+    expect(readFileSync(join(f.dir, '.planning', 'ACTIVE_WORKFLOW.md'), 'utf8')).toBe('---\nworkflow: work\nstyle: legal\n---\n\nScoping marker.\n')
+  })
+
+  test('a readOnly run writes no cursor into the tree it promised not to touch', () => {
+    const f = fixture({ redCommand: 'bash scripts/check.sh', tasks: [], extraArgs: { readOnly: true, mechanicalChecks: [{ name: 'gate', cmd: 'bash scripts/check.sh' }] } })
+    script(f.dir, 'check.sh', 'echo "gate: 1 file(s) examined"\nexit 0')
+    const r = dispatch(f, '--no-red-probe', '--no-mech-probe', '--no-suite-lint')
+    expect(r.code, r.out).toBe(0)
+    expect(existsSync(join(f.dir, '.planning', 'ACTIVE_WORKFLOW.md'))).toBe(false)
+  })
+})

@@ -5,7 +5,7 @@ applies-to: [ds]
 
 # DS Workflow: Common Constraints
 
-Deterministic rules for the DS workflow. Each constraint can be verified by a script returning pass/fail. Self-contained files under `${CLAUDE_PLUGIN_ROOT}/constraints/`.
+Deterministic rules for the DS workflow. Each constraint can be verified by a script returning pass/fail. Self-contained files under `${CLAUDE_PLUGIN_ROOT}/rules/`; the scripts that decide them are `${CLAUDE_PLUGIN_ROOT}/checks/ds/constraints/`.
 
 **See also:** `${CLAUDE_PLUGIN_ROOT}/skills/ds/rules/ds-common-conventions.md` for judgment-based behavioral guidance (V1-V9).
 

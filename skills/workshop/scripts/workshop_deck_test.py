@@ -6,7 +6,7 @@
 # Dependencies are declared HERE, not in whoever runs the suite. A generic gate cannot know
 # that this file needs pypdf, and guessing wrong is silent: run without it and 19 of 108
 # cases fail for a missing import, which reads exactly like 19 broken contracts.
-"""Contract suite for ${CLAUDE_PLUGIN_ROOT}/skills/workshop/scripts/workshop-deck.py.
+"""Contract suite for ${CLAUDE_PLUGIN_ROOT}/checks/workshop/constraints/workshop-deck.py.
 
 WHY THIS EXISTS
     The defect the probe removes is a check that reports clean when it could not run: upstream's
@@ -43,8 +43,8 @@ from pathlib import Path
 
 import pytest
 
-RUNNER = Path(__file__).resolve().parent / "workshop-deck.py"
-SKILL_ROOT = RUNNER.parent.parent
+SKILL_ROOT = Path(__file__).resolve().parent.parent
+RUNNER = SKILL_ROOT.parent.parent / "checks" / "workshop" / "constraints" / "workshop-deck.py"
 FIXTURES = SKILL_ROOT / "fixtures"
 CLEAN = FIXTURES / "clean"
 
@@ -396,6 +396,7 @@ def scratch_skill(tmp_path: Path) -> Path:
         SKILL_ROOT, dest,
         ignore=shutil.ignore_patterns("fixtures", "__pycache__", "*.pyc", ".pytest_cache"),
     )
+    shutil.copy2(RUNNER, dest / "scripts" / RUNNER.name)  # the probe lives in checks/, not the skill
     shutil.copytree(CONSTRAINT_RUNNER.parent, dest / "constraints", ignore=ignore)
     shutil.copytree(TYPST_PLUGIN / "scripts", dest / "typst" / "scripts", ignore=ignore)
     shutil.copytree(TYPST_PLUGIN / "constraints",
@@ -1644,6 +1645,34 @@ def test_an_unreadable_plan_still_emits_every_line_and_exits_non_zero(tmp_path: 
         assert report.status(check) == "FAIL", (check, report[check])
         assert "could not read the approved plan" in report[check]["detail"]
     assert proc.returncode == 1, proc.stdout + proc.stderr
+
+
+# The constraint contract bin/workflow-check runs the probe on: the count line first, every FAIL a
+# `path:line: <ID>` finding, and no plan an explicit empty scope rather than a usage error.
+
+
+def test_with_no_plan_the_probe_reports_an_explicit_empty_scope_and_passes(tmp_path: Path):
+    proc = subprocess.run(
+        [sys.executable, str(RUNNER), "--project-dir", str(tmp_path), "--files", str(RUNNER)],
+        capture_output=True, text=True, check=False,
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert proc.stdout.splitlines() == ["workshop-deck: 0 deck check(s) examined — nothing in scope (no --plan given)"]
+
+
+def test_the_count_line_comes_first_and_each_failure_is_a_plan_finding(tmp_path: Path):
+    root = stage(tmp_path)
+    substitute(deck_src(root), CLEAN_FINAL_LINE, "")
+    (root / "plan.md").write_text("# Plan\n", encoding="utf-8")
+    proc = subprocess.run(
+        [sys.executable, str(RUNNER), "--plan", str(root / "plan.md"), "--project-dir", str(root), "--files"],
+        capture_output=True, text=True, check=False,
+    )
+    lines = proc.stdout.splitlines()
+    assert lines[0] == "workshop-deck: 13 deck check(s) examined", proc.stdout
+    findings = [ln for ln in lines if ln.startswith("plan.md:1: ")]
+    assert [ln.split()[1] for ln in findings] == list(ARTIFACT_CHECKS), proc.stdout
+    assert proc.returncode == 1
 
 
 def test_the_json_report_mirrors_the_emitted_lines(tmp_path: Path):

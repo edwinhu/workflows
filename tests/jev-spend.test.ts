@@ -245,7 +245,7 @@ describe('the reply cache', () => {
     try {
       const f = join(dir, 'memo.md')
       writeFileSync(f, '# Memo\n\nThe board should adopt the plan. It saves money.\n')
-      const argv = ['bun', 'skills/work/scripts/rule-check.ts', '--files', f, '--rules', 'constraints/jev/writing']
+      const argv = ['bun', 'skills/work/scripts/rule-check.ts', '--files', f, '--workflow', 'writing']
       const a = await run(argv, envFor(dir, s.url))
       const asked = s.seen.length
       const b = await run(argv, envFor(dir, s.url))

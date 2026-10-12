@@ -17,7 +17,9 @@ import { useTmp } from "../../../tests/helpers/tmp.ts";
 const mkTmp = useTmp();
 
 const CHECK = path.join(import.meta.dir, "check.sh");
-const CHECK_ADDENDUM = path.join(import.meta.dir, "check-addendum.py");
+// The checkers are the elide workflow's constraints; check.sh drives them from there.
+const CHECKERS = path.join(import.meta.dir, "..", "..", "..", "checks", "elide", "constraints");
+const CHECK_ADDENDUM = path.join(CHECKERS, "check-addendum.py");
 const FIXTURES = path.join(import.meta.dir, "..", "fixtures");
 const SRC_TYP = path.join(FIXTURES, "source-addendum.typ");
 const SRC_DOCS = path.join(FIXTURES, "docs");
@@ -184,6 +186,7 @@ describe("check.sh", () => {
       addendum: "PASS",
       strays: "PASS",
       marks: "PASS",
+      constraints: "PASS",
     });
     expect(out).toContain("reading 2/2");
     expect(code).toBe(0);
@@ -200,6 +203,7 @@ describe("check.sh", () => {
     expect(Object.keys(seen).sort()).toEqual([
       "addendum",
       "compile",
+      "constraints",
       "marks",
       "plan",
       "quotes",
@@ -476,6 +480,32 @@ ${scopeSection([
         expect(code).not.toBe(0);
       }, 300_000);
     }
+
+    // The interview check is an elide constraint, so the runner reaches it with no check.sh: a
+    // farmed row or a /work gate naming `elide` and the plan refuses an unanswered interview.
+    test("workflow-check elide --plan refuses a plan that does not record the interview", () => {
+      const repo = path.join(import.meta.dir, "..", "..", "..");
+      const scope = scopeSection([[CAP.mutualBenefits, "1-12"]]);
+      const half = writePlan("gate-half", GOOD_TARGET.replace("- Taught for: reasoning\n", "") + scope);
+      const whole = writePlan("gate-whole", GOOD_TARGET + scope);
+      const gate = (plan?: string) => {
+        const r = spawnSync(
+          "python3",
+          [path.join(repo, "bin", "workflow-check"), "elide", "--constraints-only", "--project-dir", ROOT,
+           ...(plan ? ["--plan", plan] : []), "--files", half],
+          { encoding: "utf8", timeout: 300_000, env: { ...process.env, WORKFLOW_CHECKS_PATH: repo } },
+        );
+        return { code: r.status, out: `${r.stdout ?? ""}${r.stderr ?? ""}` };
+      };
+      const bad = gate(half);
+      expect(bad.out).toMatch(/^gate-half\/plan\.md:\d+: \S+ .*'Taught for:' is missing or empty/m);
+      expect(bad.code).toBe(1);
+      const good = gate(whole);
+      expect(good.out).not.toContain("'Taught for:'");
+      expect(good.out).toMatch(/^[\w-]+: 1 plan\(s\) examined/m);
+      expect(good.code).toBe(0);
+      expect(gate().out).toMatch(/^[\w-]+: 0 plan\(s\) examined — nothing in scope \(no --plan given\)/m);
+    }, 300_000);
   });
 
   // A '## Non-court readings' bullet switches the FIRST Iron Law off the reading it hits, so
@@ -711,28 +741,37 @@ ${scopeSection([
   // sweep, both all-clean), so a Typst-compiled fixture would assert nothing about the
   // checker. Drawing the lines makes the defect stated rather than hoped for.
   describe("the strays leg decides widows, orphans, stranded headings and runts", () => {
-    const STRANDED = path.join(import.meta.dir, "check-stranded-headings.py");
+    const STRANDED = path.join(CHECKERS, "check-stranded-headings.py");
     const MAKE = path.join(FIXTURES, "make-pagebreak-fixture.py");
     // The runt checker is CANONICAL, in the typst plugin, and is resolved the way check.sh
     // resolves it. This named `<plugin>/scripts/check-widows.py` — the pre-split script that did
     // widows, orphans and runts together, and that exists in no plugin since typst separated them
     // into widows.py / orphans.py / runts.py. The test failed for years-old naming, not for a
     // defect, and nothing ran it to say so: skills/*/scripts/ was in no gate.
-    const CANON = (() => {
-      const r = spawnSync("typst-constraints", ["--dir"], { encoding: "utf8" });
-      if (r.status === 0 && r.stdout.trim()) return r.stdout.trim();
-      for (const c of [`${process.env.HOME}/.claude/skills/typst/constraints`,
-                       `${process.env.HOME}/projects/typst/constraints`]) {
-        if (existsSync(path.join(c, "runts.py"))) return c;
-      }
-      throw new Error("the typst plugin was not found — the canonical checkers cannot run, which is not the same as their passing");
+    // Like check.sh: the workshop layout (`workflow-check workshop --list`) first, then the directory
+    // `typst-constraints --dir` names.
+    const LISTED: string[] = (() => {
+      const r = spawnSync("python3", [path.join(import.meta.dir, "..", "..", "..", "bin", "workflow-check"), "workshop", "--list"],
+        { encoding: "utf8" });
+      return r.status === 0 ? JSON.parse(r.stdout).constraints : [];
     })();
-    const RUNTS = path.join(CANON, "runts.py");
+    const CANON_DIRS = (() => {
+      const r = spawnSync("typst-constraints", ["--dir"], { encoding: "utf8" });
+      return [...(r.status === 0 && r.stdout.trim() ? [r.stdout.trim()] : []),
+              `${process.env.HOME}/.claude/skills/typst/constraints`, `${process.env.HOME}/projects/typst/constraints`];
+    })();
+    function canon(name: string): string {
+      const hit = LISTED.find(f => path.basename(f) === name && fs.existsSync(f))
+        ?? CANON_DIRS.map(d => path.join(d, name)).find(f => fs.existsSync(f));
+      if (!hit) throw new Error(`${name}: the typst plugin was not found — the canonical checkers cannot run, which is not the same as their passing`);
+      return hit;
+    }
+    const RUNTS = canon("runts.py");
 
     /** Any canonical checker, run the way check.sh runs it. */
     function checkCanon(name: string, pdf: string) {
       const py = pymupdfPython() ?? "python3";
-      const r = spawnSync(py, [path.join(CANON, name), pdf, "--prose"], {
+      const r = spawnSync(py, [canon(name), pdf, "--prose"], {
         encoding: "utf8",
         timeout: 300_000,
       });
@@ -929,6 +968,35 @@ ${scopeSection([
       expect(code).not.toBe(0);
     }, 300_000);
 
+    // The typst plugin keeps the three under checks/workshop/constraints/ (the workshop workflow's
+    // layout), while `typst-constraints --dir` still names its constraints/ — which then holds none of
+    // them. The leg finds them through the layout, as `workflow-check workshop --list` reaches them.
+    test("the canonical checkers are found in a plugin's checks/workshop/constraints/", () => {
+      const typ = fixture("canon-layout", [3], "", { calibrate: false });
+      const plug = mkTmp("elide-typst-");
+      fs.mkdirSync(path.join(plug, "constraints"), { recursive: true });
+      fs.mkdirSync(path.join(plug, "checks", "workshop", "constraints"), { recursive: true });
+      for (const n of ["widows", "orphans", "runts"]) {
+        fs.writeFileSync(
+          path.join(plug, "checks", "workshop", "constraints", `${n}.py`),
+          `import sys\nprint("stub-${n} ran: " + " ".join(sys.argv[1:]))\n`,
+        );
+      }
+      const shadow = path.join(ROOT, "shadow-bin-layout");
+      fs.mkdirSync(shadow, { recursive: true });
+      fs.writeFileSync(path.join(shadow, "typst-constraints"), `#!/bin/sh\necho '${path.join(plug, "constraints")}'\n`);
+      fs.chmodSync(path.join(shadow, "typst-constraints"), 0o755);
+      const repo = path.join(import.meta.dir, "..", "..", "..");
+      const { out } = runRaw(["--addendum", typ, "--no-plan", "--no-target"], {
+        PATH: `${shadow}:${process.env.PATH}`,
+        TYPST_CHECKERS_DIR: path.join(ROOT, "no-such-constraints-dir"),
+        WORKFLOW_CHECKS_PATH: `${repo}:${plug}`,
+      });
+      for (const n of ["widows", "orphans", "runts"]) expect(out).toMatch(new RegExp(`stub-${n} ran: \\S+\\.pdf --prose`));
+      expect(out).not.toContain("not found (TYPST_CHECKERS_DIR");
+      expect(legs(out).strays).toBe("PASS");
+    }, 300_000);
+
     test("--no-strays waives the canonical sub-checks too, and says so", () => {
       const typ = fixture("runt-waived", [3]);
       const { out } = runRaw(["--addendum", typ, "--no-plan", "--no-target", "--no-strays"]);
@@ -1008,7 +1076,7 @@ ${scopeSection([
     const { out } = run(["--addendum", typ]);
     const raw = spawnSync(
       "python3",
-      [path.join(import.meta.dir, "check-quotes.py"), typ, path.join(ROOT, "gap", "docs", DOC_FILES[1])],
+      [path.join(CHECKERS, "check-quotes.py"), typ, path.join(ROOT, "gap", "docs", DOC_FILES[1])],
       { encoding: "utf8" },
     );
     const rawOut = `${raw.stdout ?? ""}${raw.stderr ?? ""}`;
@@ -1041,12 +1109,13 @@ ${scopeSection([
       addendum: "PASS",
       strays: "PASS",
       marks: "PASS",
+      constraints: "PASS",
     });
     expect(code).toBe(0);
   }, 300_000);
 
   describe("the marks leg decides elision marks and footnote numbering from the .typ", () => {
-    const CHECK_MARKS = path.join(import.meta.dir, "check-marks.py");
+    const CHECK_MARKS = path.join(CHECKERS, "check-marks.py");
     const marks = (typ: string) => spawnSync("python3", [CHECK_MARKS, typ], { encoding: "utf8" });
     const variant = (name: string, edit: (s: string) => string) => {
       const typ = fixture(name, [3], "", { calibrate: false });
@@ -1099,5 +1168,27 @@ ${scopeSection([
     const { code, out } = runRaw(["--addendum", fixtureTyp, "--target", "1-6"]);
     expect(legs(out).plan).toBe("FAIL");
     expect(code).not.toBe(0);
+  }, 300_000);
+
+  // Membership is the directory: a constraint dropped into checks/elide/constraints/ of any plugin
+  // root on WORKFLOW_CHECKS_PATH is run on the addendum with no edit to check.sh.
+  test("the constraints leg runs a constraint dropped into checks/elide/constraints/", () => {
+    const typ = fixture("dropped", [3]);
+    const plug = mkTmp("elide-plug-");
+    fs.mkdirSync(path.join(plug, "checks", "elide", "constraints"), { recursive: true });
+    fs.writeFileSync(
+      path.join(plug, "checks", "elide", "constraints", "zz-dropped.py"),
+      'import sys\nprint("zz-dropped: 1 addendum(s) examined")\n' +
+        'print("addenda/dropped.typ:1: zz-dropped fired, handed " + " ".join(a for a in sys.argv if a.endswith(".typ")))\nsys.exit(1)\n',
+    );
+    const repo = path.join(import.meta.dir, "..", "..", "..");
+    const { code, out } = runRaw(["--addendum", typ, "--no-plan", "--target", "1-12"], {
+      WORKFLOW_CHECKS_PATH: `${repo}:${plug}`,
+    });
+    expect(out).toContain(`zz-dropped fired, handed ${typ}`);
+    expect(legs(out).constraints).toBe("FAIL");
+    expect(legs(out).quotes).toBe("PASS");
+    expect(out).toContain("constraints=FAIL");
+    expect(code).toBe(1);
   }, 300_000);
 });

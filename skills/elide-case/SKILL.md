@@ -223,10 +223,12 @@ added.
   goal: "<one sentence>",
 
   // ── The deterministic floor: ONE entry point, whose exit code IS the mechanical verdict. ──
-  // Six legs — the plan's interview answers, typst compile, check-quotes.py per derived caption,
+  // Seven legs — the plan's interview answers (check-plan.py), typst compile, check-quotes.py per derived caption,
   // check-addendum.py --target, the strays leg (canonical widows.py/orphans.py/runts.py
-  // plus check-stranded-headings.py), and check-marks.py (one elision mark per addendum; every
-  // retained footnote renumbered 1..k and paired) — none short-circuiting. A second entry here would spread the
+  // plus check-stranded-headings.py), check-marks.py (one elision mark per addendum; every
+  // retained footnote renumbered 1..k and paired), and `bin/workflow-check elide
+  // --constraints-only`, which runs every constraint under checks/elide/constraints/ (where the five
+  // checkers live) over the addendum and the plan — none short-circuiting. A second entry here would spread the
   // verdict over two commands and lose one silently; P10 refuses it.
   // The plan leg FAILS CLOSED: pass `--plan <md>` on a real run or `--no-plan` on a fixture run,
   // and passing neither is a FAIL naming the missing flag. `--plan` also carries the plan's
@@ -245,18 +247,18 @@ added.
   mechanicalChecks: [
     {
       name: "elide-check",
-      cmd: "bash /home/eh/projects/workflows/skills/elide-case/scripts/check.sh --addendum /home/eh/areas/secreg/addenda/NN-addendum.typ --pdf /home/eh/areas/secreg/output/addenda/NN-addendum.pdf --plan /home/eh/areas/secreg/.claude/plans/<slug>.md",
+      cmd: "bash ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts/check.sh --addendum /home/eh/areas/secreg/addenda/NN-addendum.typ --pdf /home/eh/areas/secreg/output/addenda/NN-addendum.pdf --plan /home/eh/areas/secreg/.claude/plans/<slug>.md",
     },
   ],
 
-  // Jev scores the calibrated excerpt rules under constraints/jev/elide: an elision mark cutting
+  // Jev scores the calibrated excerpt rules under checks/elide/rules/: an elision mark cutting
   // inside a holding or rule sentence, a heading or ordinal sequence that skips with nothing
   // marking it, editors' voice set as the court's, stress inside a quotation with no emphasis
   // notation, and a reading's note that is only mechanical boilerplate. p >= 0.85 lands in
   // rulesThatFailed and blocks; lower ones reach the lens ranked. It scores the assembled
   // addendum by --files, not --project-dir: the course tree carries earlier addenda untracked,
   // and every untracked file is "changed", so a project-dir run would grade old readings too.
-  ruleChecks: { name: "jev-elide-rules", cmd: "bun /home/eh/projects/workflows/skills/work/scripts/rule-check.ts --files /home/eh/areas/secreg/addenda/NN-addendum.typ --plan /home/eh/areas/secreg/.claude/plans/<slug>.md --project secreg --rules /home/eh/projects/workflows/constraints/jev/elide" },
+  ruleChecks: { name: "jev-elide-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow elide --files /home/eh/areas/secreg/addenda/NN-addendum.typ --plan /home/eh/areas/secreg/.claude/plans/<slug>.md --project secreg" },
 
   tasks: [
     // ── WAVE 1: ONE row, whatever the reading count. It is the only row that writes `docs/`,
@@ -269,8 +271,8 @@ added.
       acceptance: "Every `## Readings In Scope` row has its retrieved source on disk under /home/eh/areas/secreg/docs/ — <name>.westlaw.docx ALONE on the Westlaw route, or <name>.pdf plus <name>.txt on the corpus fallback — and each is the reporter text of that row's caption. Writing a <name>.westlaw.txt for a source retrieved THIS RUN fails this row — the projection is in memory. A .westlaw.txt already in docs/ from an earlier run is left alone: an addendum whose plan or `// elide-source:` names one still resolves and still passes, and deleting it would break a gate that was green.",
       redDisposition: "Retrieval writes no excerpt, so there is no behaviour a redCommand could hold red: the run's mechanical entry point cannot run at all until wave 2 has produced a .typ to check. The per-task Verify channel adjudicates the files this row is responsible for.",
       refs: [
-        "/home/eh/projects/workflows/skills/elide-case/references/authenticity.md",
-        "/home/eh/projects/workflows/skills/elide-case/references/retrieval.md",
+        "${CLAUDE_PLUGIN_ROOT}/skills/elide-case/references/authenticity.md",
+        "${CLAUDE_PLUGIN_ROOT}/skills/elide-case/references/retrieval.md",
       ],
     },
     // ── WAVE 2: ONE ROW PER READING. Copy this row for each `## Readings In Scope` line,
@@ -286,11 +288,11 @@ added.
       // Task-specific: check-quotes.py for THIS caption alone. Not the run's entry point — a task
       // graded by the shared command can be reported done because a DIFFERENT task's work made it
       // pass, which leaves `work`'s per-task Verify channel nothing task-specific to judge.
-      acceptance: "python3 /home/eh/projects/workflows/skills/elide-case/scripts/check-quotes.py /home/eh/areas/secreg/addenda/NN-addendum-<slug>.typ /home/eh/areas/secreg/docs/<name>.westlaw.docx --caption '<this reading's caption>' --skip-editorial exits 0, having checked a non-zero number of sentences for that caption.",
+      acceptance: "python3 ${CLAUDE_PLUGIN_ROOT}/checks/elide/constraints/check-quotes.py /home/eh/areas/secreg/addenda/NN-addendum-<slug>.typ /home/eh/areas/secreg/docs/<name>.westlaw.docx --caption '<this reading's caption>' --skip-editorial exits 0, having checked a non-zero number of sentences for that caption.",
       redDisposition: "The behaviour this task must satisfy is already executed by the run's one mechanical entry point, whose check-quotes.py leg is red before the excerpt exists and green after; a redCommand here would be that same command run a second time by a second agent.",
       refs: [
-        "/home/eh/projects/workflows/skills/elide-case/references/authenticity.md",
-        "/home/eh/projects/workflows/skills/elide-case/references/editing-marks.md",
+        "${CLAUDE_PLUGIN_ROOT}/skills/elide-case/references/authenticity.md",
+        "${CLAUDE_PLUGIN_ROOT}/skills/elide-case/references/editing-marks.md",
       ],
     },
     // ── WAVE 3: alone, so its two writable paths collide with nothing.
@@ -302,12 +304,12 @@ added.
       // Task-specific: check-addendum.py's own arity, table-truth and length legs against the
       // compiled PDF. The run's entry point stays the WHOLE mechanical verdict without also being
       // this task's only grader.
-      acceptance: "python3 /home/eh/projects/workflows/skills/elide-case/scripts/check-addendum.py /home/eh/areas/secreg/addenda/NN-addendum.typ /home/eh/areas/secreg/output/addenda/NN-addendum.pdf --target <the page target the plan's `## Readings In Scope` rows carry; when the rows differ, run the run's entry point instead, which reads each row's own target> exits 0 — summary-table rows equal readings found (arity), every stated page range matches the compiled PDF (table truth), and each reading is inside its target (length).",
+      acceptance: "python3 ${CLAUDE_PLUGIN_ROOT}/checks/elide/constraints/check-addendum.py /home/eh/areas/secreg/addenda/NN-addendum.typ /home/eh/areas/secreg/output/addenda/NN-addendum.pdf --target <the page target the plan's `## Readings In Scope` rows carry; when the rows differ, run the run's entry point instead, which reads each row's own target> exits 0 — summary-table rows equal readings found (arity), every stated page range matches the compiled PDF (table truth), and each reading is inside its target (length).",
       dependsOn: ["cut-<slug>" /* , one id per reading row; `retrieve` is reached transitively */],
       redDisposition: "Work whose whole acceptance is the run's mechanical entry point; `work` re-runs that command in a shell to adjudicate it, so a redCommand would duplicate the gate rather than gate the task.",
       refs: [
-        "/home/eh/projects/workflows/skills/elide-case/references/authenticity.md",
-        "/home/eh/projects/workflows/skills/elide-case/references/verification.md",
+        "${CLAUDE_PLUGIN_ROOT}/skills/elide-case/references/authenticity.md",
+        "${CLAUDE_PLUGIN_ROOT}/skills/elide-case/references/verification.md",
       ],
     },
   ],
@@ -329,7 +331,7 @@ added.
       key: "legibility",
       items: ["<caption>" /* , one per `## Readings In Scope` row */],
       agentType: "Explore",
-      refs: ["/home/eh/projects/workflows/skills/elide-case/references/editing-marks.md"],
+      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/elide-case/references/editing-marks.md"],
       prompt: "Read this reading's excerpt in addenda/NN-addendum.typ as a student would, with no access to the full opinion. Count ONLY these five defect kinds, and report COUNTS plus the offending sentences verbatim: (1) unparsable — a sentence that does not parse as a sentence; (2) fusedElision — an elision that joins two fragments into something the court did not write; (3) danglingReferent — a pronoun or 'it'/'that' whose referent was cut; (4) unattributedQuote — a block quote whose speaker is not identifiable from the excerpt alone; (5) undefinedTermOfArt — a term of art used before it is introduced. Anything outside those five is not counted here. `itemsChecked` is the number of sentences you actually read; report 0 only if you read none, which marks the item unreliable rather than clean.",
       schema: {
         type: "object",
@@ -354,7 +356,7 @@ added.
       key: "fidelity",
       items: ["<caption>" /* , one per `## Readings In Scope` row */],
       agentType: "Explore",
-      refs: ["/home/eh/projects/workflows/skills/elide-case/references/authenticity.md"],
+      refs: ["${CLAUDE_PLUGIN_ROOT}/skills/elide-case/references/authenticity.md"],
       prompt: "Verbatim matching cannot see misrepresentation. Judge whether the CUT misrepresents the opinion, reading this reading's excerpt against its full source docs/<name>.westlaw.docx. Count ONLY these four, and report COUNTS plus the excerpt passage and the source line for each: (1) quotedAsOwnReasoning — a passage the court QUOTES FROM ANOTHER CASE presented as the court's own reasoning; 02-addendum did exactly this, rendering a Life Partners block quote as running text inside the Mutual Benefits excerpt, where the Eleventh Circuit quotes it in order to REJECT it; (2) unqualifiedHolding — a holding stated without the qualifier that limits it; (3) omittedAlternativeHolding — an omitted alternative holding that changes what the case stands for; (4) dissentAsMajority — a dissent's language read as the majority's. `itemsChecked` is the number of excerpt passages you traced back to the source; 0 marks the item unreliable rather than clean.",
       schema: {
         type: "object",
@@ -543,5 +545,5 @@ command that makes X true — and if there is none, say so plainly where the cla
 
 `skills/elide-case/` is **untracked in git**, so the plugin does not carry it: `Skill(workflows:elide-case)`
 returns *Unknown skill*. Until the user commits the skill and reinstalls the plugin, this file is read
-by path — `/home/eh/projects/workflows/skills/elide-case/SKILL.md`. **Do not commit or install it to
+by path — `${CLAUDE_PLUGIN_ROOT}/skills/elide-case/SKILL.md`. **Do not commit or install it to
 fix that.** It is the user's call, and it is recorded here rather than worked around.

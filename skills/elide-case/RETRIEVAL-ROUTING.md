@@ -2,7 +2,7 @@
 
 Westlaw is now the first retrieval route in `elide-case`; the CourtListener/RECAP and CAP routes are
 the fallback. Files touched are all inside
-`/home/eh/projects/workflows/skills/elide-case/`. Nothing under `/home/eh/projects/workflows` or
+`${CLAUDE_PLUGIN_ROOT}/skills/elide-case/`. Nothing under `${CLAUDE_PLUGIN_ROOT}` or
 `/home/eh/areas/secreg` was modified; secreg was read only.
 
 ## `references/retrieval.md`
@@ -78,7 +78,7 @@ the skill, this file was not it.
 ### Test suite — verbatim
 
 ```
-$ cd /home/eh/projects/workflows/skills/elide-case/scripts && bun test
+$ cd ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts && bun test
 bun test v1.4.0 (34cbb9a40)
 
  36 pass
@@ -92,7 +92,7 @@ Same as the pre-edit baseline (36 pass, 0 fail).
 ### Gate — verbatim, read-only, after the edits
 
 ```
-$ cd /home/eh/areas/secreg && bash /home/eh/projects/workflows/skills/elide-case/scripts/check.sh \
+$ cd /home/eh/areas/secreg && bash ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts/check.sh \
     --addendum addenda/02-addendum.typ --docs docs --plan .claude/plans/addendum-02.md
 --- leg plan
 LEG plan: PASS — both interview answers recorded in addendum-02.md; 1 non-court reading(s) declared
@@ -143,7 +143,7 @@ Exit code 0. Identical to the pre-edit baseline run, leg for leg.
 - Did not scope or preserve a three-tier hierarchy or a corrections ledger — neither exists in this
   skill; see the section above.
 - Did not modify `references/editing-marks.md`, any script, any test, or any fixture.
-- Did not modify `/home/eh/projects/workflows` or `/home/eh/areas/secreg`. `git status` in secreg
+- Did not modify `${CLAUDE_PLUGIN_ROOT}` or `/home/eh/areas/secreg`. `git status` in secreg
   shows modifications under `notes/`, `slides/` and `templates/` that predate this work and are not
   attributable to it; `addenda/` and `docs/` show no change.
 - Did not add a test for the routing change. The routing lives entirely in context-loaded prose and

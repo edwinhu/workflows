@@ -110,7 +110,7 @@ about; and work re-runs a claimed mechanical pass in a shell (`work-result.sh`),
 affordable for one command and not for N. **P10** refuses a second `mechanicalChecks` entry; a
 genuine exception is declared with `<!-- wc-probe: ignore-entry-point -->`.
 
-**A domain's check.sh calls its domain gate.** `skills/work/scripts/domain-gate.py --domain <d>` computes what the domain runs: the glob `constraints/<d>-*.py`, `ds-dq`, and the Jev set wired in `RULE_DIRS`. check.sh passes `--skip-rules` because the plan's `ruleChecks` scores them; a farmed row calls it bare. `authoring-lint` L5/L6 refuse a check.sh that skips it and a domain whose Jev rules run nowhere.
+**A workflow's check.sh calls the one runner.** `bin/workflow-check <wf> --constraints-only` runs every constraint under `checks/<wf>/constraints/` (a nested workflow's parents' too: `writing/legal` runs writing's) in every plugin root on `WORKFLOW_CHECKS_PATH`. Membership is the directory, so a constraint dropped there runs with no edit to check.sh. check.sh passes `--constraints-only` because the plan's `ruleChecks`, `rule-check.ts --workflow <wf>`, scores `checks/<wf>/rules/`; a farmed row calls the runner bare. `authoring-lint` L5/L6 refuse a check.sh that skips it and a domain whose Jev rules run nowhere.
 
 **And it reaches its constraints by ONE name.** A plugin shipping a constraint corpus exposes
 `scripts/load-constraints <scope>[,<scope>] [--index|--full]` — index by default, because the prose
@@ -120,7 +120,7 @@ couples every caller to a language choice; `wc-probe`'s P13 refuses those. Cross
 is reached through `bin/` on PATH (`typst-rules`), never through a hand-rolled `$HOME` resolver.
 
 **A generated workflow declares its own check entry point.** `check.sh` gates workflow *artifacts* —
-probe, parity, node-check, probe suite — and is not a generated workflow's domain gate. A workflow
+probe, parity, the authoring constraints, probe suite — and is not a generated workflow's domain gate. A workflow
 whose domain has a toolchain (build, test, lint, render) ships one entry point of its own, collects
 those legs behind it, and names *that* in its `mechanicalChecks`. The law binds the workflow being
 generated, not only its generator.
@@ -129,7 +129,7 @@ generated, not only its generator.
 
 | the thing is | it is a | found by |
 |---|---|---|
-| a mechanical rule | **SCRIPT** in `constraints/` | the check runner, globbing that directory |
+| a mechanical rule | **SCRIPT** in `checks/<wf>/constraints/` | `bin/workflow-check <wf>`, listing that directory |
 | knowledge | **REFERENCE** `.md` | `skill-toc`, emitted by a bang at load |
 | a procedure | **SKILL** | named in an agent's `skills:`, or invoked |
 
@@ -139,7 +139,7 @@ down to the number, and `typst-source-fidelity.md` duplicated `source-verify`. B
 restating a procedure. Before writing a constraint doc for something a script cannot check, ask
 whether it is a skill that already exists.
 
-**A constraint is enforced by a SCRIPT or by an AGENT WITH THE SKILL. There is no third shape.** Its one canonical home is `constraints/` at the plugin root; a copy per consumer is the vendoring defect, and a consumer in another plugin reaches it through `bin/`, never through a path.
+**A constraint is enforced by a SCRIPT or by an AGENT WITH THE SKILL. There is no third shape.** Its one canonical home is `checks/<wf>/constraints/` at the plugin root; a copy per consumer is the vendoring defect, and a consumer in another plugin reaches it through `bin/`, never through a path.
 
 **ONE FRONTMATTER KEY: `applies-to:`. Nothing else.** Scope is the only fact about a rule that no path already holds — the name is the filename, whether it is mechanised is whether `checkers/<name>.py` exists, and what it says is the body. Any other key is either a copy of one of those or metadata nothing reads, and both rot silently: measured 2026-09-14 in the typst corpus, `type:` sat in 17 of 21 files and `testable:` in 3, read by no code on any path, while `description:` had drifted from the rule beside it (a rule described as "table inset minimum 10pt" whose body leads with source-grounding) with no check able to see it. Lint the key set — a convention nothing computes is how `type:` got into 17 files and stayed.
 
@@ -230,9 +230,9 @@ const args = {
       cmd: `bash ${CLAUDE_PLUGIN_ROOT}/skills/workflow-creator/scripts/check.sh --target ${auditDir}${agentFile ? ` --agent ${agentFile}` : ''}` },
   ],
 
-  // The authoring judgement rules (constraints/jev/authoring), scored by Jev over the changed lines;
+  // The authoring judgement rules (checks/authoring/rules/), scored by Jev over the changed lines;
   // each is wired only after rule-calibrate passed it.
-  ruleChecks: { name: "jev-authoring-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --project-dir <projectDir> --plan <planPath> --rules ${CLAUDE_PLUGIN_ROOT}/constraints/jev/authoring" },
+  ruleChecks: { name: "jev-authoring-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow authoring --project-dir <projectDir> --plan <planPath>" },
 
   // The Phase 4 lens verbatim, minus scope fidelity. Omitting `lens` selects work's generic default,
   // not this domain checklist. Keep shared prompt items and refs in sync across both fences.
@@ -377,7 +377,7 @@ const args = {
 
   tasks: [ /* the plan's table verbatim: {id, name, work, writablePaths, acceptance, refs} */ ],
 
-  // ONE entry, always: check.sh runs every leg (wc-probe, parity, node-check over genDir/*.js, and
+  // ONE entry, always: check.sh runs every leg (wc-probe, parity, the authoring constraints over genDir, and
   // genDir's OWN probe suite) and its exit code is the whole mechanical verdict. A new deterministic
   // check becomes a LEG of check.sh, never a second entry here — P10 refuses that.
   // `--agent` whenever the workflow ships a guard agent: the file sits outside genDir and the probe
@@ -389,9 +389,9 @@ const args = {
       cmd: `bash ${CLAUDE_PLUGIN_ROOT}/skills/workflow-creator/scripts/check.sh --target ${genDir}${agentFile ? ` --agent ${agentFile}` : ''}` },
   ],
 
-  // The authoring judgement rules (constraints/jev/authoring), scored by Jev over the changed lines;
+  // The authoring judgement rules (checks/authoring/rules/), scored by Jev over the changed lines;
   // each is wired only after rule-calibrate passed it.
-  ruleChecks: { name: "jev-authoring-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --project-dir <projectDir> --plan <planPath> --rules ${CLAUDE_PLUGIN_ROOT}/constraints/jev/authoring" },
+  ruleChecks: { name: "jev-authoring-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow authoring --project-dir <projectDir> --plan <planPath>" },
 
   // One lens after verification and mechanical checks: gate integrity, spine fidelity and scope.
   // Audit-only uses the same checklist minus scope, which has no changes to judge.
@@ -501,7 +501,7 @@ four that decide where a workflow's own files land:
 
 | | |
 |---|---|
-| `constraints/` | its rules, as scripts — one directory per plugin, no second copy |
+| `checks/<wf>/` | its constraints (`constraints/`, scripts) and Jev rules (`rules/`) — the directory is the membership, no second copy |
 | `references/` | knowledge read by 2+ of its skills; one-consumer knowledge goes in `<skill>/references/` |
 | `scripts/` | the workflow's own tooling, `check.sh` among it — not reachable from another plugin |
 | `bin/` | anything another plugin must call, because that is the ONLY cross-plugin reach |
@@ -528,9 +528,9 @@ carrying frontmatter being precisely the 19 without a `# Heading` first line.
 
 **Location follows from the type for a constraint, and from consumers for a reference.**
 
-A CONSTRAINT is a script, so it lives in `constraints/` at the plugin root of whoever owns the
-rule — one directory per plugin, never a second copy, and reached from another plugin through a
-`bin/` entry point rather than a path (`typst-constraints --dir`). There is no such thing as a
+A CONSTRAINT is a script, so it lives in `checks/<wf>/constraints/` at the plugin root of whoever
+owns the rule — never a second copy, and reached from another plugin by `bin/workflow-check <wf>`,
+which walks every plugin root on `WORKFLOW_CHECKS_PATH`, rather than by a path. There is no such thing as a
 constraint that lives somewhere else: a rule no script can settle is not a constraint at all, it is
 a REFERENCE (knowledge a grader reads) or a SKILL (a procedure), and goes where those go.
 
@@ -911,7 +911,7 @@ declares, and flagging it would fire on every audit block. Marker: `task-coverag
 | rule | fires on | severity | marker |
 |---|---|---|---|
 | P14 shell-only agent leg | a scoredChecks, attempt or lens prompt, or a code `agent(` call, told to run a command as written AND report its exit code | major | `shell-leg` |
-| P15 duplicate grading | against the wired rules of the fence's `ruleChecks --rules` dirs: a scoredChecks penalty count named for a rule, or a lens sentence that does not defer and names the rule id or its name word in capitals | major | `duplicate-grading` |
+| P15 duplicate grading | against the wired rules of the workflow the fence's `ruleChecks` names (`--workflow <wf>` or `workflow-check <wf>`, resolved through the layout): a scoredChecks penalty count named for a rule, or a lens sentence that does not defer and names the rule id or its name word in capitals | major | `duplicate-grading` |
 | P16 missing ruleChecks | a fence whose `tasks[].writablePaths` map through `ruleSetOf` (`hooks/jev/rules.ts`) to a set with wired rules, carrying no `ruleChecks` | major | `rule-checks` |
 | P17 serial row loop | a task `work`, attempt or farm-row prompt looping over plural independent items with no dependency named | minor, advisory | `serial-loop` |
 | P18 fixed shared temp path | a worktree add/remove or recursive delete at a literal temp path with no per-run part, on the line or through one assignment | major | `fixed-temp` |

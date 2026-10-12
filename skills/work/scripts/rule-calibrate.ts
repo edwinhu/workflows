@@ -7,7 +7,7 @@
 // Exit 0: every wired rule passed. Exit 1: a wired rule failed. Exit 2: Jev unavailable (never a pass).
 // Nothing is written to the repo; --json prints to stdout. Manifest paths are absolute, or relative to the
 // manifest's `root` (itself relative to the manifest file) when it has one, else to this repo: a plugin
-// that ships its own rule set (teaching's constraints/jev) keeps its calibration set in its own tree.
+// that ships its own rule set (teaching's checks/<workflow>/rules) keeps its calibration set in its own tree.
 import { spawnSync } from 'child_process';
 import { cpSync, existsSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';

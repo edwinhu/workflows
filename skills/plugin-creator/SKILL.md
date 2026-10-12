@@ -91,9 +91,14 @@ Then score the draft using the appropriate template:
 
 Score against all 12 patterns from the checklist. Focus especially on:
 
-Run the authoring judgement rules over the change first —
-`bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --project-dir <repo> --rules ${CLAUDE_PLUGIN_ROOT}/constraints/jev/authoring`
-(exit 2 names each rule at p >= 0.85; exit 1 is Jev unavailable, never a pass). It decides the
+Run the authoring judgement rules over the change first — the authoring workflow's. A `work` dispatch
+for a plugin change carries this line; by hand, run its command without `--plan`:
+
+```js
+ruleChecks: { name: "jev-authoring-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow authoring --project-dir <projectDir> --plan <planPath>" },
+```
+
+Exit 2 names each rule at p >= 0.85; exit 1 is Jev unavailable, never a pass. It decides the
 quality clauses below, so score only presence by hand.
 
 1. **Iron Laws** — Does each skill have absolute constraints for high-drift actions? (soft wording: A-SOFT)

@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-# The single mechanical verdict for an addendum. Six legs, none short-circuiting:
-#   plan      — the plan records both interview answers (and any non-court readings)
+# The single mechanical verdict for an addendum. Seven legs, none short-circuiting:
+#   plan      — check-plan.py: the plan records both interview answers and each reading's
+#               page target (and any non-court readings)
 #   compile   — typst builds the addendum
-#   quotes    — check-quotes.py once per reading, captions DERIVED from the .typ
+#   quotes    — check-quotes.py --leg: the verbatim check once per reading, captions DERIVED
+#               from the .typ
 #   addendum  — check-addendum.py: arity, table truth vs the PDF, per-reading length
 #   strays    — the stray-line family, each defect under ITS OWN name and its own exit code:
 #                 widows.py --prose   widow  (a paragraph's last line alone at a page top)
@@ -13,6 +15,11 @@
 #               fourth is this skill's own.
 #   marks     — check-marks.py: one elision mark per addendum, and every retained footnote
 #               renumbered 1..k per reading with each #super[N] marker paired to a body
+#   constraints — `bin/workflow-check elide --constraints-only`: every constraint under
+#               checks/elide/constraints/, where the five checkers above live, over the addendum
+#               and the plan.
+#               The legs above carry this script's per-reading flags, which the constraint
+#               contract has no place for; this leg is what reaches a constraint added there.
 # Every leg runs; the exit code is 0 only when all of them passed.
 #
 # Usage: check.sh --addendum <typ> [--pdf <pdf>] [--docs <dir>]
@@ -90,6 +97,9 @@
 set -uo pipefail
 
 SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# The checkers are the elide workflow's constraints (checks/elide/constraints/), each also on the
+# constraint contract the constraints leg runs them on.
+CHECKS_DIR="$(cd "$SCRIPTS_DIR/../../../checks/elide/constraints" && pwd)"
 
 ADDENDUM=""
 PDF=""
@@ -194,114 +204,9 @@ elif [[ ! -f "$PLAN" ]]; then
   fail_plan=1
   echo "LEG plan: FAIL — no such plan file: $PLAN"
 else
-  plan_out="$(python3 - "$PLAN" "$DECLARED_FILE" "$READINGS_FILE" <<'PY'
-import re, sys
-from pathlib import Path
-
-plan = Path(sys.argv[1]).read_text(encoding="utf-8")
-declared_out = Path(sys.argv[2])
-readings_out = Path(sys.argv[3])
-
-PLACEHOLDER = re.compile(r"^(tbd|todo|n/?a|none|\?+|_+|x+|<.*>|\[.*\])$", re.I)
-
-
-def section(name: str) -> str | None:
-    m = re.search(rf"^##+\s*{re.escape(name)}\s*$(.*?)(?=^##\s|\Z)", plan, re.I | re.M | re.S)
-    return m.group(1) if m else None
-
-
-def field(body: str, label: str) -> str:
-    # Horizontal whitespace only: \s* would cross the newline and capture the NEXT bullet
-    # as this label's answer, so an empty answer would read as filled in.
-    m = re.search(rf"{re.escape(label)}[^\S\n]*:[^\S\n]*([^\n]*)", body, re.I)
-    if not m:
-        return ""
-    v = m.group(1).strip().strip("*_` ")
-    return "" if PLACEHOLDER.match(v) else v
-
-
-problems: list[str] = []
-target = section("Doctrinal target")
-if target is None:
-    problems.append("no '## Doctrinal target' section — neither interview answer is recorded")
-else:
-    if not field(target, "Doctrinal thread"):
-        problems.append("interview answer 1 absent: 'Doctrinal thread:' is missing or empty")
-    if not field(target, "Cuts against"):
-        problems.append("interview answer 1 incomplete: 'Cuts against:' is missing or empty")
-    taught = field(target, "Taught for").lower()
-    if not taught:
-        problems.append("interview answer 2 absent: 'Taught for:' is missing or empty")
-    elif not re.search(r"\b(holding|reasoning)\b", taught):
-        problems.append(f"interview answer 2 unusable: 'Taught for: {taught}' is neither holding nor reasoning")
-
-# '## Readings In Scope' is the source of truth for each reading's page target. It is
-# enforced exactly as the three Doctrinal target lines are: absent section, a row with no
-# target, or a placeholder target all FAIL, and the failure names the offending row.
-TARGET_RE = re.compile(r"^(\d+)\s*[-–—]\s*(\d+)$")
-readings: list[str] = []
-scope = section("Readings In Scope")
-if scope is None:
-    problems.append(
-        "no '## Readings In Scope' section — no reading has an approved page target"
-    )
-else:
-    rows = []
-    for raw in scope.splitlines():
-        if not raw.strip().startswith("|"):
-            continue
-        cells = [c.strip() for c in raw.strip().strip("|").split("|")]
-        if len(cells) < 2:
-            continue
-        if set("".join(cells)) <= set("-: "):
-            continue  # the |---|---| separator
-        if cells[0].lower() in ("caption", "reading"):
-            continue  # the header row
-        rows.append(cells)
-    if not rows:
-        problems.append("'## Readings In Scope' has no reading rows")
-    for cells in rows:
-        cap = cells[0].strip("*_` ")
-        tgt = cells[-1].strip().strip("*_` ")
-        label = cap[:60] if cap else "<unnamed row>"
-        if not cap:
-            problems.append(f"'## Readings In Scope' row has no caption: {' | '.join(cells)}")
-            continue
-        if len(cells) < 3 or not tgt or PLACEHOLDER.match(tgt):
-            problems.append(
-                f"reading '{label}' has no page target — the '## Readings In Scope' row must "
-                f"end in a MIN-MAX page target (2-6 is the default range)"
-            )
-            continue
-        m = TARGET_RE.match(tgt)
-        if not m:
-            problems.append(
-                f"reading '{label}' has an unusable page target {tgt!r} — expected MIN-MAX, e.g. 2-6"
-            )
-            continue
-        readings.append(f"{cap}\x1f{int(m.group(1))}-{int(m.group(2))}")
-readings_out.write_text("\n".join(readings) + ("\n" if readings else ""), encoding="utf-8")
-
-lines = []
-noncourt = section("Non-court readings")
-if noncourt:
-    for raw in noncourt.splitlines():
-        m = re.match(r"\s*[-*]\s+(.+)", raw)
-        if not m:
-            continue
-        item = m.group(1).strip()
-        parts = re.split(r"\s+[—–]\s+|\s+--\s+", item, maxsplit=1)
-        cap = parts[0].strip().strip("*_`")
-        why = (parts[1].strip() if len(parts) > 1 else "") or "declared non-court text in the plan"
-        if cap:
-            lines.append(f"{cap}\x1f{why}")
-declared_out.write_text("\n".join(lines) + ("\n" if lines else ""), encoding="utf-8")
-
-for p in problems:
-    print(f"  {p}")
-sys.exit(1 if problems else 0)
-PY
-)"
+  # check-plan.py is the elide workflow's constraint for the interview; in this form it also writes
+  # the plan's per-reading targets and non-court readings for the legs below.
+  plan_out="$(python3 "$CHECKS_DIR/check-plan.py" "$PLAN" "$DECLARED_FILE" "$READINGS_FILE")"
   plan_rc=$?
   [[ -n "$plan_out" ]] && printf '%s\n' "$plan_out"
   # grep -c prints 0 AND exits 1 on no match, so `|| echo 0` would append a second line.
@@ -315,18 +220,6 @@ PY
     echo "LEG plan: FAIL — $(basename "$PLAN") does not record the interview answers or the per-reading page targets"
   fi
 fi
-
-# check-quotes.py prints its gap-match block on SUCCESS as well as failure: a sentence that
-# matched across a source gap may have been fused across dropped holding rather than across
-# a footnote block, and only a human can tell. Surfacing it only in the FAIL branch discards
-# the one diagnostic that catches that corruption silently.
-gap_block() {
-  printf '%s\n' "$1" | awk '
-    /^matched across a source gap/ { show = 1 }
-    show && /^[[:space:]]*$/ { exit }
-    show { print }
-  '
-}
 
 # ---------------------------------------------------------------- leg: compile
 echo "--- leg compile"
@@ -342,282 +235,12 @@ else
 fi
 
 # ---------------------------------------------------------------- leg: quotes
-# The caption list is DERIVED from the .typ using check-addendum.py's own parser, so a
-# reading added to the addendum is checked without anyone being told it exists.
+# check-quotes.py --leg derives the caption list from the .typ with check-addendum.py's own parser,
+# so a reading added to the addendum is checked without anyone being told it exists; resolves each
+# reading's source in $DOCS_DIR; and runs the verbatim check once per reading. The constraint
+# contract runs the same leg (the constraints leg below).
 echo "--- leg quotes"
-RESOLVED="$(python3 - "$ADDENDUM" "$DOCS_DIR" "$SCRIPTS_DIR/check-addendum.py" "$DECLARED_FILE" <<'PY'
-import importlib.util, re, sys
-from pathlib import Path
-
-typ, docs_dir, parser_path = Path(sys.argv[1]), Path(sys.argv[2]), Path(sys.argv[3])
-declared_file = Path(sys.argv[4])
-spec = importlib.util.spec_from_file_location("check_addendum", parser_path)
-mod = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(mod)
-
-src = typ.read_text(encoding="utf-8")
-captions = mod.parse_captions(src)
-
-# Offsets let a declaration attach to the caption block that follows it.
-cap_offsets = [m.end() for m in mod.CAPTION_RE.finditer(src)]
-declared: dict[int, tuple[str, str]] = {}
-for m in re.finditer(r"//\s*elide-(source|unchecked):\s*([^\n]*)", src):
-    kind, value = m.group(1), m.group(2).strip()
-    for i, off in enumerate(cap_offsets):
-        if off > m.start():
-            declared[i] = (kind, value)
-            break
-
-# Readings the PLAN declares non-court text. The match must be DEFINITE: a bullet matches a
-# caption only when its token sequence IS the caption's or appears in it as a full contiguous
-# run. A raw substring test would let a short bullet ('blog') switch the verbatim check off
-# every caption it happened to occur inside — and that check is the first Iron Law, so a loose
-# match hands the instructor's authority to whoever writes a vague bullet.
-def toklist(s: str) -> list[str]:
-    return [w for w in re.split(r"[^a-z0-9]+", s.lower()) if w]
-
-
-def run_matches(needle: list[str], hay: list[str]) -> bool:
-    if not needle or len(needle) > len(hay):
-        return False
-    return any(hay[i : i + len(needle)] == needle for i in range(len(hay) - len(needle) + 1))
-
-
-plan_unchecked: list[tuple[str, list[str], str]] = []  # (raw bullet, tokens, why)
-if declared_file.is_file():
-    for line in declared_file.read_text(encoding="utf-8").splitlines():
-        if "\x1f" in line:
-            cap, why = line.split("\x1f", 1)
-            if toklist(cap):
-                plan_unchecked.append((cap.strip(), toklist(cap), why))
-
-# A bullet naming no reading is a typo, and a bullet naming several does not say WHICH reading
-# is not court text. Both are failures: silently ignoring either is how a reading the
-# instructor meant to exempt gets checked, or a reading he never named stops being.
-cap_tokens = [toklist(c) for c in captions]
-bullet_hits: list[tuple[str, list[int]]] = [
-    (raw, [i for i, ct in enumerate(cap_tokens) if run_matches(bt, ct)])
-    for raw, bt, _ in plan_unchecked
-]
-bad_bullets = {i for i, (_, hits) in enumerate(bullet_hits) if len(hits) != 1}
-
-
-def plan_exempt(idx: int) -> str | None:
-    for b, (_, hits) in enumerate(bullet_hits):
-        if b not in bad_bullets and hits == [idx]:
-            return plan_unchecked[b][2]
-    return None
-
-
-# Tokens that name no party and so cannot discriminate between two sources.
-STOP = {
-    "sec", "securities", "exchange", "commission", "opinion", "order", "court",
-    "united", "states", "district", "circuit", "appeals", "supp", "f2d", "f3d",
-    "cir", "and", "the", "inc", "corp", "corporation", "llc", "ltd",
-}
-
-
-def toks(s: str) -> set[str]:
-    return {w for w in re.split(r"[^a-z0-9]+", s.lower()) if w}
-
-
-def file_tokens(stem: str) -> set[str]:
-    return {w for w in toks(stem) if w.isalpha() and len(w) >= 4 and w not in STOP}
-
-
-# The .docx is the source of record; a .txt is still resolvable, which is what keeps an
-# addendum whose plan names one working unchanged. When a stem carries BOTH — every pair
-# retrieved before the docx became canonical does — the .docx wins, and offering both to
-# the scorer would instead make every such caption AMBIGUOUS and fail a run that passed.
-candidates: dict[str, Path] = {}
-if docs_dir.is_dir():
-    for suffix in (".txt", ".docx"):  # .docx second, so it overwrites
-        for p in sorted(docs_dir.glob(f"*{suffix}")):
-            candidates[p.stem] = p
-sources = []
-for _stem, p in sorted(candidates.items()):
-    ft = file_tokens(p.stem)
-    if ft:
-        sources.append((p, ft))
-
-rows = []  # (caption, path, status, mode)
-for i, cap in enumerate(captions):
-    if i in declared and declared[i][0] == "unchecked":
-        # Self-exemption: the .typ is written by the same agent as the excerpt, so honouring
-        # this marker would let fabricated text switch the verbatim check off itself.
-        rows.append((cap, "", f"SELFEXEMPT:{declared[i][1] or 'not court text'}", "typ-marker"))
-        continue
-    why = plan_exempt(i)
-    if why is not None:
-        rows.append((cap, "", f"UNCHECKED:{why}", "plan"))
-        continue
-    if i in declared:
-        kind, value = declared[i]
-        cand = docs_dir / value
-        # A declaration naming the retired `.txt` twin resolves to the `.docx` it was
-        # derived from. The declaration still names a file that must exist, so it cannot
-        # fabricate a pass; what it must not do is fail an addendum whose only defect is
-        # that it was written before the docx became the sole stored source.
-        if not cand.is_file() and cand.suffix.lower() == ".txt":
-            sibling = cand.with_suffix(".docx")
-            if sibling.is_file():
-                cand = sibling
-        if cand.is_file():
-            rows.append((cap, str(cand), "OK", "declared"))
-        else:
-            rows.append((cap, "", f"DECLARED-MISSING:{value}", "declared"))
-        continue
-    ct = toks(cap)
-    scored = []
-    for p, ft in sources:
-        hit = len(ft & ct)
-        if hit:
-            scored.append((hit / len(ft), hit, p))
-    scored.sort(key=lambda r: (-r[0], -r[1], str(r[2])))
-    if not scored:
-        rows.append((cap, "", "NOSOURCE", "derived"))
-    elif len(scored) > 1 and (scored[0][0], scored[0][1]) == (scored[1][0], scored[1][1]):
-        rows.append((cap, "", f"AMBIGUOUS:{scored[0][2].name},{scored[1][2].name}", "derived"))
-    else:
-        rows.append((cap, str(scored[0][2]), "OK", "derived"))
-
-# A source answering for two readings means at least one is verified against text that is
-# not its own. That is reported as its own failure — but the quote check still RUNS for
-# both, because replacing a computed result with an unrun status is a vacuous pass.
-by_path: dict[str, list[int]] = {}
-for i, (_, path, status, _) in enumerate(rows):
-    if status == "OK":
-        by_path.setdefault(path, []).append(i)
-shared = {p: idxs for p, idxs in by_path.items() if len(idxs) > 1}
-
-for cap, path, status, mode in rows:
-    dup = ""
-    if status == "OK" and path in shared:
-        dup = ",".join(str(j + 1) for j in shared[path])
-    print("\x1f".join((cap.replace("\x1f", " "), path, status, mode, dup)))
-
-for p, idxs in sorted(shared.items()):
-    caps = " | ".join(rows[j][0][:60] for j in idxs)
-    print("\x1f".join(("!SHARED", Path(p).name, ",".join(str(j + 1) for j in idxs), caps)))
-
-for b in sorted(bad_bullets):
-    raw, hits = bullet_hits[b][0], bullet_hits[b][1]
-    if not hits:
-        print("\x1f".join(("!BULLETNONE", raw.replace("\x1f", " "), "", "")))
-    else:
-        caps = " | ".join(rows[j][0][:60] for j in hits)
-        print("\x1f".join(("!BULLETMANY", raw.replace("\x1f", " "),
-                           ",".join(str(j + 1) for j in hits), caps)))
-PY
-)"
-resolve_rc=$?
-
-n_readings=0
-n_verified=0
-n_unchecked=0
-n_lossy=0
-if [[ $resolve_rc -ne 0 ]]; then
-  fail_quotes=1
-  echo "could not derive the caption list from $(basename "$ADDENDUM"):"
-  echo "$RESOLVED"
-else
-  mapfile -t all_lines < <(printf '%s\n' "$RESOLVED" | sed '/^$/d')
-  rows=()
-  shared_lines=()
-  for line in "${all_lines[@]}"; do
-    if [[ "$line" == '!'* ]]; then shared_lines+=("$line"); else rows+=("$line"); fi
-  done
-  n_readings=${#rows[@]}
-  if [[ $n_readings -eq 0 ]]; then
-    fail_quotes=1
-    echo "no reading caption blocks found in $(basename "$ADDENDUM"); there is nothing to verify"
-  fi
-  idx=0
-  n_verified=0
-  n_unchecked=0
-  for row in "${rows[@]}"; do
-    idx=$((idx + 1))
-    IFS=$'\x1f' read -r caption src status mode dup <<<"$row"
-    label="reading $idx/$n_readings \"${caption:0:60}\""
-    case "$status" in
-      UNCHECKED:*)
-        n_unchecked=$((n_unchecked + 1))
-        echo "  $label: DECLARED-UNCHECKED [$mode] — ${status#UNCHECKED:}"
-        continue
-        ;;
-      SELFEXEMPT:*)
-        fail_quotes=1
-        echo "  $label: FAIL [$mode] — SELF-EXEMPTING '// elide-unchecked:' marker in the .typ."
-        echo "    Declaring a reading non-court text is the instructor's call and belongs in the"
-        echo "    plan's '## Non-court readings' section, not in the file the excerpt is written into."
-        continue
-        ;;
-      OK) ;;
-      *)
-        fail_quotes=1
-        echo "  $label: FAIL [$mode] — no source resolved in $DOCS_DIR ($status)"
-        continue
-        ;;
-    esac
-    # --skip-editorial: an editors' note is authored commentary, never a quotation, so
-    # grading it against the reporter reports the editor's own prose as missing court text.
-    q_out="$(python3 "$SCRIPTS_DIR/check-quotes.py" "$ADDENDUM" "$src" --caption "$caption" --skip-editorial 2>&1)"
-    if [[ $? -eq 0 ]]; then
-      n_verified=$((n_verified + 1))
-      echo "  $label: PASS [$mode] — verbatim against $(basename "$src")"
-      # A PASS otherwise prints only the gap block, which would swallow the one line
-      # saying the source had no typography to check against. Same shape as the
-      # --no-plan and --no-target waivers: loud, named, and not a failure — the
-      # CourtListener/RECAP fallback route yields a court PDF with no formatting
-      # layer at all, and that route is not going away.
-      if [[ "$src" != *.docx ]]; then
-        n_lossy=$((n_lossy + 1))
-        echo "    ITALICS NOT CHECKED — $(basename "$src") is plain text and carries no"
-        echo "    formatting layer, so whether this excerpt's emphasis matches the court's"
-        echo "    is verified by nothing. Pass the .westlaw.docx where one exists; on the"
-        echo "    CourtListener/RECAP fallback route no source can carry it."
-      fi
-      gaps="$(gap_block "$q_out")"
-      [[ -n "$gaps" ]] && printf '%s\n' "$gaps" | sed 's/^/    /'
-    else
-      fail_quotes=1
-      echo "  $label: FAIL [$mode] — against $(basename "$src")"
-      printf '%s\n' "$q_out" | sed 's/^/    /'
-    fi
-    [[ -n "$dup" ]] && echo "    (source shared with reading(s) $dup)"
-  done
-  for line in "${shared_lines[@]}"; do
-    IFS=$'\x1f' read -r kind a idxs caps <<<"$line"
-    fail_quotes=1
-    case "$kind" in
-      '!SHARED')
-        echo "  AMBIGUOUS MAPPING: readings $idxs all resolve to $a — $caps" ;;
-      '!BULLETNONE')
-        echo "  PLAN BULLET MATCHES NO READING: \"$a\""
-        echo "    A '## Non-court readings' bullet must name a caption exactly, or as a full"
-        echo "    contiguous run of its words. This one names nothing in the addendum." ;;
-      '!BULLETMANY')
-        echo "  PLAN BULLET IS AMBIGUOUS: \"$a\" matches readings $idxs — $caps"
-        echo "    Say which reading is not court text; a bullet this general would switch the"
-        echo "    verbatim check off every one of them." ;;
-    esac
-  done
-fi
-# An addendum whose every reading carries the unchecked marker verifies nothing, and a leg
-# that verified nothing has no verdict to report. Zero verified is a FAIL.
-if [[ $fail_quotes -eq 0 && $n_verified -eq 0 ]]; then
-  fail_quotes=1
-  echo "  NOTHING VERIFIED: 0 of $n_readings reading(s) were checked against a source ($n_unchecked declared unchecked)"
-fi
-if [[ $fail_quotes -eq 0 ]]; then
-  if [[ $n_lossy -gt 0 ]]; then
-    echo "LEG quotes: PASS — $n_verified of $n_readings reading(s) verified verbatim, $n_unchecked declared unchecked; ITALICS NOT CHECKED on $n_lossy reading(s) with a plain-text source"
-  else
-    echo "LEG quotes: PASS — $n_verified of $n_readings reading(s) verified verbatim, $n_unchecked declared unchecked"
-  fi
-else
-  echo "LEG quotes: FAIL — at least one of $n_readings reading(s) is not verified"
-fi
+python3 "$CHECKS_DIR/check-quotes.py" --leg "$ADDENDUM" "$DOCS_DIR" "$DECLARED_FILE" || fail_quotes=1
 
 # ---------------------------------------------------------------- leg: addendum
 echo "--- leg addendum"
@@ -632,7 +255,7 @@ target_msg=""
 # .typ to its '## Readings In Scope' row and hand check-addendum.py that row's own MIN-MAX.
 if [[ -n "$PLAN" && $NO_PLAN -eq 0 && $fail_plan -eq 0 && -s "$READINGS_FILE" ]]; then
   plan_targets=1
-  map_out="$(python3 - "$ADDENDUM" "$READINGS_FILE" "$SCRIPTS_DIR/check-addendum.py" "$TARGETS_FILE" <<'PY'
+  map_out="$(python3 - "$ADDENDUM" "$READINGS_FILE" "$CHECKS_DIR/check-addendum.py" "$TARGETS_FILE" <<'PY'
 import importlib.util, re, sys
 from pathlib import Path
 
@@ -715,11 +338,11 @@ else
 fi
 
 if [[ $length_checked -eq 1 && $plan_targets -eq 1 ]]; then
-  a_out="$(python3 "$SCRIPTS_DIR/check-addendum.py" "$ADDENDUM" "$PDF" --targets "$TARGETS_FILE" 2>&1)"
+  a_out="$(python3 "$CHECKS_DIR/check-addendum.py" "$ADDENDUM" "$PDF" --targets "$TARGETS_FILE" 2>&1)"
 elif [[ $length_checked -eq 1 ]]; then
-  a_out="$(python3 "$SCRIPTS_DIR/check-addendum.py" "$ADDENDUM" "$PDF" --target "$TARGET" 2>&1)"
+  a_out="$(python3 "$CHECKS_DIR/check-addendum.py" "$ADDENDUM" "$PDF" --target "$TARGET" 2>&1)"
 else
-  a_out="$(python3 "$SCRIPTS_DIR/check-addendum.py" "$ADDENDUM" "$PDF" 2>&1)"
+  a_out="$(python3 "$CHECKS_DIR/check-addendum.py" "$ADDENDUM" "$PDF" 2>&1)"
 fi
 if [[ $? -ne 0 ]]; then
   fail_addendum=1
@@ -787,6 +410,11 @@ else
   # plugin's, in one copy; only stranded-heading is this skill's own. None of the three
   # re-execs to find pymupdf, so borrow the local script's resolver for an interpreter.
   # A checker that cannot be found is a FAIL: nothing checked that class.
+  # The typst plugin keeps them as workshop constraints (checks/workshop/constraints/), so
+  # `workflow-check workshop --list` reaches them first; a typst plugin from before that layout
+  # keeps them in the directory `typst-constraints --dir` names.
+  CANON_LISTED="$(python3 "$SCRIPTS_DIR/../../../bin/workflow-check" workshop --list 2>/dev/null \
+    | python3 -c 'import json, sys; print("\n".join(json.load(sys.stdin)["constraints"]))' 2>/dev/null)" || CANON_LISTED=""
   CANON_DIR=""
   # ASK the plugin; the list below is the plain-shell fallback, not a second source of truth.
   if command -v typst-constraints >/dev/null 2>&1; then
@@ -797,11 +425,16 @@ else
       [[ -n "$cand" && -d "$cand" ]] && { CANON_DIR="$cand"; break; }
     done
   fi
-  PYEXE="$(python3 "$SCRIPTS_DIR/check-stranded-headings.py" "$PDF" --which-python 2>/dev/null)"
+  canon_file() {  # canon_file widows.py -> its path, or nothing
+    local f
+    while IFS= read -r f; do [[ "${f##*/}" == "$1" && -f "$f" ]] && { echo "$f"; return; }; done <<<"$CANON_LISTED"
+    [[ -n "$CANON_DIR" && -f "$CANON_DIR/$1" ]] && echo "$CANON_DIR/$1"
+  }
+  PYEXE="$(python3 "$CHECKS_DIR/check-stranded-headings.py" "$PDF" --which-python 2>/dev/null)"
   [[ -x "$PYEXE" ]] || PYEXE=python3
 
   # --- sub-check: stranded heading. This skill's own class; needs no justified text.
-  h_out="$(python3 "$SCRIPTS_DIR/check-stranded-headings.py" "$PDF" 2>&1)"
+  h_out="$(python3 "$CHECKS_DIR/check-stranded-headings.py" "$PDF" 2>&1)"
   h_rc=$?
   printf '%s\n' "$h_out" | grep -v 'API is deprecated' | sed 's/^/  /'
   case $h_rc in
@@ -818,12 +451,13 @@ else
             "orphans:orphan:a paragraph's first line sits alone at a page foot" \
             "runts:runt:a paragraph ends on a single stranded word"; do
     _file="${_c%%:*}.py"; _rest="${_c#*:}"; _name="${_rest%%:*}"; _what="${_rest#*:}"
-    if [[ -z "$CANON_DIR" || ! -f "$CANON_DIR/$_file" ]]; then
+    _path="$(canon_file "$_file")"
+    if [[ -z "$_path" ]]; then
       fail_widows=1
       echo "  SUB $_name: FAIL — $_file not found (TYPST_CHECKERS_DIR, or the typst plugin); nothing checked ${_name}s"
       continue
     fi
-    c_out="$("$PYEXE" "$CANON_DIR/$_file" "$PDF" --prose 2>&1)"
+    c_out="$("$PYEXE" "$_path" "$PDF" --prose 2>&1)"
     c_rc=$?
     printf '%s\n' "$c_out" | grep -v 'API is deprecated' | sed 's/^/  /'
     case $c_rc in
@@ -848,7 +482,7 @@ fi
 # Decided from the .typ alone, so it needs no PDF and no source: a mixed elision mark, or a
 # retained footnote left at its original number or without its pair, is a FAIL naming the line.
 echo "--- leg marks"
-python3 "$SCRIPTS_DIR/check-marks.py" "$ADDENDUM"
+python3 "$CHECKS_DIR/check-marks.py" "$ADDENDUM"
 case $? in
   0) echo "LEG marks: PASS — one elision mark; retained footnotes renumbered and paired" ;;
   1) fail_marks=1
@@ -857,10 +491,30 @@ case $? in
      echo "LEG marks: FAIL — check-marks.py could not run; a check that did not run is not a pass" ;;
 esac
 
+# ---------------------------------------------------------------- leg: constraints
+# `bin/workflow-check elide --constraints-only`: every constraint under checks/elide/constraints/ in
+# every plugin root on WORKFLOW_CHECKS_PATH, on the constraint contract, over this addendum -- the
+# checkers above among them, each judging it with its own defaults (no length target), and any
+# constraint added there with no edit here. It is handed the addendum, the sources in $DOCS_DIR, and
+# the compiled PDF unless --no-strays waived the page layout.
+echo "--- leg constraints"
+fail_constraints=0
+c_files=("$ADDENDUM")
+for f in "$DOCS_DIR"/*.docx "$DOCS_DIR"/*.txt; do [[ -f "$f" ]] && c_files+=("$f"); done
+[[ $NO_WIDOWS -eq 1 || ! -s "$PDF" ]] || c_files+=("$PDF")
+python3 "$SCRIPTS_DIR/../../../bin/workflow-check" elide --constraints-only --project-dir "$TYPST_ROOT" ${PLAN:+--plan "$PLAN"} --files "${c_files[@]}"
+case $? in
+  0) echo "LEG constraints: PASS — every elide constraint holds on $(basename "$ADDENDUM")" ;;
+  1) fail_constraints=1
+     echo "LEG constraints: FAIL — an elide constraint fired on $(basename "$ADDENDUM")" ;;
+  *) fail_constraints=1
+     echo "LEG constraints: FAIL — not every elide constraint could check $(basename "$ADDENDUM"); a check that did not run is not a pass" ;;
+esac
+
 # ---------------------------------------------------------------- verdict
 echo "--- verdict"
 v() { [[ $1 -eq 0 ]] && echo PASS || echo FAIL; }
-if [[ $((fail_plan + fail_compile + fail_quotes + fail_addendum + fail_widows + fail_marks)) -eq 0 ]]; then
+if [[ $((fail_plan + fail_compile + fail_quotes + fail_addendum + fail_widows + fail_marks + fail_constraints)) -eq 0 ]]; then
   waived=""
   [[ $NO_PLAN -eq 1 ]] && waived="plan, which --no-plan waived"
   if [[ $NO_TARGET -eq 1 && $plan_targets -eq 0 ]]; then
@@ -879,5 +533,5 @@ if [[ $((fail_plan + fail_compile + fail_quotes + fail_addendum + fail_widows + 
   exit 0
 fi
 strays_verdict=$([[ $NO_WIDOWS -eq 1 && $WIDOWS -eq 0 ]] && echo NOT-CHECKED || v $fail_widows)
-echo "FAIL: plan=$([[ $NO_PLAN -eq 1 && -z "$PLAN" ]] && echo NOT-CHECKED || v $fail_plan) compile=$(v $fail_compile) quotes=$(v $fail_quotes) addendum=$(v $fail_addendum) strays=$strays_verdict marks=$(v $fail_marks)"
+echo "FAIL: plan=$([[ $NO_PLAN -eq 1 && -z "$PLAN" ]] && echo NOT-CHECKED || v $fail_plan) compile=$(v $fail_compile) quotes=$(v $fail_quotes) addendum=$(v $fail_addendum) strays=$strays_verdict marks=$(v $fail_marks) constraints=$(v $fail_constraints)"
 exit 1

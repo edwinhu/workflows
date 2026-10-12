@@ -928,10 +928,14 @@ args["planPath"], args["specHash"] = plan, hash_
 # Where work is installed, so the prompts workflow.js builds name paths that exist here.
 args["skillRoot"] = skill_root
 args.setdefault("projectDir", block.get("projectDir") or __import__("os").getcwd())
-print(json.dumps({"runId": run_id, "turns": block.get("goalTurns"),
+# The plan names its workflow ONCE, in its frontmatter; none is `work`, which has no checks.
+fm = re.match(r'---\s*\n(.*?)\n---\s*(\n|$)', src, re.S)
+wf = re.search(r'^workflow:\s*(\S+)\s*$', fm.group(1), re.M) if fm else None
+print(json.dumps({"runId": run_id, "turns": block.get("goalTurns"), "workflow": wf.group(1) if wf else "work",
                   "maxRounds": args.get("maxRounds", 6), "args": args}))
 PY
 ) || exit 1
+workflow=$(python3 -c 'import json,sys; print(json.loads(sys.argv[1])["workflow"])' "$run")
 
 runid=$(python3 -c 'import json,sys; print(json.loads(sys.argv[1])["runId"])' "$run")
 # goalTurns is the HOLD's budget: the hold counts red Stops of this session, which are turns, not run
@@ -970,12 +974,28 @@ tmp="$R/.args.lint.json"
 # increments it. A budget nothing counts is not a budget — the previous "or stop after N turns"
 # had no counter anywhere, so a lens re-adjudicated it on every stop. It is a FIELD in the args, not
 # a file beside them: new state goes in the existing state object.
-python3 - "$run" "$tmp" <<'PY' || exit 1
-import json, sys
-run, tmp = sys.argv[1], sys.argv[2]
-a = json.loads(run)["args"]
+# ruleChecks is FILLED HERE from the plan's `workflow:`, never copied out of a SKILL.md: the layout
+# (bin/workflow-check <wf> --list) says whether the workflow has rules, and the command scores all of
+# them, parents included. A plan that carries its own ruleChecks keeps it; plan-lint refuses one that
+# scores a different workflow. An unknown workflow is left unfilled for plan-lint to refuse by name.
+python3 - "$run" "$tmp" "$PLUGIN_ROOT/bin/workflow-check" <<'PY' || exit 1
+import json, shlex, subprocess, sys
+run, tmp, runner = sys.argv[1], sys.argv[2], sys.argv[3]
+r = json.loads(run)
+a, wf = r["args"], r["workflow"]
 a["rounds"] = 1
-
+if not a.get("ruleChecks") and wf != "work":
+    ls = subprocess.run([sys.executable, runner, wf, "--list"], capture_output=True, text=True, check=False)
+    try:
+        dirs = json.loads(ls.stdout).get("ruleDirs") if ls.returncode == 0 else None
+    except ValueError:
+        dirs = None
+    if dirs:
+        a["ruleChecks"] = {
+            "name": "jev-" + wf.replace("/", "-") + "-rules",
+            "cmd": " ".join(shlex.quote(x) for x in ["python3", runner, wf, "--rules-only", "--project-dir", a["projectDir"],
+                                                    "--plan", a["planPath"]]),
+        }
 json.dump(a, open(tmp, "w"), indent=2)
 PY
 if [ "$lint" = 1 ]; then
@@ -1037,6 +1057,31 @@ mv "$tmp" "$out" || exit 1
 
 # With args.json, never before it: a plan that was refused never ran, so it is not a run artifact.
 archive_plan "$plan" "$R" "$hash" || exit 1
+
+# THE WORKFLOW CURSOR. projectDir/.planning/ACTIVE_WORKFLOW.md is what the per-edit hooks (hooks/jev,
+# writing-prose-check) read to know which workflow an edit belongs to, and nothing else wrote it for
+# most workflows. Only its `workflow:` line is set; other fields (writing_receipt.py's `style:`) stay.
+# Not under --print, which builds and stops, nor readOnly, whose projectDir this run must not write.
+if [ "$mode" != print ] && [ "$readonly_run" = 0 ]; then
+  python3 - "$(python3 -c 'import json,sys; print(json.loads(sys.argv[1])["args"]["projectDir"])' "$run")" "$workflow" <<'PY' || exit 1
+import os, re, sys
+proj, wf = sys.argv[1], sys.argv[2]
+os.makedirs(os.path.join(proj, ".planning"), exist_ok=True)
+path = os.path.join(proj, ".planning", "ACTIVE_WORKFLOW.md")
+try:
+    text = open(path, encoding="utf-8").read()
+except FileNotFoundError:
+    text = ""
+if re.search(r"^workflow:.*$", text, re.M):
+    text = re.sub(r"^workflow:.*$", lambda _: f"workflow: {wf}", text, count=1, flags=re.M)
+elif text.startswith("---\n"):
+    text = f"---\nworkflow: {wf}\n" + text[4:]
+else:
+    text = f"---\nworkflow: {wf}\n---\n" + (f"\n{text}" if text else "")
+open(path, "w", encoding="utf-8").write(text)
+print(f"workflow: {wf} -> {path}")
+PY
+fi
 
 # Sizing, recomputed from what will actually be dispatched. The plan's prose Run sizing block is
 # for the human; this is what the gate reads. A mismatch between them is worth stopping over.

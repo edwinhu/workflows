@@ -8,7 +8,7 @@ from pathlib import Path
 
 _spec = importlib.util.spec_from_file_location(
     "ds_schema_contracts",
-    Path(__file__).resolve().parents[1] / "constraints" / "ds-schema-contracts.py")
+    Path(__file__).resolve().parents[1] / "checks" / "ds" / "constraints" / "ds-schema-contracts.py")
 _mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_mod)
 check = _mod.check
@@ -16,7 +16,7 @@ check = _mod.check
 
 def run(tmp_path, source):
     (tmp_path / "s.py").write_text(source)
-    return check({"cwd": str(tmp_path)})
+    return check({"cwd": str(tmp_path), "files": sorted(tmp_path.rglob("*.py"))})
 
 
 def test_a_bare_read_is_a_finding(tmp_path):

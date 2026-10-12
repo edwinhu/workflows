@@ -2,12 +2,11 @@
 // changed, the threshold and the one line a violation becomes, and where the mod runs. The mod
 // itself, under the engine's own host, is hooks/mod-tests/jev.test.ts (scripts/mod-test.sh).
 import { expect, test } from 'bun:test'
-import { existsSync, readdirSync } from 'node:fs'
-import { homedir } from 'node:os'
+import { spawnSync } from 'node:child_process'
 import { join } from 'node:path'
 import {
-  BLOCK_AT, REGISTER_DIRS, RULE_DIRS, TEACHING_SETS, ancestors, changedFromInput, contextLines, enabled, merge,
-  rangesFromDiff, registerDir, ruleSetFor, styleOf, workflowOf,
+  BLOCK_AT, ancestors, changedFromInput, contextLines, enabled, isCourseMaterial, merge,
+  rangesFromDiff, ruleSetFor, styleOf, workflowOf, workflowsFor,
 } from '../hooks/jev/rules.ts'
 
 const ROOT = join(import.meta.dir, '..')
@@ -34,12 +33,12 @@ test('prose is writing, tests and shell scripts are dev, .py is ds only under a 
 
 test("a talk's deck and notes are typst; other .typ stays writing unless the cursor says workshop", async () => {
   const workshop = async () => 'workshop'
-  expect(await ruleSetFor('/p/presentation/slides.typ', none)).toBe('typst')
-  expect(await ruleSetFor('/p/presentation/notes.typ', none)).toBe('typst')
-  expect(await ruleSetFor('/p/talk/notes-seminar.typ', none)).toBe('typst')
-  expect(await ruleSetFor('/p/presentation/fragments.typ', none)).toBe('typst')
+  expect(await ruleSetFor('/p/presentation/slides.typ', none)).toBe('workshop')
+  expect(await ruleSetFor('/p/presentation/notes.typ', none)).toBe('workshop')
+  expect(await ruleSetFor('/p/talk/notes-seminar.typ', none)).toBe('workshop')
+  expect(await ruleSetFor('/p/presentation/fragments.typ', none)).toBe('workshop')
   expect(await ruleSetFor('/p/paper/body.typ', none)).toBe('writing')
-  expect(await ruleSetFor('/p/paper/body.typ', workshop)).toBe('typst')
+  expect(await ruleSetFor('/p/paper/body.typ', workshop)).toBe('workshop')
   expect(await ruleSetFor('/p/drafts/notes.md', none)).toBe('writing')
   // a lecture deck's per-lecture file is neither named slides* nor under presentation/: it is the
   // teaching plugin's slides set, not a talk's
@@ -70,7 +69,12 @@ test("a lecture's notes are notes and its deck is slides; other .typ in a course
   // the exact secreg lecture 18 files (2026-10-02)
   expect(await ruleSetFor('/home/eh/areas/secreg/notes/18-insider.typ', none)).toBe('notes')
   expect(await ruleSetFor('/home/eh/areas/secreg/slides/06-insider/18.typ', none)).toBe('slides')
-  expect([...TEACHING_SETS].sort()).toEqual(['exams', 'notes', 'slides'])
+  // the same three are course material, which the prose hook leaves to teaching's own checks
+  expect(isCourseMaterial('/c/secreg/notes/14-10b5.typ')).toBe(true)
+  expect(isCourseMaterial('/c/secreg/slides/05-10b5/14.typ')).toBe(true)
+  expect(isCourseMaterial('/c/secreg/.planning/mc/01.typ')).toBe(true)
+  expect(isCourseMaterial('/c/secreg/notes/_reg-s.typ')).toBe(false)
+  expect(isCourseMaterial('/c/secreg/addenda/01.typ')).toBe(false)
 })
 
 test("an exam question file is exams, ahead of authoring's .planning/; a rubric is not", async () => {
@@ -93,29 +97,29 @@ test('the workflow walk asks each directory up to $HOME, nearest first', async (
   expect(workflowOf('---\nstyle: econ\n---')).toBeNull()
 })
 
-test('the writing cursor `style:` adds its register set to prose, and only to prose', () => {
+test('the writing cursor names the nested workflow prose is scored under: writing/<register>, then writing', () => {
   expect(styleOf('---\nworkflow: writing\nstyle: econ\n---\n')).toBe('econ')
   expect(styleOf('---\nworkflow: ds\n---\n')).toBeNull()
-  expect(registerDir('writing', 'legal')).toBe('constraints/jev/legal')
-  expect(registerDir('writing', 'econ')).toBe('constraints/jev/econ')
-  expect(registerDir('writing', 'general')).toBeNull()
-  expect(registerDir('writing', null)).toBeNull()
-  expect(registerDir('typst', 'legal')).toBeNull()
-  for (const dir of Object.values(REGISTER_DIRS)) {
-    const wired = readdirSync(join(ROOT, dir)).filter(f => /^[^_].*\.py$/.test(f))
-    expect(wired.length).toBeGreaterThan(0)
-  }
+  expect(workflowOf('---\nworkflow: writing/legal\n---\n')).toBe('writing/legal')
+  expect(workflowsFor('writing', '/p/drafts/a.md', '---\nworkflow: writing\nstyle: legal\n---\n')).toEqual(['writing/legal', 'writing'])
+  expect(workflowsFor('writing', '/p/drafts/a.md', '---\nworkflow: writing/econ\n---\n')).toEqual(['writing/econ', 'writing'])
+  expect(workflowsFor('writing', '/p/drafts/a.md', '---\nworkflow: writing\nstyle: general\n---\n')).toEqual(['writing'])
+  expect(workflowsFor('writing', '/p/drafts/a.md', null)).toEqual(['writing'])
+  // other prose falls back to writing when its own workflow is not installed; code never does
+  expect(workflowsFor('notes', '/c/notes/14-x.typ', null)).toEqual(['notes', 'writing'])
+  expect(workflowsFor('workshop', '/p/presentation/slides.typ', '---\nstyle: legal\n---\n')).toEqual(['workshop', 'writing'])
+  expect(workflowsFor('ds', '/p/src/build.py', null)).toEqual(['ds'])
+  expect(workflowsFor('dev', '/p/scripts/run.sh', null)).toEqual(['dev'])
 })
 
-test('every rule set points at a wired directory; its uncalibrated/ is below the glob', () => {
-  // the teaching sets live under the teaching plugin, checked where it is installed
-  const teaching = process.env.TEACHING_PLUGIN_ROOT || join(homedir(), '.claude/skills/teaching')
-  for (const [set, dir] of Object.entries(RULE_DIRS)) {
-    const root = TEACHING_SETS.has(set as keyof typeof RULE_DIRS) ? teaching : ROOT
-    if (root === teaching && !existsSync(join(root, dir))) continue
-    const wired = readdirSync(join(root, dir)).filter(f => /^[^_].*\.py$/.test(f) && f !== 'evidence.py')
-    expect(wired.length).toBeGreaterThan(0)
-    expect(dir).not.toContain('uncalibrated')
+test('every rule set this plugin owns is a workflow the layout resolves with wired rules; uncalibrated/ is never one', () => {
+  for (const set of ['writing', 'writing/legal', 'writing/econ', 'dev', 'ds', 'authoring', 'workshop', 'elide']) {
+    const r = spawnSync('python3', [join(ROOT, 'bin', 'workflow-check'), set, '--list'], { encoding: 'utf8', timeout: 60_000, env: { ...process.env, WORKFLOW_CHECKS_PATH: ROOT } })
+    expect(r.status, `${set}: ${r.stderr}`).toBe(0)
+    const { ruleDirs, rules } = JSON.parse(r.stdout)
+    expect(ruleDirs.length, set).toBeGreaterThan(0)
+    expect(rules.length, set).toBeGreaterThan(0)
+    expect(rules.filter((f: string) => f.includes('/uncalibrated/')), set).toEqual([])
   }
 })
 

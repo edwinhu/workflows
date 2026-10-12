@@ -6,7 +6,7 @@ feature was already implemented and already tested. Details and evidence below.
 Baseline before any edit: `bun test` in `scripts/` → **32 pass, 0 fail**.
 After the work: **36 pass, 0 fail** (4 tests added).
 
-Nothing outside `/home/eh/projects/workflows/skills/elide-case/` was modified.
+Nothing outside `${CLAUDE_PLUGIN_ROOT}/skills/elide-case/` was modified.
 `/home/eh/areas/secreg` was read only; `git status` there shows no change to `addenda/` or
 `docs/` attributable to this work.
 
@@ -59,7 +59,7 @@ error: expect(received).not.toContain(expected)
 Expected to not contain: "This paragraph is the editor's own commentary"
 Received: "--- leg plan\nLEG plan: NOT CHECKED — --no-plan was given; NOBODY IS CHECKING THE INTERVIEW ANSWERS\n  this addendum was graded on its text alone; the doctrinal target it was cut for is unverified\n--- leg compile\nLEG compile: PASS — editorial.typ builds to editorial.pdf\n--- leg quotes\n  reading 1/1 \"SECURITIES AND EXCHANGE COMMISSION v. MUTUAL BENEFITS CORP.\": FAIL [derived] — against SEC-v-Mutual-Benefits-408-F3d-737-11th-Cir-2005.txt\n    MISS in 'SECURITIES AND EXCHANGE COMMISSION v. MUTUAL BENEFITS CORP.':\n      typ: This paragraph is the editor's own commentary and appears nowhere in the reporter, which is precisely why grading it against the opinion is a category error.\n ... LEG quotes: FAIL — at least one of 1 reading(s) is not verified\n ..."
 
-      at <anonymous> (/home/eh/projects/workflows/skills/elide-case/scripts/check.test.ts:240:21)
+      at <anonymous> (skills/elide-case/scripts/check.test.ts:240:21)
 (fail) check.sh > an editors'-note block is not graded as court text [287.05ms]
 ```
 
@@ -161,7 +161,7 @@ error: expect(received).toBe(expected)
 Expected: "the vast majority of individuals"
 Received: "the vast *329 majority of individuals"
 
-      at <anonymous> (/home/eh/projects/workflows/skills/elide-case/scripts/check-quotes.test.ts:116:69)
+      at <anonymous> (skills/elide-case/scripts/check-quotes.test.ts:116:69)
 (fail) check-quotes.py > the furniture stripper eats Westlaw star pages but never an emphasis asterisk [22.73ms]
 ```
 
@@ -174,7 +174,7 @@ error: expect(received).not.toContain(expected)
 Expected to not contain: "MISS"
 Received: "MISS in 'SEC v. RIPPLE LABS, INC.':\n  typ: Therefore, the vast majority of individuals who purchased XRP did so with an expectation of profit derived from the efforts of Ripple and its agents.\n  matched source through: ...therefore the vast\n  diverges at: majority of individuals who purchased xrp did so with an expectation of\n\n1 sentences checked, 1 not found\n ..."
 
-      at <anonymous> (/home/eh/projects/workflows/skills/elide-case/scripts/check-quotes.test.ts:134:21)
+      at <anonymous> (skills/elide-case/scripts/check-quotes.test.ts:134:21)
 (fail) check-quotes.py > a sentence split by a star-page marker in the source is not reported as a miss [32.81ms]
 ```
 
@@ -214,7 +214,7 @@ the brief forbids editing anything under `/home/eh/areas/secreg`.
 ## Full suite — AFTER all changes (verbatim)
 
 ```
-$ cd /home/eh/projects/workflows/skills/elide-case/scripts && bun test
+$ cd ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts && bun test
 bun test v1.4.0 (34cbb9a40)
 
  36 pass
@@ -241,7 +241,7 @@ in this reverted run too, which is the disclosure made above.
 ## End-to-end run — per-reading lines, verbatim
 
 ```
-$ cd /home/eh/areas/secreg && bash /home/eh/projects/workflows/skills/elide-case/scripts/check.sh \
+$ cd /home/eh/areas/secreg && bash ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts/check.sh \
     --addendum addenda/02-addendum.typ --docs docs --target 4-6 --no-plan
 ```
 

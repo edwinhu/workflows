@@ -50,6 +50,10 @@ function harness(opts: { parityStub?: string; noSiblings?: boolean } = {}): stri
       symlinkSync(join(SCRIPTS, '..', '..', skill, 'scripts'), join(d, 'skills', skill, 'scripts'))
       void probe
     }
+    // the authoring-gate leg's runner, found under the same plugin root; it resolves its real
+    // location, so it runs this repo's checks/authoring/constraints/
+    mkdirSync(join(d, 'bin'))
+    symlinkSync(join(SCRIPTS, '..', '..', '..', 'bin', 'workflow-check'), join(d, 'bin', 'workflow-check'))
   }
   copyFileSync(CHECK, join(s, 'check.sh'))
   symlinkSync(join(SCRIPTS, 'wc-probe.ts'), join(s, 'wc-probe.ts'))
@@ -84,7 +88,7 @@ const PASSING_TEST = "import { expect, test } from 'bun:test'\ntest('fixture pas
 const FAILING_TEST = "import { expect, test } from 'bun:test'\ntest('fixture fails', () => { expect(1).toBe(2) })\n"
 
 // A fixture workflow skill. `skill` defaults to a body wc-probe reports CLEAN; `js` and `tests`
-// add the artifacts the node-check and suite legs look for.
+// add the artifacts the authoring-gate (its node-check constraint) and suite legs look for.
 // `noPluginRoot` omits the marker so the pc-probe leg's could-not-look refusal is exercised.
 function target(opts: { skill?: string; js?: string; tests?: Record<string, string>; emptyScripts?: boolean; noPluginRoot?: boolean } = {}): string {
   const d = tmp('wc-check-target-')
@@ -122,7 +126,7 @@ test('leg-count: check.sh statically declares exactly the seven legs', () => {
   const src = readFileSync(CHECK, 'utf8')
   const names = new Set<string>()
   for (const m of src.matchAll(/^[ \t]*report[ \t]+([A-Za-z0-9_-]+)\b/gm)) names.add(m[1]!)
-  expect([...names].sort()).toEqual(['authoring-lint', 'node-check', 'parity', 'pc-probe', 'probe-tests', 'sc-probe', 'wc-probe'])
+  expect([...names].sort()).toEqual(['authoring-gate', 'authoring-lint', 'parity', 'pc-probe', 'probe-tests', 'sc-probe', 'wc-probe'])
   expect(names.size).toBe(7)
 })
 
@@ -130,7 +134,7 @@ test('leg-count: a clean target prints exactly seven leg lines and exits 0', () 
   const r = run(harness(), ['--target', target({ tests: { 'fixture.test.ts': PASSING_TEST } })])
   expect(r.stdout + r.stderr).toContain('leg')
   expect(legLines(r.stdout).length).toBe(7)
-  for (const leg of ['wc-probe', 'sc-probe', 'pc-probe', 'parity', 'authoring-lint', 'node-check', 'probe-tests']) {
+  for (const leg of ['wc-probe', 'sc-probe', 'pc-probe', 'parity', 'authoring-lint', 'authoring-gate', 'probe-tests']) {
     expect(legStatus(r.stdout, leg)).toContain('exit=0')
   }
   expect(r.code).toBe(0)
@@ -219,12 +223,13 @@ test('a forced failure in the parity leg propagates', () => {
   expect(r.code).not.toBe(0)
 })
 
-test('a forced failure in the node-check leg propagates', () => {
+test('a forced failure in the authoring-gate leg (its node-check constraint on a broken .js) propagates', () => {
   const r = run(harness(), [
     '--target',
     target({ js: 'const x = ;;;\n', tests: { 'fixture.test.ts': PASSING_TEST } }),
   ])
-  expect(legStatus(r.stdout, 'node-check')).not.toContain('exit=0')
+  expect(legStatus(r.stdout, 'authoring-gate')).not.toContain('exit=0')
+  expect(r.stderr).toContain('node-check')
   expect(legLines(r.stdout).length).toBe(7)
   expect(r.code).not.toBe(0)
 })
@@ -236,14 +241,14 @@ test('a forced failure in the probe-tests leg propagates', () => {
   expect(r.code).not.toBe(0)
 })
 
-test('node-check passes when the target ships no .js, and a valid .js still passes', () => {
+test('the authoring-gate passes when the target ships no .js, and a valid .js still passes', () => {
   const none = run(harness(), ['--target', target({ tests: { 'fixture.test.ts': PASSING_TEST } })])
-  expect(legStatus(none.stdout, 'node-check')).toContain('exit=0')
+  expect(legStatus(none.stdout, 'authoring-gate')).toContain('exit=0')
   const valid = run(harness(), [
     '--target',
     target({ js: 'export const x = 1\n', tests: { 'fixture.test.ts': PASSING_TEST } }),
   ])
-  expect(legStatus(valid.stdout, 'node-check')).toContain('exit=0')
+  expect(legStatus(valid.stdout, 'authoring-gate')).toContain('exit=0')
   expect(valid.code).toBe(0)
 })
 
@@ -313,7 +318,7 @@ function audit(out: string): string[] {
   return JSON.parse(r.stdout)
 }
 const combined = (r: { stdout: string; stderr: string }) => r.stdout + r.stderr
-const COUNTED_LEGS = ['sc-probe', 'parity', 'authoring-lint', 'node-check', 'probe-tests']
+const COUNTED_LEGS = ['sc-probe', 'parity', 'authoring-lint', 'authoring-gate', 'probe-tests']
 
 test('non-vacuity: every leg of a fixture target prints a count line, so the audit has no failures', () => {
   const r = run(harness(), ['--target', target({ js: 'export const x = 1\n', tests: { 'fixture.test.ts': PASSING_TEST } })])
@@ -329,6 +334,7 @@ test('non-vacuity: a real skill in this repo (jev-rules) passes the audit throug
 test('non-vacuity: a leg that examined nothing says `nothing in scope (...)`, never a bare 0', () => {
   const r = run(harness(), ['--target', target()]) // no .js, no scripts/
   const out = combined(r)
+  expect(out).toMatch(/^authoring-gate: 0 .* examined.*nothing in scope \(/m)
   expect(out).toMatch(/^node-check: 0 .* examined.*nothing in scope \(/m)
   expect(out).toMatch(/^probe-tests: 0 .* examined.*nothing in scope \(/m)
   expect(audit(out)).toEqual([])

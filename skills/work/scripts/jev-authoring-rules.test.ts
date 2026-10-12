@@ -9,7 +9,7 @@ import { changedFiles, changedRanges, collectEvidence } from "./rule-check.ts";
 // tree so the extractors see exactly the lines a change added. Fixture files carry a .fixture suffix
 // so no probe mistakes a fixture SKILL.md for a skill of this plugin.
 const BASE = join(import.meta.dir, "../../..");
-const RULES_DIR = join(BASE, "constraints/jev/authoring");
+const RULES_DIR = join(BASE, "checks/authoring/rules");
 const FIX = join(BASE, "tests/fixtures/jev/authoring");
 const RULES = ["A-DESC", "A-FLAG", "A-GATE", "A-PAD", "A-SOFT", "A-STATE"] as const;
 const SUBJECT = "one skill, plugin or workflow authoring change (SKILL.md, agent .md, manifests, .planning/ files)";
@@ -148,7 +148,7 @@ async function ruleCheck(d: string) {
     },
   });
   // async spawn: a spawnSync would block the event loop the stub answers on
-  const proc = Bun.spawn(["bun", join(BASE, "skills/work/scripts/rule-check.ts"), "--project-dir", d, "--rules", RULES_DIR], {
+  const proc = Bun.spawn(["bun", join(BASE, "skills/work/scripts/rule-check.ts"), "--project-dir", d, "--workflow", "authoring"], {
     env: { ...process.env, WORK_HOLD_DECISIONS_URL: `http://localhost:${server.port}/`, WORK_HOLD_JUDGE_TOKEN: "test-token", FARM_OUTCOMES: join(d, ".farm-outcomes.jsonl") },
     stdout: "pipe", stderr: "pipe",
   });

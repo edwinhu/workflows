@@ -9,12 +9,15 @@ const mkTmp = useTmp();
 
 const TEST_TOKEN = 'test-token-123';
 
-async function runRuleCheck(args: string[], port: number) {
-  return await $`bun run ${join(import.meta.dir, 'rule-check.ts')} ${args}`
+/** rule-check.ts over the ds set unless the args name another workflow (the CLI has no default set). */
+async function runRuleCheck(args: string[], port: number, env: Record<string, string> = {}) {
+  const named = args.includes('--workflow') ? args : ['--workflow', 'ds', ...args];
+  return await $`bun run ${join(import.meta.dir, 'rule-check.ts')} ${named}`
     .env({
       ...process.env,
       WORK_HOLD_DECISIONS_URL: `http://localhost:${port}/`,
-      WORK_HOLD_JUDGE_TOKEN: TEST_TOKEN
+      WORK_HOLD_JUDGE_TOKEN: TEST_TOKEN,
+      ...env,
     })
     .nothrow()
     .quiet();
@@ -85,7 +88,10 @@ test('p at or above block-at exits 2', async () => {
 });
 
 test('a VIOLATED verdict carries the file:line spans its rule declares (SPANS); a MET one carries none', async () => {
-  const rules = mkTmp('rule-spans-');
+  // a private layout: workflow x, whose rules are these four
+  const plug = mkTmp('rule-spans-');
+  const rules = join(plug, 'checks', 'x', 'rules');
+  fs.mkdirSync(rules, { recursive: true });
   // X-SPAN lists two candidates under `items`; X-CTX also lists a line under `context`, which its
   // SPANS does not name, so it must not surface; X-NONE declares no SPANS at all.
   fs.writeFileSync(join(rules, 'X-SPAN.py'), [
@@ -114,7 +120,7 @@ test('a VIOLATED verdict carries the file:line spans its rule declares (SPANS); 
       return new Response(JSON.stringify({ answers: { q0: { probabilities: { VIOLATED: p } } } }));
     }
   });
-  const res = await runRuleCheck(['--files', join(import.meta.dir, 'rule-check.ts'), '--rules', rules], server.port);
+  const res = await runRuleCheck(['--files', join(import.meta.dir, 'rule-check.ts'), '--workflow', 'x'], server.port, { WORKFLOW_CHECKS_PATH: plug });
   server.stop(true);
 
   expect(res.exitCode).toBe(2);
@@ -448,7 +454,8 @@ test('the other ds rules see the same state with or without diff info', async ()
 // --batch: the per-edit Jev mod's path (hooks/jev/mod.ts). One Decisions call per run, one question
 // per WIRED rule of the set, the rule's one-line statement in each verdict.
 async function runBatch(args: string[], port: number, stdin?: string) {
-  const p = Bun.spawn(['bun', 'run', join(import.meta.dir, 'rule-check.ts'), '--batch', ...args], {
+  const named = args.includes('--workflow') ? args : ['--workflow', 'ds', ...args];
+  const p = Bun.spawn(['bun', 'run', join(import.meta.dir, 'rule-check.ts'), '--batch', ...named], {
     env: { ...process.env, WORK_HOLD_DECISIONS_URL: `http://localhost:${port}/`, WORK_HOLD_JUDGE_TOKEN: TEST_TOKEN },
     stdin: stdin === undefined ? 'ignore' : new TextEncoder().encode(stdin),
     stdout: 'pipe', stderr: 'pipe',
@@ -457,7 +464,8 @@ async function runBatch(args: string[], port: number, stdin?: string) {
   return { stdout, exitCode };
 }
 
-const WRITING_DIR = join(import.meta.dir, '../../../constraints/jev/writing');
+
+const WRITING_DIR = join(import.meta.dir, '../../../checks/writing/rules');
 
 test('--batch: ONE Decisions call carrying every wired writing rule, none of uncalibrated/', async () => {
   const d = mkTmp('rule-check-batch-');
@@ -474,7 +482,7 @@ test('--batch: ONE Decisions call carrying every wired writing rule, none of unc
         return Response.json({ answers });
       }
     });
-    const res = await runBatch(['--rules', WRITING_DIR, '--files', md], server.port);
+    const res = await runBatch(['--workflow', 'writing', '--files', md], server.port);
     server.stop(true);
 
     expect(bodies.length).toBe(1);
@@ -498,7 +506,7 @@ test('--batch: ONE Decisions call carrying every wired writing rule, none of unc
 test('--batch: a failed call makes every rule unavailable after ONE attempt, exit 1', async () => {
   let n = 0;
   const server = Bun.serve({ port: 0, async fetch(req) { await req.text(); n++; return new Response(''); } });
-  const res = await runBatch(['--rules', WRITING_DIR, '--files', join(import.meta.dir, '../SKILL.md')], server.port);
+  const res = await runBatch(['--workflow', 'writing', '--files', join(import.meta.dir, '../SKILL.md')], server.port);
   server.stop(true);
   expect(n).toBe(1);
   expect(res.exitCode).toBe(1);
@@ -532,4 +540,26 @@ test('--batch --changed-lines -: the changed map comes on stdin and scopes DQ4/D
   } finally {
     fs.rmSync(d, { recursive: true, force: true });
   }
+});
+
+// A caller that runs rule-check under bin/workflow-check (work-checks.sh, for a ruleChecks of
+// `workflow-check <wf> --rules-only`) cannot read rule-check's stdout: the runner prints its own report.
+// RULE_CHECK_OUT is where the same verdict line goes, scored or empty.
+test('RULE_CHECK_OUT receives the exact verdict line stdout carries, for a scored run and for an empty scope', async () => {
+  const server = Bun.serve({ port: 0, async fetch(req) { await req.text(); return new Response(JSON.stringify({ answers: { q0: { probabilities: { VIOLATED: 0.9 } } } })); } });
+  const d = mkTmp('rule-check-out-');
+  const out = join(d, 'verdicts.json');
+  const res = await runRuleCheck(['--files', join(import.meta.dir, 'rule-check.ts')], server.port, { RULE_CHECK_OUT: out });
+  server.stop(true);
+  expect(res.exitCode).toBe(2);
+  const line = res.stdout.toString().trim();
+  expect(JSON.parse(line).verdicts.length).toBeGreaterThan(0);
+  expect(fs.readFileSync(out, 'utf8').trim()).toBe(line);
+
+  const repo = mkTmp('rule-check-out-repo-');
+  spawnSync('git', ['-C', repo, 'init', '-q'], { timeout: 60_000 });
+  const empty = join(d, 'empty.json');
+  const e = await runRuleCheck(['--project-dir', repo], 1, { RULE_CHECK_OUT: empty });
+  expect(e.exitCode).toBe(0);
+  expect(JSON.parse(fs.readFileSync(empty, 'utf8'))).toMatchObject({ verdicts: [], unavailable: [], scope: expect.stringContaining('nothing in scope') });
 });

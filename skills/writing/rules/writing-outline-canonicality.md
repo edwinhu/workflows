@@ -3,7 +3,7 @@ name: writing-outline-canonicality
 applies-to: [writing-draft, writing-verify, writing-revise]
 ---
 
-**What a script already decides:** `constraints/writing-outline-sync.py` decides the three structural comparisons and reads the phase. WHICH side is canonical in a contested case is this rule.
+**What a script already decides:** `checks/writing/constraints/writing-outline-sync.py` decides the three structural comparisons and reads the phase. WHICH side is canonical in a contested case is this rule.
 
 ## Rule
 

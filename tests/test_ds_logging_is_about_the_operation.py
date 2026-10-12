@@ -12,7 +12,7 @@ import importlib.util
 import sys
 from pathlib import Path
 
-_CONSTRAINTS = Path(__file__).resolve().parents[1] / "constraints"
+_CONSTRAINTS = Path(__file__).resolve().parents[1] / "checks" / "ds" / "constraints"
 
 
 def _load(name, filename):
@@ -28,7 +28,7 @@ err_check = _load("ds_error_handling", "ds-error-handling.py")
 
 def run(check, tmp_path, source):
     (tmp_path / "s.py").write_text(source)
-    return check({"cwd": str(tmp_path)})
+    return check({"cwd": str(tmp_path), "files": sorted(tmp_path.rglob("*.py"))})
 
 
 # ---------------------------------------------------------------- merge()

@@ -86,7 +86,7 @@ function modelOf(inv: string): string | null {
 
 test('1. a script row runs on claude-code --model claude-sonnet-5-5 and writes one full row line', async () => {
   const r = rig()
-  const res = await runRows(r, [{ label: 'scr', prompt: 'do the thing', kind: 'script' }])
+  const res = await runRows(r, [{ label: 'scr', workflow: 'none', prompt: 'do the thing', kind: 'script' }])
   expect(res.code).toBe(0)
   const inv = invocations(r)
   expect(inv).toHaveLength(1)
@@ -113,7 +113,7 @@ test('1. a script row runs on claude-code --model claude-sonnet-5-5 and writes o
 
 test('2. a bulk row runs on gemini-code --model gemini-3.7-flash-high', async () => {
   const r = rig()
-  const res = await runRows(r, [{ label: 'blk', prompt: 'p', kind: 'bulk' }])
+  const res = await runRows(r, [{ label: 'blk', workflow: 'none', prompt: 'p', kind: 'bulk' }])
   expect(res.code).toBe(0)
   const inv = invocations(r)
   expect(inv).toHaveLength(1)
@@ -124,7 +124,7 @@ test('2. a bulk row runs on gemini-code --model gemini-3.7-flash-high', async ()
 
 test('3. a row with no kind, provider or model exits 2, names the kinds, runs nothing, logs nothing', async () => {
   const r = rig()
-  const res = await runRows(r, [{ label: 'bare', prompt: 'p' }])
+  const res = await runRows(r, [{ label: 'bare', workflow: 'none', prompt: 'p' }])
   for (const k of KINDS) expect(res.stderr).toContain(k)
   expect(res.code).toBe(2)
   expect(invocations(r)).toEqual([])
@@ -133,7 +133,7 @@ test('3. a row with no kind, provider or model exits 2, names the kinds, runs no
 
 test('4. an explicit codex provider and model run on codex-code with that model, source explicit', async () => {
   const r = rig()
-  const res = await runRows(r, [{ label: 'exp', prompt: 'p', provider: 'codex', model: 'gpt-5.6-luna' }])
+  const res = await runRows(r, [{ label: 'exp', workflow: 'none', prompt: 'p', provider: 'codex', model: 'gpt-5.6-luna' }])
   expect(res.code).toBe(0)
   const inv = invocations(r)
   expect(inv).toHaveLength(1)
@@ -146,7 +146,7 @@ test('4. an explicit codex provider and model run on codex-code with that model,
 
 test('5. legacy --provider gemini with no kind runs gemini-code with no --model, source flag', async () => {
   const r = rig()
-  const res = await runRows(r, [{ label: 'leg', prompt: 'p' }], ['--provider', 'gemini'])
+  const res = await runRows(r, [{ label: 'leg', workflow: 'none', prompt: 'p' }], ['--provider', 'gemini'])
   expect(res.code).toBe(0)
   const inv = invocations(r)
   expect(inv).toHaveLength(1)
@@ -160,8 +160,8 @@ test('5. legacy --provider gemini with no kind runs gemini-code with no --model,
 test('6. two rows of different kinds each run on their own wrapper, two row lines, distinct rowIds', async () => {
   const r = rig()
   const res = await runRows(r, [
-    { label: 'a-script', prompt: 'p1', kind: 'script' },
-    { label: 'b-bulk', prompt: 'p2', kind: 'bulk' },
+    { label: 'a-script', workflow: 'none', prompt: 'p1', kind: 'script' },
+    { label: 'b-bulk', workflow: 'none', prompt: 'p2', kind: 'bulk' },
   ])
   expect(res.code).toBe(0)
   const wrappers = invocations(r).map(i => i.split(' ')[0]).sort()
@@ -176,7 +176,7 @@ test('6. two rows of different kinds each run on their own wrapper, two row line
 
 test('7. stderr announces each row as `farm: ROW <label> <rowId>` with the outcome rowId', async () => {
   const r = rig()
-  const res = await runRows(r, [{ label: 'announced', prompt: 'p', kind: 'review' }])
+  const res = await runRows(r, [{ label: 'announced', workflow: 'none', prompt: 'p', kind: 'review' }])
   expect(res.code).toBe(0)
   const o = rowLines(r)[0]
   expect(o).toBeDefined()
@@ -185,7 +185,7 @@ test('7. stderr announces each row as `farm: ROW <label> <rowId>` with the outco
 
 test('8. a routed row runs on the table pick, and an ok row gets no automatic verdict', async () => {
   const r = rig()
-  const res = await runRows(r, [{ label: 'plain', prompt: 'p', kind: 'judgement' }])
+  const res = await runRows(r, [{ label: 'plain', workflow: 'none', prompt: 'p', kind: 'judgement' }])
   expect(res.code).toBe(0)
   const inv = invocations(r)
   expect(inv).toHaveLength(1)
@@ -198,7 +198,7 @@ test('8. a routed row runs on the table pick, and an ok row gets no automatic ve
 test('9. the prompt text never appears in outcomes.jsonl', async () => {
   const r = rig()
   const secret = 'PELICAN-ORBIT-4417 rewrite the ledger reconciler'
-  const res = await runRows(r, [{ label: 'secret', prompt: secret, kind: 'script' }])
+  const res = await runRows(r, [{ label: 'secret', workflow: 'none', prompt: secret, kind: 'script' }])
   expect(res.code).toBe(0)
   expect(rowLines(r)).toHaveLength(1)        // a row line must exist for its absence of the prompt to mean anything
   const text = readFileSync(r.outcomes, 'utf8')
@@ -208,7 +208,7 @@ test('9. the prompt text never appears in outcomes.jsonl', async () => {
 
 test('10a. --verdict <rowId> correct appends a verdict line and runs no wrapper', async () => {
   const r = rig()
-  await runRows(r, [{ label: 'judged', prompt: 'p', kind: 'script' }])
+  await runRows(r, [{ label: 'judged', workflow: 'none', prompt: 'p', kind: 'script' }])
   const o = rowLines(r)[0]
   expect(o).toBeDefined()
   const before = invocations(r).length
@@ -225,7 +225,7 @@ test('10a. --verdict <rowId> correct appends a verdict line and runs no wrapper'
 
 test('10b. --verdict with a verdict other than correct|wrong exits 2 and appends nothing', async () => {
   const r = rig()
-  await runRows(r, [{ label: 'judged', prompt: 'p', kind: 'script' }])
+  await runRows(r, [{ label: 'judged', workflow: 'none', prompt: 'p', kind: 'script' }])
   const o = rowLines(r)[0]
   expect(o).toBeDefined()                     // the refusal must be about `maybe`, not a missing row
   const before = readFileSync(r.outcomes, 'utf8')
@@ -236,7 +236,7 @@ test('10b. --verdict with a verdict other than correct|wrong exits 2 and appends
 
 test('10c. --verdict on an unknown rowId exits 2, appends nothing, runs no wrapper', async () => {
   const r = rig()
-  await runRows(r, [{ label: 'judged', prompt: 'p', kind: 'script' }])
+  await runRows(r, [{ label: 'judged', workflow: 'none', prompt: 'p', kind: 'script' }])
   expect(rowLines(r)).toHaveLength(1)        // a known row exists, so the refusal is about the id
   const before = readFileSync(r.outcomes, 'utf8')
   const nInv = invocations(r).length
@@ -248,7 +248,7 @@ test('10c. --verdict on an unknown rowId exits 2, appends nothing, runs no wrapp
 
 test('11a. a row whose expect artifact is missing gets an automatic wrong verdict naming it', async () => {
   const r = rig()
-  const res = await runRows(r, [{ label: 'noart', prompt: 'p', kind: 'script', expect: ['out/never.md'] }])
+  const res = await runRows(r, [{ label: 'noart', workflow: 'none', prompt: 'p', kind: 'script', expect: ['out/never.md'] }])
   expect(res.code).toBe(1)
   const o = rowLines(r)[0]
   expect(o.missing).toEqual(['out/never.md'])
@@ -264,7 +264,7 @@ test('11a. a row whose expect artifact is missing gets an automatic wrong verdic
 test('11b. a row whose child ends with no result event (GONE) gets an automatic wrong verdict', async () => {
   const r = rig()
   writeFileSync(join(r.root, 'bin', 'claude-code'), '#!/usr/bin/env bash\nexit 137\n')
-  const res = await runRows(r, [{ label: 'died', prompt: 'p', kind: 'script' }])
+  const res = await runRows(r, [{ label: 'died', workflow: 'none', prompt: 'p', kind: 'script' }])
   expect(res.code).toBe(1)
   const o = rowLines(r)[0]
   const v = lines(r).filter(l => l.type === 'verdict')
@@ -275,7 +275,7 @@ test('11b. a row whose child ends with no result event (GONE) gets an automatic 
 
 test('11c. a hand --verdict after an automatic one is appended, never refused', async () => {
   const r = rig()
-  await runRows(r, [{ label: 'noart', prompt: 'p', kind: 'script', expect: ['out/never.md'] }])
+  await runRows(r, [{ label: 'noart', workflow: 'none', prompt: 'p', kind: 'script', expect: ['out/never.md'] }])
   const o = rowLines(r)[0]
   const res = await farm(r, ['--verdict', o.rowId, 'correct', 'artifact was written elsewhere and checked'])
   expect(res.code).toBe(0)

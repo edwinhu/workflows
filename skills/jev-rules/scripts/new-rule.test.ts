@@ -31,7 +31,7 @@ test('scaffolds module, twins, manifest entry and test in the real manifest shap
   const before = readFileSync(manifest, 'utf8');
   const r = run(['typst', 'T-DEMO', '--manifest', manifest]);
   expect(r.code).toBe(0);
-  const mod = join(root, 'constraints/jev/typst/uncalibrated/T-DEMO.py');
+  const mod = join(root, 'checks/workshop/rules/uncalibrated/T-DEMO.py');
   expect(readFileSync(mod, 'utf8')).toMatch(/def evidence\(files, plan_lines=None, changed=None\):/);
   const vio = readFileSync(join(root, 'tests/fixtures/jev/typst/T-DEMO/vio/REPLACE-ME.txt'), 'utf8');
   expect(readFileSync(join(root, 'tests/fixtures/jev/typst/T-DEMO/sat/REPLACE-ME.txt'), 'utf8')).toBe(vio);
@@ -53,8 +53,8 @@ test('scaffolds module, twins, manifest entry and test in the real manifest shap
 test('the stub module loads through evidence.py and reports its placeholder proposition', () => {
   const { root, manifest } = realCopy();
   expect(run(['demo', 'D-ONE', '--manifest', manifest, '--layout', 'files']).code).toBe(0);
-  const r = spawnSync('python3', [join(BASE, 'constraints/jev/evidence.py'), '--files', join(root, 'tests/fixtures/jev/demo/D-ONE/vio/REPLACE-ME.txt'),
-    '--rules-dir', join(root, 'constraints/jev/demo/uncalibrated')], { encoding: 'utf8' });
+  const r = spawnSync('python3', [join(BASE, 'checks/_jev/evidence.py'), '--files', join(root, 'tests/fixtures/jev/demo/D-ONE/vio/REPLACE-ME.txt'),
+    '--rules-dir', join(root, 'checks/demo/rules/uncalibrated')], { encoding: 'utf8' });
   expect(r.status).toBe(0);
   const out = JSON.parse(r.stdout);
   expect(out['D-ONE'].proposition).toMatch(/^TODO/);
@@ -94,16 +94,20 @@ test('an unknown set needs --layout; diff layout gets before/after placeholders 
   expect(run(['newset', 'N-ONE', '--manifest', manifest]).code).toBe(3);
   expect(run(['newset', 'N-ONE', '--manifest', manifest, '--layout', 'diff']).code).toBe(0);
   const set = JSON.parse(readFileSync(manifest, 'utf8')).sets.newset;
-  expect(set).toMatchObject({ rulesDir: 'constraints/jev/newset', uncalibratedDir: 'constraints/jev/newset/uncalibrated', layout: 'diff' });
+  expect(set).toMatchObject({ rulesDir: 'checks/newset/rules', uncalibratedDir: 'checks/newset/rules/uncalibrated', layout: 'diff' });
+  // the new set is a workflow the runner resolves, its parked rule not yet run
+  const lst = spawnSync('python3', [join(BASE, 'bin/workflow-check'), 'newset', '--list'], { encoding: 'utf8', env: { ...process.env, WORKFLOW_CHECKS_PATH: root } });
+  expect(lst.status, lst.stderr).toBe(0);
+  expect(JSON.parse(lst.stdout).rules).toEqual([]);
   for (const p of ['vio/before', 'vio/after', 'sat/before', 'sat/after']) expect(existsSync(join(root, 'tests/fixtures/jev/newset/N-ONE', p, 'REPLACE-ME.txt.fixture'))).toBe(true);
   // a set that has no uncalibratedDir (elide) gains one
   const m2 = realCopy();
   expect(run(['elide', 'EL-DEMO', '--manifest', m2.manifest]).code).toBe(0);
-  expect(JSON.parse(readFileSync(m2.manifest, 'utf8')).sets.elide.uncalibratedDir).toBe('constraints/jev/elide/uncalibrated');
+  expect(JSON.parse(readFileSync(m2.manifest, 'utf8')).sets.elide.uncalibratedDir).toBe('checks/elide/rules/uncalibrated');
 });
 
 test('an indent-1 manifest with a root key (teaching shape) keeps its shape; an unknown shape is refused untouched', () => {
-  const data = { root: '.', criterion: { violatingAtLeast: 0.85, compliantBelow: 0.5, crossFlagAbove: 0.5 }, sets: { notes: { rulesDir: 'constraints/jev/notes', layout: 'files', rules: {} } } };
+  const data = { root: '.', criterion: { violatingAtLeast: 0.85, compliantBelow: 0.5, crossFlagAbove: 0.5 }, sets: { notes: { rulesDir: 'checks/notes/rules', layout: 'files', rules: {} } } };
   const { manifest } = tree(JSON.stringify(data, null, 1) + '\n');
   expect(run(['notes', 'N-DEMO', '--manifest', manifest]).code).toBe(0);
   const after = readFileSync(manifest, 'utf8');
@@ -132,7 +136,7 @@ console.log(JSON.stringify({ criterion: { violatingAtLeast: 0.85, compliantBelow
 function filled() {
   const t = realCopy();
   expect(run(['typst', 'T-DEMO', '--manifest', t.manifest]).code).toBe(0);
-  const mod = join(t.root, 'constraints/jev/typst/uncalibrated/T-DEMO.py');
+  const mod = join(t.root, 'checks/workshop/rules/uncalibrated/T-DEMO.py');
   const fill = () => {
     writeFileSync(mod, readFileSync(mod, 'utf8').replace(/TODO:?\s*/g, ''));
     for (const twin of ['vio', 'sat']) {
@@ -141,7 +145,7 @@ function filled() {
       writeFileSync(join(d, 'slides.typ'), `== ${twin}\n`);
     }
   };
-  return { ...t, mod, wired: join(t.root, 'constraints/jev/typst/T-DEMO.py'), fill };
+  return { ...t, mod, wired: join(t.root, 'checks/workshop/rules/T-DEMO.py'), fill };
 }
 
 function wire(t: { manifest: string; root: string }, plan: object[], extra: string[] = []) {

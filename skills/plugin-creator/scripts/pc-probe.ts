@@ -59,10 +59,12 @@
  *     names but never invokes it is NOT a caller.
  *     Defect: `scripts/prose-lint.py`, `ai-tic/linter/score.py`, `scripts/check-all.sh` — ~330 dead
  *     lines, one of which is named by a test file that never calls it.
- *     A contract module is REGISTERED BY ITS CONTRACT, not by a literal path: `run-constraints.py`
- *     auto-discovers on `APPLIES_TO`/`SEVERITY` by glob. So a contract module counts as called when
- *     the plugin holds a live discovery runner. If it holds none, they are all uncalled, which is
- *     the truth.
+ *     A module under `checks/<workflow>/constraints/` or `checks/<workflow>/rules/` is REGISTERED BY
+ *     ITS DIRECTORY: workflows' `bin/workflow-check` runs every one, from the plugin that ships it or
+ *     from any plugin root on WORKFLOW_CHECKS_PATH, so it is called with no runner in the target.
+ *     Elsewhere a contract module is REGISTERED BY ITS CONTRACT, not by a literal path: a discovery
+ *     runner globs a directory and dispatches on it. So it counts as called when the plugin holds a
+ *     live discovery runner. If it holds none, they are all uncalled, which is the truth.
  *
  * I4  Every path literal a checker COMPUTES to reach another file must resolve.
  *     Defect: `skills/writing/references/writing-no-bold-lead.py:30` uses `parents[2]` where all ten
@@ -520,6 +522,19 @@ export function skillOf(file: string, target: string): string | null {
   return parts.slice(0, i + 2).join('/')
 }
 
+/**
+ * Is `dir` a checks/<workflow>/constraints or checks/<workflow>/rules directory of `target`? Each workflow
+ * segment is a name (a `_` or `.` directory, such as checks/_jev, is not a workflow), as bin/workflow-check
+ * resolves them; rules/uncalibrated/ is parked and is not one.
+ */
+export function layoutDir(dir: string, target: string): boolean {
+  const parts = relative(target, dir).split(sep)
+  if (parts.length < 3 || parts[0] !== 'checks') return false
+  const kind = parts[parts.length - 1]
+  const wf = parts.slice(1, -1)
+  return (kind === 'constraints' || kind === 'rules') && wf.every(p => /^[A-Za-z0-9][\w.-]*$/.test(p) && p !== 'constraints' && p !== 'rules')
+}
+
 /** Does this module carry the check-all contract? */
 export function hasModuleContract(text: string): boolean {
   const hasConstraint = /^\s*CONSTRAINT\s*(?::[^=\n]*)?=/m.test(text)
@@ -860,8 +875,8 @@ export function checkExemptionVocabulary(exemptions: readonly Exemption[]): Find
 /**
  * Does this module expose the checker contract a discovery runner dispatches on?
  *
- * A module-level `def check(<one parameter>)`, or an `APPLIES_TO` declaration (the key workflows'
- * `run-constraints.py` reads), or the full check-all contract. See SCOPE for why one parameter.
+ * A module-level `def check(<one parameter>)`, or an `APPLIES_TO` declaration (a discovery runner's
+ * dispatch key), or the full check-all contract. See SCOPE for why one parameter.
  */
 export function hasCheckerContract(text: string): boolean {
   if (hasModuleContract(text)) return true
@@ -1066,8 +1081,9 @@ export function checkEngineCallers(
   for (const e of [...engines].sort((a, b) => a.file.localeCompare(b.file))) {
     if ((callersOf.get(e.file) ?? []).length > 0) continue
     // A contract module is registered BY ITS CONTRACT: check-all-style runners discover it by glob,
-    // so there is no literal path to find. It is called iff such a runner exists.
-    if (e.via.includes('contract') && discoveryRunners.length > 0) continue
+    // so there is no literal path to find. It is called iff such a runner exists, or its directory
+    // is the checks/ layout, which bin/workflow-check runs.
+    if (e.via.includes('contract') && (discoveryRunners.length > 0 || layoutDir(dirname(e.file), target))) continue
     findings.push({
       rule: 'I3 every engine has a live caller',
       severity: 'major',
@@ -1448,7 +1464,8 @@ export function checkSplitInvariant(
           'move it to the sibling rules/ directory if it is a rule a model must judge, or out of both if it is a record rather than a rule',
       })
     }
-    if (kind === 'rules' && extname(f) === '.py') {
+    // checks/<workflow>/rules/ holds Jev rule MODULES: code by definition, scored through bin/workflow-check
+    if (kind === 'rules' && extname(f) === '.py' && !layoutDir(d, target)) {
       findings.push({
         rule: 'I12 the split is physical',
         severity: 'major',
@@ -1600,9 +1617,10 @@ export function runProbe(target: string, opts: ProbeOptions = {}): ProbeResult {
   const delegates = (a: string, b: string) => (spawns.get(a)?.has(b) ?? false)
 
   // A discovery runner ENUMERATES a checker directory and DISPATCHES on the module contract. Which
-  // contract member it keys on is the runner's choice: workflows' run-constraints.py reads APPLIES_TO,
-  // typst's globs constraints/*.py and dispatches on a callable `check`. Requiring APPLIES_TO
-  // specifically reported all 36 of typst's live checkers as uncalled — the runner was right there.
+  // contract member it keys on is the runner's choice: one reads APPLIES_TO, typst's globs
+  // constraints/*.py and dispatches on a callable `check`. Requiring APPLIES_TO specifically
+  // reported all 36 of typst's live checkers as uncalled — the runner was right there. The
+  // checks/<workflow>/ layout needs no runner here: its directory is the registration (layoutDir).
   const discoveryRunners = [...codeOf]
     .filter(([f, code]) => {
       if (hasModuleContract(textOf.get(f) ?? '')) return false
@@ -1663,6 +1681,9 @@ export function runProbe(target: string, opts: ProbeOptions = {}): ProbeResult {
     for (const d of enumeratedDirsOf(r, code)) derived.add(d)
     for (const x of runnerExclusions(code)) exclusions.add(x)
   }
+  // The checks/<workflow>/ layout is enumerated by bin/workflow-check (from this plugin or any root on
+  // WORKFLOW_CHECKS_PATH), whatever runner this target ships.
+  for (const f of all) if (layoutDir(dirname(f), root)) enumerated.add(dirname(f))
   const contractFiles = [...textOf]
     .filter(([f, text]) => extname(f) === '.py' && !isTestFile(f) && hasCheckerContract(text))
     .map(([f]) => f)

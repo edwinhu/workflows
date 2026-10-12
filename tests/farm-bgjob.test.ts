@@ -27,7 +27,7 @@ function runFarm(stubBody: string) {
   chmodSync(join(bin, 'claude-code'), 0o755)
   const tasks = join(root, 'tasks.json')
   const outcomes = join(root, 'farm-outcomes.jsonl')
-  writeFileSync(tasks, JSON.stringify([{ label: 'bg', prompt: 'p' }]))
+  writeFileSync(tasks, JSON.stringify([{ label: 'bg', workflow: 'none', prompt: 'p' }]))
   const res = spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', agentCwd], {
     timeout: 120_000, encoding: 'utf8', cwd: root,
     env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1', FARM_OUTCOMES: outcomes,

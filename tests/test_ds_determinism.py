@@ -17,7 +17,7 @@ import pytest
 _SPEC = importlib.util.spec_from_file_location(
     "ds_determinism",
     os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                 "constraints", "ds-determinism.py"),
+                 "checks", "ds", "constraints", "ds-determinism.py"),
 )
 _MOD = importlib.util.module_from_spec(_SPEC)
 _SPEC.loader.exec_module(_MOD)
@@ -25,7 +25,7 @@ _SPEC.loader.exec_module(_MOD)
 
 def _check(tmp_path, body):
     (tmp_path / "m.py").write_text(body)
-    return _MOD.check({"cwd": str(tmp_path)})
+    return _MOD.check({"cwd": str(tmp_path), "files": sorted(tmp_path.rglob("*.py"))})
 
 
 # ---- the three spellings that ARE seeded --------------------------------------------------

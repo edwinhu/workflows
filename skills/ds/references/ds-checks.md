@@ -1,7 +1,7 @@
 # DS Common Checks
 
 Canonical definitions for data-quality verification. The vendored runner at
-`${CLAUDE_PLUGIN_ROOT}/skills/ds/scripts/ds-dq.py` OWNS the computed rows; the
+`${CLAUDE_PLUGIN_ROOT}/checks/ds/constraints/ds-dq.py` OWNS the computed rows; the
 `data-quality-judgement` lens OWNS the seven it cannot settle. Both load these definitions by the path
 `${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-checks.md`.
 
@@ -9,7 +9,7 @@ Canonical definitions for data-quality verification. The vendored runner at
 
 ## Computed vs model-evaluated
 
-The **Runner** column below is the load-bearing distinction, not a convenience. `${CLAUDE_PLUGIN_ROOT}/skills/ds/scripts/ds-dq.py`
+The **Runner** column below is the load-bearing distinction, not a convenience. `${CLAUDE_PLUGIN_ROOT}/checks/ds/constraints/ds-dq.py`
 COMPUTES the mechanical checks over the outputs declared in the approved plan's `## Data Outputs` table
 and emits a machine-generated reason for every `N/A`. Everything else is a judgement a model makes, and
 the runner reports it as `MODEL-EVALUATED` rather than `PASS` so that no reader can mistake a judgement

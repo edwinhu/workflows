@@ -22,22 +22,22 @@ const ROOT = dirname(import.meta.dir);
 // added tomorrow is swept the day it lands, and the only way out is an entry in EXCLUSIONS with
 // a reason.
 //
-// Why these six and not `skills/*/scripts/`: the per-skill scripts directories are domain
-// tooling -- WRDS ETL, docx builders, PDF extraction, batch submitters -- whose exit codes are
-// "the tool ran", not "the corpus is clean". The constraint directories plus scripts/checks are
-// where a bare exit 0 is read by a gate as PASS. The per-skill constraint directories are
-// DISCOVERED rather than listed: `skills/ds/constraints/` was on the list only so that a .py
-// dropped there would be swept on arrival, and it held nothing but .md, so the rules/constraints
-// split deleted the directory and with it a named entry that then failed as a missing dir.
-// Discovery keeps the arrival guarantee for every skill at once, including ones not yet written.
+// Why these and not `skills/*/scripts/`: the per-skill scripts directories are domain tooling --
+// WRDS ETL, docx builders, PDF extraction, batch submitters -- whose exit codes are "the tool ran",
+// not "the corpus is clean". The layout's constraint directories (checks/<workflow>/constraints/)
+// and scripts/checks are where a bare exit 0 is read by a gate as PASS. The
+// constraint directories are DISCOVERED from the layout rather than listed, so a workflow added
+// tomorrow is swept the day it lands. Rules (checks/<workflow>/rules/) are Jev modules evidence.py
+// imports; they have no entry point to sweep.
+function constraintDirs(rel: string): string[] {
+  return readdirSync(join(ROOT, rel), { withFileTypes: true })
+    .filter((e) => e.isDirectory() && !/^[_.]/.test(e.name) && e.name !== "rules" && e.name !== "__pycache__")
+    .flatMap((e) => (e.name === "constraints" ? [`${rel}/constraints`] : constraintDirs(`${rel}/${e.name}`)));
+}
 const CHECKER_DIRS = [
-  "constraints",
   "scripts",
   "scripts/checks",
-  ...readdirSync(join(ROOT, "skills"), { withFileTypes: true })
-    .filter((e) => e.isDirectory() && existsSync(join(ROOT, "skills", e.name, "constraints")))
-    .map((e) => `skills/${e.name}/constraints`)
-    .sort(),
+  ...constraintDirs("checks").sort(),
 ];
 
 // -- Exclusions ---------------------------------------------------------------
@@ -50,11 +50,17 @@ const CHECKER_DIRS = [
 //   NOT A CHECKER    -- a tool, generator or loader whose exit code is not a verdict over a
 //                       corpus, so "PASS over nothing" is not a failure mode it has.
 const EXCLUSIONS: Record<string, string> = {
-  "constraints/_ds_logging.py":
+  "checks/ds/constraints/_ds_logging.py":
     "NO ENTRY POINT: shared structured-logging helper for the ds-* checkers. No __main__.",
-  "constraints/_ds_waivers.py":
+  "checks/ds/constraints/_ds_waivers.py":
     "NO ENTRY POINT: the per-line waiver parser imported by every ds-* checker. Its only " +
     "occurrence of __main__ is the word inside its docstring; there is no guard.",
+  "checks/ds/constraints/_contract.py":
+    "NO ENTRY POINT: the constraint CLI contract (options, count line, exit codes) the ds checkers import.",
+  "checks/elide/constraints/_elide_contract.py":
+    "NO ENTRY POINT: the elide checkers' shared CLI contract. bin/workflow-check never runs a _ module.",
+  "checks/writing/constraints/_writing.py":
+    "NO ENTRY POINT: the writing checkers' shared CLI contract and file predicates. No __main__.",
   "scripts/prose_extract.py":
     "NO ENTRY POINT: draft discovery + md/docx paragraph extraction for the writing checks. No __main__.",
   "scripts/checks/hook_output_schema.py":
@@ -106,8 +112,6 @@ const EXCLUSIONS: Record<string, string> = {
   "scripts/load-constraints.ts":
     "NOT A CHECKER: the constraint loader itself (published `constraint-loader` capability). " +
     "It emits .md prose for a skill scope; exit 0 does not mean any corpus was clean.",
-  "skills/ai-anti-patterns/constraints/scored-tics-patterns.py":
-    "NO ENTRY POINT: a GENERATED regex/label table imported by the tic scorers. No __main__, no shebang.",
 };
 
 const REASON_KINDS =
@@ -202,9 +206,19 @@ function runBare(rel: string): { status: number | null; out: string } {
 const EXPLAINED =
   /COULD-NOT-RUN|COULD-NOT-CHECK|NO CHECK RAN|usage:|Usage:|Error:|is required|supply |no [\w-]+ ?[\w-]* named|takes <|(python3|bash|bun) \S+ </;
 
+// A constraint under checks/ answers to the layout's contract (bin/workflow-check): handed nothing, it may
+// instead say so as an EMPTY SCOPE -- first line `<name>: 0 <unit> examined — nothing in scope (<reason>)`,
+// exit 0 -- which the runner reports as such and never counts as a check that passed. That line is the
+// opposite of PASS over nothing: it names what was missing. Anything else must exit 2.
+const EMPTY_SCOPE = /^[\w.-]+: 0 \S.*examined.*nothing in scope \([^)]+\)/;
+
 for (const rel of FILES) {
   test(`${rel}: zero arguments exits 2 and names what was missing`, () => {
     const { status, out } = runBare(rel);
+    if (rel.startsWith("checks/") && status === 0) {
+      expect(out.split("\n")[0], `${rel} exited 0 with no input and no explicit empty scope:\n${out}`).toMatch(EMPTY_SCOPE);
+      return;
+    }
     expect(status, `${rel} exited ${status} with no input -- 0 reads as PASS over nothing, ` +
       `1 reads as violations found. Output:\n${out}`).toBe(2);
     expect(out.trim().length, `${rel} exited 2 but said nothing about what was missing`).toBeGreaterThan(0);

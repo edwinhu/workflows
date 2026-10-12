@@ -4,7 +4,7 @@
     writing_style_check.py --project <dir> --style legal|econ|general
 
 Three rules, each one a pattern with no judgement left in it (the judged register rules are
-Jev's, under constraints/jev/writing, and the reviewer's):
+Jev's, under checks/writing/rules, and the reviewer's):
 
   SHIP-DICTION       a phrase from the writing-general Ship table ("utilize", "due to the fact
                      that", ...). The table names the replacement, so a hit is never a matter

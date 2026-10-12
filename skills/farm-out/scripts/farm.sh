@@ -25,7 +25,9 @@
 #   farm.sh --tasks tasks.json --cwd /repo   # JSON array; one row or many, run in parallel.
 #                                            # Each row is routed by scripts/lib/route.ts on its
 #                                            # "kind" (or its own "provider"/"model"); a row with
-#                                            # neither is refused and nothing runs.
+#                                            # neither is refused and nothing runs. Every row names
+#                                            # its "workflow" (or "none"; a persona implies one), and
+#                                            # bin/workflow-check gates what the row touched.
 #   farm.sh --workflow /abs/wf.js --args /abs/args.json --out /abs/result.json
 #   farm.sh --provider claude|codex|gemini   # legacy whole-run override: that wrapper for every
 #                                            # row, route.ts never consulted (--workflow needs it)
@@ -66,6 +68,41 @@ NOBODY IS WATCHING THIS RUN. There is no one to answer a question, accept an off
 
 # Exit 2 is "you called me wrong" -- distinct from 1, "the delegation failed".
 refuse() { printf '%s\n' "$*" >&2; exit 2; }
+
+# THE ROW'S WORKFLOW. Every --tasks row is gated by one workflow's checks (bin/workflow-check), so every
+# row names it: `"workflow": "<wf>"`, or `"workflow": "none"` said out loud. A persona implies one when
+# the row names none: its name with `/` for `-` (writing-legal -> writing/legal) when the layout has that
+# workflow, and none for a read-only persona (no Write, Edit or Bash), which writes nothing to gate.
+# The layout is the only judge of a name: `workflow-check <wf> --list`, once per name per run.
+declare -A WF_OK=() WF_WHY=()
+wf_known() {
+  if [ -z "${WF_OK[$1]+x}" ]; then
+    local why
+    if why=$(python3 "$PLUGIN_ROOT/bin/workflow-check" "$1" --list 2>&1 >/dev/null); then WF_OK[$1]=1
+    else WF_OK[$1]=0; WF_WHY[$1]=${why:-workflow-check $1 --list failed}; fi
+  fi
+  [ "${WF_OK[$1]}" = 1 ]
+}
+# Sets ROW_WF to the workflow that gates row $1 (label $2, agent $3, "workflow" field $4), "" for none;
+# refuses the run when the row names no workflow and its persona implies none, or names an unknown one.
+row_workflow() {
+  local i=$1 label=$2 persona="${3##*:}" w=$4 file="" readonly_persona=0
+  ROW_WF=""
+  if [[ "$persona" =~ ^[A-Za-z0-9_.-]+$ ]] && [ -f "$PLUGIN_ROOT/user-agents/$persona.md" ]; then
+    file="$PLUGIN_ROOT/user-agents/$persona.md"
+    grep -qs '^tools:.*\(Write\|Edit\|Bash\)' "$file" || readonly_persona=1
+  fi
+  if [ "$w" = none ]; then return 0; fi
+  if [ -n "$w" ]; then
+    wf_known "$w" || refuse "task $i ($label) workflow \"$w\" is not a workflow: ${WF_WHY[$w]}"
+    # a read-only persona writes nothing; an mtime walk would blame it for a sibling row's files
+    [ "$readonly_persona" = 1 ] || ROW_WF=$w
+    return 0
+  fi
+  [ "$readonly_persona" = 1 ] && return 0
+  if [ -n "$file" ] && wf_known "${persona//-//}"; then ROW_WF=${persona//-//}; return 0; fi
+  refuse "task $i ($label) names no workflow: add \"workflow\": \"<wf>\" (a workflow under checks/, whose checks then gate the row's output) or \"workflow\": \"none\"${persona:+ — persona $persona implies none}"
+}
 
 now_iso() { date -u +%Y-%m-%dT%H:%M:%SZ; }
 
@@ -399,25 +436,18 @@ Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint
   orphaned=$(python3 "$PLUGIN_ROOT/skills/farm-out/scripts/bgjobs.py" reap "$row_id" "$log" 2>/dev/null)
   printf '%s' "$orphaned" | jq -e 'type == "array"' >/dev/null 2>&1 || orphaned='[]'
   failure=$(printf '%s' "$orphaned" | jq -r 'if length > 0 then "ended with background job running: " + (map(.cmd) | join("; ")) else "" end')
-  # Output gate: a row of a workflow domain must leave work that passes that domain's gate
-  # (work/scripts/domain-gate.py: every constraints/<domain>-*.py plus the domain's Jev rules). The domain is
-  # the row's "workflow" field, else ds for a writing persona that preloads ds-rules. Nothing else runs these on
-  # a farmed row (check.sh covers /work runs only), so a child that followed a brief over the rules would ship unchecked.
-  # A read-only persona (ds-reviewer) writes nothing, so it is skipped: an mtime walk would blame it for a sibling row's figures.
-  # domain-gate.py finds what the row touched; exit 1 = findings, 2 = a check could not run, and an
-  # unrun check is not a pass -- both fail the row, and the findings are the failure text.
-  local chart_gate="" persona="${agent##*:}" gate_domain="${FARM_ROW_WORKFLOW:-}"
-  if [ -z "$gate_domain" ] && [[ "$persona" =~ ^[A-Za-z0-9_.-]+$ ]] && grep -qs '^  - ds-rules$' "$PLUGIN_ROOT/user-agents/$persona.md" \
-     && grep -qs '^tools:.*\(Write\|Bash\)' "$PLUGIN_ROOT/user-agents/$persona.md"; then
-    gate_domain=ds
-  fi
-  if [ -n "$gate_domain" ]; then
-    local -a gate_args=(--domain "$gate_domain" --cwd "$CWD" --stamp "$log.stamp" --log "$log")
+  # Output gate: a row must leave work that passes its workflow's checks -- every constraint and every
+  # Jev rule under checks/<wf>/ and its parents', run by bin/workflow-check over what the row touched.
+  # The workflow is the row's (row_workflow: its field, else its persona's; "none" and a read-only persona
+  # are not gated). Nothing else runs these on a farmed row (check.sh covers /work runs only), so a child
+  # that followed a brief over the rules would ship unchecked. Exit 1 = findings, 2 = a check could not
+  # run, and an unrun check is not a pass -- both fail the row, and the runner's report is the failure text.
+  local gate_out="" gate_wf="${FARM_ROW_WORKFLOW:-}"
+  if [ -n "$gate_wf" ]; then
+    local -a gate_args=("$gate_wf" --cwd "$CWD" --stamp "$log.stamp" --log "$log")
     for _e in "${real_expects[@]:-}"; do [ -n "$_e" ] && gate_args+=(--expect "$_e"); done
-    if ! chart_gate=$(python3 "$PLUGIN_ROOT/skills/work/scripts/domain-gate.py" "${gate_args[@]}" 2>&1); then
-      failure="${failure:+$failure; }$gate_domain constraint gate failed (domain-gate.py): $(printf '%s' "$chart_gate" | head -n 40)"
-    else
-      chart_gate=""
+    if ! gate_out=$(python3 "$PLUGIN_ROOT/bin/workflow-check" "${gate_args[@]}" 2>&1); then
+      failure="${failure:+$failure; }$gate_wf constraint gate failed (workflow-check $gate_wf): $(printf '%s' "$gate_out" | head -n 40)"
     fi
   fi
   mapfile -t missing < <(verify "${expects[@]:-}")
@@ -464,7 +494,7 @@ Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint
       if ! line=$(printf '%s' "$result" | jq -c --argjson m "$meta" --arg ts "$(now_iso)" --argjson gone "$gone" \
           '. as $r | ([if ($r.missing|length) > 0 then "expect-missing" else empty end, if $gone then "gone" else empty end,
                       if ($r.orphaned|length) > 0 then "background-orphaned" else empty end,
-                      (($r.failure // "") | capture("(^|; )(?<d>ds|dev) constraint gate")? | .d + "-constraints")]) as $c
+                      (($r.failure // "") | capture("(^|; )(?<d>[A-Za-z0-9_./-]+) constraint gate")? | .d + "-constraints")]) as $c
            | {type: "verdict", rowId: $m.rowId, verdict: "wrong",
               why: ("auto [\($m.kind // "-")/\($m.route.model // ($r.models[0] // "-"))]: "
                     + ([if ($r.missing|length) > 0 then "expect missing: \($r.missing|join(", "))" else empty end,
@@ -525,9 +555,13 @@ if [ -n "$TASKS" ]; then
     elif [ -n "$lint_out" ]; then
       printf 'farm: task %s (%s): %s\n' "$i" "$l" "$lint_out" >&2
     fi
-    w=$(jq -r ".[$i].workflow // \"\"" "$TASKS")
-    case "$w" in ds|dev|"") ;; *) refuse "task $i workflow must be \"ds\" or \"dev\" (the domains with a gate), got: $w" ;; esac
-    ROW_L[i]=$l ROW_P[i]=$p ROW_A[i]=$a ROW_M[i]=$m ROW_B[i]=$b ROW_W[i]=$w
+    w=$(jq -r ".[$i].workflow // \"\"" "$TASKS"); [ "$w" = "null" ] && w=""
+    case "$w" in
+      *[$'\n\r\t']*|*[$'\001'-$'\010']*)
+        refuse "task $i workflow contains a control character; not allowed in the event stream" ;;
+    esac
+    row_workflow "$i" "$l" "$a" "$w"
+    ROW_L[i]=$l ROW_P[i]=$p ROW_A[i]=$a ROW_M[i]=$m ROW_B[i]=$b ROW_W[i]=$ROW_WF
     # Filesystem-safe and unique: run start, our pid, a random word, the row index.
     ROW_ID[i]="${RUN_STAMP}-$$-${RUN_RAND}-${i}"
   done
