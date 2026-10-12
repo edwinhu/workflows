@@ -1,0 +1,317 @@
+#!/usr/bin/env python3
+"""The one runner for a workflow's checks: every constraint and every Jev rule under checks/<workflow>/.
+
+    workflow-check <wf> --project-dir P [--plan X] [--files F ...|--changed] [--constraints-only|--rules-only]
+    workflow-check <wf> --cwd DIR --stamp FILE --log FILE [--expect P ...] [--plan X] [...]   # a farmed row
+    workflow-check <wf> --list                                                                # what it reaches, JSON
+
+MEMBERSHIP IS THE DIRECTORY. Under every plugin root on WORKFLOW_CHECKS_PATH (os.pathsep-separated; default:
+this plugin, then each ~/.claude/skills/*/ holding a checks/ directory that is not this plugin under another
+path), checks/<wf>/constraints/*.py are the constraints and checks/<wf>/rules/*.py the rules. `_*.py` are
+helpers and rules/uncalibrated/ is parked: neither runs. A nested workflow inherits its parents, so
+`writing/legal` runs writing's checks and legal's. A `_` directory (checks/_jev) is not a workflow. A
+constraint at one checks/-relative path in two roots runs once, from the first root.
+
+SCOPE. --files names it; --changed (the default with --project-dir) is the git tree's changed and untracked
+files, every file when there is no git; a farmed row is the union of the files under --cwd modified after
+--stamp, the Write/Edit paths in its stream --log and its --expect paths. Every constraint runs on that scope
+and decides its own relevance (the contract: checks/ds/constraints/_contract.py). The rules are scored on it
+through skills/work/scripts/rule-check.ts --workflow (DOMAIN_GATE_RULE_CHECK replaces that command).
+
+Exit 0: every check ran and found nothing. 1: findings. 2: a check crashed, timed out, printed no count line
+first, counted a bare zero, or could not judge -- an unrun check is never a pass. Line 1 is the leg count
+`<wf>-gate: N check(s) examined` (work/scripts/leg-counts.sh), N the checks that examined something; with
+N = 0 it says `nothing in scope (...)`. Failing checks follow with their output, then each passing check's
+own count line.
+"""
+import argparse
+import json
+import os
+import re
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parent
+KINDS = ("constraints", "rules")
+SEGMENT = re.compile(r"^[A-Za-z0-9][\w.-]*$")
+SKIP_PARTS = {".git", ".pixi", "node_modules", "__pycache__", ".venv", "venv", ".cache"}
+WRITE_TOOLS = {"Write", "Edit", "MultiEdit", "NotebookEdit"}
+COUNT = re.compile(r"^[\w.-]+: (\d+) \S.*\b(?:examined|read|checked|scanned)\b")
+FINDING = re.compile(r"^\S[^\n]*?:\d+: \S", re.MULTILINE)
+TIMEOUT = int(os.environ.get("WORKFLOW_CHECK_TIMEOUT", "1800"))
+
+
+# ---- layout ---------------------------------------------------------------------------------------
+
+def plugin_id(root: Path) -> str:
+    try:
+        return json.loads((root / ".claude-plugin" / "plugin.json").read_text())["name"]
+    except (OSError, ValueError, KeyError, TypeError):
+        return str(root.resolve())
+
+
+def roots() -> list[Path]:
+    env = os.environ.get("WORKFLOW_CHECKS_PATH")
+    if env is not None:
+        out = []
+        for p in (Path(s).expanduser() for s in env.split(os.pathsep) if s):
+            if not (p / "checks").is_dir():
+                print(f"workflow-check: {p} on WORKFLOW_CHECKS_PATH has no checks/ directory", file=sys.stderr)
+            elif p.resolve() not in {o.resolve() for o in out}:
+                out.append(p)
+        return out
+    out, ids = [ROOT], {plugin_id(ROOT)}
+    for p in sorted((Path.home() / ".claude" / "skills").glob("*/")):
+        if (p / "checks").is_dir() and plugin_id(p) not in ids:
+            ids.add(plugin_id(p))
+            out.append(p)
+    return out
+
+
+def chain(wf: str) -> list[str]:
+    parts = wf.split("/")
+    if not all(SEGMENT.match(p) for p in parts) or any(p in KINDS for p in parts):
+        raise ValueError(f"`{wf}` is not a workflow name (a `_` or `.` directory, or constraints/ or rules/, is not one)")
+    return ["/".join(parts[:i]) for i in range(1, len(parts) + 1)]
+
+
+def runnable(d: Path) -> list[Path]:
+    return sorted(f for f in d.glob("*.py") if f.is_file() and not f.name.startswith(("_", "."))) if d.is_dir() else []
+
+
+def resolve(wf: str) -> dict:
+    levels, rs = chain(wf), roots()
+    if not any((r / "checks" / wf).is_dir() for r in rs):
+        raise LookupError(f"no workflow `{wf}`: no checks/{wf}/ under " + (", ".join(map(str, rs)) or "WORKFLOW_CHECKS_PATH (empty)"))
+    constraints, seen, rules, rule_dirs = [], set(), [], []
+    for lvl in levels:
+        for r in rs:
+            for f in runnable(r / "checks" / lvl / "constraints"):
+                if f"{lvl}/{f.name}" not in seen:
+                    seen.add(f"{lvl}/{f.name}")
+                    constraints.append(f)
+            fs = runnable(r / "checks" / lvl / "rules")
+            if fs:
+                rule_dirs.append(r / "checks" / lvl / "rules")
+                rules += fs
+    return {"workflow": wf, "chain": levels, "roots": [str(r) for r in rs], "constraints": [str(f) for f in constraints],
+            "rules": [str(f) for f in rules], "ruleDirs": [str(d) for d in rule_dirs]}
+
+
+# ---- scope ----------------------------------------------------------------------------------------
+
+def logged_writes(log: Path) -> list[Path]:
+    out = []
+    try:
+        lines = log.read_text(errors="replace").splitlines()
+    except OSError:
+        return out
+    for line in lines:
+        try:
+            ev = json.loads(line)
+        except ValueError:
+            continue
+        if not isinstance(ev, dict) or ev.get("type") != "assistant":
+            continue
+        for c in (ev.get("message") or {}).get("content") or []:
+            if isinstance(c, dict) and c.get("type") == "tool_use" and c.get("name") in WRITE_TOOLS:
+                p = (c.get("input") or {}).get("file_path") or (c.get("input") or {}).get("notebook_path")
+                if isinstance(p, str):
+                    out.append(Path(p))
+    return out
+
+
+def kept(found) -> list[Path]:
+    return sorted({p for p in found if p.is_file() and not SKIP_PARTS & set(p.parts)})
+
+
+def walk(d: Path) -> set[Path]:
+    found = set()
+    for r, ds, fs in os.walk(d):
+        ds[:] = [x for x in ds if x not in SKIP_PARTS]
+        found |= {Path(r) / f for f in fs}
+    return found
+
+
+def touched(cwd: Path, stamp: Path, log: Path, expects: list[str]) -> list[Path]:
+    found: set[Path] = set()
+    if stamp.exists():
+        mark = stamp.stat().st_mtime
+        for p in walk(cwd):
+            try:
+                if p.stat().st_mtime > mark:
+                    found.add(p)
+            except OSError:
+                pass
+    found |= {p if p.is_absolute() else cwd / p for p in logged_writes(log)}
+    found |= {Path(e) if os.path.isabs(e) else cwd / e for e in expects}
+    return kept(found)
+
+
+def changed(project: Path) -> tuple[list[Path], bool]:
+    """(the git tree's changed and untracked files, True); (every file, False) when `project` is not a git tree."""
+    def git(*a):
+        return subprocess.run(["git", "-C", str(project), *a], capture_output=True, text=True, check=False)
+    if git("rev-parse", "--show-toplevel").returncode != 0:
+        return kept(walk(project)), False
+    names = git("diff", "--name-only", "--relative", "HEAD", "--", ".").stdout.split("\n") + \
+        git("ls-files", "--others", "--exclude-standard").stdout.split("\n")
+    return kept(project / n for n in names if n), True
+
+
+def named(files: list[str]) -> list[Path]:
+    found = set()
+    for s in files:
+        p = Path(s).absolute()
+        found |= walk(p) if p.is_dir() else {p}
+    return sorted(p for p in found if p.is_file())
+
+
+# ---- running --------------------------------------------------------------------------------------
+
+def run_constraint(path: Path, project: Path, plan: Path | None, files: list[Path]) -> dict:
+    name = path.stem
+    cmd = [sys.executable, str(path), "--project-dir", str(project), *(["--plan", str(plan)] if plan else []),
+           "--files", *map(str, files)]
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=TIMEOUT, cwd=project, check=False)
+    except subprocess.TimeoutExpired:
+        return {"name": name, "rc": 2, "n": 0, "out": f"COULD-NOT-CHECK: {name} timed out after {TIMEOUT}s"}
+    except OSError as e:
+        return {"name": name, "rc": 2, "n": 0, "out": f"COULD-NOT-CHECK: {name} did not run: {e}"}
+    out, err = r.stdout.rstrip("\n"), r.stderr.strip()
+    full = out + (f"\n{err}" if err else "")
+    head, _, rest = out.partition("\n")
+    m = COUNT.match(head)
+    n = int(m.group(1)) if m else 0
+    why = None
+    if r.returncode not in (0, 1):
+        why = f"exited {r.returncode}"
+    elif not m:
+        why = "printed no count line first"
+    elif n == 0 and "nothing in scope (" not in head:
+        why = "examined 0 with no `nothing in scope (...)` -- what it read is unknown"
+    elif r.returncode == 1 and (n == 0 or not FINDING.search(rest) or "Traceback" in err):
+        why = "exited 1 without a `path:line:` finding, or crashed"
+    if why:
+        return {"name": name, "rc": 2, "n": n, "head": head, "out": f"COULD-NOT-CHECK: {name} {why}\n{full}"}
+    return {"name": name, "rc": r.returncode, "n": n, "head": head, "out": full}
+
+
+def score_rules(wf: str, files: list[Path], project: Path, plan: Path | None, by_git: bool) -> dict:
+    cmd = os.environ.get("DOMAIN_GATE_RULE_CHECK", "").split() or ["bun", str(ROOT / "skills" / "work" / "scripts" / "rule-check.ts")]
+    cmd += ["--workflow", wf, *(["--plan", str(plan)] if plan else [])]
+    cmd += ["--project-dir", str(project)] if by_git else ["--project", project.name, "--files", *map(str, files)]
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=TIMEOUT, check=False)
+    except (subprocess.TimeoutExpired, OSError) as e:
+        return {"rc": 2, "n": 0, "out": f"COULD-NOT-CHECK: rule-check did not run: {e}"}
+    try:
+        res = json.loads([ln for ln in r.stdout.splitlines() if ln.strip()][-1])
+        verdicts, unavailable = res["verdicts"], res["unavailable"]
+    except (IndexError, ValueError, KeyError, TypeError):
+        return {"rc": 2, "n": 0, "out": f"COULD-NOT-CHECK: rule-check exit {r.returncode} printed no verdict line\n"
+                                       f"{(r.stdout + r.stderr).strip()[-1500:]}"}
+    lines = [f"  {v['rule']} p={v['p']:.2f}" + (f" at {', '.join(v['spans'][:5])}" if v.get("spans") else "")
+             for v in verdicts if v.get("verdict") == "VIOLATED"]
+    lines += [f"  {u['rule']} could not be judged: {u['reason']}" for u in unavailable]
+    rc = 2 if unavailable or r.returncode not in (0, 2) else (1 if lines else 0)
+    return {"rc": rc, "n": len(verdicts), "out": "\n".join(lines)}
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(prog="workflow-check", description=__doc__.split("\n\n")[0])
+    ap.add_argument("workflow")
+    ap.add_argument("--list", action="store_true")
+    ap.add_argument("--project-dir")
+    ap.add_argument("--plan")
+    ap.add_argument("--files", nargs="*")
+    ap.add_argument("--changed", action="store_true")
+    ap.add_argument("--cwd")
+    ap.add_argument("--stamp")
+    ap.add_argument("--log")
+    ap.add_argument("--expect", action="append", default=[])
+    ap.add_argument("--constraints-only", action="store_true")
+    ap.add_argument("--rules-only", action="store_true")
+    a = ap.parse_args()
+    try:
+        lay = resolve(a.workflow)
+    except (ValueError, LookupError) as e:
+        print(f"workflow-check: {e}", file=sys.stderr)
+        return 2
+    if a.list:
+        print(json.dumps(lay, indent=1))
+        return 0
+    if a.constraints_only and a.rules_only:
+        print("workflow-check: --constraints-only and --rules-only exclude each other", file=sys.stderr)
+        return 2
+    if a.files is not None and a.changed:
+        print("workflow-check: --files and --changed exclude each other", file=sys.stderr)
+        return 2
+
+    project = Path(a.project_dir or a.cwd or "").resolve()
+    if not (a.project_dir or (a.cwd and a.stamp and a.log)):
+        print("workflow-check: name the scope: --project-dir P [--files ...|--changed], or a farmed row's "
+              "--cwd/--stamp/--log", file=sys.stderr)
+        return 2
+    if not project.is_dir():
+        print(f"workflow-check: no directory {project}", file=sys.stderr)
+        return 2
+    notes, by_git = [], False
+    if not a.project_dir:
+        files = touched(project, Path(a.stamp), Path(a.log), a.expect)
+    elif a.files is None:
+        files, by_git = changed(project)
+    else:
+        files = named(a.files)
+        if len(files) < len(a.files) and any(not Path(f).exists() for f in a.files):
+            notes.append(f"{sum(not Path(f).exists() for f in a.files)} named path(s) do not exist")
+    plan = Path(a.plan).resolve() if a.plan else None
+    wf, leg = a.workflow, a.workflow.replace("/", "-") + "-gate"
+    scope = f"{len(files)} file(s)"
+    results = []
+
+    if not a.rules_only:
+        cs = [Path(c) for c in lay["constraints"]]
+        if cs:
+            with ThreadPoolExecutor(min(32, len(cs))) as ex:
+                results = list(ex.map(lambda c: run_constraint(c, project, plan, files), cs))
+            bad = sum(1 for r in results if r["rc"] == 2)
+            hit = sum(1 for r in results if r["n"] > 0 and r["rc"] != 2)
+            notes.append(f"{len(cs)} constraint(s) on {scope}: {hit} examined something, {len(cs) - hit - bad} nothing in scope"
+                         + (f", {bad} could not check" if bad else ""))
+        else:
+            notes.append(f"no constraint under checks/{wf}/constraints")
+    rules = None
+    if not a.constraints_only:
+        if not lay["ruleDirs"]:
+            notes.append(f"no rule under checks/{wf}/rules")
+        elif not files:
+            notes.append("jev rules: nothing in scope (no file in scope)")
+        else:
+            rules = score_rules(wf, files, project, plan, by_git)
+            notes.append(f"jev rules: {rules['n']} scored")
+
+    worst = max([min(r["rc"], 2) for r in results] + ([rules["rc"]] if rules else []) + [0])
+    examined = sum(1 for r in results if r["n"] > 0 and r["rc"] != 2) + (rules["n"] if rules else 0)
+    why = "; ".join(notes)
+    if examined == 0 and worst == 0:
+        print(f"{leg}: 0 check(s) examined — nothing in scope ({why})")
+    else:
+        print(f"{leg}: {examined} check(s) examined ({why})")
+    blocks = [f"{r['name']} exit {r['rc']}:\n{r['out']}" for r in results if r["rc"] != 0]
+    if rules and rules["rc"] != 0:
+        blocks.append(f"jev rules ({', '.join(lay['ruleDirs'])}) exit {rules['rc']}:\n{rules['out']}")
+    if blocks:
+        print("\n\n".join(blocks))
+    passed = [r["head"] for r in results if r["rc"] == 0]
+    if passed:
+        print("\n" + "\n".join(passed))
+    return worst
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

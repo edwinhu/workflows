@@ -87,7 +87,7 @@ error: expect(received).toBe(expected)
 Expected: "FAIL"
 Received: "PASS"
 
-      at <anonymous> (/home/eh/projects/workflows/skills/elide-case/scripts/check.test.ts:496:34)
+      at <anonymous> (skills/elide-case/scripts/check.test.ts:496:34)
 (fail) check.sh > the length check fails closed > naming neither --target nor --no-target FAILS and names the missing flag [489.69ms]
 502 |
 503 |     test("--no-target waives the length check loudly and does not claim it holds", () => {
@@ -101,7 +101,7 @@ error: expect(received).toContain(expected)
 Expected to contain: "LENGTH NOT CHECKED"
 Received: "FAIL setup: unknown argument --no-target\n"
 
-      at <anonymous> (/home/eh/projects/workflows/skills/elide-case/scripts/check.test.ts:507:19)
+      at <anonymous> (skills/elide-case/scripts/check.test.ts:507:19)
 (fail) check.sh > the length check fails closed > --no-target waives the length check loudly and does not claim it holds [203.78ms]
 
  1 pass
@@ -120,7 +120,7 @@ in the run above. The two tests that do bisect the change, (a) and (b), failed a
 ### After the change — full suite
 
 ```
-$ cd /home/eh/projects/workflows/skills/elide-case/scripts && bun test
+$ cd ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts && bun test
 bun test v1.4.0 (34cbb9a40)
 
  43 pass
@@ -132,7 +132,7 @@ Ran 43 tests across 2 files. [11.56s]
 ## Gate run on the live addendum (read-only)
 
 ```
-$ cd /home/eh/areas/secreg && bash /home/eh/projects/workflows/skills/elide-case/scripts/check.sh --addendum addenda/02-addendum.typ --docs docs --target 2-6 --plan .claude/plans/addendum-02.md
+$ cd /home/eh/areas/secreg && bash ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts/check.sh --addendum addenda/02-addendum.typ --docs docs --target 2-6 --plan .claude/plans/addendum-02.md
 --- leg plan
 LEG plan: PASS — both interview answers recorded in addendum-02.md; 1 non-court reading(s) declared
 --- leg compile

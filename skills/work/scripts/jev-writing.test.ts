@@ -5,12 +5,13 @@ import { spawnSync } from "child_process";
 import * as fs from "fs";
 import * as os from "os";
 
-// The writing rules under constraints/jev/writing: extractor state on each rule's fixtures, and
-// rule-check.ts --rules against a local stub. No network.
+// The writing rules under checks/writing/rules: extractor state on each rule's fixtures, and
+// rule-check.ts --workflow against a local stub. No network.
 
 const BASE = join(import.meta.dir, "../../..");
-const EVIDENCE = join(BASE, "constraints/jev/evidence.py");
-const WRITING = join(BASE, "constraints/jev/writing");
+const EVIDENCE = join(BASE, "checks/_jev/evidence.py");
+const WRITING = join(BASE, "checks/writing/rules");
+const DS_RULES = join(BASE, "checks/ds/rules");
 const UNCALIBRATED = join(WRITING, "uncalibrated");
 const FIX = join(BASE, "tests/fixtures/jev");
 
@@ -35,8 +36,8 @@ test("--rules-dir writing discovers exactly the wired W- rules, each a prose rul
   }
 });
 
-test("the default rules directory still yields the wired ds rules and no writing rule", () => {
-  const out = evidence(null, "W-HEDGE", "vio");
+test("the ds rules directory yields the wired ds rules and no writing rule", () => {
+  const out = evidence(DS_RULES, "W-HEDGE", "vio");
   expect(Object.keys(out)).toEqual(["A1", "A4", "DEN", "DQ4", "DQ6", "E7", "M1", "R1", "UNI"]);
   expect(Object.keys(out).some(k => k.startsWith("W-"))).toBe(false);
 });
@@ -75,7 +76,7 @@ test("candidate spans carry file:line", () => {
   }
 });
 
-async function ruleCheck(p: number, rule: string, kase: "sat" | "vio", rules: string | null) {
+async function ruleCheck(p: number, rule: string, kase: "sat" | "vio", workflow: string) {
   const bodies: string[] = [];
   const server = Bun.serve({
     port: 0,
@@ -90,7 +91,7 @@ async function ruleCheck(p: number, rule: string, kase: "sat" | "vio", rules: st
   fs.mkdirSync(join(tmp, "drafts"));
   fs.copyFileSync(join(FIX, rule, kase, "test.md"), join(tmp, "drafts", "test.md"));
   const args = ["--project-dir", tmp, "--files", "drafts/test.md"];
-  if (rules) args.push("--rules", rules);
+  args.push("--workflow", workflow);
   const res = await $`bun run ${join(import.meta.dir, "rule-check.ts")} ${args}`
     .env({
       ...process.env,
@@ -105,24 +106,24 @@ async function ruleCheck(p: number, rule: string, kase: "sat" | "vio", rules: st
 }
 
 for (const rule of WIRED) {
-  test(`${rule}: rule-check --rules writing blocks at 0.9 on the violating fixture`, async () => {
-    const { res, bodies } = await ruleCheck(0.9, rule, "vio", WRITING);
+  test(`${rule}: rule-check --workflow writing blocks at 0.9 on the violating fixture`, async () => {
+    const { res, bodies } = await ruleCheck(0.9, rule, "vio", "writing");
     expect(res.exitCode).toBe(2);
     expect(bodies).toHaveLength(WIRED.length);
     const out = JSON.parse(res.stdout.toString());
     expect(out.verdicts.map((v: any) => v.rule).sort()).toEqual(WIRED);
   });
 
-  test(`${rule}: rule-check --rules writing passes at 0.1 on the compliant fixture`, async () => {
-    const { res } = await ruleCheck(0.1, rule, "sat", WRITING);
+  test(`${rule}: rule-check --workflow writing passes at 0.1 on the compliant fixture`, async () => {
+    const { res } = await ruleCheck(0.1, rule, "sat", "writing");
     expect(res.exitCode).toBe(0);
   });
 }
 
-test("the writing preamble names a prose deliverable; the default still names data science", async () => {
-  const w = await ruleCheck(0.1, "W-HEDGE", "vio", WRITING);
+test("the writing preamble names a prose deliverable; the ds set still names data science", async () => {
+  const w = await ruleCheck(0.1, "W-HEDGE", "vio", "writing");
   expect(w.bodies.every(b => b.includes("prose deliverable"))).toBe(true);
-  const d = await ruleCheck(0.1, "W-HEDGE", "vio", null);
+  const d = await ruleCheck(0.1, "W-HEDGE", "vio", "ds");
   expect(d.bodies.length).toBeGreaterThan(0);
   expect(d.bodies.every(b => b.includes("data-science deliverable"))).toBe(true);
 });

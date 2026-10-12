@@ -269,11 +269,15 @@ EVENTS="$HOME_DIR/tmp/farm-events/$SID"
 echo "canary: checkout $ROOT ($(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null))"
 echo "canary: temp root $HOME_DIR, session $SID, state $STATE"
 
+# The checks layout the runs resolve (bin/workflow-check, plan-lint R24): the two checkouts under
+# release, never the installed plugins.
+CHECKS_PATH="$ROOT:$TEACHING"
+
 # Run a command as the canary's own session, from DIR.
 as_canary() {
   local dir=$1; shift
   ( cd "$dir" && env -u CLAUDE_CODE_BRIDGE_SESSION_ID -u HERDR_PANE_ID -u HERDR_ENV \
-      TMPDIR="$HOME_DIR/tmp" CLAUDE_CODE_SESSION_ID="$SID" CLAUDE_PROJECT_DIR="$dir" "$@" )
+      TMPDIR="$HOME_DIR/tmp" CLAUDE_CODE_SESSION_ID="$SID" CLAUDE_PROJECT_DIR="$dir" WORKFLOW_CHECKS_PATH="$CHECKS_PATH" "$@" )
 }
 
 dispatch() {   # dispatch NAME PLAN_DIR PLAN LOOPS
@@ -310,7 +314,7 @@ block = {"runId": rid, "goalTurns": 1, "args": {
   "tasks": [],
   "mechanicalChecks": [{"name": "slides-mech", "cmd": mech}],
   "ruleChecks": {"name": "jev-slides-rules",
-                 "cmd": f"bun {work}/rule-check.ts --files {course}/{deck} --rules {teaching}/constraints/jev/slides"},
+                 "cmd": f"bun {work}/rule-check.ts --workflow slides --files {course}/{deck}"},
   "lens": {
     "agentType": "slide-auditor",
     "refs": [f"{refs}/verification-checks.md", f"{course}/{deck}", f"{course}/{inv}"],
@@ -322,7 +326,7 @@ block = {"runId": rid, "goalTurns": 1, "args": {
   "authorityExtra": "IRON LAW — this run is READ-ONLY. Create, edit and overwrite no file in the course tree.",
 }}
 open(out, "w").write(
-  "---\nworkflow: teaching:slides\n---\n\n"
+  "---\nworkflow: slides\n---\n\n"
   f"# CANARY slides diagnose — lecture {nn} (read-only)\n\n"
   "Release canary: one real read-only diagnose of an already-taught lecture. The task table is empty.\n\n"
   "Goal: the audit reaches a verdict (PASS or FAIL).\n\n"
@@ -375,7 +379,7 @@ block = {"runId": rid, "goalTurns": 2, "args": {
   "mechanicalChecks": [{"name": "dev",
     "cmd": f"bash {dev}/scripts/check.sh --project-dir {proj} --test-cmd \"bun test\""}],
   "ruleChecks": {"name": "jev-dev-rules",
-    "cmd": f"bun {root}/skills/work/scripts/rule-check.ts --project-dir {proj} --plan {out} --rules {root}/constraints/jev/dev"},
+    "cmd": f"bun {root}/skills/work/scripts/rule-check.ts --workflow dev --project-dir {proj} --plan {out}"},
   "lens": {
     "agentType": "Explore",
     "refs": [f"{dev}/references/lens-security.md"],
@@ -454,22 +458,24 @@ run_template() {
       --lecture "$LECTURE" --check-paths > "$dir/args.raw.json"
   rc=$?
   [ "$rc" = 0 ] || { echo "FAIL [template] render-template.ts exited $rc (1 = a course path is absent, 2 = no render)"; FAILED=1; return; }
-  python3 - "$dir" <<'PY' || { echo "FAIL [template] could not build the plan and args for plan-lint"; FAILED=1; return; }
+  # The plan names its workflow as a session's must; a teaching checkout from before the checks/ layout
+  # has no `notes` workflow to name, and its template scores a rules directory instead.
+  python3 - "$dir" "$([ -d "$TEACHING/checks/notes" ] && echo notes)" <<'PY' || { echo "FAIL [template] could not build the plan and args for plan-lint"; FAILED=1; return; }
 import json, os, sys
-d = sys.argv[1]
+d, wf = sys.argv[1], sys.argv[2]
 args = json.load(open(os.path.join(d, "args.raw.json")))
 plan = os.path.join(d, "plan.md")
-open(plan, "w").write("# CANARY notes repair template\n\n<!-- work:dispatch\n"
+open(plan, "w").write((f"---\nworkflow: {wf}\n---\n\n" if wf else "") + "# CANARY notes repair template\n\n<!-- work:dispatch\n"
                       + json.dumps({"runId": "canary-template", "args": args}, indent=1) + "\n-->\n")
 json.dump({**args, "planPath": plan, "rounds": 1}, open(os.path.join(d, "args.json"), "w"), indent=2)
 PY
-  bun "$WORK/plan-lint.ts" "$dir/args.json" --json > "$dir/lint.json"
+  WORKFLOW_CHECKS_PATH="$CHECKS_PATH" bun "$WORK/plan-lint.ts" "$dir/args.json" --json > "$dir/lint.json"
   rc=$?
   n=$(python3 -c 'import json,sys; print(len(json.load(open(sys.argv[1]))["findings"]))' "$dir/lint.json" 2>/dev/null)
   case "$rc:$n" in
     0:0) echo "template: plan-lint 0 finding(s) over the rendered notes repair template" ;;
     *) echo "FAIL [template] plan-lint exited $rc with ${n:-an uncountable number of} finding(s) — a template must lint with ZERO of any severity"
-       bun "$WORK/plan-lint.ts" "$dir/args.json" 2>&1 | head -n 20; FAILED=1 ;;
+       WORKFLOW_CHECKS_PATH="$CHECKS_PATH" bun "$WORK/plan-lint.ts" "$dir/args.json" 2>&1 | head -n 20; FAILED=1 ;;
   esac
 }
 

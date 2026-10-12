@@ -18,7 +18,7 @@ function runFarm(root: string, env: Record<string, string | undefined>) {
   writeFileSync(join(bin, 'claude-code'), `#!/usr/bin/env bash\nprintf '{"type":"result","result":"ok"}\\n'\n`)
   chmodSync(join(bin, 'claude-code'), 0o755)
   const tasks = join(root, 't.json')
-  writeFileSync(tasks, JSON.stringify([{ label: 'r', prompt: 'p' }]))
+  writeFileSync(tasks, JSON.stringify([{ label: 'r', workflow: 'none', prompt: 'p' }]))
   return spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', root], { timeout: 120_000,
     encoding: 'utf8',
     env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, TMPDIR: root, FARM_OUTCOMES: `${root}/farm-outcomes.jsonl`, FARM_OUT_CHILD: '1', ...env },

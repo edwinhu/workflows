@@ -1,0 +1,119 @@
+#!/usr/bin/env -S uv run python3
+"""Constraint: strunk-elements-of-style — detect violations from Strunk's Elements of Style Section V."""
+import re
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))  # _writing: the contract, prose_extract
+from _writing import main, prose, prose_extract
+from _writing import rel as _rel
+
+CONSTRAINT = "strunk-elements-of-style"
+SEVERITY = "soft"
+
+# Section V: Words and Expressions Commonly Misused — testable violations
+_HARD_VIOLATIONS = [
+    # Rule 5 proxy: comma splice marker
+    # (too many false positives to check mechanically — left as convention)
+
+    # "Different than" — should be "different from"
+    (r'\bdifferent\s+than\b', "S&W §V: 'different than' → use 'different from'"),
+
+    # "Due to" as adverbial (incorrect): "He lost, due to carelessness"
+    (r',\s*due\s+to\b', "S&W §V: 'due to' as adverbial modifier — use 'because of' or 'owing to'"),
+
+    # "The fact that" — almost always cut-able
+    (r'\bthe\s+fact\s+that\b', "S&W Rule 13: 'the fact that' — omit or rewrite"),
+    (r'\bdue\s+to\s+the\s+fact\s+that\b', "S&W Rule 13: 'due to the fact that' → 'because'"),
+    (r'\bin\s+(light|view)\s+of\s+the\s+fact\s+that\b',
+     "S&W Rule 13: 'in view of the fact that' → 'since' or 'because'"),
+
+    # "He is a man who" — redundant construction
+    (r'\b\w+\s+is\s+(a|an)\s+\w+\s+who\b', "S&W Rule 13: 'X is a Y who' — cut the relative clause intro"),
+
+    # Less/fewer: "less" before countable noun (rough heuristic)
+    (r'\bless\s+(people|students|cases|instances|examples|times|words|pages|citations|arguments|courts|judges)\b',
+     "S&W §V: 'less' → 'fewer' before countable nouns"),
+
+    # "Most" for "almost"
+    (r'\bmost\s+all\b|\bmost\s+any\b|\bmost\s+everyone\b|\bmost\s+always\b',
+     "S&W §V: 'most all/any/everyone/always' → 'almost'"),
+
+    # "Kind of" / "sort of" as hedges (not literal)
+    (r'\b(kind|sort)\s+of\s+(important|significant|clear|obvious|clear|interesting|useful|helpful)\b',
+     "S&W §V: 'kind of X' → 'rather X' or 'somewhat X'"),
+
+    # "Try and" instead of "try to"
+    (r'\btry\s+and\s+\w', "S&W §V / McCloskey: 'try and' → 'try to'"),
+
+    # "Interesting" as a perfunctory introduction
+    (r'\b(it\s+is|this\s+is)\s+interesting\s+(to\s+note|that|how)\b',
+     "S&W §V: 'it is interesting that' — make it interesting, don't announce it"),
+    (r'^\s*(Interesting(ly)?|It\s+is\s+interesting)\b',
+     "S&W §V: 'Interesting...' opener — cut the announcement"),
+
+    # "Certainly" / "very" as empty intensifiers
+    (r'\bvery\s+(important|significant|clear|obvious|interesting|useful|critical|crucial)\b',
+     "S&W §V: 'very X' — use a more precise intensifier or cut 'very'"),
+    (r'^\s*Certainly\b|\bCertainly,\s+\w',
+     "S&W §V: 'Certainly' as intensifier — often empty"),
+]
+
+_SOFT_VIOLATIONS = [
+    # "Along these lines" — overworked phrase
+    (r'\balong\s+these\s+lines\b', "S&W §V: 'along these lines' — overworked phrase, be specific"),
+
+    # "Factor" / "Feature" as hackneyed nouns
+    (r'\b(key|important|critical|major|significant)\s+factor\b',
+     "S&W §V: 'X factor' — hackneyed; name the specific cause"),
+    (r'\b(important|key|notable|significant)\s+feature\b',
+     "S&W §V: 'X feature' — hackneyed; describe it specifically"),
+
+    # `However,` at sentence start DELETED. writing-general/SKILL.md:123 drops it — 6,666/M in
+    # finance, 1.08% vs 1.01% across the two registers: "Fine. Vary it, do not ban it."
+
+    # "Etc." in academic writing
+    (r'\betc\.\s*$|\betc\.,', "S&W §V: 'etc.' — complete the list or use 'such as'"),
+
+    # Passive voice DELETED. writing-general/SKILL.md:54-56, writing-legal:75 and :83, and
+    # writing-econ:90 all record the measurement that refutes it as a register claim: 7.91% law vs
+    # 8.55% finance, both registers using it steadily and deliberately. Strunk's active-voice rule
+    # survives as a question ("who did this?"), which is a reading judgement and not a regex. This
+    # was also the broadest pattern in any of these tables — it fired on `is based`, `was decided`,
+    # `are required` — and it was bound to writing-general, i.e. to all three registers at once.
+]
+
+
+def check(context):
+    """Returns list of violations. Empty list = pass."""
+    cwd = Path(context.get("cwd", "."))
+    violations = []
+    draft_files = context["files"]  # the prose files handed in, wherever they lie
+
+    if not draft_files:
+        return violations
+
+    for path in draft_files:
+        try:
+
+            line_iter = list(prose_extract.iter_lines(path))
+
+        except OSError:
+
+            continue
+        rel = _rel(path, cwd)
+        for i, line in line_iter:
+            # Skip markdown heading lines for passive voice check (they're not prose)
+            is_heading = line.strip().startswith("#")
+            for pattern, label in _HARD_VIOLATIONS:
+                if re.search(pattern, line, re.IGNORECASE):
+                    violations.append(f"{rel}:{i}: {label}")
+            if not is_heading:
+                for pattern, label in _SOFT_VIOLATIONS:
+                    if re.search(pattern, line, re.IGNORECASE):
+                        violations.append(f"{rel}:{i}: SOFT — {label}")
+    return violations
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(CONSTRAINT, check, prose))

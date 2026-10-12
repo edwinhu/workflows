@@ -3,7 +3,7 @@ name: writing-number-anchoring
 applies-to: [writing-draft, writing-verify, writing-revise]
 ---
 
-**What a script already decides:** `constraints/writing-anchored-numbers.py` decides, per subsection, whether a Table or Figure anchor is present where empirical numbers are. Whether the anchor is the RIGHT one is this rule.
+**What a script already decides:** `checks/writing/constraints/writing-anchored-numbers.py` decides, per subsection, whether a Table or Figure anchor is present where empirical numbers are. Whether the anchor is the RIGHT one is this rule.
 
 ## Rule
 

@@ -5,12 +5,12 @@ import { spawnSync } from "child_process";
 import * as fs from "fs";
 import * as os from "os";
 
-// The elide-case rules under constraints/jev/elide: extractor state on each rule's fixtures, diff
-// scoping, and rule-check.ts --rules against a local stub. No network.
+// The elide-case rules under checks/elide/rules: extractor state on each rule's fixtures, diff
+// scoping, and rule-check.ts --workflow elide against a local stub. No network.
 
 const BASE = join(import.meta.dir, "../../..");
-const EVIDENCE = join(BASE, "constraints/jev/evidence.py");
-const ELIDE = join(BASE, "constraints/jev/elide");
+const EVIDENCE = join(BASE, "checks/_jev/evidence.py");
+const ELIDE = join(BASE, "checks/elide/rules");
 const FIX = join(BASE, "tests/fixtures/jev/elide");
 const TYP = "addenda/03-addendum-salman.typ";
 
@@ -38,7 +38,7 @@ test("--rules-dir elide discovers exactly the wired EL- rules, each about a case
 
 test("the default rules directory yields no elide rule", () => {
   const root = join(FIX, "EL-GAP", "vio");
-  const r = spawnSync("python3", [EVIDENCE, "--files", join(root, TYP), "--root", root], { timeout: 120_000, encoding: "utf8" });
+  const r = spawnSync("python3", [EVIDENCE, "--files", join(root, TYP), "--root", root, "--rules-dir", join(BASE, "checks/ds/rules")], { timeout: 120_000, encoding: "utf8" });
   expect(r.status).toBe(0);
   expect(Object.keys(JSON.parse(r.stdout)).some(k => k.startsWith("EL-"))).toBe(false);
 });
@@ -116,7 +116,7 @@ async function ruleCheck(p: number, rule: string, kase: "sat" | "vio") {
   });
   const tmp = fs.mkdtempSync(join(os.tmpdir(), "jev-elide-"));
   fs.cpSync(join(FIX, rule, kase), tmp, { recursive: true });
-  const args = ["--project-dir", tmp, "--files", TYP, "--rules", ELIDE];
+  const args = ["--project-dir", tmp, "--files", TYP, "--workflow", "elide"];
   if (fs.existsSync(join(tmp, "plan.md"))) args.push("--plan", "plan.md");
   const res = await $`bun run ${join(import.meta.dir, "rule-check.ts")} ${args}`
     .env({
@@ -132,7 +132,7 @@ async function ruleCheck(p: number, rule: string, kase: "sat" | "vio") {
 }
 
 for (const rule of WIRED) {
-  test(`${rule}: rule-check --rules elide blocks at 0.9 on the violating fixture`, async () => {
+  test(`${rule}: rule-check --workflow elide blocks at 0.9 on the violating fixture`, async () => {
     const { res, bodies } = await ruleCheck(0.9, rule, "vio");
     expect(res.exitCode).toBe(2);
     expect(bodies).toHaveLength(WIRED.length);
@@ -141,7 +141,7 @@ for (const rule of WIRED) {
     expect(out.verdicts.map((v: any) => v.rule).sort()).toEqual(WIRED);
   });
 
-  test(`${rule}: rule-check --rules elide passes at 0.1 on the compliant fixture`, async () => {
+  test(`${rule}: rule-check --workflow elide passes at 0.1 on the compliant fixture`, async () => {
     const { res } = await ruleCheck(0.1, rule, "sat");
     expect(res.exitCode).toBe(0);
   });

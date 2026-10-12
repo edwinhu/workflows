@@ -1,18 +1,21 @@
-// The per-edit Jev mod: after an Edit/Write/MultiEdit lands, score the file against its rule set's
+// The per-edit Jev mod: after an Edit/Write/MultiEdit lands, score the file against its workflow's
 // WIRED Jev rules and add one line of context per rule at p(VIOLATED) >= 0.85, or >= 0.95 when the
 // luna fallback answered (rules.ts decisionThreshold). Advisory only.
 //
-//   rule set   hooks/jev/rules.ts ruleSetFor: exam question .typ -> exams, skill/agent/command
+//   workflow   hooks/jev/rules.ts ruleSetFor: exam question .typ -> exams, skill/agent/command
 //              files, manifests and .planning/ -> authoring, lecture notes -> notes and a lecture
-//              deck -> slides (all three from the
-//              teaching plugin, $TEACHING_PLUGIN_ROOT or ~/.claude/skills/teaching; writing when it
-//              is absent), a talk's slides/notes .typ (or any .typ under a `workflow: workshop`
-//              cursor) -> typst, addenda/*.typ -> elide, other prose -> writing, tests and shell -> dev, .py under a
-//              `workflow: ds` ACTIVE_WORKFLOW.md -> ds; anything else is left alone. Writing prose
-//              also gets its register set (legal, econ) when that cursor says `style: legal|econ`
-//   scoring    ONE $.process.run of skills/work/scripts/rule-check.ts --batch: the set's own
-//              evidence.py (uncalibrated/ is below its glob), then ONE Decisions call for all its
-//              rules through work-hold.ts decisionsCall, the plugin's one Jev transport
+//              deck -> slides, a talk's slides/notes .typ (or any .typ under a `workflow: workshop`
+//              cursor) -> workshop, addenda/*.typ -> elide, other prose -> writing, tests and shell ->
+//              dev, .py under a `workflow: ds` ACTIVE_WORKFLOW.md -> ds; anything else is left alone.
+//              Writing prose under a `writing/<register>` cursor, or `style: <register>`, is that
+//              nested workflow (writing's rules plus the register's)
+//   rule set   THE LAYOUT, never a constant here: the first of rules.ts workflowsFor that
+//              bin/workflow-check <wf> --list resolves with rules (asked once per workflow per
+//              session). Teaching's workflows live in the teaching plugin; without it, its prose
+//              falls back to writing and the fallback is logged
+//   scoring    ONE $.process.run of skills/work/scripts/rule-check.ts --batch --workflow <wf>: each
+//              rules directory's evidence (uncalibrated/ is below its glob), then ONE Decisions call
+//              for all its rules through work-hold.ts decisionsCall, the plugin's one Jev transport
 //   debounce   at most one evaluation per file per 10 s. An edit inside the window is deferred to
 //              its end, and the deferred lines ride the NEXT tool result of any tool; a newer edit
 //              to the file supersedes a pending, in-flight or undelivered one
@@ -23,8 +26,8 @@
 // with context added or not; it never denies. Any failure adds nothing and goes to the debug log.
 import type { EngineInterface, On, ToolCallResult } from 'claude-code'
 import {
-  RULE_DIRS, TEACHING_PROBE, TEACHING_SETS, ancestors, changedFromInput, contextLines, enabled, merge, rangesFromDiff, registerDir, ruleSetFor,
-  styleOf, workflowOf, dirname, type Range, type RuleSet, type Verdict,
+  ancestors, changedFromInput, contextLines, enabled, merge, rangesFromDiff, ruleSetFor, workflowOf, workflowsFor, dirname,
+  type Range, type RuleSet, type Verdict,
 } from './rules.ts'
 
 type $ = EngineInterface
@@ -74,34 +77,42 @@ async function workflowAt($: $, dir: string): Promise<string | null> {
   return text === null ? null : workflowOf(text)
 }
 
-/** The teaching plugin's root when the set's rules are there to run, else null. */
-async function teachingRoot($: $, set: RuleSet): Promise<string | null> {
-  const root = (await $.env.get('TEACHING_PLUGIN_ROOT')) || `${(await $.env.get('HOME')) || ''}/.claude/skills/teaching`
-  try {
-    await $.fs.read(`${root}/${TEACHING_PROBE[set]}`)
-    return root
-  } catch {
-    return null
+/** Whether `wf` has rules in the layout (bin/workflow-check <wf> --list), asked once per session. */
+const layout = new Map<string, Promise<boolean>>()
+function hasRules($: $, wf: string): Promise<boolean> {
+  let known = layout.get(wf)
+  if (!known) {
+    known = (async () => {
+      const r = await $.process.run(['python3', `${$.plugin.root}/bin/workflow-check`, wf, '--list'], { timeoutMs: RUN_TIMEOUT_MS })
+      if (r.exitCode !== 0) return false
+      try {
+        const dirs = JSON.parse(r.stdout).ruleDirs
+        return Array.isArray(dirs) && dirs.length > 0
+      } catch {
+        return false
+      }
+    })().catch(() => (layout.delete(wf), false))
+    layout.set(wf, known)
   }
+  return known
 }
 
-/** The set and the rules directory an edit is scored against, plus a register set on top of writing. */
+/** The set an edit belongs to, and the workflow whose rules score it. */
 interface Target {
   set: RuleSet
-  dir: string
-  register?: string
+  workflow: string
 }
 
-async function targetFor($: $, set: RuleSet, file: string): Promise<Target> {
-  if (set === 'writing') {
-    const reg = registerDir(set, styleOf((await cursorAt($, dirname(file))) ?? ''))
-    return { set, dir: `${$.plugin.root}/${RULE_DIRS[set]}`, ...(reg ? { register: `${$.plugin.root}/${reg}` } : {}) }
+/** The first of workflowsFor the layout has rules for; null when none has (nothing to score). */
+async function targetFor($: $, set: RuleSet, file: string): Promise<Target | null> {
+  const tried = workflowsFor(set, file, await cursorAt($, dirname(file)))
+  for (const workflow of tried) {
+    if (!(await hasRules($, workflow))) continue
+    if (workflow !== tried[0]) log($, `no rules for workflow ${tried[0]} in the layout: ${set} scored as ${workflow}`)
+    return { set, workflow }
   }
-  if (!TEACHING_SETS.has(set)) return { set, dir: `${$.plugin.root}/${RULE_DIRS[set]}` }
-  const root = await teachingRoot($, set)
-  if (root) return { set, dir: `${root}/${RULE_DIRS[set]}` }
-  log($, `no teaching plugin with constraints/jev: teaching ${set} scored as writing`)
-  return { set: 'writing', dir: `${$.plugin.root}/${RULE_DIRS.writing}` }
+  log($, `${file}: no workflow of ${tried.join(', ')} has rules in the layout; not scored`)
+  return null
 }
 
 async function changedLines($: $, tool: string, input: Record<string, unknown>, file: string): Promise<Range[]> {
@@ -117,12 +128,12 @@ async function changedLines($: $, tool: string, input: Record<string, unknown>, 
 }
 
 /** The context lines for one evaluation; [] when nothing reaches the bar or anything failed. */
-async function evaluate($: $, { set, dir, register }: Target, file: string, ranges: Range[], cwd: string): Promise<string[]> {
+async function evaluate($: $, { set, workflow }: Target, file: string, ranges: Range[], cwd: string): Promise<string[]> {
   // the spend log's caller tag (scripts/jev-spend.ts); `env` because the tag is all this run changes
   const argv = [
     'env', 'JEV_CALLER=jev-edit',
     'bun', `${$.plugin.root}/skills/work/scripts/rule-check.ts`, '--batch',
-    '--rules', dir, ...(register ? ['--rules', register] : []), '--files', file,
+    '--workflow', workflow, '--files', file,
     '--changed-lines', '-', '--max-time', JEV_MAX_SECONDS,
   ]
   const started = await $.clock.now()
@@ -142,7 +153,7 @@ async function evaluate($: $, { set, dir, register }: Target, file: string, rang
   }
   const ms = (await $.clock.now()) - started
   if (out.unavailable?.length) log($, `${file}: unavailable ${out.unavailable.map(u => `${u.rule} (${u.reason})`).join('; ')}`)
-  log($, `${file}: ${set}${register ? `+${register.split('/').pop()}` : ''} ${(out.verdicts ?? []).map(v => `${v.rule}=${v.p}${v.provider === 'openai' ? '(luna)' : ''}`).join(' ')} in ${ms} ms`)
+  log($, `${file}: ${set} as ${workflow} ${(out.verdicts ?? []).map(v => `${v.rule}=${v.p}${v.provider === 'openai' ? '(luna)' : ''}`).join(' ')} in ${ms} ms`)
   return contextLines(out.verdicts ?? [], shown(cwd, file), ranges)
 }
 
@@ -177,6 +188,7 @@ async function afterEdit($: $, e: Record<string, unknown>, result: ToolCallResul
   const set = await ruleSetFor(file, d => workflowAt($, d))
   if (!set) return result
   const target = await targetFor($, set, file)
+  if (!target) return result
 
   const tool = String(e.tool)
   const ranges = await changedLines($, tool, e, file)

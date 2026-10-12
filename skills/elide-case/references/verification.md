@@ -1,7 +1,8 @@
 # Verification — what each gate leg decides
 
-The whole mechanical verdict is the exit code of `scripts/check.sh`. It runs six legs,
-none short-circuiting, and prints one PASS/FAIL line per leg.
+The whole mechanical verdict is the exit code of `scripts/check.sh`. It runs seven legs,
+none short-circuiting, and prints one PASS/FAIL line per leg. The checkers it drives are the
+elide workflow's constraints, in `${CLAUDE_PLUGIN_ROOT}/checks/elide/constraints/`.
 
 ```bash
 bash skills/elide-case/scripts/check.sh \
@@ -14,13 +15,14 @@ flag of a pair is a FAIL that names the missing one.
 
 | leg | decides |
 |---|---|
-| `--plan` | the two CLARIFY interview answers are recorded, and which readings are declared non-court |
+| `--plan` (`check-plan.py`) | the two CLARIFY interview answers and each reading's page target are recorded, and which readings are declared non-court |
 | `typst compile` | the addendum builds at all |
 | `check-quotes.py`, once per caption | every retained sentence is verbatim in `docs/*.txt` |
 | `check-addendum.py --target` | arity, table truth against the PDF, per-reading length |
 | `widows.py`, `orphans.py`, `runts.py` --prose | the canonical stray-line checkers, from the typst plugin |
 | `check-stranded-headings.py` | a heading at a page foot with its text overleaf — this skill's own class |
 | `check-marks.py` | one elision mark per addendum; every retained `#super[N]` footnote renumbered 1..k per reading and paired with its body |
+| `bin/workflow-check elide --constraints-only` | every constraint under `checks/elide/constraints/`, on the constraint contract, over the addendum and the plan: the five checkers above with their own defaults (no length target), and any constraint added there |
 
 **The widows leg is the one leg that is ON BY DEFAULT**, and that is its fail-closed form:
 naming no flag RUNS it, so its absence cannot read as a pass. `--no-widows` is the loud

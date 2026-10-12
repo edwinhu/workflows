@@ -48,7 +48,8 @@ triage ──► ALREADY MECHANICAL / COUNTED-ADVISORY / LENS ONLY ──► sto
 
 1. **Triage** every rule into one bucket — `references/triage.md`. Script before Jev.
 2. **Scaffold**: `bun ${CLAUDE_SKILL_DIR}/scripts/new-rule.ts <set> <ID> [--layout files|diff]` creates
-   the module in `<set>/uncalibrated/`, identical placeholder twins, the manifest entry and a stub test
+   the module in the set's `checks/<workflow>/rules/uncalibrated/` (a new set is the workflow
+   `checks/<set>/`), identical placeholder twins, the manifest entry and a stub test
    under `tests/jev-rules/`. It refuses to overwrite. `--manifest <path>` targets another plugin's
    calibration set (teaching's carries a `root` key).
 3. **Extractor** — `references/extractor.md`: deterministic, bounded, file:line spans, the counts and
@@ -59,8 +60,8 @@ triage ──► ALREADY MECHANICAL / COUNTED-ADVISORY / LENS ONLY ──► sto
 6. **Wire**: `bun ${CLAUDE_SKILL_DIR}/scripts/new-rule.ts --wire <set> <ID>`. Exit 0 moved the module;
    2 = Jev unavailable (never a pass); 3 = a placeholder, TODO or empty case remains; 4 = calibration
    failed or a cross-rule hit (`--accept-cross` only when one defect rightly breaks both rules).
-7. **A new set** also needs its workflow's `ruleChecks`, `RULE_DIRS` + `ruleSetFor` in
-   `hooks/jev/rules.ts`, and a lens trim — `references/calibration.md` § Wiring.
+7. **A new set** is a new workflow directory: plans name it in `workflow:`, the per-edit mod needs a path
+   test in `ruleSetOf` (`hooks/jev/rules.ts`), and the lens a trim — `references/calibration.md` § Wiring.
 
 When `--wire` exits 0, start the next JEV row of the triage table at once; never stop after one rule.
 

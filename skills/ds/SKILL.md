@@ -19,7 +19,7 @@ the mechanical checks, the refs, the authority text. It ships no `workflow.js` a
 `work`'s mechanics.
 
 What makes a run `ds` rather than plain `work` is one thing: **every declared data output is verified
-by a computed runner, not by the agent that produced it.** `scripts/ds-dq.py` reads the approved
+by a computed runner, not by the agent that produced it.** `checks/ds/constraints/ds-dq.py` reads the approved
 plan's `## Data Outputs` table and opens each artifact itself; `work`'s JS reads its exit code.
 
 ## Write surface
@@ -115,7 +115,7 @@ Five domain requirements on the plan:
 - **Reproducibility decisions**, appropriate to the work: source vintages, seeds, environments and
   config. `R1` (fresh re-run reproducibility) is judged by the review lens's data-quality item, so a
   plan recording none of these leaves `R1` with nothing to judge against.
-- **A `## Data Outputs` table**, in exactly this grammar, because `scripts/ds-dq.py` parses it and an
+- **A `## Data Outputs` table**, in exactly this grammar, because `checks/ds/constraints/ds-dq.py` parses it and an
   output absent from it is one nothing will check:
 
   ```markdown
@@ -218,8 +218,8 @@ Omitting it silently runs the user's codex request on claude.
     { name: "ds",
       cmd: "bash ${CLAUDE_PLUGIN_ROOT}/skills/ds/scripts/check.sh --plan <planPath> --project-dir <projectDir> [--test-cmd \"<the project's test command>\"] [--lint-cmd \"<the project's lint command>\"]" },
   ],
-  // work-checks.sh runs it as a command (no agent); Jev scores the wired DS rules (A1, A4, DEN, DQ4, DQ6, E7, M1, R1, UNI; DQ1 waits in constraints/jev/uncalibrated/ and ds-dq.py decides it); a rule with p >= 0.85 lands in rulesThatFailed and blocks, lower ones reach the lens as a ranked checklist.
-  ruleChecks: { name: "jev-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --project-dir <projectDir> --plan <planPath>" },
+  // check.sh runs every checks/ds/constraints/ script through `workflow-check ds --constraints-only`. work-checks.sh runs ruleChecks as a command (no agent); Jev scores the rules under checks/ds/rules/ (A1, A4, DEN, DQ4, DQ6, E7, M1, R1, UNI; DQ1 waits in checks/ds/rules/uncalibrated/ and ds-dq.py decides it); a rule with p >= 0.85 lands in rulesThatFailed and blocks, lower ones reach the lens as a ranked checklist.
+  ruleChecks: { name: "jev-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow ds --project-dir <projectDir> --plan <planPath>" },
 
   // One lens after verification and mechanical checks; its checklist covers all five dimensions.
   //
@@ -244,12 +244,12 @@ Omitting it silently runs the user's codex request on claude.
   authorityExtra: [
     "THE DS CONSTRAINT CORPUS IS ONE COMMAND AWAY. Run `${CLAUDE_PLUGIN_ROOT}/scripts/load-constraints ds` for the index — every rule scoped to this workflow, with an openable path — then read the ones your task touches. Do not work from a paraphrase of them in a brief: a paraphrase is a lossy copy of a corpus that moves.",
     "IRON LAW OF DS PLANNING — ask before you look; plan only from evidence you actually gathered.",
-    "IRON LAW OF DS VERIFICATION — no check result without the runner's own output. A mechanical check reported from reading the code, or an N/A justified by a reason the model composed, is the model certifying its own enumeration. Every mechanical result is a line ${CLAUDE_PLUGIN_ROOT}/skills/ds/scripts/ds-dq.py emitted, quoted as emitted.",
+    "IRON LAW OF DS VERIFICATION — no check result without the runner's own output. A mechanical check reported from reading the code, or an N/A justified by a reason the model composed, is the model certifying its own enumeration. Every mechanical result is a line ${CLAUDE_PLUGIN_ROOT}/checks/ds/constraints/ds-dq.py emitted, quoted as emitted.",
     "Never report M1, UNI, DEN, DEL or R1 as PASS. The runner lists them as MODEL-EVALUATED; Jev scores M1, UNI, DEN and R1, and DEL is a judgement reported with the evidence read.",
     "DQ4 and DQ6 are `always N/A` from the runner, and `always N/A` is not a third kind of pass — the runner emits a line for them only because ENUM requires one, and an N/A never sets its non-zero exit. Jev's DQ4 and DQ6 verdicts score them against the input → transform → output count chain and the before/after shape. Never read their N/A as `the runner checked this`.",
     "An artifact absent from the plan's ## Data Outputs table is one nothing will check and cannot be claimed as verified. Do not verify an output the table never declared.",
     "The analysis is done by dispatched agents. Main chat writes no .py, .ipynb, .R, .sas, .sql or .qmd file, by any tool.",
-    "Standing DS doer authority — every implementation task follows the indexed constraints in the four aggregates under ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/: ds-common-constraints.md (C1-C6), ds-common-conventions.md (V1-V9 — assumption-over-evidence, deferred verification, statistical validity, P-hacking prevention, sample-selection documentation), ds-analysis-constraints.md (A1-A6 — robustness checks, standard-error specification, visualization integrity, table-figure pairing, chart typography, chart colour) and ds-engineering-constraints.md (E1-E7 — determinism and seeds, schema contracts, join audits with row counts and match rates, idempotency, loud error handling, native document input, network politeness), each indexing the self-contained files under ${CLAUDE_PLUGIN_ROOT}/constraints/. All four are named in every implementation task's refs, and refs are contractual reads, not a reading list: read all four in full before writing code. ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-checks.md stays a separate load.",
+    "Standing DS doer authority — every implementation task follows the indexed constraints in the four aggregates under ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/: ds-common-constraints.md (C1-C6), ds-common-conventions.md (V1-V9 — assumption-over-evidence, deferred verification, statistical validity, P-hacking prevention, sample-selection documentation), ds-analysis-constraints.md (A1-A6 — robustness checks, standard-error specification, visualization integrity, table-figure pairing, chart typography, chart colour) and ds-engineering-constraints.md (E1-E7 — determinism and seeds, schema contracts, join audits with row counts and match rates, idempotency, loud error handling, native document input, network politeness), each indexing the self-contained files under ${CLAUDE_PLUGIN_ROOT}/rules/. All four are named in every implementation task's refs, and refs are contractual reads, not a reading list: read all four in full before writing code. ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-checks.md stays a separate load.",
     "Rules: ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-checks.md defines all thirteen checks; ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/etl-enforcement.md governs pipelines; ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/sql-patterns.md governs data pulls; ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/verification-patterns.md governs evidence; ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/competing-hypothesis.md governs debugging.",
   ].join("\n"),
 

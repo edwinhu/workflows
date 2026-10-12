@@ -131,8 +131,8 @@ describe('rule-check: an inventory that examined nothing is unavailable, never M
 
   test('end to end: the zero-count rule is unavailable without a judge call; its sibling is judged', async () => {
     const dir = mkTmp('rule-unexamined-')
-    const rules = join(dir, 'rules')
-    mkdirSync(rules)
+    const rules = join(dir, 'plug', 'checks', 'x', 'rules')   // a private layout: workflow x
+    mkdirSync(rules, { recursive: true })
     const rule = (name: string, n: number) => writeFileSync(join(rules, `${name}.py`), [
       `PROPOSITION = 'Some item is wrong.'`,
       `CRITERIA = {'VIOLATED': 'an item is wrong', 'SATISFIED': 'every item is right'}`,
@@ -156,9 +156,9 @@ describe('rule-check: an inventory that examined nothing is unavailable, never M
     })
     try {
       // Async: a spawnSync would block the event loop the stub judge answers on.
-      const p = Bun.spawn(['bun', join(HERE, 'rule-check.ts'), '--files', target, '--rules', rules], {
+      const p = Bun.spawn(['bun', join(HERE, 'rule-check.ts'), '--files', target, '--workflow', 'x'], {
         stdout: 'pipe', stderr: 'pipe',
-        env: { ...process.env, WORK_HOLD_DECISIONS_URL: `http://localhost:${server.port}/`, WORK_HOLD_JUDGE_TOKEN: 't' },
+        env: { ...process.env, WORK_HOLD_DECISIONS_URL: `http://localhost:${server.port}/`, WORK_HOLD_JUDGE_TOKEN: 't', WORKFLOW_CHECKS_PATH: join(dir, 'plug') },
       })
       const r = { stdout: await new Response(p.stdout).text(), status: await p.exited }
       const out = JSON.parse(r.stdout.trim().split('\n').pop()!)
@@ -174,12 +174,13 @@ describe('rule-check: an inventory that examined nothing is unavailable, never M
 })
 
 describe('every Jev rule declares EXAMINED, and no calibration case reads as examined nothing', () => {
-  const JEV = join(ROOT, 'constraints', 'jev')
-  const ruleFiles = (dir: string): string[] => readdirSync(dir, { withFileTypes: true }).flatMap(e =>
-    e.isDirectory() ? (e.name === '__pycache__' ? [] : ruleFiles(join(dir, e.name)))
-      : /^[^_].*\.py$/.test(e.name) && e.name !== 'evidence.py' ? [join(dir, e.name)] : [])
+  const JEV = join(ROOT, 'checks')
+  // every .py under a rules/ directory of the layout (its uncalibrated/ included); constraints are not Jev rules
+  const ruleFiles = (dir: string, inRules = false): string[] => readdirSync(dir, { withFileTypes: true }).flatMap(e =>
+    e.isDirectory() ? (e.name === '__pycache__' || e.name.startsWith('_') ? [] : ruleFiles(join(dir, e.name), inRules || e.name === 'rules'))
+      : inRules && /^[^_].*\.py$/.test(e.name) ? [join(dir, e.name)] : [])
 
-  test('every rule file under constraints/jev, wired or uncalibrated, names its count', () => {
+  test('every rule file under checks/<workflow>/rules, wired or uncalibrated, names its count', () => {
     const files = ruleFiles(JEV)
     expect(files.length).toBeGreaterThanOrEqual(46)
     const missing = files.filter(f => !/^EXAMINED = '\w+'$/m.test(readFileSync(f, 'utf8')))
@@ -190,7 +191,7 @@ describe('every Jev rule declares EXAMINED, and no calibration case reads as exa
     const dir = mkTmp('jev-unparsed-')
     const f = join(dir, 'analysis.py')
     writeFileSync(f, 'df = load(\nresult = df.filter(x > 1\nprint(result.height)\n')
-    const ev = collectEvidence({ files: [f], root: dir, rulesDir: JEV })
+    const ev = collectEvidence({ files: [f], root: dir, rulesDir: join(JEV, 'ds', 'rules') })
     for (const r of ['A1', 'DQ4', 'DQ6', 'M1', 'UNI']) {
       expect(ev[r].examinedKey).toBe('n_lines_searched')
       expect(unexamined(ev[r])).toMatch(/examined 0 n_lines_searched in 1 covered file/)

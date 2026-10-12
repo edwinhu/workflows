@@ -164,8 +164,8 @@ Omitting it silently runs the user's codex request on claude.
     { name: "dev",
       cmd: "bash ${CLAUDE_PLUGIN_ROOT}/skills/dev/scripts/check.sh --project-dir <projectDir> --test-cmd \"<the project's test command>\" [--lint-cmd \"<lint>\"] [--build-cmd \"<build>\"]" },
   ],
-  // work-checks.sh runs it as a command (no agent); Jev scores the five dev rules; a rule with p >= 0.85 lands in rulesThatFailed and blocks, lower ones reach the lens as a ranked checklist.
-  ruleChecks: { name: 'jev-dev-rules', cmd: 'bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --project-dir <projectDir> --plan <planPath> --rules ${CLAUDE_PLUGIN_ROOT}/constraints/jev/dev' },
+  // check.sh runs every checks/dev/constraints/ script through `workflow-check dev --constraints-only`. work-checks.sh runs ruleChecks as a command (no agent); Jev scores the rules under checks/dev/rules/ (LOOP, MOCK, NET, SHELL, WEAK); a rule with p >= 0.85 lands in rulesThatFailed and blocks, lower ones reach the lens as a ranked checklist.
+  ruleChecks: { name: 'jev-dev-rules', cmd: 'bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow dev --project-dir <projectDir> --plan <planPath>' },
 
   // One lens after verification and mechanical checks; its checklist covers all four dimensions.
   lens: {

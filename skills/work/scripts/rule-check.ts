@@ -5,7 +5,20 @@ import { tmpdir } from 'os';
 import { join, basename, dirname, resolve } from 'path';
 import { decisionsCall, decisionThreshold, OPENROUTER_OUT_OF_CREDITS } from '../../../hooks/work-hold.ts';
 
-export const defaultRulesDir = join(__dirname, '../../../constraints/jev');
+/** The shared Jev infrastructure (evidence.py, _common.py, _ds.py); `_jev` is not a workflow. */
+export const jevDir = join(__dirname, '../../../checks/_jev');
+/** collectEvidence's directory when a caller names none (the module API; the CLI always takes --workflow). */
+export const defaultRulesDir = join(__dirname, '../../../checks/ds/rules');
+const WORKFLOW_CHECK = join(__dirname, '../../../bin/workflow-check');
+
+/** A workflow's rule directories, parents included, as bin/workflow-check --list resolves them from the layout. */
+export function workflowRuleDirs(workflow: string): string[] {
+  const r = spawnSync('python3', [WORKFLOW_CHECK, workflow, '--list'], { encoding: 'utf8' });
+  if (r.status !== 0) throw new Error(`workflow-check ${workflow} --list exit ${r.status}: ${(r.stderr || r.error?.message || '').trim()}`);
+  const dirs = JSON.parse(r.stdout).ruleDirs;
+  if (!Array.isArray(dirs)) throw new Error(`workflow-check ${workflow} --list printed no ruleDirs`);
+  return dirs;
+}
 
 export interface Verdict {
   rule: string;
@@ -82,10 +95,10 @@ export function collectEvidence(opts: { files: string[]; plan?: string; root?: s
     argsList.push('--root', opts.root);
   }
 
-  // a rules directory without its own evidence.py (constraints/jev/writing) is run by the default one
+  // a rules directory without its own evidence.py (checks/ds/rules) is run by the shared one in checks/_jev
   let evidenceScript = join(rulesDir, 'evidence.py');
   if (!existsSync(evidenceScript)) {
-    evidenceScript = join(defaultRulesDir, 'evidence.py');
+    evidenceScript = join(jevDir, 'evidence.py');
     argsList.push('--rules-dir', rulesDir);
   }
 
@@ -278,6 +291,23 @@ export function checkRules(opts: {
   return { verdicts, unavailable };
 }
 
+/**
+ * The one JSON line on stdout, and a copy at $RULE_CHECK_OUT when it is set: a caller that runs this
+ * under bin/workflow-check (work-checks.sh, for a ruleChecks of `workflow-check <wf> --rules-only`)
+ * reads the verdicts there, since the runner's own stdout is its leg-count report.
+ */
+function emit(result: { verdicts: Verdict[]; unavailable: Unavailable[]; scope?: string }) {
+  const line = JSON.stringify(result);
+  if (process.env.RULE_CHECK_OUT) {
+    try {
+      writeFileSync(process.env.RULE_CHECK_OUT, line + '\n');
+    } catch (e: any) {
+      console.error(`rule-check: could not write RULE_CHECK_OUT ${process.env.RULE_CHECK_OUT}: ${e.message}`);
+    }
+  }
+  console.log(line);
+}
+
 function main() {
   let files: string[] = [];
   let projectDir = '';
@@ -285,6 +315,7 @@ function main() {
   let plan = '';
   let blockAt = 0.85;
   const rulesDirs: string[] = [];
+  let workflow = '';
   let batch = false;
   let maxTimeSeconds: number | undefined;
   let changedFile = '';
@@ -306,9 +337,9 @@ function main() {
       maxTimeSeconds = parseFloat(argv[++i]);
     } else if (arg === '--changed-lines') {
       changedFile = argv[++i];
-    } else if (arg === '--rules') {
-      // repeatable: `--rules <writing> --rules <legal>` scores the register set on top of the general one
-      rulesDirs.push(argv[++i]);
+    } else if (arg === '--workflow') {
+      // the layout decides the set: checks/<workflow>/rules and its parents', through workflow-check --list
+      workflow = argv[++i];
     } else if (arg === '--files') {
       while (i + 1 < argv.length && !argv[i + 1].startsWith('--')) {
         files.push(argv[++i]);
@@ -318,6 +349,27 @@ function main() {
 
   // the spend log's caller: --batch is the per-edit Jev mod's path, every other run a rule leg
   process.env.JEV_CALLER ||= batch ? 'jev-edit' : 'rule-check';
+
+  // The workflow names the set; nothing else can (membership is the directory). No default: a call
+  // that names no workflow would score whichever set a default picked, and pass for the wrong reason.
+  if (!workflow) {
+    console.error('rule-check: name the rule set with --workflow <wf> (the rules under checks/<wf>/rules and its parents\')');
+    process.exit(1);
+  }
+  let dirs: string[];
+  try {
+    dirs = workflowRuleDirs(workflow);
+  } catch (e: any) {
+    console.error(e.message);
+    process.exit(1);
+  }
+  if (dirs.length === 0) {
+    const scope = `nothing in scope (workflow ${workflow} has no rules under checks/)`;
+    console.error(`rule-check: 0 rule(s) examined — ${scope}`);
+    emit({ verdicts: [], unavailable: [], scope });
+    process.exit(0);
+  }
+  rulesDirs.push(...dirs);
 
   let changed: Record<string, number[][]> | null = null;
   if (changedFile) {
@@ -339,8 +391,11 @@ function main() {
     }
   }
 
+  // Zero files is an empty scope, said so: a bare `{"verdicts":[]}` reads exactly like every rule MET.
   if (files.length === 0) {
-    console.log(JSON.stringify({ verdicts: [], unavailable: [] }));
+    const scope = `nothing in scope (no file ${projectDir ? `changed under ${projectDir}` : 'named'})`;
+    console.error(`rule-check: 0 rule(s) examined — ${scope}`);
+    emit({ verdicts: [], unavailable: [], scope });
     process.exit(0);
   }
 
@@ -365,7 +420,7 @@ function main() {
   }
   const { verdicts, unavailable } = result;
 
-  console.log(JSON.stringify({ verdicts, unavailable }));
+  emit({ verdicts, unavailable });
 
   if (unavailable.length > 0) {
     process.exit(1);

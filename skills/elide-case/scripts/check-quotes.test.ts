@@ -1,4 +1,4 @@
-// Specification for scripts/check-quotes.py — the quotation-fidelity gate.
+// Specification for checks/elide/constraints/check-quotes.py — the quotation-fidelity gate.
 //
 // Two holes this pins shut, both found by running the checker for real:
 //   (a) it returned 0 having checked ZERO sentences — a vacuous pass;
@@ -11,7 +11,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-const SCRIPT = path.join(import.meta.dir, "check-quotes.py");
+const SCRIPT = path.join(import.meta.dir, "..", "..", "..", "checks", "elide", "constraints", "check-quotes.py");
 let ROOT = "";
 
 beforeAll(() => {

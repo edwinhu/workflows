@@ -1,39 +1,9 @@
 // The per-edit Jev mod's pure half: which rule set a file belongs to, which lines an edit changed,
 // and the one line a violation becomes. No `$` and no Node, so bun tests and the mod kit share it.
 
-export type RuleSet = 'writing' | 'dev' | 'ds' | 'authoring' | 'typst' | 'notes' | 'slides' | 'elide' | 'exams'
-
-/** Each set's rules directory under its plugin's root: this plugin's, or the teaching plugin's for
- *  TEACHING_SETS. Only the directory itself is globbed by evidence.py, so its `uncalibrated/`
- *  subdirectory is never read: the layout is the wiring. */
-export const RULE_DIRS: Record<RuleSet, string> = {
-  writing: 'constraints/jev/writing',
-  dev: 'constraints/jev/dev',
-  ds: 'constraints/jev',
-  authoring: 'constraints/jev/authoring',
-  typst: 'constraints/jev/typst',
-  notes: 'constraints/jev/notes',
-  slides: 'constraints/jev/slides',
-  elide: 'constraints/jev/elide',
-  exams: 'constraints/jev/exams',
-}
-
-/** The sets the teaching plugin ships (its constraints/jev); without that plugin they score as writing. */
-export const TEACHING_SETS: ReadonlySet<RuleSet> = new Set<RuleSet>(['notes', 'slides', 'exams'])
-
-/** The file whose presence under the teaching plugin root says a teaching set's rules are installed. */
-export const TEACHING_PROBE: Partial<Record<RuleSet, string>> = {
-  notes: 'constraints/jev/_lecture.py',
-  slides: 'constraints/jev/_lecture.py',
-  exams: 'constraints/jev/exams/_exam.py',
-}
-
-/** Register sets, scored ON TOP of `writing` for prose whose nearest ACTIVE_WORKFLOW.md carries
- *  `style: legal` or `style: econ` (writing_receipt.py writes it from the plan's Domain:). */
-export const REGISTER_DIRS: Record<string, string> = {
-  legal: 'constraints/jev/legal',
-  econ: 'constraints/jev/econ',
-}
+/** A file's rule set is the WORKFLOW whose rules score it: the layout (bin/workflow-check <wf> --list)
+ *  names those rules, so nothing here lists a rules directory. */
+export type RuleSet = 'writing' | 'dev' | 'ds' | 'authoring' | 'workshop' | 'notes' | 'slides' | 'elide' | 'exams'
 
 export const BLOCK_AT = 0.85
 
@@ -50,12 +20,12 @@ const LECTURE_DECK = /(^|\/)slides\/[^/]+\/\d{2}\.typ$/
 // a casebook reading cut from an opinion: elide-case writes these, and its rules are about the cut
 const ADDENDUM = /(^|\/)addenda\/[^/]+\.typ$/i
 const SHELL = /\.(sh|bash)$/i
-// constraints/jev/dev/_dev.py TEST_PATH, so the mod and the dev rules agree on what a test is.
+// checks/dev/rules/_dev.py TEST_PATH, so the mod and the dev rules agree on what a test is.
 const TEST_PATH = /(^|\/)(tests?|__tests__|spec)\/|[._-](test|spec)\.[A-Za-z]+$|(^|\/)test_[^/]*\.py$|_test\.(go|py)$/
 
-/** `workflow:` from an ACTIVE_WORKFLOW.md's text, as constraints/run-constraints.py reads it. */
+/** `workflow:` from an ACTIVE_WORKFLOW.md's text (work-dispatch.sh writes it from the plan's); nested names keep their `/`. */
 export function workflowOf(text: string): string | null {
-  return /^workflow:\s*([\w-]+)/m.exec(text)?.[1] ?? null
+  return /^workflow:\s*([\w/-]+)/m.exec(text)?.[1] ?? null
 }
 
 /** `style:` from an ACTIVE_WORKFLOW.md's text: the writing run's register. */
@@ -63,9 +33,25 @@ export function styleOf(text: string): string | null {
   return /^style:\s*([\w-]+)/m.exec(text)?.[1] ?? null
 }
 
-/** The register set scored on top of `set`: legal or econ for writing under that style, else none. */
-export function registerDir(set: RuleSet, style: string | null): string | null {
-  return (set === 'writing' && style && REGISTER_DIRS[style]) || null
+/**
+ * The workflows whose rules may score a file of `set`, most specific first; the mod takes the first the
+ * layout has with rules. Writing prose under a cursor naming `writing/<register>`, or `style: <register>`,
+ * tries that nested workflow (its rules plus writing's) first. Other prose falls back to writing when its
+ * own workflow is not installed (teaching's notes, slides and exams live in the teaching plugin).
+ */
+export function workflowsFor(set: RuleSet, path: string, cursor: string | null): string[] {
+  if (set === 'writing') {
+    const wf = workflowOf(cursor ?? '')
+    const style = styleOf(cursor ?? '')
+    const nested = wf?.startsWith('writing/') ? wf : style && style !== 'general' ? `writing/${style}` : null
+    return nested ? [nested, 'writing'] : ['writing']
+  }
+  return PROSE.test(path) ? [set, 'writing'] : [set]
+}
+
+/** Lecture notes, a lecture deck or an exam file: teaching's course material, which its own checks own. */
+export function isCourseMaterial(path: string): boolean {
+  return EXAM.test(path) || LECTURE_NOTES.test(path) || LECTURE_DECK.test(path)
 }
 
 /**
@@ -74,7 +60,7 @@ export function registerDir(set: RuleSet, style: string | null): string | null {
  * plugin.json, marketplace.json, hooks.json or a .planning/ file is authoring, ahead of the .md rule.
  * Lecture notes are notes and a lecture's deck is slides (the teaching rules: notes are spoken, and the
  * writing rules would flag the signposts they need). A talk's .typ deck or notes (by name, by a
- * presentation/ directory, or under a `workflow: workshop` cursor) is typst. A .typ under addenda/ is
+ * presentation/ directory, or under a `workflow: workshop` cursor) is workshop. A .typ under addenda/ is
  * elide (an excerpt cut from an opinion). Other prose (.md .typ .tex)
  * is writing; a test file or a
  * shell script is dev; any other .py is ds when the nearest `.planning/ACTIVE_WORKFLOW.md` above it
@@ -95,8 +81,8 @@ export function ruleSetOf(path: string, workflow: string | null): RuleSet | null
   if (LECTURE_NOTES.test(path)) return 'notes'
   if (LECTURE_DECK.test(path)) return 'slides'
   if (ADDENDUM.test(path)) return 'elide'
-  if (DECK.test(path)) return 'typst'
-  if (/\.typ$/i.test(path)) return workflow === 'workshop' ? 'typst' : 'writing'
+  if (DECK.test(path)) return 'workshop'
+  if (/\.typ$/i.test(path)) return workflow === 'workshop' ? 'workshop' : 'writing'
   if (PROSE.test(path)) return 'writing'
   if (SHELL.test(path) || TEST_PATH.test(path)) return 'dev'
   if (/\.py$/i.test(path)) return workflow === 'ds' ? 'ds' : null

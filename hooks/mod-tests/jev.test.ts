@@ -1,7 +1,8 @@
 // The per-edit Jev mod (hooks/jev/mod.ts, entered through hooks/register.ts) under the mod kit:
 // `scripts/mod-test.sh`. No network and no real process: $.process.run is answered by a fake
-// rule-check that records its argv and stdin, so "one Jev call per edit" is one batched rule-check
-// run per edit, and the fake decides what Jev said.
+// bin/workflow-check --list (the layout: which workflows have rules) and a fake rule-check that
+// records its argv and stdin, so "one Jev call per edit" is one batched rule-check run per edit, and
+// the fake decides what Jev said.
 import { expect, mock, test } from 'claude-code/testing'
 
 type Tree = Record<string, string>
@@ -12,10 +13,16 @@ const HEDGE = 'The prose hedges more than its evidence warrants'
 
 function world(
   on: any,
-  opts: { tree?: Tree; env?: Record<string, string>; surfaces?: string[]; verdicts?: { rule: string; p: number; statement?: string }[]; fail?: 'throw' | 'exit' } = {},
+  opts: {
+    tree?: Tree; env?: Record<string, string>; surfaces?: string[]; verdicts?: { rule: string; p: number; statement?: string }[]
+    fail?: 'throw' | 'exit'; layout?: string[]
+  } = {},
 ) {
   const tree: Tree = { ...(opts.tree ?? {}) }
   const runs: Run[] = []
+  // The workflows this plugin's layout gives rules; teaching's join only when a test installs them.
+  const layout = new Set(opts.layout ?? ['writing', 'writing/legal', 'writing/econ', 'dev', 'ds', 'authoring', 'workshop', 'elide'])
+  const lists: string[] = []
   const logs: string[] = []
   const clock = mock.clock(on, { now: NOW })
   mock.env(on, { HOME: '/home/u', TMPDIR: '/tmpx', ...(opts.env ?? {}) })
@@ -31,6 +38,12 @@ function world(
   on('process.run', (_$: any, e: any) => {
     const argv = e.argv as readonly string[]
     if (argv[0] === 'git') return { value: { exitCode: 1, stdout: '', stderr: '', isStdoutTruncated: false, isStderrTruncated: false } }
+    if (argv[1]?.endsWith('/bin/workflow-check') && argv[3] === '--list') {
+      lists.push(argv[2]!)
+      const known = layout.has(argv[2]!)
+      const stdout = known ? JSON.stringify({ workflow: argv[2], ruleDirs: [`/plug/checks/${argv[2]}/rules`] }) : ''
+      return { value: { exitCode: known ? 0 : 2, stdout, stderr: known ? '' : `workflow-check: no workflow \`${argv[2]}\``, isStdoutTruncated: false, isStderrTruncated: false } }
+    }
     runs.push({ argv, stdin: e.init?.stdin })
     if (opts.fail === 'throw') return { deny: 'spawn bun ENOENT' }
     if (opts.fail === 'exit') return { value: { exitCode: 1, stdout: '', stderr: 'evidence.py failed', isStdoutTruncated: false, isStderrTruncated: false } }
@@ -44,12 +57,13 @@ function world(
     if (e.new_string === 'BOOM') return { isError: true, result: 'String to replace not found', text: 'String to replace not found' }
     return { result: 'ran' }
   })
-  return { tree, runs, logs, clock }
+  return { tree, runs, logs, clock, lists }
 }
 
 const hedgy = { rule: 'W-HEDGE', p: 0.93, statement: HEDGE }
 const write = (file_path: string, content = 'It may perhaps possibly be the case.\n') => ({ tool: 'Write', file_path, content }) as const
 const jevLines = (r: any) => (r.context ?? []).filter((c: string) => c.includes('Jev '))
+const scored = (run: Run) => run.argv[run.argv.indexOf('--workflow') + 1]
 
 test('a prose Write with a rule at p >= 0.85 gets one Jev line after the result, from ONE batched rule-check run', async ($, on) => {
   const w = world(on, { verdicts: [hedgy, { rule: 'W-ATTRIB', p: 0.4, statement: 'x' }, { rule: 'W-SIGNPOST', p: 0.84, statement: 'y' }] })
@@ -60,7 +74,7 @@ test('a prose Write with a rule at p >= 0.85 gets one Jev line after the result,
   expect(w.runs.length).toBe(1)
   const argv = w.runs[0]!.argv
   expect(argv).toContain('--batch')
-  expect(argv[argv.indexOf('--rules') + 1]!.endsWith('/constraints/jev/writing')).toBe(true)
+  expect(scored(w.runs[0]!)).toBe('writing')
   expect(argv.some(a => a.includes('uncalibrated'))).toBe(false)
   expect(argv[argv.indexOf('--files') + 1]).toBe('/home/u/p/notes/a.md')
   expect(JSON.parse(w.runs[0]!.stdin!)).toEqual({ '/home/u/p/notes/a.md': [[1, 1]] })
@@ -83,11 +97,10 @@ test('an Edit reports the lines its new string occupies; a .py under a ds workfl
   })
   const r = await $.tool.call({ tool: 'Edit', file_path: 'src/build.py', old_string: 'q', new_string: 'x = raw.filter(a)\ny = x.join(b)' })
   expect(jevLines(r)).toEqual(['Jev DQ4: src/build.py:3-4 — The row-count chain is BROKEN (p=0.90)'])
-  const argv = w.runs[0]!.argv
-  expect(argv[argv.indexOf('--rules') + 1]!.endsWith('/constraints/jev')).toBe(true)
+  expect(scored(w.runs[0]!)).toBe('ds')
 })
 
-test('prose under a `style: legal` writing run scores the legal set on top of writing; `style: general` adds none', async ($, on) => {
+test('prose under a `style: legal` writing run scores writing/legal (writing\'s rules and legal\'s); `style: general` is writing', async ($, on) => {
   const w = world(on, {
     tree: {
       '/home/u/p/.planning/ACTIVE_WORKFLOW.md': '---\nworkflow: writing\nstyle: legal\n---\n',
@@ -97,56 +110,66 @@ test('prose under a `style: legal` writing run scores the legal set on top of wr
   })
   const r = await $.tool.call(write('drafts/part-ii.md', 'Text.[^1]\n\n[^1]: Id.\n'))
   expect(jevLines(r)).toEqual(['Jev L-ID: drafts/part-ii.md:1-3 — An "Id." short form has no single antecedent authority (p=0.95)'])
-  const rules = (argv: readonly string[]) => argv.flatMap((a, i) => (a === '--rules' ? [argv[i + 1]!.replace(/.*\/constraints\//, '')] : []))
-  expect(rules(w.runs[0]!.argv)).toEqual(['jev/writing', 'jev/legal'])
+  expect(scored(w.runs[0]!)).toBe('writing/legal')
   await $.tool.call(write('/home/u/q/drafts/memo.md', 'Text.\n'))
-  expect(rules(w.runs[1]!.argv)).toEqual(['jev/writing'])
+  expect(scored(w.runs[1]!)).toBe('writing')
 })
 
-test("a lecture's notes and deck use the teaching plugin's notes and slides rules", async ($, on) => {
-  const lecture = '/home/u/.claude/skills/teaching/constraints/jev/_lecture.py'
-  const w = world(on, { tree: { [lecture]: '' }, verdicts: [{ rule: 'N-HOLLOW', p: 0.9, statement: 'At least one candidate bullet is HOLLOW' }] })
+test('a `workflow: writing/econ` cursor scores writing/econ with no style line', async ($, on) => {
+  const w = world(on, { tree: { '/home/u/p/.planning/ACTIVE_WORKFLOW.md': '---\nworkflow: writing/econ\n---\n' }, verdicts: [hedgy] })
+  await $.tool.call(write('drafts/s3.md', 'We find that rates rose.\n'))
+  expect(scored(w.runs[0]!)).toBe('writing/econ')
+})
+
+const TEACHING = ['writing', 'notes', 'slides', 'exams']
+
+test("a lecture's notes and deck use the notes and slides workflows when the layout has them", async ($, on) => {
+  const w = world(on, { layout: TEACHING, verdicts: [{ rule: 'N-HOLLOW', p: 0.9, statement: 'At least one candidate bullet is HOLLOW' }] })
   const r = await $.tool.call(write('notes/14-10b5.typ', '- There are six scenarios; let us walk through each.\n'))
   expect(jevLines(r)).toEqual(['Jev N-HOLLOW: notes/14-10b5.typ:1 — At least one candidate bullet is HOLLOW (p=0.90)'])
   await $.tool.call(write('/home/u/p/slides/05-10b5/14.typ', '#slide[\n=== The answer:\n]\n'))
-  const rules = w.runs.map(x => x.argv[x.argv.indexOf('--rules') + 1])
-  expect(rules).toEqual(['/home/u/.claude/skills/teaching/constraints/jev/notes', '/home/u/.claude/skills/teaching/constraints/jev/slides'])
+  expect(w.runs.map(scored)).toEqual(['notes', 'slides'])
 })
 
-test("an exam question .typ uses the teaching plugin's exam rules", async ($, on) => {
-  const exam = '/home/u/.claude/skills/teaching/constraints/jev/exams/_exam.py'
-  const w = world(on, { tree: { [exam]: '' }, verdicts: [{ rule: 'EX-KEY', p: 0.96, statement: "At least one MC question's ANSWER KEY IS INCONSISTENT WITH ITS STEM" }] })
+test("an exam question .typ uses the exams workflow's rules", async ($, on) => {
+  const w = world(on, { layout: TEACHING, verdicts: [{ rule: 'EX-KEY', p: 0.96, statement: "At least one MC question's ANSWER KEY IS INCONSISTENT WITH ITS STEM" }] })
   const r = await $.tool.call(write('/home/u/c/.planning/mc/03.typ', '1. Which are correct?\n'))
   expect(jevLines(r)).toEqual(["Jev EX-KEY: /home/u/c/.planning/mc/03.typ:1 — At least one MC question's ANSWER KEY IS INCONSISTENT WITH ITS STEM (p=0.96)"])
-  expect(w.runs[0]!.argv[w.runs[0]!.argv.indexOf('--rules') + 1]).toBe('/home/u/.claude/skills/teaching/constraints/jev/exams')
+  expect(scored(w.runs[0]!)).toBe('exams')
 })
 
-test('the secreg lecture 18 paths, HOME default root: notes and deck reach the teaching rules and the Jev line', async ($, on) => {
+test('the secreg lecture 18 paths: notes and deck reach the teaching workflows and the Jev line', async ($, on) => {
   // secreg 2026-10-02: per-edit Jev "never observed" by the orchestrator, which edited no lecture file;
-  // the implementers' transcripts carry the lines. Pinned with the exact paths and no TEACHING_PLUGIN_ROOT.
-  const lecture = '/home/eh/.claude/skills/teaching/constraints/jev/_lecture.py'
+  // the implementers' transcripts carry the lines. Pinned with the exact paths.
   const uncited = { rule: 'N-UNCITED', p: 0.96, statement: 'At least one listed answer block REQUIRES a source cite and has none' }
-  const w = world(on, { tree: { [lecture]: '' }, env: { HOME: '/home/eh' }, verdicts: [uncited] })
+  const w = world(on, { layout: TEACHING, env: { HOME: '/home/eh' }, verdicts: [uncited] })
   const r = await $.tool.call(write('/home/eh/areas/secreg/notes/18-insider.typ', '- Q: What did the Court hold in _Chiarella_?\n'))
   expect(jevLines(r)).toEqual([`Jev N-UNCITED: /home/eh/areas/secreg/notes/18-insider.typ:1 — ${uncited.statement} (p=0.96)`])
   await $.tool.call(write('/home/eh/areas/secreg/slides/06-insider/18.typ', '#slide[\n=== Chiarella\n]\n'))
-  expect(w.runs.map(x => x.argv[x.argv.indexOf('--rules') + 1])).toEqual([
-    '/home/eh/.claude/skills/teaching/constraints/jev/notes', '/home/eh/.claude/skills/teaching/constraints/jev/slides'])
+  expect(w.runs.map(scored)).toEqual(['notes', 'slides'])
 })
 
-test('TEACHING_PLUGIN_ROOT names the teaching plugin', async ($, on) => {
-  const w = world(on, { tree: { '/opt/teaching/constraints/jev/_lecture.py': '' }, env: { TEACHING_PLUGIN_ROOT: '/opt/teaching' } })
-  await $.tool.call(write('/home/u/p/notes/14-10b5.typ'))
-  expect(w.runs[0]!.argv[w.runs[0]!.argv.indexOf('--rules') + 1]).toBe('/opt/teaching/constraints/jev/notes')
+test('the layout is asked through bin/workflow-check --list, once per workflow, however many edits', async ($, on) => {
+  const w = world(on, { verdicts: [hedgy] })
+  await $.tool.call(write('/home/u/p/a.md'))
+  await $.tool.call(write('/home/u/p/b.md'))
+  await $.tool.call(write('/home/u/p/c.md'))
+  expect(w.runs.length).toBe(3)
+  expect(w.lists.filter(x => x === 'writing').length).toBeLessThanOrEqual(1)
 })
 
-test('no teaching plugin: lecture notes are scored by the writing rules, and the fallback is logged', async ($, on) => {
+test('no teaching workflow in the layout: lecture notes are scored by the writing rules, and the fallback is logged', async ($, on) => {
   const w = world(on, { verdicts: [hedgy] })
   await $.tool.call(write('/home/u/p/notes/14-10b5.typ'))
-  const rules = w.runs[0]!.argv[w.runs[0]!.argv.indexOf('--rules') + 1]!
-  expect(rules.endsWith('/constraints/jev/writing')).toBe(true)
-  expect(rules.includes('teaching')).toBe(false)
+  expect(scored(w.runs[0]!)).toBe('writing')
   expect(w.logs.some(l => l.includes('scored as writing'))).toBe(true)
+})
+
+test('a file whose workflows all lack rules in the layout is left alone: no rule-check run', async ($, on) => {
+  const w = world(on, { layout: [], verdicts: [hedgy] })
+  const r = await $.tool.call(write('/home/u/p/a.md'))
+  expect(w.runs.length).toBe(0)
+  expect(jevLines(r)).toEqual([])
 })
 
 test('a file no rule set covers is left alone: no run, no context', async ($, on) => {

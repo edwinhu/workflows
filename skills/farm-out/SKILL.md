@@ -132,8 +132,9 @@ S=~/.claude/skills/workflows/skills/farm-out/scripts
 jq -n '[{prompt:"…", expect:"/repo/out.md", label:"count", kind:"script", agent:"ds"}]' > /tmp/t.json
 bash $S/farm.sh --tasks /tmp/t.json --cwd /repo
 
-# Rows run in PARALLEL. Per row: prompt (required), kind (or provider/model),
-# expect (string or array), label, agent. Omit "agent" when the row must orchestrate.
+# Rows run in PARALLEL. Per row: prompt (required), workflow (required unless the persona
+# implies it), kind (or provider/model), expect (string or array), label, agent.
+# Omit "agent" when the row must orchestrate.
 
 # workflow script — --out is REQUIRED (the structured return is the result, not the
 # summary), and paths resolve against OUR cwd, not --cwd, so pass them absolute.
@@ -189,4 +190,5 @@ Design: `docs/DESIGN-routing.md`.
 |---|---|---|
 | Per-document LLM coding/extraction over many files | Use `--tasks` fan-out to have agents read each document | Use `gemini-vertex` for large-scale extraction |
 | Writing style (fonts, hex colours, "X-style look") into a chart brief | The child follows the brief over its rules; `farm.sh` refuses the row | The subagent's rules own style; the brief says what to show. Only the user's verbatim style words go in a row's `userStyle` |
-| Treating a farmed `ds` or `dev` row as done on its own report | The child can ship a join with no audit, a figure in the wrong face or a test that asserts only on a mock | `farm.sh` runs `work/scripts/domain-gate.py` after a row whose persona preloads `ds-rules` or whose row sets `"workflow": "ds"\|"dev"` (validated at launch): every `constraints/<domain>-*.py` and the domain's Jev rules on the files it touched; findings or an unrunnable check mark the row `wrong` |
+| A row with no `"workflow"` | `farm.sh` refuses the run at launch (exit 2) and nothing spends: a row's output is gated by its workflow's checks, so it must say which | Set `"workflow": "<wf>"` (any workflow `bin/workflow-check <wf> --list` resolves: `ds`, `dev`, `writing`, `writing/legal`, …) or `"workflow": "none"` out loud. A persona implies one: its name with `/` for `-` (`writing-legal` is `writing/legal`); a read-only persona implies none |
+| Treating a farmed row as done on its own report | The child can ship a join with no audit, a figure in the wrong face, a test that asserts only on a mock or a meta-commentary topic sentence | `farm.sh` runs `bin/workflow-check <wf>` after the row on the files it touched: every constraint and Jev rule under `checks/<wf>/` and its parents'; findings or an unrunnable check mark the row `wrong` |

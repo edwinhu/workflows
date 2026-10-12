@@ -5,8 +5,9 @@
  * a stub that returns VIOLATED for every rule.
  */
 import { afterAll, beforeAll, expect, test } from 'bun:test'
-import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
+import { spawnSync } from 'node:child_process'
 import { caseInput } from '../skills/work/scripts/rule-calibrate.ts'
 import { useTmp } from './helpers/tmp.ts'
 
@@ -27,6 +28,23 @@ beforeAll(() => {
 })
 afterAll(() => server.stop(true))
 
+/** The workflow whose own rules directory is `dir`: the layout's answer, not a table (writing/legal for checks/writing/legal/rules). */
+function workflowOfDir(dir: string): string {
+  const found: string[] = []
+  const walk = (rel: string) => {
+    for (const n of readdirSync(join(ROOT, 'checks', rel))) {
+      const p = rel ? `${rel}/${n}` : n
+      if (/^[_.]/.test(n) || n === 'constraints' || n === 'rules' || !statSync(join(ROOT, 'checks', p)).isDirectory()) continue
+      const r = spawnSync('python3', [join(ROOT, 'bin', 'workflow-check'), p, '--list'], { encoding: 'utf8', timeout: 60_000, env: { ...process.env, WORKFLOW_CHECKS_PATH: ROOT } })
+      if (r.status === 0 && JSON.parse(r.stdout).ruleDirs.at(-1) === resolve(ROOT, dir)) found.push(p)
+      walk(p)
+    }
+  }
+  walk('')
+  expect(found, `the workflow owning ${dir}`).toHaveLength(1)
+  return found[0]!
+}
+
 function wiredRules(spec: any): [string, any][] {
   return Object.entries<any>(spec.rules).filter(([rule]) => existsSync(join(ROOT, spec.rulesDir, `${rule}.py`)))
 }
@@ -38,7 +56,7 @@ async function violatedVerdict(spec: any, rule: string, cases: any[]) {
   const temps: string[] = []
   try {
     const input = caseInput(spec.layout, resolve(ROOT, c.path), temps, c.base && resolve(ROOT, c.base))
-    const args = [RULE_CHECK, '--rules', join(ROOT, spec.rulesDir), '--files', ...input.files]
+    const args = [RULE_CHECK, '--workflow', workflowOfDir(spec.rulesDir), '--files', ...input.files]
     if (input.plan) args.push('--plan', input.plan)
     if (input.changed) {
       const f = join(mkTmp('rule-spans-changed-'), 'changed.json')
@@ -47,7 +65,7 @@ async function violatedVerdict(spec: any, rule: string, cases: any[]) {
     }
     const p = Bun.spawn(['bun', ...args], {
       stdout: 'pipe', stderr: 'pipe',
-      env: { ...process.env, WORK_HOLD_DECISIONS_URL: `http://localhost:${server.port}/`, WORK_HOLD_JUDGE_TOKEN: 't' },
+      env: { ...process.env, WORK_HOLD_DECISIONS_URL: `http://localhost:${server.port}/`, WORK_HOLD_JUDGE_TOKEN: 't', WORKFLOW_CHECKS_PATH: ROOT },
     })
     const [out, err, code] = await Promise.all([new Response(p.stdout).text(), new Response(p.stderr).text(), p.exited])
     expect({ code, err }).toEqual({ code: 2, err: '' })

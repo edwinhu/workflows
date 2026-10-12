@@ -743,8 +743,10 @@ def test_the_new_tics_are_soft_not_hard():
     idiom in a register the control corpus under-covers, and `sharpest-version` sits inside a
     family the corpus proved human."""
     import re as _re
-    mod = PA._load_module(PA.SCORED_TICS)
-    for _, label in mod._TIC_PATTERNS:
+    _, tables = PA._module_tables(REPO_ROOT / "checks" / "writing" / "constraints" / "scored-tics-patterns.py")
+    patterns = dict(tables)["_TIC_PATTERNS"]
+    assert patterns, "the scored-tic table read empty"
+    for _, label in patterns:
         if any(k in label for k in ("rule-bites", "sharpest-version", "bound-abstraction")):
             sev = int(_re.search(r"sev(\d)", label).group(1))
             assert sev <= 3, label

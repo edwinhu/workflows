@@ -109,10 +109,12 @@ Enforcement rules split into two categories with fundamentally different natures
 
 Both are necessary. Constraints catch what's mechanically checkable. Conventions guide what isn't. A workflow with only constraints has no taste. A workflow with only conventions has no teeth.
 
-**Co-located architecture:** Constraints live as paired files — `foo.md` (the rule) + `foo.py` (the check script) — in the same `constraints/` directory. Conventions are `foo.md` files without a paired script. An auto-discovering runner (`run-constraints.py`) globs all `*.py` files and executes them — no manual wiring, no registration. Adding a check script = automatically tested.
+**The directory is membership:** a workflow's checks live under `checks/<workflow>/` — `constraints/*.py` (deterministic scripts: the exit code decides) and `rules/*.py` (Jev-scored rules) — and one runner, `bin/workflow-check <workflow>`, runs every one of them, a nested workflow (`writing/legal`) inheriting its parent's. Nothing else declares which checks a workflow has: no filename prefix, no `APPLIES_TO`, no list in a runner or a hook. Adding a check script to the directory = it runs, everywhere the workflow is used. The prose guidance (`rules/*.md`) stays where it is, loaded as context.
+
+**Every use names the workflow, once, and reaches the runner:** a `/work` plan's `workflow:` frontmatter (the dispatcher fills `ruleChecks` from it and plan-lint refuses gates that never reach `workflow-check <wf>`; a plan with no domain is `workflow: work`, whose empty `checks/work/` says so), a farmed row's `"workflow"` (or `"none"`, said out loud), and the per-edit hooks' `--list`. A check the runner could not run, or a scope with nothing in it, is reported as such — never as a pass.
 
 **Two-leg verification:** The verification stage runs both legs:
-1. **Constraint checks** — `run-constraints.py` runs all check scripts. Hard block on any failure.
+1. **Constraint and rule checks** — `bin/workflow-check <wf>` runs every constraint and scores every rule. Hard block on any failure.
 2. **Convention scoring** — A reviewer subagent scores work against loaded conventions. Soft block below threshold.
 
 Neither leg alone is sufficient. Constraint checks without convention scoring miss qualitative issues. Convention scoring without constraint checks relies entirely on prompt compliance.
@@ -174,21 +176,22 @@ When both the entry point and midpoint evaluate the same quality dimensions, the
 
 **The drift problem:** Entry and midpoint skills evolve at different times. A new check added to the midpoint doesn't automatically appear in the entry point's verification step. Over time, the two diverge — the midpoint catches issues the entry point doesn't, which means the entry point ships broken work that requires midpoint re-entry to fix.
 
-**The solution:** Co-located constraint/convention files in a shared `constraints/` directory. Both entry phases and midpoint skills load from the same directory. Constraints have paired check scripts that run automatically via the auto-discovering runner. Conventions are loaded as prompt context for reviewer subagents.
+**The solution:** one layout per workflow, read by one runner. Every caller — the entry point's check, a midpoint audit, a farmed row, a per-edit hook — asks `bin/workflow-check` for the same workflow and so runs the same checks. Conventions are loaded as prompt context for reviewer subagents.
 
 ```
-constraints/
-├── no-agent-resume.md       ← constraint rule
-├── no-agent-resume.py       ← check script (auto-discovered)
-├── match-codebase-style.md  ← convention (no .py = judgment-based)
-└── run-constraints.py             ← runner: globs *.py, runs all checks
-    ↑ runs                        ↑ loads
-    │                             │
-entry verification            midpoint audit
-(hard block on fail)          (re-runs same checks)
+checks/
+├── _jev/                     ← shared Jev infrastructure (a `_` dir is not a workflow)
+├── ds/
+│   ├── constraints/*.py      ← deterministic checks (`_*.py` are helpers)
+│   └── rules/*.py            ← Jev rules (rules/uncalibrated/ never runs)
+└── writing/
+    ├── constraints/ rules/
+    └── legal/ econ/          ← nested: writing/legal runs writing's checks and legal's
+        ↑ bin/workflow-check <wf> runs every one; --list says which
+entry check.sh · /work ruleChecks · farmed rows · per-edit hooks
 ```
 
-**The design principle:** If the same quality dimension is checked in both the entry point and midpoint, the enforcement rule MUST be shared. Inlining the same check in two places guarantees drift. The co-located architecture makes sharing automatic — both entry and midpoint point at the same `constraints/` directory.
+**The design principle:** If the same quality dimension is checked in more than one place, the enforcement rule MUST be shared, and the only way to share it is the directory. Inlining a check, or a list of checks, in a caller guarantees drift.
 
 ### Three-Layer Consistency
 
@@ -383,8 +386,8 @@ Before graduation:
   rules/no-inline-checks.md             ← convention (judgment-based)
 
 After graduation:
-  constraints/no-inline-checks.py       ← check script (auto-discovered); the rule is gone,
-                                          its rationale now in the module docstring
+  checks/<workflow>/constraints/no-inline-checks.py   ← check script (the directory is membership);
+                                          the rule is gone, its rationale now in the module docstring
 ```
 
 A **partial** graduation is the common case and does not retire the rule: the script settles one half (an unseeded `.sample()`) while four other sources of the same failure stay judgement. Then the rule keeps living in `rules/`, renamed for the judgement it carries rather than the subject it shares with the checker, and opens by naming what the checker decides. Two names, two jurisdictions, and neither claims the other's ground.

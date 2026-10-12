@@ -19,17 +19,21 @@
  * L4  a file under .planning's .state dir other than review.json or episode.json, or a
  *     `*_CLARIFIED.json` sentinel, named in an added line (.claude/CLAUDE.md, State Files).
  *
- * L5  a skill that ships scripts/check.sh for a domain skills/work/scripts/domain-gate.py serves, whose
- *     check.sh does not call `domain-gate.py --domain <skill>`: the domain's constraints never run in /work.
- * L6  a domain with wired Jev rules (RULE_DIRS in hooks/jev/rules.ts) whose skill has neither `ruleChecks`
- *     in its SKILL.md nor a check.sh gate leg that scores them: its rules run nowhere.
- *     L5 and L6 are structural, not diff-scoped: they hold of the tree, and only in a tree with that gate.
+ * L5  a workflow under checks/ with constraints that no skills/<skill>/scripts/check.sh reaches through
+ *     `workflow-check <wf>`: its constraints never run in /work (plan-lint R24 asks a plan's
+ *     mechanicalChecks to reach that call, and a check.sh is how a skill's plans do).
+ * L6  a workflow under checks/ with wired Jev rules that no skills/<skill>/SKILL.md names (`workflow:
+ *     <wf>`, `--workflow <wf>`, `workflow-check <wf>`): work-dispatch.sh scores a workflow's rules only
+ *     for a plan that names it, so no skill naming it means its rules run nowhere.
+ *     L5 and L6 are structural, not diff-scoped: they hold of the tree, and only in a tree that ships
+ *     the runner (bin/workflow-check). Membership is the directory; nothing here lists a workflow.
  *
  * Test files and fixtures are skipped: they carry the violating strings on purpose.
  */
 import { spawnSync } from 'node:child_process'
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative, resolve } from 'node:path'
+import { covers, runnerTargets, scriptReaches } from '../../work/scripts/plan-lint.ts'
 
 export interface Finding { rule: string; file: string; line: number; text: string }
 
@@ -89,26 +93,47 @@ export function addedLines(target: string): Map<string, Set<number> | null> {
   return out
 }
 
-/** L5/L6: every gated domain's check.sh reaches its gate, every domain with Jev rules scores them somewhere. */
-export function gateLaw(target: string): Finding[] {
-  const gate = join(target, 'skills/work/scripts/domain-gate.py')
-  const rules = join(target, 'hooks/jev/rules.ts')
-  if (!existsSync(gate) || !existsSync(rules)) return []
-  const out: Finding[] = []
-  const domains = /^DOMAINS\s*=\s*\(([^)]*)\)/m.exec(readFileSync(gate, 'utf8'))?.[1].match(/"([\w-]+)"/g)?.map(d => d.slice(1, -1)) ?? []
-  const calls = (d: string) => new RegExp(`domain-gate\\.py[^\\n]*--domain\\s+${d}\\b`).exec(readFileSync(join(target, 'skills', d, 'scripts/check.sh'), 'utf8'))
-  for (const d of domains) {
-    const check = join(target, 'skills', d, 'scripts/check.sh')
-    if (existsSync(check) && !calls(d)) out.push({ rule: 'L5 check.sh does not call the domain gate; its constraints never run in /work', file: `skills/${d}/scripts/check.sh`, line: 1, text: `expected: domain-gate.py --domain ${d}` })
+/** Runnable checks in a constraints/ or rules/ directory: `.py` files not starting with `_` or `.`. */
+const runnable = (d: string): number =>
+  existsSync(d) ? readdirSync(d).filter(f => /^[^_.].*\.py$/.test(f) && statSync(join(d, f)).isFile()).length : 0
+
+/** Every workflow under <target>/checks/ (a `_` directory is not one; nested ones keep their `/`). */
+export function layoutWorkflows(target: string): { wf: string; constraints: number; rules: number }[] {
+  const out: { wf: string; constraints: number; rules: number }[] = []
+  const walkWf = (rel: string) => {
+    for (const n of readdirSync(join(target, 'checks', rel)).sort()) {
+      const p = rel ? `${rel}/${n}` : n
+      if (/^[_.]/.test(n) || n === 'constraints' || n === 'rules' || n === '__pycache__' || !statSync(join(target, 'checks', p)).isDirectory()) continue
+      out.push({ wf: p, constraints: runnable(join(target, 'checks', p, 'constraints')), rules: runnable(join(target, 'checks', p, 'rules')) })
+      walkWf(p)
+    }
   }
-  const block = /RULE_DIRS[^=]*=\s*\{(.*?)\n\}/s.exec(readFileSync(rules, 'utf8'))?.[1] ?? ''
-  for (const [, key, dir] of block.matchAll(/^\s*(\w+):\s*'([^']+)'/gm)) {
-    const skill = join(target, 'skills', key!, 'SKILL.md')
-    const ruled = existsSync(join(target, dir!)) && readdirSync(join(target, dir!)).some(f => /^[A-Za-z0-9-]+\.py$/.test(f) && f !== 'evidence.py')
-    if (!ruled || !existsSync(skill)) continue
-    const check = join(target, 'skills', key!, 'scripts/check.sh')
-    const gated = existsSync(check) && /domain-gate\.py/.test(readFileSync(check, 'utf8')) && !/domain-gate\.py[^\n]*--skip-rules/.test(readFileSync(check, 'utf8'))
-    if (!/ruleChecks/.test(readFileSync(skill, 'utf8')) && !gated) out.push({ rule: 'L6 a domain with wired Jev rules and no ruleChecks or gate leg scoring them', file: `skills/${key}/SKILL.md`, line: 1, text: `${dir} is wired in RULE_DIRS` })
+  walkWf('')
+  return out
+}
+
+/** Does a SKILL.md name `wf` for a plan: `workflow: <wf>`, `--workflow <wf>` or `workflow-check <wf>`?
+ *  A placeholder (`writing/<domain>`) names every workflow nested under its prefix. */
+function namesWorkflow(text: string, wf: string): boolean {
+  const named = [...runnerTargets(text), ...[...text.matchAll(/(?:--workflow[=\s]+|\bworkflow:\s*)["'`]?([^\s"'`,]+)/g)].map(m => m[1]!)]
+  return named.some(t => covers(t, wf) || (t.includes('<') && wf.startsWith(t.slice(0, t.indexOf('<')))))
+}
+
+/** L5/L6: every workflow's constraints are reached by some check.sh, every workflow's rules named by some skill. */
+export function gateLaw(target: string): Finding[] {
+  if (!existsSync(join(target, 'bin', 'workflow-check')) || !existsSync(join(target, 'checks'))) return []
+  const skills = existsSync(join(target, 'skills')) ? readdirSync(join(target, 'skills')) : []
+  const read = (rel: string) => (existsSync(join(target, rel)) ? readFileSync(join(target, rel), 'utf8') : null)
+  // each check.sh with its directory, so the scripts it runs or sources are followed to the runner
+  const checks = skills.map(k => ({ text: read(`skills/${k}/scripts/check.sh`), dir: join(target, 'skills', k, 'scripts') }))
+    .filter((c): c is { text: string; dir: string } => c.text !== null)
+  const docs = skills.map(k => read(`skills/${k}/SKILL.md`)).filter((t): t is string => t !== null)
+  const out: Finding[] = []
+  for (const { wf, constraints, rules } of layoutWorkflows(target)) {
+    if (constraints && !checks.some(c => scriptReaches(c.text, wf, c.dir)))
+      out.push({ rule: 'L5 a workflow with constraints that no check.sh reaches; its constraints never run in /work', file: `checks/${wf}/constraints`, line: 1, text: `expected: a skills/*/scripts/check.sh calling workflow-check ${wf}` })
+    if (rules && !docs.some(t => namesWorkflow(t, wf)))
+      out.push({ rule: 'L6 a workflow with wired Jev rules that no skill names; its rules run nowhere', file: `checks/${wf}/rules`, line: 1, text: `expected: a skills/*/SKILL.md naming workflow: ${wf} (or --workflow ${wf})` })
   }
   return out
 }

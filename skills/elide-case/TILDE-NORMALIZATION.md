@@ -98,7 +98,7 @@ above.
 ### Full suite after the change
 
 ```
-$ cd /home/eh/projects/workflows/skills/elide-case/scripts && bun test
+$ cd ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts && bun test
 bun test v1.4.0 (34cbb9a40)
 
  71 pass

@@ -28,7 +28,7 @@ function run(args: string[], env: Record<string, string> = {}, beacon?: { sid: s
   chmodSync(join(bin, 'claude-code'), 0o755)
   const wf = join(tmp, 'wf.js'); writeFileSync(wf, 'export const meta = { name: "x", description: "x" }\n')
   const tasks = join(tmp, 'tasks.json')
-  writeFileSync(tasks, JSON.stringify([{ label: 'r', prompt: 'p' }]))
+  writeFileSync(tasks, JSON.stringify([{ label: 'r', workflow: 'none', prompt: 'p' }]))
   const res = spawnSync('bash', [FARM, ...args.map((a) =>
     a === '@wf' ? wf : a === '@out' ? outFile : a === '@tasks' ? tasks : a === '@cwd' ? tmp : a)], { timeout: 120_000,
     encoding: 'utf8',

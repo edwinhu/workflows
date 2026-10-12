@@ -9,7 +9,8 @@ import { dirname, join } from "path";
 // after/ tree (left in the working tree), so the extractors see a real `git diff HEAD`. Files carry a
 // .fixture suffix so bun never collects a fixture test as a suite of its own.
 const BASE = join(import.meta.dir, "../../..");
-const RULES_DIR = join(BASE, "constraints/jev/dev");
+const RULES_DIR = join(BASE, "checks/dev/rules");
+const EVIDENCE = join(BASE, "checks/_jev/evidence.py");
 const FIX = join(BASE, "tests/fixtures/jev/dev");
 const RULES = ["MOCK", "WEAK", "NET", "SHELL", "LOOP"] as const;
 const made: string[] = [];
@@ -48,7 +49,7 @@ function changed(d: string): string[] {
 }
 
 function evidence(d: string): Record<string, any> {
-  const r = spawnSync("python3", [join(RULES_DIR, "evidence.py"), "--files", ...changed(d), "--root", d], { timeout: 120_000, encoding: "utf8" });
+  const r = spawnSync("python3", [EVIDENCE, "--rules-dir", RULES_DIR, "--files", ...changed(d), "--root", d], { timeout: 120_000, encoding: "utf8" });
   expect(r.status).toBe(0);
   return JSON.parse(r.stdout);
 }
@@ -73,7 +74,7 @@ test("dev discovery finds exactly the five rules, each with a subject; ds discov
     expect(Object.keys(out[r].criteria).sort()).toEqual(["INSUFFICIENT_EVIDENCE", "NOT_APPLICABLE", "SATISFIED", "VIOLATED"]);
     expect(JSON.stringify(out[r].state).length).toBeLessThan(60000);
   }
-  const ds = spawnSync("python3", [join(BASE, "constraints/jev/evidence.py"), "--files", ...changed(d), "--root", d], { timeout: 120_000, encoding: "utf8" });
+  const ds = spawnSync("python3", [EVIDENCE, "--rules-dir", join(BASE, "checks/ds/rules"), "--files", ...changed(d), "--root", d], { timeout: 120_000, encoding: "utf8" });
   const dsOut = JSON.parse(ds.stdout);
   expect(Object.keys(dsOut)).toEqual(["A1", "A4", "DEN", "DQ4", "DQ6", "E7", "M1", "R1", "UNI"]);
   expect(Object.values(dsOut).every((v: any) => v.subject === undefined)).toBe(true);
@@ -146,7 +147,7 @@ async function ruleCheck(d: string) {
     },
   });
   // async spawn: a spawnSync would block the event loop the stub answers on
-  const proc = Bun.spawn(["bun", join(BASE, "skills/work/scripts/rule-check.ts"), "--project-dir", d, "--rules", RULES_DIR], {
+  const proc = Bun.spawn(["bun", join(BASE, "skills/work/scripts/rule-check.ts"), "--project-dir", d, "--workflow", "dev"], {
     env: { ...process.env, WORK_HOLD_DECISIONS_URL: `http://localhost:${server.port}/`, WORK_HOLD_JUDGE_TOKEN: "test-token", FARM_OUTCOMES: join(d, ".farm-outcomes.jsonl") },
     stdout: "pipe", stderr: "pipe",
   });
@@ -174,7 +175,7 @@ function evidenceScoped(d: string, ranges: Record<string, number[][]>): Record<s
   const f = join(mkdtempSync(join(tmpdir(), "jev-dev-changed-")), "changed.json");
   made.push(dirname(f));
   writeFileSync(f, JSON.stringify(ranges));
-  const r = spawnSync("python3", [join(RULES_DIR, "evidence.py"), "--files", ...changed(d), "--root", d, "--changed-lines", f], { timeout: 120_000, encoding: "utf8" });
+  const r = spawnSync("python3", [EVIDENCE, "--rules-dir", RULES_DIR, "--files", ...changed(d), "--root", d, "--changed-lines", f], { timeout: 120_000, encoding: "utf8" });
   expect(r.status).toBe(0);
   return JSON.parse(r.stdout);
 }

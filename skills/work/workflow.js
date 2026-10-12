@@ -865,6 +865,7 @@ const digestLines = d => [
   ...bullets('RED-SUITE FILES CHANGED DURING THE ROUND (each is already a CRITICAL):', d.suiteChanges || []),
   ...bullets('RULE CHECKS THAT FAILED (p >= block-at, or the runner died):', d.rulesThatFailed),
   ...bullets('RULE CHECKLIST (advisory, ranked by p):', d.advisoryRules),
+  ...(d.ruleScope ? ['', `RULE CHECKS SCORED NOTHING: ${d.ruleScope}`] : []),
   ...(d.carried.length
     ? ['', 'CARRIED FINDINGS — rule on EVERY one of these in `carried`, by id:',
        ...d.carried.map(f =>
@@ -1275,6 +1276,9 @@ const mechanicalThatFailed = mechanical.filter(r => r.exitCode !== 0)
 
 const rulesThatFailed = []
 const ruleVerdicts = []
+// The runner's `nothing in scope (...)` when it scored no rule (work-checks.sh carries it as `scope`): an
+// empty verdict set must read as an empty scope, never as every rule MET.
+let ruleScope = null
 // A failed rule's candidate spans in the digest: enough to route and start a repair, not the whole list.
 const RULE_SPANS_SHOWN = 12
 if (ruleChecks) {
@@ -1305,6 +1309,7 @@ if (ruleChecks) {
   if (parseFailed) {
     rulesThatFailed.push(`ruleChecks:${ruleChecks.name}`)
   } else {
+    if (parsed.verdicts.length === 0 && typeof parsed.scope === 'string' && parsed.scope.trim()) ruleScope = parsed.scope.trim()
     for (const v of parsed.verdicts) {
       const spans = Array.isArray(v.spans) ? v.spans.filter(x => typeof x === 'string') : []
       ruleVerdicts.push(spans.length ? { rule: v.rule, p: v.p, verdict: v.verdict, spans } : { rule: v.rule, p: v.p, verdict: v.verdict })
@@ -1346,6 +1351,7 @@ const digest = {
     return `${v.rule}: p=${v.p} — ${v.verdict}${at}`
   }),
   advisoryRules: ruleVerdicts.filter(v => v.p < (ruleChecks ? ruleChecks.blockAt : 1)).sort((a, b) => b.p - a.p).map(v => `${v.rule}: p=${v.p} — ${v.verdict}`),
+  ruleScope,
   carried: carriedFindings,
   attempts: attemptsResult,
 }
@@ -1503,6 +1509,7 @@ return {
     tasksTotal: taskList.length,
     attempts: attemptsResult.map(a => ({ key: a.key, reported: !!a.answer })),
     ...(ruleChecks ? { rulesThatFailed: rulesThatFailed.length, ruleVerdicts: ruleVerdicts.length } : {}),
+    ...(ruleScope ? { ruleScope } : {}),
     // n/a (null), NOT 0. Under readOnly nothing was implemented or verified because nothing was
     // dispatched; rendering 0/0 next to real counts would read as "checked and clean".
     tasksJudgedThisRun: readOnly ? null : activeTasks.length,

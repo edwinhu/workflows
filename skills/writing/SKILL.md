@@ -334,17 +334,20 @@ Omitting it silently runs the user's codex request on claude.
   // plan — the purest form of what P10 refuses, since a plan that forgets a row drops
   // that section's citation gate and nothing reports a check it never knew about.
   // check.sh discovers the sections from drafts/ instead, so the set cannot disagree
-  // with what is on disk, and no sections at all is a refusal rather than a pass.
+  // with what is on disk, and no sections at all is a refusal rather than a pass. It also runs
+  // `bin/workflow-check writing[/legal|/econ] --constraints-only` (the register from --style): every
+  // constraint under checks/writing/, so the set is the directory, never a list here.
   mechanicalChecks: [
     { name: "writing",
       cmd: "bash ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/check.sh --project <proj> --bib \"<proj>/<bib>.bib\" --plan \"<proj>/.planning/<slug>.md\" --plan-hash <work plan hash> --style <domain>" },
   ],
-  // Jev scores the calibrated prose rules under constraints/jev/writing (signposting, stacked hedges,
-  // vague attribution); p >= 0.85 lands in rulesThatFailed and blocks, lower ones reach the lens ranked.
-  // <register rules> is substituted from Domain: exactly as --style is: Domain: legal ->
-  // `--rules ${CLAUDE_PLUGIN_ROOT}/constraints/jev/legal`, Domain: econ -> `--rules ${CLAUDE_PLUGIN_ROOT}/constraints/jev/econ`,
-  // Domain: general -> nothing. The register set is scored ON TOP of the writing set, never instead of it.
-  ruleChecks: { name: "jev-writing-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --project-dir <projectDir> --plan <planPath> --rules ${CLAUDE_PLUGIN_ROOT}/constraints/jev/writing <register rules>" },
+  // Jev scores the calibrated prose rules the layout holds for the workflow: checks/writing/rules
+  // (signposting, stacked hedges, vague attribution), and for a register its own rules ON TOP of them,
+  // never instead. p >= 0.85 lands in rulesThatFailed and blocks, lower ones reach the lens ranked.
+  // The workflow is substituted from Domain: when --style is: Domain: legal -> `writing/legal`,
+  // Domain: econ -> `writing/econ`, Domain: general -> bare `writing` (there is no `writing/general`).
+  // Left unsubstituted, or as `writing/general`, it fails loudly.
+  ruleChecks: { name: "jev-writing-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --project-dir <projectDir> --plan <planPath> --workflow writing/<domain>" },
 
   // One lens after verification and mechanical checks; its checklist covers all five dimensions.
   //
@@ -364,7 +367,7 @@ Omitting it silently runs the user's codex request on claude.
   },
 
   authorityExtra: [
-    "THE WRITING CONSTRAINT CORPUS IS NOT IN YOUR REFS. Its rules are `${CLAUDE_PLUGIN_ROOT}/skills/writing/constraints/` — read the ones governing what you are about to write. Their executable twins run in the gate whether or not you read them, so the gate is the verdict and this is how you avoid earning one.",
+    "THE WRITING CONSTRAINT CORPUS IS NOT IN YOUR REFS. Its rules are `${CLAUDE_PLUGIN_ROOT}/checks/writing/constraints/` and, for a register, `checks/writing/legal/constraints/` or `checks/writing/econ/constraints/` — read the ones governing what you are about to write. Their executable twins run in the gate whether or not you read them, so the gate is the verdict and this is how you avoid earning one.",
     "IRON LAW OF WRITING PLANNING — ask before you draft, and gather sources before you claim. Training-data recall is NOT a source: every citation resolves to a real artifact under the project's references/ and to a key in the Source Plan Bibliography.",
     "IRON LAW OF WRITING VERIFICATION — no check result without the runner's own output. A mechanical check reported from reading the plan or the draft is the model certifying its own work. Every COMPUTED result is an exit code observed on this run.",
     "Never report GRAMMAR, CITE, CLAIM or PROSE-HARD from reading the code, and never report COVER, FIDELITY, TRANSITION or COUNTER as PASS — those four are MODEL-EVALUATED judgements and are reported as such, with the evidence read.",
@@ -376,7 +379,7 @@ Omitting it silently runs the user's codex request on claude.
     "The document is written by dispatched agents. Main chat writes nothing under the project's drafts/, outlines/ or references/, by any tool including Bash heredocs — the sole exception being writing_bench_compile.py, a compiler emitting the user's own accepted outline.",
     "In bench mode the outlines/ files are the USER'S accepted work. A drafting row writes drafts/<Section>.md only; a draft needing a beat the outline does not have is raised, never silently added.",
     "Standing writing doer authority — every drafting task loads ${CLAUDE_PLUGIN_ROOT}/skills/writing/references/writing-checks.md plus ${CLAUDE_PLUGIN_ROOT}/skills/writing-general/SKILL.md, which is the base register for every Domain, and — when the plan's Domain: field is legal or econ — ${CLAUDE_PLUGIN_ROOT}/skills/writing-legal/SKILL.md or ${CLAUDE_PLUGIN_ROOT}/skills/writing-econ/SKILL.md alongside it. The domain files carry only what is additional to the base and are useless without it; Domain: general loads the base alone. It loads the raw style guides — volokh-distilled.md, formatting.md, economical-writing-full.md, elements-of-style.md — NOT AT ALL for drafting, because the register is those guides already filtered through 14.29M sentences and it overrides three of their rules as register mistakes, so loading both puts the drafter under contradictory instructions.",
-    "Rules: writing-checks.md defines all eight checks; writing-anchored-numbers.md, writing-citation-tense.md, writing-no-bold-lead.md, writing-outline-sync.md, writing-topic-sentences.md, writing-shortjournal.md and writing-stop-triggers.md are the prose constraints; claim-id-traceability.md and the six cite-fidelity-*.md files govern claim ids and sourcing. All under ${CLAUDE_PLUGIN_ROOT}/skills/writing/references/.",
+    "Rules: writing-checks.md defines every check; writing-anchored-numbers.md, writing-citation-tense.md, writing-no-bold-lead.md, writing-outline-sync.md, writing-topic-sentences.md, writing-shortjournal.md and writing-stop-triggers.md are the prose constraints; claim-id-traceability.md and the six cite-fidelity-*.md files govern claim ids and sourcing. All under ${CLAUDE_PLUGIN_ROOT}/skills/writing/references/.",
   ].join("\n"),
 
   // The plan's Domain: selects the register, so it selects the doer too — each of these three agents

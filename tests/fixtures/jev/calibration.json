@@ -3,7 +3,7 @@
   "criterion": { "violatingAtLeast": 0.85, "compliantBelow": 0.5, "crossFlagAbove": 0.5 },
   "sets": {
     "elide": {
-      "rulesDir": "constraints/jev/elide",
+      "rulesDir": "checks/elide/rules",
       "layout": "files",
       "rules": {
         "EL-HOLDING": [
@@ -44,8 +44,8 @@
       }
     },
     "ds": {
-      "rulesDir": "constraints/jev",
-      "uncalibratedDir": "constraints/jev/uncalibrated",
+      "rulesDir": "checks/ds/rules",
+      "uncalibratedDir": "checks/ds/rules/uncalibrated",
       "layout": "files",
       "rules": {
         "A1": [
@@ -117,7 +117,7 @@
       }
     },
     "dev": {
-      "rulesDir": "constraints/jev/dev",
+      "rulesDir": "checks/dev/rules",
       "layout": "diff",
       "rules": {
         "LOOP": [
@@ -153,8 +153,8 @@
       }
     },
     "writing": {
-      "rulesDir": "constraints/jev/writing",
-      "uncalibratedDir": "constraints/jev/writing/uncalibrated",
+      "rulesDir": "checks/writing/rules",
+      "uncalibratedDir": "checks/writing/rules/uncalibrated",
       "layout": "files",
       "rules": {
         "W-ATTRIB": [
@@ -185,8 +185,8 @@
       }
     },
     "legal": {
-      "rulesDir": "constraints/jev/legal",
-      "uncalibratedDir": "constraints/jev/legal/uncalibrated",
+      "rulesDir": "checks/writing/legal/rules",
+      "uncalibratedDir": "checks/writing/legal/rules/uncalibrated",
       "layout": "files",
       "rules": {
         "L-ID": [
@@ -218,8 +218,8 @@
       }
     },
     "econ": {
-      "rulesDir": "constraints/jev/econ",
-      "uncalibratedDir": "constraints/jev/econ/uncalibrated",
+      "rulesDir": "checks/writing/econ/rules",
+      "uncalibratedDir": "checks/writing/econ/rules/uncalibrated",
       "layout": "files",
       "rules": {
         "E-WEFIND": [
@@ -248,8 +248,8 @@
       }
     },
     "typst": {
-      "rulesDir": "constraints/jev/typst",
-      "uncalibratedDir": "constraints/jev/typst/uncalibrated",
+      "rulesDir": "checks/workshop/rules",
+      "uncalibratedDir": "checks/workshop/rules/uncalibrated",
       "layout": "files",
       "rules": {
         "T-TAKEAWAY": [
@@ -326,7 +326,7 @@
       }
     },
     "authoring": {
-      "rulesDir": "constraints/jev/authoring",
+      "rulesDir": "checks/authoring/rules",
       "layout": "diff",
       "rules": {
         "A-DESC": [

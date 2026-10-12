@@ -14,7 +14,7 @@ import sys
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                                "constraints"))
+                                "checks", "ds", "constraints"))
 from _ds_waivers import MIN_REASON, partition  # noqa: E402
 
 

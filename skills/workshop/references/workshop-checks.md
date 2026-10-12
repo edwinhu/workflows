@@ -1,7 +1,7 @@
 # Workshop Deck Checks
 
 Canonical definitions for deck verification. The probe at
-`${CLAUDE_PLUGIN_ROOT}/skills/workshop/scripts/workshop-deck.py` OWNS the computed rows; the
+`${CLAUDE_PLUGIN_ROOT}/checks/workshop/constraints/workshop-deck.py` OWNS the computed rows; the
 `deck-fidelity`, `deck-convention` and `visual-integrity` lenses OWN the three it cannot settle. Both
 load these definitions by the path
 `${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/workshop-checks.md`. The plan grammar the probe
@@ -81,10 +81,11 @@ paths, and both produced output paths.
 
 ### CON: Vendored constraints, over files actually inspected — computed
 
-**Means:** `constraints/run-constraints.py`, invoked against the **resolved presentation
-directory** (not the project root), reports for every co-located `typst-*.py` module an empty
-`failed[]`, an empty `errors[]`, an empty `skipped[]`, and a summed `inspected` count greater than
-zero.
+**Means:** the typst plugin's `constraints/workshop/run-constraints.py` (the JSON front end for
+every module under its `checks/workshop/constraints/`, the set `bin/workflow-check workshop` runs),
+invoked against the **resolved presentation directory** (not the project root), reports for every
+module an empty `failed[]`, an empty `errors[]`, an empty `skipped[]`, and a summed `inspected`
+count greater than zero.
 
 **Evidence:** the runner's JSON — per-module `passed`/`failed`/`errors`/`skipped` membership, each
 module's `inspected` file count, and the summed inspected count.
@@ -358,7 +359,7 @@ than from a render is a declared reduction: `look_at.py` is not vendored.
 
 ## Jev rule checks
 
-`ruleChecks` runs `rule-check.ts --rules ${CLAUDE_PLUGIN_ROOT}/constraints/jev/typst`: one judged
+`ruleChecks` runs `rule-check.ts --workflow workshop` over `${CLAUDE_PLUGIN_ROOT}/checks/workshop/rules/`: one judged
 proposition per calibrated rule over spans an extractor pulls with `file:line`, diff-scoped to the
 round's changed lines. Wired: `T-HOLLOW` (a notes bullet announcing scenarios, factors or examples
 the notes never write out), `T-CALLOUT` (a `#callout` quoting source text), `T-STORY` (a
@@ -370,7 +371,7 @@ verdict in the digest: do not re-grade it, except to rule on a verdict ranked be
 Accepted decks that break `T-CALLOUT`, `T-STORY`, `T-TAKEAWAY` or `T-TRANSITION` are not re-judged: only
 spans on changed lines are. p >= 0.85 lands in
 `rulesThatFailed`; lower scores reach the lens as a ranked checklist. The rules in
-`constraints/jev/typst/uncalibrated/` are not scored -- each module's docstring records the
+`checks/workshop/rules/uncalibrated/` are not scored -- each module's docstring records the
 calibration that kept it out.
 
 ## How to use in subagent prompts

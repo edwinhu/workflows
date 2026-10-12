@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Contract suite for scripts/checks/ds-dq.py.
+"""Contract suite for checks/ds/constraints/ds-dq.py, the ds constraint itself (not a copy).
 
 WHY THIS EXISTS
     The plan this runner comes from says it plainly: a check only ever seen green is the defect the
@@ -30,7 +30,7 @@ import polars as pl
 import pytest
 
 REPO = Path(__file__).resolve().parents[1]
-RUNNER = REPO / "scripts" / "checks" / "ds-dq.py"
+RUNNER = REPO / "checks" / "ds" / "constraints" / "ds-dq.py"
 
 MODEL_EVALUATED_CHECKS = ("M1", "UNI", "DEN", "DEL", "R1")
 MATRIX = ["DQ1", "DQ2", "DQ3", "DQ4", "DQ5", "DQ6", "COV", "R1", "M1", "UNI", "DEN", "DEL", "ENUM"]
@@ -300,15 +300,18 @@ def test_duplicate_data_outputs_rows_are_rejected():
 
 
 def test_a_malformed_plan_still_emits_json_on_stdout(tmp_path: Path):
-    # "JSON on stdout, non-zero exit" is the contract. A bare stderr line left a gate reading empty
-    # stdout, which parses as "no checks ran" rather than "could not check".
+    # Could-not-check is exit 2 (the checks/ constraint contract), named on stdout's first line with the
+    # JSON error after it. A bare stderr line left a gate reading empty stdout, which parses as "no checks
+    # ran" rather than "could not check".
     plan = tmp_path / "plan.md"
     plan.write_text("## Data Outputs\n\nno table here at all\n", encoding="utf-8")
     proc = subprocess.run(
         [sys.executable, str(RUNNER), "--plan", str(plan)],
         capture_output=True, text=True, check=False,
     )
-    assert proc.returncode != 0, proc
-    payload = json.loads(proc.stdout)
+    assert proc.returncode == 2, proc
+    head, _, rest = proc.stdout.partition("\n")
+    assert head.startswith("COULD-NOT-CHECK: ds-dq:"), proc.stdout
+    payload = json.loads(rest)
     assert payload["_error"]["status"] == "FAIL"
     assert payload["_error"]["reason_source"] == "runner"

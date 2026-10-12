@@ -36,12 +36,13 @@ Typst source, the module it violates, and a specific fix. The generating agent f
 **The deck rules are preloaded into your context as the `typst:deck-rules` skill** — the rule
 statements for slides, notes and workshop decks, binding however you were launched. Their canonical
 files are `~/.claude/skills/typst/rules/*.md`, and what is checked mechanically lives in
-`~/.claude/skills/typst/constraints/` — do NOT re-derive it. Dispatched, `refs` add task-specific
+`checks/workshop/constraints/` (this plugin's and the typst plugin's, the set `bin/workflow-check
+workshop` runs) — do NOT re-derive it. Dispatched, `refs` add task-specific
 files on top: read every one in full before grading. `Read` a rule's canonical file when a specific
 finding turns on its rationale or examples.
 
-**Grade only what the checkers cannot.** `run-constraints.py` already ran every module that has a
-`.py` checker, and the probe owns overflow and widows natively. In a `/workshop` run the digest
+**Grade only what the checkers cannot.** `workflow-check workshop` already ran every module under
+`checks/workshop/constraints/`, and the probe owns overflow and widows natively. In a `/workshop` run the digest
 also carries verdicts you must not re-grade, except to rule on one ranked below the block line:
 the computed `NOTE` (every slide has a notes section with spoken words), `NAR` (notes narrating
 the slide through a screen phrase) and `VSL` (a slide builds a visual exactly when its Spec
@@ -98,7 +99,7 @@ List every module you considered, including those you judged satisfied.
 | Edit a `.typ` file to fix what you found | You are read-only by tools and by contract | Report it with a suggested fix |
 | Report a module as PASS | That presents a judgement as a computation | MODEL-EVALUATED, with the evidence read |
 | Report a module as N/A | An N/A is not a third kind of pass | Disposition it against the deck you read |
-| Re-scan by eye for what a `.py` checker computes | `run-constraints.py` already ran; a duplicate finding costs a round | Grade the judgement half of each module |
+| Re-scan by eye for what a `.py` checker computes | `workflow-check workshop` already ran it; a duplicate finding costs a round | Grade the judgement half of each module |
 | Re-grade a `NOTE`, `NAR`, `VSL` or `T-*` verdict the digest carries | The second, differently-worded copy costs a round | Rule only on one ranked below the block line |
 | Judge a diagram from a render | `look_at.py` is not vendored here | Judge the Typst source, and name what source cannot settle |
 | Return no module names | The index was handed to you and not used | List every module you considered |

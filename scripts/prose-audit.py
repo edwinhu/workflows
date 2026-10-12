@@ -3,9 +3,10 @@
 
 ONE entry point over ALL five pattern systems, emitting ONE span list with stable ids:
 
-  A  scored AI-tics   skills/ai-anti-patterns/constraints/scored-tics-patterns.py  (system `scored-tic`)
-  B  wikipedia-*      skills/ai-anti-patterns/constraints/wikipedia-*.py           (system `wikipedia-*`)
-  D  domain style     skills/writing/constraints/{strunk,mccloskey,volokh}*.py     (system `writing-*`)
+  A  scored AI-tics   checks/writing/constraints/scored-tics-patterns.py           (system `scored-tic`)
+  B  wikipedia-*      checks/writing/constraints/wikipedia-*.py                    (system `wikipedia-*`)
+  D  domain style     checks/writing[/legal|/econ]/constraints/ style guides       (system `writing-*`)
+  A, B and D are DISCOVERED from those directories, never named here (see `pattern tables` below).
   E  tiered diction   skills/de-ai-revise/references/diction.yaml                  (system `diction`)
   +  stylometrics     skills/ai-anti-patterns/scripts/style_metrics.py --lint      (system `style`)
   +  US-register spelling and paragraph/section em-dash density                    (`spelling`, `em-dash`)
@@ -50,7 +51,7 @@ Exit: 1 if any `hard` span was found, else 0. (2 on a usage error.)
 from __future__ import annotations
 
 import argparse
-import importlib.util
+import ast
 import json
 import os
 import re
@@ -63,12 +64,6 @@ from pathlib import Path
 WORKFLOWS_ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS_DIR = WORKFLOWS_ROOT / "scripts"
 SKILLS_DIR = WORKFLOWS_ROOT / "skills"
-# The pattern TABLES are constraints and live in constraints/; the prose .md guides
-# stayed in references/. Built piece by piece, so a literal grep for
-# "skills/ai-anti-patterns/references" cannot see this line — which is how the move
-# broke it silently once already.
-AAP_REFS = SKILLS_DIR / "ai-anti-patterns" / "constraints"
-SCORED_TICS = AAP_REFS / "scored-tics-patterns.py"
 STYLE_LINT = SKILLS_DIR / "ai-anti-patterns" / "scripts" / "style_metrics.py"
 DICTION_YAML = SKILLS_DIR / "de-ai-revise" / "references" / "diction.yaml"
 
@@ -98,42 +93,78 @@ def _worst(a: str, b: str) -> str:
 
 
 # ── pattern tables ───────────────────────────────────────────────────────────
-# (system, module path, attribute, severity-or-None, ignore_case)
-# severity None ⇒ read the module's own declared SEVERITY. The one split is
-# wikipedia-communication, whose module declares `hard` but carries a separate
-# _SOFT_PATTERNS table; that table is pinned soft here because the module has no
-# second SEVERITY to declare it with.
-_WIKI_TABLES = [
-    ("wikipedia-structural",         "wikipedia-structural-patterns.py",      "_STRUCTURAL_PATTERNS",  None, True),
-    ("wikipedia-puffery",            "wikipedia-puffery-and-exaggeration.py", "_PUFFERY_PATTERNS",     None, True),
-    ("wikipedia-promotional",        "wikipedia-promotional-language.py",     "_PROMOTIONAL_PATTERNS", None, True),
-    # The artifact/placeholder tables are matched CASE-SENSITIVELY, exactly as their own
-    # check() does: `[A-Z][a-zA-Z ']+` is a capitalised-placeholder rule, and folding case
-    # would turn it into a match on any bracketed phrase.
-    ("wikipedia-chatgpt-artifacts",  "wikipedia-chatgpt-artifacts.py",        "_ARTIFACT_PATTERNS",    None, False),
-    ("wikipedia-template-artifacts", "wikipedia-template-artifacts.py",       "_PLACEHOLDER_PATTERNS", None, False),
-    ("wikipedia-communication",      "wikipedia-communication-patterns.py",   "_HARD_PATTERNS",        None, True),
-    ("wikipedia-communication",      "wikipedia-communication-patterns.py",   "_SOFT_PATTERNS",        SOFT, True),
-]
+# DISCOVERED, never named: every module-level list of (regex, label) pairs in a .py under
+# checks/writing/constraints/ and, for --style S, checks/writing/S/constraints/, in each plugin root on
+# WORKFLOW_CHECKS_PATH (os.pathsep-separated; default: this plugin). A table dropped there is audited
+# with no edit here. Modules are READ with ast, never executed: the directory also holds constraint CLIs.
+#   system    a label `ai-tic·sevN·…` is the scored-tic system, its severity in the label (sev>=4 is hard:
+#             every entry cleared the ~0-human-rate corpus gate); else the module's AUDIT_SYSTEM; else the
+#             directory's style guide, `writing-general` or `writing-<S>`
+#   severity  a table named `_SOFT_*` is soft (wikipedia-communication declares `hard` and carries one);
+#             else the module's SEVERITY (hard|soft, default soft)
+#   case      folded unless the module sets AUDIT_IGNORE_CASE = False (the artifact/placeholder tables,
+#             whose `[A-Z][a-zA-Z ']+` would otherwise match any bracketed phrase)
+#   order     load order names a span tied tables match: scored tics, then declared systems by the module's
+#             AUDIT_ORDER (an unordered one after every ordered one, so a dropped table takes no span from a
+#             system already reporting it), then the style guides
+# The style guides stay a DISTINCT system on purpose: style-guide advice (Strunk/Volokh/McCloskey) is a
+# different axis, and folding it into the AI-tell families would misreport a house-style preference as an
+# AI tell.
+_SCORED_LABEL = re.compile(r"^ai-tic·sev(\d)·")
+_STYLE_NAME = re.compile(r"^[A-Za-z0-9][\w-]*$")
 
-# Domain style guides. Kept a DISTINCT system from the AI-tell tables on purpose: they are
-# style-guide advice on a different axis (Strunk/Volokh/McCloskey), already domain-gated, and
-# folding them into the AI-tell families would misreport a house-style preference as an AI tell.
-_DOMAIN_TABLES = [
-    ("writing-general", "writing", "strunk-elements-of-style.py",     "_HARD_VIOLATIONS"),
-    ("writing-general", "writing", "strunk-elements-of-style.py",     "_SOFT_VIOLATIONS"),
-    ("writing-econ",    "writing",    "mccloskey-economical-writing.py", "_VAGUE_NOUNS"),
-    ("writing-econ",    "writing",    "mccloskey-economical-writing.py", "_PRETENTIOUS_VERBS"),
-    ("writing-econ",    "writing",    "mccloskey-economical-writing.py", "_ERSATZ_ECON"),
-    ("writing-econ",    "writing",    "mccloskey-economical-writing.py", "_STRUCTURAL"),
-    ("writing-legal",   "writing",   "volokh-distilled.py",             "_LEGALESE"),
-    ("writing-legal",   "writing",   "volokh-distilled.py",             "_LONG_SYNONYMS"),
-    ("writing-legal",   "writing",   "volokh-distilled.py",             "_NOMINALIZATION"),
-    ("writing-legal",   "writing",   "volokh-distilled.py",             "_HARSH_WORDS"),
-    ("writing-legal",   "writing",   "volokh-distilled.py",             "_EMPTY_QUALIFIERS"),
-    ("writing-legal",   "writing",   "volokh-distilled.py",             "_DOUBLETS"),
-    ("writing-legal",   "writing",   "volokh-distilled.py",             "_INTRO_CLAUSES"),
-]
+
+def _check_roots() -> list[Path]:
+    env = os.environ.get("WORKFLOW_CHECKS_PATH")
+    roots = [Path(p).expanduser() for p in env.split(os.pathsep) if p] if env else [WORKFLOWS_ROOT]
+    return [r for r in roots if (r / "checks").is_dir()]
+
+
+def table_modules(style: str | None = None) -> list[tuple[str, Path]]:
+    """(register, module) for every constraint module tables are read from: writing's, then the style's.
+    A module at one checks/-relative path in two roots is read once, from the first."""
+    s = (style or "general").lower()
+    levels = ["writing"] + ([f"writing/{s}"] if s != "general" and _STYLE_NAME.match(s)
+                            and s not in ("constraints", "rules") else [])
+    out, seen = [], set()
+    for level in levels:
+        for root in _check_roots():
+            for f in sorted((root / "checks" / level / "constraints").glob("*.py")):
+                if f.name.startswith(("_", ".")) or f"{level}/{f.name}" in seen:
+                    continue
+                seen.add(f"{level}/{f.name}")
+                out.append((level.rsplit("/", 1)[-1], f))
+    return out
+
+
+def _module_tables(path: Path) -> tuple[dict, list[tuple[str, list]]]:
+    """(the module's other literal constants, its (regex, label) tables in source order), read, not run."""
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8"), str(path))
+    except (OSError, SyntaxError, ValueError) as e:
+        print(f"WARN: failed to read {path}: {e}", file=sys.stderr)
+        return {}, []
+    consts, tables = {}, []
+    for node in tree.body:
+        if isinstance(node, ast.Assign) and len(node.targets) == 1:
+            target, value = node.targets[0], node.value
+        elif isinstance(node, ast.AnnAssign) and node.value is not None:
+            target, value = node.target, node.value
+        else:
+            continue
+        if not isinstance(target, ast.Name):
+            continue
+        try:
+            v = ast.literal_eval(value)
+        except (ValueError, TypeError, SyntaxError, MemoryError, RecursionError):
+            continue
+        if isinstance(v, (list, tuple)) and v and all(
+                isinstance(t, tuple) and len(t) == 2 and all(isinstance(x, str) for x in t) for t in v):
+            tables.append((target.id, list(v)))
+        else:
+            consts[target.id] = v
+    return consts, tables
+
 
 # ── profiles ─────────────────────────────────────────────────────────────────
 # A profile selects WHICH systems run. `full` is the default and runs every system; `deck` is the
@@ -180,81 +211,41 @@ def label_enabled(label: str, profile: str = "full") -> bool:
     return not label.startswith(_DECK_OFF_LABELS)
 
 
-_MODULE_CACHE: dict[str, object] = {}
-
-
-def _load_module(path: Path):
-    key = str(path)
-    if key not in _MODULE_CACHE:
-        spec = importlib.util.spec_from_file_location(
-            "prose_audit_" + re.sub(r"\W", "_", path.stem), path)
-        mod = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(mod)
-        _MODULE_CACHE[key] = mod
-    return _MODULE_CACHE[key]
-
-
-def _compile_table(path: Path, attr: str, ignore_case: bool):
-    """Yield (compiled, label) for one (regex, label) table. A bad regex warns and is skipped
-    rather than killing the audit — a single broken pattern must not blind every other one."""
-    try:
-        mod = _load_module(path)
-    except Exception as e:  # pragma: no cover - defensive
-        print(f"WARN: failed to load {path}: {e}", file=sys.stderr)
-        return
-    for pattern, label in (getattr(mod, attr, None) or []):
-        flags = re.MULTILINE | (re.IGNORECASE if ignore_case else 0)
-        try:
-            yield re.compile(pattern, flags), label
-        except re.error as e:
-            print(f"WARN: bad regex in {path.name}:{attr} — {e}", file=sys.stderr)
-
-
 def load_pattern_systems(style: str | None = None) -> list[tuple[str, str, str, re.Pattern]]:
-    """(system, label, severity, compiled) for every regex table in scope.
+    """(system, label, severity, compiled) for every discovered table row in scope, in load order (above).
 
-    `style` gates the domain guides the way check-all already gates them:
-    writing-general always, writing-legal for legal, writing-econ for econ.
+    `style` selects the register's directory on top of writing's: legal adds checks/writing/legal/,
+    econ adds checks/writing/econ/, anything else adds nothing. A bad regex warns and is skipped rather
+    than killing the audit -- a single broken pattern must not blind every other one.
     """
-    out: list[tuple[str, str, str, re.Pattern]] = []
-
-    # A — scored AI-tics. Severity rides in the label (`ai-tic·sevN·id`); sev>=4 is `hard`
-    # because every entry cleared the ~0-human-rate corpus gate, which is the same
-    # "no false positives" property the provenance-leak tables have.
-    for rx, label in _compile_table(SCORED_TICS, "_TIC_PATTERNS", True):
-        m = re.search(r"sev(\d)", label)
-        sev = int(m.group(1)) if m else 1
-        out.append(("scored-tic", label, HARD if sev >= 4 else SOFT, rx))
-
-    # B — wikipedia tables (severity declared by the module).
-    for system, filename, attr, forced, ignore_case in _WIKI_TABLES:
-        path = AAP_REFS / filename
-        if not path.exists():
-            continue
-        severity = forced
-        if severity is None:
-            try:
-                severity = str(getattr(_load_module(path), "SEVERITY", SOFT)).lower()
-            except Exception:
-                severity = SOFT
-            severity = HARD if severity == HARD else SOFT
-        for rx, label in _compile_table(path, attr, ignore_case):
-            out.append((system, f"{system}: {label}", severity, rx))
-
-    # D — domain style guides.
-    domain = (style or "general").lower()
-    for system, skill, filename, attr in _DOMAIN_TABLES:
-        if system == "writing-legal" and domain != "legal":
-            continue
-        if system == "writing-econ" and domain != "econ":
-            continue
-        path = SKILLS_DIR / skill / "constraints" / filename
-        if not path.exists():
-            continue
-        for rx, label in _compile_table(path, attr, True):
-            out.append((system, f"{system}: {label}", SOFT, rx))
-
-    return out
+    tics: list[tuple[str, str, str, re.Pattern]] = []
+    declared: list[tuple[float, tuple[str, str, str, re.Pattern]]] = []
+    guides: list[tuple[str, str, str, re.Pattern]] = []
+    for register, path in table_modules(style):
+        consts, tables = _module_tables(path)
+        named = consts.get("AUDIT_SYSTEM") if isinstance(consts.get("AUDIT_SYSTEM"), str) else None
+        order = consts.get("AUDIT_ORDER")
+        rank = order if isinstance(order, int) and not isinstance(order, bool) else float("inf")
+        system = named or ("writing-general" if register == "writing" else f"writing-{register}")
+        module_sev = HARD if str(consts.get("SEVERITY", SOFT)).lower() == HARD else SOFT
+        flags = re.MULTILINE | (0 if consts.get("AUDIT_IGNORE_CASE", True) is False else re.IGNORECASE)
+        for attr, rows in tables:
+            for pattern, label in rows:
+                try:
+                    rx = re.compile(pattern, flags)
+                except re.error as e:
+                    print(f"WARN: bad regex in {path.name}:{attr} — {e}", file=sys.stderr)
+                    continue
+                tic = _SCORED_LABEL.match(label)
+                row = (system, f"{system}: {label}", SOFT if attr.startswith("_SOFT") else module_sev, rx)
+                if tic:
+                    tics.append(("scored-tic", label, HARD if int(tic.group(1)) >= 4 else SOFT, rx))
+                elif named:
+                    declared.append((rank, row))
+                else:
+                    guides.append(row)
+    declared.sort(key=lambda r: r[0])  # stable: discovery order within a rank
+    return tics + [row for _, row in declared] + guides
 
 
 # ── diction (tiered fancy→plain) ─────────────────────────────────────────────
@@ -652,7 +643,7 @@ _EMOJI_RX = re.compile(
 # heading is not that.
 #
 # TWO IMPLEMENTATIONS IN TWO LANGUAGES, deliberately, and pinned. The hook needs the predicate
-# BEFORE it spawns anything (it also skips check-all and the plan lookup), so it cannot ask this
+# BEFORE it spawns anything (it also skips the structural constraints for a deck), so it cannot ask this
 # script. tests/writing-prose-check.test.mjs asserts the two agree over a shared fixture set —
 # which is the honest way to carry a duplicated predicate, as against hoping it stays in sync.
 _DECK_MARKERS = ("touying", "polylux", "#slide(")
@@ -1289,12 +1280,9 @@ def audit_document(path: Path, style: str | None = None, mask: bool = True,
 # LOADERS are shared with the audit above; only the assembly differs.
 # ═════════════════════════════════════════════════════════════════════════════
 def _load_tics():
-    """[(compiled, label, sev)] from the in-plugin scored table."""
-    out = []
-    for rx, label in _compile_table(SCORED_TICS, "_TIC_PATTERNS", True):
-        m = re.search(r"sev(\d)", label)
-        out.append((rx, label, int(m.group(1)) if m else 1))
-    return out
+    """[(compiled, label, sev)] for the scored-tic rows the table discovery finds."""
+    return [(rx, label, int(_SCORED_LABEL.match(label).group(1)))
+            for system, label, _, rx in load_pattern_systems() if system == "scored-tic"]
 
 
 def _diction_rate_report(text: str, diction: dict, words: int, tiers_on) -> dict:

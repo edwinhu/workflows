@@ -239,7 +239,7 @@ The invocation that passes is **the one you gave, unchanged** — no new flag is
 because the widows leg is on by default:
 
 ```bash
-cd /home/eh/areas/secreg && bash /home/eh/projects/workflows/skills/elide-case/scripts/check.sh \
+cd /home/eh/areas/secreg && bash ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts/check.sh \
   --addendum addenda/02-addendum.typ --docs docs --plan .claude/plans/addendum-02.md
 ```
 

@@ -398,15 +398,16 @@ describe('a luna answer is held to a bar of at least 0.95', () => {
 // ---------------------------------------------------------------------------- the callers
 
 /** A one-rule rules dir: the default evidence.py runs it (rule-check.test.ts's X-SPAN pattern). */
+/** A private layout holding one rule, as workflow `x`; returns the plugin root for WORKFLOW_CHECKS_PATH. */
 function oneRule(dir: string): string {
-  const rules = join(dir, 'rules')
+  const rules = join(dir, 'plug', 'checks', 'x', 'rules')
   mkdirSync(rules, { recursive: true })
   writeFileSync(join(rules, 'X-LUNA.py'), [
     "PROPOSITION = 'Every claim cites a source.'",
     "CRITERIA = {'VIOLATED': 'A claim has no source.', 'SATISFIED': 'Every claim has a source.'}",
     'def evidence(files, plan_lines=None):',
     "    return {'items': [{'file': 'a.md', 'line': 1}]}", ''].join('\n'))
-  return rules
+  return join(dir, 'plug')
 }
 
 const RULE_CHECK = join(ROOT, 'skills/work/scripts/rule-check.ts')
@@ -421,18 +422,18 @@ const verdictsOf = (out: string): any => {
 describe('callers apply decisionThreshold', () => {
   test('rule-check: P(VIOLATED)=0.9 fails the rule when Jev says it, not when luna does', async () => {
     const dir = mkTmp('fb-rc-')
-    const rules = oneRule(dir)
+    const plug = oneRule(dir)
     const jev = jevStub(jevStatus(529))
     const oa = openaiStub(0.9)
     try {
-      const env = fbEnv(dir, jev.url, oa.url)
-      const viaLuna = await run(['bun', RULE_CHECK, '--files', RULE_CHECK, '--rules', rules], env)
+      const env = fbEnv(dir, jev.url, oa.url, { WORKFLOW_CHECKS_PATH: plug })
+      const viaLuna = await run(['bun', RULE_CHECK, '--files', RULE_CHECK, '--workflow', 'x'], env)
       expect(oa.seen.length).toBe(1)
       expect(verdictsOf(viaLuna.out).verdicts).toEqual([expect.objectContaining({ rule: 'X-LUNA', p: 0.9, verdict: 'MET' })])
       expect(viaLuna.code).toBe(0)
 
       jev.set(jevAnswers(0.9))
-      const viaJev = await run(['bun', RULE_CHECK, '--files', RULE_CHECK, '--rules', rules], env)
+      const viaJev = await run(['bun', RULE_CHECK, '--files', RULE_CHECK, '--workflow', 'x'], env)
       expect(verdictsOf(viaJev.out).verdicts).toEqual([expect.objectContaining({ rule: 'X-LUNA', p: 0.9, verdict: 'VIOLATED' })])
       expect(viaJev.code).toBe(2)
     } finally {
@@ -477,19 +478,19 @@ describe('callers apply decisionThreshold', () => {
   // faked). Its bun-runnable path is the real `rule-check.ts --batch` it spawns, fed to contextLines.
   test('jev/mod: a luna P(VIOLATED)=0.9 adds no context line; the same 0.9 from Jev adds one', async () => {
     const dir = mkTmp('fb-mod-')
-    const rules = oneRule(dir)
+    const plug = oneRule(dir)
     const jev = jevStub(jevStatus(529))
     const oa = openaiStub(0.9)
     const lines = (out: string) => jevRules.contextLines(verdictsOf(out).verdicts ?? [], 'a.md', [[1, 1]])
     try {
-      const env = fbEnv(dir, jev.url, oa.url)
-      const viaLuna = await run(['bun', RULE_CHECK, '--batch', '--rules', rules, '--files', RULE_CHECK], env)
+      const env = fbEnv(dir, jev.url, oa.url, { WORKFLOW_CHECKS_PATH: plug })
+      const viaLuna = await run(['bun', RULE_CHECK, '--batch', '--workflow', 'x', '--files', RULE_CHECK], env)
       expect(oa.seen.length).toBe(1)
       expect(verdictsOf(viaLuna.out).verdicts.map((v: any) => v.rule)).toEqual(['X-LUNA'])
       expect(lines(viaLuna.out)).toEqual([])
 
       jev.set(jevAnswers(0.9))
-      const viaJev = await run(['bun', RULE_CHECK, '--batch', '--rules', rules, '--files', RULE_CHECK], env)
+      const viaJev = await run(['bun', RULE_CHECK, '--batch', '--workflow', 'x', '--files', RULE_CHECK], env)
       expect(lines(viaJev.out).length).toBe(1)
     } finally {
       jev.server.stop(true)

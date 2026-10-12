@@ -1,0 +1,726 @@
+#!/usr/bin/env python3
+"""Compute the mechanical DS data-quality checks over an approved plan's declared outputs.
+
+WHY THIS EXISTS
+    The thirteen checks in ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-checks.md had NO
+    runner anywhere in the plugin. Every one of them was
+    evaluated by the model reading the analysis code and
+    reporting what it believed it saw -- and ENUM, the check whose entire job is "every applicable
+    check ran or is N/A with a reason", was therefore the model certifying its own enumeration. A
+    check that is simply absent from the output looks exactly like one that ran clean, so an
+    analysis could pass verification having computed nothing at all. Worse, the /ds VERIFY step
+    lived INSIDE ds-implement, so the agent that wrote the pipeline also graded it.
+
+    This runner removes the self-certification from the checks a machine can settle. It reads the
+    approved plan's `## Data Outputs` table -- the one deterministic table /ds requires -- opens
+    each declared artifact, and emits a line per check per output. Every N/A carries a reason THIS
+    SCRIPT generated; the model never supplies one. ENUM stops being a claim and becomes an
+    assertion the script makes about its own output.
+
+WHAT IT DELIBERATELY DOES NOT DO
+    M1, UNI, DEN, DEL and R1 are judgements, not computations. No script can know where a universe
+    predicate was supposed to be applied, or whether a reported rate named its denominator in prose.
+    They are enumerated in the output with the literal status MODEL-EVALUATED -- never PASS -- so a
+    reader cannot mistake a judgement for a computation. A runner that printed PASS for M1 would
+    recreate, one layer down, exactly the defect it was written to remove.
+
+NOT A HOOK
+    This is a ds constraint on the one CLI contract (checks/ds/constraints/_contract.py), run by
+    bin/workflow-check. ${CLAUDE_PLUGIN_ROOT}/scripts/checks/hook_output_schema.py governs hook
+    payloads and does not apply here. With --plan: stdout line 1 is the count line, each COMPUTED FAIL
+    follows as `<output>:1: <CHECK> detail`, then the JSON report; exit 1 if any COMPUTED check FAILs.
+    With no --plan it is out of scope and says so; --files is accepted and does not widen the scope,
+    which is the plan's Data Outputs. --output and --declarations print JSON alone.
+
+USAGE
+    ds-dq.py --project-dir DIR --plan .planning/<plan>.md [--files ...]
+    ds-dq.py --declarations --plan <plan.md | -> [--project-dir DIR]
+    ds-dq.py --output data/panel.parquet --grain "firm-year" --keys "gvkey,fyear" \
+             --window "datadate: 2005-01-01..2025-12-31"
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import shutil
+import sys
+from pathlib import Path
+
+# The matrix in ${CLAUDE_PLUGIN_ROOT}/skills/ds/references/ds-checks.md, in matrix order. ENUM
+# asserts that a line was emitted for every ID here -- that is the whole point of computing ENUM
+# rather than claiming it.
+MATRIX = ["DQ1", "DQ2", "DQ3", "DQ4", "DQ5", "DQ6", "COV", "R1", "M1", "UNI", "DEN", "DEL", "ENUM"]
+
+# Checks no script can settle. Reported as MODEL-EVALUATED, never PASS/FAIL/N/A.
+MODEL_EVALUATED = {
+    "R1": "Fresh re-run reproducibility: requires executing the analysis twice, which this runner does not do.",
+    "M1": "Approved-plan criterion compliance: requires reading the plan's criteria against the outputs.",
+    "UNI": "Universe agreement: requires knowing where the universe predicate was meant to be applied.",
+    "DEN": "Every reported rate states its denominator: a property of the reported prose, not the artifact.",
+    "DEL": "Coverage improved because the base shrank: requires the before/after pair and its bases.",
+}
+
+HIGH_NULL_THRESHOLD = 0.5
+NEAR_UNIQUE_RATIO = 0.9
+
+
+def result(status: str, detail: str, evidence: str = "") -> dict:
+    """One check line. `reason_source` records WHO wrote `detail` -- always this script."""
+    return {
+        "status": status,
+        "detail": detail,
+        "evidence": evidence,
+        "reason_source": "runner",
+    }
+
+
+def model_line(check: str) -> dict:
+    return {
+        "status": "MODEL-EVALUATED",
+        "detail": MODEL_EVALUATED[check],
+        "evidence": "",
+        "reason_source": "model-required",
+    }
+
+
+# --------------------------------------------------------------------------------------------
+# Plan parsing
+# --------------------------------------------------------------------------------------------
+
+REQUIRED_HEADERS = ["path", "grain", "key columns", "required window"]
+
+
+def _split_row(line: str) -> list[str]:
+    cells = line.strip().strip("|").split("|")
+    return [c.strip() for c in cells]
+
+
+def parse_data_outputs(plan_text: str) -> list[dict]:
+    """Parse the `## Data Outputs` table. Raises ValueError on a malformed or absent table."""
+    lines = plan_text.splitlines()
+    start = None
+    for i, line in enumerate(lines):
+        if re.match(r"^\s*##\s+Data Outputs\s*$", line):
+            start = i + 1
+            break
+    if start is None:
+        raise ValueError("plan has no `## Data Outputs` section")
+
+    table: list[str] = []
+    for line in lines[start:]:
+        if re.match(r"^\s*#{1,6}\s", line):
+            break
+        if line.strip().startswith("|"):
+            table.append(line)
+        elif table:
+            break
+
+    if len(table) < 2:
+        raise ValueError("`## Data Outputs` contains no markdown table")
+
+    headers = [h.lower() for h in _split_row(table[0])]
+    if headers != REQUIRED_HEADERS:
+        raise ValueError(
+            "`## Data Outputs` must have exactly the columns "
+            f"{' | '.join(h.title() for h in REQUIRED_HEADERS)}; found {' | '.join(headers)}"
+        )
+
+    rows = []
+    for line in table[2:]:
+        cells = _split_row(line)
+        if len(cells) != len(REQUIRED_HEADERS):
+            raise ValueError(f"`## Data Outputs` row has {len(cells)} cells, expected 4: {line.strip()}")
+        row = dict(zip(REQUIRED_HEADERS, cells))
+        if not row["path"]:
+            raise ValueError(f"`## Data Outputs` row has an empty Path: {line.strip()}")
+        # The report is keyed by Path. Two rows for one Path would overwrite each other, and the
+        # SURVIVOR decides the exit code — so a strict declaration that FAILs can disappear behind
+        # a later `n/a` one and the gate reads 0. Reject the ambiguity instead of picking a winner.
+        if any(existing["path"] == row["path"] for existing in rows):
+            raise ValueError(
+                f"`## Data Outputs` declares `{row['path']}` more than once. One row per artifact: "
+                f"two rows for one path silently collapse to whichever is parsed last."
+            )
+        rows.append(row)
+    if not rows:
+        raise ValueError("`## Data Outputs` table has a header but no rows")
+    return rows
+
+
+def parse_keys(spec: str) -> tuple[list[str], list[str]]:
+    """`a, b` -> pk only. `pk: a, b; event: c, d` -> pk and business/event key (DQ3c)."""
+    spec = (spec or "").strip().strip("`")
+    if not spec or spec.lower() in {"n/a", "na", "none"}:
+        return [], []
+    if ":" not in spec:
+        return [c.strip().strip("`") for c in spec.split(",") if c.strip()], []
+    pk: list[str] = []
+    event: list[str] = []
+    for part in spec.split(";"):
+        if ":" not in part:
+            continue
+        label, cols = part.split(":", 1)
+        parsed = [c.strip().strip("`") for c in cols.split(",") if c.strip()]
+        if label.strip().lower() in {"pk", "key", "primary key"}:
+            pk = parsed
+        elif label.strip().lower() in {"event", "event key", "business key"}:
+            event = parsed
+    return pk, event
+
+
+def parse_annotations(spec: str) -> dict[str, list[str]]:
+    """Columns the artifact's own shape exempts from a generic heuristic.
+
+    Same `label: a, b` grammar as `parse_keys`, read from the same Key Columns cell:
+
+      `sparse:`   null for most rows BY DESIGN — a diagnostic column populated only
+                  on the rows that need it. DQ2 flags any column over 50% null
+                  because that usually means a broken join or a failed populate; on
+                  an `error` column that only failed rows carry, a fully-populated
+                  column would be the alarming outcome. DQ2 cannot tell those apart,
+                  so the plan says which it is and the reviewer sees the claim.
+      `constant:` one repeated non-null value BY DESIGN — a per-paper file whose `paper`
+                  or `window` column is the same on every row. DQ1 flags any column with
+                  one distinct value; this exempts the named column only while it holds
+                  exactly one non-null value, so an EMPTY (all-null) column still FAILS
+                  even when declared. Aliases: `constant by design`, `const`.
+      `freetext:` a name, title or path. DQ5 flags near-unique non-key string columns
+                  as "likely IDs, not categories"; a firm name is near-unique because
+                  firms have distinct names, not because it is a mis-declared key.
+
+    Declaring a column here is a claim in the approved plan, hashed with it, and it
+    narrows exactly one check on exactly one column — unlike moving the column into
+    `pk`/`event`, which would silence DQ5 by making a false statement about the key.
+    """
+    out: dict[str, list[str]] = {"sparse": [], "freetext": [], "constant": []}
+    spec = (spec or "").strip().strip("`")
+    if not spec or ":" not in spec:
+        return out
+    for part in spec.split(";"):
+        if ":" not in part:
+            continue
+        label, cols = part.split(":", 1)
+        key = label.strip().lower()
+        if key in {"sparse", "sparse by design"}:
+            out["sparse"] = [c.strip().strip("`") for c in cols.split(",") if c.strip()]
+        elif key in {"constant", "constant by design", "const"}:
+            out["constant"] = [c.strip().strip("`") for c in cols.split(",") if c.strip()]
+        elif key in {"freetext", "free text", "names"}:
+            out["freetext"] = [c.strip().strip("`") for c in cols.split(",") if c.strip()]
+    return out
+
+
+DATE_RE = r"\d{4}-\d{2}-\d{2}"
+
+
+def parse_window(spec: str) -> tuple[str | None, str | None, str | None]:
+    """`n/a` -> (None, None, None). `[col: ]YYYY-MM-DD..YYYY-MM-DD` -> (col, start, end)."""
+    spec = (spec or "").strip().strip("`")
+    if not spec or spec.lower() in {"n/a", "na", "none"}:
+        return None, None, None
+    col = None
+    body = spec
+    if ":" in spec:
+        col, body = spec.split(":", 1)
+        col, body = col.strip().strip("`"), body.strip()
+    match = re.match(rf"^({DATE_RE})\s*\.\.\s*({DATE_RE})$", body)
+    if not match:
+        raise ValueError(
+            f"Required Window `{spec}` is neither `n/a` nor `[column: ]YYYY-MM-DD..YYYY-MM-DD`"
+        )
+    return col, match.group(1), match.group(2)
+
+
+# --------------------------------------------------------------------------------------------
+# Checks
+# --------------------------------------------------------------------------------------------
+
+
+def load_frame(path: Path):
+    import polars as pl
+
+    suffix = path.suffix.lower()
+    if suffix == ".parquet":
+        return pl.read_parquet(path)
+    if suffix in {".csv", ".tsv", ".txt"}:
+        return pl.read_csv(path, separator="\t" if suffix == ".tsv" else ",", try_parse_dates=True)
+    raise ValueError(f"unsupported extension `{suffix}` (expected .parquet, .csv, or .tsv)")
+
+
+def check_dq1(df, constant: list[str] | None = None) -> dict:
+    constant = constant or []
+    exempt = [c for c in constant if c in df.columns and df[c].n_unique() == 1 and df[c].null_count() == 0]
+    flagged = [c for c in df.columns if df[c].n_unique() <= 1 and c not in exempt]
+    if flagged:
+        return result(
+            "FAIL",
+            f"{len(flagged)} column(s) carry zero information (constant or empty).",
+            f"constant columns: {', '.join(flagged)}",
+        )
+    note = f"; {len(exempt)} declared constant-by-design and not checked: {', '.join(exempt)}" if exempt else ""
+    return result("PASS", "No constant or empty columns.", f"{df.width} columns checked{note}")
+
+
+def check_dq2(df, sparse: list[str] | None = None) -> dict:
+    height = df.height
+    sparse = sparse or []
+    high = [(c, df[c].null_count() / height) for c in df.columns
+            if c not in sparse and df[c].null_count() / height > HIGH_NULL_THRESHOLD]
+    if high:
+        return result(
+            "FAIL",
+            f"{len(high)} column(s) exceed the >{HIGH_NULL_THRESHOLD:.0%} null threshold.",
+            "; ".join(f"{c}={pct:.1%} null" for c, pct in high),
+        )
+    note = f"; {len(sparse)} declared sparse-by-design and not checked: {', '.join(sparse)}" if sparse else ""
+    return result("PASS", f"No column exceeds the >{HIGH_NULL_THRESHOLD:.0%} null threshold.",
+                  f"{df.width} columns checked{note}")
+
+
+def check_dq3(df, pk: list[str], event: list[str]) -> dict[str, dict]:
+    """Three levels. DQ3 is NOT a bare all-columns duplicate check -- see ds-checks.md DQ3."""
+    lines: dict[str, dict] = {}
+
+    missing_pk = [c for c in pk if c not in df.columns]
+    if not pk:
+        lines["DQ3a"] = result(
+            "N/A",
+            "No primary key declared: the plan's Key Columns cell is empty or `n/a`, so PK uniqueness cannot be computed.",
+        )
+    elif missing_pk:
+        lines["DQ3a"] = result(
+            "FAIL",
+            f"Declared PK column(s) absent from the artifact: {', '.join(missing_pk)}.",
+            f"artifact columns: {', '.join(df.columns)}",
+        )
+    else:
+        dupes = int(df.select(pk).is_duplicated().sum())
+        lines["DQ3a"] = (
+            result("FAIL", f"{dupes} row(s) violate the declared PK ({', '.join(pk)}) — upstream join fan-out?",
+                   f"pk={pk} duplicated_rows={dupes} height={df.height}")
+            if dupes
+            else result("PASS", f"Declared PK ({', '.join(pk)}) is unique.", f"height={df.height}")
+        )
+
+    exact = int(df.is_duplicated().sum())
+    lines["DQ3b"] = (
+        result("FAIL", f"{exact} byte-identical duplicate row(s).", f"height={df.height} exact_dupe_rows={exact}")
+        if exact
+        else result("PASS", "No byte-identical duplicate rows.", f"height={df.height}")
+    )
+
+    missing_event = [c for c in event if c not in df.columns]
+    if not event:
+        lines["DQ3c"] = result(
+            "N/A",
+            "No business/event key declared: Key Columns carries no `event:` clause, so amendment/restatement "
+            "collisions cannot be computed. Declare it as `pk: a, b; event: c, d`.",
+        )
+    elif missing_event:
+        lines["DQ3c"] = result(
+            "FAIL",
+            f"Declared event key column(s) absent from the artifact: {', '.join(missing_event)}.",
+            f"artifact columns: {', '.join(df.columns)}",
+        )
+    else:
+        collisions = df.group_by(event).len()
+        n_collide = int(collisions.filter(collisions["len"] > 1).height)
+        lines["DQ3c"] = (
+            result("FAIL", f"{n_collide} event key(s) appear more than once — check for amendments/restatements; "
+                           "resolve by supersession, not blind drop_duplicates.",
+                   f"event={event} colliding_keys={n_collide}")
+            if n_collide
+            else result("PASS", f"No business/event key collisions on ({', '.join(event)}).", f"height={df.height}")
+        )
+
+    failed = [k for k in ("DQ3a", "DQ3b", "DQ3c") if lines[k]["status"] == "FAIL"]
+    if failed:
+        lines["DQ3"] = result(
+            "FAIL",
+            f"Grain integrity failed at {', '.join(failed)}.",
+            " | ".join(f"{k}: {lines[k]['detail']}" for k in failed),
+        )
+    elif all(lines[k]["status"] == "N/A" for k in ("DQ3a", "DQ3c")) and lines["DQ3b"]["status"] == "PASS":
+        lines["DQ3"] = result(
+            "N/A",
+            "Only the byte-identical level (DQ3b) was computable: neither a primary key nor an event key was declared.",
+            f"DQ3b: {lines['DQ3b']['detail']}",
+        )
+    else:
+        lines["DQ3"] = result(
+            "PASS",
+            "Grain integrity holds at every computable level.",
+            " | ".join(f"{k}={lines[k]['status']}" for k in ("DQ3a", "DQ3b", "DQ3c")),
+        )
+    return lines
+
+
+def check_dq4(df) -> dict:
+    return result(
+        "N/A",
+        "Row-count traceability needs the task-local input -> transform -> output chain, which is not "
+        "derivable from the finished artifact alone; the runner reports the observed count only.",
+        f"observed rows={df.height} columns={df.width}",
+    )
+
+
+def check_dq5(df, pk: list[str], event: list[str], freetext: list[str] | None = None) -> dict:
+    import polars as pl
+
+    keys = set(pk) | set(event) | set(freetext or [])
+    categorical = [
+        c for c in df.columns
+        if df.schema[c] in (pl.String, pl.Categorical, pl.Enum) and c not in keys
+    ]
+    if not categorical:
+        return result(
+            "N/A",
+            "No non-key string/categorical column to check for suspicious cardinality.",
+            f"declared key columns excluded: {', '.join(sorted(keys)) or 'none'}",
+        )
+    suspicious = [(c, df[c].n_unique()) for c in categorical if df[c].n_unique() > NEAR_UNIQUE_RATIO * df.height]
+    if suspicious:
+        return result(
+            "FAIL",
+            f"{len(suspicious)} non-key categorical column(s) have near-unique cardinality — likely IDs, not categories.",
+            "; ".join(f"{c}={n}/{df.height} unique" for c, n in suspicious),
+        )
+    return result("PASS", "No non-key categorical column has near-unique cardinality.",
+                  f"{len(categorical)} categorical column(s) checked")
+
+
+def check_dq6() -> dict:
+    return result(
+        "N/A",
+        "No before/after shape declared: the runner observes only the finished artifact, so an "
+        "output-first before/after comparison has no prior state to compare against.",
+    )
+
+
+def check_cov(df, window_spec: str) -> dict:
+    import polars as pl
+
+    try:
+        col, start, end = parse_window(window_spec)
+    except ValueError as exc:
+        return result("FAIL", str(exc))
+    if start is None:
+        return result("N/A", "Required Window is `n/a`: this output declares no sample period to cover.")
+
+    if col is None:
+        candidates = [c for c in df.columns if df.schema[c] in (pl.Date, pl.Datetime)]
+        if len(candidates) != 1:
+            return result(
+                "FAIL",
+                f"Required Window {start}..{end} declared but the date column is ambiguous: "
+                f"{len(candidates)} date/datetime column(s) found. Declare it as `column: {start}..{end}`.",
+                f"candidates: {', '.join(candidates) or 'none'}",
+            )
+        col = candidates[0]
+    if col not in df.columns:
+        return result("FAIL", f"Declared window column `{col}` is absent from the artifact.",
+                      f"artifact columns: {', '.join(df.columns)}")
+
+    series = df[col]
+    if series.dtype not in (pl.Date, pl.Datetime):
+        try:
+            series = series.cast(pl.Date, strict=True)
+        except Exception:  # noqa: BLE001 - any cast failure is a FAIL, never a crash of the gate
+            return result("FAIL", f"Window column `{col}` is {series.dtype} and could not be cast to a date.")
+
+    lo, hi = series.min(), series.max()
+    if lo is None or hi is None:
+        return result("FAIL", f"Window column `{col}` is entirely null; the declared span has ZERO data.")
+    lo_s, hi_s = str(lo)[:10], str(hi)[:10]
+    if lo_s > start or hi_s < end:
+        return result(
+            "FAIL",
+            f"Covers {lo_s}..{hi_s} but is required to cover {start}..{end}. The uncovered span has ZERO data.",
+            f"column={col} observed={lo_s}..{hi_s} required={start}..{end}",
+        )
+    return result("PASS", f"Covers {lo_s}..{hi_s}, spanning the required {start}..{end}.",
+                  f"column={col} height={df.height}")
+
+
+def check_enum(checks: dict) -> dict:
+    """Computed, not claimed: assert a line exists for every ID in the matrix."""
+    missing = [c for c in MATRIX if c != "ENUM" and c not in checks]
+    if missing:
+        return result("FAIL", f"No line emitted for {len(missing)} matrix check(s): {', '.join(missing)}.")
+    return result(
+        "PASS",
+        f"A line was emitted for all {len(MATRIX)} matrix checks.",
+        " ".join(f"{c}={checks[c]['status']}" for c in MATRIX if c != "ENUM"),
+    )
+
+
+def check_output(path: Path, keys_spec: str, window_spec: str) -> dict:
+    checks: dict[str, dict] = {}
+
+    if not path.exists():
+        for check in MATRIX:
+            if check in MODEL_EVALUATED:
+                checks[check] = model_line(check)
+            elif check != "ENUM":
+                checks[check] = result("FAIL", f"Declared output does not exist at `{path}`.")
+        checks["ENUM"] = check_enum(checks)
+        return checks
+
+    try:
+        df = load_frame(path)
+    except Exception as exc:  # noqa: BLE001 - an unreadable artifact is a FAIL, never a crash of the gate
+        for check in MATRIX:
+            if check in MODEL_EVALUATED:
+                checks[check] = model_line(check)
+            elif check != "ENUM":
+                checks[check] = result("FAIL", f"Could not read `{path}`: {exc}")
+        checks["ENUM"] = check_enum(checks)
+        return checks
+
+    pk, event = parse_keys(keys_spec)
+    ann = parse_annotations(keys_spec)
+
+    if df.height == 0:
+        for check in ("DQ1", "DQ2", "DQ3", "DQ5"):
+            checks[check] = result("FAIL", f"Artifact `{path}` has zero rows; no data-quality property can hold.")
+        checks["DQ4"] = result("FAIL", "Artifact has zero rows, so the row-count chain terminates in nothing.")
+        checks["DQ6"] = check_dq6()
+        checks["COV"] = result("FAIL", "Artifact has zero rows, so it covers no window at all.")
+    else:
+        checks["DQ1"] = check_dq1(df, ann["constant"])
+        checks["DQ2"] = check_dq2(df, ann["sparse"])
+        checks.update(check_dq3(df, pk, event))
+        checks["DQ4"] = check_dq4(df)
+        checks["DQ5"] = check_dq5(df, pk, event, ann["freetext"])
+        checks["DQ6"] = check_dq6()
+        checks["COV"] = check_cov(df, window_spec)
+
+    for check in MODEL_EVALUATED:
+        checks[check] = model_line(check)
+    checks["ENUM"] = check_enum(checks)
+    return checks
+
+
+# --------------------------------------------------------------------------------------------
+# Declaration gaps (--declarations): the FAILs only a `## Data Outputs` declaration can cure
+# --------------------------------------------------------------------------------------------
+# Run by plan-lint before dispatch over artifacts already on disk. A gap is a FAIL that an
+# annotation exempts and nothing in the data could fix short of dropping the column: DQ1 on one
+# repeated non-null value (`constant:`), DQ2 (`sparse:`), DQ5 (`freetext:`), and COV on data that
+# exists but does not reach both edges (`n/a` for an event list, or the span it is meant to cover).
+# Duplicated keys, empty columns and missing files are data defects and never appear here.
+
+
+def _keys_cell(pk: list[str], event: list[str], ann: dict[str, list[str]]) -> str:
+    parts = [f"pk: {', '.join(pk)}"] if pk else []
+    if event:
+        parts.append(f"event: {', '.join(event)}")
+    for label in ("sparse", "freetext", "constant"):
+        if ann[label]:
+            parts.append(f"{label}: {', '.join(ann[label])}")
+    return "; ".join(parts)
+
+
+def declaration_gaps(path: Path, keys_spec: str, window_spec: str) -> dict:
+    out = {"exists": path.exists(), "gaps": [], "key_columns": keys_spec,
+           "required_window": window_spec, "passes_once_declared": None}
+    if not path.exists():
+        return out
+    try:
+        df = load_frame(path)
+    except Exception:  # noqa: BLE001 - unreadable is a data defect, reported by the real run
+        return out
+    if df.height == 0:
+        return out
+
+    pk, event = parse_keys(keys_spec)
+    ann = parse_annotations(keys_spec)
+    add = {"constant": [], "sparse": [], "freetext": []}
+
+    if check_dq1(df, ann["constant"])["status"] == "FAIL":
+        add["constant"] = [c for c in df.columns if c not in ann["constant"]
+                           and df[c].n_unique() == 1 and df[c].null_count() == 0]
+    if check_dq2(df, ann["sparse"])["status"] == "FAIL":
+        # An all-null column still FAILs DQ1 when declared sparse: a defect, not a gap.
+        add["sparse"] = [c for c in df.columns if c not in ann["sparse"]
+                         and HIGH_NULL_THRESHOLD < df[c].null_count() / df.height < 1]
+    dq5 = check_dq5(df, pk, event, ann["freetext"])
+    if dq5["status"] == "FAIL":
+        add["freetext"] = [part.split("=", 1)[0].strip() for part in dq5["evidence"].split(";")]
+
+    window = window_spec
+    cov = check_cov(df, window_spec)
+    cov_gap = None
+    if cov["status"] == "FAIL" and cov["evidence"].startswith("column="):
+        col = cov["evidence"].split()[0].split("=", 1)[1]
+        cov_gap = {"check": "COV", "column": col, "detail": cov["detail"],
+                   "cure": "Required Window `n/a` (an event list need not reach both edges; state the "
+                           "search bound in Grain), or the span the data is meant to cover"}
+        window = "n/a"
+
+    for label, check in (("constant", "DQ1"), ("sparse", "DQ2"), ("freetext", "DQ5")):
+        for col in add[label]:
+            out["gaps"].append({"check": check, "column": col, "cure": f"{label}: {col}"})
+            ann[label] = ann[label] + [col]
+    if cov_gap:
+        out["gaps"].append(cov_gap)
+    if not out["gaps"]:
+        return out
+
+    out["key_columns"] = _keys_cell(pk, event, ann) if any(add.values()) else keys_spec
+    out["required_window"] = window
+    cured = check_output(path, out["key_columns"], window)
+    out["passes_once_declared"] = not any(
+        isinstance(e, dict) and e.get("status") == "FAIL" for e in cured.values())
+    return out
+
+
+def run_declarations(plan_text: str, root: Path) -> int:
+    try:
+        rows = parse_data_outputs(plan_text)
+    except ValueError as exc:
+        print(json.dumps({"_error": {"status": "FAIL", "detail": str(exc), "reason_source": "runner"}}))
+        return 2
+    outputs = []
+    for row in rows:
+        path = Path(row["path"])
+        resolved = path if path.is_absolute() else root / path
+        outputs.append({"path": row["path"],
+                        **declaration_gaps(resolved, row["key columns"], row["required window"])})
+    print(json.dumps({"outputs": outputs}, indent=2))
+    return 1 if any(o["gaps"] for o in outputs) else 0
+
+
+# --------------------------------------------------------------------------------------------
+# CLI
+# --------------------------------------------------------------------------------------------
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="ds-dq.py",
+        description=(
+            "Compute the mechanical DS data-quality checks (DQ1-DQ6, COV, ENUM) over the outputs "
+            "declared in an approved /ds plan's `## Data Outputs` table. M1, UNI, DEN, DEL and R1 "
+            "are enumerated as MODEL-EVALUATED and are never computed."
+        ),
+        epilog="Exits non-zero if any COMPUTED check FAILs.",
+    )
+    parser.add_argument("--plan", help="Path to the approved plan whose `## Data Outputs` table declares the artifacts.")
+    parser.add_argument("--project-dir", default=".", help="Root the declared Paths are relative to (default: cwd).")
+    parser.add_argument("--output", help="Check a single artifact instead of a plan (testing).")
+    parser.add_argument("--grain", default="", help="Declared row grain for --output (recorded, not computed against).")
+    parser.add_argument("--keys", default="", help="Key Columns for --output: `a, b` or `pk: a, b; event: c, d`.")
+    parser.add_argument("--window", default="n/a", help="Required Window for --output: `n/a` or `[col: ]YYYY-MM-DD..YYYY-MM-DD`.")
+    parser.add_argument("--files", nargs="*", default=[],
+                        help="The files bin/workflow-check hands every constraint; ds-dq's scope is the plan's Data Outputs.")
+    parser.add_argument("--declarations", action="store_true",
+                        help="With --plan (`-` reads stdin): report only the FAILs a Data Outputs declaration "
+                             "would cure, over artifacts already on disk. Exit 1 if any, 2 if the table is unparseable.")
+    return parser
+
+
+def ensure_polars(argv: list[str]) -> None:
+    """polars, or this run re-executed under `uv run --with polars`: the runner calls every constraint
+    with one python, so a constraint supplies its own dependencies."""
+    try:
+        import polars  # noqa: F401
+        return
+    except ImportError:
+        pass
+    if os.environ.get("DS_DQ_UV") or not shutil.which("uv"):
+        raise RuntimeError("polars is not importable and uv cannot supply it")
+    os.environ["DS_DQ_UV"] = "1"
+    os.execvp("uv", ["uv", "run", "-q", "--with", "polars", "python3", os.path.abspath(__file__), *argv])
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+    root = Path(args.project_dir).expanduser().resolve()
+
+    if args.plan and args.output:
+        print("ds-dq.py: supply exactly one of --plan or --output", file=sys.stderr)
+        return 2
+    if not args.plan and not args.output:
+        if args.declarations:
+            print("ds-dq.py: --declarations needs --plan", file=sys.stderr)
+            return 2
+        print("ds-dq: 0 data output(s) examined — nothing in scope (no --plan given)")
+        return 0
+
+    if args.declarations:
+        if not args.plan:
+            print("ds-dq.py: --declarations needs --plan", file=sys.stderr)
+            return 2
+        text = sys.stdin.read() if args.plan == "-" else Path(args.plan).expanduser().read_text(encoding="utf-8")
+        return run_declarations(text, root)
+
+    if args.output:
+        rows = [{"path": args.output, "grain": args.grain, "key columns": args.keys, "required window": args.window}]
+    else:
+        plan_path = Path(args.plan).expanduser()
+        try:
+            rows = parse_data_outputs(plan_path.read_text(encoding="utf-8"))
+        except FileNotFoundError:
+            print(f"ds-dq.py: plan not found at {plan_path}", file=sys.stderr)
+            return 2
+        except ValueError as exc:
+            # Could-not-check is named on stdout, with the JSON error after it: a bare stderr line left a
+            # gate reading an empty stdout, which parses as "no checks" rather than "could not check" —
+            # the silence-looks-like-a-pass shape ENUM exists to prevent.
+            print(f"COULD-NOT-CHECK: ds-dq: {exc}")
+            print(json.dumps({"_error": {"status": "FAIL", "detail": str(exc),
+                                         "reason_source": "runner"}}, indent=2))
+            print(f"ds-dq.py: {exc}", file=sys.stderr)
+            return 2
+
+    if any((Path(r["path"]) if Path(r["path"]).is_absolute() else root / r["path"]).exists() for r in rows):
+        try:
+            ensure_polars(sys.argv[1:] if argv is None else argv)
+        except RuntimeError as exc:
+            print(f"COULD-NOT-CHECK: ds-dq: {exc}")
+            return 2
+
+    report: dict[str, dict] = {}
+    for row in rows:
+        path = Path(row["path"])
+        resolved = path if path.is_absolute() else root / path
+        report[row["path"]] = {
+            "_declared": {
+                "grain": row["grain"],
+                "key_columns": row["key columns"],
+                "required_window": row["required window"],
+                "resolved_path": str(resolved),
+            },
+            **check_output(resolved, row["key columns"], row["required window"]),
+        }
+
+    # The non-vacuity count line (work/scripts/leg-counts.sh): a plan declaring no output examined none.
+    computed = sum(1 for output in report.values() for k, e in output.items()
+                   if not k.startswith("_") and isinstance(e, dict) and e.get("status") in ("PASS", "FAIL"))
+    count = f"ds-dq: {len(rows)} data output(s) examined, {computed} computed check(s)"
+    if args.output:
+        print(json.dumps(report, indent=2, sort_keys=False))
+        sys.stdout.flush()
+        print(count, file=sys.stderr)
+    else:
+        print(count)
+        for out_path, output in report.items():
+            for check, e in output.items():
+                if not check.startswith("_") and isinstance(e, dict) and e.get("status") == "FAIL":
+                    print(f"{out_path}:1: {check} {e.get('detail', '')}")
+        print()
+        print(json.dumps(report, indent=2, sort_keys=False))
+    failed = any(
+        isinstance(entry, dict) and entry.get("status") == "FAIL"
+        for output in report.values()
+        for entry in output.values()
+    )
+    return 1 if failed else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

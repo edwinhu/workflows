@@ -3,7 +3,7 @@ name: ds-misleading-charts
 applies-to: [ds-delegate]
 ---
 
-**What a script already decides:** `constraints/ds-visualization-integrity.py` decides the detectable anti-patterns. Whether a chart misleads is a reading, and is this rule.
+**What a script already decides:** `checks/ds/constraints/ds-visualization-integrity.py` decides the detectable anti-patterns. Whether a chart misleads is a reading, and is this rule.
 
 ## Rule
 

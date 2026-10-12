@@ -5,15 +5,19 @@ import { spawnSync } from "child_process";
 import * as fs from "fs";
 import * as os from "os";
 
-// The register rules under constraints/jev/legal and constraints/jev/econ, scored on top of
-// constraints/jev/writing when a writing run's Domain is legal or econ: extractor state on each
-// rule's fixtures, and rule-check.ts --rules <writing> --rules <register> against a local stub. No network.
+// The register rules under checks/writing/legal/rules and checks/writing/econ/rules, scored on top of
+// checks/writing/rules when a writing run's Domain is legal or econ: extractor state on each
+// rule's fixtures, and rule-check.ts --workflow writing/<register> against a local stub. No network.
 
 const BASE = join(import.meta.dir, "../../..");
-const EVIDENCE = join(BASE, "constraints/jev/evidence.py");
-const WRITING = join(BASE, "constraints/jev/writing");
-const LEGAL = join(BASE, "constraints/jev/legal");
-const ECON = join(BASE, "constraints/jev/econ");
+const EVIDENCE = join(BASE, "checks/_jev/evidence.py");
+const WRITING = join(BASE, "checks/writing/rules");
+const LEGAL = join(BASE, "checks/writing/legal/rules");
+const ECON = join(BASE, "checks/writing/econ/rules");
+/** The workflow a register directory belongs to: writing/legal or writing/econ, which inherit writing's rules. */
+const WF_OF = (dir: string) => (dir === LEGAL ? "writing/legal" : dir === ECON ? "writing/econ" : "writing");
+/** writing's own wired rules, scored under every register. */
+const WRITING_RULES = ["W-ATTRIB", "W-HEDGE", "W-SIGNPOST"];
 const FIX = join(BASE, "tests/fixtures/jev");
 
 const WIRED: Record<string, string[]> = {
@@ -46,7 +50,7 @@ function evidence(rule: string, kase: "sat" | "vio", dir = DIR_OF(rule)) {
 }
 
 for (const [dir, rules] of Object.entries(WIRED)) {
-  test(`${dir.split("/").pop()} discovers exactly its wired rules, uncalibrated/ below the glob`, () => {
+  test(`${WF_OF(dir)} discovers exactly its wired rules, uncalibrated/ below the glob`, () => {
     const out = evidence(rules[0], "vio", dir);
     expect(Object.keys(out).sort()).toEqual(rules);
     for (const id of rules) {
@@ -58,7 +62,7 @@ for (const [dir, rules] of Object.entries(WIRED)) {
 }
 
 test("the writing and default directories carry no register rule", () => {
-  for (const d of [WRITING, join(BASE, "constraints/jev")]) {
+  for (const d of [WRITING, join(BASE, "checks/ds/rules")]) {
     const out = evidence("L-ID", "vio", d);
     expect(Object.keys(out).some(k => /^[LE]-/.test(k))).toBe(false);
   }
@@ -145,7 +149,7 @@ async function ruleCheck(p: number, rule: string, kase: "sat" | "vio", rules: st
   const d = tmp("jev-register-");
   fs.mkdirSync(join(d, "drafts"));
   fs.copyFileSync(join(FIX, rule, kase, "test.md"), join(d, "drafts", "test.md"));
-  const args = ["--project-dir", d, "--files", "drafts/test.md", ...rules.flatMap(r => ["--rules", r])];
+  const args = ["--project-dir", d, "--files", "drafts/test.md", "--workflow", WF_OF(rules[rules.length - 1]!)];
   const res = await $`bun run ${join(import.meta.dir, "rule-check.ts")} ${args}`
     .env({
       ...process.env,
@@ -160,20 +164,20 @@ async function ruleCheck(p: number, rule: string, kase: "sat" | "vio", rules: st
 }
 
 for (const rule of Object.values(WIRED).flat()) {
-  test(`${rule}: rule-check --rules <register> blocks at 0.9 on the violating fixture`, async () => {
+  test(`${rule}: rule-check --workflow writing/<register> blocks at 0.9 on the violating fixture`, async () => {
     const { res, bodies } = await ruleCheck(0.9, rule, "vio", [DIR_OF(rule)]);
     expect(res.exitCode).toBe(2);
-    expect(bodies).toHaveLength(WIRED[DIR_OF(rule)].length);
+    expect(bodies).toHaveLength(WIRED[DIR_OF(rule)].length + WRITING_RULES.length);
     expect(bodies.some(b => b.includes(`rule ${rule}`))).toBe(true);
   });
 
-  test(`${rule}: rule-check --rules <register> passes at 0.1 on the compliant fixture`, async () => {
+  test(`${rule}: rule-check --workflow writing/<register> passes at 0.1 on the compliant fixture`, async () => {
     const { res } = await ruleCheck(0.1, rule, "sat", [DIR_OF(rule)]);
     expect(res.exitCode).toBe(0);
   });
 }
 
-test("--rules repeats: writing plus legal scores both sets in one run", async () => {
+test("--workflow writing/legal scores writing's rules and legal's in one run", async () => {
   const { res, bodies } = await ruleCheck(0.9, "L-ID", "vio", [WRITING, LEGAL]);
   expect(res.exitCode).toBe(2);
   const out = JSON.parse(res.stdout.toString());

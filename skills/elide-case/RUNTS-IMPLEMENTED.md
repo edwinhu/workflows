@@ -4,10 +4,10 @@ Implementation of RUNTS.md §5, 2026-09-10. Files changed:
 
 - `teaching/scripts/check-widows.py` (shared with the slides workflow; since retired)
 - `skills/elide-case/scripts/check-page-breaks.py` (since retired)
-- `/home/eh/projects/workflows/skills/elide-case/scripts/check.sh`
-- `/home/eh/projects/workflows/skills/elide-case/scripts/check.test.ts`
-- `/home/eh/projects/workflows/skills/elide-case/fixtures/make-pagebreak-fixture.py`
-- `/home/eh/projects/workflows/skills/elide-case/fixtures/mini-addendum.typ`, `fixtures/source-addendum.typ`
+- `${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts/check.sh`
+- `${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts/check.test.ts`
+- `${CLAUDE_PLUGIN_ROOT}/skills/elide-case/fixtures/make-pagebreak-fixture.py`
+- `${CLAUDE_PLUGIN_ROOT}/skills/elide-case/fixtures/mini-addendum.typ`, `fixtures/source-addendum.typ`
   (one editorial sentence reworded — see §6)
 
 Nothing under `/home/eh/areas` was written. `git status` in `secreg` shows no change under
@@ -255,7 +255,7 @@ cannot support them.
 ## 4. Test suite — verbatim
 
 ```
-$ cd /home/eh/projects/workflows/skills/elide-case/scripts && bun test
+$ cd ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts && bun test
 bun test v1.4.0 (34cbb9a40)
 
  68 pass
@@ -331,7 +331,7 @@ stranded heading survives, as predicted.
 Exact invocation:
 
 ```
-cd /home/eh/areas/secreg && bash /home/eh/projects/workflows/skills/elide-case/scripts/check.sh \
+cd /home/eh/areas/secreg && bash ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts/check.sh \
   --addendum addenda/02-addendum.typ --docs docs --plan .claude/plans/addendum-02.md
 ```
 

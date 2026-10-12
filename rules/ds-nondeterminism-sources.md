@@ -3,7 +3,7 @@ name: ds-nondeterminism-sources
 applies-to: [ds-delegate]
 ---
 
-**What a script already decides:** `constraints/ds-determinism.py` decides ONE of the five sources below: an unseeded `.sample()`. Dict ordering, timestamps, float accumulation and parallel order are unchecked and are this rule.
+**What a script already decides:** `checks/ds/constraints/ds-determinism.py` decides ONE of the five sources below: an unseeded `.sample()`. Dict ordering, timestamps, float accumulation and parallel order are unchecked and are this rule.
 
 ## Rule
 

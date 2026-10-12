@@ -113,7 +113,7 @@ unflagged. No single global range produces that pair: any range containing 2 can
 6-8", and 6-8 itself would have flagged the 2-page reading. The same addendum passes when only the
 second row is widened to `3-5`.
 
-**AFTER** — `cd /home/eh/projects/workflows/skills/elide-case/scripts && bun test`:
+**AFTER** — `cd ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts && bun test`:
 
 ```
 bun test v1.4.0 (34cbb9a40)
@@ -135,7 +135,7 @@ No `--target` flag, and nothing written under `/home/eh/areas/secreg` (no `--pdf
 goes to a temp dir):
 
 ```
-$ cd /home/eh/areas/secreg && bash /home/eh/projects/workflows/skills/elide-case/scripts/check.sh --addendum addenda/02-addendum.typ --docs docs --plan .claude/plans/addendum-02.md
+$ cd /home/eh/areas/secreg && bash ${CLAUDE_PLUGIN_ROOT}/skills/elide-case/scripts/check.sh --addendum addenda/02-addendum.typ --docs docs --plan .claude/plans/addendum-02.md
 --- leg plan
 LEG plan: PASS — both interview answers recorded in addendum-02.md; 4 reading(s) with a page target; 1 non-court reading(s) declared
 --- leg compile

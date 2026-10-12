@@ -30,7 +30,7 @@ else, so every fact the proposition needs must be in it — and nothing the prop
 
 ## Layout of a set
 
-- One module per rule, `constraints/jev/<set>/<ID>.py`, exporting `PROPOSITION`, `CRITERIA` (the four
+- One module per rule, `checks/<workflow>/rules/<ID>.py`, exporting `PROPOSITION`, `CRITERIA` (the four
   keys VIOLATED / SATISFIED / NOT_APPLICABLE / INSUFFICIENT_EVIDENCE), `evidence`, and optionally
   `SUBJECT` (the preamble's "You are auditing …"), `DELIVERABLE`, and `SPANS` — the inventory keys whose
   items are the candidates (`'key'` for items carrying `file`/`line`, `('key', file_field, line_field)`
@@ -42,7 +42,7 @@ else, so every fact the proposition needs must be in it — and nothing the prop
   directory non-recursively, so `uncalibrated/` is never read by a workflow — the layout is the wiring.
 - A module in `uncalibrated/` reaches its set's helpers through the `sys.path.insert(0, <parent dir>)`
   line the scaffold writes.
-- A set without its own `evidence.py` is run by `constraints/jev/evidence.py --rules-dir`.
+- A set without its own `evidence.py` is run by the shared `checks/_jev/evidence.py --rules-dir`.
 
 ## Extractor bugs that looked like judge failures
 
@@ -64,5 +64,5 @@ else, so every fact the proposition needs must be in it — and nothing the prop
 - **Vacuous real cases.** After T-HOLLOW's precision fix the real notes yielded zero candidates, so
   their 0.00 proved nothing; they were replaced with excerpts that contain the construct.
 
-Before blaming the judge, dump the exact state: `python3 constraints/jev/evidence.py --files <f> --root
+Before blaming the judge, dump the exact state: `python3 checks/_jev/evidence.py --files <f> --root
 <dir> --rules-dir <set dir>` (or `collectEvidence` on a `caseInput` replay for a diff or base case).

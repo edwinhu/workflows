@@ -7,7 +7,7 @@ import importlib.util
 import json
 from pathlib import Path
 
-_C = Path(__file__).resolve().parents[1] / "constraints"
+_C = Path(__file__).resolve().parents[1] / "checks" / "ds" / "constraints"
 
 
 def _load(name, filename):
@@ -33,7 +33,7 @@ def run(check, tmp_path, source, helpers=None):
     cfg.unlink(missing_ok=True)
     if helpers is not None:
         cfg.write_text(json.dumps({"dsAuditHelpers": helpers}))
-    return check({"cwd": str(tmp_path)})
+    return check({"cwd": str(tmp_path), "files": sorted(tmp_path.rglob("*.py"))})
 
 
 def test_declared_helper_closes_a_merge(tmp_path):

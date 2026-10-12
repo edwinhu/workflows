@@ -198,7 +198,7 @@ const read = (f: string) => readFileSync(f, 'utf8')
 
 /** Run the CLI out-of-process so the test covers main()/argv, not just runProbe(). */
 function cli(args: string[]): { code: number; out: string; err: string } {
-  const r = Bun.spawnSync(['bun', join(SELF_DIR, 'wc-probe.ts'), ...args])
+  const r = Bun.spawnSync(['bun', join(SELF_DIR, 'wc-probe.ts'), ...args], { env: { ...process.env } })
   return { code: r.exitCode, out: r.stdout.toString(), err: r.stderr.toString() }
 }
 
@@ -3725,21 +3725,32 @@ describe('D37 — P14: an agent leg that only runs a command and reports its exi
 })
 
 describe('D38 — P15: an agent grades a rule the fence\'s ruleChecks already scores (gates)', () => {
-  /** A rules dir with one wired rule, one helper, and one parked rule that must never count. */
+  /** A private layout: workflow p15 with one wired rule, one helper, and one parked rule that must never count. */
   const rulesDir = (dir: string) => {
-    const r = join(dir, 'rules')
+    const r = join(dir, 'plug', 'checks', 'p15', 'rules')
     mkdirSync(join(r, 'uncalibrated'), { recursive: true })
     writeFileSync(join(r, 'N-HOLLOW.py'), "PROPOSITION = ('A bullet is HOLLOW: it refers to content '\n               'it never writes out.')\n")
     writeFileSync(join(r, 'A1.py'), "PROPOSITION = ('A robustness check is missing.')\n")
     writeFileSync(join(r, '_lib.py'), "PROPOSITION = ('hollow helper')\n")
     writeFileSync(join(r, 'uncalibrated', 'N-COLD.py'), "PROPOSITION = ('A transition is cold.')\n")
-    return r
+    return join(dir, 'plug')
   }
-  const fenceWith = (rules: string, parts: string[]) => workArgs([
+  const fenceWith = (_plug: string, parts: string[]) => workArgs([
     'tasks: []',
-    `ruleChecks: { name: "jev", cmd: "bun rule-check.ts --rules ${rules}" }`,
+    'ruleChecks: { name: "jev", cmd: "bun rule-check.ts --workflow p15" }',
     ...parts,
   ])
+  /** Run with the private layout as the only checks root (the runner reads WORKFLOW_CHECKS_PATH). */
+  const inLayout = <T>(plug: string, fn: () => T): T => {
+    const was = process.env.WORKFLOW_CHECKS_PATH
+    process.env.WORKFLOW_CHECKS_PATH = plug
+    try {
+      return fn()
+    } finally {
+      if (was === undefined) delete process.env.WORKFLOW_CHECKS_PATH
+      else process.env.WORKFLOW_CHECKS_PATH = was
+    }
+  }
 
   test('a scoredChecks penalty count named for a wired rule is a MAJOR finding, and it gates', () => {
     const dir = fixture({ 'SKILL.md': skillMd('p15-scored') })
@@ -3747,16 +3758,18 @@ describe('D38 — P15: an agent grades a rule the fence\'s ruleChecks already sc
     writeFileSync(join(dir, 'SKILL.md'), skillMd('p15-scored', fenceWith(r, [
       'scoredChecks: [{ key: "audit", items: ["a"], prompt: "Count defects.", schema: {}, components: [{ name: "n3", weight: 1, base: 10, penalties: { dense: 0.2, hollow: 1.0, cold: 1.0 } }] }]',
     ])))
-    const result = probe.runProbe(dir)
-    const found = result.findings.filter((f: any) => f.rule.startsWith('P15'))
-    expect(found.map((f: any) => f.detail).join(' ')).toContain('N-HOLLOW')
-    expect(found.length).toBe(1)
-    expect(found[0].severity).toBe('major')
-    expect(result.advisories.filter((f: any) => f.rule.startsWith('P15'))).toEqual([])
-    const c = cli(['--target', dir])
-    expect(c.out).toContain('[major] P15 duplicate grading')
-    expect(c.out).not.toContain('[advisory major] P15')
-    expect(c.code).toBe(1)
+    inLayout(r, () => {
+      const result = probe.runProbe(dir)
+      const found = result.findings.filter((f: any) => f.rule.startsWith('P15'))
+      expect(found.map((f: any) => f.detail).join(' ')).toContain('N-HOLLOW')
+      expect(found.length).toBe(1)
+      expect(found[0].severity).toBe('major')
+      expect(result.advisories.filter((f: any) => f.rule.startsWith('P15'))).toEqual([])
+      const c = cli(['--target', dir])
+      expect(c.out).toContain('[major] P15 duplicate grading')
+      expect(c.out).not.toContain('[advisory major] P15')
+      expect(c.code).toBe(1)
+    })
   })
 
   test('a lens sentence grading the rule by its capitalised name or its id is a finding', () => {
@@ -3765,7 +3778,7 @@ describe('D38 — P15: an agent grades a rule the fence\'s ruleChecks already sc
     writeFileSync(join(dir, 'SKILL.md'), skillMd('p15-lens', fenceWith(r, [
       'lens: { prompt: "CHECKLIST: (1) Report each HOLLOW bullet as MAJOR. (2) Judge A1 compliance.", refs: [] }',
     ])))
-    const ids = allOf(dir, 'P15').map((f: any) => f.detail)
+    const ids = inLayout(r, () => allOf(dir, 'P15').map((f: any) => f.detail))
     expect(ids.some((d: string) => d.includes('N-HOLLOW'))).toBe(true)
     expect(ids.some((d: string) => d.includes('grades A1'))).toBe(true)
   })
@@ -3777,7 +3790,7 @@ describe('D38 — P15: an agent grades a rule the fence\'s ruleChecks already sc
       'scoredChecks: [{ key: "audit", items: ["a"], prompt: "Count defects.", schema: {}, components: [{ name: "n6", weight: 1, base: 10, penalties: { cold: 1.0, dense: 0.2 } }] }]',
       'lens: { prompt: "HOLLOW bullets are NOT findings here: the Jev rule N-HOLLOW decides them. Report every COLD transition.", refs: [] }',
     ])))
-    expect(allOf(dir, 'P15')).toEqual([])
+    expect(inLayout(r, () => allOf(dir, 'P15'))).toEqual([])
   })
 
   test('a lens that hands the rule ids to the digest\'s verdicts, and keeps a broader judgement stated as such, is clean', () => {
@@ -3786,20 +3799,22 @@ describe('D38 — P15: an agent grades a rule the fence\'s ruleChecks already sc
     writeFileSync(join(dir, 'SKILL.md'), skillMd('p15-defer', fenceWith(r, [
       'lens: { prompt: "CHECKLIST: (1) A1 and N-HOLLOW are the jev-rules verdicts in the digest: do not re-grade them, except to rule on a verdict the digest ranks below the block line. Two judgements reach past the wired rule texts and stay yours: whether the sources admit the same entities.", refs: [] }',
     ])))
-    expect(allOf(dir, 'P15')).toEqual([])
+    expect(inLayout(r, () => allOf(dir, 'P15'))).toEqual([])
   })
 
   test('the ds skill this repo ships carries no P15 finding', () => {
     expect(allOf(join(SELF_DIR, '..', '..', 'ds'), 'P15')).toEqual([])
   })
 
-  test('a fence with no ruleChecks is not judged, and an unresolvable --rules is reported NOT CHECKED', () => {
+  test('a fence with no ruleChecks is not judged; a workflow the layout lacks, and a retired --rules, are reported NOT CHECKED', () => {
     const dir = fixture({ 'SKILL.md': skillMd('p15-none', [
       workArgs(['tasks: []', 'lens: { prompt: "Report each HOLLOW bullet.", refs: [] }']),
+      workArgs(['tasks: []', 'ruleChecks: { name: "jev", cmd: "bun rule-check.ts --workflow no-such-workflow" }']),
       workArgs(['tasks: []', 'ruleChecks: { name: "jev", cmd: "bun rule-check.ts --rules /nonexistent/rules-dir" }']),
     ].join('\n'))})
     const result = probe.runProbe(dir)
     expect(allOf(dir, 'P15')).toEqual([])
+    expect(result.unresolvedRefs.some((u: any) => u.rule.startsWith('P15') && u.token === 'no-such-workflow')).toBe(true)
     expect(result.unresolvedRefs.some((u: any) => u.rule.startsWith('P15') && u.token === '/nonexistent/rules-dir')).toBe(true)
   })
 })

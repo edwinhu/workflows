@@ -3,7 +3,7 @@ name: ds-chart-type-system
 applies-to: [ds-delegate]
 ---
 
-**What a script already decides:** `constraints/ds-chart-typography.py` decides the registered theme, per-chart styling, the single palette, vector output, a serif face (static, and with `--render` the file matplotlib actually draws) and the 300 DPI raster floor; the ds `check.sh` runs it. Which serif matches the host document it cannot see, and that is this rule.
+**What a script already decides:** `checks/ds/constraints/ds-chart-typography.py` decides the registered theme, per-chart styling, the single palette, vector output, a serif face (static, and, unless `--no-render`, the file matplotlib actually draws) and the 300 DPI raster floor; the ds `check.sh` runs it. Which serif matches the host document it cannot see, and that is this rule.
 
 ## Rule
 
@@ -77,11 +77,11 @@ impression an exhibit should leave.
 ## Verification
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/constraints/ds-chart-typography.py <file.py|dir>
+python3 ${CLAUDE_PLUGIN_ROOT}/checks/ds/constraints/ds-chart-typography.py --project-dir <project> --files <file.py|dir> ...
 ```
 
 Exits non-zero on: charts present with no theme registration; per-chart font or axis
 configuration; hex colours outside a single palette block; a matplotlib save of a `.png` with no
 `.svg` save at the same stem in the file; a sans or monospace `font.family` (or theme font) or a
-theme that never sets one; a raster saved below 300 DPI; and, with `--render`, a family that
+theme that never sets one; a raster saved below 300 DPI; and, unless `--no-render`, a family that
 resolves to a sans file or to no installed face at all.

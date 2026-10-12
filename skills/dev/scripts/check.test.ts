@@ -70,8 +70,8 @@ test("a leg runs inside --project-dir", () => {
   } finally { rmSync(d, { recursive: true, force: true }); }
 });
 
-// The scan leg reads only the lines a change adds. Patterns are assembled at runtime so this file
-// does not itself trip the scan when the dev gate runs over this repo.
+// diff-scan (checks/dev/constraints/, reached through the dev-gate leg) reads only the lines a change adds.
+// Patterns are assembled at runtime so this file does not itself trip the scan when the dev gate runs over this repo.
 const ONLY = ["it", "only"].join(".");
 const KEY = ["-----BEGIN RSA", "PRIVATE KEY-----"].join(" ");
 function gitProj(files: Record<string, string>, after: Record<string, string>) {
@@ -89,12 +89,24 @@ test("scan: an added focused test fails the gate; the same line committed before
   try {
     const clean = run("--project-dir", d, "--test-cmd", PASS);
     expect(clean.code).toBe(0);
-    expect(clean.out).toContain("leg scan exit=0");
+    expect(clean.out).toContain("leg dev-gate exit=0");
     writeFileSync(join(d, "tests/b.test.ts"), `${ONLY}('z', () => {})\n`);
     const r = run("--project-dir", d, "--test-cmd", PASS);
     expect(r.code).toBe(1);
-    expect(r.out).toContain("leg scan exit=1");
-    expect(r.err).toContain("focused-or-skipped-test: tests/b.test.ts:1");
+    expect(r.out).toContain("leg dev-gate exit=1");
+    expect(r.out).toContain("tests/b.test.ts:1: focused-or-skipped-test");
+    expect(r.out).not.toContain("tests/a.test.ts:1");
+  } finally { rmSync(d, { recursive: true, force: true }); }
+});
+
+// git ends a `+++ b/<name>` header with a tab when the name holds a space; a header read verbatim names no file given.
+test("scan: a focused test added to a tracked file whose name has a space fails the gate", () => {
+  const d = gitProj({ "tests/a b.test.ts": "it('x', () => {})\n" }, { "tests/a b.test.ts": `it('x', () => {})\n${ONLY}('y', () => {})\n` });
+  try {
+    const r = run("--project-dir", d, "--test-cmd", PASS);
+    expect(r.code).toBe(1);
+    expect(r.out).toContain("leg dev-gate exit=1");
+    expect(r.out).toContain("tests/a b.test.ts:2: focused-or-skipped-test");
   } finally { rmSync(d, { recursive: true, force: true }); }
 });
 
@@ -108,10 +120,10 @@ test("scan: TLS off and a private key in added source lines fail; fixtures/ and 
   try {
     const r = run("--project-dir", d, "--test-cmd", PASS);
     expect(r.code).toBe(1);
-    expect(r.err).toContain("tls-verification-off: src/a.ts:2");
-    expect(r.err).toContain("secret: src/k.pem:1");
-    expect(r.err).not.toContain("fixtures/");
-    expect(r.err).not.toContain("src/ok.py");
+    expect(r.out).toContain("src/a.ts:2: tls-verification-off");
+    expect(r.out).toContain("src/k.pem:1: secret");
+    expect(r.out).not.toContain("tests/fixtures/x.ts");
+    expect(r.out).not.toContain("src/ok.py");
   } finally { rmSync(d, { recursive: true, force: true }); }
 });
 
@@ -121,9 +133,11 @@ test("scan: a focused test outside a test path is not a hit, and a non-git dir r
   finally { rmSync(d, { recursive: true, force: true }); }
   const e = proj();
   try {
+    writeFileSync(join(e, "a.test.ts"), `${ONLY}('x', () => {})\n`);
     const r = run("--project-dir", e, "--test-cmd", PASS);
     expect(r.code).toBe(0);
-    expect(r.out).toContain("leg scan exit=0 (not a git repo)");
+    expect(r.out).toContain("leg dev-gate exit=0");
+    expect(r.out).toContain("nothing in scope (not a git repo)");
   } finally { rmSync(e, { recursive: true, force: true }); }
 });
 

@@ -24,7 +24,7 @@ for (const rule of RULES) {
 const MANIFEST = join(tmp, "calibration.json");
 writeFileSync(MANIFEST, JSON.stringify({
   criterion: { violatingAtLeast: 0.85, compliantBelow: 0.5, crossFlagAbove: 0.5 },
-  sets: { writing: { rulesDir: "constraints/jev/writing", uncalibratedDir: "constraints/jev/writing/uncalibrated", layout: "files", rules } },
+  sets: { writing: { rulesDir: "checks/writing/rules", uncalibratedDir: "checks/writing/rules/uncalibrated", layout: "files", rules } },
 }));
 
 // p(rule, kind, owner): the default is a perfectly calibrated model; `override` replaces single cells.
@@ -112,7 +112,7 @@ test("a manifest with a root resolves its rules and case paths against that root
   writeFileSync(manifest, JSON.stringify({
     root: "../..",
     criterion: { violatingAtLeast: 0.85, compliantBelow: 0.5, crossFlagAbove: 0.5 },
-    sets: { writing: { rulesDir: relative(tmp, join(BASE, "constraints/jev/writing")), uncalibratedDir: relative(tmp, join(BASE, "constraints/jev/writing/uncalibrated")), layout: "files", rules: rel } },
+    sets: { writing: { rulesDir: relative(tmp, join(BASE, "checks/writing/rules")), uncalibratedDir: relative(tmp, join(BASE, "checks/writing/rules/uncalibrated")), layout: "files", rules: rel } },
   }));
   const r = await calibrate(undefined, { manifest });
   expect(r.err).toBe("");

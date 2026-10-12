@@ -52,7 +52,7 @@ Everything else is a local convention, so the names below are ours and worth kee
 | directory | holds | found by |
 |---|---|---|
 | `bin/` | cross-plugin entry points | **the harness puts it on PATH** — callable as a bare command from any plugin, which is the ONLY way one plugin reaches another's tooling; `${CLAUDE_PLUGIN_ROOT}` resolves to the CALLING plugin |
-| `constraints/` | rules that are scripts | the workflow's check runner; `typst-constraints` lists them |
+| `checks/<wf>/` | a workflow's checks: `constraints/` (scripts, an exit code decides) and `rules/` (Jev-scored) | `bin/workflow-check <wf>` — the directory is the membership; `--list` names them |
 | `references/` | knowledge | `skill-toc`, or `typst-rules` for a scoped corpus |
 | `rules/` | always-on, path-globbed | the harness injects it; `install.sh` links it to `~/.claude/rules/` |
 | `skills/` | procedures | named in an agent's `skills:`, or invoked |
@@ -88,8 +88,13 @@ every rule this file states that a string can settle — the TOC bang on every s
 aborts a load, a path the prose cannot resolve from the skill's own base directory, and a constraint key
 no loader reads. `bin/plugin-audit` runs it, so a finding fails the audit rather than waiting for a reader.
 
-**Then the judgement rules over what you changed:**
-`bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --project-dir <repo> --rules ${CLAUDE_PLUGIN_ROOT}/constraints/jev/authoring`.
+**Then the judgement rules over what you changed** — the authoring workflow's. A `work` dispatch for a
+skill change carries this line; by hand, run its command without `--plan`:
+
+```js
+ruleChecks: { name: "jev-authoring-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow authoring --project-dir <projectDir> --plan <planPath>" },
+```
+
 Exit 2 names each rule at p >= 0.85 — A-DESC process summary in a description, A-FLAG intention-targeted
 red flag, A-SOFT softened Iron Law, A-GATE judgement gate, A-STATE new state file or `.planning/` noun
 with nothing retired, A-PAD narrated history that is not a fact row. Fix every one it names; exit 1 means Jev was unavailable, never a pass.

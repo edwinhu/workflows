@@ -17,7 +17,7 @@
 import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
-import { auditStyle, isTypDeck, editRanges, inRanges, runProseAudit, runCheckAll, profileFor } from '../hooks/writing-prose-check.ts'
+import { auditStyle, isTypDeck, editRanges, inRanges, runProseAudit, runStructural, profileFor, writingWorkflow } from '../hooks/writing-prose-check.ts'
 import { useTmp } from './helpers/tmp.ts'
 
 const mkTmp = useTmp()
@@ -89,19 +89,32 @@ const write = (dir, name, body) => { const p = join(dir, name); writeFileSync(p,
     spans.some((s) => s.includes('emphasis') && s.includes('bold-bare-number')), JSON.stringify(spans))
 }
 {
-  // `constraints/writing-no-bold-lead` delegates to prose-audit now, so check-all would report the
-  // SAME span the audit already reported. The prefix list is what keeps it to one line.
+  // checks/writing/constraints/writing-no-bold-lead delegates to prose-audit, so the structural pass
+  // would report the SAME span the audit already reported. The split (the layout minus what the
+  // audit owns) is what keeps it to one line.
   const d = tmp()
   mkdirSync(join(d, 'drafts'), { recursive: true })
   const draft = write(join(d, 'drafts'), 'part2.md',
     '**The objection.** A five percent stake could leverage mirror voting to control votes.\n')
   const audit = runProseAudit(draft, 'legal', [[1, 10]])
-  const check = runCheckAll(d, draft, [[1, 10]])
+  const check = runStructural(d, draft, [[1, 10]], 'legal')
   const boldLead = [...audit, ...check].filter((v) => v.toLowerCase().includes('bold-lead'))
   ok('a drafts/*.md bold-lead is reported once, not twice', boldLead.length === 1, JSON.stringify(boldLead))
   ok('and it is the audit engine that reports it',
     audit.some((v) => v.includes('bold-lead')) && !check.some((v) => v.includes('bold-lead')),
     JSON.stringify({ audit, check }))
+}
+{
+  // The structural pass DOES report what only a structural constraint sees, scoped to the edit.
+  const d = tmp()
+  mkdirSync(join(d, 'drafts'), { recursive: true })
+  const draft = write(join(d, 'drafts'), 'part3.md',
+    'Plain opening paragraph here.\n\nThe key finding is robust to every specification.\n')
+  const hit = runStructural(d, draft, [[3, 3]])
+  ok('a meta-commentary topic sentence on an edited line is reported by its structural constraint',
+    hit.length === 1 && hit[0].includes('part3.md:3: writing-topic-sentences'), JSON.stringify(hit))
+  ok('and is not reported when the edit is elsewhere', runStructural(d, draft, [[1, 1]]).length === 0)
+  ok('the plan\'s register picks the nested workflow', writingWorkflow('Legal') === 'writing/legal' && writingWorkflow(null) === 'writing')
 }
 
 // ── deck detection exists TWICE, in two languages — pin that they agree ──────

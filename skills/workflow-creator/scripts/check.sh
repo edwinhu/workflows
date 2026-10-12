@@ -18,7 +18,10 @@
 #   authoring-lint  the authoring rules a string settles, over the lines the change ADDED under
 #                --target (a SKILL_DIR climb, a retired enforcement table, plugin.json
 #                dependencies, a non-canonical state file)
-#   node-check   `node --check` over <target>/*.js; PASSES when the target ships none
+#   authoring-gate  `bin/workflow-check authoring --constraints-only` over the target: every constraint
+#                under checks/authoring/constraints/ (node-check among them: `node --check` over its
+#                .js; nothing in scope when it ships none), so a constraint added there runs with no
+#                edit here. Its Jev rules are skipped: the plan's ruleChecks scores them.
 #   probe-tests  `bun test <target>/scripts/*.test.ts` — TARGET-relative, so pointing this at a
 #                generated skill runs THAT skill's suite; a scripts/ dir with no test file FAILS
 #
@@ -194,20 +197,14 @@ case "$lint_n" in
 esac
 report authoring-lint "$lint_rc"
 
-# --- leg: node-check ---------------------------------------------------------------------------
-# A workflow that ships no .js is the normal case and passes; only a real syntax error fails.
-node_rc=0
-js_n=0
-for f in "$TARGET"/*.js; do
-  [ -e "$f" ] || continue
-  js_n=$((js_n + 1))
-  node --check "$f" >&2 || node_rc=1
-done
-count_line node-check "$js_n" "js file(s)" "target ships no .js"
-if [ "$js_n" -eq 0 ]; then
-  report node-check 0 "no .js under target"
+# --- leg: authoring-gate -----------------------------------------------------------------------
+# The runner is this plugin's, found the way the two probes are. Its first line is the leg's count.
+if [ -z "$OWN_ROOT" ] || [ ! -r "$OWN_ROOT/bin/workflow-check" ]; then
+  echo "check.sh: cannot run authoring-gate — no bin/workflow-check under ${OWN_ROOT:-a plugin root above $SCRIPT_DIR}" >&2
+  report authoring-gate 2 "runner unreachable"
 else
-  report node-check "$node_rc" "$js_n .js checked"
+  python3 "$OWN_ROOT/bin/workflow-check" authoring --constraints-only --project-dir "${TARGET_ROOT:-$TARGET}" --files "$TARGET" >&2
+  report authoring-gate $?
 fi
 
 # --- leg: probe-tests --------------------------------------------------------------------------

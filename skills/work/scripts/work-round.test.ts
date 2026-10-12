@@ -244,6 +244,23 @@ const roundArgs = (dir: string, over: any = {}) => ({
 })
 
 describe('work-round.sh: the lens is ONE farm row of kind review', () => {
+  test('the lens row it writes is one the real farm.sh launches: it names its workflow ("none"), so it is not refused', () => {
+    const dir = repo({ 'scripts/red.sh': 'echo "1 passed"; exit 0', 'src/a.ts': 'a' })
+    const r = round(roundArgs(dir))
+    expect(r.rows[0].workflow).toBe('none')
+    const bin = join(r.cap, 'bin'); mkdirSync(bin)
+    const ran = join(r.cap, 'lens-ran')
+    // a stub wrapper: records that it ran and writes the row's expected lens file
+    writeFileSync(join(bin, 'claude-code'), `#!/usr/bin/env bash\n: > ${JSON.stringify(ran)}\nprintf '{}' > ${JSON.stringify(r.rows[0].expect[0])}\nprintf '{"type":"result","result":"done"}\\n'\n`)
+    chmodSync(join(bin, 'claude-code'), 0o755)
+    const rows = join(r.cap, 'rows-real.json'); writeFileSync(rows, JSON.stringify(r.rows))
+    const f = spawnSync('bash', [join(HERE, '..', '..', 'farm-out', 'scripts', 'farm.sh'), '--provider', 'claude', '--tasks', rows, '--cwd', dir],
+      { timeout: 120_000, encoding: 'utf8', env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1', TMPDIR: r.cap,
+        FARM_OUTCOMES: join(r.cap, 'o.jsonl'), CLAUDE_CODE_SESSION_ID: 'lens-row-test' } })
+    expect(f.status, f.stderr).toBe(0)
+    expect(existsSync(ran)).toBe(true)
+  })
+
   test('one row, kind review, model = lens.model, agent = lens.agentType, expect = RUN/lens.json, provider from routing', () => {
     const dir = repo({ 'scripts/red.sh': 'echo "1 passed"; exit 0', 'src/a.ts': 'a' })
     const r = round(roundArgs(dir))
@@ -416,6 +433,34 @@ describe('work-checks.sh runs ruleChecks.cmd and records {name, exitCode, stdout
     const dir = repo({ 'a.txt': 'a' })
     const r = checks({ projectDir: dir, tasks: [] }, { rules: [{ name: 'rules', cmd: `bash ${stub(dir, MET, 0)}` }] })
     expect(r.checks.rules[0]).toMatchObject({ name: 'rules', exitCode: 0, stdout: MET })
+  })
+
+  // A ruleChecks of `workflow-check <wf> --rules-only` (what work-dispatch.sh fills) prints the runner's
+  // leg report, not a JSON line: rule-check.ts copies its verdict line to $RULE_CHECK_OUT, and that copy
+  // is what the gate reads. The report itself stays in `output`.
+  test('a runner-style ruleChecks: the verdicts are read from RULE_CHECK_OUT, the leg report kept as output', () => {
+    const dir = repo({ 'a.txt': 'a' })
+    const runnerLike = `echo 'dev-gate: 1 check(s) examined (jev rules: 1 scored)'; echo '  R1 p=0.90'; printf '%s\\n' '${VIOLATED}' > "$RULE_CHECK_OUT"; exit 1`
+    const r = checks({ projectDir: dir, tasks: [] }, { rules: [{ name: 'rules', cmd: runnerLike }] })
+    expect(r.checks.rules[0]).toMatchObject({ name: 'rules', exitCode: 1, stdout: VIOLATED })
+    expect(r.checks.rules[0].output).toContain('dev-gate: 1 check(s) examined')
+  })
+
+  test('the real runner with nothing in scope records an explicit empty scope, not a silent pass and not -1', () => {
+    const dir = repo({ 'a.txt': 'a' })
+    const cmd = `python3 ${join(HERE, '..', '..', '..', 'bin', 'workflow-check')} dev --rules-only --project-dir ${dir}`
+    const r = checks({ projectDir: dir, tasks: [] }, { rules: [{ name: 'rules', cmd }] })
+    expect(r.checks.rules[0].exitCode).toBe(0)
+    const rec = JSON.parse(r.checks.rules[0].stdout)
+    expect(rec).toMatchObject({ verdicts: [], unavailable: [] })
+    expect(rec.scope).toMatch(/^dev-gate: 0 check\(s\) examined.*nothing in scope \(/)
+  })
+
+  test('a runner that could not resolve its workflow records -1', () => {
+    const dir = repo({ 'a.txt': 'a' })
+    const cmd = `python3 ${join(HERE, '..', '..', '..', 'bin', 'workflow-check')} no-such-workflow --rules-only --project-dir ${dir}`
+    const r = checks({ projectDir: dir, tasks: [] }, { rules: [{ name: 'rules', cmd }] })
+    expect(r.checks.rules[0].exitCode).toBe(-1)
   })
 
   test('a crashing cmd, or one that prints no JSON object, fails closed at -1', () => {

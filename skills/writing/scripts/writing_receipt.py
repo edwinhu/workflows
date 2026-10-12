@@ -2,10 +2,9 @@
 """Derive the writing workflow's on-disk approval artifacts from `work`'s approvals.
 
 `writing_section_index.py` refuses to parse anything without a well-formed
-`<proj>/.planning/.state/review.json`, and `run-constraints.py` scopes itself from
-`<proj>/.planning/ACTIVE_WORKFLOW.md` — with no such file `_applies` returns True
-unconditionally and every `ds-*`/`dev-*`/`typst-*` hard constraint runs on a writing
-project. This shim writes both.
+`<proj>/.planning/.state/review.json`, and the per-edit Jev hook (hooks/jev) reads the
+writing run's register from `style:` in `<proj>/.planning/ACTIVE_WORKFLOW.md`. This shim
+writes both.
 
 It is an ADAPTER, never a second authority. Every field is mapped from an approval
 `work` already carries:
@@ -174,7 +173,7 @@ def build_receipt(
     if plan_domain is not None and plan_domain != domain:
         raise ReceiptRefusal(
             f"--domain {domain!r} contradicts the plan's `Domain: {plan_domain}`; the style written to "
-            "ACTIVE_WORKFLOW.md must be the plan's own value or check-all runs the wrong domain's constraints."
+            "ACTIVE_WORKFLOW.md must be the plan's own value or the per-edit hooks score the wrong register's rules."
         )
 
     now = datetime.now(timezone.utc)
@@ -207,7 +206,7 @@ def build_receipt(
 
 
 def active_workflow_text(style: str) -> str:
-    return f"---\nworkflow: writing\nstyle: {style}\n---\n\nScoping marker for run-constraints.py — written by writing_receipt.py from `work`'s approved plan.\n"
+    return f"---\nworkflow: writing\nstyle: {style}\n---\n\nThe writing run's cursor for the per-edit hooks — written by writing_receipt.py from `work`'s approved plan.\n"
 
 
 def write_artifacts(project: Path, receipt: dict, style: str) -> tuple[Path, Path]:

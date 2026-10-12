@@ -50,16 +50,17 @@ Parking is a result, not a failure to report: it records which rules Jev cannot 
 
 `new-rule.ts --wire` moves the module; everything else is a one-time step per set:
 
-1. **Workflow args.** The workflow's dispatch fence carries `ruleChecks` (one per run):
-   `ruleChecks: { name: "jev-<set>-rules", cmd: "bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --project-dir <projectDir> --plan <planPath> --rules ${CLAUDE_PLUGIN_ROOT}/constraints/jev/<set>" }`.
-   `--rules` repeats: the writing workflow adds `--rules …/legal` or `…/econ` from the plan's
-   `Domain:`. A read-only (audit) mode has no diff, so it passes `--files <paths>` instead of
-   `--project-dir`. A skill with no `work` fence (skill-creator) gets a run step with the exit codes.
-2. **Per-edit mod.** `hooks/jev/rules.ts`: add the set to `RuleSet` and `RULE_DIRS`, and a path test
-   in `ruleSetFor` — order matters (exams → authoring → lecture notes → lecture deck → addenda → talk
-   deck → prose → dev → ds). A set another plugin ships also goes in `TEACHING_SETS` and
-   `TEACHING_PROBE`, and falls back to `writing` when that plugin is absent. Add a case to
-   `tests/jev-edit-mod.test.ts`.
+1. **Workflow args.** Membership is the directory: a wired module in `checks/<wf>/rules/` is scored by
+   every run of `<wf>` and of the workflows nested under it, with no list to edit. `/work` fills
+   `ruleChecks` itself from the plan's `workflow:` (`bin/workflow-check <wf> --rules-only`), and plan-lint
+   refuses one naming another workflow. A read-only (audit) mode has no diff, so it runs
+   `bun ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/rule-check.ts --workflow <wf> --files <paths>`. A skill
+   with no `work` fence (skill-creator) gets a run step with the exit codes.
+2. **Per-edit mod.** `hooks/jev/rules.ts` maps a file to its workflow: add a path test in `ruleSetOf` —
+   order matters (exams → authoring → lecture notes → lecture deck → addenda → talk deck → prose → dev →
+   ds). The mod scores the rules `bin/workflow-check <wf> --list` resolves, so a set another plugin ships
+   is found under that plugin's `checks/`, and prose falls back to `writing` when it is absent. Add a
+   case to `tests/jev-edit-mod.test.ts`.
 3. **Calibration manifest.** The scaffold adds the set; drop `uncalibratedDir` only when the directory
    is empty and removed.
 4. **Lens trim.** For each item a wired rule now decides, one sentence in the lens or reviewer prompt:

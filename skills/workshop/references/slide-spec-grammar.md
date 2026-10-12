@@ -1,7 +1,7 @@
 # Workshop Plan Grammar
 
 The grammar the approved plan and the built deck must satisfy for
-`${CLAUDE_PLUGIN_ROOT}/skills/workshop/scripts/workshop-deck.py` to gate a run. Check semantics
+`${CLAUDE_PLUGIN_ROOT}/checks/workshop/constraints/workshop-deck.py` to gate a run. Check semantics
 live in `${CLAUDE_PLUGIN_ROOT}/skills/workshop/references/workshop-checks.md`; this file
 specifies only the syntax the probe parses and the emission the generated slides must carry.
 

@@ -63,32 +63,51 @@ test('outside git every line counts; exit codes are 0, 1 and 2', () => {
   expect(run()).toBe(2)
 })
 
-// ---- L5 / L6: a domain's check.sh reaches its gate, a domain's Jev rules run somewhere -----------------
+// ---- L5 / L6: a workflow's constraints are reached by a check.sh, its Jev rules named by a skill ----------
 
 import { gateLaw } from './authoring-lint.ts'
 
-function plugin(opts: { check?: string; skill?: string }): string {
+function plugin(opts: { check?: string; skill?: string; extra?: Record<string, string> }): string {
   const d = mkdtempSync(join(tmpdir(), 'gate-law-'))
   trash.push(d)
   const w = (p: string, body: string) => { mkdirSync(join(d, p, '..'), { recursive: true }); writeFileSync(join(d, p), body) }
-  w('skills/work/scripts/domain-gate.py', 'DOMAINS = ("ds",)\n')
-  w('hooks/jev/rules.ts', "export const RULE_DIRS = {\n  ds: 'constraints/jev/ds',\n}\n")
-  w('constraints/jev/ds/M1.py', '')
-  w('skills/ds/SKILL.md', opts.skill ?? 'ruleChecks: {}\n')
-  w('skills/ds/scripts/check.sh', opts.check ?? 'python3 domain-gate.py --domain ds --project-dir . --skip-rules\n')
+  w('bin/workflow-check', '#!/usr/bin/env python3\n')
+  w('checks/ds/constraints/ds-join-audits.py', '')
+  w('checks/ds/constraints/_helper.py', '')
+  w('checks/ds/rules/M1.py', '')
+  w('checks/ds/rules/uncalibrated/DQ1.py', '')
+  w('checks/_jev/evidence.py', '')
+  w('skills/ds/SKILL.md', opts.skill ?? 'The plan opens with frontmatter `workflow: ds`.\n')
+  w('skills/ds/scripts/check.sh', opts.check ?? 'python3 "$HERE/../../../bin/workflow-check" ds --project-dir . --constraints-only\n')
+  for (const [p, body] of Object.entries(opts.extra ?? {})) w(p, body)
   return d
 }
 
-test('L5: a check.sh that does not call its domain gate is flagged; one that does is not', () => {
+test('L5: a workflow whose constraints no check.sh reaches is flagged; a comment naming the runner is not a call', () => {
   expect(gateLaw(plugin({}))).toEqual([])
-  const f = gateLaw(plugin({ check: 'echo hand-listed legs\n' }))
+  const f = gateLaw(plugin({ check: 'echo hand-listed legs\n# bin/workflow-check ds --constraints-only\n' }))
   expect(f.map(x => x.rule.slice(0, 2))).toEqual(['L5'])
-  expect(f[0]!.file).toBe('skills/ds/scripts/check.sh')
+  expect(f[0]!.file).toBe('checks/ds/constraints')
 })
 
-test('L6: Jev rules wired for a domain with no ruleChecks and a gate that skips them are flagged', () => {
-  expect(gateLaw(plugin({ skill: 'no rule runner here\n' })).map(x => x.rule.slice(0, 2))).toEqual(['L6'])
-  expect(gateLaw(plugin({ skill: 'no rule runner here\n', check: 'python3 domain-gate.py --domain ds --project-dir .\n' }))).toEqual([])
+test('L5: a nested workflow is reached through a check.sh that passes the register as an expansion', () => {
+  const nested = { 'checks/writing/constraints/w.py': '', 'checks/writing/legal/constraints/v.py': '', 'skills/writing/SKILL.md': 'workflow: writing\n' }
+  const reached = plugin({ extra: { ...nested, 'skills/writing/scripts/check.sh': 'case "$S" in legal) WF="writing/$S" ;; *) WF="writing" ;; esac\npython3 bin/workflow-check "$WF" --constraints-only\n' } })
+  expect(gateLaw(reached)).toEqual([])
+  const unreached = plugin({ extra: { ...nested, 'skills/writing/scripts/check.sh': 'python3 bin/workflow-check writing --constraints-only\n' } })
+  expect(gateLaw(unreached).map(x => x.file)).toEqual(['checks/writing/legal/constraints'])
+})
+
+test('L6: a workflow with wired Jev rules that no SKILL.md names is flagged; uncalibrated/ and helpers count for nothing', () => {
+  expect(gateLaw(plugin({ skill: 'no workflow named here\n' })).map(x => `${x.rule.slice(0, 2)} ${x.file}`)).toEqual(['L6 checks/ds/rules'])
+  expect(gateLaw(plugin({ skill: "ruleChecks: { cmd: 'bun rule-check.ts --workflow ds' }\n" }))).toEqual([])
+  expect(gateLaw(plugin({ extra: { 'checks/elide/rules/uncalibrated/EL-X.py': '', 'checks/elide/rules/_elide.py': '' } }))).toEqual([])
+})
+
+test('L5/L6 hold only of a tree that ships the runner', () => {
+  const d = plugin({ check: 'echo nothing\n', skill: 'nothing\n' })
+  rmSync(join(d, 'bin'), { recursive: true, force: true })
+  expect(gateLaw(d)).toEqual([])
 })
 
 test('the law holds of this plugin as it stands', () => {

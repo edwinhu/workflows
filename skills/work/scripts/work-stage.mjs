@@ -194,8 +194,10 @@ async function main() {
     const provider = (routing.lens && routing.lens.provider)
       || (routing.decisions && routing.decisions.review && routing.decisions.review.provider)
       || routing.provider || f.provider
+    // workflow "none", said out loud (farm.sh requires every row to name one): the lens judges and
+    // writes only its verdict JSON, which no workflow's checks are about. The round's checks ran above.
     const row = {
-      label: spec.label, kind: spec.kind, prompt, provider,
+      label: spec.label, kind: spec.kind, prompt, provider, workflow: 'none',
       ...(spec.model ? { model: spec.model } : {}),
       ...(spec.agentType ? { agent: spec.agentType } : {}),
       expect: [lensOut],
