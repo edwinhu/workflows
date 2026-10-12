@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _ds_logging import reports_operation, statement_text  # noqa: E402
+from _ds_logging import declared_helpers, reports_operation, statement_text  # noqa: E402
 
 CONSTRAINT = "ds-join-audits"
 APPLIES_TO = ["ds-delegate"]
@@ -17,6 +17,7 @@ def check(context):
     """Returns list of violations. Empty list = pass."""
     cwd = Path(context.get("cwd", "."))
     violations = []
+    helpers = declared_helpers(cwd)
 
     py_files = [
         p for p in cwd.rglob("*.py")
@@ -41,7 +42,7 @@ def check(context):
                 start = max(0, i - 6)
                 end = min(len(lines), i + 5)
                 context_block = "\n".join(lines[start:end])
-                if not reports_operation(context_block, statement_text(lines, i - 1)):
+                if not reports_operation(context_block, statement_text(lines, i - 1), helpers):
                     violations.append(
                         f"{path.relative_to(cwd)}:{i}: .merge() without diagnostic print — "
                         "log row counts, match rates, key uniqueness"

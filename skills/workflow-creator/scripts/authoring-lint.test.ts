@@ -62,3 +62,35 @@ test('outside git every line counts; exit codes are 0, 1 and 2', () => {
   expect(run('--target', join(d, 'missing'))).toBe(2)
   expect(run()).toBe(2)
 })
+
+// ---- L5 / L6: a domain's check.sh reaches its gate, a domain's Jev rules run somewhere -----------------
+
+import { gateLaw } from './authoring-lint.ts'
+
+function plugin(opts: { check?: string; skill?: string }): string {
+  const d = mkdtempSync(join(tmpdir(), 'gate-law-'))
+  trash.push(d)
+  const w = (p: string, body: string) => { mkdirSync(join(d, p, '..'), { recursive: true }); writeFileSync(join(d, p), body) }
+  w('skills/work/scripts/domain-gate.py', 'DOMAINS = ("ds",)\n')
+  w('hooks/jev/rules.ts', "export const RULE_DIRS = {\n  ds: 'constraints/jev/ds',\n}\n")
+  w('constraints/jev/ds/M1.py', '')
+  w('skills/ds/SKILL.md', opts.skill ?? 'ruleChecks: {}\n')
+  w('skills/ds/scripts/check.sh', opts.check ?? 'python3 domain-gate.py --domain ds --project-dir . --skip-rules\n')
+  return d
+}
+
+test('L5: a check.sh that does not call its domain gate is flagged; one that does is not', () => {
+  expect(gateLaw(plugin({}))).toEqual([])
+  const f = gateLaw(plugin({ check: 'echo hand-listed legs\n' }))
+  expect(f.map(x => x.rule.slice(0, 2))).toEqual(['L5'])
+  expect(f[0]!.file).toBe('skills/ds/scripts/check.sh')
+})
+
+test('L6: Jev rules wired for a domain with no ruleChecks and a gate that skips them are flagged', () => {
+  expect(gateLaw(plugin({ skill: 'no rule runner here\n' })).map(x => x.rule.slice(0, 2))).toEqual(['L6'])
+  expect(gateLaw(plugin({ skill: 'no rule runner here\n', check: 'python3 domain-gate.py --domain ds --project-dir .\n' }))).toEqual([])
+})
+
+test('the law holds of this plugin as it stands', () => {
+  expect(gateLaw(join(import.meta.dir, '..', '..', '..'))).toEqual([])
+})

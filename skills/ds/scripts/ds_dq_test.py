@@ -292,7 +292,7 @@ def test_check_sh_ds_dq_leg_passes_when_every_output_passes(clean: Path, tmp_pat
         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, check=False,
     )
     lines = proc.stdout.splitlines()
-    assert "leg ds-dq exit=0" in lines, proc.stdout[-3000:]
+    assert "leg ds-gate exit=0" in lines, proc.stdout[-3000:]
     assert any(line.startswith("ds-dq: 9 data output(s) examined") for line in lines), proc.stdout[-3000:]
 
 

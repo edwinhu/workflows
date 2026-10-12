@@ -110,6 +110,8 @@ about; and work re-runs a claimed mechanical pass in a shell (`work-result.sh`),
 affordable for one command and not for N. **P10** refuses a second `mechanicalChecks` entry; a
 genuine exception is declared with `<!-- wc-probe: ignore-entry-point -->`.
 
+**A domain's check.sh calls its domain gate.** `skills/work/scripts/domain-gate.py --domain <d>` computes what the domain runs: the glob `constraints/<d>-*.py`, `ds-dq`, and the Jev set wired in `RULE_DIRS`. check.sh passes `--skip-rules` because the plan's `ruleChecks` scores them; a farmed row calls it bare. `authoring-lint` L5/L6 refuse a check.sh that skips it and a domain whose Jev rules run nowhere.
+
 **And it reaches its constraints by ONE name.** A plugin shipping a constraint corpus exposes
 `scripts/load-constraints <scope>[,<scope>] [--index|--full]` — index by default, because the prose
 for one scope is 38,524 bytes against 1,386 and a load-time bang pays that on every invocation.

@@ -19,6 +19,12 @@
  * L4  a file under .planning's .state dir other than review.json or episode.json, or a
  *     `*_CLARIFIED.json` sentinel, named in an added line (.claude/CLAUDE.md, State Files).
  *
+ * L5  a skill that ships scripts/check.sh for a domain skills/work/scripts/domain-gate.py serves, whose
+ *     check.sh does not call `domain-gate.py --domain <skill>`: the domain's constraints never run in /work.
+ * L6  a domain with wired Jev rules (RULE_DIRS in hooks/jev/rules.ts) whose skill has neither `ruleChecks`
+ *     in its SKILL.md nor a check.sh gate leg that scores them: its rules run nowhere.
+ *     L5 and L6 are structural, not diff-scoped: they hold of the tree, and only in a tree with that gate.
+ *
  * Test files and fixtures are skipped: they carry the violating strings on purpose.
  */
 import { spawnSync } from 'node:child_process'
@@ -83,8 +89,32 @@ export function addedLines(target: string): Map<string, Set<number> | null> {
   return out
 }
 
+/** L5/L6: every gated domain's check.sh reaches its gate, every domain with Jev rules scores them somewhere. */
+export function gateLaw(target: string): Finding[] {
+  const gate = join(target, 'skills/work/scripts/domain-gate.py')
+  const rules = join(target, 'hooks/jev/rules.ts')
+  if (!existsSync(gate) || !existsSync(rules)) return []
+  const out: Finding[] = []
+  const domains = /^DOMAINS\s*=\s*\(([^)]*)\)/m.exec(readFileSync(gate, 'utf8'))?.[1].match(/"([\w-]+)"/g)?.map(d => d.slice(1, -1)) ?? []
+  const calls = (d: string) => new RegExp(`domain-gate\\.py[^\\n]*--domain\\s+${d}\\b`).exec(readFileSync(join(target, 'skills', d, 'scripts/check.sh'), 'utf8'))
+  for (const d of domains) {
+    const check = join(target, 'skills', d, 'scripts/check.sh')
+    if (existsSync(check) && !calls(d)) out.push({ rule: 'L5 check.sh does not call the domain gate; its constraints never run in /work', file: `skills/${d}/scripts/check.sh`, line: 1, text: `expected: domain-gate.py --domain ${d}` })
+  }
+  const block = /RULE_DIRS[^=]*=\s*\{(.*?)\n\}/s.exec(readFileSync(rules, 'utf8'))?.[1] ?? ''
+  for (const [, key, dir] of block.matchAll(/^\s*(\w+):\s*'([^']+)'/gm)) {
+    const skill = join(target, 'skills', key!, 'SKILL.md')
+    const ruled = existsSync(join(target, dir!)) && readdirSync(join(target, dir!)).some(f => /^[A-Za-z0-9-]+\.py$/.test(f) && f !== 'evidence.py')
+    if (!ruled || !existsSync(skill)) continue
+    const check = join(target, 'skills', key!, 'scripts/check.sh')
+    const gated = existsSync(check) && /domain-gate\.py/.test(readFileSync(check, 'utf8')) && !/domain-gate\.py[^\n]*--skip-rules/.test(readFileSync(check, 'utf8'))
+    if (!/ruleChecks/.test(readFileSync(skill, 'utf8')) && !gated) out.push({ rule: 'L6 a domain with wired Jev rules and no ruleChecks or gate leg scoring them', file: `skills/${key}/SKILL.md`, line: 1, text: `${dir} is wired in RULE_DIRS` })
+  }
+  return out
+}
+
 export function lint(target: string): Finding[] {
-  const findings: Finding[] = []
+  const findings: Finding[] = [...gateLaw(target)]
   for (const [file, lines] of addedLines(target)) {
     if (!TEXT_EXT.test(file) || TEST_PATH.test(relative(target, file)) || !existsSync(file)) continue
     const text = readFileSync(file, 'utf8').split('\n')

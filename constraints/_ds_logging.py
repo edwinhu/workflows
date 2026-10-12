@@ -21,6 +21,13 @@ THE RULE, stated once so the checkers can cite it:
 Either half alone is vacuous: a bare count nearby is still someone else's count, and a
 bare variable mention is `print(df)`.
 
+A project that logs through its own helper (`audit_join(left, right, merged)`) declares the name in its
+`.claude-workflows.json` as `"dsAuditHelpers": ["audit_join", ...]`. A call to a DECLARED helper in the
+window satisfies the operation when its code names an identifier linked to the operation, exactly as an
+inline log does; an undeclared helper is still just a function call. `declared_helpers` reads the nearest
+config above a directory, or `DS_AUDIT_HELPERS` (comma-separated) when set -- the farm/work gate sets it
+because it checks a flat copy of the files, away from the config.
+
 Two refinements, each of which exists to stop the rule reporting real diagnostics:
 
   - LINK reads CODE, not prose. `print(f"{c}: {x[c].isna().sum()} unparseable")` links
@@ -33,7 +40,10 @@ Two refinements, each of which exists to stop the rule reporting real diagnostic
 
 from __future__ import annotations
 
+import json
+import os
 import re
+from pathlib import Path
 
 _LOG_CALL = re.compile(r"\b(?:print|(?:logging|logger|log|LOG|LOGGER)\s*\.\s*\w+)\s*\(")
 
@@ -179,8 +189,10 @@ def statement_text(lines: list[str], idx: int) -> str:
     return "\n".join(lines[start : end + 1])
 
 
-def reports_operation(block: str, op_stmt: str) -> bool:
-    """True iff some log call in `block` states a quantity AND links to `op_stmt`."""
+def reports_operation(block: str, op_stmt: str, helpers=frozenset()) -> bool:
+    """True iff some log call in `block` states a quantity AND links to `op_stmt`, or a declared helper does."""
+    if helper_reports(block, op_stmt, helpers):
+        return True
     op_idents = _idents(op_stmt)
     if not op_idents:
         return False
@@ -189,5 +201,39 @@ def reports_operation(block: str, op_stmt: str) -> bool:
         if not (_QUANTITY_EXPR.search(call) or _QUANTITY_WORD.search(call)):
             continue
         if _idents(code_text(call)) & linkable:
+            return True
+    return False
+
+
+def declared_helpers(start) -> frozenset[str]:
+    """`dsAuditHelpers` from `DS_AUDIT_HELPERS`, else the nearest .claude-workflows.json above `start`."""
+    env = os.environ.get("DS_AUDIT_HELPERS")
+    if env is not None:
+        return frozenset(n.strip() for n in env.split(",") if n.strip())
+    p = Path(start).resolve()
+    for d in (p, *p.parents):
+        cfg = d / ".claude-workflows.json"
+        if cfg.is_file():
+            try:
+                v = json.loads(cfg.read_text()).get("dsAuditHelpers") or []
+            except (ValueError, OSError, AttributeError):
+                return frozenset()
+            return frozenset(str(n).strip() for n in v if str(n).strip()) if isinstance(v, list) else frozenset()
+        if d == Path.home() or d == d.parent:
+            break
+    return frozenset()
+
+
+def helper_reports(block: str, op_stmt: str, helpers) -> bool:
+    """True iff `block` calls a declared helper (`name(` or `obj.name(`) whose code links to `op_stmt`."""
+    if not helpers:
+        return False
+    op_idents = _idents(op_stmt)
+    if not op_idents:
+        return False
+    linkable = _derived(block, op_idents)
+    call = re.compile(r"(?<![\w])(?:[A-Za-z_]\w*\s*\.\s*)*(?:%s)\s*\(" % "|".join(map(re.escape, sorted(helpers))))
+    for m in call.finditer(block):
+        if _idents(code_text(_balanced(block, m.end() - 1))) & linkable:
             return True
     return False

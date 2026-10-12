@@ -5,6 +5,9 @@ import os
 import sys
 from pathlib import Path
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _ds_logging import declared_helpers, helper_reports  # noqa: E402
+
 CONSTRAINT = "ds-schema-contracts"
 APPLIES_TO = ["ds-delegate"]
 SEVERITY = "hard"
@@ -57,6 +60,7 @@ def check(context):
     """Returns list of violations. Empty list = pass."""
     cwd = Path(context.get("cwd", "."))
     violations = []
+    helpers = declared_helpers(cwd)
 
     py_files = [
         p for p in cwd.rglob("*.py")
@@ -79,6 +83,8 @@ def check(context):
                     continue
                 end = min(len(lines), i + 10)
                 post_load = "\n".join(lines[i:end])
+                if helper_reports(post_load, statement(lines, i - 1), helpers):
+                    continue
                 if not any(re.search(pat, post_load) for pat in SCHEMA_CHECK_PATTERNS):
                     violations.append(
                         f"{path.relative_to(cwd)}:{i}: data load without schema contract — "
