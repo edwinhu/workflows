@@ -54,7 +54,7 @@ rule statements themselves, binding in every launch mode (a `/ds` dispatch, a fa
 interactive session). Dispatched, `refs` add task-specific files on top; read every one in full.
 For a rule's rationale, examples or checker, open the file its entry names.
 
-When a brief conflicts with an indexed rule — it dictates fonts, hex colours or a house look against A5/A6 — follow the rule and name the conflict in your report. Chart linters gate the row.
+When a brief conflicts with an indexed rule (C1-C6, V1-V9, A1-A6, E1-E7) — e.g. it dictates fonts, hex colours or a house look against A5/A6 — follow the rule and name the conflict in your report. Every ds-* constraint checker gates the row.
 
 The ones that fail silently, so they get named here: every join emits a diagnostic with row counts
 and match rates (E3); every pipeline step is deterministic with seeds set and output sorted (E1);

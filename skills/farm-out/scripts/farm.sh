@@ -399,19 +399,20 @@ Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint
   orphaned=$(python3 "$PLUGIN_ROOT/skills/farm-out/scripts/bgjobs.py" reap "$row_id" "$log" 2>/dev/null)
   printf '%s' "$orphaned" | jq -e 'type == "array"' >/dev/null 2>&1 || orphaned='[]'
   failure=$(printf '%s' "$orphaned" | jq -r 'if length > 0 then "ended with background job running: " + (map(.cmd) | join("; ")) else "" end')
-  # Output gate: a row whose persona preloads ds-rules (A5 type system, A6 palette) must leave charts
-  # that pass the chart linters. Nothing else runs them on a farmed row (check.sh covers /ds work runs
-  # only), so a child that followed a styling brief over the rules would otherwise ship unchecked.
+  # Output gate: a row whose persona preloads ds-rules (C/V/A/E) must leave work that passes every ds-*
+  # constraint checker -- the A5/A6 chart linters and the code checkers. Nothing else runs them on a
+  # farmed row (check.sh covers /ds work runs only), so a child that followed a brief over the rules
+  # would otherwise ship unchecked.
   # A read-only persona (ds-reviewer) writes nothing, so it is skipped: an mtime walk would blame it for a sibling row's figures.
-  # chart-gate.py finds what the row touched; exit 1 = findings, 2 = a linter could not run, and an
+  # ds-gate.py finds what the row touched; exit 1 = findings, 2 = a checker could not run, and an
   # unrun check is not a pass -- both fail the row, and the findings are the failure text.
   local chart_gate="" persona="${agent##*:}"
   if [[ "$persona" =~ ^[A-Za-z0-9_.-]+$ ]] && grep -qs '^  - ds-rules$' "$PLUGIN_ROOT/user-agents/$persona.md" \
      && grep -qs '^tools:.*\(Write\|Bash\)' "$PLUGIN_ROOT/user-agents/$persona.md"; then
     local -a gate_args=(--cwd "$CWD" --stamp "$log.stamp" --log "$log")
     for _e in "${real_expects[@]:-}"; do [ -n "$_e" ] && gate_args+=(--expect "$_e"); done
-    if ! chart_gate=$(python3 "$PLUGIN_ROOT/skills/farm-out/scripts/chart-gate.py" "${gate_args[@]}" 2>&1); then
-      failure="${failure:+$failure; }chart style gate failed (ds-rules A5/A6): $(printf '%s' "$chart_gate" | head -n 40)"
+    if ! chart_gate=$(python3 "$PLUGIN_ROOT/skills/farm-out/scripts/ds-gate.py" "${gate_args[@]}" 2>&1); then
+      failure="${failure:+$failure; }ds constraint gate failed (ds-rules): $(printf '%s' "$chart_gate" | head -n 40)"
     else
       chart_gate=""
     fi
@@ -460,7 +461,7 @@ Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint
       if ! line=$(printf '%s' "$result" | jq -c --argjson m "$meta" --arg ts "$(now_iso)" --argjson gone "$gone" \
           '. as $r | ([if ($r.missing|length) > 0 then "expect-missing" else empty end, if $gone then "gone" else empty end,
                       if ($r.orphaned|length) > 0 then "background-orphaned" else empty end,
-                      if (($r.failure // "") | startswith("chart style gate") or contains("; chart style gate")) then "chart-style" else empty end]) as $c
+                      if (($r.failure // "") | startswith("ds constraint gate") or contains("; ds constraint gate")) then "ds-constraints" else empty end]) as $c
            | {type: "verdict", rowId: $m.rowId, verdict: "wrong",
               why: ("auto [\($m.kind // "-")/\($m.route.model // ($r.models[0] // "-"))]: "
                     + ([if ($r.missing|length) > 0 then "expect missing: \($r.missing|join(", "))" else empty end,
