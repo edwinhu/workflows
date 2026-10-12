@@ -10,7 +10,7 @@ description: >
   the analysis goes to `ds`, not here — this agent holds Read, Grep and Glob only.
 model: sonnet
 color: yellow
-tools: Read, Grep, Glob
+tools: Read, Grep, Glob, StructuredOutput
 skills:
   - ds-rules
 initialPrompt: /ds-rules
