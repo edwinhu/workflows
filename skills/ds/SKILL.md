@@ -267,7 +267,7 @@ a preloaded skill.
 `verifierAgentType` pins `Explore` because it has no Edit and no Write: a judge that structurally
 cannot modify the tree beats a prompt asking it not to. The lens buys the same property a different
 way — `ds-reviewer` is read-only by tools allowlist — because Explore's prompt is predefined and no
-preloaded skill or CLAUDE.md reaches it; the lens carries the four aggregates in its own `refs`.
+preloaded skill or CLAUDE.md reaches it; the lens carries the four aggregates in its own `refs`. The lens returns schema-validated JSON through StructuredOutput, and the runner writes lens.json. `lens.sandbox: true` lets it run the scripts and tests that confirm a claim: its Bash executes in a throwaway overlay of the tree and `data/`, so a re-run's writes vanish and ssh/qsub have no network.
 
 Add `${CLAUDE_PLUGIN_ROOT}/skills/ds/references/competing-hypothesis.md` to a task's `refs` when
 that task is a diagnosis rather than a build. `authorityExtra` names it; `refs` is what makes an

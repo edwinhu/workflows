@@ -27,7 +27,10 @@
 #                                            # "kind" (or its own "provider"/"model"); a row with
 #                                            # neither is refused and nothing runs. Every row names
 #                                            # its "workflow" (or "none"; a persona implies one), and
-#                                            # bin/workflow-check gates what the row touched.
+#                                            # bin/workflow-check gates what the row touched. A row
+#                                            # "schema" becomes --json-schema (see run_one);
+#                                            # "sandbox": true runs the row's commands in a
+#                                            # throwaway bubblewrap overlay (sandbox.sh).
 #   farm.sh --workflow /abs/wf.js --args /abs/args.json --out /abs/result.json
 #   farm.sh --provider claude|codex|gemini   # legacy whole-run override: that wrapper for every
 #                                            # row, route.ts never consulted (--workflow needs it)
@@ -44,6 +47,7 @@ declare -A WRAPPERS=( [claude]=claude-code [codex]=codex-code [gemini]=gemini-co
 # skills/farm-out/scripts/farm.sh -> the plugin root, four levels up. Resolved from this file, not
 # CLAUDE_PLUGIN_ROOT, so a worktree's farm.sh runs that worktree's route.ts and watchdog.
 PLUGIN_ROOT=$(dirname "$(dirname "$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")")")")")
+SANDBOX_SH="$PLUGIN_ROOT/skills/farm-out/scripts/sandbox.sh"
 
 # One machine-wide, append-only JSONL: a `row` line per finished --tasks row, a `verdict` line per
 # --verdict, and an automatic `wrong` verdict for a row that dropped its expect or ended GONE. It is the labelled dataset Jev is graded on, so it outlives the farm-events files
@@ -340,8 +344,18 @@ claim() {
 #
 # provider picks the wrapper for THIS row (rows of one --tasks run may differ). meta is the row's
 # outcome record minus what only the run can say; empty means record nothing (--workflow).
+#
+# schema, when set, is a compact JSON Schema object: the child gets it as --json-schema, the CLI
+# validates the StructuredOutput call against it, and the validated value (the result event's
+# .structured_output) is written to the row's ONE expect path unless the child wrote that file itself.
+#
+# sandbox=true: the child itself keeps the network (it has to reach the model), but every shell it
+# spawns goes through CLAUDE_CODE_SHELL_PREFIX into ONE bubblewrap holder per row (sandbox.sh): the
+# tree as it is now, uncommitted edits included, its data/ targets and $HOME as tmpfs-backed overlays,
+# no network. Edit and Write are denied, the agent runs as a variant with Bash, and the holder dies
+# with the row, taking every write with it. The expect file is still written here, outside.
 run_one() {
-  local label="$1" prompt="$2" agent="$3" model="$4" budget="$5" max_turns="$6" provider="$7" meta="$8"; shift 8
+  local label="$1" prompt="$2" agent="$3" model="$4" budget="$5" max_turns="$6" provider="$7" meta="$8" schema="$9" sandbox="${10}"; shift 10
   local expects=("$@") log err rc text calls models missing stderr_tail result orphaned failure
   local wrapper="${WRAPPERS[$provider]}"
   log=$(mktemp -t farm-out.XXXXXX.jsonl)
@@ -358,13 +372,51 @@ run_one() {
   local -a real_expects=()
   local _e
   for _e in "${expects[@]:-}"; do [ -n "$_e" ] && real_expects+=("$_e"); done
-  if [ "${#real_expects[@]}" -gt 0 ]; then
+  if [ -n "$schema" ] && [ "${#real_expects[@]}" -gt 0 ]; then
+    prompt+="
+
+Return your deliverable by calling the StructuredOutput tool with ONE object matching its schema. The runner writes that object to:
+  ${real_expects[0]}"
+  elif [ "${#real_expects[@]}" -gt 0 ]; then
     prompt+="
 
 Write your deliverable to EXACTLY this path, literally as written, creating parent directories if needed. Do not choose a different location, and do not add a suffix, timestamp or extension:"
     for _e in "${real_expects[@]}"; do prompt+="
   ${_e}"
     done
+  fi
+
+  local sbx_tmp="" sbx_pid="" sbx_holder="" sbx_fail="" run_agent="$agent" agents_file=""
+  if [ "$sandbox" = true ]; then
+    prompt+="
+
+Your Bash tool runs in a throwaway sandbox of this machine: the working tree exactly as it is now (uncommitted changes included), its data directories and \$HOME are overlays, so tests, check scripts and the plan's acceptance commands run against the real files, and everything they write vanishes when you finish. There is no network: ssh, qsub, curl and remote jobs fail there by design. Read, Grep and Glob see the real tree, not what your commands wrote; inspect those outputs with Bash."
+    sbx_tmp=$(mktemp -d /tmp/farm-sandbox.XXXXXX)
+    bash "$SANDBOX_SH" hold "$CWD" "$sbx_tmp" 3>"$log.sandbox" 2>"$log.sandbox.err" &
+    sbx_holder=$!
+    local _i
+    for _i in $(seq 1 100); do
+      sbx_pid=$(jq -r '."child-pid" // empty' "$log.sandbox" 2>/dev/null) && [ -n "$sbx_pid" ] && break
+      kill -0 "$sbx_holder" 2>/dev/null || break
+      sleep 0.05
+    done
+    [ -n "$sbx_pid" ] || sbx_fail="sandbox did not start: $(tail -3 "$log.sandbox.err" | tr '\n' ' ')"
+    # The agent's own file never lists Bash; the row runs the variant sandbox.sh derives from it. An
+    # agent with no file (a built-in such as Explore) runs as itself, behind the same tool denial.
+    if [ -n "$agent" ] && [ -z "$sbx_fail" ]; then
+      local bare=${agent#workflows:} cand
+      for cand in "$CWD/.claude/agents/$bare.md" "${HOME:-}/.claude/agents/$bare.md" \
+                  "$PLUGIN_ROOT/user-agents/$bare.md" "$PLUGIN_ROOT/agents/$bare.md"; do
+        [ -f "$cand" ] || continue
+        agents_file="$log.agents.json"
+        if bash "$SANDBOX_SH" agent "$bare" "$cand" "$agents_file" 2>>"$log.sandbox.err"; then
+          run_agent="$bare-sandboxed"
+        else
+          sbx_fail="could not derive a sandboxed variant of agent $agent from $cand"
+        fi
+        break
+      done
+    fi
   fi
 
   emit "START $(enc "$label") cwd=$(enc "$CWD") out=$(enc "${OUT:-}") expect=${#real_expects[@]} t=$(date +%s)"
@@ -387,10 +439,15 @@ Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint
   prompt_file=$(mktemp -t farm-out.XXXXXX.prompt)
   printf '%s' "${prompt}${ANTI_SIM}${CHILD_STANDING}${guard}" > "$prompt_file"
   local -a cmd=("$wrapper" -p --output-format stream-json --verbose)
-  [ -n "$agent" ] && cmd+=(--agent "$agent")
+  [ -n "$run_agent" ] && cmd+=(--agent "$run_agent")
+  if [ "$sandbox" = true ]; then
+    [ -n "$agents_file" ] && cmd+=(--agents "$agents_file")
+    cmd+=(--strict-mcp-config --disallowedTools "Edit,Write,NotebookEdit,MultiEdit")
+  fi
   # Per-row model override. Absent leaves the wrapper's own default -- which is what every
   # existing caller gets, since no row carried one until now.
   [ -n "$model" ] && cmd+=(--model "$model")
+  [ -n "$schema" ] && cmd+=(--json-schema "$schema")
   touch "$log.stamp"
   
   # Keep stderr: a provider that dies (proxy down, model rejected, auth stale) writes
@@ -401,7 +458,15 @@ Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint
   local row_id
   row_id=$(printf '%s' "$meta" | jq -r '.rowId // empty' 2>/dev/null)
   [ -n "$row_id" ] || row_id="wf-$$-$(od -An -N6 -tx1 /dev/urandom | tr -d ' \n')"
-  ( cd "$CWD" && export FARM_ROW_ID="$row_id" && exec "${cmd[@]}" ) < "$prompt_file" > "$log" 2>"$err" &
+  # A sandbox that failed to start runs nothing: the row fails as a dead child, never unsandboxed.
+  local -a pre=()
+  if [ -n "$sbx_fail" ]; then
+    pre=(bash -c 'printf "farm: %s\n" "$1" >&2; exit 125' sandbox "$sbx_fail"); cmd=()
+  elif [ "$sandbox" = true ]; then
+    pre=(env CLAUDE_CODE_SHELL_PREFIX="$SANDBOX_SH" FARM_SANDBOX_PID="$sbx_pid"
+             TMPDIR="$sbx_tmp" CLAUDE_CODE_TMPDIR="$sbx_tmp")
+  fi
+  ( cd "$CWD" && export FARM_ROW_ID="$row_id" && exec ${pre[@]+"${pre[@]}"} ${cmd[@]+"${cmd[@]}"} ) < "$prompt_file" > "$log" 2>"$err" &
   local child_pid=$!
   
   local wd_out
@@ -436,6 +501,22 @@ Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint
   orphaned=$(python3 "$PLUGIN_ROOT/skills/farm-out/scripts/bgjobs.py" reap "$row_id" "$log" 2>/dev/null)
   printf '%s' "$orphaned" | jq -e 'type == "array"' >/dev/null 2>&1 || orphaned='[]'
   failure=$(printf '%s' "$orphaned" | jq -r 'if length > 0 then "ended with background job running: " + (map(.cmd) | join("; ")) else "" end')
+  # After the reap, so a job left running inside the sandbox is still reported by name.
+  if [ -n "$sbx_holder" ]; then
+    kill "$sbx_holder" 2>/dev/null; wait "$sbx_holder" 2>/dev/null
+    rm -rf -- "$sbx_tmp" "$log.sandbox" "$log.sandbox.err" "$log.agents.json"
+    [ -n "$sbx_fail" ] && failure="${failure:+$failure; }$sbx_fail"
+  fi
+  # Only the structured value, never the prose reply: null (StructuredOutput never called, or never
+  # with a schema-valid object) writes nothing, so the expect stays missing and the row fails.
+  if [ -n "$schema" ] && [ "${#real_expects[@]}" -eq 1 ]; then
+    local so target
+    case "${real_expects[0]}" in /*) target=${real_expects[0]} ;; *) target="$CWD/${real_expects[0]}" ;; esac
+    so=$(jq -s '[.[] | select(.type == "result") | .structured_output] | last | select(type == "object")' "$log" 2>/dev/null)
+    if [ ! -s "$target" ] && [ -n "$so" ]; then
+      mkdir -p -- "$(dirname -- "$target")" && printf '%s\n' "$so" >"$target"
+    fi
+  fi
   # Output gate: a row must leave work that passes its workflow's checks -- every constraint and every
   # Jev rule under checks/<wf>/ and its parents', run by bin/workflow-check over what the row touched.
   # The workflow is the row's (row_workflow: its field, else its persona's; "none" and a read-only persona
@@ -513,7 +594,7 @@ if [ -n "$TASKS" ]; then
   n=$(jq 'length' "$TASKS")
   # Three passes: validate every row, route every row, THEN run any. A refusal in row 9 must not
   # arrive after rows 0-8 are already spending, and a refused row never falls through to a default.
-  declare -a ROW_W=() ROW_L=() ROW_P=() ROW_A=() ROW_M=() ROW_B=() ROW_PROV=() ROW_META=() ROW_ID=()
+  declare -a ROW_W=() ROW_L=() ROW_P=() ROW_A=() ROW_M=() ROW_B=() ROW_S=() ROW_X=() ROW_PROV=() ROW_META=() ROW_ID=()
   RUN_STAMP=$(date -u +%Y%m%dT%H%M%SZ)
   RUN_RAND=$(od -An -N4 -tx1 /dev/urandom 2>/dev/null | tr -d ' \n'); RUN_RAND=${RUN_RAND:-$RANDOM}
   # CDPATH empty: a relative --cwd matched through CDPATH makes cd print it, doubling the value.
@@ -561,7 +642,37 @@ if [ -n "$TASKS" ]; then
         refuse "task $i workflow contains a control character; not allowed in the event stream" ;;
     esac
     row_workflow "$i" "$l" "$a" "$w"
-    ROW_L[i]=$l ROW_P[i]=$p ROW_A[i]=$a ROW_M[i]=$m ROW_B[i]=$b ROW_W[i]=$ROW_WF
+    # "schema": a JSON Schema object, inline JSON text, or a path (relative paths against --cwd, like
+    # expect). Resolved here so an unreadable one refuses the batch before any row spends.
+    st=$(jq -r ".[$i].schema | type" "$TASKS")
+    sch=""
+    case "$st" in
+      null) ;;
+      object) sch=$(jq -c ".[$i].schema" "$TASKS") ;;
+      string)
+        sv=$(jq -r ".[$i].schema" "$TASKS")
+        if [[ $sv == "{"* ]]; then
+          sch=$(printf '%s' "$sv" | jq -ce 'select(type == "object")' 2>/dev/null) \
+            || refuse "task $i: \"schema\" is not a JSON object"
+        else
+          case "$sv" in /*) sp=$sv ;; *) sp="$CWD/$sv" ;; esac
+          sch=$(jq -ce 'select(type == "object")' "$sp" 2>/dev/null) \
+            || refuse "task $i: \"schema\" $sv is not a readable file holding a JSON Schema object"
+        fi ;;
+      *) refuse "task $i: \"schema\" must be an object, inline JSON or a file path, not a $st" ;;
+    esac
+    if [ -n "$sch" ]; then
+      ne=$(jq ".[$i].expect // [] | if type == \"array\" then length else 1 end" "$TASKS")
+      [ "$ne" -le 1 ] || refuse "task $i: a \"schema\" row writes its structured value to ONE expect path, not $ne"
+    fi
+    # "sandbox": true or absent. Anything else is refused rather than read as one or the other.
+    x=$(jq -r ".[$i].sandbox | if . == null then \"\" elif type == \"boolean\" then tostring else \"bad\" end" "$TASKS")
+    [ "$x" != bad ] || refuse "task $i: \"sandbox\" must be true or false"
+    if [ "$x" = true ]; then
+      command -v bwrap >/dev/null && command -v nsenter >/dev/null \
+        || refuse "task $i: \"sandbox\" needs bwrap and nsenter on PATH; refusing to run it unsandboxed"
+    fi
+    ROW_L[i]=$l ROW_P[i]=$p ROW_A[i]=$a ROW_M[i]=$m ROW_B[i]=$b ROW_S[i]=$sch ROW_X[i]=$x ROW_W[i]=$ROW_WF
     # Filesystem-safe and unique: run start, our pid, a random word, the row index.
     ROW_ID[i]="${RUN_STAMP}-$$-${RUN_RAND}-${i}"
   done
@@ -634,6 +745,10 @@ for r in json.load(open(sys.argv[1], encoding="utf-8")):
       *[$'\n\r\t']*|*[$'\001'-$'\010']*)
         rm -rf -- "$rdir"; refuse "task $i: routed model contains a control character" ;;
     esac
+    # Only Claude Code routes its shells through CLAUDE_CODE_SHELL_PREFIX; another wrapper's commands
+    # would run unsandboxed on the real tree.
+    [ "${ROW_X[i]}" != true ] || [ "$prov" = claude ] \
+      || { rm -rf -- "$rdir"; refuse "task $i: \"sandbox\" needs provider claude (routed to $prov); refusing to run it unsandboxed"; }
     ROW_PROV[i]=$prov ROW_M[i]=$mdl
     read -r sha len <<<"${ROW_HASH[i]}"
     ROW_META[i]=$(jq -c --arg rowId "${ROW_ID[i]}" --arg label "${ROW_L[i]}" --arg sha "$sha" --argjson len "$len" \
@@ -652,7 +767,7 @@ for r in json.load(open(sys.argv[1], encoding="utf-8")):
     printf 'farm: ROW %s %s\n' "${ROW_L[i]}" "${ROW_ID[i]}" >&2
     mapfile -t e < <(jq -r ".[$i].expect // [] | if type==\"array\" then .[] else . end" "$TASKS")
     FARM_ROW_WORKFLOW="${ROW_W[i]}" run_one "${ROW_L[i]}" "${ROW_P[i]}" "${ROW_A[i]}" "${ROW_M[i]}" "${ROW_B[i]}" "${FARM_MAX_TURNS:-250}" \
-      "${ROW_PROV[i]}" "${ROW_META[i]}" "${e[@]:-}" > "$dir/$i.json" &
+      "${ROW_PROV[i]}" "${ROW_META[i]}" "${ROW_S[i]}" "${ROW_X[i]}" "${e[@]:-}" > "$dir/$i.json" &
   done
   wait
   out=$(jq -s '.' "$dir"/*.json); rm -rf "$dir"
@@ -739,7 +854,7 @@ CRONMSG
 CRITICAL — Workflow returns IMMEDIATELY with a task id and then keeps running in the background. If you end your turn at that point the session exits and the entire run is destroyed. You MUST NOT end your turn until the workflow has actually returned. It may take 20-60 minutes.
 After calling Workflow, stay alive by polling: run \`sleep 120\` via Bash, then check whether it finished (ToolSearch for \"select:TaskList,TaskGet,TaskOutput\" and use those, or read the workflow transcript directory named in the Workflow result). Repeat for as long as it takes. Never emit a final text message while the workflow is still running.
 
-When it returns, write the SCRIPT'S OWN RETURN VALUE to $OUT as a single JSON document using the Write tool — verbatim, no commentary, no summarising. The Workflow tool wraps it: the tool result is an envelope {summary, agentCount, logs, totalTokens, result, …} and the script's return value is the object under its \`result\` key. Write THAT object, unwrapped, as the whole document. Do not write the envelope, and do not add a \`result\` key of your own. If Workflow throws, write {\"error\": \"<exact error text>\"} to that same path. Do not retry with invented arguments." "" "" "$BUDGET" "${FARM_MAX_TURNS:-250}" "$PROVIDER" "" "${EXPECT[@]:-}" "$OUT")
+When it returns, write the SCRIPT'S OWN RETURN VALUE to $OUT as a single JSON document using the Write tool — verbatim, no commentary, no summarising. The Workflow tool wraps it: the tool result is an envelope {summary, agentCount, logs, totalTokens, result, …} and the script's return value is the object under its \`result\` key. Write THAT object, unwrapped, as the whole document. Do not write the envelope, and do not add a \`result\` key of your own. If Workflow throws, write {\"error\": \"<exact error text>\"} to that same path. Do not retry with invented arguments." "" "" "$BUDGET" "${FARM_MAX_TURNS:-250}" "$PROVIDER" "" "" "" "${EXPECT[@]:-}" "$OUT")
   [ -z "$wf_wrapper" ] || rm -f -- "$wf_wrapper"
   # Non-empty is not structured: a child that wrote its summary would pass the artifact
   # check and hand prose to the caller as the workflow's return value.

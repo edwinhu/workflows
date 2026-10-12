@@ -11,7 +11,7 @@ description: >
   never a revised draft.
 model: sonnet
 color: yellow
-tools: Read, Grep, Glob, mcp__ide__getCurrentSelection, mcp__ide__checkDocumentDirty, mcp__ide__getOpenEditors, mcp__ide__getDiagnostics, mcp__ide__getWorkspaceFolders
+tools: Read, Grep, Glob, StructuredOutput, mcp__ide__getCurrentSelection, mcp__ide__checkDocumentDirty, mcp__ide__getOpenEditors, mcp__ide__getDiagnostics, mcp__ide__getWorkspaceFolders
 skills:
   - writing-general
   - writing-legal

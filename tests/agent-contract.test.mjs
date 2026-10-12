@@ -473,6 +473,68 @@ function values(fm, key) {
   ok('at least one agentType was checked', seen > 0)
 }
 
+// ── A lens agent must be able to return structured output ───────────────────────────────────────
+//
+// The lens row runs `claude -p --json-schema … --agent <lens agentType>`, and an agent's `tools:`
+// allowlist strips the synthetic StructuredOutput tool unless it is named (measured 2026-10-04,
+// claude 2.1.287: ds-reviewer's init listed Read, Grep, Glob and the result had structured_output
+// null). A lens that cannot call it never writes lens.json, and every round scores a dead lens.
+{
+  let seen = 0
+  for (const s of readdirSync(SKILLS).filter(d => existsSync(join(SKILLS, d, 'SKILL.md')))) {
+    const body = readFileSync(join(SKILLS, s, 'SKILL.md'), 'utf8')
+    for (const m of body.matchAll(/lens:\s*\{\s*agentType:\s*"([^"]+)"/g)) {
+      const bare = m[1].replace(/^workflows:/, '')
+      const p = agentPath(bare)
+      if (!existsSync(p)) continue
+      const t = values(frontmatter(p), 'tools')
+      if (t.length === 0) continue
+      seen++
+      ok(`skills/${s}: lens agentType ${bare} lists StructuredOutput in tools`, t.includes('StructuredOutput'), t.join(','))
+    }
+  }
+  ok('at least one repo lens agent with a tools allowlist was checked', seen > 0)
+}
+
+// ── A lens gets Bash ONLY inside the sandbox ─────────────────────────────────────────────────────
+//
+// The property, exactly: a repo lens agent's own file lists no Bash, so on the real tree it can run
+// nothing. A `sandbox: true` farm row runs instead the variant skills/farm-out/scripts/sandbox.sh
+// derives from that file — the same prompt, the file's tools minus every writer, plus Bash — and every
+// Bash call of that row executes inside a bubblewrap overlay with no network (tests/farm-sandbox.test.ts
+// proves the write vanishes). No hand-written "-sandboxed" agent file may exist to drift from it.
+{
+  const SANDBOX = join(SKILLS, 'farm-out', 'scripts', 'sandbox.sh')
+  const WRITERS = ['Edit', 'Write', 'NotebookEdit', 'MultiEdit', 'mcp__ide__openDiff']
+  let seen = 0
+  for (const s of readdirSync(SKILLS).filter(d => existsSync(join(SKILLS, d, 'SKILL.md')))) {
+    const body = readFileSync(join(SKILLS, s, 'SKILL.md'), 'utf8')
+    for (const m of body.matchAll(/lens:\s*\{\s*agentType:\s*"([^"]+)"/g)) {
+      const bare = m[1].replace(/^workflows:/, '')
+      const p = agentPath(bare)
+      if (!existsSync(p)) continue
+      seen++
+      const t = values(frontmatter(p), 'tools')
+      ok(`skills/${s}: lens agent ${bare}'s own file lists no Bash`, !t.includes('Bash'), t.join(','))
+      const out = join(mkTmp('lens-variant-'), 'agents.json')
+      const r = spawnSync('bash', [SANDBOX, 'agent', bare, p, out], { encoding: 'utf8', timeout: 30_000 })
+      ok(`sandbox.sh derives a variant of ${bare}`, r.status === 0 && existsSync(out), r.stderr)
+      const def = existsSync(out) ? JSON.parse(readFileSync(out, 'utf8'))[`${bare}-sandboxed`] : null
+      const dt = def?.tools ?? []
+      ok(`${bare}-sandboxed adds Bash`, dt.includes('Bash'), dt.join(','))
+      for (const w of WRITERS) ok(`${bare}-sandboxed lists no ${w}`, !dt.includes(w), dt.join(','))
+      ok(`${bare}-sandboxed keeps every non-writer tool of ${bare}`,
+         t.filter(x => !WRITERS.includes(x)).every(x => dt.includes(x)), dt.join(','))
+      const text = readFileSync(p, 'utf8')
+      ok(`${bare}-sandboxed carries ${bare}'s prompt verbatim`,
+         def?.prompt === text.slice(text.indexOf('\n---\n', 3) + 5).replace(/^\n+/, ''))
+    }
+  }
+  ok('at least one repo lens agent was derived', seen > 0)
+  const hand = ROSTER.filter(a => /-sandboxed\.md$/.test(a.file))
+  ok('no hand-written -sandboxed agent file exists', hand.length === 0, hand.map(a => a.file).join(','))
+}
+
 // ── The general rule: an agent that declares itself read-only must have no writer ──
 {
   const WRITERS = ['Edit', 'Write', 'NotebookEdit', 'mcp__ide__openDiff']
