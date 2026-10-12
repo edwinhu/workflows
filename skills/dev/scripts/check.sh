@@ -51,6 +51,11 @@ leg tests "$TESTCMD"
 leg lint  "$LINTCMD"
 leg build "$BUILDCMD"
 
+# The domain gate: every constraints/dev-*.py, computed. Its Jev rules are skipped: dev's ruleChecks scores
+# them. Always runs, never counts as declared: it reads the diff, not a project command.
+legcount_run dev-gate python3 "$HERE/../../work/scripts/domain-gate.py" --domain dev --project-dir "$PROJ" --skip-rules
+report dev-gate "$LEG_STATUS"
+
 # Always runs, never counts as declared: it reads the diff, not a project command.
 SCAN_NOTE=""
 scan_leg() {

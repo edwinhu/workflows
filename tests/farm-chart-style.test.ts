@@ -7,7 +7,8 @@ import { spawnSync } from 'node:child_process'
 const ROOT = join(import.meta.dir, '..')
 const FARM = join(ROOT, 'skills', 'farm-out', 'scripts', 'farm.sh')
 const LINT = join(ROOT, 'scripts', 'lib', 'brief-style-lint.ts')
-const GATE = join(ROOT, 'skills', 'farm-out', 'scripts', 'ds-gate.py')
+const GATE = join(ROOT, 'skills', 'work', 'scripts', 'domain-gate.py')
+const RULES_STUB = join(import.meta.dir, 'fixtures', 'ds-gate', 'rule-check-clean.sh')
 const FIX = join(ROOT, 'tests', 'fixtures', 'ds-chart-typography')
 const GATEFIX = join(ROOT, 'tests', 'fixtures', 'ds-gate')
 
@@ -73,7 +74,7 @@ test('userStyle: the user\'s verbatim words in the prompt are the only override'
 // ---- farm.sh: launch refusal and the output gate -------------------------------------------
 
 // A stub claude-code that records that it ran and, optionally, copies a fixture into its cwd.
-function farm(rows: Record<string, unknown>[], copyFixture?: string) {
+function farm(rows: Record<string, unknown>[], copyFixture?: string, env: Record<string, string> = {}) {
   const root = mkdtempSync(join(tmpdir(), 'farmstyle-'))
   const cwd = join(root, 'cwd'); const bin = join(root, 'bin')
   mkdirSync(cwd, { recursive: true }); mkdirSync(bin, { recursive: true })
@@ -85,7 +86,7 @@ function farm(rows: Record<string, unknown>[], copyFixture?: string) {
   const res = spawnSync('bash', [FARM, '--provider', 'claude', '--tasks', tasks, '--cwd', cwd], {
     encoding: 'utf8', timeout: 300_000, cwd: root,
     env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, FARM_OUT_CHILD: '1', FARM_OUTCOMES: join(root, 'outcomes.jsonl'),
-           TMPDIR: root, CLAUDE_CODE_SESSION_ID: 'farm-chart-style-test' } })
+           TMPDIR: root, CLAUDE_CODE_SESSION_ID: 'farm-chart-style-test', DOMAIN_GATE_RULE_CHECK: RULES_STUB, ...env } })
   const out = { status: res.status, stderr: res.stderr, ran: existsSync(ran), rows: JSON.parse(res.stdout || '[]'),
                 outcomes: existsSync(join(root, 'outcomes.jsonl')) ? readFileSync(join(root, 'outcomes.jsonl'), 'utf8') : '' }
   rmSync(root, { recursive: true, force: true })
@@ -135,7 +136,7 @@ test('output gate stays out of rows whose persona does not preload ds-rules', ()
   expect(r.rows[0].ok).toBe(true)
 })
 
-// ---- ds-gate.py directly ----------------------------------------------------------------
+// ---- domain-gate.py directly ----------------------------------------------------------------
 
 test('ds-gate sees a chart under a directory named scratch (the colour linter used to prune it)', () => {
   const root = mkdtempSync(join(tmpdir(), 'chartgate-'))
@@ -150,9 +151,9 @@ test('ds-gate with nothing chart-shaped touched is a no-op pass', () => {
   const root = mkdtempSync(join(tmpdir(), 'chartgate-'))
   writeFileSync(join(root, 'stamp'), ''); writeFileSync(join(root, 'log'), '')
   writeFileSync(join(root, 'notes.md'), 'x')
-  const r = spawnSync('python3', [GATE, '--cwd', root, '--stamp', join(root, 'stamp'), '--log', join(root, 'log')], { encoding: 'utf8', timeout: 60_000 })
+  const r = spawnSync('python3', [GATE, '--domain', 'ds', '--cwd', root, '--stamp', join(root, 'stamp'), '--log', join(root, 'log')], { encoding: 'utf8', timeout: 60_000 })
   expect(r.status).toBe(0)
-  expect(r.stdout).toContain('nothing to lint')
+  expect(r.stdout).toContain('chart linters: no chart code or figure touched')
   rmSync(root, { recursive: true, force: true })
 })
 
@@ -168,6 +169,19 @@ test('output gate marks a ds row wrong for a non-chart rule: unaudited join, unl
   expect(row.failure).toContain('pipeline.py:')
 })
 
+test('a row declaring workflow dev is gated by the dev domain: its Jev verdict fails the row', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'devstub-'))
+  const stub = join(dir, 'rc.sh')
+  writeFileSync(stub, `#!/usr/bin/env bash\necho '{"verdicts":[{"rule":"MOCK","p":0.93,"verdict":"VIOLATED","spans":["figs/pipeline.py:3"]}],"unavailable":[]}'\n`); chmodSync(stub, 0o755)
+  const r = farm([{ label: 'd', agent: 'general-purpose', workflow: 'dev', prompt: 'Add the feature.' }], join(GATEFIX, 'clean'), { DOMAIN_GATE_RULE_CHECK: stub })
+  rmSync(dir, { recursive: true, force: true })
+  expect(r.rows[0].ok).toBe(false)
+  expect(r.rows[0].failure).toContain('dev constraint gate failed')
+  expect(r.rows[0].failure).toContain('MOCK p=0.93')
+  const verdict = r.outcomes.split('\n').filter(Boolean).map(l => JSON.parse(l)).find(l => l.type === 'verdict')
+  expect(verdict.checks).toContain('dev-constraints')
+})
+
 test('output gate passes a clean pipeline', () => {
   const r = farm([{ label: 'g', agent: 'ds', prompt: DATA_ONLY }], join(GATEFIX, 'clean'))
   expect(r.rows[0].ok).toBe(true)
@@ -176,16 +190,17 @@ test('output gate passes a clean pipeline', () => {
 function gateRun(opts: { files: Record<string, string>, constraints?: Record<string, string> }) {
   const root = mkdtempSync(join(tmpdir(), 'dsgate-'))
   // a private copy of the plugin layout, so a checker can be replaced with one that cannot run
-  const plug = join(root, 'plug'); mkdirSync(join(plug, 'skills', 'farm-out', 'scripts'), { recursive: true })
-  cpSync(GATE, join(plug, 'skills', 'farm-out', 'scripts', 'ds-gate.py'))
+  const plug = join(root, 'plug'); mkdirSync(join(plug, 'skills', 'work', 'scripts'), { recursive: true }); mkdirSync(join(plug, 'hooks', 'jev'), { recursive: true })
+  cpSync(GATE, join(plug, 'skills', 'work', 'scripts', 'domain-gate.py'))
+  cpSync(join(ROOT, 'hooks', 'jev', 'rules.ts'), join(plug, 'hooks', 'jev', 'rules.ts'), { recursive: false })
   cpSync(join(ROOT, 'constraints'), join(plug, 'constraints'), { recursive: true })
   for (const [n, body] of Object.entries(opts.constraints ?? {})) writeFileSync(join(plug, 'constraints', n), body)
   const cwd = join(root, 'cwd'); mkdirSync(cwd)
   writeFileSync(join(root, 'stamp'), ''); writeFileSync(join(root, 'log'), '')
   const past = new Date(Date.now() - 60_000); utimesSync(join(root, 'stamp'), past, past)
   for (const [n, body] of Object.entries(opts.files)) { mkdirSync(join(cwd, n, '..'), { recursive: true }); writeFileSync(join(cwd, n), body) }
-  const r = spawnSync('python3', [join(plug, 'skills', 'farm-out', 'scripts', 'ds-gate.py'), '--cwd', cwd, '--stamp', join(root, 'stamp'), '--log', join(root, 'log')],
-    { encoding: 'utf8', timeout: 120_000 })
+  const r = spawnSync('python3', [join(plug, 'skills', 'work', 'scripts', 'domain-gate.py'), '--domain', 'ds', '--cwd', cwd, '--stamp', join(root, 'stamp'), '--log', join(root, 'log')],
+    { encoding: 'utf8', timeout: 120_000, env: { ...process.env, DOMAIN_GATE_RULE_CHECK: RULES_STUB } })
   rmSync(root, { recursive: true, force: true })
   return { rc: r.status, out: r.stdout }
 }
@@ -207,9 +222,9 @@ test('ds-gate respects a waiver that carries a reason', () => {
 test('ds-gate: a clean file passes and says what ran; a figure-only row says the code checkers had nothing', () => {
   const ok = gateRun({ files: { 'p.py': CLEAN } })
   expect(ok.rc).toBe(0)
-  expect(ok.out).toContain('10 code checkers on 1 .py file(s)')
+  expect(ok.out).toContain('10 code checker(s) on 1 .py file(s)')
   const fig = gateRun({ files: { 'f.svg': '<svg xmlns="http://www.w3.org/2000/svg"/>' } })
-  expect(fig.out).toContain('code checkers: no .py touched, nothing to check')
+  expect(fig.out).toContain('code checkers: no .py touched')
 })
 
 test('ds-gate exits 2, never 0, when a checker crashes or prints no verdict', () => {

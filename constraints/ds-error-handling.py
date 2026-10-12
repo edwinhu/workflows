@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _ds_logging import reports_operation, statement_text  # noqa: E402
+from _ds_logging import declared_helpers, reports_operation, statement_text  # noqa: E402
 
 CONSTRAINT = "ds-error-handling"
 APPLIES_TO = ["ds-delegate"]
@@ -17,6 +17,7 @@ def check(context):
     """Returns list of violations. Empty list = pass."""
     cwd = Path(context.get("cwd", "."))
     violations = []
+    helpers = declared_helpers(cwd)
 
     py_files = [
         p for p in cwd.rglob("*.py")
@@ -56,7 +57,7 @@ def check(context):
                 context_block = "\n".join(lines[start:end])
                 # The log must report THIS coercion: a quantity linked by a name from the
                 # coercing line. A neighbouring print says nothing about what was coerced.
-                if not reports_operation(context_block, statement_text(lines, i - 1)):
+                if not reports_operation(context_block, statement_text(lines, i - 1), helpers):
                     violations.append(
                         f"{path.relative_to(cwd)}:{i}: errors='coerce' without logging — "
                         "log count and sample of coerced values"
@@ -69,7 +70,7 @@ def check(context):
                 context_block = "\n".join(lines[start:end])
                 # The log must report THIS drop: a row-count quantity linked by a name from
                 # the dropping line. "How many rows dropped" is the whole point of the rule.
-                if not reports_operation(context_block, statement_text(lines, i - 1)):
+                if not reports_operation(context_block, statement_text(lines, i - 1), helpers):
                     violations.append(
                         f"{path.relative_to(cwd)}:{i}: .dropna() without logging — "
                         "log how many rows dropped and why"

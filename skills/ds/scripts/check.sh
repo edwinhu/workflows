@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 # The ONE mechanical entry point for the ds workflow. Its exit code IS the verdict.
 #
-# Four legs, none short-circuiting. ds-dq and chart-typography (A5) are this plugin's; the other
-# two are the PROJECT's own commands, which a plan discovers and passes in -- that is why they are
+# Four legs, none short-circuiting. ds-gate is this plugin's: the one domain gate (work/scripts/domain-gate.py),
+# which computes what it runs -- every constraints/ds-*.py, ds-dq over the plan's Data Outputs -- so a new
+# constraint script is reached with no edit here. Its Jev rules are skipped: this plan's ruleChecks already
+# scores them, and work reads that verdict, so a leg here would pay for it twice. The other two legs are the
+# PROJECT's own commands, which a plan discovers and passes in -- that is why they are
 # arguments rather than a fixed list:
 # this skill cannot know what a given project runs, but it can still be the single command
 # whose exit code `work` reads. A plan that has no test or lint command omits the flag and
@@ -33,14 +36,8 @@ done
 RC=0
 report() { printf 'leg %s exit=%s%s\n' "$1" "$2" "${3:+ ($3)}"; [ "$2" -le "$RC" ] || RC="$2"; }
 
-ds_dq_leg() { uv run --with polars python3 "$HERE/ds-dq.py" --plan "$PLAN" --project-dir "$PROJ" >&2; }
-legcount_run ds-dq ds_dq_leg
-report ds-dq "$LEG_STATUS"
-
-# A5 is decidable, so it gates here rather than waiting for a reviewer's eye. --render costs one
-# findfont per theme and runs only when the project has chart code or a style sheet.
-legcount_run chart-typography python3 "$HERE/../../../constraints/ds-chart-typography.py" "$PROJ" --render
-report chart-typography "$LEG_STATUS"
+legcount_run ds-gate python3 "$HERE/../../work/scripts/domain-gate.py" --domain ds --project-dir "$PROJ" --plan "$PLAN" --skip-rules
+report ds-gate "$LEG_STATUS"
 
 if [ -n "$TESTCMD" ]; then legcount_run tests legcount_cmd tests "$PROJ" "$TESTCMD" "$TESTRE"; report tests "$LEG_STATUS"
 else count_line tests 0 "command(s)" "— nothing in scope (not declared)" >&2; report tests 0 "not declared"; fi

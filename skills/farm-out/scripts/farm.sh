@@ -399,20 +399,23 @@ Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint
   orphaned=$(python3 "$PLUGIN_ROOT/skills/farm-out/scripts/bgjobs.py" reap "$row_id" "$log" 2>/dev/null)
   printf '%s' "$orphaned" | jq -e 'type == "array"' >/dev/null 2>&1 || orphaned='[]'
   failure=$(printf '%s' "$orphaned" | jq -r 'if length > 0 then "ended with background job running: " + (map(.cmd) | join("; ")) else "" end')
-  # Output gate: a row whose persona preloads ds-rules (C/V/A/E) must leave work that passes every ds-*
-  # constraint checker -- the A5/A6 chart linters and the code checkers. Nothing else runs them on a
-  # farmed row (check.sh covers /ds work runs only), so a child that followed a brief over the rules
-  # would otherwise ship unchecked.
+  # Output gate: a row of a workflow domain must leave work that passes that domain's gate
+  # (work/scripts/domain-gate.py: every constraints/<domain>-*.py plus the domain's Jev rules). The domain is
+  # the row's "workflow" field, else ds for a writing persona that preloads ds-rules. Nothing else runs these on
+  # a farmed row (check.sh covers /work runs only), so a child that followed a brief over the rules would ship unchecked.
   # A read-only persona (ds-reviewer) writes nothing, so it is skipped: an mtime walk would blame it for a sibling row's figures.
-  # ds-gate.py finds what the row touched; exit 1 = findings, 2 = a checker could not run, and an
+  # domain-gate.py finds what the row touched; exit 1 = findings, 2 = a check could not run, and an
   # unrun check is not a pass -- both fail the row, and the findings are the failure text.
-  local chart_gate="" persona="${agent##*:}"
-  if [[ "$persona" =~ ^[A-Za-z0-9_.-]+$ ]] && grep -qs '^  - ds-rules$' "$PLUGIN_ROOT/user-agents/$persona.md" \
+  local chart_gate="" persona="${agent##*:}" gate_domain="${FARM_ROW_WORKFLOW:-}"
+  if [ -z "$gate_domain" ] && [[ "$persona" =~ ^[A-Za-z0-9_.-]+$ ]] && grep -qs '^  - ds-rules$' "$PLUGIN_ROOT/user-agents/$persona.md" \
      && grep -qs '^tools:.*\(Write\|Bash\)' "$PLUGIN_ROOT/user-agents/$persona.md"; then
-    local -a gate_args=(--cwd "$CWD" --stamp "$log.stamp" --log "$log")
+    gate_domain=ds
+  fi
+  if [ -n "$gate_domain" ]; then
+    local -a gate_args=(--domain "$gate_domain" --cwd "$CWD" --stamp "$log.stamp" --log "$log")
     for _e in "${real_expects[@]:-}"; do [ -n "$_e" ] && gate_args+=(--expect "$_e"); done
-    if ! chart_gate=$(python3 "$PLUGIN_ROOT/skills/farm-out/scripts/ds-gate.py" "${gate_args[@]}" 2>&1); then
-      failure="${failure:+$failure; }ds constraint gate failed (ds-rules): $(printf '%s' "$chart_gate" | head -n 40)"
+    if ! chart_gate=$(python3 "$PLUGIN_ROOT/skills/work/scripts/domain-gate.py" "${gate_args[@]}" 2>&1); then
+      failure="${failure:+$failure; }$gate_domain constraint gate failed (domain-gate.py): $(printf '%s' "$chart_gate" | head -n 40)"
     else
       chart_gate=""
     fi
@@ -461,7 +464,7 @@ Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint
       if ! line=$(printf '%s' "$result" | jq -c --argjson m "$meta" --arg ts "$(now_iso)" --argjson gone "$gone" \
           '. as $r | ([if ($r.missing|length) > 0 then "expect-missing" else empty end, if $gone then "gone" else empty end,
                       if ($r.orphaned|length) > 0 then "background-orphaned" else empty end,
-                      if (($r.failure // "") | startswith("ds constraint gate") or contains("; ds constraint gate")) then "ds-constraints" else empty end]) as $c
+                      (($r.failure // "") | capture("(^|; )(?<d>ds|dev) constraint gate")? | .d + "-constraints")]) as $c
            | {type: "verdict", rowId: $m.rowId, verdict: "wrong",
               why: ("auto [\($m.kind // "-")/\($m.route.model // ($r.models[0] // "-"))]: "
                     + ([if ($r.missing|length) > 0 then "expect missing: \($r.missing|join(", "))" else empty end,
@@ -480,7 +483,7 @@ if [ -n "$TASKS" ]; then
   n=$(jq 'length' "$TASKS")
   # Three passes: validate every row, route every row, THEN run any. A refusal in row 9 must not
   # arrive after rows 0-8 are already spending, and a refused row never falls through to a default.
-  declare -a ROW_L=() ROW_P=() ROW_A=() ROW_M=() ROW_B=() ROW_PROV=() ROW_META=() ROW_ID=()
+  declare -a ROW_W=() ROW_L=() ROW_P=() ROW_A=() ROW_M=() ROW_B=() ROW_PROV=() ROW_META=() ROW_ID=()
   RUN_STAMP=$(date -u +%Y%m%dT%H%M%SZ)
   RUN_RAND=$(od -An -N4 -tx1 /dev/urandom 2>/dev/null | tr -d ' \n'); RUN_RAND=${RUN_RAND:-$RANDOM}
   # CDPATH empty: a relative --cwd matched through CDPATH makes cd print it, doubling the value.
@@ -522,7 +525,9 @@ if [ -n "$TASKS" ]; then
     elif [ -n "$lint_out" ]; then
       printf 'farm: task %s (%s): %s\n' "$i" "$l" "$lint_out" >&2
     fi
-    ROW_L[i]=$l ROW_P[i]=$p ROW_A[i]=$a ROW_M[i]=$m ROW_B[i]=$b
+    w=$(jq -r ".[$i].workflow // \"\"" "$TASKS")
+    case "$w" in ds|dev|"") ;; *) refuse "task $i workflow must be \"ds\" or \"dev\" (the domains with a gate), got: $w" ;; esac
+    ROW_L[i]=$l ROW_P[i]=$p ROW_A[i]=$a ROW_M[i]=$m ROW_B[i]=$b ROW_W[i]=$w
     # Filesystem-safe and unique: run start, our pid, a random word, the row index.
     ROW_ID[i]="${RUN_STAMP}-$$-${RUN_RAND}-${i}"
   done
@@ -612,7 +617,7 @@ for r in json.load(open(sys.argv[1], encoding="utf-8")):
     # The rowId is what --verdict takes; this line is where the caller learns it.
     printf 'farm: ROW %s %s\n' "${ROW_L[i]}" "${ROW_ID[i]}" >&2
     mapfile -t e < <(jq -r ".[$i].expect // [] | if type==\"array\" then .[] else . end" "$TASKS")
-    run_one "${ROW_L[i]}" "${ROW_P[i]}" "${ROW_A[i]}" "${ROW_M[i]}" "${ROW_B[i]}" "${FARM_MAX_TURNS:-250}" \
+    FARM_ROW_WORKFLOW="${ROW_W[i]}" run_one "${ROW_L[i]}" "${ROW_P[i]}" "${ROW_A[i]}" "${ROW_M[i]}" "${ROW_B[i]}" "${FARM_MAX_TURNS:-250}" \
       "${ROW_PROV[i]}" "${ROW_META[i]}" "${e[@]:-}" > "$dir/$i.json" &
   done
   wait
