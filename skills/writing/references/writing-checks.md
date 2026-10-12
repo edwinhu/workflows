@@ -31,7 +31,7 @@ pass. It is reported from an exit code observed on this run.
 | CITE | Every draft citation resolves to a bibliography key and to an outline-pinned source | COMPUTED | `writing_gate_probe.py` | CRITICAL |
 | CLAIM | Every drafted section carries the claims the Claim → Section Map assigns it | COMPUTED | `writing_gate_probe.py` | CRITICAL |
 | PROSE-HARD | The hard-severity structural prose constraints | COMPUTED | `writing_prose_gate.py` (wraps `prose-audit.py`) | MAJOR |
-| STYLE | Ship-table diction, ALL-CAPS emphasis, register-crossing markers; legal: full citation in body text | COMPUTED | `writing_style_check.py` | MAJOR |
+| STYLE | Ship-table diction, ALL-CAPS emphasis, register-crossing markers; legal: full citation in body text | COMPUTED | `checks/writing/constraints/writing-style.py` | MAJOR |
 | CONSTRAINTS | Every constraint under `checks/writing/constraints/` and the register's (anchored numbers, topic sentences, outline sync, `shortjournal`, the style and AI-tell tables), on the run's changed files: each reads the file types it checks | COMPUTED | `workflow-check writing[/<domain>] --constraints-only` (the writing-gate leg of `check.sh`) | MAJOR |
 | JEV-RULES | Signposting, stacked hedges, vague attribution (`W-SIGNPOST`, `W-HEDGE`, `W-ATTRIB`); legal adds `L-ID`, `L-FNARG`, `L-DIGEST`; econ adds `E-WEFIND`, `E-CITEFORM`, `E-CAUSAL`, `E-MAGNITUDE` | JUDGED, scored | `rule-check.ts --workflow writing[/<domain>]` (`ruleChecks`) | MAJOR at p >= 0.85 |
 | COVER | Every outline point is expanded in the draft | MODEL-EVALUATED | review lens | MAJOR |
@@ -181,10 +181,10 @@ result.
 ### STYLE: the style rules a regex settles
 
 ```
-uv run python3 ${CLAUDE_PLUGIN_ROOT}/skills/writing/scripts/writing_style_check.py --project <proj> --style <domain>
+uv run --no-project --quiet --with lxml --with pyyaml python3 ${CLAUDE_PLUGIN_ROOT}/bin/workflow-check writing[/<domain>] --project-dir <proj> --constraints-only
 ```
 
-`check.sh` runs it as a leg of the one `writing` entry. Four rules, each a pattern with no judgement
+`<domain>` is `general`, `legal` or `econ`: `check.sh` maps `--style` to it, and any other style runs plain `writing`. The rules are `checks/writing/constraints/writing-style.py` and `checks/writing/<domain>/constraints/register-crossing.py`, which `check.sh` runs as a leg of the one `writing` entry. Four rules, each a pattern with no judgement
 left: `SHIP-DICTION` (the Ship table's phrases — the table names the replacement), `ALL-CAPS` (a
 common word capitalised for emphasis), `REGISTER-CROSSING` (Bluebook short forms, `This Article`
 or `Part II.B` outside a law review; a directional `Section 2 above` or `This paper` inside one) and,
