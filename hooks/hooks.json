@@ -60,10 +60,6 @@
             "type": "command",
             "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/pr-url-logger.ts",
             "async": true
-          },
-          {
-            "type": "command",
-            "command": "bun ${CLAUDE_PLUGIN_ROOT}/hooks/overflow-check.ts"
           }
         ]
       }

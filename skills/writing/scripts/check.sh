@@ -75,22 +75,17 @@ print(int(d.get("citesChecked") or 0))' 2>/dev/null)"; then
   report cite-claim "$LEG_STATUS" "${#SECTIONS[@]} section(s)"
 fi
 
-# Every constraint under checks/writing/constraints/ and the register's (writing/legal, writing/econ), on the
-# files changed in the project: bin/workflow-check computes the set from the layout, so a constraint dropped
-# there is run with no edit here. Its Jev rules are skipped: the plan's ruleChecks scores them. The runner's
+# Every constraint under checks/writing/constraints/ and the register's (writing/legal, writing/econ,
+# writing/general), on the files changed in the project: bin/workflow-check computes the set from the layout, so a
+# constraint dropped there is run with no edit here -- the style rules a regex settles among them (writing-style;
+# the register's register-crossing). Its Jev rules are skipped: the plan's ruleChecks scores them. The runner's
 # interpreter runs every constraint, so it carries what they import: lxml (prose_extract reads a .docx) and
 # PyYAML (writing-no-bold-lead runs prose-audit.py on it).
-case "$STYLE" in legal|econ) WF="writing/$STYLE" ;; *) WF="writing" ;; esac
-name="${WF//\//-}-gate"   # the runner's own count line: writing-gate, writing-legal-gate, writing-econ-gate
+case "$STYLE" in legal|econ|general) WF="writing/$STYLE" ;; *) WF="writing" ;; esac
+name="${WF//\//-}-gate"   # the runner's own count line: writing-gate, writing-legal-gate, writing-general-gate, ...
 legcount_run "$name" uv run --no-project --quiet --with lxml --with pyyaml python3 "$HERE/../../../bin/workflow-check" "$WF" \
   --project-dir "$PROJ" --plan "$PLAN" --constraints-only
 report "$name" "$LEG_STATUS"
-
-# The style rules a regex settles (Ship diction, ALL-CAPS emphasis, register crossing). The
-# judged register rules are rule-check.ts's, over checks/writing/rules and the register's.
-style_leg() { uv run python3 "$HERE/writing_style_check.py" --project "$PROJ" --style "$STYLE" >&2; }
-legcount_run style style_leg
-report style "$LEG_STATUS"
 
 prose_leg() { uv run python3 "$HERE/writing_prose_gate.py" --project "$PROJ" --style "$STYLE" >&2; }
 legcount_run prose prose_leg

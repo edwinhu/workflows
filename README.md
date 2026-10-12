@@ -243,7 +243,6 @@ Hooks auto-run at specific lifecycle events. The table has one row per command t
 | `writing-prose-check.ts` | PostToolUse | Edit/Write | Check edited prose for writing-quality violations |
 | `cite-fidelity-lint.ts` | PostToolUse | Edit/Write | Check edited writing for citation-ledger fidelity |
 | `pr-url-logger.ts` | PostToolUse | Bash | Log PR URLs and GitHub Actions status |
-| `overflow-check.ts` | PostToolUse | Bash | Detect Typst content overflow after compilation |
 | `pattern-scan.ts` | SessionEnd | clear/logout/prompt_input_exit/other | Scan session for reusable patterns |
 
 ### Tool-call guards (mod)

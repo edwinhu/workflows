@@ -1,5 +1,5 @@
-// check.sh's writing-gate leg runs every writing constraint (bin/workflow-check writing --constraints-only)
-// over the project's changed files. The prose tables read a .docx through scripts/prose_extract.py, which
+// check.sh's runner leg runs every writing constraint of the plan's register (`--style general`: bin/workflow-check
+// writing/general --constraints-only) over the project's changed files. The prose tables read a .docx through scripts/prose_extract.py, which
 // needs lxml, so a changed Word file must be read and judged like any other draft: a finding at its path,
 // never a constraint that could not run.
 import { expect, setDefaultTimeout, test } from 'bun:test'
@@ -38,5 +38,5 @@ test('check.sh judges a changed .docx with the writing constraints: its finding 
     { encoding: 'utf8', timeout: 170_000, env: { ...process.env, WORKFLOW_CHECKS_PATH: ROOT } })
   const out = (r.stdout ?? '') + (r.stderr ?? '')
   expect(out).toContain('exports/Intro.docx:1: wikipedia-structural-patterns')
-  expect(out).toMatch(/^leg writing-gate exit=1$/m)
+  expect(out).toMatch(/^leg writing-general-gate exit=1$/m)
 })

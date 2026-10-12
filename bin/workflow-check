@@ -22,7 +22,7 @@ Exit 0: every check ran and found nothing. 1: findings. 2: a check crashed, time
 first, counted a bare zero, or could not judge -- an unrun check is never a pass. Line 1 is the leg count
 `<wf>-gate: N check(s) examined` (work/scripts/leg-counts.sh), N the checks that examined something; with
 N = 0 it says `nothing in scope (...)`. Failing checks follow with their output, then each passing check's
-own count line.
+own count line and any `warning: ` lines it printed.
 """
 import argparse
 import json
@@ -198,7 +198,8 @@ def run_constraint(path: Path, project: Path, plan: Path | None, files: list[Pat
         why = "exited 1 without a `path:line:` finding, or crashed"
     if why:
         return {"name": name, "rc": 2, "n": n, "head": head, "out": f"COULD-NOT-CHECK: {name} {why}\n{full}"}
-    return {"name": name, "rc": r.returncode, "n": n, "head": head, "out": full}
+    return {"name": name, "rc": r.returncode, "n": n, "head": head, "out": full,
+            "warnings": [ln for ln in rest.splitlines() if ln.startswith("warning: ")]}
 
 
 def score_rules(wf: str, files: list[Path], project: Path, plan: Path | None, by_git: bool) -> dict:
@@ -307,7 +308,9 @@ def main() -> int:
         blocks.append(f"jev rules ({', '.join(lay['ruleDirs'])}) exit {rules['rc']}:\n{rules['out']}")
     if blocks:
         print("\n\n".join(blocks))
-    passed = [r["head"] for r in results if r["rc"] == 0]
+    # A passing check contributes its count line and its `warning: ` lines: a warning never moves the exit code, so
+    # this is where a caller sees it. Read from stdout only, since uv writes its own `warning:` lines to stderr.
+    passed = [ln for r in results if r["rc"] == 0 for ln in [r["head"], *r["warnings"]]]
     if passed:
         print("\n" + "\n".join(passed))
     return worst

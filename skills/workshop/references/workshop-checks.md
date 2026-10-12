@@ -30,7 +30,8 @@ detector is absent and therefore passes vacuously. **A check that cannot fail is
 **`N/A` is not a third kind of pass.** An `N/A` line carries a machine-generated reason and is still
 owed a disposition by the verifier against task-local evidence, exactly like a `MODEL-EVALUATED` row.
 It is not permission to stop looking. No computed check in this matrix is `always N/A`: each of
-`CMP CON SPEC NOTE NAR INV VSL WID OVR ENUM` has a fixture that makes it FAIL.
+`CMP SPEC NOTE NAR INV VSL WID OVR ENUM` has a fixture that makes it FAIL. `CON` is not computed by
+the probe: it is always `N/A`, naming the workshop constraints that settle it.
 
 **A `MODEL-EVALUATED` line is never `PASS`.** Reporting `FID`, `CONV` or `VIS` as PASS — in the
 probe, in a task report, or in a verifier summary — is a defect of the same class as a vacuous
@@ -41,7 +42,7 @@ computed pass.
 | Check ID | Description | Runner |
 |---|---|---|
 | CMP | `slides.typ` and `notes.typ` compile clean | computed |
-| CON | Vendored Typst constraints report no failure, no error, no skip, over a non-zero inspected-file count | computed |
+| CON | The typst plugin's workshop constraints report no finding over the deck, each on its own count line | workshop constraints (`workflow-check workshop`) |
 | SPEC | Slide Spec rows and built slides correspond one-to-one by normalized title | computed |
 | NOTE | Every built slide has a non-empty `notes.typ` section under the same normalized title key | computed |
 | NAR | No spoken notes bullet on lines added against HEAD narrates the slide ("the slide shows", "as you can see") | computed |
@@ -79,36 +80,25 @@ paths, and both produced output paths.
 - either compile exits non-zero, or writes to stderr;
 - the probe would open an artifact that no `## Outputs and Verification` row declares.
 
-### CON: Vendored constraints, over files actually inspected — computed
+### CON: The typst workshop constraints — settled by `workflow-check workshop`
 
-**Means:** the typst plugin's `constraints/workshop/run-constraints.py` (the JSON front end for
-every module under its `checks/workshop/constraints/`, the set `bin/workflow-check workshop` runs),
-invoked against the **resolved presentation directory** (not the project root), reports for every
-module an empty `failed[]`, an empty `errors[]`, an empty `skipped[]`, and a summed `inspected`
-count greater than zero.
+**Means:** every constraint under the typst plugin's `checks/workshop/constraints/` reports no
+finding over the deck. They are members of the workshop workflow: `bin/workflow-check workshop`
+runs each one beside this probe on the constraint CLI contract, and each prints its own count line,
+its own `path:line:` findings, and could-not-check (exit 2) when it examined nothing. Their verdict
+reaches the gate's exit code with no help from the probe.
 
-**Evidence:** the runner's JSON — per-module `passed`/`failed`/`errors`/`skipped` membership, each
-module's `inspected` file count, and the summed inspected count.
+**The probe emits `N/A`** for `CON`, with a machine-written reason naming those constraints. It runs
+none of them: the deck is judged against each constraint once, in the runner.
 
-The probe reads the runner's **JSON**, and must not treat the runner's exit 1 as a crash: a violation
-exit and an infrastructure failure are distinguished by the JSON, not by the status.
-
-**Non-vacuity (R11).** `CON` FAILs when:
-
-- the summed `inspected` count is **zero**;
-- `errors[]` is non-empty. A module that raised is not "infra, therefore fine": it checked nothing,
-  so it cannot certify anything;
-- `skipped[]` is non-empty;
-- any module reports a failure.
-
-Every vendored module locates its own inputs by globbing `cwd` and `cwd/presentation` and returns
-`[]` when it finds nothing, so a deck the runner never found reports clean having opened no file. The
-inspected count is what distinguishes "checked and clean" from "checked nothing".
+**Evidence:** the same `workflow-check workshop` run — each workshop constraint's count line, and the
+output of any that failed. Like every `N/A`, `CON` is owed a disposition against that evidence, never
+against the probe's line.
 
 `typst-widow-detection.py` and `typst-overflow.py` are **deliberately not vendored** — both fail
-open, and `WID`/`OVR` own those dimensions natively — the probe owns them, not the corpus runner.
-No count is written down here: the corpus is indexed at load time and a number in prose is a copy
-of it that nothing updates.
+open, and `WID`/`OVR` own those dimensions natively — the probe owns them, not the workshop
+constraints. No count is written down here: the constraint set is the directory, and a number in
+prose is a copy of it that nothing updates.
 
 ### SPEC: Slide Spec ↔ built deck, one-to-one, by title — computed
 
@@ -274,11 +264,13 @@ actually scanned, the pages skipped with their reason, and each offending page w
 ### OVR: Frame overflow — computed
 
 **Means:** zero slides overflow their frame, as determined by the typst plugin's
-`scripts/check-overflow.sh` and its `constraints/slides/overflow.py`, `constraints/slides/shared.py` and `scripts/validation.typ` parts. Every
+`scripts/check-overflow.sh`, the overflow checker it runs and its `scripts/validation.typ`. Every
 Typst checker has exactly one copy, in that plugin; this skill vendors none of it. The driver is
-resolved from `WORKSHOP_OVERFLOW_DRIVER`, then `~/.claude/skills/typst`, then `~/projects/typst`,
-and `validation.typ` is the one beside whichever driver resolved. A machine without the plugin has
-no overflow check, and `OVR` says so as a FAIL naming the plugin — never a skip, never a clean line.
+resolved from `WORKSHOP_OVERFLOW_DRIVER`, else under the root `typst-plugin-root` prints (on PATH
+wherever Claude Code runs; a plain shell without it falls back to `~/.claude/skills/typst`), and
+`validation.typ` is the one beside whichever driver resolved. A machine without the plugin, or a
+`typst-plugin-root` that refuses, has no overflow check, and `OVR` says so as a FAIL — never a skip,
+never a clean line, never another tree's driver.
 
 **Evidence:** the driver's exit code, its captured output, and the physical page count it reports.
 
@@ -338,14 +330,14 @@ result the paper does not contain is critical.
 
 ### CONV: Convention — MODEL-EVALUATED
 
-**Means:** the deck follows the Typst/Touying conventions the vendored constraints cannot express and
+**Means:** the deck follows the Typst/Touying conventions the workshop constraints cannot express and
 the plan's declared proportions — the `## Audience, Venue, Duration, and Proportions` split across
-sections, takeaway-as-title phrasing, bullet density, notes voice. `CON` computes the mechanically
-expressible subset; the rest is judgement: a takeaway that is not a claim, a bullet restating its
-title, notes duplicating the slide instead of expanding it.
+sections, takeaway-as-title phrasing, bullet density, notes voice. The workshop constraints (`CON`)
+compute the mechanically expressible subset; the rest is judgement: a takeaway that is not a
+claim, a bullet restating its title, notes duplicating the slide instead of expanding it.
 
-**Evidence a lens reads:** the built deck and notes, the vendored `typst-*.md` constraint docs under
-`constraints/`, and the plan's Proportions and Slide Spec.
+**Evidence a lens reads:** the built deck and notes, the typst plugin's convention docs under
+`rules/`, and the plan's Proportions and Slide Spec.
 
 ### VIS: Visual integrity — MODEL-EVALUATED
 
