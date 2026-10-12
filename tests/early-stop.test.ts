@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
 import { useTmp } from './helpers/tmp.ts'
-import { DEFAULT_THRESHOLD, INSTRUCTIONS, judgeContext, mandateCeilingMs, NO_WAKE_REASON, afkHold, afkHoldGoal, judgeState, latestUserTurn, noWakeUnderMandate, typedByHuman } from '../hooks/early-stop.ts'
+import { DEFAULT_THRESHOLD, INSTRUCTIONS, idleTicks, judgeContext, mandateCeilingMs, NO_WAKE_REASON, STALE_TICKS, afkHold, afkHoldGoal, judgeState, latestUserTurn, noWakeUnderMandate, typedByHuman } from '../hooks/early-stop.ts'
 
 const mkTmp = useTmp()
 
@@ -1066,3 +1066,223 @@ test('mandateCeilingMs agrees with arm.sh minute for minute, across the 05:00, 0
     expect([hhmm, (mandateCeilingMs(typed, NY) - typed) / 60_000]).toEqual([hhmm, armed])
   }
 }, 120000)
+
+// ---- stale ticks: heartbeat ticks answered with "no change" (nevada e83fb488, 2026-10-12 13:09-16:50) ----
+
+let sn = 0
+const sAt = (min: number) => new Date(Date.parse('2026-10-12T17:00:00.000Z') + min * 60_000).toISOString()
+/** A cron tick exactly as the harness records it: isMeta, turnOrigin scheduled, a scheduledTaskId. */
+const sTick = (min: number, label = 'work run 1012-checks-residue') =>
+  entry({ type: 'user', uuid: `t${sn++}`, timestamp: sAt(min), isMeta: true, turnOrigin: 'scheduled', promptSource: 'system',
+    scheduledTaskId: '62a6ad78', message: { role: 'user', content: `and? (${label})` } })
+/** One tool call and its result; `isError` marks the result failed. */
+const sCall = (min: number, name: string, input: Record<string, unknown>, isError = false): string[] => {
+  const id = `toolu_${sn++}`
+  return [
+    entry({ type: 'assistant', uuid: `a${sn++}`, timestamp: sAt(min), message: { role: 'assistant', content: [{ type: 'tool_use', id, name, input }] } }),
+    entry({ type: 'user', uuid: `r${sn++}`, timestamp: sAt(min), toolUseResult: {},
+      message: { role: 'user', content: [{ type: 'tool_result', tool_use_id: id, content: 'ok', is_error: isError }] } }),
+  ]
+}
+const sSay = (min: number, text: string) =>
+  entry({ type: 'assistant', uuid: `a${sn++}`, timestamp: sAt(min), message: { role: 'assistant', content: [{ type: 'text', text }] } })
+const IDLE_SAY = "No change since the last check. Workflows main still has the other session's 26 uncommitted files."
+/** One tick answered the way the incident answered them: read-only looks, then "no change". */
+const idleTurn = (min: number): string[] => [
+  sTick(min),
+  ...sCall(min + 0.1, 'Bash', { command: 'git -C ~/projects/workflows status --short | wc -l; git -C ~/projects/workflows log --oneline -1; date' }),
+  ...sCall(min + 0.2, 'Bash', { command: 'ls -la ~/projects/workflows/.work && rg -n merge notes.md && cat report.md' }),
+  ...sCall(min + 0.3, 'Read', { file_path: '/home/eh/projects/workflows/CHANGELOG.md' }),
+  sSay(min + 0.4, IDLE_SAY),
+]
+const REQUEST = human('h0', 'Merge then disarm', sAt(-10))
+
+function staleTicks(lines: string[]) {
+  const dir = mkTmp('earlystop-stale-')
+  const path = join(dir, 'transcript.jsonl')
+  writeFileSync(path, [REQUEST, ...lines].join('\n') + '\n')
+  return { dir, transcript: path }
+}
+const STALE_LOG = 'stale ticks'
+
+test('stale ticks: K is two', () => {
+  expect(STALE_TICKS).toBe(2)
+})
+
+test('(a) two trailing ticks answered only with read-only calls BLOCK, before the judge, with the stale-tick reason', () => {
+  const { dir, transcript } = staleTicks([...idleTurn(9), ...idleTurn(26)])
+  const r = runHook(childEnv(dir, DEAD), stopPayload('st-a', transcript, IDLE_SAY))
+  expect(r.out).toContain('"decision":"block"')
+  const reason = JSON.parse(r.out).reason as string
+  expect(reason).toContain('2 heartbeat ticks in a row')
+  expect(reason).toContain('agent-msg list')
+  expect(reason).toContain('agent-msg send --as-user')
+  expect(reason).toContain('"No change" is not an answer')
+  expect(reason).toContain('AskUserQuestion')
+  // The order the reason must keep: count, then test the blocker, then act, then ask.
+  const at = (s: string) => reason.indexOf(s)
+  expect(at('in a row')).toBeLessThan(at('agent-msg list'))
+  expect(at('agent-msg list')).toBeLessThan(at('--as-user'))
+  expect(at('--as-user')).toBeLessThan(at('AskUserQuestion'))
+  const log = readFileSync(join(dir, 'early-stop.log'), 'utf8')
+  expect(log).toContain(STALE_LOG)
+  expect(log).not.toContain('judge unavailable')
+}, 30000)
+
+test('(a) idleTicks counts the trailing run and names the current tick', () => {
+  const lines = [REQUEST, ...idleTurn(9), ...idleTurn(26), ...idleTurn(50)]
+  const got = idleTicks(lines.join('\n'))
+  expect(got.run).toBe(3)
+  expect(got.tick).toBe(JSON.parse(lines.filter((l) => l.includes('"turnOrigin":"scheduled"')).at(-1)!).uuid)
+})
+
+for (const [what, act] of [
+  ['a commit', (m: number) => sCall(m, 'Bash', { command: 'git -C ~/projects/workflows commit -q -m "docs: report"' })],
+  ['a merge', (m: number) => sCall(m, 'Bash', { command: 'cd ~/projects/workflows && git merge --ff-only chart-style-gate' })],
+  ['a work dispatch', (m: number) => sCall(m, 'Bash', { command: 'bash ~/.claude/skills/workflows/skills/work/scripts/work-dispatch.sh /repo args.json' })],
+  ['a work redispatch', (m: number) => sCall(m, 'Bash', { command: 'work-redispatch.sh /repo/.work/1012-x' })],
+  ['a farm dispatch', (m: number) => sCall(m, 'Bash', { command: 'bash farm.sh --tasks /tmp/tasks.json --provider gemini' })],
+  ['a setsid launch', (m: number) => sCall(m, 'Bash', { command: 'setsid nohup bun run.ts > log 2>&1 &' })],
+  ['an agent-msg send', (m: number) => sCall(m, 'Bash', { command: 'agent-msg send --as-user f488bb95 "commit your finished work"' })],
+  ['a kill', (m: number) => sCall(m, 'Bash', { command: 'kill 4242' })],
+  ['an Edit', (m: number) => sCall(m, 'Edit', { file_path: '/repo/x.md', old_string: 'a', new_string: 'b' })],
+  ['a Write', (m: number) => sCall(m, 'Write', { file_path: '/repo/x.md', content: 'b' })],
+  ['a CronCreate', (m: number) => sCall(m, 'CronCreate', { cron: '7 * * * *', prompt: 'and? (x)' })],
+  ['an answered AskUserQuestion', (m: number) => sCall(m, 'AskUserQuestion', { questions: [] })],
+] as const) {
+  test(`(b) a tick whose turn made ${what} does not block`, () => {
+    const { dir, transcript } = staleTicks([...idleTurn(9), ...idleTurn(26).slice(0, -1), ...act(26.35), sSay(26.4, IDLE_SAY)])
+    const r = runHook(childEnv(dir, DEAD), stopPayload('st-b', transcript, IDLE_SAY))
+    expect(r.out).toBe('')
+    expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).not.toContain(STALE_LOG)
+  }, 30000)
+}
+
+test('(b) an action on the PREVIOUS tick leaves a run of one: no block', () => {
+  const jsonl = [REQUEST, ...idleTurn(9).slice(0, -1), ...sCall(9.35, 'Bash', { command: 'agent-msg send --as-user f488bb95 "commit"' }), ...idleTurn(26)].join('\n')
+  expect(idleTicks(jsonl).run).toBe(1)
+})
+
+test('(b) a FAILED commit and an UNANSWERED AskUserQuestion change nothing: still idle', () => {
+  const jsonl = [
+    REQUEST, ...idleTurn(9),
+    ...idleTurn(26).slice(0, -1),
+    ...sCall(26.35, 'Bash', { command: 'git commit -m x' }, true),
+    ...sCall(26.36, 'AskUserQuestion', { questions: [] }, true),
+    sSay(26.4, IDLE_SAY),
+  ].join('\n')
+  expect(idleTicks(jsonl).run).toBe(2)
+})
+
+test('(b) read-only look-alikes are idle: git log --merges, git merge-base, an echoed word, agent-msg list', () => {
+  const jsonl = [
+    REQUEST, ...idleTurn(9), sTick(26),
+    ...sCall(26.1, 'Bash', { command: 'git log --merges -3; git merge-base HEAD main; echo commit; agent-msg list' }),
+    sSay(26.4, IDLE_SAY),
+  ].join('\n')
+  expect(idleTicks(jsonl).run).toBe(2)
+})
+
+test('(c) a single idle tick does not block', () => {
+  const { dir, transcript } = staleTicks(idleTurn(9))
+  const r = runHook(childEnv(dir, DEAD), stopPayload('st-c', transcript, IDLE_SAY))
+  expect(r.out).toBe('')
+  expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).not.toContain(STALE_LOG)
+}, 30000)
+
+test('(d) a live owned run is not idle: no block with the watcher, and none without it either', () => {
+  const a = staleTicks([...idleTurn(9), ...idleTurn(26)])
+  farmEvents(a.dir, 'st-d1', process.pid, [START('wf-merge')])
+  beacon(a.dir, 'st-d1')
+  expect(runHook(childEnv(a.dir, DEAD), stopPayload('st-d1', a.transcript, IDLE_SAY)).out).toBe('')
+  expect(readFileSync(join(a.dir, 'early-stop.log'), 'utf8')).toContain('owned runs live, the watcher wakes the session')
+
+  const b = staleTicks([...idleTurn(9), ...idleTurn(26)])
+  farmEvents(b.dir, 'st-d2', process.pid, [START('wf-merge')])
+  expect(runHook(childEnv(b.dir, DEAD), stopPayload('st-d2', b.transcript, IDLE_SAY)).out).toBe('')
+  expect(readFileSync(join(b.dir, 'early-stop.log'), 'utf8')).not.toContain(STALE_LOG)
+}, 60000)
+
+test('(e) a genuine user turn between the ticks resets the run: no block', () => {
+  const { dir, transcript } = staleTicks([...idleTurn(9), human('h1', "Why isn't it moving", sAt(20)), sSay(21, 'Checked.'), ...idleTurn(26)])
+  const r = runHook(childEnv(dir, DEAD), stopPayload('st-e', transcript, IDLE_SAY))
+  expect(r.out).toBe('')
+  expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).not.toContain(STALE_LOG)
+}, 30000)
+
+test('(e) a plugin wake or task notification is news and resets too; hook feedback is neither a tick nor a reset', () => {
+  const feedback = entry({ type: 'user', uuid: 'fb', timestamp: sAt(26.5), isMeta: true, message: { role: 'user', content: 'Stop hook feedback:\nkeep going' } })
+  expect(idleTicks([REQUEST, ...idleTurn(9), wake('w1', 'The workflows plugin sent a message:\nfarm run x finished: ok', sAt(15)), ...idleTurn(26)].join('\n')).run).toBe(1)
+  expect(idleTicks([REQUEST, ...idleTurn(9), ...idleTurn(26), feedback, sSay(26.6, IDLE_SAY)].join('\n')).run).toBe(2)
+  // The stop is in a typed turn, not a tick: nothing to count.
+  expect(idleTicks([REQUEST, ...idleTurn(9), ...idleTurn(26), human('h2', 'and', sAt(40)), sSay(41, 'ok')].join('\n')).run).toBe(0)
+})
+
+test('only heartbeat ticks count: a self-contained scheduled job (f488bb95 "AFK re-audit (12h, read-only)") does not', () => {
+  const audit = (min: number) => entry({ type: 'user', uuid: `t${sn++}`, timestamp: sAt(min), isMeta: true, turnOrigin: 'scheduled',
+    scheduledTaskId: 'aud1', message: { role: 'user', content: 'AFK re-audit (12h, read-only). Find AFK sessions newer than the last audit report.' } })
+  const auditTurn = (min: number) => [audit(min), ...sCall(min + 0.1, 'Bash', { command: 'fd -e jsonl . ~/.claude/projects' }), sSay(min + 0.2, 'No new AFK sessions.')]
+  expect(idleTicks([REQUEST, ...auditTurn(9), ...auditTurn(26)].join('\n')).run).toBe(0)
+  // Between two heartbeats it neither counts nor resets.
+  expect(idleTicks([REQUEST, ...idleTurn(9), ...auditTurn(15), ...idleTurn(26)].join('\n')).run).toBe(2)
+  // The d73a2eae shape: a heartbeat that names itself one.
+  const hb = (min: number) => entry({ type: 'user', uuid: `t${sn++}`, timestamp: sAt(min), isMeta: true, turnOrigin: 'scheduled',
+    message: { role: 'user', content: 'Overnight heartbeat (the user is asleep; standing authority from the user)' } })
+  expect(idleTicks([REQUEST, hb(9), sSay(9.1, IDLE_SAY), hb(26), sSay(26.1, IDLE_SAY)].join('\n')).run).toBe(2)
+})
+
+test('a peer session message is news even though the harness marks it meta: it resets', () => {
+  const peer = entry({ type: 'user', uuid: 'p1', timestamp: sAt(15), isMeta: true, origin: { kind: 'peer' },
+    message: { role: 'user', content: 'Another Claude session sent a message:\ncommitted 79c3409c' } })
+  expect(idleTicks([REQUEST, ...idleTurn(9), peer, ...idleTurn(26)].join('\n')).run).toBe(1)
+})
+
+test('cap: one stale block per tick, separate from the user-turn cap; the next idle tick blocks again', () => {
+  const { dir, transcript } = staleTicks([...idleTurn(9), ...idleTurn(26)])
+  const env = childEnv(dir, DEAD)
+  expect(runHook(env, stopPayload('st-cap', transcript, IDLE_SAY)).out).toContain('"decision":"block"')
+  // The same tick again: the leg has spoken for it; the judge (unreachable here) is next.
+  expect(runHook(env, stopPayload('st-cap', transcript, IDLE_SAY)).out).toBe('')
+  const c = JSON.parse(readFileSync(join(dir, 'early-stop-st-cap.json'), 'utf8'))
+  expect(c.blocks).toBe(0)
+  expect(c.tickBlocks).toBe(1)
+  writeFileSync(transcript, [REQUEST, ...idleTurn(9), ...idleTurn(26), ...idleTurn(50)].join('\n') + '\n')
+  expect(runHook(env, stopPayload('st-cap', transcript, IDLE_SAY)).out).toContain('"decision":"block"')
+  expect(JSON.parse(readFileSync(join(dir, 'early-stop-st-cap.json'), 'utf8')).tickBlocks).toBe(1)
+}, 60000)
+
+test('a spent user-turn cap does not silence the stale leg, and a stale block keeps that count', () => {
+  const { dir, transcript } = staleTicks([...idleTurn(9), ...idleTurn(26)])
+  writeFileSync(join(dir, 'early-stop-st-keep.json'), JSON.stringify({ turn: 'h0', blocks: 2 }))
+  expect(runHook(childEnv(dir, DEAD), stopPayload('st-keep', transcript, IDLE_SAY)).out).toContain('"decision":"block"')
+  expect(JSON.parse(readFileSync(join(dir, 'early-stop-st-keep.json'), 'utf8'))).toMatchObject({ turn: 'h0', blocks: 2, tickBlocks: 1 })
+}, 30000)
+
+test('an UNREADABLE counter fails open for the stale leg too', () => {
+  const { dir, transcript } = staleTicks([...idleTurn(9), ...idleTurn(26)])
+  writeFileSync(join(dir, 'early-stop-st-bad.json'), 'not json')
+  expect(runHook(childEnv(dir, DEAD), stopPayload('st-bad', transcript, IDLE_SAY)).out).toBe('')
+}, 30000)
+
+test('an armed work-hold that speaks stands the stale leg down; FARM_OUT_CHILD and GRIND exempt it', () => {
+  const a = staleTicks([...idleTurn(9), ...idleTurn(26)])
+  writeFileSync(join(a.dir, 'work-hold-st-hold.json'), JSON.stringify({
+    check: '', goal: 'merge the branches', startedAt: Math.floor(Date.now() / 1000), ceilingMinutes: 600, maxRounds: 10, rounds: 0,
+  }))
+  expect(runHook(childEnv(a.dir, DEAD), stopPayload('st-hold', a.transcript, IDLE_SAY)).out).toBe('')
+  expect(readFileSync(join(a.dir, 'early-stop.log'), 'utf8')).toContain('work-hold is armed')
+
+  const b = staleTicks([...idleTurn(9), ...idleTurn(26)])
+  expect(runHook(childEnv(b.dir, { ...DEAD, FARM_OUT_CHILD: '1' }), stopPayload('st-child', b.transcript, IDLE_SAY)).out).toBe('')
+  expect(runHook(childEnv(b.dir, { ...DEAD, GRIND_ITERATION: '3' }), stopPayload('st-grind', b.transcript, IDLE_SAY)).out).toBe('')
+}, 60000)
+
+test('a silent afk hold: the stale leg speaks for it, and sends questions to the morning report', () => {
+  const { dir, transcript } = staleTicks([...idleTurn(9), ...idleTurn(26)])
+  afkHoldFile(dir, 'st-afk')
+  const r = runHook(childEnv(dir, DEAD), stopPayload('st-afk', transcript, IDLE_SAY))
+  expect(r.out).toContain('"decision":"block"')
+  expect(r.out).toContain('2 heartbeat ticks in a row')
+  expect(r.out).toContain('morning report')
+  expect(r.out).not.toContain('ask the user with AskUserQuestion')
+}, 30000)

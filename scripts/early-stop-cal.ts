@@ -18,7 +18,7 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { homedir } from 'node:os'
-import { INSTRUCTIONS as NEW_INSTRUCTIONS, judgeContext, judgeState, latestUserTurn, noWakeUnderMandate, QUESTION_KEY, typedByHuman } from '../hooks/early-stop.ts'
+import { idleTicks, INSTRUCTIONS as NEW_INSTRUCTIONS, judgeContext, judgeState, latestUserTurn, noWakeUnderMandate, QUESTION_KEY, STALE_TICKS, typedByHuman } from '../hooks/early-stop.ts'
 import { decisionsCall, parseNoul } from '../hooks/work-hold.ts'
 
 const ROOT = dirname(import.meta.dir)
@@ -269,13 +269,14 @@ function measure(runs: number): void {
 /**
  * Free (no model call): does the deterministic leg fire on each case? The context is recomputed from the
  * transcript cut at the stop, with the current `judgeContext`. Every case reached the judge, so no
- * watched live run existed; live runs are taken as none. blocked = leg OR both stored NEW p >= bar.
+ * watched live run existed; live runs are taken as none. leg = noWakeUnderMandate OR stale ticks;
+ * blocked = leg OR both stored NEW p >= bar.
  */
 function leg(bar: number): void {
   const { cases } = JSON.parse(readFileSync(CASES, 'utf8'))
   const results = JSON.parse(readFileSync(RESULTS, 'utf8'))
   const tx = new Map<string, string[]>()
-  let tot = { E: 0, I: 0, L: 0, jE: 0, jI: 0, jL: 0, lE: 0, lI: 0, lL: 0 }
+  let tot = { E: 0, I: 0, L: 0, jE: 0, jI: 0, jL: 0, lE: 0, lI: 0, lL: 0, sE: 0, sL: 0 }
   const n = { E: 0, I: 0, L: 0 }
   for (const c of cases) {
     if (!tx.has(c.session)) { const f = transcriptOf(c.session); tx.set(c.session, f ? readFileSync(f, 'utf8').split('\n').filter(Boolean) : []) }
@@ -287,11 +288,15 @@ function leg(bar: number): void {
       if (Number.isFinite(t) && t > stopMs + 1500) break
       before.push(l)
     }
+    const early = c.label === 'EARLY'
     const ctx = judgeContext(before.join('\n'))
-    const fires = noWakeUnderMandate(ctx, [])
+    const idle = idleTicks(before.join('\n'))
+    const stale = idle.tick !== null && idle.run >= STALE_TICKS
+    if (stale) { if (early) tot.sE++; else tot.sL++ }
+    if (stale) console.log(`STALE ${c.id}\t${c.label}\trun=${idle.run}`)
+    const fires = noWakeUnderMandate(ctx, []) || stale
     const p: number[] = results[c.id].new
     const jev = p.length >= 2 && p.every((x) => x >= bar)
-    const early = c.label === 'EARLY'
     n[early ? 'E' : 'L']++; if (early && c.incident) n.I++
     if (jev) { if (early) tot.jE++; else tot.jL++; if (early && c.incident) tot.jI++ }
     if (fires) { if (early) tot.lE++; else tot.lL++; if (early && c.incident) tot.lI++ }
@@ -299,6 +304,7 @@ function leg(bar: number): void {
     if (fires) console.log(`LEG ${c.id}\t${c.label}${c.incident ? '/incident' : ''}\tjev ${p.join('/')}\twoken=${c.wokenBeforeNext}\tstanding=${JSON.stringify(ctx.standing).slice(0, 100)}`)
   }
   console.log(`bar ${bar}  jev-only: EARLY ${tot.jE}/${n.E} incidents ${tot.jI}/${n.I} LEGIT ${tot.jL}/${n.L}`)
+  console.log(`stale-ticks leg: EARLY ${tot.sE}/${n.E} LEGIT ${tot.sL}/${n.L}`)
   console.log(`bar ${bar}  leg-only: EARLY ${tot.lE}/${n.E} incidents ${tot.lI}/${n.I} LEGIT ${tot.lL}/${n.L}`)
   console.log(`bar ${bar}  combined: EARLY ${tot.E}/${n.E} incidents ${tot.I}/${n.I} LEGIT ${tot.L}/${n.L}`)
 }
