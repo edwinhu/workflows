@@ -3,7 +3,7 @@
 The contract is checks/ds/constraints/_contract.py -- `<constraint>.py --project-dir P [--plan X] [--files F ...]`,
 line 1 the count, each finding `path:line: <name> message`, exit 0 pass, 1 findings, 2 could not run. A writing
 constraint checks every file it is handed whose type it reads, wherever it lies: it never looks for drafts/ itself.
-A nested register's constraints (writing/legal, writing/econ) import this module from here.
+A nested register's constraints (writing/legal, writing/econ, writing/general) import this module from here.
 """
 from __future__ import annotations
 

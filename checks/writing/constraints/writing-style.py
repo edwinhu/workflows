@@ -1,10 +1,10 @@
 #!/usr/bin/env -S uv run python3
-"""writing_style_check.py — the style rules a regex settles, over <project>/drafts.
+"""Constraint: writing-style — the style rules a regex settles, on the CLI contract (_writing.main).
 
-    writing_style_check.py --project <dir> --style legal|econ|general
-
-Three rules, each one a pattern with no judgement left in it (the judged register rules are
-Jev's, under checks/writing/rules, and the reviewer's):
+This file runs SHIP-DICTION and ALL-CAPS, which hold in every register; checks/writing/<register>/
+constraints/register-crossing.py (legal, econ, general) loads it and runs REGISTER-CROSSING (and INLINE-CITE
+for legal) for the register its directory names. Each rule is a pattern with no judgement left in it (the judged register
+rules are Jev's, under checks/writing/rules, and the reviewer's):
 
   SHIP-DICTION       a phrase from the writing-general Ship table ("utilize", "due to the fact
                      that", ...). The table names the replacement, so a hit is never a matter
@@ -17,16 +17,19 @@ Jev's, under checks/writing/rules, and the reviewer's):
                      text of a law review draft. Footnotes carry the citations.
 
 Quoted text is skipped — a quotation reproduces someone else's diction. Frontmatter, code,
-tables and headings are not prose and are skipped too.
+tables and headings are not prose and are skipped too. Every .md, .typ and .tex file handed in is read.
 
-Prints `file:line: RULE: text` per finding. Exit 0 clean · 1 findings · 2 refusal.
+The general register (comment letters, memos, briefs) is its own level, checks/writing/general/: a check in
+checks/writing/constraints/ is inherited by every register, so it could not hold general's crossing rules.
 """
 from __future__ import annotations
 
-import argparse
 import re
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import _writing
 
 PROSE_EXT = (".md", ".typ", ".tex")
 
@@ -114,41 +117,36 @@ def prose_lines(path: Path):
         yield i + 1, QUOTED.sub(" ", text)
 
 
-def check(path: Path, style: str):
-    rules = [(re.compile(p, re.IGNORECASE), "SHIP-DICTION", f"`{{m}}` → {w}") for p, w in SHIP.items()]
-    rules.append((CAPS_RX, "ALL-CAPS", "`{m}` set in capitals for emphasis — let the sentence carry it"))
-    rules += [(re.compile(p), "REGISTER-CROSSING", f"`{{m}}`: {w}") for p, w in REGISTER[style]]
+def _findings(path: Path, rules, inline_cite: bool):
     for n, text in prose_lines(path):
         for rx, rule, msg in rules:
             for m in rx.finditer(text):
                 yield n, rule, msg.format(m=m.group(0))
-        if style == "legal" and not re.match(r"\s*\[\^[^\]]+\]:", text):
+        if inline_cite and not re.match(r"\s*\[\^[^\]]+\]:", text):
             for m in FULL_CITE.finditer(body_only(text)):
                 yield n, "INLINE-CITE", f"`{m.group(0)}…` in body text: put the citation in a footnote"
 
 
-def main(argv=None) -> int:
-    ap = argparse.ArgumentParser(description="the style rules a regex settles, over <project>/drafts")
-    ap.add_argument("--project", required=True)
-    ap.add_argument("--style", required=True, choices=sorted(REGISTER))
-    a = ap.parse_args(argv)
-    drafts = Path(a.project) / "drafts"
-    files = sorted(p for p in drafts.glob("*") if p.suffix.lower() in PROSE_EXT) if drafts.is_dir() else []
-    if not files:
-        print(f"writing_style_check: no prose under {drafts} — the check would examine nothing",
-              file=sys.stderr)
-        return 2
-    found = 0
-    for f in files:
-        for n, rule, msg in check(f, a.style):
-            print(f"{f.relative_to(a.project)}:{n}: {rule}: {msg}")
-            found += 1
-    print(f"writing_style_check: {found} finding(s) across {len(files)} file(s)", file=sys.stderr)
-    # The non-vacuity count line (work/scripts/leg-counts.sh).
-    lines = sum(len(f.read_text(encoding="utf-8", errors="replace").splitlines()) for f in files)
-    print(f"style: {lines} line(s) examined in {len(files)} file(s)", file=sys.stderr)
-    return 1 if found else 0
+def style(path: Path):
+    """SHIP-DICTION and ALL-CAPS: (line, rule, message) for the rules every register shares."""
+    rules = [(re.compile(p, re.IGNORECASE), "SHIP-DICTION", f"`{{m}}` → {w}") for p, w in SHIP.items()]
+    rules.append((CAPS_RX, "ALL-CAPS", "`{m}` set in capitals for emphasis — let the sentence carry it"))
+    return _findings(path, rules, inline_cite=False)
+
+
+def crossing(path: Path, register: str):
+    """REGISTER-CROSSING for `register`, and INLINE-CITE when it is legal."""
+    rules = [(re.compile(p), "REGISTER-CROSSING", f"`{{m}}`: {w}") for p, w in REGISTER[register]]
+    return _findings(path, rules, inline_cite=register == "legal")
+
+
+def main(name: str, findings_of) -> int:
+    """`findings_of(path)` over every .md, .typ and .tex file handed in, on the contract (_writing.main)."""
+    def check(context):
+        cwd = Path(context["cwd"])
+        return [f"{_writing.rel(p, cwd)}:{n}: {rule}: {msg}" for p in context["files"] for n, rule, msg in findings_of(p)]
+    return _writing.main(name, check, lambda p: p.suffix.lower() in PROSE_EXT, kind="prose file (.md, .typ, .tex)")
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main("writing-style", style))

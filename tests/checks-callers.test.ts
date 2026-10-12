@@ -203,6 +203,33 @@ test('the per-edit hooks take their rule and constraint sets from workflow-check
   expect(read('hooks/writing-prose-check.ts'), 'the prose hook resolves its set through the runner').toContain('workflow-check')
 })
 
+// ---- what a caller reads from the runner (R5) --------------------------------------------------------------
+
+test('workflow-check prints the warning: lines of a check that exits 0, and a warning never moves the exit code', () => {
+  const root = plug({
+    'checks/zzwarn/constraints/soft.py': 'import sys\nprint("soft: 1 file(s) examined")\nprint("warning: a.md:3: SOFT a deck question the notes never ask")\n'
+      + 'print("a.md:4: an informational line")\nsys.exit(0)\n',
+    'checks/zzwarn/constraints/clean.py': 'import sys\nprint("clean: 1 file(s) examined")\nsys.exit(0)\n',
+  })
+  const p = project({ 'a.md': 'x\n' })
+  const r = wcheck(['zzwarn', '--constraints-only', '--project-dir', p, '--files', join(p, 'a.md')], { WORKFLOW_CHECKS_PATH: root })
+  expect(r.status, r.stdout + r.stderr).toBe(0)
+  expect(first(r.stdout)).toMatch(/^zzwarn-gate: 2 check\(s\) examined/)
+  expect(r.stdout, 'the passing check\'s warning reaches the caller').toMatch(/^warning: a\.md:3: SOFT a deck question the notes never ask$/m)
+  expect(r.stdout, 'a passing check contributes its count line and its warnings, nothing else').not.toContain('an informational line')
+  expect(r.stdout).toMatch(/^clean: 1 file\(s\) examined$/m)
+})
+
+test('writing check.sh maps --style general to writing/general: the general register\'s crossing markers gate through workflow-check', () => {
+  const p = project({ 'drafts/x.md': 'As explained supra, This Article argues the point.\n', 'refs.bib': '', 'plan.md': '# Plan\n' })
+  const r = sh('bash', [join(ROOT, 'skills', 'writing', 'scripts', 'check.sh'), '--project', p, '--bib', join(p, 'refs.bib'), '--plan', join(p, 'plan.md'),
+    '--plan-hash', 'h', '--style', 'general'], { WORKFLOW_CHECKS_PATH: ROOT, TMPDIR: mkTmp('wfc-tmpdir-') })
+  const o = r.stdout + r.stderr
+  expect(o, o.slice(-1500)).toMatch(/^leg writing-general-gate exit=1/m)
+  const crossings = [...o.matchAll(/^drafts\/x\.md:1: register-crossing REGISTER-CROSSING: `([^`]+)`/gm)].map(m => m[1]).sort()
+  expect(crossings, o.slice(-1500)).toEqual(['This Article', 'supra'])
+})
+
 // ---- retirement ---------------------------------------------------------------------------------------------
 
 const tracked = () => (spawnSync('git', ['-C', ROOT, 'ls-files'], { encoding: 'utf8', timeout: 60_000, maxBuffer: 64 * 1024 * 1024 }).stdout ?? '').split('\n').filter(Boolean)
@@ -215,8 +242,11 @@ test('the old machinery is gone: no constraints/ tree, run-constraints.py, domai
   for (const f of ['skills/work/scripts/domain-gate.py', 'scripts/check-all-ds.sh']) expect(files, f).not.toContain(f)
   expect(read('skills/work/scripts/rule-check.ts'), 'rule-check --rules retired in favour of --workflow').not.toContain("'--rules'")
   const SELF = 'tests/checks-callers.test.ts'
+  // The residue red tests build an APPLIES_TO module and a run-constraints.py runner as fixtures, to prove they register
+  // nothing; a fixture string there is not a use. Every other file in scope, production code above all, stays banned.
+  const RED_FIXTURES = /^tests\/checks-residue[\w-]*\.test\.ts$/
   const scope = /^(skills\/work\/|skills\/farm-out\/|hooks\/|scripts\/|skills\/workflow-creator\/scripts\/|tests\/)/
-  const hits = files.filter(f => scope.test(f) && f !== SELF && /\.(py|ts|mjs|js|sh)$/.test(f) && existsSync(join(ROOT, f)))
+  const hits = files.filter(f => scope.test(f) && f !== SELF && !RED_FIXTURES.test(f) && /\.(py|ts|mjs|js|sh)$/.test(f) && existsSync(join(ROOT, f)))
     .filter(f => /RULE_DIRS|REGISTER_DIRS|TEACHING_SETS|TEACHING_PROBE|APPLIES_TO|run-constraints\.py/.test(readFileSync(join(ROOT, f), 'utf8')))
   expect(hits).toEqual([])
 })

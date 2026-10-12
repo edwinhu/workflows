@@ -4,18 +4,17 @@
 // `N passed, M failed` line and `process.exit(1)` on failure, but register no bun `test()` block.
 // `bun test` sees a file with zero tests, ignores its exit code, and reports success. With two
 // genuine failures live in `tests/writing-prose-check.test.mjs`, `bun test` exited **0** — and its
-// summary line was the harness's own output being mistaken for bun's tally. 293 assertions across
-// agent-contract (232), writing-prose-check (33), overflow-check (20) and typst-convention-guard
-// (8) could not fail the gate.
+// summary line was the harness's own output being mistaken for bun's tally. The assertions in
+// agent-contract, writing-prose-check and typst-convention-guard could not fail the gate.
 //
 // The harnesses are NOT rewritten into bun tests: each is also a standalone script with a
-// documented `bun tests/<file>` invocation, and porting 293 assertions to change nothing but the
+// documented `bun tests/<file>` invocation, and porting their assertions to change nothing but the
 // runner is churn with a real chance of dropping one. Instead each is SPAWNED here, once, and its
 // exit code is the assertion — the same "run it and read the exit code" rule this repo applies to
 // every other mechanical gate.
 //
-// Discovery is dynamic ON PURPOSE. A hard-coded list of four would not cover the fifth, and the
-// fifth is exactly the one nobody would remember to add.
+// Discovery is dynamic ON PURPOSE. A hard-coded list would not cover the next harness, and the
+// next is exactly the one nobody would remember to add.
 import { describe, expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";

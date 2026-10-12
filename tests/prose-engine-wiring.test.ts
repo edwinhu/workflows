@@ -22,10 +22,12 @@ function split(workflow: string, env: Record<string, string> = {}): { structural
   return { structural: j.structural.map((f: string) => basename(f, ".py")).sort(), owned: j.owned.map((f: string) => basename(f, ".py")).sort() };
 }
 
-const STRUCTURAL = ["writing-anchored-numbers", "writing-outline-sync", "writing-shortjournal", "writing-topic-sentences"];
+const STRUCTURAL = ["writing-anchored-numbers", "writing-outline-sync", "writing-shortjournal", "writing-style", "writing-topic-sentences"];
+/** A register level adds its register-crossing to writing's structural set; no pattern table of its own joins it. */
+const REGISTER_STRUCTURAL = [...STRUCTURAL, "register-crossing"].sort();
 
 describe("the structural set is the layout's writing constraints minus what prose-audit owns", () => {
-  test("writing: the four structural constraints run; every table module and the delegating bold-lead do not", () => {
+  test("writing: the structural constraints run; every table module and the delegating bold-lead do not", () => {
     const { structural, owned } = split("writing");
     expect(structural).toEqual(STRUCTURAL);
     for (const o of ["scored-tics-patterns", "strunk-elements-of-style", "wikipedia-structural-patterns", "wikipedia-chatgpt-artifacts", "writing-no-bold-lead"])
@@ -34,11 +36,12 @@ describe("the structural set is the layout's writing constraints minus what pros
 
   test("a register's style guide is the audit's too: writing/legal adds Volokh to the owned side, writing/econ McCloskey", () => {
     const legal = split("writing/legal");
-    expect(legal.structural).toEqual(STRUCTURAL);
+    expect(legal.structural).toEqual(REGISTER_STRUCTURAL);
     expect(legal.owned).toContain("volokh-distilled");
     const econ = split("writing/econ");
-    expect(econ.structural).toEqual(STRUCTURAL);
+    expect(econ.structural).toEqual(REGISTER_STRUCTURAL);
     expect(econ.owned).toContain("mccloskey-economical-writing");
+    expect(split("writing/general").structural).toEqual(REGISTER_STRUCTURAL);
   });
 
   test("a structural constraint dropped into the layout is run with no edit anywhere; a table dropped there is the audit's", () => {

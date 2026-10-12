@@ -16,6 +16,10 @@ WHY THIS EXISTS
     not a check.
 
 WHAT IT DELIBERATELY DOES NOT DO
+    CON is not this probe's: the typst plugin's workshop constraints settle it, each one run by
+    `bin/workflow-check workshop` beside this probe and reporting its own count line. CON is
+    emitted as N/A naming them, so the deck is judged against them once.
+
     FID, CONV and VIS are judgements. They are enumerated with the literal status
     MODEL-EVALUATED -- never PASS -- and settled by the deck-fidelity, deck-convention and
     visual-integrity lenses. ENUM asserts both that a line was emitted for every matrix ID *and*
@@ -54,41 +58,32 @@ import tempfile
 import traceback
 from pathlib import Path
 
-# The constraint corpus is owned by the typst plugin; this skill holds no copy. The env override
-# exists so the contract suite can point the probe at a scratch corpus without touching the real one.
-CONSTRAINT_RUNNER = Path(
-    os.environ.get(
-        "WORKSHOP_CONSTRAINT_RUNNER",
-        Path.home() / ".claude" / "skills" / "typst" / "constraints" / "workshop"
-        / "run-constraints.py",
-    )
-)
-
-# The overflow driver is owned by the typst plugin too; this skill holds no copy. Same shape as
-# CONSTRAINT_RUNNER above: env override first (so the contract suite can point the probe at a
-# scratch driver without touching the real one), then the plugin. A machine without the plugin has
-# no overflow check, and check_ovr says so as a FAIL rather than skipping the leg.
-TYPST_PLUGIN_ROOTS = (
-    Path.home() / ".claude" / "skills" / "typst",
-    Path.home() / "projects" / "typst",
-)
-
-
-def _resolve_overflow_driver() -> Path:
+# The overflow driver is owned by the typst plugin; this skill holds no copy. The env override comes
+# first, so the contract suite can point the probe at a scratch driver without touching the real one.
+# Otherwise the plugin's root is ASKED of its `typst-plugin-root`, which Claude Code puts on PATH; a
+# plain shell without it falls back to the installed plugin. A refusal (no plugin, a TYPST_PLUGIN_ROOT
+# that is not one) is no driver, and check_ovr says so as a FAIL rather than running another tree's.
+def _resolve_overflow_driver() -> tuple[Path | None, str]:
     override = os.environ.get("WORKSHOP_OVERFLOW_DRIVER")
     if override:
-        return Path(override)
-    candidates = [root / "scripts" / "check-overflow.sh" for root in TYPST_PLUGIN_ROOTS]
-    for candidate in candidates:
-        if candidate.is_file():
-            return candidate
-    return candidates[0]
+        return Path(override), ""
+    exe = shutil.which("typst-plugin-root")
+    if exe is None:
+        return Path.home() / ".claude" / "skills" / "typst" / "scripts" / "check-overflow.sh", ""
+    try:
+        proc = subprocess.run([exe], capture_output=True, text=True, timeout=60, check=False)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return None, f"`typst-plugin-root` did not run: {exc}"
+    root = proc.stdout.strip()
+    if proc.returncode != 0 or not root:
+        return None, f"`typst-plugin-root` exited {proc.returncode}: {' '.join(proc.stderr.split())}"
+    return Path(root) / "scripts" / "check-overflow.sh", ""
 
 
-OVERFLOW_DRIVER = _resolve_overflow_driver()
+OVERFLOW_DRIVER, OVERFLOW_DRIVER_PROBLEM = _resolve_overflow_driver()
 # The driver reads its own `$SCRIPT_DIR/validation.typ`, so this must be the copy beside
 # whichever driver resolved -- resolving it a second time could name a file the driver never reads.
-VALIDATION_TYP = OVERFLOW_DRIVER.parent / "validation.typ"
+VALIDATION_TYP = OVERFLOW_DRIVER.parent / "validation.typ" if OVERFLOW_DRIVER else None
 
 # The matrix in references/workshop-checks.md, in matrix order. ENUM asserts that a line was
 # emitted for every ID here -- the whole point of computing ENUM rather than claiming it.
@@ -573,102 +568,13 @@ def check_cmp(deck_src: Path, notes_src: Path, deck_pdf: Path, notes_pdf: Path, 
     )
 
 
-def check_con(presentation_dir: Path) -> dict:
-    """R3/R11: read the runner's JSON, not its status; zero inspected files is a FAIL."""
-    if not CONSTRAINT_RUNNER.is_file():
-        return result("FAIL", f"vendored constraint runner is absent at `{CONSTRAINT_RUNNER}`.")
-    if not presentation_dir.is_dir():
-        return result(
-            "FAIL",
-            f"resolved presentation directory `{presentation_dir}` does not exist, so every "
-            "constraint module would glob an empty tree and report clean having opened no file.",
-        )
-
-    if shutil.which("uv"):
-        cmd = ["uv", "run", "--with", "lxml", "python3", str(CONSTRAINT_RUNNER), str(presentation_dir)]
-    else:
-        cmd = [sys.executable, str(CONSTRAINT_RUNNER), str(presentation_dir)]
-    try:
-        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=SUBPROCESS_TIMEOUT)
-    except subprocess.TimeoutExpired:
-        return result("FAIL", f"constraint runner timed out after {SUBPROCESS_TIMEOUT}s.")
-    except (OSError, FileNotFoundError) as exc:
-        return result("FAIL", f"could not run the constraint runner: {exc}")
-
-    # Exit 1 is a violation verdict, not a crash: the runner exits 1 for a violation AND for an
-    # infrastructure failure, and the JSON is what tells them apart.
-    try:
-        report = json.loads(proc.stdout)
-    except ValueError as exc:
-        return result(
-            "FAIL",
-            f"constraint runner emitted unparseable JSON (exit {proc.returncode}): {exc}",
-            " ".join((proc.stdout + proc.stderr).split())[:1500],
-        )
-    # Valid JSON is not yet a report: `[]`, `null` and `"ok"` all decode without raising, and
-    # `.get()` on any of them raises AttributeError, which would kill the probe before it emitted a
-    # single line -- silence a gate reads as "no checks" rather than "could not check".
-    if not isinstance(report, dict):
-        return result(
-            "FAIL",
-            f"constraint runner emitted JSON that is not an object (exit {proc.returncode}): "
-            f"decoded a {type(report).__name__}, so no module verdict could be read and nothing "
-            "was measured.",
-            " ".join((proc.stdout + proc.stderr).split())[:1500],
-        )
-
-    passed = report.get("passed") or []
-    failed = report.get("failed") or []
-    errors = report.get("errors") or []
-    skipped = report.get("skipped") or []
-    inspected = report.get("inspected_total")
-    if inspected is None:
-        inspected = sum(
-            e.get("inspected", 0)
-            for key in ("passed", "failed", "errors", "skipped")
-            for e in (report.get(key) or [])
-        )
-
-    evidence = (
-        f"exit={proc.returncode} modules={report.get('modules')} inspected_total={inspected} "
-        f"passed={len(passed)} failed={[f.get('name') for f in failed]} "
-        f"errors={[e.get('name') for e in errors]} skipped={[s.get('name') for s in skipped]}"
-    )
-
-    problems: list[str] = []
-    if report.get("error"):
-        problems.append(f"the runner could not run: {report['error']}")
-    if inspected == 0:
-        problems.append(
-            "the summed inspected-file count is zero: every module globbed an empty tree and "
-            "reported clean having opened no file"
-        )
-    if errors:
-        problems.append(
-            "module(s) raised and therefore checked nothing: "
-            + "; ".join(f"{e.get('name')}: {e.get('error')}" for e in errors)
-        )
-    if skipped:
-        problems.append(
-            "module(s) were skipped: "
-            + "; ".join(f"{s.get('name')}: {s.get('reason')}" for s in skipped)
-        )
-    if failed:
-        problems.append(
-            "constraint failure(s): "
-            + "; ".join(
-                f"{f.get('name')} [{f.get('severity')}] "
-                f"({len(f.get('violations') or [])} violation(s))"
-                for f in failed
-            )
-        )
-    if problems:
-        return result("FAIL", "; ".join(problems), evidence)
+def check_con() -> dict:
+    """The typst workshop constraints settle CON, each a member bin/workflow-check runs beside this probe."""
     return result(
-        "PASS",
-        f"{report.get('modules')} vendored constraint module(s) reported no failure, no error and "
-        f"no skip over {inspected} inspected file(s).",
-        evidence,
+        "N/A",
+        "settled by the typst plugin's workshop constraints (checks/workshop/constraints/), which "
+        "`workflow-check workshop` runs beside this probe; read their count lines and findings in "
+        "the same run.",
     )
 
 
@@ -1109,6 +1015,8 @@ def compile_handout(deck_src: Path, root: Path, out_pdf: Path) -> tuple[bool, st
     its own page and most pages end mid-build: the final line of an incomplete overlay is not a
     widow, so that build measures a different property than WID specifies.
     """
+    if VALIDATION_TYP is None:
+        return False, f"no typst plugin resolved: {OVERFLOW_DRIVER_PROBLEM}"
     if not VALIDATION_TYP.is_file():
         return False, f"the typst plugin's `validation.typ` is absent at `{VALIDATION_TYP}`"
     slides_dir = deck_src.parent
@@ -1264,6 +1172,9 @@ def check_ovr(deck_src: Path) -> dict:
     `No validation metadata found` and exits 0 having measured nothing, and `overflow.py` prints
     `Physical pages: 0` and exits 0 on empty input.
     """
+    if OVERFLOW_DRIVER is None:
+        return result("FAIL", f"no typst plugin resolved, so no overflow driver: {OVERFLOW_DRIVER_PROBLEM}. "
+                              "No overflow check ran.")
     if not OVERFLOW_DRIVER.is_file():
         return result(
             "FAIL",
@@ -1378,11 +1289,11 @@ def check_enum(checks: dict) -> dict:
 
 
 def all_fail(reason: str) -> dict:
-    checks: dict[str, dict] = {}
+    checks: dict[str, dict] = {"CON": check_con()}
     for check in MATRIX:
         if check in MODEL_EVALUATED:
             checks[check] = model_line(check)
-        elif check != "ENUM":
+        elif check not in ("ENUM", "CON"):
             checks[check] = result("FAIL", reason)
     checks["ENUM"] = check_enum(checks)
     return {c: checks[c] for c in MATRIX}
@@ -1475,7 +1386,7 @@ def _run(plan_text: str, root: Path, slides_override: str | None, notes_override
 
     checks: dict[str, dict] = {}
     checks["CMP"] = guarded("CMP", check_cmp, deck_src, notes_src, deck_pdf, notes_pdf, root)
-    checks["CON"] = guarded("CON", check_con, deck_src.parent)
+    checks["CON"] = guarded("CON", check_con)
     checks["SPEC"] = guarded("SPEC", check_spec, spec_rows, spec_error, deck_src, paper_error)
     checks["NOTE"] = guarded("NOTE", check_note, deck_src, notes_src)
     checks["NAR"] = guarded("NAR", check_nar, notes_src, root)
@@ -1527,10 +1438,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="workshop-deck.py",
         description=(
-            "Compute the mechanical workshop deck checks (CMP, CON, SPEC, NOTE, INV, WID, OVR, "
+            "Compute the mechanical workshop deck checks (CMP, SPEC, NOTE, NAR, INV, VSL, WID, OVR, "
             "ENUM) over the artifacts declared in an approved /workshop plan's "
             "`## Outputs and Verification` table. FID, CONV and VIS are enumerated as "
-            "MODEL-EVALUATED and are never computed."
+            "MODEL-EVALUATED and are never computed; CON as N/A, settled by the workshop constraints."
         ),
         epilog="Exits non-zero iff a COMPUTED check FAILs. Every computed check fails closed.",
     )

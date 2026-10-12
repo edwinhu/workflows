@@ -28,7 +28,8 @@ beforeAll(() => {
 })
 afterAll(() => server.stop(true))
 
-/** The workflow whose own rules directory is `dir`: the layout's answer, not a table (writing/legal for checks/writing/legal/rules). */
+/** The workflow whose own rules directory is `dir`: the layout's answer, not a table (writing/legal for checks/writing/legal/rules).
+ *  A level with no rules of its own (writing/general) inherits its parent's as its last ruleDir, so it does not count as an owner. */
 function workflowOfDir(dir: string): string {
   const found: string[] = []
   const walk = (rel: string) => {
@@ -36,7 +37,8 @@ function workflowOfDir(dir: string): string {
       const p = rel ? `${rel}/${n}` : n
       if (/^[_.]/.test(n) || n === 'constraints' || n === 'rules' || !statSync(join(ROOT, 'checks', p)).isDirectory()) continue
       const r = spawnSync('python3', [join(ROOT, 'bin', 'workflow-check'), p, '--list'], { encoding: 'utf8', timeout: 60_000, env: { ...process.env, WORKFLOW_CHECKS_PATH: ROOT } })
-      if (r.status === 0 && JSON.parse(r.stdout).ruleDirs.at(-1) === resolve(ROOT, dir)) found.push(p)
+      const own = resolve(ROOT, 'checks', p, 'rules') === resolve(ROOT, dir)
+      if (own && r.status === 0 && JSON.parse(r.stdout).ruleDirs.at(-1) === resolve(ROOT, dir)) found.push(p)
       walk(p)
     }
   }

@@ -60,7 +60,7 @@ for (const [name, content, expected] of [
 console.log('check 4 (qr: none) applies to a deck by PATH, not by filename')
 // The gate was `pathStem(filepath).includes("slides")` — the FILENAME with its extension stripped —
 // so it fired only on a file literally named `slides.typ`. Every deck stored as `slides/<name>.typ`
-// (the teaching convention) skipped the check silently. Same defect as overflow-check.ts:108.
+// (the teaching convention) skipped the check silently.
 {
   const DECK_NO_QR = '#import "@preview/touying:0.5.0": *\n#show: config-info(title: "x")\n#slide[\n=== y\n]\n'
   const run = check(DECK_NO_QR, 'slides/01-intro.typ')

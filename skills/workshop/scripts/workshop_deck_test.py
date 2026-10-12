@@ -50,14 +50,14 @@ CLEAN = FIXTURES / "clean"
 
 MATRIX = ["CMP", "CON", "SPEC", "NOTE", "NAR", "INV", "VSL", "WID", "OVR", "ENUM", "FID", "CONV", "VIS"]
 MODEL_EVALUATED_CHECKS = ("FID", "CONV", "VIS")
-COMPUTED_CHECKS = ("CMP", "CON", "SPEC", "NOTE", "NAR", "INV", "VSL", "WID", "OVR", "ENUM")
+# CON is neither: the typst workshop constraints settle it, run by bin/workflow-check beside the probe.
+COMPUTED_CHECKS = ("CMP", "SPEC", "NOTE", "NAR", "INV", "VSL", "WID", "OVR", "ENUM")
 # ENUM is a meta-check over the emitted line set: a line WAS emitted for each ID even on a run where
 # every artifact check failed closed, so it stays PASS there. These are the ones that must all go
 # red when the plan declares nothing the probe can open.
-ARTIFACT_CHECKS = ("CMP", "CON", "SPEC", "NOTE", "NAR", "INV", "VSL", "WID", "OVR")
+ARTIFACT_CHECKS = ("CMP", "SPEC", "NOTE", "NAR", "INV", "VSL", "WID", "OVR")
 
-# Everything the probe's subprocesses reach for, minus `typst`: check-overflow.sh needs a shell and
-# uv, and run-constraints.py is invoked through uv when uv is on PATH.
+# Everything the probe's subprocesses reach for, minus `typst`: check-overflow.sh needs a shell and uv.
 _PASSTHROUGH_BINARIES = (
     "bash", "sh", "env", "uv", "python3", "python",
     "cp", "rm", "cat", "echo", "dirname", "basename", "mktemp", "sed", "grep",
@@ -133,7 +133,7 @@ CLEAN_FINAL_LINE = "The estimate is stable across every specification."
 
 
 def break_con_banned_package(root: Path) -> None:
-    """IMPORT a banned package: `cetz-plot-ban` forbids it outright (cetz version conflict).
+    """IMPORT a banned package: the typst workshop constraint `cetz-plot-ban` forbids it outright.
 
     The import is live source, not a comment. This planted `// charting via cetz-plot was
     considered and rejected` until 2026-09-17, and the constraint module it targeted matched raw
@@ -333,15 +333,13 @@ def probe(root: Path, *, runner: Path = RUNNER, env: dict | None = None,
           args: tuple[str, ...] = ()) -> Report:
     """Run the probe as the gate runs it and parse the emitted check lines.
 
-    A scratch skill copy gets its own scratch constraint corpus AND its own scratch typst
-    plugin: both belong to the real typst plugin and no test may stub or delete those.
-    Both resolvers are pointed at the scratch copies here, so a test simulates absence by
-    removing a file from the scratch plugin rather than from the one the machine ships.
+    A scratch skill copy gets its own scratch typst plugin: the overflow driver belongs to the
+    real typst plugin and no test may stub or delete it. The resolver is pointed at the scratch
+    copy here, so a test simulates absence by removing a file from the scratch plugin rather than
+    from the one the machine ships.
     """
     if runner != RUNNER:
         env = dict(os.environ if env is None else env)
-        env["WORKSHOP_CONSTRAINT_RUNNER"] = str(
-            runner.parent.parent / "constraints" / "run-constraints.py")
         env["WORKSHOP_OVERFLOW_DRIVER"] = str(scratch_overflow_driver(runner.parent.parent))
     proc = subprocess.run(
         [sys.executable, str(runner), "--plan", str(root / "plan.md"),
@@ -375,21 +373,22 @@ def replace_section(text: str, heading: str, new_body: str) -> str:
 
 
 # The plugin the probe actually resolved, so a scratch copy of it is a copy of the real thing.
-TYPST_PLUGIN = workshop_deck.OVERFLOW_DRIVER.parent.parent
+TYPST_PLUGIN = workshop_deck.OVERFLOW_DRIVER.parent.parent if workshop_deck.OVERFLOW_DRIVER else None
 
 
 def scratch_skill(tmp_path: Path) -> Path:
     """A writable copy of the skill, so a part it reaches for can be removed or stubbed.
 
-    Neither the constraint corpus nor the overflow driver lives in this skill -- both belong to
-    the typst plugin, in one copy -- so both are copied in beside the scratch skill, as
-    `constraints/` and `typst/`, and reached through `WORKSHOP_CONSTRAINT_RUNNER` /
-    `WORKSHOP_OVERFLOW_DRIVER` (see `probe`). No test may stub or delete the real ones.
+    The overflow driver does not live in this skill -- it belongs to the typst plugin, in one
+    copy -- so that plugin is copied in beside the scratch skill as `typst/` and reached through
+    `WORKSHOP_OVERFLOW_DRIVER` (see `probe`). No test may stub or delete the real one.
 
     The typst copy keeps the plugin's own depths: the driver reads `$SCRIPT_DIR/../validation.typ`
-    and its `shared.py` reaches `_shared` at `<plugin>/constraints`, so a flattened copy
-    would leave a driver that cannot run for a reason no test is asserting.
+    and runs its overflow checker from the plugin's checker tree (`constraints/` before typst's
+    `checks/_typst` move, `checks/` after), so a flattened copy would leave a driver that cannot
+    run for a reason no test is asserting.
     """
+    assert TYPST_PLUGIN is not None, f"no typst plugin resolved: {workshop_deck.OVERFLOW_DRIVER_PROBLEM}"
     dest = tmp_path / "skill"
     ignore = shutil.ignore_patterns("__pycache__", "*.pyc")
     shutil.copytree(
@@ -397,15 +396,11 @@ def scratch_skill(tmp_path: Path) -> Path:
         ignore=shutil.ignore_patterns("fixtures", "__pycache__", "*.pyc", ".pytest_cache"),
     )
     shutil.copy2(RUNNER, dest / "scripts" / RUNNER.name)  # the probe lives in checks/, not the skill
-    shutil.copytree(CONSTRAINT_RUNNER.parent, dest / "constraints", ignore=ignore)
     shutil.copytree(TYPST_PLUGIN / "scripts", dest / "typst" / "scripts", ignore=ignore)
-    shutil.copytree(TYPST_PLUGIN / "constraints",
-                    dest / "typst" / "constraints", ignore=ignore)
+    for tree in ("constraints", "checks"):
+        if (TYPST_PLUGIN / tree).is_dir():
+            shutil.copytree(TYPST_PLUGIN / tree, dest / "typst" / tree, ignore=ignore)
     return dest
-
-
-def scratch_constraint_runner(skill: Path) -> Path:
-    return skill / "constraints" / "run-constraints.py"
 
 
 def scratch_overflow_driver(skill: Path) -> Path:
@@ -467,17 +462,6 @@ def env_with_nonpdf_typst(tmp_path: Path) -> dict:
     env = dict(os.environ)
     env["PATH"] = str(bindir)
     return env
-
-
-def stub_constraint_runner(skill: Path, report: dict, *, exit_code: int = 1) -> None:
-    """Replace the vendored constraint runner with one replaying a fixed JSON report."""
-    runner = scratch_constraint_runner(skill)
-    runner.write_text(
-        "import json, sys\n"
-        f"print(json.dumps({report!r}))\n"
-        f"sys.exit({exit_code})\n",
-        encoding="utf-8",
-    )
 
 
 def stub_overflow_driver(skill: Path, output: str, *, exit_code: int = 0) -> None:
@@ -573,180 +557,71 @@ def test_cmp_fails_when_a_compile_produces_no_output_file(tmp_path: Path):
 
 
 # ------------------------------------------------------------------------------------------------
-# CON -- the runner's JSON is read, not its status
+# CON -- settled by the typst workshop constraints that bin/workflow-check runs beside this probe
 # ------------------------------------------------------------------------------------------------
 
 
-def test_con_fails_on_a_hard_constraint_violation(tmp_path: Path):
-    root = stage(tmp_path)
-    break_con_banned_package(root)
-    report = probe(root)
-    assert report.status("CON") == "FAIL", report["CON"]
-    assert "cetz-plot-ban" in report["CON"]["detail"]
-    assert "hard" in report["CON"]["detail"]
+def _con_unreadable_plan(tmp_path: Path) -> Report:
+    proc = subprocess.run([sys.executable, str(RUNNER), "--plan", str(tmp_path / "absent.md")],
+                          capture_output=True, text=True, check=False)
+    return Report(proc.returncode, proc.stdout, proc.stderr)
+
+
+@pytest.mark.parametrize("case", ["clean", "constraint-violation", "unparseable-outputs", "unreadable-plan"])
+def test_con_names_the_workshop_constraints_and_never_judges_the_deck(case: str, tmp_path: Path):
+    # A probe that judged the deck's constraints again would report a violation twice, once as its
+    # own CON FAIL; one that claimed PASS would certify what it never ran. Whatever the plan or deck,
+    # CON says what settles it and nothing else.
+    if case == "unreadable-plan":
+        report = _con_unreadable_plan(tmp_path)
+    elif case == "unparseable-outputs":
+        report = probe(stage(tmp_path, plan="# Plan\n"))
+    else:
+        root = stage(tmp_path)
+        if case == "constraint-violation":
+            break_con_banned_package(root)
+        report = probe(root)
+    assert report.status("CON") == "N/A", (case, report["CON"])
+    assert "workshop constraints" in report["CON"]["detail"], (case, report["CON"])
+    assert "workflow-check workshop" in report["CON"]["detail"], (case, report["CON"])
+    assert not [ln for ln in report.stdout.splitlines() if re.match(r"^\S+:1: CON ", ln)], (case, report.stdout)
+
+
+def test_ovr_runs_the_driver_typst_plugin_root_names(tmp_path: Path):
+    # The overflow driver is ASKED of the typst plugin, never spelled: a probe that walked a fixed
+    # list of roots would run another tree's driver, or none, on a machine laid out differently.
+    plugin = tmp_path / "typstroot"
+    (plugin / "scripts").mkdir(parents=True)
+    (plugin / "scripts" / "validation.typ").write_text("", encoding="utf-8")
+    marker = tmp_path / "ran-driver"
+    driver = plugin / "scripts" / "check-overflow.sh"
+    driver.write_text(f"#!/bin/bash\necho \"$@\" > {marker}\necho 'Physical pages: 7'\nexit 0\n", encoding="utf-8")
+    driver.chmod(0o755)
+    bindir = tmp_path / "bin"
+    bindir.mkdir()
+    (bindir / "typst-plugin-root").write_text(f"#!/bin/sh\necho {plugin}\n", encoding="utf-8")
+    (bindir / "typst-plugin-root").chmod(0o755)
+    env = {k: v for k, v in os.environ.items() if k != "WORKSHOP_OVERFLOW_DRIVER"}
+    env["PATH"] = f"{bindir}{os.pathsep}{env.get('PATH', '')}"
+    report = probe(stage(tmp_path), env=env)
+    assert marker.is_file(), report["OVR"]
+    assert "--flat-deck" in marker.read_text(encoding="utf-8"), marker.read_text(encoding="utf-8")
+
+
+def test_ovr_fails_closed_when_typst_plugin_root_refuses(tmp_path: Path):
+    # typst-plugin-root exits 2 on a bad TYPST_PLUGIN_ROOT rather than hand back another tree; the
+    # probe must not fall through to one either.
+    bindir = tmp_path / "bin"
+    bindir.mkdir()
+    (bindir / "typst-plugin-root").write_text("#!/bin/sh\necho 'not a typst plugin' >&2\nexit 2\n", encoding="utf-8")
+    (bindir / "typst-plugin-root").chmod(0o755)
+    env = {k: v for k, v in os.environ.items() if k != "WORKSHOP_OVERFLOW_DRIVER"}
+    env["PATH"] = f"{bindir}{os.pathsep}{env.get('PATH', '')}"
+    report = probe(stage(tmp_path), env=env)
+    assert report.status("OVR") == "FAIL", report["OVR"]
+    assert "typst-plugin-root" in report["OVR"]["detail"], report["OVR"]
+    assert "not a typst plugin" in report["OVR"]["detail"], report["OVR"]
     assert report.code == 1
-
-
-def test_con_reads_the_runners_json_rather_than_treating_exit_1_as_a_crash(tmp_path: Path):
-    # The runner exits 1 for a violation AND for an infrastructure failure. CON must tell them
-    # apart by the JSON: here the exit is 1 and the verdict still names the failing module.
-    root = stage(tmp_path)
-    break_con_banned_package(root)
-    report = probe(root)
-    assert "exit=1" in report["CON"]["evidence"], report["CON"]
-    assert "inspected_total=" in report["CON"]["evidence"]
-    assert "cetz-plot-ban" in report["CON"]["evidence"]
-    assert "could not run" not in report["CON"]["detail"]
-
-
-def test_con_fails_when_no_module_inspected_a_file(tmp_path: Path):
-    skill = scratch_skill(tmp_path)
-    stub_constraint_runner(skill, {
-        "modules": 15,
-        "passed": [{"name": f"typst-{i}", "inspected": 0} for i in range(15)],
-        "failed": [], "errors": [], "skipped": [], "inspected_total": 0,
-    })
-    report = probe(stage(tmp_path), runner=skill / "scripts" / "workshop-deck.py")
-    assert report.status("CON") == "FAIL", report["CON"]
-    assert "inspected-file count is zero" in report["CON"]["detail"]
-    assert report.code == 1
-
-
-def test_con_fails_on_a_non_empty_errors_list(tmp_path: Path):
-    skill = scratch_skill(tmp_path)
-    stub_constraint_runner(skill, {
-        "modules": 15,
-        "passed": [{"name": "typst-tables", "inspected": 2}],
-        "failed": [],
-        "errors": [{"name": "typst-computed-values", "inspected": 0, "error": "ImportError: lxml"}],
-        "skipped": [], "inspected_total": 2,
-    })
-    report = probe(stage(tmp_path), runner=skill / "scripts" / "workshop-deck.py")
-    assert report.status("CON") == "FAIL", report["CON"]
-    assert "typst-computed-values" in report["CON"]["detail"]
-    assert "checked nothing" in report["CON"]["detail"]
-    assert report.code == 1
-
-
-def test_con_fails_on_a_non_empty_skipped_list(tmp_path: Path):
-    skill = scratch_skill(tmp_path)
-    stub_constraint_runner(skill, {
-        "modules": 15,
-        "passed": [{"name": "typst-tables", "inspected": 2}],
-        "failed": [], "errors": [],
-        "skipped": [{"name": "typst-images", "inspected": 0, "reason": "no callable check()"}],
-        "inspected_total": 2,
-    })
-    report = probe(stage(tmp_path), runner=skill / "scripts" / "workshop-deck.py")
-    assert report.status("CON") == "FAIL", report["CON"]
-    assert "typst-images" in report["CON"]["detail"]
-    assert "skipped" in report["CON"]["detail"]
-    assert report.code == 1
-
-
-def test_con_fails_when_a_failed_module_is_reported_beside_a_zero_exit(tmp_path: Path):
-    # A runner that prints a failed[] and exits 0 is a check that cannot fail. CON reads the JSON,
-    # so the verdict does not follow the status.
-    skill = scratch_skill(tmp_path)
-    stub_constraint_runner(skill, {
-        "modules": 15,
-        "passed": [{"name": "typst-tables", "inspected": 2}],
-        "failed": [{"name": "typst-slide-format", "inspected": 2, "severity": "hard",
-                    "violations": [{"line": 4, "found": "three pauses"}]}],
-        "errors": [], "skipped": [], "inspected_total": 4,
-    }, exit_code=0)
-    report = probe(stage(tmp_path), runner=skill / "scripts" / "workshop-deck.py")
-    assert report.status("CON") == "FAIL", report["CON"]
-    assert "typst-slide-format" in report["CON"]["detail"]
-    assert "exit=0" in report["CON"]["evidence"]
-    assert report.code == 1
-
-
-def test_con_fails_on_unparseable_runner_output(tmp_path: Path):
-    skill = scratch_skill(tmp_path)
-    scratch_constraint_runner(skill).write_text(
-        "print('not json at all')\n", encoding="utf-8")
-    report = probe(stage(tmp_path), runner=skill / "scripts" / "workshop-deck.py")
-    assert report.status("CON") == "FAIL", report["CON"]
-    assert "unparseable JSON" in report["CON"]["detail"]
-    assert report.code == 1
-
-
-def test_con_fails_on_its_own_line_over_an_empty_presentation_dir(tmp_path: Path):
-    # CMP fails here too (both declared sources are gone), so a bare non-zero exit would not show
-    # that CON reported FAIL rather than being masked by CMP's. Both lines are named, and CON's
-    # detail is the inspected-count one: every vendored module globs its own inputs and returns []
-    # over an empty tree, so "clean" there is clean having opened no file.
-    root = stage(tmp_path)
-    for stale in (root / "presentation").iterdir():
-        stale.unlink()
-    assert not list((root / "presentation").iterdir())
-    report = probe(root)
-    assert report.status("CON") == "FAIL", report["CON"]
-    assert "inspected-file count is zero" in report["CON"]["detail"], report["CON"]
-    assert "inspected_total=0" in report["CON"]["evidence"], report["CON"]
-    assert report.status("CMP") == "FAIL", report["CMP"]
-    assert "does not exist on disk" in report["CMP"]["detail"], report["CMP"]
-    assert report.code == 1
-
-
-def test_con_fails_closed_when_the_vendored_runner_is_absent(tmp_path: Path):
-    skill = scratch_skill(tmp_path)
-    scratch_constraint_runner(skill).unlink()
-    report = probe(stage(tmp_path), runner=skill / "scripts" / "workshop-deck.py")
-    assert report.status("CON") == "FAIL", report["CON"]
-    assert "constraint runner is absent" in report["CON"]["detail"]
-    assert report.code == 1
-
-
-# ------------------------------------------------------------------------------------------------
-# The constraint runner's own exit contract (R3): it is shipped as a standalone mechanicalCheck
-# ------------------------------------------------------------------------------------------------
-
-
-CONSTRAINT_RUNNER = (Path.home() / ".claude" / "skills" / "typst" / "constraints"
-                     / "workshop" / "run-constraints.py")
-
-
-def run_constraints(target: Path) -> tuple[int, dict]:
-    proc = subprocess.run(
-        [sys.executable, str(CONSTRAINT_RUNNER), str(target)],
-        capture_output=True, text=True, check=False,
-    )
-    return proc.returncode, json.loads(proc.stdout)
-
-
-def test_run_constraints_exits_zero_on_the_clean_fixture(tmp_path: Path):
-    code, report = run_constraints(stage(tmp_path) / "presentation")
-    assert code == 0, report
-    assert report["failed"] == [] and report["errors"] == [] and report["skipped"] == []
-    assert report["inspected_total"] > 0, report
-
-
-def test_run_constraints_exits_one_on_a_hard_violation(tmp_path: Path):
-    root = stage(tmp_path)
-    break_con_banned_package(root)
-    code, report = run_constraints(root / "presentation")
-    assert code == 1, report
-    names = [f["name"] for f in report["failed"]]
-    # `cetz-plot-ban` is the one owner of the ban; the contract under test is the exit status
-    # beside a populated failed[], not which module caught it.
-    assert "cetz-plot-ban" in names, report["failed"]
-    assert all(f["severity"] == "hard" for f in report["failed"]), report["failed"]
-    assert report["inspected_total"] > 0, report
-
-
-def test_run_constraints_exits_two_when_nothing_was_inspected(tmp_path: Path):
-    # An empty tree reads exactly like a clean deck unless the runner says otherwise, so exit 0
-    # here would be a check that cannot fail. It is 2 rather than 1: a check that COULD NOT RUN is
-    # not a check that found violations, and every caller here reads 1 as "violations found".
-    # (This pinned 1 until the runner stopped globbing its own inputs and started naming them.)
-    empty = tmp_path / "empty"
-    empty.mkdir()
-    code, report = run_constraints(empty)
-    assert code == 2, report
-    assert report["inspected_total"] == 0, report
-    assert report["failed"] == [] and report["errors"] == [], report
 
 
 # ------------------------------------------------------------------------------------------------

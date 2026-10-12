@@ -311,7 +311,9 @@ describe('I3 — every engine has at least one live caller', () => {
     expect(i3[0].file.endsWith(join('scripts', 'prose-lint.py'))).toBe(true)
   })
 
-  test('a contract module discovered by a live runner is called', () => {
+  // Membership is the checks/<workflow>/ directory alone. A runner that globs and dispatches on
+  // APPLIES_TO is how a stray checker used to pass as registered.
+  test('a runner that globs a directory and reads APPLIES_TO registers nothing: the module it finds is uncalled', () => {
     const dir = fixture({
       'plugin.json': PLUGIN_JSON,
       'skills/writing/SKILL.md': skillMd('writing'),
@@ -336,7 +338,19 @@ describe('I3 — every engine has at least one live caller', () => {
         },
       }),
     })
-    expect(findingsFor(probe.runProbe(dir), 'I3').length).toBe(0)
+    const i3 = findingsFor(probe.runProbe(dir), 'I3')
+    expect(i3.map((f: any) => f.file.slice(dir.length + 1))).toEqual([join('skills', 'writing', 'constraints', 'topic-sentences.py')])
+  })
+
+  test('APPLIES_TO is no contract: a module declaring only CONSTRAINT and APPLIES_TO is not an engine', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'scripts/legacy.py': 'CONSTRAINT = "legacy"\nAPPLIES_TO = ["slides"]\n',
+      'scripts/declared.py': 'CONSTRAINT = "declared"\nSEVERITY = "hard"\n',
+    })
+    const result = probe.runProbe(dir)
+    expect(findingsFor(result, 'I3').map((f: any) => f.file.slice(dir.length + 1))).toEqual([join('scripts', 'declared.py')])
+    expect(findingsFor(result, 'I9')).toEqual([])
   })
 })
 
@@ -602,11 +616,11 @@ describe('I7 — a shipped pattern may not carry a corpus-rejected phrase (ADVIS
 
 // ------------------------------------------------------------------ I8/I9/I10
 
-/** A contract module a discovery runner dispatches on: module-level `check` of ONE parameter. */
+/** A contract module: CONSTRAINT and SEVERITY, and a module-level `check` of ONE parameter. */
 const checkerModule = (stem: string) =>
   ['"""A fixture checker."""', `CONSTRAINT = "${stem}"`, 'APPLIES_TO = ["slides"]', 'SEVERITY = "hard"', '', 'def check(context):', '    return []', ''].join('\n')
 
-/** typst's run-constraints.py in miniature: globs its OWN directory, dispatches on `check`. */
+/** typst's retired run-constraints.py in miniature: globs its OWN directory, dispatches on `check`. Registers nothing. */
 const runnerModule = (extra = '') =>
   [
     'import glob, os',
@@ -700,54 +714,60 @@ describe('I8 — one rule, one representation', () => {
 })
 
 describe('I9 — a checker must be reachable', () => {
-  test('a contract module outside every enumerated directory is a finding', () => {
+  // Reachable means under checks/<workflow>/: bin/workflow-check runs that directory, and nothing else
+  // registers a checker. One reached only because a script writes its name down is one rename from silence.
+  test('a checker outside every checks/<workflow>/ directory, reached only by name, is a finding', () => {
     const dir = fixture({
       'plugin.json': PLUGIN_JSON,
-      'constraints/run-constraints.py': runnerModule(),
-      'constraints/tables.py': checkerModule('tables'),
-      // Reached only because check-variety.sh writes its name down.
       'scripts/checks/geom-variety.py': checkerModule('geom-variety'),
       'scripts/checks/check-variety.sh': '#!/usr/bin/env bash\npython3 "$(dirname "$0")/geom-variety.py" "$@"\n',
     })
     const i9 = findingsFor(probe.runProbe(dir), 'I9')
-    expect(i9.length).toBe(1)
-    expect(i9[0].file.endsWith(join('scripts', 'checks', 'geom-variety.py'))).toBe(true)
+    expect(i9.map((f: any) => f.file.slice(dir.length + 1))).toEqual([join('scripts', 'checks', 'geom-variety.py')])
     expect(i9[0].severity).toBe('major')
   })
 
-  test('the same module inside the enumerated directory draws nothing', () => {
+  test('the same checker under checks/<workflow>/constraints/ draws nothing', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'checks/slides/constraints/geom-variety.py': checkerModule('geom-variety'),
+      'scripts/checks/check-variety.sh': '#!/usr/bin/env bash\npython3 "$(dirname "$0")/geom-variety.py" "$@"\n',
+    })
+    const result = probe.runProbe(dir)
+    expect(findingsFor(result, 'I9')).toEqual([])
+    expect(findingsFor(result, 'I3')).toEqual([])
+  })
+
+  test('a runner that globs its own directory and dispatches on check() reaches nothing: what it finds is uncalled', () => {
     const dir = fixture({
       'plugin.json': PLUGIN_JSON,
       'constraints/run-constraints.py': runnerModule(),
       'constraints/tables.py': checkerModule('tables'),
       'constraints/geom-variety.py': checkerModule('geom-variety'),
     })
-    expect(findingsFor(probe.runProbe(dir), 'I9').length).toBe(0)
+    const result = probe.runProbe(dir)
+    expect(findingsFor(result, 'I3').map((f: any) => f.file.slice(dir.length + 1)))
+      .toEqual([join('constraints', 'geom-variety.py'), join('constraints', 'tables.py')])
+    expect(findingsFor(result, 'I9')).toEqual([])
   })
 
-  // typst's CLI_CHECKERS: excluded from the import path on purpose. Read from the RUNNER, because a
-  // copy of that list here is the stale-suppression defect I5 is named after.
-  test('a CLI checker named in the runner\'s own exclusion list is not a finding', () => {
+  test('a runner\'s own exclusion list exempts nothing', () => {
     const dir = fixture({
       'plugin.json': PLUGIN_JSON,
       'constraints/run-constraints.py': runnerModule('CLI_CHECKERS = ("runts", "widows", "orphans", "section-hierarchy")'),
-      'constraints/tables.py': checkerModule('tables'),
       'scripts/runts.py': checkerModule('runts'),
     })
-    expect(findingsFor(probe.runProbe(dir), 'I9').length).toBe(0)
+    expect(findingsFor(probe.runProbe(dir), 'I3').map((f: any) => f.file.slice(dir.length + 1))).toEqual([join('scripts', 'runts.py')])
   })
 
-  test('a two-parameter def check() in a CLI script is an internal helper, not a contract', () => {
-    const dir = fixture({
-      'plugin.json': PLUGIN_JSON,
-      'constraints/run-constraints.py': runnerModule(),
-      'constraints/tables.py': checkerModule('tables'),
-      'scripts/check_crossrefs.py': 'def check(path: str, verbose: bool = False) -> int:\n    return 0\n',
-    })
-    expect(findingsFor(probe.runProbe(dir), 'I9').length).toBe(0)
+  test('a two-parameter def check() in a CLI script is an internal helper, not a contract; one parameter is', () => {
+    const helper = fixture({ 'plugin.json': PLUGIN_JSON, 'scripts/check_crossrefs.py': 'def check(path: str, verbose: bool = False) -> int:\n    return 0\n' })
+    expect(findingsFor(probe.runProbe(helper), 'I9')).toEqual([])
+    const checker = fixture({ 'plugin.json': PLUGIN_JSON, 'scripts/check_crossrefs.py': 'def check(context):\n    return []\n' })
+    expect(findingsFor(probe.runProbe(checker), 'I9').map((f: any) => f.file.slice(checker.length + 1))).toEqual([join('scripts', 'check_crossrefs.py')])
   })
 
-  test('with NO discovery runner, I9 is silent — I3 already reports it uncalled', () => {
+  test('a checker nothing calls is I3\'s finding, and I9 does not repeat it', () => {
     const dir = fixture({
       'plugin.json': PLUGIN_JSON,
       'scripts/checks/geom-variety.py': checkerModule('geom-variety'),
@@ -757,33 +777,26 @@ describe('I9 — a checker must be reachable', () => {
     expect(findingsFor(result, 'I3').length).toBe(1)
   })
 
-  test('the directories a runner enumerates are derived, not keyed on the name constraints/', () => {
-    const d = mkTmp('pc-probe-enum-')
-    try {
-      mkdirSync(join(d, 'rules'), { recursive: true })
-      mkdirSync(join(d, 'skills', 'ds', 'rules'), { recursive: true })
-      const runner = join(d, 'rules', 'run.py')
-      writeFileSync(
-        runner,
-        [
-          'from pathlib import Path',
-          '_here = Path(__file__).parent',
-          '_root = Path(__file__).resolve().parent.parent',
-          'skills_dir = _root / "skills"',
-          'for p in _here.glob("*.py"):',
-          '    load(p).check({})',
-          'for d in skills_dir.glob("*/rules"):',
-          '    for p in d.glob("*.py"):',
-          '        load(p).check({})',
-          '',
-        ].join('\n'),
-      )
-      const dirs = probe.enumeratedDirsOf(runner, readFileSync(runner, 'utf8'))
-      expect(dirs).toContain(join(d, 'rules'))
-      expect(dirs).toContain(join(d, 'skills', 'ds', 'rules'))
-    } finally {
-      rmSync(d, { recursive: true, force: true })
-    }
+  test('a runner whose globs reach other directories from its __file__ does not register the checkers there', () => {
+    const dir = fixture({
+      'plugin.json': PLUGIN_JSON,
+      'tools/run.py': [
+        'from pathlib import Path',
+        '_here = Path(__file__).parent',
+        '_root = Path(__file__).resolve().parent.parent',
+        'skills_dir = _root / "skills"',
+        'for p in _here.glob("*.py"):',
+        '    load(p).check({})',
+        'for d in skills_dir.glob("*/checkers"):',
+        '    for p in d.glob("*.py"):',
+        '        load(p).check({})',
+        '',
+      ].join('\n'),
+      'tools/near.py': checkerModule('near'),
+      'skills/ds/checkers/far.py': checkerModule('far'),
+    })
+    expect(findingsFor(probe.runProbe(dir), 'I3').map((f: any) => f.file.slice(dir.length + 1)))
+      .toEqual([join('skills', 'ds', 'checkers', 'far.py'), join('tools', 'near.py')])
   })
 })
 
@@ -955,10 +968,14 @@ describe('the checks/<workflow>/ layout — the directory registers the check', 
 
   test('a `_` directory under checks/ is not a workflow: a checker there is judged like any other', () => {
     const dir = fixture(layout({
-      'constraints/run-constraints.py': runnerModule(),
       'checks/_shared/constraints/stray.py': checkerModule('stray'),
+      'checks/_shared/constraints/named.py': checkerModule('named'),
+      'scripts/run-named.sh': '#!/usr/bin/env bash\npython3 checks/_shared/constraints/named.py\n',
     }))
-    expect(findingsFor(probe.runProbe(dir), 'I9').map((f: any) => f.file.slice(dir.length + 1))).toEqual([join('checks', '_shared', 'constraints', 'stray.py')])
+    const result = probe.runProbe(dir)
+    const at = (rule: string) => findingsFor(result, rule).map((f: any) => f.file.slice(dir.length + 1))
+    expect(at('I3')).toEqual([join('checks', '_shared', 'constraints', 'stray.py')])
+    expect(at('I9')).toEqual([join('checks', '_shared', 'constraints', 'named.py')])
   })
 })
 
@@ -1026,17 +1043,13 @@ describe('the clean fixture', () => {
       // In rules/, not constraints/, because I12 judges the directory: prose in a directory a
       // runner globs for code is a finding regardless of how well it is scoped.
       'skills/writing/rules/writing-checks.md': '---\napplies-to: [writing-draft]\n---\n\n# checks\n',
-      'skills/writing/constraints/volokh.py': tableModule('volokh', ['    (r"\\bheretofore\\b", "legalese"),']),
+      // The contract module lives where bin/workflow-check runs it; the leg that reads its table is a
+      // project command, which carries no module contract.
+      'checks/writing/constraints/volokh.py': tableModule('volokh', ['    (r"\\bheretofore\\b", "legalese"),']),
       'skills/writing/scripts/prose-gate.py': [
         'from pathlib import Path',
-        'CONSTRAINT = "prose-gate"',
-        'APPLIES_TO = ["writing-draft"]',
-        'SEVERITY = "hard"',
-        'TABLE = Path(__file__).resolve().parents[1] / "constraints" / "volokh.py"',
+        'TABLE = Path(__file__).resolve().parents[3] / "checks" / "writing" / "constraints" / "volokh.py"',
         'ATTR = "_PATTERNS"',
-        '',
-        'def check(context):',
-        '    return []',
         '',
       ].join('\n'),
       'corpus/tics.yaml': TICS_YAML,
@@ -1117,20 +1130,20 @@ describe('the documented exit-code contract', () => {
   })
 })
 
-// A runner that globs a checker directory and dispatches on a callable `check` is as live as one
-// that reads APPLIES_TO. Keying I3 on APPLIES_TO alone reported all 36 of typst's checkers as
-// uncalled while run-constraints.py was importing and running every one of them.
-test('a glob-and-dispatch-on-check runner registers contract modules', () => {
-  const d = mkTmp('pc-probe-glob-')
-  try {
-    mkdirSync(join(d, 'constraints'), { recursive: true })
-    writeFileSync(join(d, 'constraints', 'run-constraints.py'),
-      'import glob\nfor f in glob.glob("constraints/*.py"):\n    mod.check(f)\n')
-    writeFileSync(join(d, 'constraints', 'spacing.py'),
+// A runner that globs a checker directory and dispatches on a callable `check` registers nothing:
+// membership is the checks/<workflow>/ directory, which bin/workflow-check runs.
+test('a glob-and-dispatch-on-check runner registers nothing; the checks/ layout does', () => {
+  const at = (dir: string) => {
+    const d = mkTmp('pc-probe-glob-')
+    mkdirSync(join(d, dir), { recursive: true })
+    writeFileSync(join(d, 'constraints-runner.py'),
+      `import glob\nfor f in glob.glob("${dir}/*.py"):\n    mod.check(f)\n`)
+    writeFileSync(join(d, dir, 'spacing.py'),
       'CONSTRAINT = "spacing"\nSEVERITY = "hard"\nAPPLIES_TO = ["slides"]\ndef check(p):\n    return []\n')
-    const r = probe.runProbe(d)
-    expect(r.findings.filter(f => f.rule.startsWith('I3'))).toEqual([])
-  } finally { rmSync(d, { recursive: true, force: true }) }
+    return probe.runProbe(d).findings.filter((f: any) => f.rule.startsWith('I3')).length
+  }
+  expect(at('constraints')).toBe(1)
+  expect(at(join('checks', 'slides', 'constraints'))).toBe(0)
 })
 
 test('with NO runner at all, a contract module is still reported uncalled', () => {

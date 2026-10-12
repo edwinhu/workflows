@@ -29,8 +29,8 @@
  *
  *   LENS   the `lens:` object of a work-args object in a SKILL.md — `work` takes exactly one.
  *          Domain: the skill directory it is in.
- *   ENGINE an executable that produces findings, identified by any of — a `CONSTRAINT` /
- *          `APPLIES_TO` / `SEVERITY` module contract; appearing in a `mechanicalChecks` entry;
+ *   ENGINE an executable that produces findings, identified by any of — a `CONSTRAINT` +
+ *          `SEVERITY` module contract; appearing in a `mechanicalChecks` entry;
  *          being spawned by a hook in `hooks/hooks.json`. Domain: below.
  *
  * ---------------------------------------------------------------------------------------------
@@ -62,9 +62,8 @@
  *     A module under `checks/<workflow>/constraints/` or `checks/<workflow>/rules/` is REGISTERED BY
  *     ITS DIRECTORY: workflows' `bin/workflow-check` runs every one, from the plugin that ships it or
  *     from any plugin root on WORKFLOW_CHECKS_PATH, so it is called with no runner in the target.
- *     Elsewhere a contract module is REGISTERED BY ITS CONTRACT, not by a literal path: a discovery
- *     runner globs a directory and dispatches on it. So it counts as called when the plugin holds a
- *     live discovery runner. If it holds none, they are all uncalled, which is the truth.
+ *     Nothing else registers a contract module: a runner that globs a directory and dispatches on
+ *     `APPLIES_TO` or `check` is how a stray checker passed as a member, so it counts for nothing.
  *
  * I4  Every path literal a checker COMPUTES to reach another file must resolve.
  *     Defect: `skills/writing/references/writing-no-bold-lead.py:30` uses `parents[2]` where all ten
@@ -106,17 +105,11 @@
  *     "merely restates" is not decidable — so the PAIR is flagged and the rationale case is
  *     DECLARED, never guessed. See EXEMPTIONS below.
  *
- * I9  A checker is REACHABLE. A `.py` exposing the checker contract that sits outside every
- *     discovery runner's enumerated directory runs only because someone wrote its name down, and is
- *     one rename from silence with nothing to report it.
- *     Decided from the two halves this probe already builds — `discoveryRunners` and the directories
- *     each one globs — never from the literal name `constraints/`, which is a convention in two
- *     plugins and the definition in neither.
- *     Two silences, both deliberate: with NO discovery runner at all, I9 says nothing (I3 already
- *     reports every contract module as uncalled, and one fact twice is one fact plus noise); and a
- *     CLI-shaped checker named in a runner's own exclusion list — typst's
- *     `CLI_CHECKERS = ("runts", "widows", "orphans", "section-hierarchy")` — is excluded from the
- *     import path on purpose, so it is read FROM the runner, not hardcoded here.
+ * I9  A checker is REACHABLE: it sits in a `checks/<workflow>/constraints/` or `rules/` directory,
+ *     the only membership there is. A `.py` exposing the checker contract anywhere else runs only
+ *     because someone wrote its name down, and is one rename from silence with nothing to report it.
+ *     One silence, deliberate: a contract module I3 already reports as uncalled draws no I9, because
+ *     one fact twice is one fact plus noise.
  *
  * I10 Every rule in a checker directory is SCOPED. A `.md` there with no `applies-to:` frontmatter
  *     is in scope for zero workflows and indistinguishable from one nobody scoped.
@@ -164,13 +157,13 @@
  *   Cross-plugin lens/table pairs are out of reach and are not claimed.
  * - I5 reads only LABEL-SHAPED entries: a string containing `/`. `SKIP_DIRS`-style lists of bare
  *   names are not label suppressions and are left alone.
- * - I8/I9/I10 judge a CHECKER DIRECTORY, derived as: a directory holding at least one `.py` that
- *   exposes the checker contract, or a directory some discovery runner globs. A dir the probe
- *   cannot derive is not judged, and is not claimed to be clean.
- * - The checker contract is a module-level `def check(<one parameter>)` or an `APPLIES_TO`
- *   declaration. ONE parameter is exact, not conservative: both runners in the corpus call
- *   `mod.check(context)` / `mod.check(filepath)` with a single positional, and a two-parameter
- *   `def check(path, verbose=False)` in a CLI script is an internal helper no runner dispatches to.
+ * - I8/I10 judge a CHECKER DIRECTORY, derived as: a directory holding at least one `.py` that
+ *   exposes the checker contract. A dir the probe cannot derive is not judged, and is not claimed
+ *   to be clean.
+ * - The checker contract is the module contract or a module-level `def check(<one parameter>)`.
+ *   ONE parameter is exact, not conservative: a checker is called `check(context)` with a single
+ *   positional, and a two-parameter `def check(path, verbose=False)` in a CLI script is an internal
+ *   helper. `APPLIES_TO` is no part of either contract: nothing reads it.
  */
 
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
@@ -269,7 +262,7 @@ export interface ProbeResult {
   exemptions: Exemption[]
   /** Checker directories, relative to the target — what I8 and I10 were judged over. */
   checkerDirs: string[]
-  /** Directories some discovery runner globs, relative to the target — what I9 was judged against. */
+  /** The checks/<workflow>/ directories, relative to the target — what I9 was judged against. */
   enumeratedDirs: string[]
   /** The corpus dictionary actually read, or null when none was reachable. */
   corpus: string | null
@@ -535,12 +528,11 @@ export function layoutDir(dir: string, target: string): boolean {
   return (kind === 'constraints' || kind === 'rules') && wf.every(p => /^[A-Za-z0-9][\w.-]*$/.test(p) && p !== 'constraints' && p !== 'rules')
 }
 
-/** Does this module carry the check-all contract? */
+/** Does this module carry the module contract, `CONSTRAINT` and `SEVERITY`? */
 export function hasModuleContract(text: string): boolean {
   const hasConstraint = /^\s*CONSTRAINT\s*(?::[^=\n]*)?=/m.test(text)
-  const hasApplies = /^\s*APPLIES_TO\s*(?::[^=\n]*)?=/m.test(text)
   const hasSeverity = /^\s*SEVERITY\s*(?::[^=\n]*)?=/m.test(text)
-  return hasConstraint && (hasApplies || hasSeverity)
+  return hasConstraint && hasSeverity
 }
 
 export function constraintValue(text: string): string | null {
@@ -873,14 +865,11 @@ export function checkExemptionVocabulary(exemptions: readonly Exemption[]): Find
 // ---------------------------------------------------------------- checker shape
 
 /**
- * Does this module expose the checker contract a discovery runner dispatches on?
- *
- * A module-level `def check(<one parameter>)`, or an `APPLIES_TO` declaration (a discovery runner's
- * dispatch key), or the full check-all contract. See SCOPE for why one parameter.
+ * Does this module expose the checker contract: the module contract, or a module-level
+ * `def check(<one parameter>)`? See SCOPE for why one parameter.
  */
 export function hasCheckerContract(text: string): boolean {
   if (hasModuleContract(text)) return true
-  if (/^\s*APPLIES_TO\s*(?::[^=\n]*)?=/m.test(text)) return true
   return /^def\s+check\s*\(\s*[A-Za-z_]\w*(?:\s*:[^,()=]*)?\s*\)/m.test(text)
 }
 
@@ -890,120 +879,6 @@ export function hasAppliesTo(text: string): boolean {
   const end = text.indexOf('\n---', 3)
   if (end === -1) return false
   return /^applies-to\s*:/m.test(text.slice(0, end))
-}
-
-/**
- * Directory anchors a runner computes from `__file__`, by variable name.
- *
- * `constraints_dir = os.path.dirname(os.path.abspath(__file__))`, `_plugin_constraints_dir =
- * Path(__file__).parent`, `_repo_root = Path(__file__).resolve().parent.parent` and the one level of
- * indirection the corpus needs, `skills_dir = _repo_root / "skills"`. Nothing else: a glob whose
- * anchor this probe cannot follow yields no enumerated directory, which can only ADD an I9 finding a
- * human dismisses — never hide one.
- */
-export function globAnchors(runner: string, code: string): Map<string, string> {
-  const self = dirname(runner)
-  const out = new Map<string, string>([['__self__', self]])
-  for (const m of code.matchAll(/^\s*([A-Za-z_]\w*)\s*=\s*os\.path\.dirname\(\s*(?:os\.path\.abspath\(\s*)?__file__/gm)) {
-    out.set(m[1], self)
-  }
-  for (const m of code.matchAll(
-    /^\s*([A-Za-z_]\w*)\s*=\s*Path\(\s*__file__\s*\)((?:\s*\.\s*(?:resolve\(\)|absolute\(\)|parents\[\d+\]|parent))+)((?:\s*\/\s*(?:"[^"]*"|'[^']*'))*)/gm,
-  )) {
-    let up = 0
-    for (const step of m[2].matchAll(/parents\[(\d+)\]|parent\b/g)) up += step[1] ? Number(step[1]) + 1 : 1
-    let base = runner
-    for (let i = 0; i < up; i++) base = dirname(base)
-    const segs = [...m[3].matchAll(/["']([^"']*)["']/g)].map(s => s[1])
-    out.set(m[1], resolve(base, ...segs))
-  }
-  // One level of indirection: `NAME = OTHER / "seg"`, resolved against the anchors above.
-  for (const m of code.matchAll(/^\s*([A-Za-z_]\w*)\s*=\s*([A-Za-z_]\w*)\s*((?:\/\s*(?:"[^"]*"|'[^']*')\s*)+)/gm)) {
-    const base = out.get(m[2])
-    if (!base) continue
-    const segs = [...m[3].matchAll(/["']([^"']*)["']/g)].map(s => s[1])
-    out.set(m[1], resolve(base, ...segs))
-  }
-  return out
-}
-
-/** Existing directories matching `segments` (each possibly holding `*`) under `base`. */
-function expandDirs(base: string, segments: string[]): string[] {
-  if (segments.length === 0) return existsSync(base) && statSync(base).isDirectory() ? [base] : []
-  const [head, ...rest] = segments
-  if (!head || head === '.') return expandDirs(base, rest)
-  if (!head.includes('*')) return expandDirs(join(base, head), rest)
-  const quoted = head.split('*').map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-  const re = new RegExp('^' + quoted.join('[^/]*') + '$')
-  let entries: string[]
-  try {
-    entries = readdirSync(base)
-  } catch {
-    return []
-  }
-  const out: string[] = []
-  for (const e of entries) if (re.test(e)) out.push(...expandDirs(join(base, e), rest))
-  return out
-}
-
-/**
- * The directories `runner` ENUMERATES, derived from its glob patterns and its `__file__` anchors.
- *
- * A pattern with no directory part (`*.py`) is anchored at the runner's own directory — that is
- * where `glob.glob(os.path.join(constraints_dir, "*.py"))` points. A pattern that names directories
- * (a star segment followed by `constraints`) is tried against every anchor and kept where it
- * expands to a real directory.
- */
-export function enumeratedDirsOf(runner: string, code: string, extraAnchors: readonly string[] = []): string[] {
-  const anchors = globAnchors(runner, code)
-  // A cwd-relative pattern — `glob.glob("constraints/*.py")` — is anchored wherever the runner is
-  // invoked from, which this process cannot know. The plugin root is the plausible cwd, and counting
-  // its expansion as enumerated can only SILENCE an I9, never invent one.
-  for (const a of extraAnchors) anchors.set(`__extra:${a}`, a)
-  const self = dirname(runner)
-  const out = new Set<string>()
-  for (const m of code.matchAll(/["']([^"'\n]*\*[^"'\n]*)["']/g)) {
-    const pattern = m[1]
-    if (pattern.startsWith('/') || pattern.includes('**')) continue
-    const segs = pattern.split('/').filter(s => s !== '')
-    if (segs.length === 0) continue
-    // A trailing `*.ext` names FILES; the directory enumerated is what precedes it.
-    const last = segs[segs.length - 1]
-    const dirSegs = /\.[A-Za-z0-9]+$/.test(last) ? segs.slice(0, -1) : segs
-    // A directory part that is nothing but wildcards (`*`, `*/*`) IDENTIFIES no directory, so it is
-    // read only against the runner's own — a runner globbing `*` in its own directory. Cross-
-    // producting it with every anchor expanded the plugin root into all 23 of its top-level
-    // directories, which then read as checker directories and drew 25 I10 findings on correct prose.
-    const named = dirSegs.some(s => s.replace(/\*/g, '') !== '')
-    const bases = dirSegs.length === 0 || !named ? [self] : [...anchors.values()]
-    // Filtered through SKIP_DIRS: a `__pycache__` the walk never scans is not a checker directory,
-    // and reporting one as enumerated would describe coverage the probe does not have.
-    for (const b of bases) for (const d of expandDirs(b, dirSegs)) if (!SKIP_DIRS.has(basename(d))) out.add(d)
-  }
-  return [...out]
-}
-
-/**
- * Module stems a runner deliberately keeps OUT of its import path.
- *
- * typst names them in `CLI_CHECKERS`; workflows passes `exclude_names={"check-all"}`. Read from the
- * runner because the list is the runner's, and a hardcoded copy here would go stale silently — the
- * exact failure I5 is named after.
- */
-export function runnerExclusions(code: string): string[] {
-  const out = new Set<string>()
-  const take = (body: string) => {
-    for (const s of body.matchAll(/(['"])((?:\\.|(?!\1)[^\\])*)\1/g)) {
-      const v = s[2].trim()
-      if (v) out.add(v.replace(/\.py$/, ''))
-    }
-  }
-  for (const m of code.matchAll(/^\s*([A-Za-z_]\w*)\s*(?::[^=\n]*)?=\s*[[({]([^\])}]*)[\])}]/gm)) {
-    if (!/(CLI|EXCLUDE|EXCLUDED|SKIP|EXEMPT|IGNORE|NOT_)/i.test(m[1])) continue
-    take(m[2])
-  }
-  for (const m of code.matchAll(/exclude_names\s*=\s*[[({]([^\])}]*)[\])}]/g)) take(m[1])
-  return [...out]
 }
 
 // ---------------------------------------------------------------- predicates
@@ -1074,23 +949,21 @@ export function checkSingleEngine(
 export function checkEngineCallers(
   engines: readonly Engine[],
   callersOf: Map<string, string[]>,
-  discoveryRunners: readonly string[],
   target: string,
 ): Finding[] {
   const findings: Finding[] = []
   for (const e of [...engines].sort((a, b) => a.file.localeCompare(b.file))) {
     if ((callersOf.get(e.file) ?? []).length > 0) continue
-    // A contract module is registered BY ITS CONTRACT: check-all-style runners discover it by glob,
-    // so there is no literal path to find. It is called iff such a runner exists, or its directory
-    // is the checks/ layout, which bin/workflow-check runs.
-    if (e.via.includes('contract') && (discoveryRunners.length > 0 || layoutDir(dirname(e.file), target))) continue
+    // A contract module in the checks/ layout is registered by its directory, which bin/workflow-check
+    // runs, so there is no literal path to find. Nothing else registers one.
+    if (e.via.includes('contract') && layoutDir(dirname(e.file), target)) continue
     findings.push({
       rule: 'I3 every engine has a live caller',
       severity: 'major',
       file: e.file,
       detail:
         `${relative(target, e.file)} is identified as an engine (via ${e.via.join('+')}) and nothing in this plugin invokes it` +
-        (e.via.includes('contract') ? ' — and no discovery runner reads APPLIES_TO, so its contract registers it with nobody' : ''),
+        (e.via.includes('contract') ? ' — and it sits outside every checks/<workflow>/ directory, so its contract registers it with nobody' : ''),
       remedy:
         'wire it or delete it. A comment, a CHANGELOG line, a doc or a test that names it is not a caller, and an engine nobody runs reads exactly like an engine that passes',
     })
@@ -1289,33 +1162,24 @@ export function checkTwoRepresentations(
 }
 
 /**
- * I9: a checker outside every discovery runner's enumerated directory.
- *
- * Silent when there is no discovery runner at all — I3 already reports those modules as uncalled —
- * and silent on a stem some runner's own exclusion list names, which is a CLI checker held out of
- * the import path on purpose.
+ * I9: a checker outside every checks/<workflow>/ directory. Silent on a file I3 already reports as
+ * uncalled (`uncalled`): one fact, reported once.
  */
 export function checkCheckerReach(
   contractFiles: readonly string[],
-  enumerated: readonly string[],
-  exclusions: readonly string[],
-  runnerCount: number,
+  uncalled: ReadonlySet<string>,
   target: string,
 ): Finding[] {
-  if (runnerCount === 0) return []
-  const dirs = new Set(enumerated)
-  const excluded = new Set(exclusions)
   const findings: Finding[] = []
   for (const f of [...contractFiles].sort()) {
-    if (dirs.has(dirname(f))) continue
-    if (excluded.has(basename(f, '.py'))) continue
+    if (layoutDir(dirname(f), target) || uncalled.has(f)) continue
     findings.push({
       rule: 'I9 a checker must be reachable',
       severity: 'major',
       file: f,
-      detail: `${relative(target, f)} exposes the checker contract and sits outside every directory this plugin's ${runnerCount} discovery runner(s) enumerate — nothing discovers it`,
+      detail: `${relative(target, f)} exposes the checker contract and sits outside every checks/<workflow>/constraints or rules directory — nothing registers it`,
       remedy:
-        'move it into an enumerated checker directory, or widen the runner that should find it. A checker reached only because someone wrote its name down is one rename from silence, with nothing to report the silence',
+        'move it under checks/<workflow>/constraints/, where bin/workflow-check runs it, or drop the contract if it is a project command a skill runs as a leg. A checker reached only because someone wrote its name down is one rename from silence, with nothing to report the silence',
     })
   }
   return findings
@@ -1616,21 +1480,6 @@ export function runProbe(target: string, opts: ProbeOptions = {}): ProbeResult {
 
   const delegates = (a: string, b: string) => (spawns.get(a)?.has(b) ?? false)
 
-  // A discovery runner ENUMERATES a checker directory and DISPATCHES on the module contract. Which
-  // contract member it keys on is the runner's choice: one reads APPLIES_TO, typst's globs
-  // constraints/*.py and dispatches on a callable `check`. Requiring APPLIES_TO specifically
-  // reported all 36 of typst's live checkers as uncalled — the runner was right there. The
-  // checks/<workflow>/ layout needs no runner here: its directory is the registration (layoutDir).
-  const discoveryRunners = [...codeOf]
-    .filter(([f, code]) => {
-      if (hasModuleContract(textOf.get(f) ?? '')) return false
-      if (code.includes('APPLIES_TO')) return true
-      const enumerates = /\bglob\b|\biterdir\b|\breaddirSync\b|\breaddir\b|\bscandir\b|\blistdir\b/.test(code)
-      const dispatches = /\bSEVERITY\b|\bCONSTRAINT\b|["']check["']|\bcheck\(/.test(code)
-      return enumerates && dispatches
-    })
-    .map(([f]) => f)
-
   // ---- labels a checker can emit (I5). Derived from where the checkers actually live.
   // The label forms a runner actually builds — `skills/<skill>/references/<stem>` and
   // `constraints/<stem>` — not every suffix of every path. Arbitrary suffixes invented labels like
@@ -1653,7 +1502,8 @@ export function runProbe(target: string, opts: ProbeOptions = {}): ProbeResult {
   // ---- run the predicates
   findings.push(...checkSingleEngine(engines, tables, consumersOf, delegates, root))
   // No I2 leg: see the retirement note above `checkLensLiteralInTable`.
-  findings.push(...checkEngineCallers(engines, callersOf, discoveryRunners, root))
+  const i3 = checkEngineCallers(engines, callersOf, root)
+  findings.push(...i3)
   findings.push(...checkComputedPaths([...engineMap.keys(), ...tables.map(t => t.file)], textOf))
   findings.push(...checkSuppressionLists(suppress, [...labels], unresolvedRefs))
   findings.push(...checkLensLiteralInTable(lenses, tables, textOf, root))
@@ -1667,22 +1517,9 @@ export function runProbe(target: string, opts: ProbeOptions = {}): ProbeResult {
   }
   findings.push(...checkExemptionVocabulary([...exemptionsOf.values()].flat()))
 
-  // TWO sets, and the difference is load-bearing. `enumerated` includes the directories a
-  // cwd-relative glob would reach if the runner were invoked from the plugin root — an ASSUMPTION,
-  // used only to keep I9 quiet where the probe cannot know the cwd. `derived` holds only what a
-  // runner computes from its own `__file__`, and that is what I8 and I10 call a checker directory:
-  // an assumed cwd must never promote a prose directory into one.
+  // The checks/<workflow>/ layout is the one enumeration: bin/workflow-check runs it, from this plugin
+  // or any root on WORKFLOW_CHECKS_PATH, whatever runner this target ships.
   const enumerated = new Set<string>()
-  const derived = new Set<string>()
-  const exclusions = new Set<string>()
-  for (const r of discoveryRunners) {
-    const code = codeOf.get(r) ?? ''
-    for (const d of enumeratedDirsOf(r, code, [root])) enumerated.add(d)
-    for (const d of enumeratedDirsOf(r, code)) derived.add(d)
-    for (const x of runnerExclusions(code)) exclusions.add(x)
-  }
-  // The checks/<workflow>/ layout is enumerated by bin/workflow-check (from this plugin or any root on
-  // WORKFLOW_CHECKS_PATH), whatever runner this target ships.
   for (const f of all) if (layoutDir(dirname(f), root)) enumerated.add(dirname(f))
   const contractFiles = [...textOf]
     .filter(([f, text]) => extname(f) === '.py' && !isTestFile(f) && hasCheckerContract(text))
@@ -1693,10 +1530,9 @@ export function runProbe(target: string, opts: ProbeOptions = {}): ProbeResult {
     filesByDir.set(d, [...(filesByDir.get(d) ?? []), f])
   }
   const checkerDirs = new Set<string>(contractFiles.map(f => dirname(f)))
-  for (const d of derived) if (filesByDir.has(d)) checkerDirs.add(d)
 
   findings.push(...checkTwoRepresentations([...checkerDirs], filesByDir, exemptionsOf, root, exemptions))
-  findings.push(...checkCheckerReach(contractFiles, [...enumerated], [...exclusions], discoveryRunners.length, root))
+  findings.push(...checkCheckerReach(contractFiles, new Set(i3.map(f => f.file)), root))
   findings.push(...checkRuleScope([...checkerDirs], filesByDir, textOf, root))
   // I12 judges DIRECTORY NAMES, not derived checker directories: the whole point is that a
   // rules/ directory holds no code for a runner to derive itself from, so deriving it would
