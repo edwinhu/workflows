@@ -1,5 +1,5 @@
 import { test, expect } from 'bun:test'
-import { mkdtempSync, writeFileSync, readFileSync, mkdirSync, chmodSync, rmSync, existsSync } from 'node:fs'
+import { mkdtempSync, writeFileSync, readFileSync, mkdirSync, chmodSync, rmSync, existsSync, cpSync, utimesSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
@@ -7,8 +7,9 @@ import { spawnSync } from 'node:child_process'
 const ROOT = join(import.meta.dir, '..')
 const FARM = join(ROOT, 'skills', 'farm-out', 'scripts', 'farm.sh')
 const LINT = join(ROOT, 'scripts', 'lib', 'brief-style-lint.ts')
-const GATE = join(ROOT, 'skills', 'farm-out', 'scripts', 'chart-gate.py')
+const GATE = join(ROOT, 'skills', 'farm-out', 'scripts', 'ds-gate.py')
 const FIX = join(ROOT, 'tests', 'fixtures', 'ds-chart-typography')
+const GATEFIX = join(ROOT, 'tests', 'fixtures', 'ds-gate')
 
 function lint(row: Record<string, unknown>) {
   const r = spawnSync('bun', [LINT, '--row', JSON.stringify(row)], { encoding: 'utf8', timeout: 30_000 })
@@ -107,7 +108,7 @@ test('farm.sh runs a styling brief when the row carries the user\'s verbatim wor
   expect(r.ran).toBe(true)
 })
 
-const GATE_MSG = 'chart style gate failed'
+const GATE_MSG = 'ds constraint gate failed'
 
 test('output gate marks a ds row wrong when the child left a sans-serif chart theme', () => {
   const r = farm([{ label: 'g', agent: 'ds', prompt: DATA_ONLY }], join(FIX, 'founder-v2'))
@@ -119,7 +120,7 @@ test('output gate marks a ds row wrong when the child left a sans-serif chart th
   expect(r.stderr).toContain('UNVERIFIED')
   const verdict = r.outcomes.split('\n').filter(Boolean).map(l => JSON.parse(l)).find(l => l.type === 'verdict')
   expect(verdict.verdict).toBe('wrong')
-  expect(verdict.checks).toContain('chart-style')
+  expect(verdict.checks).toContain('ds-constraints')
   expect(verdict.why).toContain(GATE_MSG)
 })
 
@@ -134,9 +135,9 @@ test('output gate stays out of rows whose persona does not preload ds-rules', ()
   expect(r.rows[0].ok).toBe(true)
 })
 
-// ---- chart-gate.py directly ----------------------------------------------------------------
+// ---- ds-gate.py directly ----------------------------------------------------------------
 
-test('chart-gate sees a chart under a directory named scratch (the colour linter used to prune it)', () => {
+test('ds-gate sees a chart under a directory named scratch (the colour linter used to prune it)', () => {
   const root = mkdtempSync(join(tmpdir(), 'chartgate-'))
   const d = join(root, 'scratch', 'figs'); mkdirSync(d, { recursive: true })
   writeFileSync(join(d, 'c.py'), 'import matplotlib.pyplot as plt\nfig, ax = plt.subplots()\n')
@@ -145,7 +146,7 @@ test('chart-gate sees a chart under a directory named scratch (the colour linter
   rmSync(root, { recursive: true, force: true })
 })
 
-test('chart-gate with nothing chart-shaped touched is a no-op pass', () => {
+test('ds-gate with nothing chart-shaped touched is a no-op pass', () => {
   const root = mkdtempSync(join(tmpdir(), 'chartgate-'))
   writeFileSync(join(root, 'stamp'), ''); writeFileSync(join(root, 'log'), '')
   writeFileSync(join(root, 'notes.md'), 'x')
@@ -153,4 +154,69 @@ test('chart-gate with nothing chart-shaped touched is a no-op pass', () => {
   expect(r.status).toBe(0)
   expect(r.stdout).toContain('nothing to lint')
   rmSync(root, { recursive: true, force: true })
+})
+
+// ---- the code checkers (every ds-* rule, not only A5/A6) -----------------------------------
+
+test('output gate marks a ds row wrong for a non-chart rule: unaudited join, unlogged dropna, no schema contract, bare OLS', () => {
+  const r = farm([{ label: 'g', agent: 'ds', prompt: DATA_ONLY }], join(GATEFIX, 'bad'))
+  const row = r.rows[0]
+  expect(row.ok).toBe(false)
+  expect(row.failure).toContain('ds constraint gate failed')
+  for (const c of ['ds-join-audits.py', 'ds-error-handling.py', 'ds-schema-contracts.py', 'ds-standard-error-spec.py'])
+    expect(row.failure).toContain(c)
+  expect(row.failure).toContain('pipeline.py:')
+})
+
+test('output gate passes a clean pipeline', () => {
+  const r = farm([{ label: 'g', agent: 'ds', prompt: DATA_ONLY }], join(GATEFIX, 'clean'))
+  expect(r.rows[0].ok).toBe(true)
+})
+
+function gateRun(opts: { files: Record<string, string>, constraints?: Record<string, string> }) {
+  const root = mkdtempSync(join(tmpdir(), 'dsgate-'))
+  // a private copy of the plugin layout, so a checker can be replaced with one that cannot run
+  const plug = join(root, 'plug'); mkdirSync(join(plug, 'skills', 'farm-out', 'scripts'), { recursive: true })
+  cpSync(GATE, join(plug, 'skills', 'farm-out', 'scripts', 'ds-gate.py'))
+  cpSync(join(ROOT, 'constraints'), join(plug, 'constraints'), { recursive: true })
+  for (const [n, body] of Object.entries(opts.constraints ?? {})) writeFileSync(join(plug, 'constraints', n), body)
+  const cwd = join(root, 'cwd'); mkdirSync(cwd)
+  writeFileSync(join(root, 'stamp'), ''); writeFileSync(join(root, 'log'), '')
+  const past = new Date(Date.now() - 60_000); utimesSync(join(root, 'stamp'), past, past)
+  for (const [n, body] of Object.entries(opts.files)) { mkdirSync(join(cwd, n, '..'), { recursive: true }); writeFileSync(join(cwd, n), body) }
+  const r = spawnSync('python3', [join(plug, 'skills', 'farm-out', 'scripts', 'ds-gate.py'), '--cwd', cwd, '--stamp', join(root, 'stamp'), '--log', join(root, 'log')],
+    { encoding: 'utf8', timeout: 120_000 })
+  rmSync(root, { recursive: true, force: true })
+  return { rc: r.status, out: r.stdout }
+}
+const BAD = readFileSync(join(GATEFIX, 'bad', 'pipeline.py'), 'utf8')
+const CLEAN = readFileSync(join(GATEFIX, 'clean', 'pipeline.py'), 'utf8')
+
+test('ds-gate checks code under a scratch/ directory and reports the original path', () => {
+  const r = gateRun({ files: { 'scratch/run1/pipeline.py': BAD } })
+  expect(r.rc).toBe(1)
+  expect(r.out).toContain('scratch/run1/pipeline.py:')
+})
+
+test('ds-gate respects a waiver that carries a reason', () => {
+  const waived = BAD.replace('m = a.merge(b, on="k")', 'm = a.merge(b, on="k")  # ds-join-audits: fixture merge, counted by the caller test')
+  const r = gateRun({ files: { 'scratch/p.py': waived } })
+  expect(r.out).not.toContain('ds-join-audits.py')
+})
+
+test('ds-gate: a clean file passes and says what ran; a figure-only row says the code checkers had nothing', () => {
+  const ok = gateRun({ files: { 'p.py': CLEAN } })
+  expect(ok.rc).toBe(0)
+  expect(ok.out).toContain('10 code checkers on 1 .py file(s)')
+  const fig = gateRun({ files: { 'f.svg': '<svg xmlns="http://www.w3.org/2000/svg"/>' } })
+  expect(fig.out).toContain('code checkers: no .py touched, nothing to check')
+})
+
+test('ds-gate exits 2, never 0, when a checker crashes or prints no verdict', () => {
+  const crash = gateRun({ files: { 'p.py': CLEAN }, constraints: { 'ds-determinism.py': '1/0\n' } })
+  expect(crash.rc).toBe(2)
+  expect(crash.out).toContain('COULD-NOT-CHECK: ds-determinism.py crashed')
+  const mute = gateRun({ files: { 'p.py': CLEAN }, constraints: { 'ds-idempotency.py': 'pass\n' } })
+  expect(mute.rc).toBe(2)
+  expect(mute.out).toContain('without a PASS verdict')
 })
