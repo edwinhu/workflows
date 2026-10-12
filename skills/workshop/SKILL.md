@@ -222,7 +222,7 @@ canonical Typst modules.
 cannot modify the tree beats a prompt asking it not to. The lens buys the same property a different
 way — `workshop-reviewer` is read-only by tools allowlist — because Explore's prompt is predefined
 and no preloaded skill or CLAUDE.md reaches it, and the lens's constraint item has to be told what it
-is grading.
+is grading. The lens returns schema-validated JSON through StructuredOutput, and the runner writes lens.json.
 
 ## Phase 5 — HUMAN REVIEW
 

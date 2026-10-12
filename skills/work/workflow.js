@@ -211,7 +211,10 @@ if (args.reviewLenses !== undefined) {
   )
 }
 if (args.lens !== undefined && (!args.lens || typeof args.lens !== 'object' || Array.isArray(args.lens))) {
-  throw new Error(`work: lens must be an object {prompt, refs, agentType?, model?, effort?}: ${JSON.stringify(args.lens)}`)
+  throw new Error(`work: lens must be an object {prompt, refs, agentType?, model?, effort?, sandbox?}: ${JSON.stringify(args.lens)}`)
+}
+if (args.lens && args.lens.sandbox !== undefined && typeof args.lens.sandbox !== 'boolean') {
+  throw new Error(`work: lens.sandbox must be true or false: ${JSON.stringify(args.lens.sandbox)}`)
 }
 const DEFAULT_LENS_PROMPT = [
   'Judge the deliverable in the working tree against the APPROVED PLAN and the goal, along four dimensions:',
@@ -231,6 +234,8 @@ const lens = {
   // are the settings the measurement covers; pass null to inherit the session's instead.
   model: lensArg.model === undefined ? 'sonnet' : (lensArg.model || null),
   effort: lensArg.effort === undefined ? 'high' : (lensArg.effort || null),
+  // true: the lens row runs its commands in farm.sh's throwaway sandbox (skills/farm-out/scripts/sandbox.sh).
+  sandbox: lensArg.sandbox === true,
 }
 // Whole-deliverable mechanical checks: [{name, cmd}]. Optional; absent/empty skips the phase entirely.
 const mechanicalChecks = Array.isArray(args.mechanicalChecks) ? args.mechanicalChecks : []
@@ -896,7 +901,9 @@ const lensSpec = digest => {
     ...refLines(lens.refs, JUDGE_REFS_INTRO),
     ...digestLines(digest),
     '',
-    'Rules: modify nothing; cite files and lines; run read-only commands and quote their output as your evidence.',
+    lens.sandbox
+      ? 'Rules: modify nothing in the real tree; cite files and lines. Your Bash is a throwaway sandbox: RUN the commands that confirm or refute a claim no settled check decided (the tests, the check scripts, the plan\'s acceptance commands) and quote their output as your evidence.'
+      : 'Rules: modify nothing; cite files and lines; run read-only commands and quote their output as your evidence.',
     'Put a line number in the `line` field, NOT in `file`. A `file` of "src/a.go:135" matches no path in the plan\'s task table, so the fix loop cannot route it and re-runs everything.',
     'A FINDING IS A DEFECT CLAIM AND NOTHING ELSE. Every entry in `findings` must assert that something is WRONG. "I checked X and it holds", "constraint Y is satisfied", "no violation found", "recorded for completeness" — none of those are findings, and filing one as a finding fails the run on a true statement.',
     'Put every satisfied check in `dispositions` instead. It is REPORTED to the user in full, so the obligation to show what you examined is discharged there, not by inflating the findings list. If you must file a non-defect under `findings` anyway, set `defect: false` on it.',
@@ -907,6 +914,7 @@ const lensSpec = digest => {
     ...(reviewAgentType(lens.agentType) ? { agentType: reviewAgentType(lens.agentType) } : {}),
     ...(lensLegModel ? { model: lensLegModel } : {}),
     ...(lens.effort ? { effort: lens.effort } : {}),
+    ...(lens.sandbox ? { sandbox: true } : {}),
   }
 }
 

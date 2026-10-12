@@ -1,6 +1,6 @@
 ---
 name: marimo
-description: "ALWAYS load before editing ANY .py file that contains @app.cell or marimo.App — 'edit this notebook', 'add a cell', 'fix the notebook', 'why is this cell not updating', 'my notebook won't run', 'convert this ipynb to marimo', 'turn my Jupyter notebook into marimo', 'start a notebook', 'export the notebook to HTML', 'run marimo', 'the cell says variable already defined', 'marimo edit'. Use even when the user just says 'the notebook' — hand-editing a marimo file breaks its cell signatures and DAG."
+description: "ALWAYS load before editing ANY .py file that contains @app.cell or marimo.App — 'edit this notebook', 'add a cell', 'fix the notebook', 'why is this cell not updating', 'my notebook won't run', 'convert this ipynb to marimo', 'turn my Jupyter notebook into marimo', 'start a notebook', 'export the notebook to HTML', 'run marimo', 'the cell says variable already defined', 'marimo edit', 'add Lens', 'address my selections', 'I selected this chart', 'walk me through this notebook'. Use even when the user just says 'the notebook' — hand-editing a marimo file breaks its cell signatures and DAG."
 user-invocable: false
 ---
 
@@ -341,6 +341,20 @@ cell changes through marimo-pair. Everything else about scratchpad execution, ce
 package installation is marimo-pair's to document; read its SKILL.md and `reference/` files
 (`finding-marimo.md`, `gotchas.md`, `rich-representations.md`, `notebook-improvements.md`) rather
 than a copy here.
+
+### Lens — the user points, the agent sees
+
+[marimo-lens](https://github.com/marimo-team/marimo-lens) lets the user mark a point or region on any output and attach a note; the agent receives the selection, a PNG of it, and the producing + upstream cell source. It rides on the marimo-pair connection. Install it in every notebook environment we start a live session in — `pixi add --pypi marimo-lens` (marimo ≥ 0.25.0; the browser editor mounts the dock automatically on the first cell that imports marimo; the VS Code extension cannot target outputs).
+
+Lens ships its own agent skill inside the package — read it from **the notebook's environment** before the first Lens call, and route "add Lens", "address my selections", "what I marked", "walk me through this notebook" (a Trail) to it:
+
+```bash
+pixi run python -c "import marimo_lens; help(marimo_lens.agent)"   # in the notebook env
+uvx --with marimo-lens agent-plugins read marimo-lens               # full briefing + references, any env
+```
+
+- It uses private marimo runtime APIs with no upper version bound: after a marimo upgrade, confirm the dock still mounts before relying on it.
+- Selections, images and notes reach the agent exactly as rendered; Lens redacts password/file widgets only. Treat a notebook on confidential expert data like any other agent read of that data.
 
 ## Data and Visualization
 

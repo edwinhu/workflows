@@ -9,11 +9,14 @@
  *   work-stage.mjs   the digest maps owners and pre-flags out-of-scope paths; a suite change is a
  *                    CRITICAL in the gate
  *   work-round.sh    the lens is ONE farm.sh --tasks row of kind review, carrying lens.model and
- *                    lens.agentType, with `expect` on its JSON; route.ts is not re-asked
+ *                    lens.agentType, with `expect` on its JSON and the lens schema as `schema`;
+ *                    route.ts is not re-asked; through the real farm.sh the structured value becomes
+ *                    lens.json, and a lens that returned none is the dead-lens CRITICAL
  *   work-result.sh   PASS/FAIL verdicts on an assembled result are the verdicts it always gave
  *   workflow.js      dispatches zero red/mechanical/rules/lens agents, and no verifier for an acceptanceCmd task
  *
- * No model and no network: farm.sh is a stub (WORK_FARM), FARM_OUTCOMES and TMPDIR are temp paths.
+ * No model and no network: farm.sh is a stub (WORK_FARM) — for the lens row it can hand off to the
+ * real farm.sh over a stub claude-code — and FARM_OUTCOMES and TMPDIR are temp paths.
  *
  * Run: bun test ./skills/work/scripts/work-round.test.ts
  */
@@ -32,6 +35,7 @@ const CHECKS = join(HERE, 'work-checks.sh')
 const ROUND = join(HERE, 'work-round.sh')
 const RESULT_SH = join(HERE, 'work-result.sh')
 const STAGE = join(HERE, 'work-stage.mjs')
+const REAL_FARM = join(HERE, '..', '..', 'farm-out', 'scripts', 'farm.sh')
 
 const temps: string[] = []
 const tmp = () => { const d = mkdtempSync(join(tmpdir(), 'work-round-')); temps.push(d); return d }
@@ -192,6 +196,7 @@ writeFileSync(out, JSON.stringify(r))
   writeFileSync(farm, `#!/usr/bin/env bash
 set -eu
 echo "$*" >> "$CAPTURE/argv"
+orig=("$@")
 while [ $# -gt 0 ]; do case $1 in
   --provider) prov=$2; shift 2;; --args) a=$2; shift 2;; --out) out=$2; shift 2;;
   --tasks) rows=$2; shift 2;; --workflow) shift 2;; *) shift;; esac; done
@@ -199,6 +204,7 @@ echo "$([ -n "\${rows:-}" ] && echo tasks || echo workflow) --provider $prov" >>
 echo "\${JEV_EDIT_MOD-unset}" >> "$CAPTURE/jev"
 if [ -n "\${rows:-}" ]; then
   cp "$rows" "$CAPTURE/rows.json"
+  [ -n "\${REAL_FARM:-}" ] && exec bash "$REAL_FARM" "\${orig[@]}"
   printf '%s' "$LENS_REPLY" > "$(jq -r '.[0].expect[0]' "$rows")"
   exit 0
 fi
@@ -208,7 +214,35 @@ bun "$CAPTURE/agents.mjs" "$a" "$out" "$CAPTURE/agents.log"
   return farm
 }
 
-function round(args: any, lensReply: any = { routes: [], findings: [], carried: [], dispositions: [] }) {
+/**
+ * The lens row's provider CLI, for the real farm.sh: records argv one arg per line, then streams what
+ * claude 2.1.287 was measured to stream (2026-10-04) — the validated value as `.structured_output`
+ * on the `result` event, or null after a StructuredOutput call the CLI rejected against the schema.
+ * LENS_SO is that value (raw JSON; empty = the rejected call). LENS_SELF writes LENS_REPLY to RUN/lens.json first.
+ */
+function stubProviders(dir: string) {
+  const bin = join(dir, 'bin'); mkdirSync(bin)
+  const body = `#!/usr/bin/env bash
+printf '%s\\n' "$@" > "$CAPTURE/lens-argv"
+cat > /dev/null
+[ -n "\${LENS_SELF:-}" ] && printf '%s' "$LENS_REPLY" > "$LENS_SELF"
+if [ -n "\${LENS_SO:-}" ]; then
+  jq -cn --argjson so "$LENS_SO" '{type:"assistant",message:{id:"m1",model:"claude-sonnet-5-5",content:[{type:"tool_use",id:"s",name:"StructuredOutput",input:$so}]}}'
+  jq -cn --argjson so "$LENS_SO" '{type:"result",subtype:"success",result:($so|tostring),structured_output:$so}'
+else
+  printf '%s\\n' '{"type":"assistant","message":{"id":"m1","model":"claude-sonnet-5-5","content":[{"type":"tool_use","id":"s","name":"StructuredOutput","input":{"findings":[{"title":"t","severity":"catastrophic"}]}}]}}'
+  printf '%s\\n' '{"type":"user","message":{"content":[{"type":"tool_result","tool_use_id":"s","is_error":true,"content":"Output does not match required schema: /findings/0/severity: must be equal to one of the allowed values"}]}}'
+  printf '%s\\n' '{"type":"result","subtype":"success","result":"My review:\\n\\n\\u0060\\u0060\\u0060json\\n{\\"routes\\": [], \\"findings\\": [], \\"carried\\": [], \\"dispositions\\": []}\\n\\u0060\\u0060\\u0060","structured_output":null}'
+fi
+`
+  for (const w of ['claude-code', 'codex-code', 'gemini-code']) {
+    writeFileSync(join(bin, w), body); chmodSync(join(bin, w), 0o755)
+  }
+  return bin
+}
+
+function round(args: any, lensReply: any = { routes: [], findings: [], carried: [], dispositions: [] },
+               lens: { so?: any, self?: boolean } | null = null) {
   const cap = tmp()
   const farm = stubFarm(cap)
   const runDir = join(cap, 'run')
@@ -218,7 +252,10 @@ function round(args: any, lensReply: any = { routes: [], findings: [], carried: 
   const result = join(runDir, 'result.json')
   const { JEV_EDIT_MOD: _, ...inherited } = process.env
   const env = { ...inherited, WORK_FARM: farm, CAPTURE: cap, LENS_REPLY: JSON.stringify(lensReply),
-    TMPDIR: cap, FARM_OUTCOMES: join(cap, 'farm-outcomes.jsonl') }
+    TMPDIR: cap, FARM_OUTCOMES: join(cap, 'farm-outcomes.jsonl'),
+    ...(lens ? { REAL_FARM, PATH: `${stubProviders(cap)}:${process.env.PATH}`, FARM_OUT_CHILD: '1', CLAUDE_CODE_SESSION_ID: '',
+                 LENS_SO: lens.so === undefined ? '' : JSON.stringify(lens.so),
+                 LENS_SELF: lens.self ? join(runDir, 'lens.json') : '' } : {}) }
   const r = spawnSync('bash', [ROUND, argsPath, result, args.projectDir, 'claude'], { timeout: 120_000, encoding: 'utf8', env })
   const verdict = existsSync(result) ? spawnSync(RESULT_SH, [result], { timeout: 120_000, encoding: 'utf8' }) : null
   return {
@@ -228,6 +265,7 @@ function round(args: any, lensReply: any = { routes: [], findings: [], carried: 
     calls: existsSync(join(cap, 'calls')) ? readFileSync(join(cap, 'calls'), 'utf8').trim().split('\n') : [],
     argv: existsSync(join(cap, 'argv')) ? readFileSync(join(cap, 'argv'), 'utf8').trim().split('\n') : [],
     jev: existsSync(join(cap, 'jev')) ? readFileSync(join(cap, 'jev'), 'utf8').trim().split('\n') : [],
+    lensArgv: existsSync(join(cap, 'lens-argv')) ? readFileSync(join(cap, 'lens-argv'), 'utf8').split('\n') : [],
     agents: existsSync(join(cap, 'agents.log')) ? readFileSync(join(cap, 'agents.log'), 'utf8').trim().split('\n') : [],
     verdict,
   }
@@ -300,6 +338,26 @@ describe('work-round.sh: the lens is ONE farm row of kind review', () => {
     expect(r.jev).toEqual(['1', 'unset'])
   })
 
+  test('lens.sandbox: true reaches the farm row as sandbox: true; absent, the row carries no sandbox key', () => {
+    const dir = repo({ 'scripts/red.sh': 'echo "1 passed"; exit 0', 'src/a.ts': 'a' })
+    const on = round(roundArgs(dir, { lens: { ...roundArgs(dir).lens, sandbox: true } }))
+    expect({ code: on.code, out: on.code === 0 ? '' : on.out }).toEqual({ code: 0, out: '' })
+    expect(on.rows[0].sandbox).toBe(true)
+    // the lens is told to run what confirms a claim, not restricted to read-only commands
+    expect(on.rows[0].prompt).toMatch(/RUN the commands that confirm or refute a claim/)
+    expect(on.rows[0].prompt).not.toMatch(/run read-only commands/)
+    const off = round(roundArgs(dir))
+    expect('sandbox' in off.rows[0]).toBe(false)
+    expect(off.rows[0].prompt).toMatch(/run read-only commands/)
+  })
+
+  test('a non-boolean lens.sandbox is refused', () => {
+    const dir = repo({ 'scripts/red.sh': 'echo "1 passed"; exit 0', 'src/a.ts': 'a' })
+    const r = round(roundArgs(dir, { lens: { ...roundArgs(dir).lens, sandbox: 'yes' } }))
+    expect(r.code).not.toBe(0)
+    expect(r.out).toMatch(/lens\.sandbox/)
+  })
+
   test('MODE is RED when a check failed', () => {
     const dir = repo({ 'scripts/red.sh': 'echo "1 passed"; exit 0', 'src/a.ts': 'a' })
     const r = round(roundArgs(dir, { mechanicalChecks: [{ name: 'tests', cmd: 'echo "2 failed"; exit 1' }] }))
@@ -361,6 +419,50 @@ describe('work-result.sh verdicts on an assembled round are unchanged', () => {
     expect(r.result.overallPass).toBe(false)
     expect(r.result.lensesThatFlagged.length).toBeGreaterThan(0)
     expect(r.verdict!.status).toBe(1)
+  })
+})
+
+describe('the lens returns schema-validated structured output; farm.sh writes lens.json from it', () => {
+  const lensObj = { routes: [], carried: [], dispositions: [],
+    findings: [{ title: 'wrong', severity: 'minor', file: 'src/a.ts', detail: 'd', ownerTask: 'T1' }] }
+
+  test('the row carries the lens schema; it reaches the CLI as --json-schema; the structured value is lens.json and the gate reads it', () => {
+    const dir = repo({ 'scripts/red.sh': 'echo "1 passed"; exit 0', 'src/a.ts': 'a' })
+    const r = round(roundArgs(dir), null, { so: lensObj })
+    const schema = r.rows[0].schema
+    expect(Object.keys(schema.properties).sort()).toEqual(['carried', 'dispositions', 'findings', 'routes'])
+    expect(schema.required).toEqual(['carried', 'findings'])
+    expect(schema.properties.findings.items.properties.severity.enum).toEqual(['critical', 'major', 'minor'])
+    const i = r.lensArgv.indexOf('--json-schema')
+    expect(i).toBeGreaterThan(0)
+    expect(JSON.parse(r.lensArgv[i + 1])).toEqual(schema)
+    expect(json(join(r.runDir, 'lens.json'))).toEqual(lensObj)
+    expect(r.out).not.toMatch(/the lens row did not finish ok/)
+    expect(r.out).not.toMatch(/the lens did NOT report/)
+    expect(r.result.findings.some((f: any) => f.title === 'wrong' && f.severity === 'minor')).toBe(true)
+    expect(r.result.findings.some((f: any) => f.severity === 'critical')).toBe(false)
+    expect(r.verdict!.status).toBe(0)
+  })
+
+  test('a lens whose output failed the schema returns no structured value -> no lens.json, the dead-lens CRITICAL, even with lens JSON in its prose', () => {
+    const dir = repo({ 'scripts/red.sh': 'echo "1 passed"; exit 0', 'src/a.ts': 'a' })
+    const r = round(roundArgs(dir), null, {})
+    expect(r.lensArgv).toContain('--json-schema')
+    expect(existsSync(join(r.runDir, 'lens.json'))).toBe(false)
+    expect(r.out).toMatch(/the lens row did not finish ok/)
+    expect(r.out).toMatch(/the lens did NOT report/)
+    expect(r.result.overallPass).toBe(false)
+    expect(r.result.findings.some((f: any) => f.severity === 'critical')).toBe(true)
+    expect(r.verdict!.status).toBe(1)
+  })
+
+  test('a lens that writes lens.json itself is taken as written', () => {
+    const dir = repo({ 'scripts/red.sh': 'echo "1 passed"; exit 0', 'src/a.ts': 'a' })
+    const own = { ...lensObj, findings: [{ ...lensObj.findings[0], title: 'written by the lens' }] }
+    const r = round(roundArgs(dir), own, { so: lensObj, self: true })
+    expect(json(join(r.runDir, 'lens.json'))).toEqual(own)
+    expect(r.out).not.toMatch(/the lens row did not finish ok/)
+    expect(r.result.findings.some((f: any) => f.title === 'written by the lens')).toBe(true)
   })
 })
 

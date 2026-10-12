@@ -97,17 +97,24 @@ function run(plan: string, args: string) {
 
 const readArgs = (p: string) => JSON.parse(readFileSync(p, 'utf8'))
 
+/** A call that COMMITS (a real --dispatch against stubbed farm and round), shaped like run(). Bare
+ *  run() is the no---dispatch report, which writes nothing. */
+function commit(plan: string, args: string) {
+  const r = redispatch(plan, args, '--no-lint')
+  return { code: r.code, stdout: r.out }
+}
+
 describe('work-redispatch.sh syncs the plan dispatch block into args.json', () => {
   test('an amended work string in the plan reaches args.json', () => {
     const f = fixture({ planWork: 'AMENDED work', planRed: 'false', argsWork: 'STALE work', argsRed: 'false' })
-    const r = run(f.plan, f.args)
+    const r = commit(f.plan, f.args)
     expect(r.code).toBe(0)
     expect(readArgs(f.args).tasks[0].work).toBe('AMENDED work')
   })
 
   test('an amended redCommand reaches args.json — it is EXECUTED from there, not from the plan', () => {
     const f = fixture({ planWork: 'w', planRed: 'bun test x -t amended', argsWork: 'w', argsRed: 'bun test x -t stale' })
-    const r = run(f.plan, f.args)
+    const r = commit(f.plan, f.args)
     expect(r.code).toBe(0)
     expect(readArgs(f.args).tasks[0].redCommand).toBe('bun test x -t amended')
   })
@@ -123,7 +130,7 @@ describe('work-redispatch.sh syncs the plan dispatch block into args.json', () =
       planWork: 'w', planRed: 'false', argsWork: 'w', argsRed: 'false',
       extra: { reviewLenses: [{ key: 'k', agentType: 'Explore', refs: [], prompt: 'judge' }] },
     })
-    const r = run(f.plan, f.args)
+    const r = commit(f.plan, f.args)
     expect(r.code).toBe(0)
     expect('reviewLenses' in readArgs(f.args)).toBe(false)
     expect(readArgs(f.args).lens.prompt).toBe('judge')
@@ -138,13 +145,12 @@ describe('work-redispatch.sh syncs the plan dispatch block into args.json', () =
   test('run-local fields survive the sync — they are not in the plan and must not be dropped', () => {
     const f = fixture({
       planWork: 'AMENDED work', planRed: 'false', argsWork: 'STALE work', argsRed: 'false',
-      extra: { onlyTasks: ['t1'], priorResults: { implemented: [{ id: 't2' }] } },
+      extra: { maxAgents: 3 },
     })
-    const r = run(f.plan, f.args)
+    const r = commit(f.plan, f.args)
     expect(r.code).toBe(0)
     const a = readArgs(f.args)
-    expect(a.onlyTasks).toEqual(['t1'])
-    expect(a.priorResults.implemented[0].id).toBe('t2')
+    expect(a.maxAgents).toBe(3)
     expect(a.tasks[0].work).toBe('AMENDED work')
   })
 
@@ -173,15 +179,15 @@ describe('the round counter — a field in args.json, not a file beside it', () 
   test('re-hashing increments <run-dir>/rounds', () => {
     const f = fixture({ planWork: 'w', planRed: 'false', argsWork: 'w', argsRed: 'false' })
     const a0 = readArgs(f.args); a0.rounds = 1; writeFileSync(f.args, JSON.stringify(a0, null, 2))
-    run(f.plan, f.args)
+    commit(f.plan, f.args)
     expect(readArgs(f.args).rounds).toBe(2)
-    run(f.plan, f.args)
+    commit(f.plan, f.args)
     expect(readArgs(f.args).rounds).toBe(3)
   })
 
   test('an absent counter starts at 1 rather than crashing a re-dispatch', () => {
     const f = fixture({ planWork: 'w', planRed: 'false', argsWork: 'w', argsRed: 'false' })
-    const r = run(f.plan, f.args)
+    const r = commit(f.plan, f.args)
     expect(r.code).toBe(0)
     expect(readArgs(f.args).rounds).toBe(1)
   })
@@ -798,12 +804,12 @@ describe('M1/M2/M3 — the loop no longer dead-ends', () => {
   const major = (file: string, title = 'the gate asserts existence only', over: Record<string, unknown> = {}) =>
     ({ title, severity: 'major', detail: 'why it is wrong', file, lens: 'lens', ...over })
 
-  /** Re-hash WITHOUT dispatching, so args.specHash becomes the plan's real hash and the next
+  /** Stamp args.specHash with the plan's real hash, as a prior dispatch did, so the next
    *  --dispatch sees an UNCHANGED hash. The loop's "nothing was amended" state, reproduced. */
   const syncHash = (f: { plan: string; args: string }) => {
-    const r = run(f.plan, f.args)
-    expect(r.code).toBe(0)
-    return r
+    const h = execFileSync('bash', [join(import.meta.dir, 'work-dispatch.sh'), '--spec-hash', f.plan], { encoding: 'utf8', timeout: 60_000 }).trim()
+    const a = readArgs(f.args); a.specHash = h
+    writeFileSync(f.args, JSON.stringify(a, null, 2) + '\n')
   }
 
   // ---- M1: a FULL re-run keeps the proven red pair ------------------------------------------------
@@ -1047,7 +1053,7 @@ describe('M1/M2/M3 — the loop no longer dead-ends', () => {
     expect(r.out).toContain('scripts/gen.ts')
     // Nothing was spent: the refusal is before every mutation.
     expect(readFileSync(f.args, 'utf8')).toBe(before)
-    expect(readArgs(f.args).rounds).toBe(2)
+    expect(readArgs(f.args).rounds).toBe(1)
     expect(existsSync(join(f.dir, 'result-round1.json'))).toBe(false)
   })
 
@@ -1063,6 +1069,29 @@ describe('M1/M2/M3 — the loop no longer dead-ends', () => {
     expect(r.code).toBe(0)
     expect(only(f.args)).toEqual([])
     expect(r.out).toMatch(/ZERO-IMPLEMENTER round/)
+  })
+
+  // hidden-figures 1004-chinco-gap: the dry run (no --dispatch) wrote the new specHash and advanced
+  // rounds, so the --dispatch that followed saw OLD == NEW and refused an amended plan.
+  test('a dry run after a plan amendment leaves args.json alone, so the --dispatch that follows still dispatches', () => {
+    const f = selFixture()
+    syncHash(f)
+    const routed = { title: 'outside every writablePath', severity: 'major', detail: 'd',
+                     file: 'scripts/gen.ts', ownerTask: 'plan', lens: 'lens' }
+    selResult(f.dir, [], { findings: [routed], planFindings: [routed] })
+    writeFileSync(f.plan, readFileSync(f.plan, 'utf8').replace('"do part 1"', '"do part 1, AMENDED"'))
+    const before = readFileSync(f.args, 'utf8')
+
+    const dry = execFileSync('bash', [SCRIPT, f.plan, f.args, '--provider', 'claude'],
+      { timeout: 120_000, encoding: 'utf8', env: { ...process.env, TMPDIR: CHILD_TMP } })
+    expect(dry).toMatch(/specHash: \w+ -> \w+/)
+    expect(readFileSync(f.args, 'utf8')).toBe(before)
+    expect(existsSync(join(f.dir, '.args.redispatch.json'))).toBe(false)
+
+    const r = redispatch(f.plan, f.args)
+    expect(r.out).not.toContain('BLOCKED')
+    expect(r.code).toBe(0)
+    expect(only(f.args)).toEqual([])
   })
 
   test('no planFindings and an unchanged hash is not refused', () => {
@@ -1219,7 +1248,7 @@ describe('the red column is echoed on re-hash too, from work-dispatch.sh\'s one 
 describe('work-redispatch.sh re-hashes the SPEC, not the plan bytes', () => {
   test('the synced spec hash lands in args.json as specHash, with no planHash left behind', () => {
     const f = fixture({ planWork: 'AMENDED work', planRed: 'false', argsWork: 'STALE work', argsRed: 'false' })
-    expect(run(f.plan, f.args).code).toBe(0)
+    expect(commit(f.plan, f.args).code).toBe(0)
     const a = readArgs(f.args)
     expect(a.planHash).toBeUndefined()
     expect(a.specHash).toMatch(/^[0-9a-f]{64}$/)
@@ -1238,11 +1267,11 @@ describe('work-redispatch.sh re-hashes the SPEC, not the plan bytes', () => {
 
   test('a PROSE-only amendment leaves the spec hash unchanged and says so', () => {
     const f = fixture({ planWork: 'w', planRed: 'false', argsWork: 'w', argsRed: 'false' })
-    expect(run(f.plan, f.args).code).toBe(0)
+    expect(commit(f.plan, f.args).code).toBe(0)
     const first = readArgs(f.args).specHash
 
     writeFileSync(f.plan, readFileSync(f.plan, 'utf8').replace('# Plan', '# Plan\n\nA rationale sentence, added between rounds.'))
-    const r = run(f.plan, f.args)
+    const r = commit(f.plan, f.args)
     expect(r.code).toBe(0)
     expect(readArgs(f.args).specHash).toBe(first)
     expect(r.stdout).toMatch(/unchanged/)
@@ -1250,11 +1279,11 @@ describe('work-redispatch.sh re-hashes the SPEC, not the plan bytes', () => {
 
   test('amending a VALUE in the block moves the spec hash', () => {
     const f = fixture({ planWork: 'w', planRed: 'false', argsWork: 'w', argsRed: 'false' })
-    expect(run(f.plan, f.args).code).toBe(0)
+    expect(commit(f.plan, f.args).code).toBe(0)
     const first = readArgs(f.args).specHash
 
     writeFileSync(f.plan, readFileSync(f.plan, 'utf8').replace('"work": "w"', '"work": "AMENDED IN THE BLOCK"'))
-    expect(run(f.plan, f.args).code).toBe(0)
+    expect(commit(f.plan, f.args).code).toBe(0)
     expect(readArgs(f.args).specHash).not.toBe(first)
   })
 })
