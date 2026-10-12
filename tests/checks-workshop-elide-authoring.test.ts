@@ -108,8 +108,9 @@ test('workshop check.sh honours --project-dir: the constraints it runs receive t
   const dropped = plug({ 'checks/workshop/constraints/zzws.py': 'import sys\nprint("zzws: 1 file(s) examined")\nprint("slides.typ:1: ZZWS fired " + " ".join(sys.argv[1:]))\nsys.exit(1)\n' })
   const p = project({ 'slides.typ': '= A deck\n', 'plan.md': '# Plan\n' })
   const elsewhere = mkTmp('wfc-cwd-')
+  // check.sh's probe-tests leg runs pytest, whose tmp_path root is $TMPDIR/pytest-of-<user>: a swept TMPDIR keeps it out of the caller's.
   const r = sh('bash', [join(ROOT, 'skills', 'workshop', 'scripts', 'check.sh'), '--plan', join(p, 'plan.md'), '--project-dir', p],
-    { WORKFLOW_CHECKS_PATH: `${ROOT}:${dropped}` }, elsewhere)
+    { WORKFLOW_CHECKS_PATH: `${ROOT}:${dropped}`, TMPDIR: mkTmp('wfc-tmpdir-') }, elsewhere)
   const out = r.stdout + r.stderr
   expect(r.status, out).toBeGreaterThanOrEqual(1)
   expect(out).toContain('ZZWS fired')

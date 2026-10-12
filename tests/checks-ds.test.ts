@@ -206,8 +206,12 @@ test('rule-check.ts --workflow ds resolves the rule directories through the layo
   } })
   try {
     const p = project({ 'src/p.py': BAD })
-    const r = sh('bun', [RULE_CHECK, '--workflow', 'ds', '--project-dir', p, '--files', join(p, 'src/p.py')], {
-      WORKFLOW_CHECKS_PATH: ROOT, WORK_HOLD_DECISIONS_URL: `http://localhost:${server.port}/`, WORK_HOLD_JUDGE_TOKEN: 'test-token' })
+    // async: spawnSync would block the event loop that serves the stub judge above
+    const proc = Bun.spawn(['bun', RULE_CHECK, '--workflow', 'ds', '--project-dir', p, '--files', join(p, 'src/p.py')], {
+      stdout: 'pipe', stderr: 'pipe', timeout: 100_000,
+      env: { ...process.env, WORKFLOW_CHECKS_PATH: ROOT, WORK_HOLD_DECISIONS_URL: `http://localhost:${server.port}/`, WORK_HOLD_JUDGE_TOKEN: 'test-token' } })
+    const [stdout, stderr, status] = await Promise.all([new Response(proc.stdout).text(), new Response(proc.stderr).text(), proc.exited])
+    const r = { status: proc.signalCode ? null : status, stdout, stderr }
     expect([0, 1], r.stdout + r.stderr).toContain(r.status)
     const out = JSON.parse(r.stdout)
     const seen: string[] = [...out.verdicts, ...out.unavailable].map((v: { rule: string }) => v.rule)
