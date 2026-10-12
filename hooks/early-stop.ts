@@ -33,6 +33,13 @@
  *      beacon is fresh — the owed work is in flight and its finish arrives as a `$.prompt.submit`, so a
  *      block would only force busy-work. See `liveOwnedRuns` and `watcherActive`.
  *
+ * STALE TICKS (`idleTicks`) is the second deterministic leg, after `noWakeUnderMandate`: STALE_TICKS
+ * heartbeat ticks in a row in which the session changed nothing block the stop, before the judge, which
+ * reads each tick alone and let nevada e83fb488 answer eight hourly ticks with "no change" (2026-10-12).
+ * Its budget is STALE_BLOCKS_PER_TICK per tick, not the per-turn cap: ticks are meta and never rotate the
+ * turn, so a per-turn budget would run dry in the first idle hour. Rules 1, 3 and 4 hold unchanged, and
+ * any live owned run, watched or not, means the tick is waiting on it and is not idle.
+ *
  * The judge is the one `work-hold.ts` already uses — Jev, through the Decisions API — reached
  * through that file's exported `decisionsCall`/`parseNoul`. There is exactly one Decisions transport
  * in this plugin and this hook does not add a second.
@@ -306,6 +313,102 @@ export function noWakeUnderMandate(ctx: JudgeContext | undefined, liveRuns: read
 }
 
 /**
+ * Trailing idle heartbeat ticks that block a stop. Two hourly ticks is an hour of nothing; one is a
+ * wait that may be right, since the judge reads each tick alone and put the incident's at 42-68%.
+ */
+export const STALE_TICKS = 2
+
+/** Stale-leg blocks per tick: one delivers the instruction, and the next idle tick blocks again. */
+export const STALE_BLOCKS_PER_TICK = 1
+
+/** Tools whose successful call changes state outside the conversation. */
+const ACTING_TOOLS = new Set([
+  'Edit', 'Write', 'NotebookEdit', 'CronCreate', 'CronDelete', 'Agent', 'Task', 'SendMessage', 'TaskStop', 'Workflow', 'AskUserQuestion',
+])
+
+/** A Bash command that commits, merges, dispatches, launches, sends or kills. Read-only look-alikes stay out. */
+const ACTING_BASH = new RegExp([
+  String.raw`\bgit\b[^|;&\n]*\s(commit|merge|cherry-pick|rebase|revert|push|am)(?![\w-])`,
+  String.raw`\bwork-(re)?dispatch\b`,
+  String.raw`\bfarm\.sh\b[^\n]*--(tasks|workflow)\b`,
+  String.raw`(^|[\s;&|(])(setsid|nohup)\s`,
+  String.raw`\bagent-msg\s+send\b`,
+  String.raw`(^|[\s;&|(])(kill|pkill|killall)\s`,
+].join('|'))
+
+/** A cron or wakeup tick: the harness tags it scheduled; older transcripts carry only the prompt shape. */
+function isScheduled(e: Record<string, unknown>, text: string): boolean {
+  return e.turnOrigin === 'scheduled' || typeof e.scheduledTaskId === 'string' || /^and\? \(/.test(text)
+}
+
+/**
+ * A heartbeat asks the session to move an objective: the plugin's `and? (…)` (afk, work-dispatch,
+ * farm.sh, hold templates) or a prompt that calls itself one. A self-contained scheduled job ("AFK
+ * re-audit (12h, read-only)") can be fully answered by "nothing new", so it is not counted.
+ */
+const HEARTBEAT = /^\s*and\? \(|\bheartbeat\b/i
+
+/** Injections the harness marks meta that still carry news from outside: they end a run like a typed prompt. */
+const NEWS_ORIGINS = new Set(['human', 'peer', 'plugin', 'task-notification'])
+
+/**
+ * The trailing run of heartbeat ticks in which the assistant changed nothing, counting the tick this
+ * stop ends, and that tick's uuid. A tick turn runs to the next scheduled prompt or reset; any other
+ * non-meta string prompt, or a meta one from a NEWS_ORIGINS sender (typed, peer, plugin or task wake),
+ * ends the run, while other meta injections (hook feedback, skill text) are neither. A turn is idle unless a call in it matched ACTING_TOOLS or
+ * ACTING_BASH and its result was not an error: a failed commit or an unanswered question moved
+ * nothing. A stop outside a tick turn has a run of 0.
+ */
+export function idleTicks(jsonl: string): { run: number; tick: string | null } {
+  type T = { uuid: string; acted: boolean }
+  const turns: T[] = []
+  let cur: T | null = null
+  const pending = new Map<string, T>()
+  for (const line of jsonl.split('\n')) {
+    if (!line.trim()) continue
+    let e: Record<string, unknown>
+    try {
+      e = JSON.parse(line)
+    } catch {
+      continue
+    }
+    if (e.isSidechain) continue
+    const content = (e.message as { content?: unknown } | undefined)?.content
+    if (e.type === 'user' && typeof content === 'string' && (e.toolUseResult === undefined || e.toolUseResult === null)) {
+      const kind = (e.origin as { kind?: unknown } | undefined)?.kind
+      if (isScheduled(e, content)) {
+        cur = { uuid: typeof e.uuid === 'string' ? e.uuid : '', acted: false }
+        // Another scheduled job neither counts nor resets: its turn is held apart from the run.
+        if (HEARTBEAT.test(content)) turns.push(cur)
+      } else if (!e.isMeta || (typeof kind === 'string' && NEWS_ORIGINS.has(kind))) {
+        turns.length = 0
+        cur = null
+      }
+      continue
+    }
+    if (!cur || !Array.isArray(content)) continue
+    for (const b of content as Array<Record<string, unknown>>) {
+      if (e.type === 'assistant' && b?.type === 'tool_use') {
+        const name = String(b.name ?? '')
+        const cmd = String((b.input as { command?: unknown } | undefined)?.command ?? '')
+        if (ACTING_TOOLS.has(name) || (name === 'Bash' && ACTING_BASH.test(cmd))) pending.set(String(b.id ?? ''), cur)
+      } else if (e.type === 'user' && b?.type === 'tool_result') {
+        const id = String(b.tool_use_id ?? '')
+        const t = pending.get(id)
+        if (t && b.is_error !== true) t.acted = true
+        pending.delete(id)
+      }
+    }
+  }
+  // A call with no result yet counts as acting: the uncertain case never blocks.
+  for (const t of pending.values()) t.acted = true
+  if (!cur || turns.at(-1) !== cur) return { run: 0, tick: null }
+  let run = 0
+  for (let i = turns.length - 1; i >= 0 && !turns[i].acted; i--) run++
+  return { run, tick: run ? cur.uuid : null }
+}
+
+/**
  * Is a `work-hold` armed for this session?
  *
  * The state file OR a ledger whose last word is `armed` — the second is the hold that was deleted
@@ -510,9 +613,34 @@ export const AFK_NO_WAKE_REASON =
   'idles until the user returns. Take the next queued item, or CronCreate a heartbeat that names the ' +
   'standing objective; ' + AFK_NO_QUESTIONS
 
+/**
+ * The block reason for `idleTicks`, in the order the model must work: the count, the blocker tested
+ * live, the action, and the question only when nothing can move.
+ */
+export function staleTickReason(ticks: number, afk: boolean): string {
+  return (
+    `${ticks} heartbeat ticks in a row changed nothing: no edit, commit, dispatch, message or new heartbeat. ` +
+    'Name what blocks you and test that it is still live with concrete evidence — file mtimes, its owner\'s ' +
+    '`agent-msg list` status, the last commit time — not your previous answer. Then act: when the blocker is ' +
+    'the user\'s own session, message it with `agent-msg send --as-user`; otherwise route around it or start ' +
+    'the next open item. "No change" is not an answer. ' +
+    (afk
+      ? 'If truly nothing can move, write the blocker into the morning report and take the next item you can ' +
+        'move; do not use AskUserQuestion until the ceiling.'
+      : 'If truly nothing can move, ask the user with AskUserQuestion, naming the blocker.')
+  )
+}
+
+/**
+ * One file per session. `blocks` is counted per user turn; `tickBlocks` per heartbeat tick, because
+ * ticks are meta and never rotate `turn`, so a per-turn budget would be spent by the first idle hour
+ * of an afternoon of ticks. Each leg writes both fields back so neither resets the other.
+ */
 interface Counter {
   turn: string
   blocks: number
+  tick?: string
+  tickBlocks?: number
 }
 
 /**
@@ -527,10 +655,10 @@ interface Counter {
  */
 export type CounterRead =
   | { kind: 'absent' }
-  | { kind: 'spent'; blocks: number }
+  | { kind: 'spent'; blocks: number; tickBlocks: number }
   | { kind: 'unreadable'; reason: string }
 
-export function readCounter(path: string, turn: string): CounterRead {
+export function readCounter(path: string, turn: string, tick: string | null = null): CounterRead {
   let raw: string
   try {
     raw = readFileSync(path, 'utf8')
@@ -550,7 +678,11 @@ export function readCounter(path: string, turn: string): CounterRead {
   if (typeof c?.blocks !== 'number' || typeof c?.turn !== 'string')
     return { kind: 'unreadable', reason: 'no {turn, blocks} in the counter' }
   // A counter for an EARLIER turn parsed fine; it simply says nothing about this one.
-  return { kind: 'spent', blocks: c.turn === turn ? c.blocks : 0 }
+  return {
+    kind: 'spent',
+    blocks: c.turn === turn ? c.blocks : 0,
+    tickBlocks: tick !== null && c.tick === tick && typeof c.tickBlocks === 'number' ? c.tickBlocks : 0,
+  }
 }
 
 /** The probability Jev gave, off `parseNoul`'s own sentence — the first percentage is the answer. */
@@ -606,6 +738,7 @@ function main(): void {
   const transcriptPath = typeof payload.transcript_path === 'string' ? payload.transcript_path : ''
   let turn: Turn | null = null
   let ctx: JudgeContext | undefined
+  let idle: { run: number; tick: string | null } = { run: 0, tick: null }
   try {
     const jsonl = transcriptPath ? readFileSync(transcriptPath, 'utf8') : ''
     turn = jsonl ? latestUserTurn(jsonl) : null
@@ -615,6 +748,11 @@ function main(): void {
       } catch {
         /* the old two-part state still judges */
       }
+      try {
+        idle = idleTicks(jsonl)
+      } catch {
+        /* no count, no stale block */
+      }
     }
   } catch {
     turn = null
@@ -623,19 +761,35 @@ function main(): void {
   if (!turn) return allowNow(session, '-', 'no genuine user request in the transcript')
 
   const counter = counterPath(session)
-  const read = readCounter(counter, turn.marker)
+  const read = readCounter(counter, turn.marker, idle.tick)
   if (read.kind === 'unreadable')
     return allowNow(session, turn.marker, `counter unreadable (${read.reason}): cannot cap, so not blocking`)
   const spent = read.kind === 'spent' ? read.blocks : 0
+  const tickSpent = read.kind === 'spent' ? read.tickBlocks : 0
+  const record = (blocks: number, tickBlocks: number): boolean => {
+    try {
+      const c: Counter = idle.tick === null ? { turn: turn!.marker, blocks } : { turn: turn!.marker, blocks, tick: idle.tick, tickBlocks }
+      writeFileSync(counter, JSON.stringify(c))
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  // Stale ticks: its own per-tick budget, checked before the per-turn cap, which ticks never rotate.
+  // A live owned run is not idle even without a watcher: the tick is waiting on it.
+  if (idle.tick !== null && idle.run >= STALE_TICKS && live.length === 0 && tickSpent < STALE_BLOCKS_PER_TICK) {
+    if (!record(spent, tickSpent + 1)) return allowNow(session, turn.marker, 'counter unwritable: cannot cap, so not blocking')
+    audit(session, turn.marker, '-', 'block', `stale ticks: ${idle.run} idle in a row, ${tickSpent + 1}/${STALE_BLOCKS_PER_TICK} this tick`)
+    process.stdout.write(JSON.stringify({ decision: 'block', reason: staleTickReason(idle.run, !!afk) }))
+    process.exit(0)
+  }
+
   if (spent >= MAX_BLOCKS_PER_TURN)
     return allowNow(session, turn.marker, `cap: ${spent} blocks already this turn`)
 
   if (noWakeUnderMandate(ctx, live)) {
-    try {
-      writeFileSync(counter, JSON.stringify({ turn: turn.marker, blocks: spent + 1 } satisfies Counter))
-    } catch {
-      return allowNow(session, turn.marker, 'counter unwritable: cannot cap, so not blocking')
-    }
+    if (!record(spent + 1, tickSpent)) return allowNow(session, turn.marker, 'counter unwritable: cannot cap, so not blocking')
     audit(session, turn.marker, '-', 'block', `no wake under mandate: ${spent + 1}/${MAX_BLOCKS_PER_TURN} this turn`)
     process.stdout.write(JSON.stringify({ decision: 'block', reason: afk ? AFK_NO_WAKE_REASON : NO_WAKE_REASON }))
     process.exit(0)
@@ -658,11 +812,7 @@ function main(): void {
 
   // The counter is written BEFORE the block. An unwritable counter cannot cap, and an uncapped
   // block is an infinite loop — the lesson `teammate-idle-report-check.sh` paid for.
-  try {
-    writeFileSync(counter, JSON.stringify({ turn: turn.marker, blocks: spent + 1 } satisfies Counter))
-  } catch {
-    return allowNow(session, turn.marker, 'counter unwritable: cannot cap, so not blocking')
-  }
+  if (!record(spent + 1, tickSpent)) return allowNow(session, turn.marker, 'counter unwritable: cannot cap, so not blocking')
 
   audit(session, turn.marker, p, 'block', `${spent + 1}/${MAX_BLOCKS_PER_TURN} this turn`)
   process.stdout.write(JSON.stringify({ decision: 'block', reason: afk ? AFK_BLOCK_REASON : BLOCK_REASON }))
