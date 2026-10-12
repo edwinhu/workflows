@@ -403,7 +403,7 @@ the lens's register; the doer is the fourth thing it selects, not a fourth decis
 `verifierAgentType` pins `Explore` because it has no Edit and no Write: a judge that structurally
 cannot modify the tree beats a prompt asking it not to. The lens buys the same property a different
 way — `writing-reviewer` is read-only by tools allowlist — because Explore's prompt is predefined and
-no preloaded register skill reaches it.
+no preloaded register skill reaches it. The lens returns schema-validated JSON through StructuredOutput, and the runner writes lens.json.
 
 ## Phase 5 — HUMAN REVIEW
 

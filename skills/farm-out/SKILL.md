@@ -134,6 +134,10 @@ bash $S/farm.sh --tasks /tmp/t.json --cwd /repo
 
 # Rows run in PARALLEL. Per row: prompt (required), kind (or provider/model),
 # expect (string or array), label, agent. Omit "agent" when the row must orchestrate.
+# schema (JSON Schema object, inline JSON or a path) -> --json-schema; the CLI-validated value is
+# written to the row's ONE expect unless the child wrote it. A persona needs StructuredOutput in tools.
+# sandbox: true -> the row's Bash runs in a throwaway bwrap overlay of the tree, its data/ targets and
+# $HOME, no network (scripts/sandbox.sh); Edit/Write denied; the agent runs as <agent>-sandboxed.
 
 # workflow script — --out is REQUIRED (the structured return is the result, not the
 # summary), and paths resolve against OUR cwd, not --cwd, so pass them absolute.

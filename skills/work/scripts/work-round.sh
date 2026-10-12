@@ -6,7 +6,8 @@
 #
 #   1. farm.sh --workflow           AGENTS stage: implementers (in waves) + verifiers -> RUN/raw.json
 #   2. work-checks.sh               red-after, acceptanceCmds, mechanicalChecks, red-suite re-hash
-#   3. work-stage.mjs digest        RUN/digest.{json,md} and RUN/rows.json (ONE row, kind review)
+#   3. work-stage.mjs digest        RUN/digest.{json,md} and RUN/rows.json (ONE row, kind review,
+#                                   carrying the lens schema; farm.sh writes lens.json from its value)
 #   4. farm.sh --tasks rows.json    the lens, --provider = the row's own, so route.ts is not re-asked
 #   5. work-stage.mjs assemble      RESULT, the contract work-result.sh adjudicates
 #

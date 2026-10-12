@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Re-sync and re-hash the plan's canonical work:dispatch spec into args.json.
 #
-#   work-redispatch.sh <plan.md> <args.json>              # re-hash only
+#   work-redispatch.sh <plan.md> <args.json>              # report the re-hash; writes nothing
 #   work-redispatch.sh … --dispatch                      # dispatch detached
 #   work-redispatch.sh … --dispatch --full                # re-run every task
 #   work-redispatch.sh … --dispatch --no-lint             # skip lint and red probe
@@ -801,6 +801,16 @@ if [ -n "${WORK_REDISPATCH_DRYRUN:-}" ] && [ "$DISPATCH" = "--dispatch" ]; then
   fi
   rm -f "$STAGE"
   echo "WORK_REDISPATCH_DRYRUN: nothing dispatched, and nothing written — args.json and result.json are untouched."
+  exit 0
+fi
+
+# Without --dispatch nothing runs, so nothing is committed either. Writing the new specHash here made
+# the --dispatch that followed see OLD == NEW and refuse an amended plan as unchanged (hidden-figures
+# 1004-chinco-gap); the call reports what the hash WOULD become and leaves args.json as it was.
+if [ "$DISPATCH" != "--dispatch" ]; then
+  bash "$SKILL/scripts/work-dispatch.sh" --red-summary "$STAGE"
+  rm -f "$STAGE"
+  echo "No --dispatch: nothing written — args.json is untouched; --dispatch re-syncs and re-hashes it."
   exit 0
 fi
 

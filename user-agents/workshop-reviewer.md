@@ -11,7 +11,7 @@ description: >
   repairing the deck goes to `workshop`, not here — this agent holds Read, Grep and Glob only.
 model: sonnet
 color: yellow
-tools: Read, Grep, Glob
+tools: Read, Grep, Glob, StructuredOutput
 skills:
   - typst:typst
   - typst:deck-rules

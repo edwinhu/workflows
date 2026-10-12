@@ -55,21 +55,28 @@ for _ in range(50):
 
 exceeded = False
 try:
-    f = open(log_file, "r")
+    f = open(log_file, "rb")
 except OSError:
     f = None
+# Binary + byte buffer: a read can land inside a multi-byte UTF-8 character or mid-JSON while the
+# child is still writing. Only complete newline-terminated lines are decoded and handed to take().
+buf = b""
 while f is not None:
-    line = f.readline()
-    if line:
-        take(line)
-        if over():
-            exceeded = True
+    chunk = f.read(65536)
+    if chunk:
+        buf += chunk
+        while not exceeded and b"\n" in buf:
+            line, buf = buf.split(b"\n", 1)
+            take(line.decode("utf-8", "replace"))
+            exceeded = over()
+        if exceeded:
             break
         continue
     if not alive():
-        # drain what the child wrote between the last read and its exit
-        for line in f:
-            take(line)
+        # drain what the child wrote between the last read and its exit, incl. a final unterminated line
+        buf += f.read()
+        for line in buf.split(b"\n"):
+            take(line.decode("utf-8", "replace"))
         break
     time.sleep(0.1)
 

@@ -184,9 +184,6 @@ async function main() {
       'Every check marked SETTLED above already ran and its exit code is final. NEVER re-run a settled check; spend your time on the failures and on what no command checks.',
       '',
       spec.prompt,
-      '',
-      `Write your answer as ONE JSON object matching this schema to ${lensOut}, and nothing else in that file:`,
-      JSON.stringify(spec.schema),
     ].join('\n')
     // The provider dispatch already resolved; work-round.sh passes it to farm.sh as --provider, so
     // route.ts is not asked a second time and the row's own model is the one that runs.
@@ -198,6 +195,10 @@ async function main() {
       label: spec.label, kind: spec.kind, prompt, provider,
       ...(spec.model ? { model: spec.model } : {}),
       ...(spec.agentType ? { agent: spec.agentType } : {}),
+      // farm.sh passes it as --json-schema and writes the CLI-validated value to lensOut; a lens that
+      // returns none leaves lensOut missing, which the gate scores as the dead-lens CRITICAL.
+      schema: spec.schema,
+      ...(spec.sandbox ? { sandbox: true } : {}),
       expect: [lensOut],
     }
     writeFileSync(join(f.run, 'rows.json'), JSON.stringify([row], null, 2) + '\n')
