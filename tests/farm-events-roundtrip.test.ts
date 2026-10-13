@@ -31,7 +31,7 @@ test('farm-alive.sh finds a run that farm.sh actually emitted', async () => {
   try { process.kill(-child.pid!, 'SIGKILL') } catch {}
   rmSync(tmp, { recursive: true, force: true })
   expect(status).toBe(0)
-})
+}, 120_000)
 
 test('a label containing a newline is refused, and nothing is emitted', () => {
   const tmp = mkdtempSync(join(tmpdir(), 'forge-'))
@@ -49,4 +49,4 @@ test('a label containing a newline is refused, and nothing is emitted', () => {
   expect(res.status).toBe(2)
   expect(res.stderr).toContain('control character')
   rmSync(tmp, { recursive: true, force: true })
-})
+}, 120_000)

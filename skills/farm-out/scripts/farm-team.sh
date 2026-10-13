@@ -50,6 +50,7 @@ EOF
 # The lead runs in --cwd; the subshell keeps that move off the --expect checks below, which
 # resolve against the CALLER's cwd. $TMP is absolute (mktemp -d), so the redirections are
 # unaffected by the cd.
+T0=$(date +%s)
 (
   cd "$CWD" || exit 1
   CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 \
@@ -75,11 +76,14 @@ for line in open(sys.argv[1]):
 print(json.dumps({"teammates": spawned, "toolCalls": calls, "result": result}, indent=2))
 PY
 
-# Rule 1: verify the artifact, never the summary.
+# Rule 1: verify the artifact, never the summary. A file older than the run is not its artifact
+# (same rule as farm.sh's verify).
 rc=0
 for f in "${EXPECT[@]}"; do
-  if [[ -s "$f" ]]; then printf 'verified: %s\n' "$f"
-  else printf 'UNVERIFIED: %s missing or empty\n' "$f" >&2; rc=1
+  if [[ ! -s "$f" ]]; then printf 'UNVERIFIED: %s missing or empty\n' "$f" >&2; rc=1
+  elif [[ $(stat -c %Y -- "$f" 2>/dev/null || stat -f %m -- "$f") -lt $T0 ]]; then
+    printf 'UNVERIFIED: not written this run: %s\n' "$f" >&2; rc=1
+  else printf 'verified: %s\n' "$f"
   fi
 done
 [[ -s "$TMP/err" ]] && grep -v 'claude.ai connectors are disabled' "$TMP/err" >&2 || true

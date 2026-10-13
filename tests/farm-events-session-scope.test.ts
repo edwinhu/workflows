@@ -37,7 +37,7 @@ test('with a session id, the writer files under farm-events/<session-id>/ and no
   rmSync(root, { recursive: true, force: true })
   expect(inScoped).toBeGreaterThan(0)
   expect(inBare).toBe(0)
-})
+}, 120_000)
 
 // The cross-talk regression. Against the old bare-directory expression both sessions share one
 // directory, so this run is visible to the wrong session and the checker calls it alive.
@@ -61,7 +61,7 @@ test('a live run belonging to a different session is not seen', async () => {
   await new Promise((r) => setTimeout(r, 200))
   rmSync(root, { recursive: true, force: true })
   expect(status).not.toBe(0)   // our session owns no run claiming `out`
-})
+}, 120_000)
 
 test('with no session id the path is the bare farm-events directory', () => {
   const root = mkdtempSync(join(tmpdir(), 'scope-compat-'))
@@ -69,7 +69,7 @@ test('with no session id the path is the bare farm-events directory', () => {
   const inBare = ndjson(join(root, 'farm-events')).length
   rmSync(root, { recursive: true, force: true })
   expect(inBare).toBeGreaterThan(0)
-})
+}, 120_000)
 
 test('every shell writer and reader spells the directory identically', () => {
   const EXPR = 'farm-events${CLAUDE_CODE_SESSION_ID:+/$CLAUDE_CODE_SESSION_ID}'

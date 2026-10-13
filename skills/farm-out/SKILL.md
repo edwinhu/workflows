@@ -49,7 +49,7 @@ user objecting three times.
 Observed twice: two runs quoted invented teammate output, with zero tool calls
 and zero filesystem trace. Always give the task a checkable artifact and pass
 `--expect <path>`; the runners exit non-zero when an expected artifact is
-missing, or when the child ended with a background job still running (the row's
+missing, empty or older than the row (`not written this run: <path>`), or when the child ended with a background job still running (the row's
 `failure` names it: `ended with background job running: <cmd>`; a Stop hook in
 the child refuses that turn end first). Never relay a delegated summary you did not verify.
 
