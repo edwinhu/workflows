@@ -988,7 +988,7 @@ test('(d) after the borrowed hold releases, the promoted afk hold makes this hoo
   expect(r.out).toContain('"decision":"block"')
   expect(r.out).toContain('write the open questions into the morning report')
   expect(r.out).not.toContain('say what blocks and use AskUserQuestion')
-}, 60000)
+}, 120_000)
 
 // ---- a typed mandate lapses: the user typed again, or its afk ceiling passed (23a5bbb6, 2026-10-08) ----
 

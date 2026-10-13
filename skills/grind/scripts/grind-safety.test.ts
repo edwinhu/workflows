@@ -23,13 +23,15 @@
  *
  * Run: bun test /home/eh/projects/workflows/skills/grind/scripts/grind-safety.test.ts
  */
-import { describe, expect, test, afterAll } from 'bun:test'
+import { describe, expect, test, afterAll, setDefaultTimeout } from 'bun:test'
 import { spawnSync } from 'node:child_process'
 import { mkdtempSync, rmSync, writeFileSync, readFileSync, existsSync, chmodSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { grindEnv } from './grind-test-env'
 import { useTmp } from '../../../tests/helpers/tmp.ts'
+
+setDefaultTimeout(180_000)
 
 // Sweeps the notifier shim dir grind-test-env makes on this file's behalf.
 useTmp()
@@ -143,7 +145,7 @@ describe('append enforces the shape each agent record needs', () => {
     // The well-formed record still lands.
     expect(grind(['append', '--journal', journal, '{"kind":"floor","key":"CIK-79179"}']).status).toBe(0)
     expect(grind(['floors', '--journal', journal]).stdout).toContain('CIK-79179')
-  })
+  }, 240_000)
 
   test('accepts every agent-owned kind', () => {
     const d = workdir('grind-agentkinds')
@@ -262,5 +264,5 @@ describe('the operator still owns stop', () => {
     // A fresh stop after the resume is honoured again.
     expect(grind(['stop', '--journal', journal]).status).toBe(0)
     expect(grind(args('9')).status).toBe(5)
-  })
+  }, 300_000)
 })

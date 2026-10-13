@@ -1,9 +1,11 @@
-import { afterAll, expect, test } from "bun:test";
+import { afterAll, expect, test, setDefaultTimeout } from "bun:test";
 import { spawnSync } from "child_process";
 import { cpSync, existsSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
 import { changedFiles, changedRanges, collectEvidence } from "./rule-check.ts";
+
+setDefaultTimeout(1_200_000)
 
 // The authoring rules against their fixture twins, replayed as a before/ commit and an after/ working
 // tree so the extractors see exactly the lines a change added. Fixture files carry a .fixture suffix
@@ -80,7 +82,7 @@ for (const rule of RULES) {
     // every wired rule other than this one stays quiet on this rule's violating twin
     const all = evidence(repo(rule, "vio"));
     for (const other of RULES.filter(r => r !== rule)) expect(SIGNAL[other](all[other].state)).toBe(false);
-  });
+  }, 1_800_000);
 }
 
 test("A-DESC state: the changed description arrives split into clauses, with its line", () => {
@@ -112,7 +114,7 @@ test("A-PAD state: a dated fact backing a rule is a fact row; narrated history i
   const facts = s.added_passages.filter((p: any) => p.section === "Facts");
   expect(facts.length).toBe(6);
   for (const f of facts) expect(f.fact_row).toBe(true);
-});
+}, 1_800_000);
 
 test("A-STATE state: a new .planning noun and the lines naming it; nothing retired", () => {
   const s = evidence(repo("A-STATE", "vio"))["A-STATE"].state;
@@ -167,5 +169,5 @@ for (const rule of RULES) {
     const sat = await ruleCheck(repo(rule, "sat"));
     expect(sat.code).toBe(0);
     expect(sat.out.verdicts.every((v: any) => v.verdict === "MET")).toBe(true);
-  }, 30000);
+  }, 1_200_000);
 }

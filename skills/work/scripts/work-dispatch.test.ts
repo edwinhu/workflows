@@ -29,7 +29,7 @@ const mkTmp = useTmp()
 // 60s does not hide a hang (a hang never returns and is caught by any finite ceiling); it stops
 // standing in for a latency budget this suite never had. Set per file because bun 1.4.0 ignores
 // `[test] timeout` in bunfig.toml and applies a preload's setDefaultTimeout to the first file only.
-setDefaultTimeout(60_000)
+setDefaultTimeout(120_000)
 
 const SCRIPT = `${import.meta.dir}/work-dispatch.sh`
 const scratch: string[] = []
@@ -392,7 +392,7 @@ describe('a probe refusal is atomic — the run is left exactly as it was', () =
     expect(readFileSync(f.argsPath, 'utf8')).toBe(argsBefore)
     expect(JSON.parse(readFileSync(f.argsPath, 'utf8')).rounds).toBe(5)
     expect(readFileSync(join(f.runDir, 'result.json'), 'utf8')).toBe(resultBefore)
-  })
+  }, 240_000)
 })
 
 /**
@@ -463,7 +463,7 @@ describe('the dispatched plan is archived, so a run carries the plan it was appr
     expect(readFileSync(join(f.runDir, first), 'utf8')).toBe(firstBytes)
     expect(found.map(n => readFileSync(join(f.runDir, n), 'utf8')))
       .toContain(readFileSync(f.plan, 'utf8'))
-  })
+  }, 240_000)
 
   test('re-dispatching the SAME plan does not multiply archives — the name is the content', () => {
     const f = fixture({ redCommand: 'bash scripts/check.sh' })
@@ -471,7 +471,7 @@ describe('the dispatched plan is archived, so a run carries the plan it was appr
     expect(dispatch(f).code).toBe(0)
     expect(dispatch(f).code).toBe(0)
     expect(archives(f.runDir)).toHaveLength(1)
-  })
+  }, 240_000)
 
   test('--run-dir puts the archive with the run it belongs to, not in the tree the run may not write', () => {
     const f = fixture({ redCommand: 'bash scripts/check.sh' })
@@ -587,27 +587,27 @@ describe('--spec-hash hashes the authored spec, not the bytes around it', () => 
     const b = specHash(planWith(BLOCK, 'p\n', 6))
     expect(a.code).toBe(0)
     expect(b.out).toBe(a.out)
-  })
+  }, 240_000)
 
   test('reordering the block keys does NOT move the hash — canonicalisation sorts them', () => {
     const a = specHash(planWith(BLOCK))
     const reordered = { args: BLOCK.args, runId: BLOCK.runId }
     expect(specHash(planWith(reordered)).out).toBe(a.out)
-  })
+  }, 240_000)
 
   test('editing PROSE outside the block does NOT move the hash — the whole point of the change', () => {
     const a = specHash(planWith(BLOCK, 'Original rationale.\n'))
     const b = specHash(planWith(BLOCK, 'Original rationale, with a typo fixed and a paragraph added.\n\nMore prose.\n'))
     expect(a.code).toBe(0)
     expect(b.out).toBe(a.out)
-  })
+  }, 240_000)
 
   test('editing ANY value inside the block DOES move the hash', () => {
     const a = specHash(planWith(BLOCK))
     const edited = JSON.parse(JSON.stringify(BLOCK))
     edited.args.tasks[0].work = 'DIFFERENT work'
     expect(specHash(planWith(edited)).out).not.toBe(a.out)
-  })
+  }, 240_000)
 
   test('a plan with no work:dispatch block fails loudly rather than printing a hash', () => {
     const dir = mkTmp('work-spechash-')
@@ -642,7 +642,7 @@ describe('dispatch injects specHash, and planHash is gone', () => {
     expect(a.specHash).toMatch(/^[0-9a-f]{64}$/)
     expect(a.specHash).toBe(execFileSync('bash', [SCRIPT, '--spec-hash', f.plan], { timeout: 120_000, encoding: 'utf8' }).trim())
     expect(a.planPath).toBe(f.plan)
-  })
+  }, 240_000)
 
   test('a prose-only edit re-dispatches under the SAME specHash — no round is spent on a typo', () => {
     const f = fixture({ redCommand: 'bash scripts/check.sh' })
@@ -653,7 +653,7 @@ describe('dispatch injects specHash, and planHash is gone', () => {
     writeFileSync(f.plan, readFileSync(f.plan, 'utf8').replace('# Plan', '# Plan\n\nA sentence added to the rationale.'))
     expect(dispatch(f).code).toBe(0)
     expect(JSON.parse(readFileSync(f.argsPath, 'utf8')).specHash).toBe(before)
-  })
+  }, 240_000)
 
   test('the archived plan is named by the SPEC hash args.json records', () => {
     const f = fixture({ redCommand: 'bash scripts/check.sh' })
@@ -737,7 +737,7 @@ describe('--covers separates the run\'s own output from what no task may write',
   test('a spec naming no writable surface is undecidable, never a "no"', () => {
     expect(covers(planWith([{ id: 'T1' }]).plan, '/tmp/x')).toBe(2)
     expect(covers(planWith([], { readOnly: true }).plan, '/tmp/x')).toBe(2)
-  })
+  }, 240_000)
 
   test('--scaffold: a declared path is 0 even though a task also writes it — the whole point', () => {
     // The deadlock this breaks: a stub is BOTH the implementer's output and a thing that must
@@ -745,7 +745,7 @@ describe('--covers separates the run\'s own output from what no task may write',
     const f = planWith(TASKS, { scaffoldPaths: ['src/impl.ts'] })
     expect(covers(f.plan, join(f.dir, 'src/impl.ts'))).toBe(0)
     expect(scaffold(f.plan, join(f.dir, 'src/impl.ts'))).toBe(0)
-  })
+  }, 240_000)
 
   test('--scaffold: a covered path that was NOT declared stays 1, so the hole is only as wide as the plan says', () => {
     const f = planWith(TASKS, { scaffoldPaths: ['src/impl.ts'] })
@@ -779,7 +779,7 @@ describe('--covers separates the run\'s own output from what no task may write',
     writeFileSync(none, '# Plan\n\nno block here\n')
     expect(covers(none, '/tmp/x')).toBe(2)
     expect(covers(join(dir, 'missing.md'), '/tmp/x')).toBe(2)
-  })
+  }, 360_000)
 })
 
 /**

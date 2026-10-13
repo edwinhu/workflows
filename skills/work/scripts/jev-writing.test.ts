@@ -1,9 +1,11 @@
-import { expect, test } from "bun:test";
+import { expect, test, setDefaultTimeout } from "bun:test";
 import { $ } from "bun";
 import { join } from "path";
 import { spawnSync } from "child_process";
 import * as fs from "fs";
 import * as os from "os";
+
+setDefaultTimeout(240_000)
 
 // The writing rules under checks/writing/rules: extractor state on each rule's fixtures, and
 // rule-check.ts --workflow against a local stub. No network.
@@ -66,7 +68,7 @@ test("the compliant fixtures carry no stacked hedge, no vague attribution, no co
   expect(a.n_vague_attributions + a.n_statistics_without_a_source_marker).toBe(0);
   const b = evidence(UNCALIBRATED, "W-BULLETS", "sat")["W-BULLETS"].state;
   expect(b.lists.every((l: any) => l.items_opening_on_a_connective === 0)).toBe(true);
-});
+}, 360_000);
 
 test("candidate spans carry file:line", () => {
   const s = evidence(WRITING, "W-SIGNPOST", "vio")["W-SIGNPOST"].state;

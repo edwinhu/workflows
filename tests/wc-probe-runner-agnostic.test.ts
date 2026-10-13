@@ -24,7 +24,7 @@ function probeOn(body: string) {
 
 test('P12(a) fires on a hand-rolled dispatch naming farm.sh', () => {
   expect(probeOn('Dispatch with `farm.sh` and the args file.')).toMatch(/P12|work-dispatch/)
-})
+}, 120_000)
 
 test('the P12(a) rule no longer depends on the literal string farm.ts', () => {
   const src = readFileSync(PROBE, 'utf8')

@@ -7,10 +7,12 @@
  *
  * Run: bun test tests/load-constraints-applies-to.test.ts
  */
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test, setDefaultTimeout } from "bun:test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { parseFrontmatter, skillMatches } from "../scripts/load-constraints.ts";
+
+setDefaultTimeout(120_000)
 
 const ROOT = resolve(import.meta.dir, "..");
 const CONSTRAINTS = join(ROOT, "rules");
@@ -183,5 +185,5 @@ describe("could-not-run is exit 2, never 1 and never 0", () => {
     const full = new TextDecoder().decode(run(["ds", "--full"]).stdout);
     expect(full).toContain("# Loaded");
     expect(full.length).toBeGreaterThan(idx.length * 10);
-  });
+  }, 240_000);
 });

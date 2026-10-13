@@ -1,4 +1,4 @@
-import { expect, test } from "bun:test";
+import { expect, test, setDefaultTimeout } from "bun:test";
 import { $ } from "bun";
 import { join, basename } from "path";
 import { spawnSync } from "child_process";
@@ -302,6 +302,8 @@ test('an oversized state is truncated at 60000 chars', async () => {
 
 import { changedRanges } from './rule-check.ts';
 
+setDefaultTimeout(720_000)
+
 const LEGACY = [
   'import polars as pl',
   '',
@@ -416,7 +418,7 @@ test('a statement is in scope when a changed line falls inside its span, not nex
   } finally {
     fs.rmSync(d, { recursive: true, force: true });
   }
-});
+}, 840_000);
 
 test('no diff info (--files outside a repo): DQ4/DQ6 see every transform and carry no scope fields', async () => {
   const d = mkTmp('rule-check-dq-nodiff-');

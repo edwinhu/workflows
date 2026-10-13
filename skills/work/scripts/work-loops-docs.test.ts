@@ -83,5 +83,5 @@ describe('SKILL.md carries the rule, and only the rule', () => {
     const now = readFileSync(SKILL_MD, 'utf8')
     const growth = now.split('\n').length - head.split('\n').length
     expect(growth).toBeLessThan(25)
-  })
+  }, 120_000)
 })

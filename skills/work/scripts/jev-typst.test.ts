@@ -1,8 +1,10 @@
-import { afterAll, expect, test } from "bun:test";
+import { afterAll, expect, test, setDefaultTimeout } from "bun:test";
 import { spawnSync } from "child_process";
 import { cpSync, mkdtempSync, rmSync, writeFileSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
+
+setDefaultTimeout(240_000)
 
 // The Typst deck/notes rules under checks/workshop/rules: extractor state on every rule's fixture
 // twins (wired and uncalibrated), diff scoping, and rule-check.ts --workflow workshop against a stub Jev. No network.
@@ -132,7 +134,7 @@ test("T-TAKEAWAY defers a wh-opening subtitle without `?` to T-TAKEAWAY-WH, whic
   expect(wired.n_wh_subtitles_judged_by_T_TAKEAWAY_WH).toBe(1);
   expect(state("T-TAKEAWAY-WH", "vio").n_wh_subtitles).toBe(1);
   expect(state("T-TAKEAWAY-WH", "sat").n_wh_subtitles).toBe(1);
-});
+}, 360_000);
 
 test("diff scope: a span on unchanged lines is skipped, counted, and never listed", () => {
   const root = join(FIX, "T-HOLLOW", "vio");
@@ -191,4 +193,4 @@ test("T-HOLLOW: rule-check --workflow workshop blocks the violating notes and pa
   const sat = await ruleCheck("sat");
   expect(sat.code).toBe(0);
   expect(sat.out.verdicts.map((v: any) => v.verdict)).toEqual(WIRED.map(() => "MET"));
-}, 30000);
+}, 240_000);

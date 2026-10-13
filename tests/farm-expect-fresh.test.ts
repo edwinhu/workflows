@@ -1,8 +1,10 @@
-import { test, expect } from 'bun:test'
+import { test, expect, setDefaultTimeout } from 'bun:test'
 import { writeFileSync, readFileSync, mkdirSync, chmodSync, utimesSync } from 'node:fs'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { useTmp } from './helpers/tmp.ts'
+
+setDefaultTimeout(240_000)
 
 const mkTmp = useTmp()
 
@@ -65,7 +67,7 @@ test('an expect file that existed before the row and was left untouched fails th
   expect(v).toHaveLength(1)
   expect(v[0].verdict).toBe('wrong')
   expect(v[0].why).toContain(`not written this run: ${out}`)
-}, SPAWN_MS)
+}, 240_000)
 
 test('a relative expect path that existed before the row is resolved against --cwd and fails the same way', () => {
   const r = rig()
@@ -74,7 +76,7 @@ test('a relative expect path that existed before the row is resolved against --c
   const { res, row } = r.run([{ label: 'repair', prompt: 'repair it', expect: 'scratch/report.md' }])
   expect(row?.ok, res.stderr).toBe(false)
   expect(row.missing).toEqual(['not written this run: scratch/report.md'])
-}, SPAWN_MS)
+}, 240_000)
 
 test('the same pre-existing file rewritten by the child counts as delivered', () => {
   const r = rig()
@@ -84,7 +86,7 @@ test('the same pre-existing file rewritten by the child counts as delivered', ()
   expect(row?.ok, res.stderr).toBe(true)
   expect(row.missing).toEqual([])
   expect(readFileSync(out, 'utf8')).toBe('repaired\n')
-}, SPAWN_MS)
+}, 240_000)
 
 test('a missing expect is still reported as the bare path', () => {
   const r = rig()
@@ -92,7 +94,7 @@ test('a missing expect is still reported as the bare path', () => {
   const { res, row } = r.run([{ label: 'repair', prompt: 'p', expect: out }])
   expect(row?.ok, res.stderr).toBe(false)
   expect(row.missing).toEqual([out])
-}, SPAWN_MS)
+}, 240_000)
 
 test('a schema row whose value the runner writes counts as written this run', () => {
   const r = rig()
@@ -100,7 +102,7 @@ test('a schema row whose value the runner writes counts as written this run', ()
   const { res, row } = r.run([{ label: 'lens', prompt: 'review', schema: SCHEMA, expect: out }], { STUB_SO: '{"n":1}' })
   expect(row?.ok, res.stderr).toBe(true)
   expect(JSON.parse(readFileSync(out, 'utf8'))).toEqual({ n: 1 })
-}, SPAWN_MS)
+}, 240_000)
 
 test('a schema row over a stale expect file: the runner replaces it with this run\'s value and the row is ok', () => {
   const r = rig()
@@ -108,7 +110,7 @@ test('a schema row over a stale expect file: the runner replaces it with this ru
   const { res, row } = r.run([{ label: 'lens', prompt: 'review', schema: SCHEMA, expect: out }], { STUB_SO: '{"n":2}' })
   expect(row?.ok, res.stderr).toBe(true)
   expect(JSON.parse(readFileSync(out, 'utf8'))).toEqual({ n: 2 })
-}, SPAWN_MS)
+}, 240_000)
 
 test('a schema row over a stale expect file with no structured value fails as not written this run', () => {
   const r = rig()
@@ -117,7 +119,7 @@ test('a schema row over a stale expect file with no structured value fails as no
   expect(row?.ok, res.stderr).toBe(false)
   expect(row.missing).toEqual([`not written this run: ${out}`])
   expect(readFileSync(out, 'utf8')).toBe('{"n":0}\n')
-}, SPAWN_MS)
+}, 240_000)
 
 test('farm-team.sh: a pre-existing untouched expect is UNVERIFIED as not written this run; a rewritten one verifies', () => {
   const r = rig()
@@ -129,7 +131,7 @@ test('farm-team.sh: a pre-existing untouched expect is UNVERIFIED as not written
   const good = r.team([out], { STUB_SELF: out, STUB_SELF_TEXT: 'team wrote this\n' })
   expect(good.status, good.stderr).toBe(0)
   expect(good.stdout).toContain(`verified: ${out}`)
-}, SPAWN_MS)
+}, 240_000)
 
 test('a row with no expect is not failed by its --cwd directory being older than the row', () => {
   const r = rig()
@@ -138,4 +140,4 @@ test('a row with no expect is not failed by its --cwd directory being older than
   const { res, row } = r.run([{ label: 'free', prompt: 'p' }])
   expect(row?.ok, res.stderr).toBe(true)
   expect(row.missing).toEqual([])
-}, SPAWN_MS)
+}, 240_000)

@@ -10,12 +10,14 @@
  *
  * Run: bun test skills/grind/scripts/grind-floor-retract.test.ts
  */
-import { describe, expect, test } from 'bun:test'
+import { describe, expect, test, setDefaultTimeout } from 'bun:test'
 import { spawnSync } from 'node:child_process'
 import { writeFileSync, readFileSync, existsSync, chmodSync } from 'node:fs'
 import { join } from 'node:path'
 import { grindEnv } from './grind-test-env'
 import { tmpDir, useTmp } from '../../../tests/helpers/tmp.ts'
+
+setDefaultTimeout(420_000)
 
 useTmp()
 

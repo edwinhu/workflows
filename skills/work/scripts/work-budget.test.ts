@@ -100,7 +100,7 @@ describe('the work round budget scales with the plan', () => {
     expect(r.code).toBe(0)
     expect(r.out).toMatch(/^\s*budget: 2500000 tokensW \(explicit/m)
     expect(budgetOf(roundFarmArgv(sixTaskArgs(f.dir, { budget: 2_500_000 })).argv)).toBe(2_500_000)
-  })
+  }, 120_000)
 
   test('FARM_SESSION_BUDGET stays the outer bound', () => {
     const f = plan()

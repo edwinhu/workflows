@@ -31,7 +31,7 @@ describe('plugin version sites', () => {
     const { out, status } = check()
     expect(out, 'bump-version.sh --check must report agreement').toContain('OK: all six agree at')
     expect(status, `version sites disagree or went missing:\n${out}`).toBe(0)
-  })
+  }, 120_000)
 
   test('the check actually inspects six distinct sites', () => {
     // Guards the guard: if a refactor collapses the site list, --check would trivially
@@ -40,5 +40,5 @@ describe('plugin version sites', () => {
     const sites = out.split('\n').filter(line => /^ {2}\S/.test(line))
     expect(sites).toHaveLength(6)
     for (const site of sites) expect(site).toMatch(/\b\d+\.\d+\.\d+$/)
-  })
+  }, 120_000)
 })

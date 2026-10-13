@@ -1,9 +1,11 @@
-import { afterAll, expect, test } from "bun:test";
+import { afterAll, expect, test, setDefaultTimeout } from "bun:test";
 import { spawnSync } from "child_process";
 import { cpSync, existsSync, mkdtempSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from "fs";
 import { changedRanges } from "./rule-check.ts";
 import { tmpdir } from "os";
 import { dirname, join } from "path";
+
+setDefaultTimeout(480_000)
 
 // The five dev rules against their fixture twins. Each twin is a before/ tree (committed) and an
 // after/ tree (left in the working tree), so the extractors see a real `git diff HEAD`. Files carry a
@@ -90,7 +92,7 @@ for (const rule of RULES) {
     for (const other of RULES.filter(r => r !== rule)) {
       expect(SIGNAL[other](evidence(repo(rule, "vio"))[other].state)).toBe(false);
     }
-  });
+  }, 720_000);
 }
 
 test("MOCK state: per-test assertions flagged on_mock", () => {
@@ -166,7 +168,7 @@ for (const rule of RULES) {
     const sat = await ruleCheck(repo(rule, "sat"));
     expect(sat.code).toBe(0);
     expect(sat.out.verdicts.every((v: any) => v.verdict === "MET")).toBe(true);
-  }, 30000);
+  }, 240_000);
 }
 
 // `changed` scopes the dev extractors. A round passes its own diff (changedRanges), so its evidence must

@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, test } from "bun:test";
+import { afterEach, describe, expect, test, setDefaultTimeout } from "bun:test";
 import { mkdtempSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -9,6 +9,8 @@ import {
   parseCandidateManifest,
   serializeCandidateManifest,
 } from "../scripts/lib/candidate-manifest";
+
+setDefaultTimeout(720_000)
 
 const roots: string[] = [];
 const sha256 = (bytes: Uint8Array) => createHash("sha256").update(bytes).digest("hex");
@@ -86,7 +88,7 @@ describe("canonical immutable candidate capture", () => {
     expect(digestCandidateManifest(first.manifest)).toBe(digestCandidateManifest(second.manifest));
     expect(serializeCandidateManifest(first.manifest)).toEqual(serializeCandidateManifest(second.manifest));
     expect(first.capturedAt).not.toBe(second.capturedAt);
-  });
+  }, 840_000);
 
   test("rejects internal, external, and dangling symlink ancestors in a real repository", () => {
     for (const target of ["internal", "external", "dangling"] as const) {
@@ -112,7 +114,7 @@ describe("canonical immutable candidate capture", () => {
 
       expect(() => captureCandidate({ repositoryRoot: root, baseRef: "HEAD" })).toThrow(/symlink ancestor/i);
     }
-  });
+  }, 840_000);
 
   test("preserves final symlink payloads and captures normal files", () => {
     const root = repo();

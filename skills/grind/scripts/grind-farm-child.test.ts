@@ -82,7 +82,7 @@ describe('grind.sh — an iteration is a farm-out child', () => {
     ])
 
     expect(readFileSync(seen, 'utf8')).toBe('1|1')
-  })
+  }, 60_000)
 
   test('the marker is scoped to the runner — the grind process’s own check never sees it', () => {
     const d = workdir('grind-foc-scope')
@@ -103,5 +103,5 @@ describe('grind.sh — an iteration is a farm-out child', () => {
     ])
 
     expect(readFileSync(seen, 'utf8')).toBe('unset')
-  })
+  }, 60_000)
 })

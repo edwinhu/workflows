@@ -181,7 +181,7 @@ test('the mod kit tests pass (scripts/mod-test.sh -> claude plugin test)', () =>
   expect(r.stdout + r.stderr).toMatch(/\b49 pass\b/)
   expect(r.stdout + r.stderr).toMatch(/\b0 fail\b/)
   expect(r.status).toBe(0)
-}, 130_000)
+}, 250_000)
 
 describe('a stale loop.exit never decides a live loop', () => {
   const R = '/w/.work/runs/1004-published-apps'

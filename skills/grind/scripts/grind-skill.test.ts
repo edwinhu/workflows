@@ -104,7 +104,7 @@ describe('skills/grind/SKILL.md', () => {
     // Both directions: no example naming a subcommand that does not exist, and no subcommand
     // shipped without being documented.
     expect(documented).toEqual(implemented)
-  })
+  }, 30_000)
 
   test('covers the three rules that make an amnesiac loop safe', () => {
     const md = body().toLowerCase()

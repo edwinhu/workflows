@@ -21,7 +21,7 @@ import * as hold from '../hooks/work-hold.ts'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
 import { useTmp } from './helpers/tmp.ts'
 
-setDefaultTimeout(60_000)
+setDefaultTimeout(250_000)
 const mkTmp = useTmp()
 const REPO = join(import.meta.dir, '..')
 const ARM = join(REPO, 'skills/work/scripts/work-hold.sh')

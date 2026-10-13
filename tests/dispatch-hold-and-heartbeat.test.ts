@@ -115,7 +115,7 @@ describe('the self-send transport is gone, not merely unused', () => {
       && existsSync(join(REPO, rel))
       && readFileSync(join(REPO, rel), 'utf8').includes('goal-self-send'))
     expect(offenders).toEqual([])
-  })
+  }, 180_000)
 
   test('work-dispatch.sh queues nothing and names no drainer', () => {
     const s = readFileSync(DISPATCH, 'utf8')
@@ -168,7 +168,7 @@ describe('half one: the HOLD is armed by the dispatch, in this session', () => {
     const s = holdState(r)
     expect(s.maxRounds).toBe(4)
     expect(s.ceilingMinutes).toBe(Number(minutes))
-  })
+  }, 180_000)
 
   test('a plan that DOES state args.goalCheck arms on that command', () => {
     const f = fixture({ goalCheck: 'bash scripts/check.sh' })

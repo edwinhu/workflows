@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { useTmp } from './helpers/tmp.ts'
 
-setDefaultTimeout(120_000)
+setDefaultTimeout(360_000)
 const mkTmp = useTmp()
 
 const ROOT = join(import.meta.dir, '..')

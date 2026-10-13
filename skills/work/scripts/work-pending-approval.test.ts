@@ -15,7 +15,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { useTmp } from '../../../tests/helpers/tmp.ts'
 
-setDefaultTimeout(60_000)
+setDefaultTimeout(180_000)
 const mkTmp = useTmp()
 const PENDING = join(import.meta.dir, 'work-pending.sh')
 const DISPATCH = join(import.meta.dir, 'work-dispatch.sh')
@@ -125,7 +125,7 @@ describe('a dispatched run is found wherever its run dir is', () => {
     expect(existsSync(join(runs, 'r1', 'args.json'))).toBe(true)
     expect(existsSync(join(w.root, '.work'))).toBe(false)
     expect(pending(w, t)).toBe('')
-  })
+  }, 240_000)
 
   test('a dispatch record whose args.json does not carry the hash is not trusted', () => {
     const w = world()

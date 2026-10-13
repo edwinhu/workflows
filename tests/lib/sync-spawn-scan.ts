@@ -17,7 +17,7 @@ export interface SyncCall {
 }
 
 /** A mask: true where the character is code, false inside a string, template text, comment or regex. */
-function codeMask(src: string): boolean[] {
+export function codeMask(src: string): boolean[] {
   const mask = new Array<boolean>(src.length).fill(true);
   // Each frame is a template literal awaiting its closing backtick, or a `${` awaiting its `}`.
   const stack: ("tpl" | number)[] = [];

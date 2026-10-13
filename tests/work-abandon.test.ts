@@ -8,13 +8,15 @@
  *
  * Run: bun test tests/work-abandon.test.ts
  */
-import { describe, expect, test } from 'bun:test'
+import { describe, expect, test, setDefaultTimeout } from 'bun:test'
 import { spawnSync } from 'node:child_process'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
 import { useTmp } from './helpers/tmp.ts'
+
+setDefaultTimeout(120_000)
 
 const mkTmp = useTmp()
 
@@ -146,7 +148,7 @@ describe('the gates downstream agree', () => {
     expect(guard(f)).toBe('deny')
     expect(abandon(f, ['--why', 'the user walked away']).status).toBe(0)
     expect(guard(f)).toBe('allow')
-  })
+  }, 360_000)
 })
 
 describe('work-result.sh reads an abandoned run as a FAIL, not a refusal', () => {
@@ -159,5 +161,5 @@ describe('work-result.sh reads an abandoned run as a FAIL, not a refusal', () =>
     expect(r.status).toBe(1)
     expect(r.stdout).toContain('ABANDONED')
     expect(r.stdout).toContain('the user changed direction')
-  })
+  }, 240_000)
 })

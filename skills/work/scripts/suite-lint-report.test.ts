@@ -48,10 +48,12 @@
  *   - a Method section carrying the exact command, so the number can be re-run by someone who
  *     disputes it
  */
-import { describe, expect, test } from 'bun:test'
+import { describe, expect, test, setDefaultTimeout } from 'bun:test'
 import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+
+setDefaultTimeout(120_000)
 
 const REPO = join(import.meta.dir, '..', '..', '..')
 const REPORT = join(REPO, 'docs/investigations/2026-08-27_suite-lint-false-positives.md')

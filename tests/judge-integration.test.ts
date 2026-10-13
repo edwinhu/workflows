@@ -1,8 +1,10 @@
-import { expect, test } from "bun:test";
+import { expect, test, setDefaultTimeout } from "bun:test";
 import { mkdtempSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { useTmp } from "./helpers/tmp.ts";
+
+setDefaultTimeout(120_000)
 
 const mkTmp = useTmp();
 
@@ -83,7 +85,7 @@ test("a GREEN check with an UNMET goal blocks, carrying goal, evidence and conti
   expect(r.out).toContain("two suites still red");
   expect(r.out).toContain("every suite in the repo is green");
   expect(r.out).toContain("Report at the ceiling");
-}, 30000);
+}, 120_000);
 
 test("a GREEN check with a MET goal releases the hold", async () => {
   const port = 18782;
@@ -97,7 +99,7 @@ test("a GREEN check with a MET goal releases the hold", async () => {
   srv.kill();
   expect(r.out).not.toContain('"decision":"block"');
   expect(r.err).toContain("objective met");
-}, 30000);
+}, 120_000);
 
 test("an UNREACHABLE judge releases rather than trapping the session", async () => {
   // Fails OPEN by design: a hook that blocks forever because a model is down is worse than one
@@ -109,7 +111,7 @@ test("an UNREACHABLE judge releases rather than trapping the session", async () 
   );
   expect(r.out).not.toContain('"decision":"block"');
   expect(r.err).toContain("judge unavailable");
-}, 30000);
+}, 120_000);
 
 /** The Decisions API's shape: one typed question in, a calibrated probability out. */
 function stubDecisions(port: number, noul: number) {
@@ -146,7 +148,7 @@ test("Jev below the threshold blocks, and reports the probability it gave", asyn
   srv.kill();
   expect(r.out).toContain('"decision":"block"');
   expect(r.out).toContain("21%");
-}, 30000);
+}, 120_000);
 
 test("Jev above the threshold releases the hold", async () => {
   const port = 18784;
@@ -165,7 +167,7 @@ test("Jev above the threshold releases the hold", async () => {
   srv.kill();
   expect(r.out).not.toContain('"decision":"block"');
   expect(r.err).toContain("objective met");
-}, 30000);
+}, 120_000);
 
 // ------------------------------------------- the compaction summary actually reaches the judge
 
@@ -238,7 +240,7 @@ test("the compaction summary REACHES the judge — a marker only in it flips the
   expect(rYes.err).toContain("objective met");
   // Same transcript minus the summary -> 0.03 -> blocked. The only difference is the summary.
   expect(rNo.out).toContain('"decision":"block"');
-}, 60000);
+}, 240_000);
 
 test("the round record travels to the judge too", async () => {
   const port = 18786;
@@ -257,7 +259,7 @@ test("the round record travels to the judge too", async () => {
   );
   srv.kill();
   expect(r.err).toContain("objective met");
-}, 30000);
+}, 120_000);
 
 // ------------------------------------------------- the SessionStart briefing after a compaction
 

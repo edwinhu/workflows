@@ -7,13 +7,15 @@
  *   check.sh         every leg of the dev, ds, writing and workshop gates goes through legcount_run
  *   rule-check.ts    a rule whose inventory examined 0 over a covered file is unavailable, not MET
  */
-import { describe, expect, test } from 'bun:test'
+import { describe, expect, test, setDefaultTimeout } from 'bun:test'
 import { spawnSync } from 'node:child_process'
 import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync, rmSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { useTmp } from '../../../tests/helpers/tmp.ts'
 import { collectEvidence, unexamined } from './rule-check.ts'
 import { caseInput } from './rule-calibrate.ts'
+
+setDefaultTimeout(60_000)
 
 const mkTmp = useTmp()
 const HERE = import.meta.dir

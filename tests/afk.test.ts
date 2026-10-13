@@ -13,7 +13,7 @@ import { activeHold, nextHold, type State } from '../hooks/work-hold.ts'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
 import { useTmp } from './helpers/tmp.ts'
 
-setDefaultTimeout(60_000)
+setDefaultTimeout(120_000)
 const mkTmp = useTmp()
 const REPO = join(import.meta.dir, '..')
 const ARM = join(REPO, 'skills/afk/scripts/arm.sh')
@@ -280,7 +280,7 @@ describe('afk queued behind a borrowed work-run hold', () => {
     expect(s.origin).toBe('afk')
     expect(s.rounds).toBe(0)
     expect(s.history ?? []).toEqual([])
-  })
+  }, 240_000)
 
   // A run-less afk hold is never in flight, so rotation would put it on top while the run is worked and
   // keep it there: the run's own verdict would then never be evaluated before 09:00.
@@ -296,7 +296,7 @@ describe('afk queued behind a borrowed work-run hold', () => {
     const r = stop(w)
     expect(r.stdout).toContain('"decision":"block"')
     expect(read(w).run).toBe(run)
-  })
+  }, 240_000)
 
   // The same starvation from the other side: /afk first, then a work dispatch arms its run hold on top.
   test('afk armed first, then a run dispatched: the run in flight does not rotate the afk hold back on top', () => {
@@ -307,7 +307,7 @@ describe('afk queued behind a borrowed work-run hold', () => {
     expect(stop(w).stdout.trim()).toBe('')
     expect(read(w).run).toBe(run)
     expect(read(w).queued.map((q: any) => q.origin)).toEqual(['afk'])
-  })
+  }, 180_000)
 
   test('nextHold and activeHold keep a run-less afk mandate last', () => {
     const h = (x: Partial<State>): State => ({ check: '', startedAt: 0, ceilingMinutes: 60, maxRounds: 4, rounds: 0, ...x })

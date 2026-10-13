@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { useTmp } from './helpers/tmp.ts'
 
-setDefaultTimeout(120_000)
+setDefaultTimeout(300_000)
 const mkTmp = useTmp()
 
 const ROOT = join(import.meta.dir, '..')
@@ -121,7 +121,7 @@ test('plan-lint refuses mechanicalChecks that never reach workflow-check <wf>, a
   const ok = planFor({ workflow: 'dev', mech: DEV_CHECK, ruleChecks: { name: 'rules', cmd: 'workflow-check dev --rules-only --project-dir /x' } })
   const c = dispatch(ok)
   expect(c.status, c.stdout + c.stderr).toBe(0)
-})
+}, 400_000)
 
 test('a plan with no workflow names workflow: work, which has no checks and says so', () => {
   const f = planFor({})

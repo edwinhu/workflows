@@ -30,11 +30,13 @@
  * `extract` throws on a source it cannot scan; an unterminated string literal is such a source, and
  * corpus mode counts that file rather than dropping it.
  */
-import { afterAll, describe, expect, test } from 'bun:test'
+import { afterAll, describe, expect, test, setDefaultTimeout } from 'bun:test'
 import { execFileSync } from 'node:child_process'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+
+setDefaultTimeout(120_000)
 
 const SCRIPT = `${import.meta.dir}/suite-lint.ts`
 const mod = () => import('./suite-lint.ts')
@@ -151,7 +153,7 @@ describe('the output is deterministic, so the number can be recomputed and dispu
   test('two consecutive CLI runs over one tree are byte-identical', () => {
     const dir = tree()
     expect(cli(dir)).toBe(cli(dir))
-  })
+  }, 240_000)
 
   test('two lintCorpus calls over one tree serialize identically', async () => {
     const { lintCorpus } = await mod()

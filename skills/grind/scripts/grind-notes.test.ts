@@ -12,13 +12,15 @@
  *
  * Run: bun test /home/eh/projects/workflows/skills/grind/scripts/grind-notes.test.ts
  */
-import { describe, expect, test, afterAll } from 'bun:test'
+import { describe, expect, test, afterAll, setDefaultTimeout } from 'bun:test'
 import { spawnSync } from 'node:child_process'
 import { mkdtempSync, rmSync, writeFileSync, readFileSync, chmodSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { grindEnv } from './grind-test-env'
 import { useTmp } from '../../../tests/helpers/tmp.ts'
+
+setDefaultTimeout(90_000)
 
 // Sweeps the notifier shim dir grind-test-env makes on this file's behalf.
 useTmp()

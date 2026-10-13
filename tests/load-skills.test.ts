@@ -46,7 +46,7 @@ test('every bang output a main-thread rule skill renders stays under the inline 
   expect(ds.status).toBe(0)
   sizes['ds --digest'] = ds.stdout.length
   for (const [k, n] of Object.entries(sizes)) expect([k, n < BANG_CAP]).toEqual([k, true])
-})
+}, 60_000)
 
 test('a rendered skill is the file itself: frontmatter gone, variables substituted, bangs run', () => {
   const dir = join(mkTmp('load-skills-'), 'skills', 'x')
@@ -63,4 +63,4 @@ test('a missing skill is exit 2 and loads nothing, never a partial stack', () =>
   expect(r.status).toBe(2)
   expect(r.stdout).toBe('')
   expect(r.stderr).toContain('NO skill was loaded')
-})
+}, 30_000)

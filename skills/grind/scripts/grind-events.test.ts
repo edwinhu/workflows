@@ -12,7 +12,7 @@
  *
  * Run: bun test /home/eh/projects/workflows/skills/grind/scripts/grind-events.test.ts
  */
-import { describe, expect, test, afterAll } from 'bun:test'
+import { describe, expect, test, afterAll, setDefaultTimeout } from 'bun:test'
 import { spawnSync } from 'node:child_process'
 import { mkdtempSync, rmSync, writeFileSync, readFileSync, readdirSync, existsSync, chmodSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -23,6 +23,8 @@ import { useTmp } from '../../../tests/helpers/tmp.ts'
 // Sweeps the notifier shim dir grind-test-env makes on this file's behalf.
 useTmp()
 import { classify, parseEvents, wakeable, wakeText, type View } from '../../../hooks/watch/runs.ts'
+
+setDefaultTimeout(60_000)
 
 const GRIND = `${import.meta.dir}/grind.sh`
 

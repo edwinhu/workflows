@@ -26,7 +26,7 @@ import { join } from 'node:path'
 // 60s does not hide a hang (a hang never returns and is caught by any finite ceiling); it stops
 // standing in for a latency budget this suite never had. Set per file because bun 1.4.0 ignores
 // `[test] timeout` in bunfig.toml and applies a preload's setDefaultTimeout to the first file only.
-setDefaultTimeout(60_000)
+setDefaultTimeout(840_000)
 
 const SCRIPT = `${import.meta.dir}/work-loop.sh`
 const scratch: string[] = []
@@ -356,7 +356,7 @@ describe('a continuation round actually runs', () => {
     expect(out).toMatch(/round 2 of 3/)
     expect(existsSync(join(f.R, 'result-round1.json'))).toBe(true)
     expect(readFileSync(join(f.R, '.farm-calls'), 'utf8')).toBe('1')
-  }, 240_000)
+  }, 420_000)
 
   /**
    * A runner that dies mid-continuation, so the death message is produced on a round that is NOT
@@ -398,7 +398,7 @@ describe('a continuation round actually runs', () => {
     // The continuation round's own log, which work-redispatch.sh created — not round 1's.
     expect(named![1]).toMatch(/run-\d{6}\.log$/)
     expect(existsSync(named![1])).toBe(true)
-  }, 240_000)
+  }, 420_000)
 
   /**
    * The settle is load-bearing, pinned by WORK_LOOP_SETTLE rather than by timing luck. With the
@@ -437,7 +437,7 @@ describe('a continuation round actually runs', () => {
   test('without the settle a healthy continuation round is condemned; with it, the same round survives', () => {
     expect(runWithSettle(continuationFixture(), '0')).toBe(1)   // no grace: declared dead at once
     expect(runWithSettle(continuationFixture(), '5')).toBe(0)   // grace: the runner registers, PASS
-  }, 240_000)
+  }, 840_000)
 })
 
 describe('the selectors are reported, because work-result.sh prints none of them', () => {

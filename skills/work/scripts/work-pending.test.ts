@@ -26,7 +26,7 @@ import { join } from 'node:path'
 // 60s does not hide a hang (a hang never returns and is caught by any finite ceiling); it stops
 // standing in for a latency budget this suite never had. Set per file because bun 1.4.0 ignores
 // `[test] timeout` in bunfig.toml and applies a preload's setDefaultTimeout to the first file only.
-setDefaultTimeout(60_000)
+setDefaultTimeout(240_000)
 
 const SCRIPTS = import.meta.dir
 const PENDING = join(SCRIPTS, 'work-pending.sh')

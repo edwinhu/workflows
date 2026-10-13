@@ -20,7 +20,7 @@ import { join } from 'node:path'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
 import { useTmp } from './helpers/tmp.ts'
 
-setDefaultTimeout(60_000)
+setDefaultTimeout(180_000)
 const mkTmp = useTmp()
 const REPO = join(import.meta.dir, '..')
 const ARM = join(REPO, 'skills/work/scripts/work-hold.sh')

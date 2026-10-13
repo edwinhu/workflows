@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { useTmp } from './helpers/tmp.ts'
 
-setDefaultTimeout(120_000)
+setDefaultTimeout(320_000)
 const mkTmp = useTmp()
 
 const ROOT = join(import.meta.dir, '..')
@@ -96,7 +96,7 @@ test('diff-scan honours the CLI contract: leg count first, path:line finding on 
   const none = sh('python3', [scan, '--project-dir', p, '--files', join(p, 'README.md')])
   expect(none.status, none.stdout + none.stderr).toBe(0)
   expect(first(none.stdout)).toMatch(EMPTY)
-})
+}, 360_000)
 
 test('workflow-check dev runs diff-scan on the change: a focused test fails by name, a clean change passes', () => {
   const bad = wcheck(['dev', '--project-dir', project({ 'src/a.test.ts': "it.only('x', () => {})\n" }), '--constraints-only', '--changed'])

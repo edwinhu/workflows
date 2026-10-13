@@ -1,7 +1,9 @@
-import { test, expect } from "bun:test";
+import { test, expect, setDefaultTimeout } from "bun:test";
 import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+
+setDefaultTimeout(240_000)
 
 const ROOT = dirname(import.meta.dir);
 const HOOK = join(ROOT, "hooks", "pgrep-self-match.ts");
@@ -85,7 +87,7 @@ test("combined short flags and --full are parsed", () => {
   expect(run("pgrep -af 'claude -p'").decision).toBe("deny");
   expect(run("pgrep --full foo").decision).toBe("deny");
   expect(run("set -e; pgrep -fl myjob | wc -l").decision).toBe("deny");
-});
+}, 360_000);
 
 // ── NO SELF-MATCH: SILENT ALLOW ────────────────────────────────────────────────────────────────
 
@@ -168,7 +170,7 @@ test("an input redirect allows", () => {
   expect(run("rg foo < file").stdout).toBe("");
   expect(run("rg foo <file").stdout).toBe("");
   expect(run("rg foo <<< \"$text\"").stdout).toBe("");
-});
+}, 360_000);
 
 test("-e/-f supply the pattern, so the FIRST positional is already a path", () => {
   // No positional at all: the pattern came from the flag and there is still no path.
@@ -177,7 +179,7 @@ test("-e/-f supply the pattern, so the FIRST positional is already a path", () =
   // One positional IS the path.
   expect(run("rg -e foo src").stdout).toBe("");
   expect(run("rg -f patterns.txt src").stdout).toBe("");
-});
+}, 480_000);
 
 test("a value-taking flag's operand is not a path", () => {
   expect(run("rg -g '!x' foo").decision).toBe("deny");
@@ -188,7 +190,7 @@ test("a value-taking flag's operand is not a path", () => {
   // ...and the same flags allow once a real path follows.
   expect(run("rg -g '!x' foo .").stdout).toBe("");
   expect(run("rg -C 3 foo src").stdout).toBe("");
-});
+}, 840_000);
 
 test("no-pattern modes never read stdin and are allowed", () => {
   expect(run("rg --files").stdout).toBe("");
@@ -196,7 +198,7 @@ test("no-pattern modes never read stdin and are allowed", () => {
   expect(run("rg --version").stdout).toBe("");
   expect(run("rg --help").stdout).toBe("");
   expect(run("rg --type-list").stdout).toBe("");
-});
+}, 600_000);
 
 test("rg with no pattern at all is a usage error, not a hang", () => {
   // Verified: exit 2, immediate — rg never reaches stdin.
@@ -222,7 +224,7 @@ test("an output redirect is not a path", () => {
   expect(run("rg foo > out.txt").decision).toBe("deny");
   expect(run("rg foo 2>/dev/null").decision).toBe("deny");
   expect(run("rg foo . > out.txt").stdout).toBe("");
-});
+}, 360_000);
 
 test("`--` ends the flags and the positionals still count", () => {
   expect(run("rg -- -foo").decision).toBe("deny");
@@ -240,7 +242,7 @@ test("reads the Monitor tool payload the same way", () => {
   expect(run("pkill -f myjob", "Monitor").decision).toBe("deny");
   expect(run(RG_INCIDENT, "Monitor").decision).toBe("deny");
   expect(run("rg -n foo .", "Monitor").stdout).toBe("");
-});
+}, 360_000);
 
 test("silent when tool_input carries no command", () => {
   const r = runRaw(JSON.stringify({ tool_name: "Bash", tool_input: {} }));

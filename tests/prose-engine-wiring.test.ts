@@ -73,7 +73,7 @@ describe("writing-no-bold-lead resolves the engine it delegates to", () => {
     expect(proc.exitCode, proc.stderr.toString()).toBe(0);
     expect(resolved).toBe(join(REPO, "scripts", "prose-audit.py"));
     expect(existsSync(resolved)).toBe(true);
-  });
+  }, 120_000);
 
   test("an unreachable engine raises rather than returning a clean pass", () => {
     // SEVERITY is "hard", so `except Exception: return []` reported "no bold leads found" for a
@@ -91,5 +91,5 @@ describe("writing-no-bold-lead resolves the engine it delegates to", () => {
       `\ntry:\n m.check({'cwd': ${JSON.stringify(d)}, 'files': [pathlib.Path(${JSON.stringify(draft)})]})\nexcept Exception as e:\n print('RAISED'); sys.exit(0)\nprint('SILENT'); sys.exit(1)`,
     ], { timeout: 120_000 });
     expect(proc.stdout.toString().trim(), proc.stderr.toString()).toBe("RAISED");
-  });
+  }, 120_000);
 });

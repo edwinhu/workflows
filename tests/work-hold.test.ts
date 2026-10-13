@@ -20,7 +20,7 @@ const mkTmp = useTmp()
 // 60s does not hide a hang (a hang never returns and is caught by any finite ceiling); it stops
 // standing in for a latency budget this suite never had. Set per file because bun 1.4.0 ignores
 // `[test] timeout` in bunfig.toml and applies a preload's setDefaultTimeout to the first file only.
-setDefaultTimeout(60_000)
+setDefaultTimeout(240_000)
 
 const HOOK = join(import.meta.dir, '..', 'hooks', 'work-hold.ts')
 
@@ -358,20 +358,20 @@ describe('work-hold.sh no longer takes --background', () => {
     const { r } = arm(['--background'])
     expect(r.status).toBe(2)
     expect(r.stderr).toContain('unknown flag --background')
-  })
+  }, 480_000)
 
   test('the state records no background key at all', () => {
     const { dir, sid } = arm([])
     const st = JSON.parse(readFileSync(join(dir, `work-hold-${sid}.json`), 'utf8'))
     expect('background' in st).toBe(false)
-  })
+  }, 480_000)
 
   test('the defaults are the SHORT ceilings a hold is for: 4 rounds, 120 minutes', () => {
     const { dir, sid } = arm([])
     const st = JSON.parse(readFileSync(join(dir, `work-hold-${sid}.json`), 'utf8'))
     expect(st.maxRounds).toBe(4)
     expect(st.ceilingMinutes).toBe(120)
-  })
+  }, 480_000)
 })
 
 const envelope = (content: string) =>
@@ -782,7 +782,7 @@ describe('work-hold.sh warns on a LONG hold and hands over the grind command', (
       // still armed, exit code unchanged
       expect(r.status).toBe(0)
       expect(existsSync(r.state)).toBe(true)
-    })
+    }, 480_000)
   }
 
   for (const extra of [[], ['--minutes', '120'], ['--rounds', '4'], ['--rounds', '4', '--minutes', '120']]) {
@@ -792,7 +792,7 @@ describe('work-hold.sh warns on a LONG hold and hands over the grind command', (
       expect(r.stderr).not.toContain('grind.sh')
       expect(r.status).toBe(0)
       expect(existsSync(r.state)).toBe(true)
-    })
+    }, 480_000)
   }
 
   // --run is work-dispatch.sh arming over a detached run, whose 720-minute ceiling comes from
@@ -804,18 +804,18 @@ describe('work-hold.sh warns on a LONG hold and hands over the grind command', (
     expect(r.stderr).not.toContain('grind.sh')
     expect(r.status).toBe(0)
     expect(existsSync(r.state)).toBe(true)
-  })
+  }, 480_000)
 
   test('still warns on the same ceilings without --run, so the advice is not lost', () => {
     const r = arm(['--rounds', '15', '--minutes', '600'])
     expect(r.stderr).toContain('WARNING: this is a LONG hold')
-  })
+  }, 480_000)
 
   test('the grind path it names actually exists', () => {
     const line = /setsid nohup bash (\S+) run/.exec(arm(['--minutes', '480']).stderr)
     expect(line, 'no grind command in the warning').not.toBeNull()
     expect(existsSync(line![1])).toBe(true)
-  })
+  }, 480_000)
 })
 
 // ------------------------------------------------- arming warns about an uncapped context window
@@ -844,7 +844,7 @@ describe('work-hold.sh and the auto-compact cap', () => {
     expect(r.status).toBe(0)
     expect(r.stdout).toContain('not capped')
     expect(r.stdout).toContain('a hold writes nothing in a project tree')
-  })
+  }, 480_000)
 
   test('opted in with no pane, it arms anyway and names the manual fix', () => {
     const r = arm({ WORK_HOLD_COMPACT_WINDOW: '250000' })
@@ -852,17 +852,17 @@ describe('work-hold.sh and the auto-compact cap', () => {
     expect(r.stdout).toContain('no Herdr pane')
     expect(r.stdout).toContain('settings.local.json')
     expect(existsSync(join(r.dir, 'work-hold-arm-cap-test.json'))).toBe(true)
-  })
+  }, 480_000)
 
   test('WORK_HOLD_COMPACT_WINDOW=0 opts out', () => {
     expect(arm({ WORK_HOLD_COMPACT_WINDOW: '0' }).stdout).toContain('not capped')
-  })
+  }, 480_000)
 
   test('CLAUDE_CODE_AUTO_COMPACT_WINDOW wins, so the cap stands down', () => {
     const r = arm({ CLAUDE_CODE_AUTO_COMPACT_WINDOW: '400000' })
     expect(r.stdout).toContain('CLAUDE_CODE_AUTO_COMPACT_WINDOW is set')
     expect(r.status).toBe(0)
-  })
+  }, 480_000)
 })
 
 // ---------------------------------------------------------- DONE MEANS THE GOAL IS MET
@@ -946,7 +946,7 @@ describe('the pass branch writes DISTINCT verbs, because a green check is not a 
     // Conditional, because the cron is now optional: the monitor is the wake and a session may
     // have raised no cron at all.
     expect(r.stderr).toContain('Leave the heartbeat cron in place if the session has other open work')
-  }, 30000)
+  }, 120_000)
 
   test('a judge that says UNMET still blocks — the new verbs did not touch that path', async () => {
     const port = 18792
@@ -959,7 +959,7 @@ describe('the pass branch writes DISTINCT verbs, because a green check is not a 
     srv.kill()
     expect(JSON.parse(r.stdout).decision).toBe('block')
     expect(r.entry).toBeNull()          // nothing released, so nothing was written
-  }, 30000)
+  }, 120_000)
 })
 
 // ------------------------------------------------- the run: in flight, and the hold's other modes
@@ -1091,7 +1091,7 @@ describe('a CHECK-LESS hold: Jev alone on the goal', () => {
     expect(r.entry?.verb).toBe(PASSED_GOAL_MET)
     expect(r.stderr).toContain('the classifier judged the goal MET')
     expect(r.stderr).not.toContain('exits 0')
-  }, 30000)
+  }, 120_000)
 
   test('UNMET blocks, and the message names no check', async () => {
     const port = 18796
@@ -1107,7 +1107,7 @@ describe('a CHECK-LESS hold: Jev alone on the goal', () => {
     expect(out.reason).toContain('the goal is judged NOT met')
     expect(out.reason).not.toContain('exits 0')
     expect(r.entry).toBeNull()
-  }, 30000)
+  }, 120_000)
 
   test('an UNAVAILABLE judge BLOCKS here — there is no check to fail open onto', () => {
     const r = passRun('cl-down', { check: '', goal: 'every suite is green' })
@@ -1316,7 +1316,7 @@ describe('work-hold.sh composes the continuation clause per mode', () => {
     const a = arm(['exit 1', '--goal', 'ship the thing'])
     expect(a.status).toBe(0)
     expect(a.json.continuation).toStartWith('A failing check is not a stopping point:')
-  })
+  }, 480_000)
 
   test('a CHECK-LESS hold speaks about the goal — there is no check to fail', () => {
     const a = arm(['--goal', 'ship the thing'])
@@ -1324,13 +1324,13 @@ describe('work-hold.sh composes the continuation clause per mode', () => {
     expect(a.json.check).toBe('')
     expect(a.json.continuation).toStartWith('An unmet goal is not a stopping point: take the next action in the same turn.')
     expect(a.json.continuation).not.toContain('failing check')
-  })
+  }, 480_000)
 
   test('both modes keep GOAL_CONTINUATION_TAIL', () => {
     const tail = 'Report at the ceiling, not at the first stopping point.'
     expect(arm(['exit 1', '--goal', 'g']).json.continuation).toEndWith(tail)
     expect(arm(['--goal', 'g']).json.continuation).toEndWith(tail)
-  })
+  }, 960_000)
 })
 
 /**

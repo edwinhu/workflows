@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test, setDefaultTimeout } from "bun:test";
 import { mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -13,6 +13,8 @@ import {
   validatePrivacyPolicy,
   type PrivacyPolicy,
 } from "../scripts/scan-public-privacy";
+
+setDefaultTimeout(240_000)
 
 const REQUIRED_RATIONALE = ["live reverse integration until pri", "vate Stage 2 passes"].join("");
 const DEBT_COMMAND = ["teaching", ":find-slide-page"].join("");

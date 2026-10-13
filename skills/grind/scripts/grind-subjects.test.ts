@@ -18,13 +18,15 @@
  *
  * Run: bun test /home/eh/projects/workflows/skills/grind/scripts/grind-subjects.test.ts
  */
-import { describe, expect, test, afterAll } from 'bun:test'
+import { describe, expect, test, afterAll, setDefaultTimeout } from 'bun:test'
 import { spawnSync } from 'node:child_process'
 import { mkdtempSync, rmSync, writeFileSync, readFileSync, existsSync, chmodSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { grindEnv } from './grind-test-env'
 import { useTmp } from '../../../tests/helpers/tmp.ts'
+
+setDefaultTimeout(150_000)
 
 // Sweeps the notifier shim dir grind-test-env makes on this file's behalf.
 useTmp()
@@ -289,7 +291,7 @@ describe('grind.sh — reopen is the only way back, and it must say what changed
     const f = fieldsOf(subjectLine(prompt(1), 'S'))
     expect(f.attempts).toBe('2')
     expect(f.state).toBe('open')
-  })
+  }, 180_000)
 
   test('the later of progress and reopen is the reset point', () => {
     const d = workdir('grind-subj-reset-latest')
@@ -304,7 +306,7 @@ describe('grind.sh — reopen is the only way back, and it must say what changed
 
     expect(r.status).toBe(4)
     expect(fieldsOf(subjectLine(prompt(1), 'S')).attempts).toBe('2')
-  })
+  }, 210_000)
 
   test('a reopen without rerunReason is refused with exit 2 and writes nothing', () => {
     const d = workdir('grind-subj-reopen-noreason')

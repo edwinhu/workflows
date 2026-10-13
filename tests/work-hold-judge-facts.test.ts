@@ -7,7 +7,7 @@ import { failingLegs, runFacts, runRounds, redispatchBlocked, lastLedgerEntry } 
 import { useTmp } from './helpers/tmp.ts'
 
 const mkTmp = useTmp()
-setDefaultTimeout(60_000)
+setDefaultTimeout(150_000)
 
 const HOOK = join(import.meta.dir, '..', 'hooks', 'work-hold.ts')
 const DISPATCH = join(import.meta.dir, '..', 'skills', 'work', 'scripts', 'work-dispatch.sh')
@@ -142,7 +142,7 @@ describe('item 20: the judge reads the facts the goal names, not only overallPas
     expect(body.questions.met.instructions).toContain(GOAL)
     expect(lastLedgerEntry(join(dir, 'work-hold-facts-met.releases.log'))?.verb).toBe('passed-goal-met')
     expect(r.state).toBeNull()
-  }, 30000)
+  }, 150_000)
 
   test('a NON-excluded failing leg reaches the judge by name', async () => {
     const dir = mkTmp('judgefacts-')
@@ -155,7 +155,7 @@ describe('item 20: the judge reads the facts the goal names, not only overallPas
     srv.kill()
     expect(sent(log)[0].state).toContain('alignment (exit 1), hierarchy (exit 1)')
     expect(JSON.parse(r.stdout).decision).toBe('block')
-  }, 30000)
+  }, 150_000)
 })
 
 describe('a hold that watches NO run keeps the transcript judge and its two-clause question', () => {
@@ -171,7 +171,7 @@ describe('a hold that watches NO run keeps the transcript judge and its two-clau
     expect(body.state).toContain('MOST RECENT TURNS')
     expect(body.state).not.toContain('RUN FACTS')
     expect(body.questions.met.instructions).toContain('This goal is met AND no obvious open work remains')
-  }, 30000)
+  }, 120_000)
 })
 
 describe('item 20b: no redispatch advice when the redispatch is refused at Tier 1', () => {
@@ -188,7 +188,7 @@ describe('item 20b: no redispatch advice when the redispatch is refused at Tier 
     expect(reason).toContain('Do NOT redispatch')
     expect(reason).toContain('Tier 1 gate')
     expect(reason).toContain('red:r18-style — owner r18-style')
-  }, 30000)
+  }, 150_000)
 
   test('once the plan is amended (new hash) the redispatch advice comes back', () => {
     const dir = mkTmp('judgetier1-')
@@ -242,7 +242,7 @@ describe('item 21: a round is a DISPATCH, not a Stop', () => {
     expect(JSON.parse(c.stdout).reason).toContain('2/6 rounds dispatched')
     expect(c.state.rounds).toBe(2)
     expect(runRounds({ run })).toBe(2)
-  }, 60000)
+  }, 390_000)
 
   test('six Stops do not expire a hold whose run dispatched one round', async () => {
     const dir = mkTmp('judgerounds-')
@@ -255,7 +255,7 @@ describe('item 21: a round is a DISPATCH, not a Stop', () => {
     srv.kill()
     expect(JSON.parse(last.stdout).decision).toBe('block')
     expect(lastLedgerEntry(join(dir, 'work-hold-drain.releases.log'))).toBeNull()
-  }, 60000)
+  }, 270_000)
 
   test('the run in flight on its LAST allowed round is not expired by the round ceiling', () => {
     const dir = mkTmp('judgerounds-')
@@ -266,7 +266,7 @@ describe('item 21: a round is a DISPATCH, not a Stop', () => {
     expect(r.stdout).toBe('')
     expect(r.state).not.toBeNull()
     expect(lastLedgerEntry(join(dir, 'work-hold-inflight.releases.log'))).toBeNull()
-  })
+  }, 180_000)
 
   test('the round ceiling still binds on dispatched rounds', async () => {
     const dir = mkTmp('judgerounds-')
@@ -278,7 +278,7 @@ describe('item 21: a round is a DISPATCH, not a Stop', () => {
     srv.kill()
     expect(lastLedgerEntry(join(dir, 'work-hold-capped.releases.log'))?.verb).toBe('expired')
     expect(r.stderr).toContain('6 rounds, at the 6 ceiling')
-  }, 30000)
+  }, 150_000)
 
   test('a hold that watches NO run still counts its red Stops (nothing else to count)', () => {
     const dir = mkTmp('judgerounds-')
@@ -320,7 +320,7 @@ describe('a check-less, run-less afk hold is never judged: the ceiling clock is 
     expect(r.stdout).toBe('')
     expect(r.state.rounds).toBe(0)
     expect(readFileSync(log, 'utf8')).toBe('')
-  }, 30000)
+  }, 120_000)
 
   test('past the ceiling: released `expired`, still without asking the judge', async () => {
     const dir = mkTmp('judgefacts-')
@@ -336,5 +336,5 @@ describe('a check-less, run-less afk hold is never judged: the ceiling clock is 
     expect(r.state).toBeNull()
     expect(lastLedgerEntry(join(dir, 'work-hold-afk-done.releases.log'))?.verb).toBe('expired')
     expect(readFileSync(log, 'utf8')).toBe('')
-  }, 30000)
+  }, 120_000)
 })

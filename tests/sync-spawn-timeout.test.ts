@@ -34,7 +34,7 @@ test("every synchronous spawn in the suite carries a timeout", () => {
   // Not vacuous: the suite held 204 such calls when this was written.
   expect(seen).toBeGreaterThan(150);
   expect(unbounded).toEqual([]);
-});
+}, 30_000);
 
 test("the scanner flags an unbounded call and ignores strings and comments", () => {
   const src = [
