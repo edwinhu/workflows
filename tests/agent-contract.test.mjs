@@ -246,11 +246,12 @@ function values(fm, key) {
   const p = agentPath('writing-reviewer')
   ok('user-agents/writing-reviewer.md exists', existsSync(p))
   const fm = existsSync(p) ? frontmatter(p) : null
-  // It grades every domain, so it preloads the base AND both domain registers.
-  for (const s of ['writing-general', 'writing-legal', 'writing-econ']) {
-    ok(`writing-reviewer preloads ${s}`, values(fm, 'skills').includes(s))
+  // It grades every domain: its one rules skill prints the base, both domain registers and the tics.
+  ok('writing-reviewer names prose-rules-review', values(fm, 'skills').join() === 'prose-rules-review')
+  const rbody = readFileSync(join(SKILLS, 'prose-rules-review', 'SKILL.md'), 'utf8')
+  for (const s of ['writing-general', 'writing-legal', 'writing-econ', 'ai-anti-patterns']) {
+    ok(`prose-rules-review prints ${s}`, rbody.includes(`load-skills.ts; [ -f "$c" ]`) && rbody.includes(`"$c" ${s};`))
   }
-  ok('writing-reviewer preloads ai-anti-patterns', values(fm, 'skills').includes('ai-anti-patterns'))
 
   // It has no Skill tool, so preloading is its ONLY channel.
   const rtools = values(fm, 'tools')
@@ -283,14 +284,15 @@ function values(fm, key) {
     'writing-legal': ['writing-general', 'writing-legal', 'ai-anti-patterns'],
     'writing-econ':  ['writing-general', 'writing-econ', 'ai-anti-patterns'],
   }
+  const RULES = { 'writing': 'prose-rules', 'writing-legal': 'prose-rules-legal', 'writing-econ': 'prose-rules-econ' }
   for (const [agent, want] of Object.entries(EXPECTED)) {
     const p = agentPath(agent)
     ok(`user-agents/${agent}.md exists`, existsSync(p))
     const fm = existsSync(p) ? frontmatter(p) : null
     const wskills = values(fm, 'skills')
-    for (const s of want) ok(`${agent} preloads ${s}`, wskills.includes(s), wskills.join(','))
-    ok(`${agent} preloads exactly the expected set`,
-       wskills.length === want.length, wskills.join(','))
+    ok(`${agent} names exactly ${RULES[agent]}`, wskills.join() === RULES[agent], wskills.join(','))
+    const rbody = readFileSync(join(SKILLS, RULES[agent], 'SKILL.md'), 'utf8')
+    for (const s of want) ok(`${RULES[agent]} prints ${s}`, rbody.includes(`"$c" ${s};`))
     for (const s of wskills) {
       ok(`user-agents/${agent}.md: skills: ${s} resolves`, existsSync(join(SKILLS, s, 'SKILL.md')))
     }

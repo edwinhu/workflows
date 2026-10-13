@@ -1,6 +1,6 @@
 ---
 name: prose-rules-econ
-description: "The writing-econ agent's rule skills (writing-general, writing-econ, ai-anti-patterns) loaded on its main thread, where a skills: preload never lands. Named by that agent's initialPrompt; the registers themselves are agent-internal."
+description: "The writing-econ agent's rule skills (writing-general, writing-econ, ai-anti-patterns) loaded through one skill on either launch path. Named by that agent's skills: and initialPrompt:; the registers themselves are agent-internal."
 ---
 
 # prose-rules-econ — the writing-econ agent's rules on the main thread

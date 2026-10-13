@@ -19,7 +19,14 @@ const fm = (f: string) => Bun.YAML.parse(readFileSync(f, 'utf8').split('\n---\n'
 const bangNames = (f: string) => readFileSync(f, 'utf8').split('\n').filter(l => l.includes('load-skills.ts'))
   .flatMap(l => (/exec bun \S+ ([^;`]+);/.exec(l)?.[1] ?? '').trim().split(/\s+/))
 
-test('each writing agent\'s initialPrompt skill loads its whole skills: preload, one bang per register', () => {
+const REGISTERS: Record<string, string[]> = {
+  'writing.md': ['writing-general', 'ai-anti-patterns'],
+  'writing-legal.md': ['writing-general', 'writing-legal', 'ai-anti-patterns'],
+  'writing-econ.md': ['writing-general', 'writing-econ', 'ai-anti-patterns'],
+  'writing-reviewer.md': ['writing-general', 'writing-legal', 'writing-econ', 'ai-anti-patterns'],
+}
+
+test('each writing agent\'s one rules skill (skills: and initialPrompt:) bangs every register, one per bang', () => {
   const agents = readdirSync(join(ROOT, 'user-agents')).filter(f => /^writing.*\.md$/.test(f))
   expect(agents.length).toBe(4)
   for (const a of agents) {
@@ -29,7 +36,8 @@ test('each writing agent\'s initialPrompt skill loads its whole skills: preload,
     const skill = join(ROOT, 'skills', cmd!, 'SKILL.md')
     expect(fm(skill)['user-invocable']).not.toBe(false)
     const names = bangNames(skill)
-    expect([a, [...names].sort()]).toEqual([a, [...meta.skills].sort()])
+    expect([a, meta.skills]).toEqual([a, [cmd]])
+    expect([a, [...names].sort()]).toEqual([a, [...REGISTERS[a]].sort()])
     // One register per bang, so no single bang carries two registers toward the cap.
     expect(readFileSync(skill, 'utf8').split('\n').filter(l => l.includes('load-skills.ts')).length).toBe(names.length)
   }

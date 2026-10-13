@@ -16,9 +16,7 @@ model: inherit
 color: blue
 tools: ["Read", "Grep", "Glob", "Edit", "Write", "Bash", "Skill"]
 skills:
-  - writing-general
-  - writing-econ
-  - ai-anti-patterns
+  - prose-rules-econ
 initialPrompt: /prose-rules-econ
 hooks:
   PreToolUse:

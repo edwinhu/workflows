@@ -1,6 +1,6 @@
 ---
 name: prose-rules-legal
-description: "The writing-legal agent's rule skills (writing-general, writing-legal, ai-anti-patterns) loaded on its main thread, where a skills: preload never lands. Named by that agent's initialPrompt; the registers themselves are agent-internal."
+description: "The writing-legal agent's rule skills (writing-general, writing-legal, ai-anti-patterns) loaded through one skill on either launch path. Named by that agent's skills: and initialPrompt:; the registers themselves are agent-internal."
 ---
 
 # prose-rules-legal — the writing-legal agent's rules on the main thread

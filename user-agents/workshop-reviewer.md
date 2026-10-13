@@ -13,7 +13,6 @@ model: sonnet
 color: yellow
 tools: Read, Grep, Glob, StructuredOutput
 skills:
-  - typst:typst
   - typst:deck-rules
 initialPrompt: /typst:deck-rules
 ---
