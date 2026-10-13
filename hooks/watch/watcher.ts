@@ -69,8 +69,9 @@ async function readRuns($: EngineInterface, nowMs: number): Promise<Run[]> {
   return runs
 }
 
-async function nonEmpty($: EngineInterface, p: string): Promise<boolean> {
-  try { return (await $.fs.stat(p)).size > 0 } catch { return false }
+/** mtime (ms) of a non-empty file, else undefined. */
+async function nonEmptyAt($: EngineInterface, p: string): Promise<number | undefined> {
+  try { const s = await $.fs.stat(p); return s.size > 0 ? s.mtimeMs : undefined } catch { return undefined }
 }
 
 async function readText($: EngineInterface, p: string): Promise<string | undefined> {
@@ -80,7 +81,7 @@ async function readText($: EngineInterface, p: string): Promise<string | undefin
 /** Everything classify() needs, gathered with one ps call and a stat per artifact. */
 async function gather($: EngineInterface, runs: Run[]): Promise<Facts> {
   const facts: Facts = {
-    alive: new Set(), present: new Set(), firstSeen, loopExit: new Map(), loopExitAt: new Map(), round: new Map(), phase: new Map(),
+    alive: new Set(), present: new Set(), presentAt: new Map(), firstSeen, loopExit: new Map(), loopExitAt: new Map(), round: new Map(), phase: new Map(),
   }
   const open = [...new Set(runs.filter(r => !r.done).map(r => r.pid))]
   if (open.length) {
@@ -98,7 +99,10 @@ async function gather($: EngineInterface, runs: Run[]): Promise<Facts> {
     for (const p of [r.out, ...r.claims]) if (p && p.startsWith('/')) paths.add(p)
     if ((r.label === 'work-round' || r.label === 'work-loop') && r.out) workDirs.add(r.out.replace(/\/[^/]*$/, ''))
   }
-  for (const p of paths) if (await nonEmpty($, p)) facts.present.add(p)
+  for (const p of paths) {
+    const at = await nonEmptyAt($, p)
+    if (at !== undefined) { facts.present.add(p); facts.presentAt!.set(p, at) }
+  }
   for (const d of workDirs) {
     const exit = await readText($, `${d}/loop.exit`)
     if (exit !== undefined && exit.trim() !== '') {
