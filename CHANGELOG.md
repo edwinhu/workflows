@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- **`tests/jev-rule-spans.test.ts` no longer runs synchronous spawns while its rule-check children wait on the test's own event loop:** the stub judge answers on that loop, but each rule's case prep (`caseInput`'s git calls, and a fresh walk of `checks/` running `python3 bin/workflow-check --list` once per directory, about 450 spawns per file) ran while the earlier rules' children were already in flight. Every such spawn stalled those children's judge calls: a curl to the in-process stub lived 12 s in a clean full-suite run. A sync spawn that never returns would also block the loop that bun's 120 s per-test timeout fires on, so the file would hang until `scripts/test.sh`'s 600 s wall cap. That matches the two `jev-rule-spans.test.ts (589s)` interrupts on 2026-10-13: the leak guard was empty afterwards, which places the hang in the `elide` or `ds` test, whose only blocking calls are those spawns. Now one walk is memoized for the whole file, every case is prepared before the first child starts, and each child has its own 90 s spawn timeout (the test timeout rises to 150 s to cover it). The test also asserts that no prep ran while a child was live: red before (`Received: 4` on `elide`, 5 rules), green after. The file takes about 5 s alone, down from about 17 s. The hang itself did not reproduce: 1 full suite in a fresh worktree and stress runs of 32 parallel copies of the old file all passed.
+
 ## [6.45.1] - 2026-10-13
 
 ### Added
