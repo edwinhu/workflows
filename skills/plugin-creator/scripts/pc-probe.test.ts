@@ -40,7 +40,7 @@ function fixture(files: Record<string, string>): string {
 
 /** Run the CLI out-of-process so the test covers main()/argv, not just runProbe(). */
 function cli(args: string[]): { code: number; out: string; err: string } {
-  const r = Bun.spawnSync(['bun', join(SELF_DIR, 'pc-probe.ts'), ...args])
+  const r = Bun.spawnSync(['bun', join(SELF_DIR, 'pc-probe.ts'), ...args], { timeout: 120_000 })
   return { code: r.exitCode, out: r.stdout.toString(), err: r.stderr.toString() }
 }
 

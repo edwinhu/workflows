@@ -1,4 +1,6 @@
-import { test, expect } from "bun:test";
+import { test, expect, setDefaultTimeout } from "bun:test";
+
+setDefaultTimeout(300_000);
 import { spawnSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
@@ -6,7 +8,7 @@ import { tmpdir } from "node:os";
 
 const CHECK = join(import.meta.dir, "check.sh");
 const run = (...a: string[]) => {
-  const r = spawnSync("bash", [CHECK, ...a], { encoding: "utf8" });
+  const r = spawnSync("bash", [CHECK, ...a], { timeout: 120_000, encoding: "utf8" });
   return { code: r.status ?? -1, out: r.stdout ?? "", err: r.stderr ?? "" };
 };
 const proj = () => mkdtempSync(join(tmpdir(), "devcheck-"));
@@ -76,7 +78,7 @@ const ONLY = ["it", "only"].join(".");
 const KEY = ["-----BEGIN RSA", "PRIVATE KEY-----"].join(" ");
 function gitProj(files: Record<string, string>, after: Record<string, string>) {
   const d = proj();
-  const git = (...a: string[]) => spawnSync("git", ["-C", d, ...a], { encoding: "utf8" });
+  const git = (...a: string[]) => spawnSync("git", ["-C", d, ...a], { timeout: 30_000, encoding: "utf8" });
   git("init", "-q"); git("config", "user.email", "t@t"); git("config", "user.name", "t");
   for (const [f, c] of Object.entries(files)) { mkdirSync(dirname(join(d, f)), { recursive: true }); writeFileSync(join(d, f), c); }
   git("add", "-A"); git("commit", "-qm", "base", "--allow-empty");

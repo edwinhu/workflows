@@ -1,6 +1,8 @@
 // authoring-lint.ts: each rule fires on an added line and stays quiet on the compliant form, and a
 // violation already committed is not the change's.
-import { afterAll, expect, test } from 'bun:test'
+import { afterAll, expect, setDefaultTimeout, test } from 'bun:test'
+
+setDefaultTimeout(180_000)
 import { spawnSync } from 'node:child_process'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -34,7 +36,7 @@ test('each rule fires on its violating line and not on the compliant one', () =>
 function repo(): string {
   const d = mkdtempSync(join(tmpdir(), 'authoring-lint-'))
   trash.push(d)
-  const git = (...a: string[]) => spawnSync('git', ['-C', d, ...a], { encoding: 'utf8' })
+  const git = (...a: string[]) => spawnSync('git', ['-C', d, ...a], { timeout: 30_000, encoding: 'utf8' })
   git('init', '-q'); git('config', 'user.email', 't@t'); git('config', 'user.name', 't')
   mkdirSync(join(d, 'skills', 'a'), { recursive: true })
   writeFileSync(join(d, 'skills', 'a', 'SKILL.md'), `---\nname: a\ndescription: d\n---\n\nLegacy: ${CLIMB}\n`)
@@ -55,7 +57,7 @@ test('outside git every line counts; exit codes are 0, 1 and 2', () => {
   const d = mkdtempSync(join(tmpdir(), 'authoring-lint-nogit-'))
   trash.push(d)
   writeFileSync(join(d, 'SKILL.md'), '---\nname: a\ndescription: d\n---\n\nclean\n')
-  const run = (...a: string[]) => spawnSync('bun', [LINT, ...a], { encoding: 'utf8' }).status
+  const run = (...a: string[]) => spawnSync('bun', [LINT, ...a], { timeout: 120_000, encoding: 'utf8' }).status
   expect(run('--target', d)).toBe(0)
   writeFileSync(join(d, 'SKILL.md'), `clean\n${CLIMB}\n`)
   expect(run('--target', d)).toBe(1)

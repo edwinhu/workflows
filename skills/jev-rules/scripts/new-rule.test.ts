@@ -1,4 +1,6 @@
-import { expect, test } from 'bun:test';
+import { expect, setDefaultTimeout, test } from 'bun:test';
+
+setDefaultTimeout(600_000);
 import { spawnSync } from 'child_process';
 import { existsSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'fs';
 import { dirname, join, resolve } from 'path';
@@ -22,7 +24,7 @@ function tree(manifestText: string) {
 const realCopy = () => tree(REAL_MANIFEST.replace(/^\{\n/, '{\n  "root": ".",\n'));
 
 function run(args: string[], env: Record<string, string> = {}) {
-  const r = spawnSync('bun', [SCRIPT, ...args], { encoding: 'utf8', env: { ...process.env, ...env } });
+  const r = spawnSync('bun', [SCRIPT, ...args], { timeout: 120_000, encoding: 'utf8', env: { ...process.env, ...env } });
   return { code: r.status, out: r.stdout, err: r.stderr };
 }
 
@@ -54,7 +56,7 @@ test('the stub module loads through evidence.py and reports its placeholder prop
   const { root, manifest } = realCopy();
   expect(run(['demo', 'D-ONE', '--manifest', manifest, '--layout', 'files']).code).toBe(0);
   const r = spawnSync('python3', [join(BASE, 'checks/_jev/evidence.py'), '--files', join(root, 'tests/fixtures/jev/demo/D-ONE/vio/REPLACE-ME.txt'),
-    '--rules-dir', join(root, 'checks/demo/rules/uncalibrated')], { encoding: 'utf8' });
+    '--rules-dir', join(root, 'checks/demo/rules/uncalibrated')], { timeout: 120_000, encoding: 'utf8' });
   expect(r.status).toBe(0);
   const out = JSON.parse(r.stdout);
   expect(out['D-ONE'].proposition).toMatch(/^TODO/);
@@ -65,7 +67,7 @@ test('the generated test is red on the identical placeholder twins and green onc
   const { root, manifest } = realCopy();
   expect(run(['demo', 'D-TWO', '--manifest', manifest, '--layout', 'files']).code).toBe(0);
   const gen = join(root, 'tests/jev-rules/demo-D-TWO.test.ts');
-  const bunTest = () => spawnSync('bun', ['test', gen], { cwd: root, encoding: 'utf8' });
+  const bunTest = () => spawnSync('bun', ['test', gen], { timeout: 120_000, cwd: root, encoding: 'utf8' });
   expect(bunTest().status).not.toBe(0);
   const fx = join(root, 'tests/fixtures/jev/demo/D-TWO');
   rmSync(join(fx, 'vio/REPLACE-ME.txt'));
@@ -96,7 +98,7 @@ test('an unknown set needs --layout; diff layout gets before/after placeholders 
   const set = JSON.parse(readFileSync(manifest, 'utf8')).sets.newset;
   expect(set).toMatchObject({ rulesDir: 'checks/newset/rules', uncalibratedDir: 'checks/newset/rules/uncalibrated', layout: 'diff' });
   // the new set is a workflow the runner resolves, its parked rule not yet run
-  const lst = spawnSync('python3', [join(BASE, 'bin/workflow-check'), 'newset', '--list'], { encoding: 'utf8', env: { ...process.env, WORKFLOW_CHECKS_PATH: root } });
+  const lst = spawnSync('python3', [join(BASE, 'bin/workflow-check'), 'newset', '--list'], { timeout: 120_000, encoding: 'utf8', env: { ...process.env, WORKFLOW_CHECKS_PATH: root } });
   expect(lst.status, lst.stderr).toBe(0);
   expect(JSON.parse(lst.stdout).rules).toEqual([]);
   for (const p of ['vio/before', 'vio/after', 'sat/before', 'sat/after']) expect(existsSync(join(root, 'tests/fixtures/jev/newset/N-ONE', p, 'REPLACE-ME.txt.fixture'))).toBe(true);

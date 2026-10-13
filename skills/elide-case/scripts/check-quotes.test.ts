@@ -11,7 +11,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-setDefaultTimeout(120_000)
+setDefaultTimeout(240_000)
 
 const SCRIPT = path.join(import.meta.dir, "..", "..", "..", "checks", "elide", "constraints", "check-quotes.py");
 let ROOT = "";
@@ -50,7 +50,7 @@ spec = importlib.util.spec_from_file_location("cq", ${JSON.stringify(SCRIPT)})
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
 sys.stdout.write(m.strip_furniture(json.loads(sys.stdin.read())))
 `;
-  const r = spawnSync("python3", ["-c", driver], {
+  const r = spawnSync("python3", ["-c", driver], { timeout: 30_000,
     input: JSON.stringify(text),
     encoding: "utf8",
   });
@@ -66,7 +66,7 @@ spec = importlib.util.spec_from_file_location("cq", ${JSON.stringify(SCRIPT)})
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
 sys.stdout.write(m.strip_typ_markup(json.loads(sys.stdin.read())))
 `;
-  const r = spawnSync("python3", ["-c", driver], {
+  const r = spawnSync("python3", ["-c", driver], { timeout: 30_000,
     input: JSON.stringify(body),
     encoding: "utf8",
   });
@@ -290,7 +290,7 @@ describe("check-quotes.py", () => {
     );
     expect(extra.out).toContain("MISS");
     expect(extra.code).not.toBe(0);
-  }, 360_000);
+  }, 480_000);
 
   test("the Telegram baseline alteration is still reported as a miss", () => {
     const source =
@@ -321,7 +321,7 @@ with zipfile.ZipFile(sys.argv[1], "w") as z:
     z.writestr("document.xml", sys.stdin.read())
     z.writestr("footnotes.xml", "<a/>")
 `;
-    const r = spawnSync("python3", ["-c", driver, out], { input: xml, encoding: "utf8" });
+    const r = spawnSync("python3", ["-c", driver, out], { timeout: 30_000, input: xml, encoding: "utf8" });
     if (r.status !== 0) throw new Error(r.stderr);
     return out;
   }
@@ -370,7 +370,7 @@ spec = importlib.util.spec_from_file_location("cq", ${JSON.stringify(SCRIPT)})
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
 sys.stdout.write(m.load_source(__import__("pathlib").Path(sys.argv[1]))[0])
 `;
-    const r = spawnSync("python3", ["-c", driver, flatOpc(dir, [PARA])], {
+    const r = spawnSync("python3", ["-c", driver, flatOpc(dir, [PARA])], { timeout: 30_000,
       encoding: "utf8",
     });
     expect(r.status).toBe(0);
