@@ -107,6 +107,21 @@ printf '{"type":"result","result":"done"}\\n'`
   } finally { rmSync(root, { recursive: true, force: true }) }
 }, 120_000)
 
+test("an MCP server's detached update check outliving the session is not the child's orphan", () => {
+  // chrome-devtools-mcp 1.7.0 utils/check-for-updates.js spawns bin/check-latest-version.js with
+  // detached:true at most once a day; it runs `npm config get registry` (5 s timeout) and one registry
+  // fetch, then exits -- bounded, but routinely longer than the reap grace.
+  const stub = `bin="$TMPDIR/node_modules/chrome-devtools-mcp/build/src/bin"
+mkdir -p "$bin" && printf '#!/usr/bin/env bash\\nsleep 3\\n' > "$bin/check-latest-version.js"
+setsid bash "$bin/check-latest-version.js" "$TMPDIR/latest.json" </dev/null >/dev/null 2>&1 &
+printf '{"type":"result","result":"done"}\\n'`
+  const { row, root } = runFarm(stub)
+  try {
+    expect(row.orphaned).toEqual([])
+    expect(row.ok).toBe(true)
+  } finally { rmSync(root, { recursive: true, force: true }) }
+}, 120_000)
+
 // What a real `claude -p` child writes when its turn ends with a run_in_background Bash live
 // (captured 2026-10-03): the harness kills the task AFTER the result event, so no process survives
 // for a scan to find. The stream is the evidence.
