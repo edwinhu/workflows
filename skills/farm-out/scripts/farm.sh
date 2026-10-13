@@ -230,15 +230,27 @@ CALLER_IS_CHILD=${FARM_OUT_CHILD:-}
 export FARM_OUT_CHILD=1
 
 # Rule 1: the model's own summary is not evidence. Check the artifact.
-# Empty counts as missing -- a created-but-unwritten file is not a result.
-verify() {
-  local missing=() abs
+# Empty counts as missing -- a created-but-unwritten file is not a result. So does a file older
+# than the row (mtime before its START t=): a repair row whose expect the previous row already wrote
+# would otherwise pass with a child that did nothing. Same rule in farm-team.sh.
+written_since() {  # <file> <epoch>
+  local m
+  [ -s "$1" ] || return 1
+  m=$(stat -c %Y -- "$1" 2>/dev/null || stat -f %m -- "$1" 2>/dev/null) || return 1
+  [ "$m" -ge "$2" ]
+}
+verify() {  # <row start epoch> <expect>...
+  local missing=() abs t0=$1; shift
   for p in "$@"; do
+    # An absent expect arrives as one "" ("${e[@]:-}"); resolved, it is $CWD itself, older than the row.
+    [ -n "$p" ] || continue
     # Resolved against $CWD -- where the AGENT worked -- not ours. They are routinely different
     # (we are launched from wherever the caller sat, with --cwd pointing elsewhere), and a bare
     # test then checks a path that never existed and calls every artifact missing.
     case "$p" in /*) abs=$p ;; *) abs="$CWD/$p" ;; esac
-    [ -s "$abs" ] || missing+=("$p")
+    if [ ! -s "$abs" ]; then missing+=("$p")
+    elif ! written_since "$abs" "$t0"; then missing+=("not written this run: $p")
+    fi
   done
   printf '%s\n' "${missing[@]:-}"
 }
@@ -419,7 +431,9 @@ Your Bash tool runs in a throwaway sandbox of this machine: the working tree exa
     fi
   fi
 
-  emit "START $(enc "$label") cwd=$(enc "$CWD") out=$(enc "${OUT:-}") expect=${#real_expects[@]} t=$(date +%s)"
+  local t0
+  t0=$(date +%s)
+  emit "START $(enc "$label") cwd=$(enc "$CWD") out=$(enc "${OUT:-}") expect=${#real_expects[@]} t=$t0"
   for _e in "${real_expects[@]:-}"; do [ -n "$_e" ] && claim "$label" "$_e"; done
   [ -n "${OUT:-}" ] && claim "$label" "$OUT"
 
@@ -508,12 +522,13 @@ Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint
     [ -n "$sbx_fail" ] && failure="${failure:+$failure; }$sbx_fail"
   fi
   # Only the structured value, never the prose reply: null (StructuredOutput never called, or never
-  # with a schema-valid object) writes nothing, so the expect stays missing and the row fails.
+  # with a schema-valid object) writes nothing, so the expect stays missing and the row fails. A file
+  # left by an earlier row is replaced: only one the child wrote this run outranks the value.
   if [ -n "$schema" ] && [ "${#real_expects[@]}" -eq 1 ]; then
     local so target
     case "${real_expects[0]}" in /*) target=${real_expects[0]} ;; *) target="$CWD/${real_expects[0]}" ;; esac
     so=$(jq -s '[.[] | select(.type == "result") | .structured_output] | last | select(type == "object")' "$log" 2>/dev/null)
-    if [ ! -s "$target" ] && [ -n "$so" ]; then
+    if ! written_since "$target" "$t0" && [ -n "$so" ]; then
       mkdir -p -- "$(dirname -- "$target")" && printf '%s\n' "$so" >"$target"
     fi
   fi
@@ -531,7 +546,7 @@ Never call any model API (no requests to ANTHROPIC_BASE_URL or any /v1/ endpoint
       failure="${failure:+$failure; }$gate_wf constraint gate failed (workflow-check $gate_wf): $(printf '%s' "$gate_out" | head -n 40)"
     fi
   fi
-  mapfile -t missing < <(verify "${expects[@]:-}")
+  mapfile -t missing < <(verify "$t0" "${expects[@]:-}")
   # verify prints one blank line when nothing is missing; drop it.
   [ "${#missing[@]}" -eq 1 ] && [ -z "${missing[0]}" ] && missing=()
   rm -f "$log" "$log.stamp" "$err" "$prompt_file"

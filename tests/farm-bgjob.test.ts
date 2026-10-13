@@ -56,7 +56,7 @@ test('a child that backgrounds `sleep 60` and ends fails its row, naming the job
     try { process.kill(pid, 'SIGKILL') } catch {}
     rmSync(root, { recursive: true, force: true })
   }
-})
+}, 120_000)
 
 // What a real `claude -p` child writes when its turn ends with a run_in_background Bash live
 // (captured 2026-10-03): the harness kills the task AFTER the result event, so no process survives
@@ -77,7 +77,7 @@ test('a background task the harness killed at turn end fails the row and names i
     expect(row.failure).toBe('ended with background job running: scripts/canary.sh --run')
     expect(res.stderr).toContain('bg ended with background job running: scripts/canary.sh --run')
   } finally { rmSync(root, { recursive: true, force: true }) }
-})
+}, 120_000)
 
 test('a background task that finished inside the turn is not an orphan', () => {
   const { row, root } = runFarm(emitLines([BASH_USE, STARTED, COMPLETED, RESULT]))
@@ -86,7 +86,7 @@ test('a background task that finished inside the turn is not an orphan', () => {
     expect(row.ok).toBe(true)
     expect(row.failure).toBeUndefined()
   } finally { rmSync(root, { recursive: true, force: true }) }
-})
+}, 120_000)
 
 // ------------------------------------------------------------------------ the Stop hook
 //

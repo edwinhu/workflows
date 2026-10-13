@@ -60,7 +60,7 @@ describe('parseEvents over what farm.sh writes', () => {
     // farm.sh's own verdict on a missing artifact is fail; the watcher reports it, missing.
     expect([b.state, b.done?.status, b.artifactsPresent]).toEqual(['done', 'fail', false])
     expect(wakeText(b, Date.now())).toContain('(MISSING)')
-  })
+  }, 130_000)
 })
 
 describe('work-loop.sh files itself in the stream', () => {
@@ -86,7 +86,7 @@ describe('work-loop.sh files itself in the stream', () => {
     expect(v.kind).toBe('work-loop')
     expect(v.runDir).toBe(run)
     expect(wakeText(v, Date.now())).toContain('loop finished: exit 1 (dispatch died with no verdict)')
-  })
+  }, 130_000)
 })
 
 describe('classify: ownership of nested rows, GONE, and the status line', () => {

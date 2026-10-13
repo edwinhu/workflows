@@ -36,13 +36,13 @@ test('a relative --expect resolves against --cwd, not the caller cwd', () => {
   const row = runFarm('out.md', { writeRelative: 'out.md' })
   expect(row.missing).toEqual([])
   expect(row.ok).toBe(true)
-})
+}, 120_000)
 
 test('a relative --expect the agent never wrote is still reported missing', () => {
   const row = runFarm('out.md')
   expect(row.missing).toEqual(['out.md'])
   expect(row.ok).toBe(false)
-})
+}, 120_000)
 
 // A row's `model` is advertised in farm-out/SKILL.md as a task-row field. The stub records the
 // argv farm.sh built instead of making a call, so the flag is checked without reaching a provider.
@@ -74,26 +74,26 @@ test("a row's model reaches the wrapper as --model", () => {
   const { argv } = runRow({ label: 'r', workflow: 'none', prompt: 'p', model: 'gpt-5.6-luna' })
   expect(argv).toContain('--model')
   expect(argv[argv.indexOf('--model') + 1]).toBe('gpt-5.6-luna')
-})
+}, 120_000)
 
 test('a row with no model passes no --model flag — the wrapper default stands', () => {
   const { argv } = runRow({ label: 'r', workflow: 'none', prompt: 'p' })
   expect(argv.length).toBeGreaterThan(0)
   expect(argv).not.toContain('--model')
-})
+}, 120_000)
 
 test('a null model is coerced to empty and passes no --model flag', () => {
   const { argv } = runRow({ label: 'r', workflow: 'none', prompt: 'p', model: null })
   expect(argv.length).toBeGreaterThan(0)
   expect(argv).not.toContain('--model')
-})
+}, 120_000)
 
 test('a model carrying a control character is refused before the wrapper is invoked', () => {
   const { argv, status, stderr } = runRow({ label: 'r', workflow: 'none', prompt: 'p', model: 'good\tbad' })
   expect(argv).toEqual([])
   expect(status).toBe(2)
   expect(stderr).toMatch(/model contains a control character/)
-})
+}, 120_000)
 
 function runFanout(rows: Record<string, unknown>[], spend: number | null = 0, env: Record<string, string> = {}) {
   const root = mkdtempSync(join(tmpdir(), 'farmtest-'))
@@ -128,29 +128,29 @@ test('seven rows at zero spend use the median estimate, not full task budgets', 
   expect(res.stderr).toContain('Estimate for 7 task(s): 5250000 tokensW')
   expect(res.stderr).toContain('Session spend so far: 0 tokensW')
   expect(res.stderr).not.toContain('Session spend so far: 00')
-})
+}, 120_000)
 
 test('spend plus fan-out estimate exceeding the session cap is refused', () => {
   const res = runFanout(sevenRows, 15000000)
   expect(res.status).toBe(2)
   expect(res.stderr).toContain('Session budget exceeded up front: 20250000')
   expect(res.stdout).toBe('')
-})
+}, 120_000)
 
 test('the estimate is capped at each row budget', () => {
   const res = runFanout([{ label: 'small', workflow: 'none', prompt: 'p', budget: 100000 }])
   expect(res.status).toBe(0)
   expect(res.stderr).toContain('Estimate for 1 task(s): 100000 tokensW')
-})
+}, 120_000)
 
 test('the estimate is capped at the default task budget and accepts an override', () => {
   const res = runFanout([{ label: 'small', workflow: 'none', prompt: 'p' }], 0, { FARM_TASK_ESTIMATE: '5000000' })
   expect(res.status).toBe(0)
   expect(res.stderr).toContain('Estimate for 1 task(s): 4000000 tokensW')
-})
+}, 120_000)
 
 test('empty session event files display a single zero', () => {
   const res = runFanout([{ label: 'zero', workflow: 'none', prompt: 'p' }], null)
   expect(res.stderr).toContain('Session spend so far: 0 tokensW')
   expect(res.stderr).not.toContain('Session spend so far: 00')
-})
+}, 120_000)

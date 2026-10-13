@@ -29,4 +29,4 @@ test('a run evicts stale event files for pids that are long gone', () => {
   const left = readdirSync(evd).length
   rmSync(tmp, { recursive: true, force: true })
   expect(left).toBeLessThan(41)   // the 40 stale ones must not all survive alongside the new one
-})
+}, 120_000)

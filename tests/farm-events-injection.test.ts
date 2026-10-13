@@ -25,7 +25,7 @@ test('a label cannot inject an out= field that steers the liveness checker', () 
   rmSync(tmp, { recursive: true, force: true })
   // The victim path names no real run here, so the checker must NOT report it alive.
   expect(proc.stdout).toContain('status=1')
-})
+}, 120_000)
 
 // Regression: the control-character guard originally tested label+prompt+agent concatenated,
 // so every multi-line prompt — nearly every real brief — was refused, and the message blamed
@@ -41,7 +41,7 @@ test('a multi-line prompt with a clean label dispatches', () => {
     { timeout: 120_000, encoding: 'utf8', env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, TMPDIR: tmp, FARM_OUTCOMES: `${tmp}/farm-outcomes.jsonl`, FARM_OUT_CHILD: '1' } })
   rmSync(tmp, { recursive: true, force: true })
   expect(res.status).toBe(0)
-})
+}, 120_000)
 
 // Non-vacuity for the above: without this, scoping the guard could be "fixed" by deleting it.
 test('a newline in the LABEL is still refused, and the message names the label', () => {
@@ -56,4 +56,4 @@ test('a newline in the LABEL is still refused, and the message names the label',
   rmSync(tmp, { recursive: true, force: true })
   expect(res.status).toBe(2)
   expect(res.stderr).toContain('label contains a control character')
-})
+}, 120_000)

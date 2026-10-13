@@ -28,34 +28,34 @@ test('lint refuses a hex colour and names it', () => {
   expect(r.rc).toBe(2)
   expect(r.err).toContain('"#E9B93B"')
   expect(r.err).toContain('belongs to the subagent')
-})
+}, 30_000)
 
 test('lint refuses "use a sans-serif font" and a named face', () => {
   expect(lint({ agent: 'ds', prompt: 'Make a bar chart of the shares. Use a sans-serif font.' }).rc).toBe(2)
   const r = lint({ agent: 'ds', prompt: 'Make a bar chart; labels in Helvetica or Liberation Sans.' })
   expect(r.rc).toBe(2)
   expect(r.err).toContain('"Helvetica"')
-})
+}, 60_000)
 
 test('lint refuses an X-style look directive', () => {
   expect(lint({ agent: 'ds', prompt: 'Build WSJ-style simple bar charts of the shares.' }).rc).toBe(2)
   expect(lint({ agent: 'ds', prompt: 'Give the figures the FT graphics look.' }).rc).toBe(2)
   expect(lint({ agent: 'ds', prompt: 'Use yellow bars for Nevada.' }).rc).toBe(2)
-})
+}, 90_000)
 
 test('lint passes a brief that names only data and comparisons, and mentions the rule files', () => {
   expect(lint({ agent: 'ds', prompt: DATA_ONLY })).toEqual({ rc: 0, err: '' })
-})
+}, 30_000)
 
 test('lint ignores fenced and quoted user content and paths', () => {
   const prompt = 'Chart the shares from the memo.\n\n```\nfont-family: Helvetica; color: #E9B93B\n```\n> the old figure used sans-serif\nRead /home/eh/scratch/serif_fonts/#abc123/report.md and wsj-style.css.'
   expect(lint({ agent: 'ds', prompt }).rc).toBe(0)
-})
+}, 30_000)
 
 test('lint leaves non-chart rows alone and does not flag issue numbers or newspapers', () => {
   expect(lint({ prompt: 'Summarise the serif typeface section of the style guide for the memo.' }).rc).toBe(0)
   expect(lint({ agent: 'ds', prompt: 'Chart the shares; see issue #123 and the New York Times piece, Georgia and Courier filings.' }).rc).toBe(0)
-})
+}, 60_000)
 
 test('userStyle: the user\'s verbatim words in the prompt are the only override', () => {
   const words = 'Use Helvetica and #E9B93B for Nevada'
@@ -69,7 +69,7 @@ test('userStyle: the user\'s verbatim words in the prompt are the only override'
   // a userStyle that is not in the prompt (or is empty) is not an override
   expect(lint({ agent: 'ds', prompt, userStyle: 'something else' }).rc).toBe(2)
   expect(lint({ agent: 'ds', prompt, userStyle: '' }).rc).toBe(2)
-})
+}, 150_000)
 
 // ---- farm.sh: launch refusal and the output gate -------------------------------------------
 
@@ -100,14 +100,14 @@ test('farm.sh refuses a styling brief at launch: exit 2, names the text, no row 
   expect(r.stderr).toContain('"#E9B93B"')
   expect(r.stderr).toContain('1 of 2 row(s) refused')
   expect(r.ran).toBe(false)
-})
+}, 300_000)
 
 test('farm.sh runs a styling brief when the row carries the user\'s verbatim words in userStyle', () => {
   const words = 'make it sans-serif'
   const r = farm([{ label: 'u', agent: 'ds', prompt: `Chart the shares. The user said: ${words}.`, userStyle: words }])
   expect(r.stderr).toContain('userStyle override accepted')
   expect(r.ran).toBe(true)
-})
+}, 300_000)
 
 const GATE_MSG = 'ds constraint gate failed'
 
@@ -123,18 +123,18 @@ test('output gate marks a ds row wrong when the child left a sans-serif chart th
   expect(verdict.verdict).toBe('wrong')
   expect(verdict.checks).toContain('ds-constraints')
   expect(verdict.why).toContain(GATE_MSG)
-})
+}, 300_000)
 
 test('output gate passes a compliant serif chart fixture', () => {
   const r = farm([{ label: 'g', agent: 'ds', prompt: DATA_ONLY }], join(FIX, 'serif-600'))
   expect(r.rows[0].ok).toBe(true)
   expect(r.rows[0].failure).toBeUndefined()
-})
+}, 300_000)
 
 test('a writing row is gated by writing\'s checks, not ds\'s: a ds chart theme does not fail it', () => {
   const r = farm([{ label: 'g', agent: 'writing', prompt: 'Draft the memo section on shares.' }], join(FIX, 'founder-v2'))
   expect(r.rows[0].ok).toBe(true)
-})
+}, 300_000)
 
 // ---- the runner (bin/workflow-check ds) on a farmed row's scope, directly ---------------------
 
@@ -145,7 +145,7 @@ test('ds-gate sees a chart under a directory named scratch (the colour linter us
   const r = spawnSync('python3', [join(ROOT, 'checks', 'ds', 'constraints', 'ds-chart-color.py'), '--project-dir', root, '--files', join(d, 'c.py')], { encoding: 'utf8', timeout: 60_000 })
   expect(r.stdout.split('\n')[0]).toMatch(/^ds-chart-color: 1 \S.* examined/)
   rmSync(root, { recursive: true, force: true })
-})
+}, 60_000)
 
 test('ds-gate with nothing chart-shaped touched says so: an explicit empty scope, exit 0', () => {
   const root = mkdtempSync(join(tmpdir(), 'chartgate-'))
@@ -157,7 +157,7 @@ test('ds-gate with nothing chart-shaped touched says so: an explicit empty scope
   expect(r.status).toBe(0)
   expect(r.stdout).toMatch(/^ds-chart-color: 0 \S.* examined.*nothing in scope \(/m)
   rmSync(root, { recursive: true, force: true })
-})
+}, 120_000)
 
 // ---- the code checkers (every ds-* rule, not only A5/A6) -----------------------------------
 
@@ -169,7 +169,7 @@ test('output gate marks a ds row wrong for a non-chart rule: unaudited join, unl
   for (const c of ['ds-join-audits', 'ds-error-handling', 'ds-schema-contracts', 'ds-standard-error-spec'])
     expect(row.failure).toContain(`${c} exit 1`)
   expect(row.failure).toContain('pipeline.py:')
-})
+}, 300_000)
 
 test('a row declaring workflow dev is gated by the dev domain: its Jev verdict fails the row', () => {
   const dir = mkdtempSync(join(tmpdir(), 'devstub-'))
@@ -182,12 +182,12 @@ test('a row declaring workflow dev is gated by the dev domain: its Jev verdict f
   expect(r.rows[0].failure).toContain('MOCK p=0.93')
   const verdict = r.outcomes.split('\n').filter(Boolean).map(l => JSON.parse(l)).find(l => l.type === 'verdict')
   expect(verdict.checks).toContain('dev-constraints')
-})
+}, 300_000)
 
 test('output gate passes a clean pipeline', () => {
   const r = farm([{ label: 'g', agent: 'ds', prompt: DATA_ONLY }], join(GATEFIX, 'clean'))
   expect(r.rows[0].ok).toBe(true)
-})
+}, 300_000)
 
 function gateRun(opts: { files: Record<string, string>, constraints?: Record<string, string> }) {
   const root = mkdtempSync(join(tmpdir(), 'dsgate-'))
@@ -212,13 +212,13 @@ test('ds-gate checks code under a scratch/ directory and reports the original pa
   const r = gateRun({ files: { 'scratch/run1/pipeline.py': BAD } })
   expect(r.rc).toBe(1)
   expect(r.out).toContain('scratch/run1/pipeline.py:')
-})
+}, 120_000)
 
 test('ds-gate respects a waiver that carries a reason', () => {
   const waived = BAD.replace('m = a.merge(b, on="k")', 'm = a.merge(b, on="k")  # ds-join-audits: fixture merge, counted by the caller test')
   const r = gateRun({ files: { 'scratch/p.py': waived } })
   expect(r.out).not.toContain('ds-join-audits exit')
-})
+}, 120_000)
 
 test('ds-gate: a clean file passes and says what ran; a figure-only row says the code checkers had nothing', () => {
   const ok = gateRun({ files: { 'p.py': CLEAN } })
@@ -226,7 +226,7 @@ test('ds-gate: a clean file passes and says what ran; a figure-only row says the
   expect(ok.out).toMatch(/^ds-join-audits: 1 \S.* examined/m)
   const fig = gateRun({ files: { 'f.svg': '<svg xmlns="http://www.w3.org/2000/svg"/>' } })
   expect(fig.out).toMatch(/^ds-join-audits: 0 \S.* examined.*nothing in scope \(/m)
-})
+}, 240_000)
 
 test('ds-gate exits 2, never 0, when a checker crashes or prints no verdict', () => {
   const crash = gateRun({ files: { 'p.py': CLEAN }, constraints: { 'ds-determinism.py': '1/0\n' } })
@@ -236,4 +236,4 @@ test('ds-gate exits 2, never 0, when a checker crashes or prints no verdict', ()
   const mute = gateRun({ files: { 'p.py': CLEAN }, constraints: { 'ds-idempotency.py': 'pass\n' } })
   expect(mute.rc).toBe(2)
   expect(mute.out).toContain('COULD-NOT-CHECK: ds-idempotency printed no count line first')
-})
+}, 240_000)

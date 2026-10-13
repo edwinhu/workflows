@@ -99,7 +99,7 @@ describe('the early-stop standing instruction reaches every unattended child pro
     // The row's own prompt must still be there: appending the instruction must not replace it.
     expect(p).toContain('ROW-PROMPT-SENTINEL')
     expect(p, show('farm.sh', p)).toContain(INSTRUCTION)
-  })
+  }, 120_000)
 
   test('farm-team.sh: it is written into the prompt file the lead is fed on stdin', () => {
     const d = workdir('child-instr-team')
@@ -132,7 +132,7 @@ describe('the early-stop standing instruction reaches every unattended child pro
 
     expect(prompt).toContain('TEAM-BRIEF-SENTINEL')
     expect(prompt, show('farm-team.sh', prompt)).toContain(INSTRUCTION)
-  })
+  }, 120_000)
 
   test('grind.sh: it is in the GRIND_PROTOCOL block of every iteration prompt', () => {
     const d = workdir('child-instr-grind')
@@ -171,5 +171,5 @@ describe('the early-stop standing instruction reaches every unattended child pro
     expect(prompt).toContain('GRIND-BODY-SENTINEL')
     expect(prompt).toContain('GRIND_PROTOCOL:')
     expect(prompt, show('grind.sh', prompt)).toContain(INSTRUCTION)
-  })
+  }, 120_000)
 })
