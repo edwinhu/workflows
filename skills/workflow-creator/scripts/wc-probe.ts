@@ -4060,6 +4060,17 @@ export function checkRuleSkillPreload(
         why = `its initialPrompt /${cmd} loads ${[...covered].join(', ')}`
       }
     }
+    // One rules skill R, named identically in both fields: the subagent and main-thread paths must load the same rules.
+    if (cmd && (listedRaw.length !== 1 || norm(listedRaw[0]) !== norm(cmd))) {
+      findings.push({
+        rule: 'P19 rule-skill preload',
+        severity: 'major',
+        file,
+        line,
+        detail: `agent "${name}" (${agentFile}) has skills: [${listedRaw.join(', ')}] but initialPrompt: /${cmd}; the two paths load different rules`,
+        remedy: 'name one rules skill R as skills: [R] and initialPrompt: /R',
+      })
+    }
     const notOnMain = decl.skills.filter(s => !covered.has(norm(s)))
     if (notOnMain.length) {
       findings.push({

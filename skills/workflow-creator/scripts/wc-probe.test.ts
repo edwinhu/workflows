@@ -3949,7 +3949,7 @@ describe('D42 — P19: a workflow\'s persona agents preload its rule skills', ()
 
   test('an agent that lacks the declared preload is a MAJOR, and the CLI exits 1', () => {
     const dir = plugin({ ruleSkills: 'p19-rules', agentSkills: ['other'] })
-    const found = allOf(dir, 'P19')
+    const found = allOf(dir, 'P19').filter(f => f.detail.includes('does not preload'))
     expect(found.length).toBe(1)
     expect(found[0].severity).toBe('major')
     expect(found[0].detail).toContain('"p19-impl"')
@@ -4018,17 +4018,17 @@ describe('D42 — P19: a workflow\'s persona agents preload its rule skills', ()
   })
 
   test('several rule skills land through one combined skill whose bangs run load-skills.ts on each', () => {
-    const base = { ruleSkills: 'p19-rules, p19-more', agentSkills: ['p19-rules', 'p19-more'], ip: '/p19-stack' }
+    const base = { ruleSkills: 'p19-rules, p19-more', agentSkills: ['p19-stack'], ip: '/p19-stack' }
     const more = { 'skills/p19-more/SKILL.md': skillMd('p19-more') }
     expect(allOf(plugin({ ...base, extra: { ...more, 'skills/p19-stack/SKILL.md': stack('p19-rules p19-more') } }), 'P19')).toEqual([])
     const short = allOf(plugin({ ...base, extra: { ...more, 'skills/p19-stack/SKILL.md': stack('p19-rules') } }), 'P19')
-    expect(short.length).toBe(1)
-    expect(short[0].detail).toContain('does not invoke p19-more')
+    expect(short.length).toBe(2)
+    expect(short.map(f => f.detail).join('\n')).toContain('does not invoke p19-more')
   })
 
   test('only the first slash command counts — stacking does not apply to initialPrompt', () => {
     const found = allOf(plugin({ ruleSkills: 'p19-rules, p19-more', agentSkills: ['p19-rules', 'p19-more'], ip: '/p19-rules /p19-more',
-      extra: { 'skills/p19-more/SKILL.md': skillMd('p19-more') } }), 'P19')
+      extra: { 'skills/p19-more/SKILL.md': skillMd('p19-more') } }), 'P19').filter(f => f.detail.includes('does not invoke'))
     expect(found.length).toBe(1)
     expect(found[0].detail).toContain('does not invoke p19-more')
   })
@@ -4038,6 +4038,21 @@ describe('D42 — P19: a workflow\'s persona agents preload its rule skills', ()
     const found = allOf(plugin({ ruleSkills: 'p19-rules', agentSkills: ['p19-rules'], extra: { 'skills/p19-rules/SKILL.md': hidden } }), 'P19')
     expect(found.length).toBe(1)
     expect(found[0].detail).toContain('user-invocable: false')
+  })
+
+  test('skills: that is not exactly the initialPrompt rules skill is a MAJOR naming both fields', () => {
+    const extra = { 'skills/p19-more/SKILL.md': skillMd('p19-more') }
+    const dir = plugin({ ruleSkills: 'p19-rules', agentSkills: ['p19-rules', 'p19-more'], ip: '/p19-rules', extra })
+    const found = allOf(dir, 'P19')
+    expect(found.length).toBe(1)
+    expect(found[0].severity).toBe('major')
+    expect(found[0].detail).toContain('skills: [p19-rules, p19-more]')
+    expect(found[0].detail).toContain('initialPrompt: /p19-rules')
+    expect(found[0].remedy).toBe('name one rules skill R as skills: [R] and initialPrompt: /R')
+    expect(cli(['--target', dir]).code).toBe(1)
+    const other = allOf(plugin({ ruleSkills: 'p19-rules', agentSkills: ['p19-more'], ip: '/p19-rules', extra }), 'P19')
+    expect(other.some(f => f.remedy === 'name one rules skill R as skills: [R] and initialPrompt: /R')).toBe(true)
+    expect(allOf(plugin({ ruleSkills: 'p19-rules', agentSkills: ['p19plug:p19-rules'], ip: '/p19-rules' }), 'P19')).toEqual([])
   })
 
   test('every workflow this repo ships passes P19', () => {
