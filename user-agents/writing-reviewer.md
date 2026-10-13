@@ -79,9 +79,13 @@ correct in context is a legitimate answer — say so. Do not rewrite prose to sa
 
 ## Step 2: Read the rules the spans cannot express
 
-**All three registers are already in your context.** The `writing-general`, `writing-legal` and
-`writing-econ` skills are preloaded at startup through this agent's `skills:` frontmatter, so their
-full text arrived before your first turn; there is nothing to fetch and no file to `Read`.
+**The registers arrive through `prose-rules-review`**, this agent's one rules skill (`skills:` and
+`initialPrompt:`), which prints the `writing-general`, `writing-legal`, `writing-econ` and
+`ai-anti-patterns` text before your first turn. If any line reads `(... NOT in your context)` or
+`NO ... rule was loaded`, or a `(load-skills: ... bang failed ...)` line appears, that register did
+not arrive: `Read` `~/.claude/skills/workflows/skills/<name>/SKILL.md` for each named register
+(its bangs will not run under `Read`; the file is still the rule text) before grading, and never
+grade without them.
 `writing-general` is the base — it carries the shared rules plus the `general` register — and the
 other two carry only what is additional to it for their domain. Grade against `writing-general`
 always, plus `writing-legal` or `writing-econ` when your prompt names that domain style. Never grade

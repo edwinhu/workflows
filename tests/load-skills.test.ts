@@ -6,7 +6,7 @@ import { test, expect } from 'bun:test'
 import { readFileSync, readdirSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
-import { renderSkill } from '../scripts/load-skills.ts'
+import { renderSkill, bangLoaderNames } from '../scripts/load-skills.ts'
 import { useTmp } from './helpers/tmp.ts'
 
 const mkTmp = useTmp()
@@ -16,8 +16,7 @@ const run = (cmd: string, args: string[]) => spawnSync(cmd, args, { encoding: 'u
 const fm = (f: string) => Bun.YAML.parse(readFileSync(f, 'utf8').split('\n---\n')[0].replace(/^---\n/, '')) as any
 
 /** Every skill named by a load-skills.ts bang in one SKILL.md. */
-const bangNames = (f: string) => readFileSync(f, 'utf8').split('\n').filter(l => l.includes('load-skills.ts'))
-  .flatMap(l => (/exec bun \S+ ([^;`]+);/.exec(l)?.[1] ?? '').trim().split(/\s+/))
+const bangNames = (f: string) => bangLoaderNames(readFileSync(f, 'utf8'))
 
 const REGISTERS: Record<string, string[]> = {
   'writing.md': ['writing-general', 'ai-anti-patterns'],
@@ -72,3 +71,42 @@ test('a missing skill is exit 2 and loads nothing, never a partial stack', () =>
   expect(r.stdout).toBe('')
   expect(r.stderr).toContain('NO skill was loaded')
 }, 30_000)
+
+test('a nested bang that exits non-zero is named loudly in the output and the CLI exits 1 after printing everything', () => {
+  const root = mkTmp('load-skills-fail-')
+  const mk = (n: string, body: string) => {
+    mkdirSync(join(root, 'skills', n), { recursive: true })
+    writeFileSync(join(root, 'skills', n, 'SKILL.md'), `---\nname: ${n}\n---\n\n${body}\n`)
+  }
+  mk('bad', '# bad\n!`echo partial; echo boom-on-stderr >&2; exit 2`\nafter')
+  mk('good', '# good\nfine')
+  const out = renderSkill(join(root, 'skills', 'bad', 'SKILL.md'))
+  expect(out).toContain('(load-skills: bad bang failed, status 2: boom-on-stderr')
+  expect(out).toContain('NOT in your context')
+  expect(out).toContain('after')
+  // The CLI: run against a copy of the loader rooted at the fixture so `bad` resolves as this plugin's skill.
+  mkdirSync(join(root, 'scripts'), { recursive: true })
+  mkdirSync(join(root, '.claude-plugin'), { recursive: true })
+  writeFileSync(join(root, '.claude-plugin', 'plugin.json'), '{"name":"fx"}')
+  writeFileSync(join(root, 'scripts', 'load-skills.ts'), readFileSync(join(ROOT, 'scripts', 'load-skills.ts'), 'utf8'))
+  const r = spawnSync('bun', [join(root, 'scripts', 'load-skills.ts'), 'bad', 'good'], { encoding: 'utf8', timeout: 30_000, cwd: root })
+  expect(r.status).toBe(1)
+  expect(r.stdout).toContain('# Skill: good')
+  expect(r.stdout).toContain('bang failed, status 2')
+}, 60_000)
+
+test('bangLoaderNames reads loader names from executable bang lines only', () => {
+  const real = '!`c=$X/load-skills.ts; [ -f "$c" ] && exec bun "$c" a b:c; echo no`'
+  const text = ['prose load-skills.ts exec bun x y;', 'e.g. `!`exec bun load-skills.ts z;``', real].join('\n')
+  expect(bangLoaderNames(text)).toEqual(['a', 'b:c'])
+})
+
+test('the writing-reviewer has Read but no Skill or Bash, so its fallback says Read a path, never invoke', () => {
+  const agent = readFileSync(join(ROOT, 'user-agents', 'writing-reviewer.md'), 'utf8')
+  expect(fm(join(ROOT, 'user-agents', 'writing-reviewer.md')).tools).not.toMatch(/\b(Skill|Bash)\b/)
+  expect(agent).toContain('~/.claude/skills/workflows/skills/<name>/SKILL.md')
+  expect(agent).not.toContain('no file to `Read`')
+  const wrapper = readFileSync(join(ROOT, 'skills', 'prose-rules-review', 'SKILL.md'), 'utf8')
+  expect(wrapper).not.toMatch(/; invoke the/)
+  expect(wrapper.match(/Read ~\/\.claude\/skills\/workflows\/skills\/[\w-]+\/SKILL\.md/g)?.length).toBe(4)
+})

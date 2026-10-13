@@ -120,11 +120,8 @@ resolves them against no particular directory; `writablePaths` and every `mechan
 
   // One row per distinct `Section` value in the plan's ## Slide Spec, plus one assembler.
   // Every task carries refs, empty or not.
-  // The plan's table verbatim. Every task carries refs, empty or not. The Typst constraints
-  // are NOT among them: `implementerAgentType: "workshop"` names `typst:typst` in its own
-  // frontmatter, so every doer receives the whole computed index. Listing a subset here was
-  // the defect — the comment claimed fifteen modules were unconditional while the rows named
-  // four, and the corpus declares 20 for a workshop deck. refs carry task artefacts only.
+  // The plan's table verbatim. The Typst constraints are NOT among the refs: `implementerAgentType: "workshop"`
+  // names the one rules skill `typst:deck-rules` in its own frontmatter, so every doer receives the full rule set.
   tasks: [
     { id: "section-1",
       name: "Section: <Section>",
@@ -215,8 +212,8 @@ resolves them against no particular directory; `writablePaths` and every `mechan
 `implementerAgentType` names `workshop` because the default agent carries Claude Code's
 software-engineering system prompt, and the deliverable here is a deck and speaker notes a room
 reads — prose, not code. An agent is justified only by a custom prompt, hooks or preloaded skills;
-`workshop` earns it on the first, and it preloads `typst:typst`, whose bang line indexes the
-canonical Typst modules.
+`workshop` earns it on the first, and it preloads `typst:deck-rules`, whose bang prints the
+canonical Typst rule statements.
 
 `verifierAgentType` pins `Explore` because it has no Edit and no Write: a judge that structurally
 cannot modify the tree beats a prompt asking it not to. The lens buys the same property a different

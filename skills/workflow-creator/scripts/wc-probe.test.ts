@@ -4055,6 +4055,61 @@ describe('D42 — P19: a workflow\'s persona agents preload its rule skills', ()
     expect(allOf(plugin({ ruleSkills: 'p19-rules', agentSkills: ['p19plug:p19-rules'], ip: '/p19-rules' }), 'P19')).toEqual([])
   })
 
+  // The agent's own plugin owns a bare skill name in its skills:/initialPrompt, not the workflow's plugin.
+  describe('a bare skill name resolves in the agent\'s owning plugin', () => {
+    // bun caches os.homedir() in-process, so the probe runs out-of-process with HOME pointed at a fixture.
+    const withHome = (files: Record<string, string>, dir: () => string) => {
+      const home = fixture(files)
+      const r = Bun.spawnSync(['bun', join(SELF_DIR, 'wc-probe.ts'), '--target', dir()], { timeout: 120_000, env: { ...process.env, HOME: home } })
+      return { code: r.exitCode, out: r.stdout.toString() + r.stderr.toString() }
+    }
+    const loaderBang = (names: string) => '!`c=${CLAUDE_PLUGIN_ROOT}/scripts/load-skills.ts; [ -f "$c" ] && exec bun "$c" ' + names + '; echo "NO rule was loaded"`'
+    const agentIn = (skillsList: string, ip: string) => ['---', 'name: impl', 'description: d', 'skills:', `  - ${skillsList}`, `initialPrompt: ${ip}`, '---', '', 'body', ''].join('\n')
+    const wfPlugin = (impl: string) => join(fixture({
+      '.claude-plugin/plugin.json': '{"name": "p19plug"}',
+      'skills/wf/SKILL.md': ['---', 'name: wf', 'description: d', 'metadata:', '  rule-skills: typst:deck-rules', '---', '', '# wf', '',
+        workArgs(['tasks: []', `implementerAgentType: "${impl}"`, 'verifierAgentType: "Explore"', 'lens: { prompt: "judge", refs: [], agentType: "Explore" }']), ''].join('\n'),
+    }), 'skills', 'wf')
+    const home = (bRules: string) => ({
+      '.claude/skills/typst/skills/deck-rules/SKILL.md': skillMd('deck-rules'),
+      '.claude/skills/pb/.claude-plugin/plugin.json': '{"name": "pb"}',
+      '.claude/skills/pb/user-agents/impl.md': agentIn('b-rules', '/b-rules'),
+      '.claude/skills/pb/skills/b-rules/SKILL.md': bRules,
+    })
+    const skillWith = (...lines: string[]) => ['---', 'name: b-rules', 'description: d', '---', '', '# b-rules', '', ...lines, ''].join('\n')
+
+    test('a qualified external agent whose bare wrapper lives in its own plugin is CLEAN', () => {
+      const r = withHome(home(skillWith(loaderBang('typst:deck-rules'))), () => wfPlugin('pb:impl'))
+      expect(r.out).not.toContain('P19 rule-skill preload')
+      expect(r.code).toBe(0)
+    })
+
+    test('the wrapper loading nothing is still a MAJOR in the agent\'s plugin', () => {
+      const r = withHome(home(skillWith('prose only')), () => wfPlugin('pb:impl'))
+      expect(r.out).toContain('does not preload typst:deck-rules')
+      expect(r.code).toBe(1)
+    })
+  })
+
+  // Only a real bang line (the form scripts/load-skills.ts renderSkill runs) loads a register.
+  describe('a load-skills.ts mention outside a bang loads nothing', () => {
+    const prose = 'This is just prose, not an invoked bang: load-skills.ts example: exec bun loader p19-rules;'
+    const inline = 'Example: `!`c=x/load-skills.ts; exec bun "$c" p19-rules; echo no`` is how a wrapper bangs.'
+    const real = '!`c=${CLAUDE_PLUGIN_ROOT}/scripts/load-skills.ts; [ -f "$c" ] && exec bun "$c" p19-rules; echo "NO rule was loaded"`'
+    const wf = (line: string) => plugin({ ruleSkills: 'p19-rules', agentSkills: ['p19-stack'], ip: '/p19-stack',
+      extra: { 'skills/p19-stack/SKILL.md': ['---', 'name: p19-stack', 'description: d', '---', '', '# p19-stack', '', line, ''].join('\n') } })
+    test('a prose line is not a bang: both launch paths are MAJORs', () => {
+      const found = allOf(wf(prose), 'P19')
+      expect(found.map(f => f.detail.includes('does not preload') || f.detail.includes('does not invoke')).sort()).toEqual([true, true])
+    })
+    test('a backticked example not at line start is not a bang', () => {
+      expect(allOf(wf(inline), 'P19').length).toBe(2)
+    })
+    test('the real bang line is CLEAN', () => {
+      expect(allOf(wf(real), 'P19')).toEqual([])
+    })
+  })
+
   test('every workflow this repo ships passes P19', () => {
     for (const w of ['dev', 'ds', 'elide-case', 'work', 'workflow-creator', 'workshop', 'writing']) {
       expect([w, allOf(join(SELF_DIR, '..', '..', w), 'P19')]).toEqual([w, []])

@@ -20,6 +20,7 @@ import { basename, delimiter, dirname, join, resolve, sep } from 'node:path'
 import { homedir } from 'node:os'
 import { spawnSync } from 'node:child_process'
 import { ruleSetOf } from '../../../hooks/jev/rules.ts'
+import { bangLoaderNames } from '../../../scripts/load-skills.ts'
 
 // ---------------------------------------------------------------- types
 
@@ -3913,6 +3914,16 @@ function agentNamesIn(value: string): string[] {
   return names.map(n => n.trim()).filter(n => /^[A-Za-z][\w.-]*(?::[A-Za-z][\w.-]*)?$/.test(n))
 }
 
+/** The plugin root holding an agent file (`<root>/user-agents|agents/x.md`), or null when it sits in no plugin. */
+function ownerRootOf(agentFile: string): string | null {
+  const root = dirname(dirname(agentFile))
+  return existsSync(join(root, '.claude-plugin', 'plugin.json')) ? root : null
+}
+
+function pluginNameAt(root: string | null): string | null {
+  try { return JSON.parse(readFileSync(join(root ?? '', '.claude-plugin', 'plugin.json'), 'utf8')).name ?? null } catch { return null }
+}
+
 /**
  * P19 rule-skill preload — every persona agent a workflow dispatches preloads its rule skills.
  *
@@ -4009,23 +4020,28 @@ export function checkRuleSkillPreload(
     onRead(agentFile)
     const agentText = readTextOrNull(agentFile)
     const fm = agentText === null ? null : frontmatterData(agentText)
+    // A bare skill name in the agent's skills:/initialPrompt belongs to the agent's OWN plugin: the one
+    // holding its file (a qualified `p:n` agent lives under ~/.claude/skills/p), else the workflow's.
+    const ownerRoot = ownerRootOf(agentFile) ?? pluginRoot
+    const ownerName = ownerRoot === pluginRoot ? pluginName : (pluginNameAt(ownerRoot) ?? p)
+    const canon = (s: string) => norm(s.includes(':') || !ownerName ? s : `${ownerName}:${s}`)
+    // One resolver for a skill reference made by this agent: its SKILL.md, or null when it has none.
+    const skillFileOf = (cmd: string): { cp: string | null, file: string } => {
+      const [cp, cn] = cmd.includes(':') ? cmd.split(':') : [ownerName, cmd]
+      const root = cp === ownerName ? ownerRoot : cp === pluginName ? pluginRoot : join(home, '.claude', 'skills', cp ?? '')
+      return { cp, file: join(root ?? '', 'skills', cn, 'SKILL.md') }
+    }
     // A rule skill is preloaded when `skills:` lists it or lists a user-invocable skill whose
-    // `load-skills.ts` bangs print it (the one-rules-skill form, `prose-rules-*`).
+    // `load-skills.ts` bang lines print it (the one-rules-skill form, `prose-rules-*`).
     const bangNames = (cmd: string): string[] => {
-      const [cp, cn] = cmd.includes(':') ? cmd.split(':') : [pluginName, cmd]
-      const cmdFile = cp === pluginName ? join(pluginRoot ?? '', 'skills', cn, 'SKILL.md') : join(home, '.claude', 'skills', cp ?? '', 'skills', cn, 'SKILL.md')
+      const { cp, file: cmdFile } = skillFileOf(cmd)
       const cmdText = readTextOrNull(cmdFile)
       if (cmdText === null || frontmatterData(cmdText)?.['user-invocable'] === false) return []
       onRead(cmdFile)
-      const out: string[] = []
-      for (const l of cmdText.split('\n').filter(l => l.includes('load-skills.ts'))) {
-        const args = /exec bun \S+ ([^;`]+);/.exec(l)?.[1] ?? ''
-        for (const n of args.trim().split(/\s+/).filter(Boolean)) out.push(norm(n.includes(':') ? n : `${cp}:${n}`))
-      }
-      return out
+      return bangLoaderNames(cmdText).map(n => norm(n.includes(':') || !cp ? n : `${cp}:${n}`))
     }
     const listedRaw = Array.isArray(fm?.skills) ? (fm!.skills as unknown[]).map(x => String(x)) : []
-    const listed = [...listedRaw.map(norm), ...listedRaw.flatMap(bangNames)]
+    const listed = [...listedRaw.map(canon), ...listedRaw.flatMap(bangNames)]
     const missing = decl.skills.filter(s => !listed.includes(norm(s)))
     if (missing.length) {
       findings.push({
@@ -4045,23 +4061,19 @@ export function checkRuleSkillPreload(
     const covered = new Set<string>()
     let why = ip ? `its initialPrompt "${ip}" opens with no slash command` : 'it has no initialPrompt'
     if (cmd) {
-      const [cp, cn] = cmd.includes(':') ? cmd.split(':') : [pluginName, cmd]
-      const cmdFile = cp === pluginName ? join(pluginRoot ?? '', 'skills', cn, 'SKILL.md') : join(home, '.claude', 'skills', cp ?? '', 'skills', cn, 'SKILL.md')
+      const { cp, file: cmdFile } = skillFileOf(cmd)
       const cmdText = readTextOrNull(cmdFile)
       if (cmdText === null) why = `its initialPrompt names /${cmd}, which has no SKILL.md at ${cmdFile}`
       else if (frontmatterData(cmdText)?.['user-invocable'] === false) why = `its initialPrompt names /${cmd}, which is user-invocable: false and so loads nothing (0 turns)`
       else {
         onRead(cmdFile)
-        covered.add(norm(cmd))
-        for (const l of cmdText.split('\n').filter(l => l.includes('load-skills.ts'))) {
-          const args = /exec bun \S+ ([^;`]+);/.exec(l)?.[1] ?? ''
-          for (const n of args.trim().split(/\s+/).filter(Boolean)) covered.add(norm(n.includes(':') ? n : `${cp}:${n}`))
-        }
+        covered.add(canon(cmd))
+        for (const n of bangLoaderNames(cmdText)) covered.add(norm(n.includes(':') || !cp ? n : `${cp}:${n}`))
         why = `its initialPrompt /${cmd} loads ${[...covered].join(', ')}`
       }
     }
     // One rules skill R, named identically in both fields: the subagent and main-thread paths must load the same rules.
-    if (cmd && (listedRaw.length !== 1 || norm(listedRaw[0]) !== norm(cmd))) {
+    if (cmd && (listedRaw.length !== 1 || canon(listedRaw[0]) !== canon(cmd))) {
       findings.push({
         rule: 'P19 rule-skill preload',
         severity: 'major',
