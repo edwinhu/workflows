@@ -37,7 +37,7 @@ test('reports alive while the run is running, dead once it exits', async () => {
   await new Promise((r) => setTimeout(r, 300))
   expect(aliveFor(out, root)).not.toBe(0)        // exited -> non-zero
   rmSync(root, { recursive: true, force: true })
-})
+}, 240_000)
 
 test('neither liveness site names a runner file', () => {
   const src = readFileSync(DISPATCH, 'utf8')

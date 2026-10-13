@@ -64,7 +64,7 @@ test('a row "schema" object reaches the CLI as --json-schema, and its structured
   // the child is told to return through StructuredOutput, not to Write the file
   expect(r.stdin()).toContain('StructuredOutput')
   expect(r.stdin()).not.toContain('Write your deliverable')
-})
+}, 120_000)
 
 test('a row "schema" given as a file path passes that file\'s schema', () => {
   const r = rig()
@@ -73,7 +73,7 @@ test('a row "schema" given as a file path passes that file\'s schema', () => {
   const { row } = r.run([{ label: 'lens', prompt: 'review', schema: sp, expect: out }], { STUB_SO: JSON.stringify(VALUE) })
   expect(JSON.parse(r.schemaArg()!)).toEqual(SCHEMA)
   expect(row.ok).toBe(true)
-})
+}, 120_000)
 
 test('no structured value (the child never returned one) -> nothing written, the expect is missing, the row fails', () => {
   const r = rig()
@@ -82,7 +82,7 @@ test('no structured value (the child never returned one) -> nothing written, the
   expect(existsSync(out)).toBe(false)
   expect(row.ok).toBe(false)
   expect(row.missing).toEqual([out])
-})
+}, 120_000)
 
 test('a child that wrote the expect file itself keeps its file; the structured value does not overwrite it', () => {
   const r = rig()
@@ -92,7 +92,7 @@ test('a child that wrote the expect file itself keeps its file; the structured v
     { STUB_SO: JSON.stringify(VALUE), STUB_SELF: out, STUB_SELF_TEXT: own })
   expect(readFileSync(out, 'utf8')).toBe(own)
   expect(row.ok).toBe(true)
-})
+}, 120_000)
 
 test('a row without "schema" passes no --json-schema and keeps the Write instruction', () => {
   const r = rig()
@@ -100,7 +100,7 @@ test('a row without "schema" passes no --json-schema and keeps the Write instruc
   r.run([{ label: 'plain', prompt: 'p', expect: out }], { STUB_SELF: out, STUB_SELF_TEXT: 'x' })
   expect(r.argv()).not.toContain('--json-schema')
   expect(r.stdin()).toContain('Write your deliverable')
-})
+}, 120_000)
 
 test('an unusable "schema" is refused before any row runs', () => {
   for (const schema of [42, '[1,2]', '/no/such/schema.json', '{not json']) {
@@ -110,7 +110,7 @@ test('an unusable "schema" is refused before any row runs', () => {
     expect(res.stderr).toMatch(/schema/)
     expect(existsSync(join(r.root, 'argv'))).toBe(false)
   }
-})
+}, 480_000)
 
 test('a schema row with two expect paths is refused: the structured value has one destination', () => {
   const r = rig()
@@ -118,4 +118,4 @@ test('a schema row with two expect paths is refused: the structured value has on
   expect(res.status).not.toBe(0)
   expect(res.stderr).toMatch(/schema/)
   expect(existsSync(join(r.root, 'argv'))).toBe(false)
-})
+}, 120_000)

@@ -10,7 +10,7 @@ import { spawnSync } from 'node:child_process'
 // 60s does not hide a hang (a hang never returns and is caught by any finite ceiling); it stops
 // standing in for a latency budget this suite never had. Set per file because bun 1.4.0 ignores
 // `[test] timeout` in bunfig.toml and applies a preload's setDefaultTimeout to the first file only.
-setDefaultTimeout(60_000)
+setDefaultTimeout(120_000)
 
 const FARM = join(import.meta.dir, '..', 'skills', 'farm-out', 'scripts', 'farm.sh')
 

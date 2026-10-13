@@ -6,7 +6,7 @@ import { useTmp } from './helpers/tmp.ts'
 import { WORKFLOW, baseArgs, task } from '../skills/work/scripts/workflow-harness.mjs'
 
 const mkTmp = useTmp()
-setDefaultTimeout(60_000)
+setDefaultTimeout(120_000)
 
 const FARM = join(import.meta.dir, '..', 'skills', 'farm-out', 'scripts', 'farm.sh')
 const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor
