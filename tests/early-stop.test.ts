@@ -1483,3 +1483,135 @@ test('idleTicks names the previous tick, the start of the window a hand job must
   const lines = [REQUEST, ...idleTurn(9), ...idleTurn(26)]
   expect(idleTicks(lines.join('\n')).since).toBe(sAt(9))
 })
+
+// ---- a check-less hold that is not afk: work-hold.ts judges it, so this hook still stands down ----
+
+/** What `work-hold.sh --goal` writes: a check-less, run-less hold with no afk origin. */
+function goalHoldFile(dir: string, sid: string, extra: Record<string, unknown> = {}) {
+  writeFileSync(join(dir, `work-hold-${sid}.json`), JSON.stringify({
+    check: '', goal: 'ship the parser', startedAt: Math.floor(Date.now() / 1000), ceilingMinutes: 600, maxRounds: 8, rounds: 0, ...extra,
+  }))
+}
+
+/** One Stop through the real work-hold.ts, same TMPDIR and payload as the early-stop run beside it. */
+function runWorkHold(env: Record<string, string>, payload: Record<string, unknown>) {
+  const p = Bun.spawnSync(['bun', WORK_HOLD], { env, stdin: Buffer.from(JSON.stringify(payload)), stdout: 'pipe', stderr: 'pipe', timeout: 60_000 })
+  return p.stdout.toString()
+}
+
+test('silent (a): a non-afk check-less, run-less hold on idle ticks: work-hold.ts blocks on its goal, so this hook stands down', () => {
+  const { dir, transcript } = staleTicks([...idleTurn(9), ...idleTurn(26)])
+  goalHoldFile(dir, 'sh-a')
+  const env = childEnv(dir, DEAD)
+  const payload = stopPayload('sh-a', transcript, IDLE_SAY)
+  const r = runHook(env, payload)
+  expect(r.out).toBe('')
+  expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).toContain('work-hold is armed')
+  // The hold is not silent: an unreachable judge on a check-less hold blocks rather than releasing on nothing.
+  const held = runWorkHold(env, payload)
+  expect(JSON.parse(held).decision).toBe('block')
+  expect(JSON.parse(held).reason).toContain('judge unavailable')
+  const prev = process.env.TMPDIR
+  process.env.TMPDIR = dir
+  try {
+    expect(afkHold('sh-a')).toBeNull()
+  } finally {
+    process.env.TMPDIR = prev
+  }
+}, 60000)
+
+test('silent (b): the same hold with a check stands this hook down', () => {
+  const { dir, transcript } = staleTicks([...idleTurn(9), ...idleTurn(26)])
+  goalHoldFile(dir, 'sh-b', { check: 'exit 1' })
+  const r = runHook(childEnv(dir, DEAD), stopPayload('sh-b', transcript, IDLE_SAY))
+  expect(r.out).toBe('')
+  expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).toContain('work-hold is armed')
+}, 30000)
+
+test('silent (c): a non-afk check-less hold under a standing mandate, no heartbeat: work-hold.ts blocks, this hook does not double-block', () => {
+  const { dir, transcript } = mandateSession()
+  goalHoldFile(dir, 'sh-c')
+  const env = childEnv(dir, DEAD)
+  const payload = stopPayload('sh-c', transcript, 'All done, nothing is running.')
+  expect(runHook(env, payload).out).toBe('')
+  expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).not.toContain(LEG_LOG)
+  expect(JSON.parse(runWorkHold(env, payload)).decision).toBe('block')
+}, 60000)
+
+test('silent: an afk check-less, run-less hold is the one work-hold.ts never judges, and only it reads as silent', () => {
+  const dir = mkTmp('earlystop-silent-')
+  afkHoldFile(dir, 'sh-afk')
+  afkHoldFile(dir, 'sh-afk-run', { run: join(dir, 'run') })
+  const prev = process.env.TMPDIR
+  process.env.TMPDIR = dir
+  try {
+    expect(afkHold('sh-afk')?.silent).toBe(true)
+    expect(afkHold('sh-afk-run')?.silent).toBe(false)
+  } finally {
+    process.env.TMPDIR = prev
+  }
+})
+
+// ---- the no-wake leg: a run_in_background job the session launched re-invokes it when it exits ----
+
+const BG_WAIT = 'until test -s /nonexistent/report.md; do sleep 30; done; echo ready'
+
+/** A standing-mandate transcript whose session launched `BG_WAIT` with run_in_background, plus its real process. */
+function mandateBgJob(s: string, out: string) {
+  const launch = nCall(59, { command: BG_WAIT, run_in_background: true },
+    `Command running in background with ID: bnw1. Output is being written to: ${out}. You will be notified when it completes.`)
+  const session = mandateSession(launch)
+  const wrapper = `source /nonexistent/shell-snapshots/snapshot-bash-0-test.sh 2>/dev/null || true && eval '${BG_WAIT}' < /dev/null && pwd -P >| /dev/null`
+  return { ...session, job: spawnJob(['/usr/bin/bash', '-c', wrapper], out, s) }
+}
+
+test('no wake (d): a live run_in_background job this session launched is a wake: ALLOW, with no progress required', async () => {
+  const s = 'nw-d'
+  const out = join(mkTmp('earlystop-nw-'), 'bnw1.output')
+  const { dir, transcript, job } = mandateBgJob(s, out)
+  try {
+    await Bun.sleep(300)
+    const r = runHook(childEnv(dir, DEAD), stopPayload(s, transcript, 'All done, nothing is running.'))
+    expect(r.out).toBe('')
+    expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).not.toContain(LEG_LOG)
+  } finally {
+    job.stop()
+  }
+}, 30000)
+
+test('no wake (e): the same job, exited, is no wake: it BLOCKS', async () => {
+  const s = 'nw-e'
+  const out = join(mkTmp('earlystop-nw-'), 'bnw1.output')
+  const { dir, transcript, job } = mandateBgJob(s, out)
+  job.stop()
+  await job.exited
+  const r = runHook(childEnv(dir, DEAD), stopPayload(s, transcript, 'All done, nothing is running.'))
+  expect(r.out).toContain('"decision":"block"')
+  expect(JSON.parse(r.out).reason).toBe(NO_WAKE_REASON)
+  expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).toContain(LEG_LOG)
+}, 30000)
+
+test('no wake (f): a live setsid job notifies nobody when it exits: it BLOCKS', async () => {
+  const s = 'nw-f'
+  const pre = mkTmp('earlystop-nw-')
+  const script = join(pre, 'run_batches.sh')
+  const log = join(pre, 'driver.out')
+  writeFileSync(script, LOOP + '\n')
+  const { dir, transcript } = mandateSession(nCall(59, { command: `setsid nohup bash ${script} > ${log} 2>&1 < /dev/null &` }, ''))
+  const job = spawnJob(['bash', script], log, s)
+  try {
+    await Bun.sleep(600)
+    const r = runHook(childEnv(dir, DEAD), stopPayload(s, transcript, 'All done, nothing is running.'))
+    expect(r.out).toContain('"decision":"block"')
+    expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).toContain(LEG_LOG)
+  } finally {
+    job.stop()
+  }
+}, 30000)
+
+test('noWakeUnderMandate: a live background job defeats it; the probe is asked last', () => {
+  const ctx = judgeContext(human('u1', MANDATE, '2026-10-07T01:00:00.000Z'))
+  expect(noWakeUnderMandate(ctx, [], () => [])).toBe(true)
+  expect(noWakeUnderMandate(ctx, [], () => ['bg: sleep 60'])).toBe(false)
+  expect(noWakeUnderMandate({ ...ctx, heartbeatAlive: true }, [], () => { throw new Error('probed') })).toBe(false)
+})

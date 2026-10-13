@@ -96,6 +96,15 @@ export function afkMandate(h: { origin?: string; run?: string }): boolean {
   return (h.origin === 'afk' || h.origin === 'overnight') && !h.run
 }
 
+/**
+ * A hold this hook never judges: an afk mandate with no check. (a0) allows every Stop under it before
+ * its ceiling, so early-stop.ts speaks for it. Every other check-less hold carries a goal (work-hold.sh
+ * refuses one without) and is judged on it.
+ */
+export function unjudged(h: { origin?: string; run?: string; check?: string }): boolean {
+  return afkMandate(h) && !h.check?.trim()
+}
+
 const mandatesLast = (hs: State[]): State[] => [...hs.filter(h => !afkMandate(h)), ...hs.filter(afkMandate)]
 
 /** Swap queued hold `i` to the top. The container fields (compact, queued) stay with the top. */
@@ -1689,9 +1698,9 @@ function main(): void {
   // With no check either, the goal is the afk mandate's prose, which no judge can decide (hidden-figures
   // 2026-10-08: 42 blocks at 1-53%, each one wasted turn). The judge is never asked, no round counts,
   // and the ceiling clock is the only release; early-stop.ts speaks for such a hold instead.
-  if ((s.origin === 'afk' || s.origin === 'overnight') && !s.run) {
+  if (afkMandate(s)) {
     const live = liveOwnedRuns(session)
-    if ((live.length && watcherActive(session)) || checkless) {
+    if ((live.length && watcherActive(session)) || unjudged(s)) {
       const c = ceilingReached({ ...s, rounds: 0 }, now)
       if (c)
         release(
