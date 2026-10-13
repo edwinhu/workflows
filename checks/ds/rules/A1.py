@@ -1,5 +1,6 @@
 """A1: a specification curve is never the only robustness check. Calibrated 2026-10-02, two runs: vio2 0.93-0.95, sat2 <=0.12, real run_core_estimands <=0.07."""
 import ast
+import os
 import re
 
 from _common import render_json
@@ -80,12 +81,50 @@ def _iterables(src, loop):
     return [clip(ast.get_source_segment(src, g.iter) or '') for g in gens]
 
 
-def _sibling_checks(siblings):
-    """Robustness check sites in the untouched files of the touched files' package tree, the files read and
-    their lines: the check a module keeps in verify.py, its parent package or a sibling package stands beside
-    the curve its build.py runs. Only .py files, nearest first, stopping after the first file with a check:
-    one settles the question, and the rest would only grow the judge's state."""
-    out, read, n_lines = [], [], 0
+def _module(path):
+    """The dotted components of a .py file's real path; an __init__.py names its package."""
+    parts = os.path.splitext(os.path.realpath(path))[0].split(os.sep)[1:]
+    return tuple(parts[:-1] if parts[-1] == '__init__' else parts)
+
+
+def _imports(tree, path):
+    """[(components, absolute)] of every module or name the file's imports could name. A relative import is
+    resolved against the file's own package to full real-path components; an absolute one is a suffix."""
+    mod = _module(path)
+    pkg = mod if os.path.basename(path) == '__init__.py' else mod[:-1]
+    out = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            out += [(tuple(a.name.split('.')), True) for a in node.names]
+        elif isinstance(node, ast.ImportFrom):
+            base = pkg[:max(0, len(pkg) - node.level + 1)] if node.level else ()
+            target = base + tuple((node.module or '').split('.')) if node.module else base
+            out.append((target, not node.level))
+            out += [(target + (a.name,), not node.level) for a in node.names if a.name != '*']
+    return out
+
+
+def _names(imports, module):
+    return any(c and (module[-len(c):] == c if absolute else module == c) for c, absolute in imports)
+
+
+def _connected(path, tree, touched):
+    """An import joins the file to a touched one: it imports a touched module (or a name from it), or a
+    touched file imports it. Static: the trees are parsed, never imported."""
+    mine = _imports(tree, path)
+    return any(_names(mine, _module(t)) or _names(_imports(t_tree, t), _module(path)) for t, t_tree in touched)
+
+
+def _sibling_checks(siblings, touched):
+    """Robustness check sites in the untouched files of the touched files' package tree, the files read, their
+    lines and the sibling-package files dropped: the check a module keeps in verify.py or its parent package
+    stands beside the curve its build.py runs; one in a sibling package does only when an import connects it
+    to a touched file, since a check in an unrelated subpackage is about some other estimate. Only .py files,
+    nearest first, stopping after the first file whose check counts: one settles the question, and the rest
+    would only grow the judge's state."""
+    own = {os.path.dirname(os.path.abspath(t)) for t, _ in touched}
+    near = own | {os.path.dirname(d) for d in own}
+    out, read, n_lines, dropped = [], [], 0, 0
     for rel, path in py_files(siblings):
         for _, lines in sources([(rel, path)]):
             tree = parse(lines)
@@ -95,21 +134,31 @@ def _sibling_checks(siblings):
             n_lines += len(lines)
             code, _ = split_comments(lines)
             docs = _docstring_lines(tree)
+            found = []
             for n, t in enumerate(code, 1):
                 kinds = [k for k, rx in CHECKS if n not in docs and t.strip() and rx.search(t)]
                 if kinds:
-                    out.append({'file': rel, 'line': n, 'kinds': kinds, 'text': clip(lines[n - 1]), 'sibling': True})
+                    found.append({'file': rel, 'line': n, 'kinds': kinds, 'text': clip(lines[n - 1]),
+                                  'sibling': True})
+            # imports are parsed only for a sibling-package file that holds a check
+            if found and os.path.dirname(os.path.abspath(path)) not in near \
+                    and not _connected(path, tree, touched):
+                dropped += 1
+                continue
+            out += found
         if out:
             break
-    return out, read, n_lines
+    return out, read, n_lines, dropped
 
 
 def evidence(files, plan_lines=None, siblings=None):
-    estimations, curves, checks, robustness_loops, n_lines = [], [], [], [], 0
+    estimations, curves, checks, robustness_loops, n_lines, touched = [], [], [], [], 0, []
+    paths = dict(files)
     for rel, lines in sources(files):
         tree = parse(lines) if is_py(rel) else None
         if tree is None:
             continue
+        touched.append((paths[rel], tree))
         src = '\n'.join(lines)
         n_lines += len(lines)
         code, _ = split_comments(lines)
@@ -141,7 +190,8 @@ def evidence(files, plan_lines=None, siblings=None):
                            'text': clip(lines[node.lineno - 1]), 'grid': looped[:6],
                            'why': 'estimator called inside a loop over specification choices'})
     # the package tree can only decide a curve the touched files leave unchecked; read it for nothing else
-    sib_checks, sib_read, n_sib_lines = _sibling_checks(siblings or []) if curves and not checks else ([], [], 0)
+    sib_checks, sib_read, n_sib_lines, n_dropped = (_sibling_checks(siblings or [], touched)
+                                                    if curves and not checks else ([], [], 0, 0))
     checks += sib_checks
     for c in curves:
         c['robustness_check_in_files'] = bool(checks)
@@ -172,4 +222,11 @@ def evidence(files, plan_lines=None, siblings=None):
                                     'curve; specification curve sites come from the touched files only')
         inventory['sibling_files_read'] = sib_read[:MAX_ITEMS]
         inventory['n_sibling_lines_searched'] = n_sib_lines
+    # only when one was dropped, so a state with no unconnected sibling package is what it was before
+    if n_dropped:
+        inventory['sites_note'] += ('. A sibling-package file counts only when it imports a touched module or a '
+                                    'touched file imports it; n_unconnected_sibling_package_files_dropped files '
+                                    'held a check-shaped line with no such import, so their lines are not '
+                                    'robustness check sites here')
+        inventory['n_unconnected_sibling_package_files_dropped'] = n_dropped
     return render_json('A1', py_files(files), inventory, [])
