@@ -171,7 +171,9 @@ function runHookTree(opts: { rowEnv?: boolean, farmChild?: boolean, blocks?: num
 sleep 59 </dev/null >/dev/null 2>&1 & echo $! > "${root}/mcp.pid"
 /usr/bin/bash -c "source ${snap} 2>/dev/null || true && eval 'sleep 58 && echo '\\"'\\"'done'\\"'\\"'' < /dev/null" >/dev/null 2>&1 & echo $! > "${root}/job.pid"
 ( setsid sleep 57 </dev/null >/dev/null 2>&1 & echo $! > "${root}/esc.pid" )
-sleep 0.3
+# Wait until each job has exec'd its command (a fixed sleep lost the race under load), at most 10 s.
+up() { local p; p=$(cat "${root}/$1.pid" 2>/dev/null) && [ -n "$p" ] && case "$(tr '\\0' ' ' < /proc/$p/cmdline 2>/dev/null)" in $2) return 0;; esac; return 1; }
+for _ in $(seq 1 100); do up mcp 'sleep 59 ' && up job '*sleep 58*' && up esc 'sleep 57 ' && break; sleep 0.1; done
 for i in $(seq 1 ${blocks}); do
   sh -c 'python3 "${BGJOBS}" hook' < "${payload}" > "${root}/out.$i.json" 2> "${root}/err.$i.txt"
 done
