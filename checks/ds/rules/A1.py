@@ -2,6 +2,7 @@
 import ast
 import os
 import re
+from collections import Counter
 
 from _common import render_json
 from _ds import MAX_ITEMS, clip, is_py, parse, py_files, sources, split_comments
@@ -38,6 +39,8 @@ CHECKS = [
     ('instrumental_variable', re.compile(r'\bIV2SLS\b|\bIVGMM\b|\bIVLIML\b|instrument|first.?stage')),
     ('regression_discontinuity', re.compile(r'rdrobust|\brdd\b|discontinuity|bandwidth', re.IGNORECASE)),
 ]
+# modules one sibling-package file's imports may resolve to and be read for a hop or a re-export
+MAX_HOP_FILES = 20
 
 
 def _name(func):
@@ -104,15 +107,82 @@ def _imports(tree, path):
     return out
 
 
-def _names(imports, module):
-    return any(c and (module[-len(c):] == c if absolute else module == c) for c, absolute in imports)
+def _stem(path):
+    """The module name a .py file answers to: its stem, or its package's name for an __init__.py."""
+    base = os.path.basename(path)
+    return os.path.basename(os.path.dirname(path)) if base == '__init__.py' else base[:-3]
 
 
-def _connected(path, tree, touched):
-    """An import joins the file to a touched one: it imports a touched module (or a name from it), or a
-    touched file imports it. Static: the trees are parsed, never imported."""
+def _root(siblings):
+    """The project root siblings() labelled against: each label is its path relative to it; None without one."""
+    for rel, path in siblings:
+        full = os.path.abspath(path)
+        if os.sep in rel and full.endswith(os.sep + rel):
+            return os.path.realpath(full[:-len(rel) - 1])
+    return None
+
+
+def _resolve(c, absolute, path, root):
+    """The real .py file inside root that an import candidate names -- a module, or a package's __init__.py --
+    or None. An absolute candidate is rooted at the importer's own directory, then each ancestor up to root,
+    nearest first; a relative one is already full real-path components."""
+    if not c or not root:
+        return None
+    heads = [os.sep + os.path.join(*c)]
+    if absolute:
+        heads, d = [], os.path.dirname(os.path.realpath(path))
+        while os.path.commonpath([d, root]) == root:
+            heads.append(os.path.join(d, *c))
+            if d == root:
+                break
+            d = os.path.dirname(d)
+    for h in heads:
+        for f in (h + '.py', os.path.join(h, '__init__.py')):
+            real = os.path.realpath(f)
+            if os.path.isfile(real) and os.path.commonpath([real, root]) == root:
+                return real
+    return None
+
+
+def _hits(imports, path, target, ctx):
+    """path's imports name the target file: a relative one exactly, an absolute one as a suffix of its real-path
+    components. A one-component suffix (`import curve`) names any curve.py, so it counts only when no other
+    file of that name is in the package tree read, or when it resolves from path to the target itself."""
+    module = _module(target)
+    for c, absolute in imports:
+        if not c or (module[-len(c):] != c if absolute else module != c):
+            continue
+        if not absolute or len(c) > 1 or ctx['names'][c[0]] < 2 \
+                or _resolve(c, True, path, ctx['root']) == os.path.realpath(target):
+            return True
+    return False
+
+
+def _hop_imports(f, ctx):
+    """The imports of a module one hop away, parsed once per evidence call."""
+    if f not in ctx['cache']:
+        tree = next((parse(lines) for _, lines in sources([(f, f)])), None)
+        ctx['cache'][f] = _imports(tree, f) if tree is not None else []
+    return ctx['cache'][f]
+
+
+def _connected(path, tree, touched, ctx):
+    """An import joins the file to a touched one: it imports a touched module (or a name from it), a touched
+    file imports it, or -- exactly one hop -- a module it imports inside the root imports a touched module. A
+    package's __init__.py is such a module, which is how a re-export (`from .curve import build`) connects.
+    Never a second hop, and at most MAX_HOP_FILES modules per file. Static: trees are parsed, never imported."""
     mine = _imports(tree, path)
-    return any(_names(mine, _module(t)) or _names(_imports(t_tree, t), _module(path)) for t, t_tree in touched)
+    if any(_hits(mine, path, t, ctx) or _hits(_imports(t_tree, t), t, path, ctx) for t, t_tree in touched):
+        return True
+    skip = {os.path.realpath(path)} | {os.path.realpath(t) for t, _ in touched}
+    hops = []
+    for c, absolute in mine:
+        f = _resolve(c, absolute, path, ctx['root'])
+        if f and f not in skip and f not in hops:
+            hops.append(f)
+            if len(hops) == MAX_HOP_FILES:
+                break
+    return any(_hits(_hop_imports(f, ctx), f, t, ctx) for f in hops for t, _ in touched)
 
 
 def _sibling_checks(siblings, touched):
@@ -124,6 +194,8 @@ def _sibling_checks(siblings, touched):
     would only grow the judge's state."""
     own = {os.path.dirname(os.path.abspath(t)) for t, _ in touched}
     near = own | {os.path.dirname(d) for d in own}
+    tree_files = {os.path.realpath(p) for _, p in py_files(siblings)} | {os.path.realpath(t) for t, _ in touched}
+    ctx = {'root': _root(siblings), 'cache': {}, 'names': Counter(_stem(f) for f in tree_files)}
     out, read, n_lines, dropped = [], [], 0, 0
     for rel, path in py_files(siblings):
         for _, lines in sources([(rel, path)]):
@@ -142,7 +214,7 @@ def _sibling_checks(siblings, touched):
                                   'sibling': True})
             # imports are parsed only for a sibling-package file that holds a check
             if found and os.path.dirname(os.path.abspath(path)) not in near \
-                    and not _connected(path, tree, touched):
+                    and not _connected(path, tree, touched, ctx):
                 dropped += 1
                 continue
             out += found

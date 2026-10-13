@@ -713,6 +713,80 @@ test('A1: a relative import of the touched module connects a sibling package', a
   expect(state.n_unconnected_sibling_package_files_dropped).toBe(1);
 });
 
+// the connection reaches through a package's __init__ re-export and exactly one module hop, never two
+test('A1: a sibling package importing a name its __init__ re-exports from the touched module satisfies it', async () => {
+  const { root } = a1Project({
+    'src/models/curve.py': BUILD,
+    'src/models/__init__.py': 'from .curve import build\n',
+    'src/robustness/loo.py': 'from src.models import build\n' + VERIFY,
+  });
+  const { res, a1, state } = await a1Run([join(root, 'src/models/curve.py')]);
+  expect(a1.verdict).toBe('MET');
+  expect(res.exitCode).toBe(0);
+  expect(state.robustness_check_sites.map((c: any) => c.file)).toEqual(['src/robustness/loo.py']);
+});
+
+test('A1: a sibling package importing a module that imports the touched module satisfies it (one hop)', async () => {
+  const { root } = a1Project({
+    'src/models/curve.py': BUILD,
+    'src/pipeline/run.py': 'from src.models.curve import build\n',
+    'src/robustness/loo.py': 'from src.pipeline import run\n' + VERIFY,
+  });
+  const { res, a1, state } = await a1Run([join(root, 'src/models/curve.py')]);
+  expect(a1.verdict).toBe('MET');
+  expect(res.exitCode).toBe(0);
+  expect(state.robustness_check_sites.map((c: any) => c.file)).toEqual(['src/robustness/loo.py']);
+});
+
+test('A1: two module hops to the touched module do not connect a sibling package', async () => {
+  const { root } = a1Project({
+    'src/models/curve.py': BUILD,
+    'src/stages/fit.py': 'from src.models.curve import build\n',
+    'src/pipeline/run.py': 'from src.stages import fit\n',
+    'src/robustness/loo.py': 'from src.pipeline import run\n' + VERIFY,
+  });
+  const { res, a1, state } = await a1Run([join(root, 'src/models/curve.py')]);
+  expect(a1.verdict).toBe('VIOLATED');
+  expect(res.exitCode).toBe(2);
+  expect(state.robustness_check_sites).toEqual([]);
+  expect(state.n_unconnected_sibling_package_files_dropped).toBe(1);
+});
+
+test('A1: a sibling package whose one hop reaches some other module still does not count', async () => {
+  const { root } = a1Project({
+    'src/models/curve.py': BUILD,
+    'src/models/__init__.py': 'from .pooled import pooled\n',
+    'src/models/pooled.py': 'def pooled(df):\n    return df\n',
+    'src/io/load.py': 'import src.models.pooled\n',
+    'src/rpt/build.py': 'from src.io import load\nfrom src.models import pooled\n' + VERIFY,
+  });
+  const { res, a1, state } = await a1Run([join(root, 'src/models/curve.py')]);
+  expect(a1.verdict).toBe('VIOLATED');
+  expect(res.exitCode).toBe(2);
+  expect(state.robustness_check_sites).toEqual([]);
+  expect(state.n_unconnected_sibling_package_files_dropped).toBe(1);
+});
+
+// a one-component absolute import names any file of that name: it counts only when unambiguous or resolvable
+test('A1: a one-component import of a module name only the touched file carries connects', async () => {
+  const { root } = a1Project({ 'src/models/curve.py': BUILD, 'src/rpt/build.py': 'import curve\n' + VERIFY });
+  const { a1, state } = await a1Run([join(root, 'src/models/curve.py')]);
+  expect(a1.verdict).toBe('MET');
+  expect(state.robustness_check_sites.map((c: any) => c.file)).toEqual(['src/rpt/build.py']);
+});
+
+test('A1: a one-component import that resolves to another file of that name does not connect', async () => {
+  const { root } = a1Project({
+    'src/models/curve.py': BUILD,
+    'src/rpt/curve.py': 'def build(df):\n    return df\n',
+    'src/rpt/build.py': 'import curve\n' + VERIFY,
+  });
+  const { res, a1, state } = await a1Run([join(root, 'src/models/curve.py')]);
+  expect(a1.verdict).toBe('VIOLATED');
+  expect(res.exitCode).toBe(2);
+  expect(state.n_unconnected_sibling_package_files_dropped).toBe(1);
+});
+
 test('A1: a check above the project root does not count', async () => {
   // root is outer/proj; outer/verify.py is its parent's file and outer/robustness/ its sibling package
   const { root } = a1Project({ 'proj/models/curve.py': BUILD, 'verify.py': VERIFY, 'robustness/loo.py': VERIFY }, 'proj');
