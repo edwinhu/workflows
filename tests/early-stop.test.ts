@@ -1,10 +1,11 @@
 import { expect, test } from 'bun:test'
-import { chmodSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { spawn } from 'node:child_process'
+import { chmodSync, closeSync, mkdirSync, mkdtempSync, openSync, readFileSync, utimesSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
 import { useTmp } from './helpers/tmp.ts'
-import { DEFAULT_THRESHOLD, INSTRUCTIONS, idleTicks, judgeContext, mandateCeilingMs, NO_WAKE_REASON, STALE_TICKS, afkHold, afkHoldGoal, judgeState, latestUserTurn, noWakeUnderMandate, typedByHuman } from '../hooks/early-stop.ts'
+import { DEFAULT_THRESHOLD, INSTRUCTIONS, handLaunches, idleTicks, judgeContext, mandateCeilingMs, NO_WAKE_REASON, STALE_TICKS, afkHold, afkHoldGoal, judgeState, latestUserTurn, noWakeUnderMandate, typedByHuman } from '../hooks/early-stop.ts'
 
 const mkTmp = useTmp()
 
@@ -1286,3 +1287,199 @@ test('a silent afk hold: the stale leg speaks for it, and sends questions to the
   expect(r.out).toContain('morning report')
   expect(r.out).not.toContain('ask the user with AskUserQuestion')
 }, 30000)
+
+// ---- hand-launched jobs: a setsid/nohup or run_in_background job the session started itself (e83fb488, 2026-10-10/11) ----
+
+/** Minutes before now: these tests judge file mtimes against tick timestamps, so the ticks must be recent. */
+const nAt = (minAgo: number) => new Date(Date.now() - minAgo * 60_000).toISOString()
+const nTick = (minAgo: number) =>
+  entry({ type: 'user', uuid: `t${sn++}`, timestamp: nAt(minAgo), isMeta: true, turnOrigin: 'scheduled', promptSource: 'system',
+    scheduledTaskId: '7c1e0d2a', message: { role: 'user', content: 'and? (reverse date-gap lookup)' } })
+const nCall = (minAgo: number, input: Record<string, unknown>, result = 'ok'): string[] => {
+  const id = `toolu_${sn++}`
+  return [
+    entry({ type: 'assistant', uuid: `a${sn++}`, timestamp: nAt(minAgo), message: { role: 'assistant', content: [{ type: 'tool_use', id, name: 'Bash', input }] } }),
+    entry({ type: 'user', uuid: `r${sn++}`, timestamp: nAt(minAgo), toolUseResult: {},
+      message: { role: 'user', content: [{ type: 'tool_result', tool_use_id: id, content: result, is_error: false }] } }),
+  ]
+}
+const PROGRESS_SAY = 'No change: the lookup is at 501 of 1,028.'
+const nIdle = (minAgo: number): string[] => [
+  nTick(minAgo),
+  ...nCall(minAgo - 0.1, { command: 'tail -1 lookup.log; date' }),
+  entry({ type: 'assistant', uuid: `a${sn++}`, timestamp: nAt(minAgo - 0.2), message: { role: 'assistant', content: [{ type: 'text', text: PROGRESS_SAY }] } }),
+]
+
+/** A transcript: the typed request, the launch call in that turn, then two idle heartbeat ticks. */
+function handSession(launch: string[]) {
+  const dir = mkTmp('earlystop-hand-')
+  const path = join(dir, 'transcript.jsonl')
+  writeFileSync(path, [human('h0', 'run the reverse date-gap lookup overnight', nAt(60)), ...launch, ...nIdle(25), ...nIdle(2)].join('\n') + '\n')
+  return { dir, transcript: path }
+}
+
+/** A real detached job (its own session, like setsid), carrying `session` the way every Bash tool process does. */
+function spawnJob(argv: string[], out: string, session: string) {
+  const fd = openSync(out, 'a')
+  const p = spawn(argv[0], argv.slice(1), { detached: true, stdio: ['ignore', fd, fd], env: { ...HERMETIC_ENV, CLAUDE_CODE_SESSION_ID: session } })
+  closeSync(fd)
+  const exited = new Promise<void>((done) => p.once('exit', () => done()))
+  p.unref()
+  return { pid: p.pid!, exited, stop: () => { try { process.kill(-p.pid!, 'SIGKILL') } catch {} } }
+}
+const old = (path: string) => { const t = new Date(Date.now() - 40 * 60_000); utimesSync(path, t, t) }
+const LOOP = 'while :; do echo row; sleep 0.2; done'
+
+test('hand job (a): a setsid job this session launched, alive and its log growing, exempts the stale leg', async () => {
+  const s = 'hj-a'
+  const pre = mkTmp('earlystop-hand-job-')
+  const script = join(pre, 'run_batches.sh')
+  const log = join(pre, 'driver.out')
+  writeFileSync(script, LOOP + '\n')
+  const { dir, transcript } = handSession(nCall(59, { command: `setsid nohup bash ${script} > ${log} 2>&1 < /dev/null &` }, ''))
+  const job = spawnJob(['bash', script], log, s)
+  try {
+    await Bun.sleep(600)
+    const r = runHook(childEnv(dir, DEAD), stopPayload(s, transcript, PROGRESS_SAY))
+    expect(r.out).toBe('')
+    expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).not.toContain(STALE_LOG)
+  } finally {
+    job.stop()
+  }
+}, 30000)
+
+test('hand job (a): a run_in_background job, alive and its task output growing, exempts the stale leg', async () => {
+  const s = 'hj-a-bg'
+  const pre = mkTmp('earlystop-hand-job-')
+  const out = join(pre, 'bzz9.output')
+  const launch = nCall(59, { command: LOOP, description: 'lookup', run_in_background: true },
+    `Command running in background with ID: bzz9. Output is being written to: ${out}. You will be notified when it completes. To check interim output, use Read on that file path.`)
+  const { dir, transcript } = handSession(launch)
+  // The harness's own wrapper: a snapshot shell that evals the command as written.
+  const wrapper = `source /nonexistent/shell-snapshots/snapshot-bash-0-test.sh 2>/dev/null || true && eval '${LOOP}' < /dev/null && pwd -P >| /dev/null`
+  const job = spawnJob(['/usr/bin/bash', '-c', wrapper], out, s)
+  try {
+    await Bun.sleep(600)
+    const r = runHook(childEnv(dir, DEAD), stopPayload(s, transcript, PROGRESS_SAY))
+    expect(r.out).toBe('')
+    expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).not.toContain(STALE_LOG)
+  } finally {
+    job.stop()
+  }
+}, 30000)
+
+test('hand job (a): the e83fb488 shape — redirect target stays empty, the job writes its own log — still exempts', async () => {
+  const s = 'hj-a-fd'
+  const pre = mkTmp('earlystop-hand-job-')
+  const script = join(pre, 'run_batches.sh')
+  const driver = join(pre, 'driver2.out')
+  writeFileSync(script, `( ${LOOP} ) >> ${join(pre, 'lookup.log')} 2>&1\n`)
+  const { dir, transcript } = handSession(nCall(59, { command: `D=${pre}; setsid nohup bash $D/run_batches.sh > $D/driver2.out 2>&1 < /dev/null & echo $! > $D/driver.pid` }, ''))
+  const job = spawnJob(['bash', script], driver, s)
+  try {
+    await Bun.sleep(600)
+    old(driver)
+    const r = runHook(childEnv(dir, DEAD), stopPayload(s, transcript, PROGRESS_SAY))
+    expect(r.out).toBe('')
+    expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).not.toContain(STALE_LOG)
+  } finally {
+    job.stop()
+  }
+}, 30000)
+
+test('hand job (b): alive but its log unchanged since the previous tick is a hang: it BLOCKS', async () => {
+  const s = 'hj-b'
+  const pre = mkTmp('earlystop-hand-job-')
+  const script = join(pre, 'run_batches.sh')
+  const log = join(pre, 'driver.out')
+  writeFileSync(script, 'sleep 60\n')
+  const { dir, transcript } = handSession(nCall(59, { command: `setsid nohup bash ${script} > ${log} 2>&1 < /dev/null &` }, ''))
+  const job = spawnJob(['bash', script], log, s)
+  try {
+    await Bun.sleep(300)
+    old(log)
+    const r = runHook(childEnv(dir, DEAD), stopPayload(s, transcript, PROGRESS_SAY))
+    expect(r.out).toContain('"decision":"block"')
+    expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).toContain(STALE_LOG)
+  } finally {
+    job.stop()
+  }
+}, 30000)
+
+test('hand job (b): a job launched since the previous tick whose output is still EMPTY has not progressed: it BLOCKS', async () => {
+  // Live e83fb488 2026-10-12 21:23: the harness creates a background task's output file at launch, so a
+  // silent `until test -s …; do sleep 30; done` waiter has a fresh mtime and 0 bytes.
+  const s = 'hj-b-empty'
+  const pre = mkTmp('earlystop-hand-job-')
+  const wait = 'until test -s /nonexistent/report.md; do sleep 30; done; echo ready'
+  const out = join(pre, 'b8copr096.output')
+  const { dir, transcript } = handSession(nCall(59, { command: wait, run_in_background: true },
+    `Command running in background with ID: b8copr096. Output is being written to: ${out}. You will be notified when it completes.`))
+  const wrapper = `source /nonexistent/shell-snapshots/snapshot-bash-0-test.sh 2>/dev/null || true && eval '${wait}' < /dev/null && pwd -P >| /dev/null`
+  const job = spawnJob(['/usr/bin/bash', '-c', wrapper], out, s)
+  try {
+    await Bun.sleep(300)
+    const r = runHook(childEnv(dir, DEAD), stopPayload(s, transcript, PROGRESS_SAY))
+    expect(r.out).toContain('"decision":"block"')
+    expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).toContain(STALE_LOG)
+  } finally {
+    job.stop()
+  }
+}, 30000)
+
+test('hand job (c): the job exited — a fresh log is not a live job: it BLOCKS', async () => {
+  const s = 'hj-c'
+  const pre = mkTmp('earlystop-hand-job-')
+  const script = join(pre, 'run_batches.sh')
+  const log = join(pre, 'driver.out')
+  writeFileSync(script, 'echo COMPLETE\n')
+  const { dir, transcript } = handSession(nCall(59, { command: `setsid nohup bash ${script} > ${log} 2>&1 < /dev/null &` }, ''))
+  const job = spawnJob(['bash', script], log, s)
+  await job.exited
+  const r = runHook(childEnv(dir, DEAD), stopPayload(s, transcript, PROGRESS_SAY))
+  expect(r.out).toContain('"decision":"block"')
+  expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).toContain(STALE_LOG)
+}, 30000)
+
+test("hand job: the same command running under ANOTHER session is not this session's job: it BLOCKS", async () => {
+  const pre = mkTmp('earlystop-hand-job-')
+  const script = join(pre, 'run_batches.sh')
+  const log = join(pre, 'driver.out')
+  writeFileSync(script, LOOP + '\n')
+  const { dir, transcript } = handSession(nCall(59, { command: `setsid nohup bash ${script} > ${log} 2>&1 < /dev/null &` }, ''))
+  const job = spawnJob(['bash', script], log, 'some-other-session')
+  try {
+    await Bun.sleep(600)
+    const r = runHook(childEnv(dir, DEAD), stopPayload('hj-own', transcript, PROGRESS_SAY))
+    expect(r.out).toContain('"decision":"block"')
+  } finally {
+    job.stop()
+  }
+}, 30000)
+
+test('handLaunches: setsid/nohup argv and redirect targets, with assignments and cd resolved; run_in_background with its output file', () => {
+  const bgOut = '/tmp/x/tasks/bq1.output'
+  const done = nCall(55, { command: 'sleep 8', run_in_background: true }, 'Command running in background with ID: bq2. Output is being written to: /tmp/x/tasks/bq2.output. You will be notified.')
+  const doneId = JSON.parse(done[0]).message.content[0].id as string
+  const jsonl = [
+    human('h0', 'go', nAt(60)),
+    ...nCall(59, { command: 'cd /data/nv; R=$PWD/.work/r1; FARM_TASK_BUDGET=1 setsid nohup bash /s/work-round.sh $R/args.json "two words" > $R/run.log 2>&1 < /dev/null & echo launched' }),
+    ...nCall(58, { command: 'nohup python3 -u job.py >> logs/job.log 2>&1 &' }),
+    ...nCall(57, { command: 'setsid nohup bash $(mktemp) > out 2>&1 &' }),
+    ...nCall(56, { command: 'sleep 9; echo hi', run_in_background: true }, `Command running in background with ID: bq1. Output is being written to: ${bgOut}. You will be notified when it completes.`),
+    ...done,
+    entry({ type: 'user', uuid: 'n1', timestamp: nAt(54), origin: { kind: 'task-notification' },
+      message: { role: 'user', content: `<task-notification>\n<task-id>bq2</task-id>\n<tool-use-id>${doneId}</tool-use-id>\n<status>completed</status>\n</task-notification>` } }),
+  ].join('\n')
+  const got = handLaunches(jsonl, '/home/u/proj')
+  expect(got).toEqual([
+    { kind: 'setsid', argv: ['bash', '/s/work-round.sh', '/data/nv/.work/r1/args.json', 'two words'], outs: ['/data/nv/.work/r1/run.log'] },
+    { kind: 'setsid', argv: ['python3', '-u', 'job.py'], outs: ['/home/u/proj/logs/job.log'] },
+    { kind: 'bg', cmd: 'sleep 9; echo hi', outs: [bgOut] },
+  ])
+})
+
+test('idleTicks names the previous tick, the start of the window a hand job must show progress in', () => {
+  const lines = [REQUEST, ...idleTurn(9), ...idleTurn(26)]
+  expect(idleTicks(lines.join('\n')).since).toBe(sAt(9))
+})
