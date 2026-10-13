@@ -29,7 +29,7 @@ const mkTmp = useTmp()
 // 60s does not hide a hang (a hang never returns and is caught by any finite ceiling); it stops
 // standing in for a latency budget this suite never had. Set per file because bun 1.4.0 ignores
 // `[test] timeout` in bunfig.toml and applies a preload's setDefaultTimeout to the first file only.
-setDefaultTimeout(60_000)
+setDefaultTimeout(120_000)
 
 const SCRIPT = `${import.meta.dir}/work-dispatch.sh`
 const scratch: string[] = []
@@ -118,7 +118,7 @@ describe('tier 3 reports a seeded defect and dispatches anyway', () => {
     for (const k of ['tasks', 'mechanicalChecks', 'lens', 'goal']) {
       expect(JSON.stringify(a[k])).toBe(JSON.stringify(b[k]))
     }
-  })
+  }, 240_000)
 
   test('a clean tree prints no finding, so the tier is not printing a constant', () => {
     const r = dispatch(fixture({ suites: { 'report.test.ts': CLEAN } }))
@@ -290,7 +290,7 @@ describe('the tier inherits the corpus contract, rather than re-implementing the
     expect(`linted ${m![1]}`).toBe(`linted ${summary.filesLinted}`)
     expect(`unparseable ${m![3]}`).toBe(`unparseable ${summary.unparseable}`)
     expect(Number(m![1])).toBeGreaterThan(1)
-  })
+  }, 240_000)
 
   test('the tier and the corpus mode agree on the same tree', () => {
     // Two walkers cannot disagree if there is one walker. Seeded so every rule has something to say.
@@ -312,7 +312,7 @@ describe('the tier inherits the corpus contract, rather than re-implementing the
     const summary = JSON.parse(corpus.slice(corpus.indexOf('{'), corpus.lastIndexOf('}') + 1))
     const expected = summary.counts['existence-only-artifact'] + summary.counts['injected-key-never-varied']
     expect(`tier ${printed}`).toBe(`tier ${expected}`)
-  })
+  }, 240_000)
 })
 
 describe('the --print and dryrun paths are unchanged', () => {

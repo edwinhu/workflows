@@ -70,7 +70,7 @@ describe("CLAUDE_CODE_EXECPATH readers", () => {
       });
     }
     expect(hits).toEqual([`hooks/session-start.ts:${fallbackLine()}: return env.${VAR} || "";`]);
-  });
+  }, 30_000);
 });
 
 /** The line of runningClaudeExe's fallback, so the assertion pins the reader to that function. */

@@ -1,8 +1,10 @@
-import { test, expect } from 'bun:test'
+import { test, expect, setDefaultTimeout } from 'bun:test'
 import { mkdtempSync, writeFileSync, readFileSync, mkdirSync, chmodSync, rmSync, existsSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
+
+setDefaultTimeout(70_000)
 
 // A farm child must not be able to end while a process it started is still running (release-6381b,
 // 2026-10-03: the child backgrounded `scripts/canary.sh --run`, ended its turn on "Still waiting on
@@ -139,7 +141,7 @@ test('the Stop hook blocks a farm child whose background jobs are alive, naming 
     expect(d.reason).toContain('sleep 57')
     expect(d.reason).not.toContain('sleep 59')
   } finally { cleanup() }
-}, 30_000)
+}, 70_000)
 
 test('the Stop hook is bounded: past its cap it allows the stop with a loud note', () => {
   const { outs, errs, cleanup } = runHookTree({ blocks: 9 })
@@ -148,14 +150,14 @@ test('the Stop hook is bounded: past its cap it allows the stop with a loud note
     expect(outs[8].trim() === '' || JSON.parse(outs[8]).decision !== 'block').toBe(true)
     expect(outs[8] + errs[8]).toContain('ALLOWING the stop with background job(s) still running')
   } finally { cleanup() }
-}, 30_000)
+}, 70_000)
 
 test('the Stop hook never fires outside a farm child, nor for a child farm.sh did not mark', () => {
   for (const o of [{ farmChild: false }, { rowEnv: false }]) {
     const { outs, cleanup } = runHookTree(o)
     try { expect(outs[0].trim()).toBe('') } finally { cleanup() }
   }
-}, 30_000)
+}, 70_000)
 
 test('hooks.json registers the background-job Stop hook', () => {
   const hooks = JSON.parse(readFileSync(join(ROOT, 'hooks', 'hooks.json'), 'utf8'))

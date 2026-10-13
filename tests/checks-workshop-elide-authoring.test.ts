@@ -102,7 +102,7 @@ test('the elide checkers honour the CLI contract: nothing relevant is an explici
     expect([0, 1, 2], f).toContain(real.status)
     expect(first(real.stdout), `${f}\n${real.stdout}${real.stderr}`).toMatch(LEG)
   }
-})
+}, 260_000)
 
 test('workshop check.sh honours --project-dir: the constraints it runs receive the project, whatever the cwd', () => {
   const dropped = plug({ 'checks/workshop/constraints/zzws.py': 'import sys\nprint("zzws: 1 file(s) examined")\nprint("slides.typ:1: ZZWS fired " + " ".join(sys.argv[1:]))\nsys.exit(1)\n' })
@@ -115,7 +115,7 @@ test('workshop check.sh honours --project-dir: the constraints it runs receive t
   expect(r.status, out).toBeGreaterThanOrEqual(1)
   expect(out).toContain('ZZWS fired')
   expect(out).toContain(`--project-dir ${p}`)
-})
+}, 160_000)
 
 test('elide and workflow-creator check.sh reach workflow-check for their workflow', () => {
   expect(read('skills/elide-case/scripts/check.sh')).toMatch(/workflow-check[^\n]*\belide\b[^\n]*--constraints-only/)

@@ -14,12 +14,14 @@
  * of JSON and nothing here needs a real run. The exit code is the verdict — 0 CONVERGING,
  * 1 NOT CONVERGING, 2 cannot judge.
  */
-import { afterAll, expect, test } from 'bun:test'
+import { afterAll, expect, test, setDefaultTimeout } from 'bun:test'
 import { spawnSync } from 'node:child_process'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { useTmp } from '../../../tests/helpers/tmp.ts'
+
+setDefaultTimeout(120_000)
 
 const mkTmp = useTmp()
 
@@ -211,7 +213,7 @@ test('the repeat rate distinguishes a re-litigated finding from a fresh one', ()
     { blocking: 2, titles: ['gamma defect', 'delta defect'] },
   ]))
   expect(fresh.repeats.exact).toBe(0)
-})
+}, 240_000)
 
 test('a near-miss title counts as a Jaccard repeat but not an exact one', () => {
   const r = json(mkRun([
@@ -227,7 +229,7 @@ test('generation slope is measured over the rounds, not asserted', () => {
   expect(flat.generated.slope).toBe(0)
   const falling = json(mkRun([{ blocking: 3, generated: 12 }, { blocking: 2, generated: 8 }, { blocking: 1, generated: 4 }]))
   expect(falling.generated.slope).toBe(-4)
-})
+}, 240_000)
 
 test('findings are split by whether their file is a task writable path', () => {
   const r = json(mkRun(

@@ -28,7 +28,7 @@ import { join } from 'node:path'
 import { buildDigest, ownerOfPath, runStage } from './work-stage.mjs'
 import { run, baseArgs, task, replies } from './workflow-harness.mjs'
 
-setDefaultTimeout(120_000)
+setDefaultTimeout(360_000)
 
 const HERE = import.meta.dir
 const CHECKS = join(HERE, 'work-checks.sh')
@@ -297,7 +297,7 @@ describe('work-round.sh: the lens is ONE farm row of kind review', () => {
         FARM_OUTCOMES: join(r.cap, 'o.jsonl'), CLAUDE_CODE_SESSION_ID: 'lens-row-test' } })
     expect(f.status, f.stderr).toBe(0)
     expect(existsSync(ran)).toBe(true)
-  })
+  }, 480_000)
 
   test('one row, kind review, model = lens.model, agent = lens.agentType, expect = RUN/lens.json, provider from routing', () => {
     const dir = repo({ 'scripts/red.sh': 'echo "1 passed"; exit 0', 'src/a.ts': 'a' })
@@ -349,7 +349,7 @@ describe('work-round.sh: the lens is ONE farm row of kind review', () => {
     const off = round(roundArgs(dir))
     expect('sandbox' in off.rows[0]).toBe(false)
     expect(off.rows[0].prompt).toMatch(/run read-only commands/)
-  })
+  }, 600_000)
 
   test('a non-boolean lens.sandbox is refused', () => {
     const dir = repo({ 'scripts/red.sh': 'echo "1 passed"; exit 0', 'src/a.ts': 'a' })

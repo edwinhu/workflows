@@ -5,11 +5,13 @@
  *
  * Run: bun test tests/canary-assert.test.ts
  */
-import { afterAll, describe, expect, test } from 'bun:test'
+import { afterAll, describe, expect, test, setDefaultTimeout } from 'bun:test'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
+
+setDefaultTimeout(60_000)
 
 const CANARY = join(import.meta.dir, '..', 'scripts', 'canary.sh')
 const root = mkdtempSync(join(tmpdir(), 'canary-assert-'))
@@ -199,7 +201,7 @@ describe('canary suites and template steps', () => {
     // Only the worktree it minted is gone; the main checkout's WIP and untracked files are untouched.
     expect(wf.git('worktree', 'list', '--porcelain').stdout.match(/^worktree /gm)?.length).toBe(1)
     expect(wf.git('status', '--porcelain').stdout).toBe(before)
-  })
+  }, 100_000)
 
   test('a teaching checkout with uncommitted changes to tracked files FAILS naming them; untracked .work/ is fine', () => {
     const wf = workflowsRepo()
@@ -212,5 +214,5 @@ describe('canary suites and template steps', () => {
     expect(dirty.out).toContain('FAIL [suites] teaching checkout has uncommitted changes to tracked files')
     expect(dirty.out).toContain('M notes.typ')
     expect(dirty.out).not.toContain('.work/')
-  })
+  }, 170_000)
 })

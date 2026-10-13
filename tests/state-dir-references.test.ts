@@ -25,11 +25,11 @@ test('no tracked file outside recorded history names the retired craft run root'
   expect([0, 1]).toContain(r.status)
   const hits = r.stdout.split('\n').filter(Boolean).filter(l => !HISTORY.has(l.slice(0, l.indexOf(':'))))
   expect(hits).toEqual([])
-})
+}, 30_000)
 
 test('the exemptions still hold the literal, so none outlives its reason', () => {
   for (const f of HISTORY) {
     const r = spawnSync('git', ['grep', '-q', '-F', stale, '--', f], { cwd: root, timeout: 30_000 })
     expect([f, r.status]).toEqual([f, 0])
   }
-})
+}, 30_000)

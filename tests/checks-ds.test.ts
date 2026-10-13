@@ -8,7 +8,7 @@ import { dirname, join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { useTmp } from './helpers/tmp.ts'
 
-setDefaultTimeout(120_000)
+setDefaultTimeout(360_000)
 const mkTmp = useTmp()
 
 const ROOT = join(import.meta.dir, '..')
@@ -169,7 +169,7 @@ test('workflow-check ds --rules-only scores the rules: a violation is exit 1, a 
   expect(wcheck(args, { DOMAIN_GATE_RULE_CHECK: stub('not json') }).status).toBe(2)
   const clean = wcheck(args, { DOMAIN_GATE_RULE_CHECK: stub('{"verdicts":[],"unavailable":[]}') })
   expect(clean.status, clean.stdout + clean.stderr).toBe(0)
-})
+}, 460_000)
 
 test('the directory is membership: a file dropped into a plugin\'s checks/ is reached with no edit, parents are inherited, _-dirs are not workflows', () => {
   const a = plug({

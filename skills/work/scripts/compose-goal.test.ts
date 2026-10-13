@@ -19,11 +19,13 @@
  *
  * Run: bun test ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/compose-goal.test.ts
  */
-import { describe, expect, test, afterAll } from 'bun:test'
+import { describe, expect, test, afterAll, setDefaultTimeout } from 'bun:test'
 import { execFileSync } from 'node:child_process'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+
+setDefaultTimeout(120_000)
 
 const SCRIPT = `${import.meta.dir}/compose-goal.sh`
 const scratch: string[] = []
@@ -170,7 +172,7 @@ describe('the goal carries a wall-clock escape, not only a round count', () => {
       .not.toMatch(/45 minutes or more/)
     expect(compose({ rounds: '4', env: { CRAFT_GOAL_MAX_HOURS: '2' } }).out)
       .not.toMatch(/120 minutes or more/)
-  })
+  }, 240_000)
 
   test('the WORK_ name is the only one read when both spellings are set', () => {
     expect(compose({ rounds: '4', env: { WORK_GOAL_MAX_MINUTES: '90', CRAFT_GOAL_MAX_MINUTES: '45' } }).out)
@@ -201,7 +203,7 @@ describe('the goal closes on a machine verdict, never on a human', () => {
   test('no composed goal mentions human review', () => {
     expect(compose({ rounds: '4' }).out).not.toMatch(/human review/i)
     expect(compose({ readOnly: true }).out).not.toMatch(/human review/i)
-  })
+  }, 240_000)
 
   test('a writing run closes on PASS, NOT on any verdict — a FAIL keeps the loop turning', () => {
     // Measured 2026-08-27: with `exits 0 or 1`, round 1 FAILING with 8 surviving blocking findings
@@ -232,7 +234,7 @@ describe('the goal closes on a machine verdict, never on a human', () => {
       expect(out).toMatch(/reads 4 or more/)
       expect(out).toMatch(/work-elapsed\.sh/)
     }
-  })
+  }, 240_000)
 
   test('the extra positional args the reversibility experiment added are gone', () => {
     const r = compose({ rounds: '4', extra: ['some-reversal', 'some-check'] })

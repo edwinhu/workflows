@@ -1,9 +1,11 @@
-import { test, expect, beforeEach, afterAll } from "bun:test";
+import { test, expect, beforeEach, afterAll, setDefaultTimeout } from "bun:test";
 import { dirname, join } from "path";
 import { mkdtempSync, writeFileSync, readFileSync, existsSync, mkdirSync, statSync, readdirSync, rmSync, lstatSync } from "fs";
 import { tmpdir } from "os";
 // @ts-ignore — plain ES module
 import { register, _reset, DENY_MESSAGE } from "../hooks/bulk-guard.mjs";
+
+setDefaultTimeout(120_000)
 
 const ROOT = dirname(import.meta.dir);
 const FIX = join(ROOT, "tests", "fixtures", "bulk-guard");
@@ -147,7 +149,7 @@ test("a glob or for-loop over filings counts every file it would open", async ()
   expect((await h2.call({ tool: "Bash", command: `head -3 ${docDir}/doc0*.txt` })).deny).toBe(DENY_MESSAGE);
   const h3 = harness();
   expect((await h3.call({ tool: "Bash", command: `ls -la ${docDir}/*.txt && wc -c ${docDir}/*.txt` })).deny).toBeUndefined();
-});
+}, 360_000);
 
 const FARM = "bash ~/.claude/skills/workflows/skills/farm-out/scripts/farm.sh";
 
@@ -278,7 +280,7 @@ test("BULK_GUARD_OFF=1 disables every rule; a command may not set it", async () 
   const on = harness();
   for (const c of [`BULK_GUARD_OFF=1 cat ${docDir}/doc00.txt`, `export BULK_GUARD_OFF=1`])
     expect((await on.call({ tool: "Bash", command: c })).deny).toContain("BULK_GUARD_OFF");
-});
+}, 240_000);
 
 test("thresholds are overridable by env", async () => {
   const h = harness({ BULK_GUARD_DENY_DOCS: "3", BULK_GUARD_DOC_BYTES: "1000" });

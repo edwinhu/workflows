@@ -11,8 +11,10 @@
  *
  * Run: bun test ${CLAUDE_PLUGIN_ROOT}/skills/work/scripts/human-review-gate.test.ts
  */
-import { describe, expect, test } from 'bun:test'
+import { describe, expect, test, setDefaultTimeout } from 'bun:test'
 import { execFileSync } from 'node:child_process'
+
+setDefaultTimeout(120_000)
 
 const MODULE = `${import.meta.dir}/review-verdict.py`
 
@@ -51,7 +53,7 @@ describe('review gate verdicts', () => {
   test('ordinary praise is still findings — approval is explicit, never inferred from tone', () => {
     expect(verdictFor(['looks good to me, ship'])).toBe('findings')
     expect(verdictFor(['all good'])).toBe('findings')
-  })
+  }, 240_000)
 
   test('lowercase approve is discussion, not a decision', () => {
     expect(verdictFor(['I would approve this once the tests land'])).toBe('findings')

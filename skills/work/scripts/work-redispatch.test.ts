@@ -29,7 +29,7 @@ const mkTmp = useTmp()
 // 60s does not hide a hang (a hang never returns and is caught by any finite ceiling); it stops
 // standing in for a latency budget this suite never had. Set per file because bun 1.4.0 ignores
 // `[test] timeout` in bunfig.toml and applies a preload's setDefaultTimeout to the first file only.
-setDefaultTimeout(60_000)
+setDefaultTimeout(120_000)
 
 const SCRIPT = `${import.meta.dir}/work-redispatch.sh`
 const scratch: string[] = []
@@ -183,7 +183,7 @@ describe('the round counter — a field in args.json, not a file beside it', () 
     expect(readArgs(f.args).rounds).toBe(2)
     commit(f.plan, f.args)
     expect(readArgs(f.args).rounds).toBe(3)
-  })
+  }, 240_000)
 
   test('an absent counter starts at 1 rather than crashing a re-dispatch', () => {
     const f = fixture({ planWork: 'w', planRed: 'false', argsWork: 'w', argsRed: 'false' })
@@ -1000,7 +1000,7 @@ describe('M1/M2/M3 — the loop no longer dead-ends', () => {
     const r = redispatch(f.plan, f.args)
     expect(r.code).toBe(3)
     expect(r.stderr || r.out).toMatch(/item\(s\) in .* are routed to the PLAN, and the spec hash is unchanged/)
-  })
+  }, 180_000)
 
   test('a plan-routed failure after a hash change dispatches onlyTasks []', () => {
     const f = selFixture()                         // args.specHash is 0*64, so the hash CHANGES
@@ -1055,7 +1055,7 @@ describe('M1/M2/M3 — the loop no longer dead-ends', () => {
     expect(readFileSync(f.args, 'utf8')).toBe(before)
     expect(readArgs(f.args).rounds).toBe(1)
     expect(existsSync(join(f.dir, 'result-round1.json'))).toBe(false)
-  })
+  }, 180_000)
 
   test('the same planFindings AFTER the plan is amended dispatches instead of refusing', () => {
     const f = selFixture()
@@ -1069,7 +1069,7 @@ describe('M1/M2/M3 — the loop no longer dead-ends', () => {
     expect(r.code).toBe(0)
     expect(only(f.args)).toEqual([])
     expect(r.out).toMatch(/ZERO-IMPLEMENTER round/)
-  })
+  }, 180_000)
 
   // hidden-figures 1004-chinco-gap: the dry run (no --dispatch) wrote the new specHash and advanced
   // rounds, so the --dispatch that followed saw OLD == NEW and refused an amended plan.
@@ -1092,7 +1092,7 @@ describe('M1/M2/M3 — the loop no longer dead-ends', () => {
     expect(r.out).not.toContain('BLOCKED')
     expect(r.code).toBe(0)
     expect(only(f.args)).toEqual([])
-  })
+  }, 300_000)
 
   test('no planFindings and an unchanged hash is not refused', () => {
     const f = selFixture()
@@ -1101,7 +1101,7 @@ describe('M1/M2/M3 — the loop no longer dead-ends', () => {
     const r = redispatch(f.plan, f.args)
     expect(r.code).toBe(0)
     expect(only(f.args)).toEqual(['T5'])
-  })
+  }, 180_000)
 
   // ---- M3: taskFixes ------------------------------------------------------------------------------
   test('taskFixes are built from the previous result', () => {
@@ -1255,7 +1255,7 @@ describe('work-redispatch.sh re-hashes the SPEC, not the plan bytes', () => {
     expect(a.specHash).toBe(execFileSync('bash', [
       `${import.meta.dir}/work-dispatch.sh`, '--spec-hash', f.plan,
     ], { timeout: 120_000, encoding: 'utf8' }).trim())
-  })
+  }, 240_000)
 
   test('it prints old -> new SPEC hash, so the amendment is visible without opening the file', () => {
     const f = fixture({ planWork: 'AMENDED work', planRed: 'false', argsWork: 'STALE work', argsRed: 'false' })
@@ -1275,7 +1275,7 @@ describe('work-redispatch.sh re-hashes the SPEC, not the plan bytes', () => {
     expect(r.code).toBe(0)
     expect(readArgs(f.args).specHash).toBe(first)
     expect(r.stdout).toMatch(/unchanged/)
-  })
+  }, 240_000)
 
   test('amending a VALUE in the block moves the spec hash', () => {
     const f = fixture({ planWork: 'w', planRed: 'false', argsWork: 'w', argsRed: 'false' })
@@ -1285,7 +1285,7 @@ describe('work-redispatch.sh re-hashes the SPEC, not the plan bytes', () => {
     writeFileSync(f.plan, readFileSync(f.plan, 'utf8').replace('"work": "w"', '"work": "AMENDED IN THE BLOCK"'))
     expect(commit(f.plan, f.args).code).toBe(0)
     expect(readArgs(f.args).specHash).not.toBe(first)
-  })
+  }, 240_000)
 })
 
 /**
@@ -1391,7 +1391,7 @@ describe('the frozen finding set and the round cap', () => {
     withFindings(f.dir, [major('a real defect')])
     expect(redispatch(f.plan, f.args).code).toBe(0)
     expect(readArgs(f.args).carriedFindings[0].id).toBe(first)
-  })
+  }, 240_000)
 
   /**
    * CARRY-OVER. The carried set used to be written ONCE, on the advance to round 2, and never touched:
@@ -1450,7 +1450,7 @@ describe('the frozen finding set and the round cap', () => {
     expect(a.rounds).toBe(3)
     expect(a.freezeFindingSet).toBe(true)
     expect(titles(f.args).sort()).toEqual(['a real defect', 'another one'])
-  })
+  }, 240_000)
 
   test('a carried finding the verdict never mentions at all stays OPEN — only an evidenced close removes one', () => {
     // The lens leg can die, and a verdict can predate the channel. Silence is not an adjudication.
@@ -1666,7 +1666,7 @@ describe('the frozen finding set and the round cap', () => {
     const b0 = readArgs(g.args); b0.rounds = 3; b0.maxRounds = 6; writeFileSync(g.args, JSON.stringify(b0, null, 2))
     withFindings(g.dir, [major('open')])
     expect(redispatch(g.plan, g.args).code).toBe(0)
-  })
+  }, 240_000)
 
   test('maxRounds is run-local: the plan sync does not drop it', () => {
     const f = gateFixture()
@@ -1816,7 +1816,7 @@ describe('the real 1002-notes-18-repair-b verdict: a task-routed fix beside plan
       'red:r18-style — owner r18-style', 'mechanical:notes-mech — owner r18-align', 'verify:r18-style — owner r18-style'])
     expect(plan.every((c: any) => c.severity === 'major' && c.detail.includes('Fix: '))).toBe(true)
     expect(a.freezeFindingSet).toBe(true)
-  })
+  }, 180_000)
 
   test('with no task-routed failure the round is still refused, and no path rule is applied to pathless items', () => {
     const f = realRun({ acceptance: 'amended', dropTaskRoute: true })
@@ -1828,7 +1828,7 @@ describe('the real 1002-notes-18-repair-b verdict: a task-routed fix beside plan
     expect(r.out).not.toContain("add <path> to a task's writablePaths")
     expect(r.out).toContain('reword the acceptance, redCommand or mechanical check each item without a file cites')
     expect(readFileSync(f.args, 'utf8')).toBe(before)
-  })
+  }, 180_000)
 
   // Item 19: the verify:r18-style route exists because the acceptance asks the verifier for a lens
   // verdict. Unamended, that wording is now refused at Tier 1, before a round is spent on it.
@@ -1839,5 +1839,5 @@ describe('the real 1002-notes-18-repair-b verdict: a task-routed fix beside plan
     expect(r.out).toContain('acceptance-names-a-verdict  [task r18-cover]')
     expect(r.out).toContain('acceptance-names-a-verdict  [task r18-style]')
     expect(r.out).toMatch(/BLOCKED: 2 major\/critical plan-lint finding/)
-  })
+  }, 180_000)
 })

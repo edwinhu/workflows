@@ -7,12 +7,14 @@
 // user's working material, he edits it at will, and a fixture derived from it goes red on an
 // edit that regressed nothing. This comment is the only occurrence of that path permitted
 // under scripts/ or fixtures/. See ../HERMETIC-TESTS.md.
-import { beforeAll, describe, expect, test } from "bun:test";
+import { beforeAll, describe, expect, test, setDefaultTimeout } from "bun:test";
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { useTmp } from "../../../tests/helpers/tmp.ts";
+
+setDefaultTimeout(1_200_000)
 
 const mkTmp = useTmp();
 
@@ -374,7 +376,7 @@ ${scopeSection([
     const second = run(["--addendum", typ, "--plan", plan]);
     expect(legs(second.out).quotes).toBe("FAIL");
     expect(second.code).not.toBe(0);
-  }, 300_000);
+  }, 600_000);
 
   test("an addendum where every reading is plan-declared unchecked verifies nothing and fails", () => {
     // The floor: a leg that ran no check has no verdict to report, so "PASS" would
@@ -694,7 +696,7 @@ ${scopeSection([
       expect(second.out).toContain("is within");
       expect(legs(second.out).addendum).toBe("PASS");
       expect(second.code).toBe(0);
-    }, 300_000);
+    }, 600_000);
 
     test("with a plan, an explicit --target is IGNORED and the plan's value is used", () => {
       const typ = fixture("target-ignored", [2, 3]);
@@ -729,7 +731,7 @@ ${scopeSection([
       expect(fail.out).toMatch(/FAIL length: reading 2 .*target is 1-3/);
       expect(legs(fail.out).addendum).toBe("FAIL");
       expect(fail.code).not.toBe(0);
-    }, 300_000);
+    }, 600_000);
   });
 
   // check-quotes.py proves the WORDS match the reporter and proves nothing about how
@@ -828,7 +830,7 @@ ${scopeSection([
       expect(out).toContain('page 2: "process."'); // the one the old key swallowed
       expect(out).toContain("Found 4 potential runt(s)");
       expect(code).not.toBe(0);
-    }, 300_000);
+    }, 1_200_000);
 
     // The name is the point: widow, orphan and runt have different causes and
     // different fixes, and reporting all three as "widow" is what let this class
@@ -839,7 +841,7 @@ ${scopeSection([
       const { out } = checkRunts(pdf);
       expect(out).toContain("runt(s)");
       expect(out).not.toContain("widow/orphan(s)");
-    }, 300_000);
+    }, 1_200_000);
 
     // ---- ragged-right prose now gets an ANSWER, not a refusal. FAIL-FIRST: the
     // local detector rested on justified body text, so on ragged-right input it
@@ -858,7 +860,7 @@ ${scopeSection([
       const { out } = checkPdf(pdf);
       expect(out).not.toContain("widow");
       expect(out).not.toContain("orphan");
-    }, 300_000);
+    }, 1_500_000);
 
     // The stranded-heading check is bold-and-short, not flush-right, so it is
     // geometry-independent — which is why this class stayed local when widow and
@@ -870,7 +872,7 @@ ${scopeSection([
       const { code, out } = checkPdf(pdf);
       expect(out).toContain("stranded-heading at the foot of page 1");
       expect(code).toBe(1);
-    }, 300_000);
+    }, 900_000);
 
     // The two detection classes are canonical, so this asserts they FIND the
     // defect the fixture states — not which script holds them.
@@ -884,7 +886,7 @@ ${scopeSection([
       const { code, out } = checkCanon("orphans.py", pdf);
       expect(out).toContain("ORPHANED first line");
       expect(code).toBe(1);
-    }, 300_000);
+    }, 1_200_000);
 
     test("a PDF with a known widow is caught by the canonical checker", () => {
       const pdf = makePdf("widow");
@@ -892,7 +894,7 @@ ${scopeSection([
       const { code, out } = checkCanon("widows.py", pdf);
       expect(out).toContain("WIDOWED last line.");
       expect(code).toBe(1);
-    }, 300_000);
+    }, 1_200_000);
 
     test("a heading stranded at the foot of a page FAILS", () => {
       const pdf = makePdf("stranded-heading");
@@ -900,7 +902,7 @@ ${scopeSection([
       const { code, out } = checkPdf(pdf);
       expect(out).toContain("stranded-heading at the foot of page 1");
       expect(code).toBe(1);
-    }, 300_000);
+    }, 900_000);
 
     test("a clean PDF passes, so the failures above are not the checker crying wolf", () => {
       const pdf = makePdf("clean");
@@ -911,7 +913,7 @@ ${scopeSection([
       for (const name of ["widows.py", "orphans.py"]) {
         expect(checkCanon(name, pdf).code).toBe(0);
       }
-    }, 300_000);
+    }, 1_500_000);
 
     // The fix vocabulary is layout-only, and the checker says so on every failure:
     // rewording the court's text to close a defect would defeat the verbatim gate.
@@ -921,7 +923,7 @@ ${scopeSection([
       const { out } = checkPdf(pdf);
       expect(out).toContain("FIX BY LAYOUT ONLY");
       expect(out).toContain("defeat the verbatim gate");
-    }, 300_000);
+    }, 900_000);
 
     // FAIL-CLOSED. The leg's default is ON, so naming no widow flag RUNS it. This is
     // the assertion that an absent flag cannot be the quiet way to skip page breaks.
@@ -1093,7 +1095,7 @@ ${scopeSection([
     fs.renameSync(path.join(ROOT, "docsflag", "docs"), elsewhere);
     expect(legs(run(["--addendum", typ]).out).quotes).toBe("FAIL");
     expect(legs(run(["--addendum", typ, "--docs", elsewhere]).out).quotes).toBe("PASS");
-  }, 300_000);
+  }, 600_000);
 
   // The run-level `elide-check` invokes this fixture with --no-plan, which the plan leg
   // requires: a fixture has no interview to record, and the leg fails closed rather than

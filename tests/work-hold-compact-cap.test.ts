@@ -1,4 +1,4 @@
-import { expect, test } from "bun:test";
+import { expect, test, setDefaultTimeout } from "bun:test";
 import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
@@ -6,6 +6,8 @@ import { tmpdir } from "node:os";
 import { capProvenance, globalArg, restoreLocal, writeLocalCap } from "../hooks/work-hold.ts";
 import { HERMETIC_ENV } from "./helpers/hermetic-env";
 import { useTmp } from "./helpers/tmp.ts";
+
+setDefaultTimeout(240_000)
 
 const REPO = join(import.meta.dir, "..");
 

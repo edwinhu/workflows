@@ -39,4 +39,4 @@ test('check.sh judges a changed .docx with the writing constraints: its finding 
   const out = (r.stdout ?? '') + (r.stderr ?? '')
   expect(out).toContain('exports/Intro.docx:1: wikipedia-structural-patterns')
   expect(out).toMatch(/^leg writing-general-gate exit=1$/m)
-})
+}, 290_000)

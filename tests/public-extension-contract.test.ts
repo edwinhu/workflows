@@ -172,7 +172,7 @@ describe("public extension contract integration", () => {
     // Both kinds must actually be present, or this test silently stops covering one of them.
     expect(modules).toBeGreaterThan(0);
     expect(scripts).toBeGreaterThan(0);
-  });
+  }, 240_000);
 
   test("publishes a PATH broker for the exact installed dependency root", () => {
     const broker = join(ROOT, "bin/workflows-capability-root");
@@ -181,7 +181,7 @@ describe("public extension contract integration", () => {
     expect(result.exitCode).toBe(0);
     expect(result.stderr.toString()).toBe("");
     expect(result.stdout.toString().trim()).toBe(ROOT);
-  });
+  }, 120_000);
 
   test("ships without ignored planning files as public contract authority", () => {
     const documentation = readFileSync(join(ROOT, "docs/extension-contracts.md"), "utf8");

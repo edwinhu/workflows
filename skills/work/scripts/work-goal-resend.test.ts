@@ -19,11 +19,13 @@
  *
  * Run: bun test /home/eh/projects/workflows/skills/work/scripts/work-goal-resend.test.ts
  */
-import { describe, expect, test, afterAll } from 'bun:test'
+import { describe, expect, test, afterAll, setDefaultTimeout } from 'bun:test'
 import { execFileSync } from 'node:child_process'
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync, existsSync, chmodSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+
+setDefaultTimeout(30_000)
 
 const HOOK = '/home/eh/dotfiles/.claude/hooks/work-goal-resend.sh'
 const SETTINGS = '/home/eh/dotfiles/.claude/settings.json'

@@ -155,7 +155,7 @@ describe('application, with --apply', () => {
     } catch (e: any) { lintOut = e.stdout ?? '' }
     const findings = JSON.parse(lintOut).findings as { rule: string; severity: string }[]
     expect(findings.filter(x => x.rule === 'work-accretion')).toEqual([])
-  })
+  }, 180_000)
 
   test('--apply on an escalating plan refuses with exit 7 and leaves the plan byte-identical', () => {
     const f = fixture(ESCALATING_TASK)

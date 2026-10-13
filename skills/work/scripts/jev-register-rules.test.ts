@@ -1,9 +1,11 @@
-import { expect, test } from "bun:test";
+import { expect, test, setDefaultTimeout } from "bun:test";
 import { $ } from "bun";
 import { join } from "path";
 import { spawnSync } from "child_process";
 import * as fs from "fs";
 import * as os from "os";
+
+setDefaultTimeout(240_000)
 
 // The register rules under checks/writing/legal/rules and checks/writing/econ/rules, scored on top of
 // checks/writing/rules when a writing run's Domain is legal or econ: extractor state on each

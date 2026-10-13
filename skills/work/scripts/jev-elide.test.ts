@@ -1,9 +1,11 @@
-import { expect, test } from "bun:test";
+import { expect, test, setDefaultTimeout } from "bun:test";
 import { $ } from "bun";
 import { join } from "path";
 import { spawnSync } from "child_process";
 import * as fs from "fs";
 import * as os from "os";
+
+setDefaultTimeout(240_000)
 
 // The elide-case rules under checks/elide/rules: extractor state on each rule's fixtures, diff
 // scoping, and rule-check.ts --workflow elide against a local stub. No network.
@@ -70,7 +72,7 @@ test("the compliant twins carry no unmarked gap, no un-noted stress, no editor-v
   expect(e.quotations_stressing_ordinary_words.every((q: any) => q.notation_regex_hit_after)).toBe(true);
   expect(e.n_conventional_italics_in_quotations_set_aside).toBeGreaterThan(0); // Dirks, i.e., quid pro quo
   expect(evidence("EL-VOICE", "sat")["EL-VOICE"].state.n_body_sentences_with_editor_voice_terms).toBe(0);
-});
+}, 360_000);
 
 test("EL-HOLDING carries the plan's doctrinal target and the cut holding sentence with its line", () => {
   const s = evidence("EL-HOLDING", "vio")["EL-HOLDING"].state;

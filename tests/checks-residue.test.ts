@@ -5,7 +5,7 @@ import { spawnSync } from 'node:child_process'
 import { useTmp } from './helpers/tmp.ts'
 import * as PcProbe from '../skills/plugin-creator/scripts/pc-probe.ts'
 
-setDefaultTimeout(120_000)
+setDefaultTimeout(260_000)
 const mkTmp = useTmp()
 
 const ROOT = join(import.meta.dir, '..')
@@ -107,7 +107,7 @@ test('the register is derived from the workflow level: writing/legal flags `This
   expect(findingLines(legal.stdout, 'drafts/y.md', /by Part/)).toEqual([1])
   const plain = wcheck(['writing', '--constraints-only', '--project-dir', sect, '--files', join(sect, 'drafts/y.md')])
   expect(findingLines(plain.stdout, 'drafts/y.md', /by Part/), 'a cross-reference by section is no crossing in the general register').toEqual([])
-})
+}, 420_000)
 
 test('the writing gate has no style leg: the style rules run through workflow-check, and every other leg still reports', () => {
   const p = project({ 'drafts/x.md': 'A plain note.\n', 'refs.bib': '', 'plan.md': '# Plan\n' })

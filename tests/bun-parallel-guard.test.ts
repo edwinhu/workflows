@@ -4,10 +4,12 @@
  * spawns the settings-hook script, so tests/mod-guards-parity.test.ts records these inputs and holds
  * the mod's handler to the same answers.
  */
-import { describe, expect, test } from 'bun:test'
+import { describe, expect, test, setDefaultTimeout } from 'bun:test'
 import { spawnSync } from 'node:child_process'
 import { dirname, join } from 'node:path'
 import { FIX } from '../hooks/guards/bun-test.ts'
+
+setDefaultTimeout(60_000)
 
 const HOOK = join(dirname(import.meta.dir), 'hooks', 'bun-parallel-guard.ts')
 

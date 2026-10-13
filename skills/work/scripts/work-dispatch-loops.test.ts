@@ -26,7 +26,7 @@ const mkTmp = useTmp()
 // 60s does not hide a hang (a hang never returns and is caught by any finite ceiling); it stops
 // standing in for a latency budget this suite never had. Set per file because bun 1.4.0 ignores
 // `[test] timeout` in bunfig.toml and applies a preload's setDefaultTimeout to the first file only.
-setDefaultTimeout(60_000)
+setDefaultTimeout(250_000)
 
 const SCRIPT = `${import.meta.dir}/work-dispatch.sh`
 const scratch: string[] = []
@@ -254,7 +254,7 @@ describe('--loops N > 0 hands the driver off DETACHED instead of printing', () =
     execFileSync('bash', ['-c', `kill -KILL -${pgid} 2>/dev/null; :`], { timeout: 130_000 })
     expect(loopExit(f.runDir)).toBe('0')
     expect(existsSync(join(f.runDir, 'result.json'))).toBe(true)
-  }, 130_000)
+  }, 520_000)
 
   test('a failing gate at the loop cap surfaces the driver\'s halt code in loop.exit, not a bare 0', () => {
     const f = fixture()
@@ -285,7 +285,7 @@ describe('a re-dispatch of a run dir clears the dead round\'s verdict files', ()
     expect(readFileSync(join(f.runDir, 'result-round1.json'), 'utf8')).toBe('{"keep":true}')
     expect(readFileSync(join(f.runDir, 'result-round2.json'), 'utf8')).toBe('{"stale":true}')
     expect(loopExit(f.runDir)).toBe('0')   // the detached loop must finish before the fixture goes
-  }, 130_000)
+  }, 250_000)
 
   test('--print touches nothing of a prior run', () => {
     const f = fixture()

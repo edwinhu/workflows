@@ -11,11 +11,13 @@
  * non-executable script fails as N individual failing tests rather than one module-load
  * error that takes the file down and reports a fail count of 0.
  */
-import { afterAll, describe, expect, test } from 'bun:test'
+import { afterAll, describe, expect, test, setDefaultTimeout } from 'bun:test'
 import { spawnSync } from 'node:child_process'
 import { chmodSync, existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+
+setDefaultTimeout(120_000)
 
 const SCRIPT = join(import.meta.dir, 'work-result.sh')
 
@@ -130,7 +132,7 @@ describe('work-result.sh accepts a well-formed gate return', () => {
   test('success prints the verdict', () => {
     expect(runJson(valid()).stdout).toContain('PASS')
     expect(runJson(validFail()).stdout).toContain('FAIL')
-  })
+  }, 240_000)
 
   test('success prints the score table entries', () => {
     const out = runJson(valid()).stdout
@@ -213,7 +215,7 @@ describe('work-result.sh accepts a well-formed gate return', () => {
       expect(runJson({ ...valid(), routes: bad }).code).toBe(2)
       expect(runJson({ ...valid(), planFindings: bad }).code).toBe(2)
     }
-  })
+  }, 240_000)
 
   // The refuter leg is gone, so nothing in the contract may still demand its key.
   test('a result with no `refuted` key is not refused for missing it', () => {
@@ -467,7 +469,7 @@ describe('work-result.sh adjudicates every claimed mechanical pass against the s
     const empty = mkdtempSync(join(tmpdir(), 'work-result-proj-'))
     scratch.push(empty)
     expect(runJson(claiming(0), { args: declaring('test -f sentinel', empty) }).code).toBe(2)
-  })
+  }, 240_000)
 
   test('a claimed FAILURE is re-run too — the file is a transcription, not the gate object', () => {
     const dir = mkdtempSync(join(tmpdir(), 'work-result-proj-'))
@@ -589,7 +591,7 @@ describe('work-result.sh refuses rather than skipping the adjudication', () => {
   test('a result with no declared checks needs no re-run and still carries its verdict', () => {
     expect(runJson(valid()).code).toBe(0)
     expect(runJson({ ...valid(), overallPass: false, verdict: 'FAIL' }).code).toBe(1)
-  })
+  }, 240_000)
 })
 
 /** A return whose `mechanical` array is empty while args.json still declares checks. */

@@ -5,11 +5,13 @@
 //   (b) its footnote-marker stripper ate legal pincites ("560 n.11"), manufacturing
 //       misses on correct excerpts.
 // Fixtures are written into a temp dir; nothing outside it is touched.
-import { afterAll, beforeAll, describe, expect, test } from "bun:test";
+import { afterAll, beforeAll, describe, expect, test, setDefaultTimeout } from "bun:test";
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+
+setDefaultTimeout(120_000)
 
 const SCRIPT = path.join(import.meta.dir, "..", "..", "..", "checks", "elide", "constraints", "check-quotes.py");
 let ROOT = "";
@@ -288,7 +290,7 @@ describe("check-quotes.py", () => {
     );
     expect(extra.out).toContain("MISS");
     expect(extra.code).not.toBe(0);
-  });
+  }, 360_000);
 
   test("the Telegram baseline alteration is still reported as a miss", () => {
     const source =

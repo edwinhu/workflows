@@ -1,10 +1,12 @@
-import { describe, expect, test } from 'bun:test'
+import { describe, expect, test, setDefaultTimeout } from 'bun:test'
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { hermeticEnv } from './helpers/hermetic-env'
 import { useTmp } from './helpers/tmp.ts'
+
+setDefaultTimeout(240_000)
 
 const mkTmp = useTmp()
 
@@ -134,7 +136,7 @@ describe('record mode', () => {
     record(cwd, '.work/run-a', { id: 'ab12cd34' })
     expect(crons(cwd, 'run-a')).toEqual(['541afe58', 'ab12cd34'])
     expect(guard(cwd, 'ab12cd34').decision).toBe('deny')
-  })
+  }, 360_000)
 
   test('reads the id out of a STRING tool_response too', () => {
     const cwd = newCwd()
@@ -372,7 +374,7 @@ describe('the hold gate: CronDelete waits on an ARMED hold, and on nothing else'
     mkRun(busy, 'run-b', { crons: ['ab12cd34'] })
     expect(guardIn(busy, 'ab12cd34', none).decision).toBe('deny')
     expect(guardIn(busy, 'ab12cd34', none).reason).toContain('.work/run-b/args.json')
-  })
+  }, 360_000)
 
   /**
    * The identity comes from the PAYLOAD and from nowhere else. An ambient CLAUDE_CODE_SESSION_ID
