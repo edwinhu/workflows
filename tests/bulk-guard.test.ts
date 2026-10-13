@@ -164,6 +164,53 @@ test("a 6+ row near-identical tasks file is denied; a 6-row different one is all
   expect(team.deny).toBe(DENY_MESSAGE);
 });
 
+/** N near-identical rows, each with its own `slot` substituted into one template. */
+function slotTasks(name: string, slots: string[], extra: Record<string, unknown> = {}) {
+  const rows = slots.map((s) => ({
+    prompt: `Code the proxy statement for director independence. Read the document at ${s} and report one JSON line per director with name, tenure and independence. Write only your report file.`,
+    ...extra,
+  }));
+  const f = join(SCRATCH, `${name}.json`);
+  writeFileSync(f, JSON.stringify(rows));
+  return f;
+}
+
+test("template fan-out: varying skill dirs (audits.json shape) is allowed", async () => {
+  const h = harness();
+  const rows = JSON.parse(readFileSync(join(FIX, "audit-tasks.json"), "utf8"));
+  expect(rows.length).toBe(10);
+  const r = await h.call({ tool: "Bash", command: `${FARM} --tasks ${join(FIX, "audit-tasks.json")}` });
+  expect(r.deny).toBeUndefined();
+  expect(h.events().filter((e) => e.kind === "deny")).toHaveLength(0);
+}, 360_000);
+
+test("template fan-out: >=5 rows varying only in a filing path are denied", async () => {
+  for (const ext of ["txt", "htm"]) {
+    const h = harness();
+    const f = slotTasks(`filings-${ext}`, [1, 2, 3, 4, 5, 6].map((i) => `/data/edgar/data/${100 + i}/000${i}.${ext}`));
+    const r = await h.call({ tool: "Bash", command: `${FARM} --tasks ${f}` });
+    expect(r.deny).toBe(DENY_MESSAGE);
+    expect(h.events()[0]).toMatchObject({ kind: "deny", rule: "template-fanout", template_rows: 6 });
+  }
+}, 360_000);
+
+test("template fan-out: >=5 rows of kind bulk varying in plain words are denied", async () => {
+  const h = harness();
+  const f = slotTasks("bulk-words", ["alpha", "bravo", "charlie", "delta", "echo", "foxtrot"], { kind: "bulk" });
+  expect((await h.call({ tool: "Bash", command: `${FARM} --tasks ${f}` })).deny).toBe(DENY_MESSAGE);
+  const plain = slotTasks("plain-words", ["alpha", "bravo", "charlie", "delta", "echo", "foxtrot"]);
+  expect((await harness().call({ tool: "Bash", command: `${FARM} --tasks ${plain}` })).deny).toBeUndefined();
+}, 360_000);
+
+test("template fan-out: >=5 rows whose shared text runs pdftotext over non-document paths are denied", async () => {
+  const rows = ["alpha", "bravo", "charlie", "delta", "echo", "foxtrot"].map((s) => ({
+    prompt: `Check the cite for key ${s}. Run pdftotext -layout on the source file for ${s} and compare the quoted passage with the manuscript. Write only your report file.`,
+  }));
+  const f = join(SCRATCH, "pdftotext-shared.json");
+  writeFileSync(f, JSON.stringify(rows));
+  expect((await harness().call({ tool: "Bash", command: `${FARM} --tasks ${f}` })).deny).toBe(DENY_MESSAGE);
+}, 360_000);
+
 test("per-item agent loops are denied; single agent calls are not", async () => {
   const h = harness();
   for (const c of [

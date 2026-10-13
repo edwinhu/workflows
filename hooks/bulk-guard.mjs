@@ -3,8 +3,9 @@
 // (Flex for ≤10 documents, ONE Batch job beyond), never an agent fan-out or an agent-written
 // model-API script.
 //
-// Rules (docs/bulk-guard.md): 1 distinct-document tripwire, 2 template fan-out and per-item agent
-// loops, 3 model-API calls inside a loop, plus trimming of oversized Read/Bash/Grep results.
+// Rules (docs/bulk-guard.md): 1 distinct-document tripwire, 2 template fan-out (rows that name a
+// document or pdftotext, or kind bulk) and per-item agent loops, 3 model-API calls inside a loop,
+// plus trimming of oversized Read/Bash/Grep results.
 // No .catch handlers on purpose: a hook that throws is skipped (fail open). A heuristic guard must
 // never cost the user Bash because of its own bug.
 
@@ -328,13 +329,27 @@ export function similarity(a, b) {
   return Math.max(jac, lev);
 }
 
-/** Rows (row 0 included) that are near-identical to the row-0 template after masking. */
+const rowText = (r) => (typeof r?.prompt === "string" ? r.prompt : JSON.stringify(r));
+
+// Only pdftotext counts as a read verb: cat/head/sed appear in ordinary code and audit prompts, so
+// they would deny any templated fan-out; pdftotext only ever means "extract text from a document".
+const EXTRACT_VERB = /\bpdftotext\b/;
+
+/** A templated row counts when it is kind "bulk" or its text (shared or varying) names a document or extracts one. */
+function namesDocument(row) {
+  if (row?.kind === "bulk") return true;
+  const text = rowText(row);
+  if (EXTRACT_VERB.test(text)) return true;
+  return text.split(/[\s"'`()<>,;]+/).some((w) => looksLikeDocument(w.replace(/[.:]+$/, "")));
+}
+
+/** Document-naming rows (row 0 included) that are near-identical to the row-0 template after masking. */
 export function templateRows(rows, threshold) {
   if (!Array.isArray(rows) || rows.length < 2) return rows?.length ?? 0;
-  const text = (r) => (typeof r?.prompt === "string" ? r.prompt : JSON.stringify(r));
-  const t0 = maskPrompt(text(rows[0]));
-  let n = 1;
-  for (let i = 1; i < rows.length; i++) if (similarity(t0, maskPrompt(text(rows[i]))) >= threshold) n++;
+  const t0 = maskPrompt(rowText(rows[0]));
+  let n = 0;
+  for (let i = 0; i < rows.length; i++)
+    if ((i === 0 || similarity(t0, maskPrompt(rowText(rows[i]))) >= threshold) && namesDocument(rows[i])) n++;
   return n;
 }
 
