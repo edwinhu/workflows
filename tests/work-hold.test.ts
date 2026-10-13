@@ -11,6 +11,7 @@ import {
   PASSED_GOAL_MET, PASSED_UNJUDGED, VERDICT_REACHED, unevaluatedNote, UNEVALUATED_AFTER_SECONDS,
 } from '../hooks/work-hold'
 import { useTmp } from './helpers/tmp.ts'
+import { freePort } from './helpers/free-port.ts'
 
 const mkTmp = useTmp()
 
@@ -932,7 +933,7 @@ describe('the pass branch writes DISTINCT verbs, because a green check is not a 
   })
 
   test('a judge that says MET releases `passed-goal-met`, and only then is CronDelete offered', async () => {
-    const port = 18791
+    const port = freePort()
     const srv = stubDecisions(port, 0.96)
     await Bun.sleep(700)
     const r = passRun('verb-met', { goal: 'the estimate lands inside the published interval' }, {
@@ -949,7 +950,7 @@ describe('the pass branch writes DISTINCT verbs, because a green check is not a 
   }, 120_000)
 
   test('a judge that says UNMET still blocks — the new verbs did not touch that path', async () => {
-    const port = 18792
+    const port = freePort()
     const srv = stubDecisions(port, 0.04)
     await Bun.sleep(700)
     const r = passRun('verb-unmet', { goal: 'every suite is green' }, {
@@ -1080,7 +1081,7 @@ describe('the hook allows a stop while the watched run is IN FLIGHT', () => {
  */
 describe('a CHECK-LESS hold: Jev alone on the goal', () => {
   test('MET releases passed-goal-met, with no check named', async () => {
-    const port = 18795
+    const port = freePort()
     const srv = stubDecisions(port, 0.97)
     await Bun.sleep(700)
     const r = passRun('cl-met', { check: '', goal: 'every suite is green' }, {
@@ -1094,7 +1095,7 @@ describe('a CHECK-LESS hold: Jev alone on the goal', () => {
   }, 120_000)
 
   test('UNMET blocks, and the message names no check', async () => {
-    const port = 18796
+    const port = freePort()
     const srv = stubDecisions(port, 0.03)
     await Bun.sleep(700)
     const r = passRun('cl-unmet', { check: '', goal: 'every suite is green' }, {

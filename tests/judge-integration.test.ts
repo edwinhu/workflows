@@ -3,6 +3,7 @@ import { mkdtempSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { useTmp } from "./helpers/tmp.ts";
+import { freePort } from "./helpers/free-port.ts";
 
 setDefaultTimeout(120_000)
 
@@ -69,7 +70,7 @@ function fixture(session: string, goal: string, extra: Record<string, unknown> =
 const settle = () => Bun.sleep(700);
 
 test("a GREEN check with an UNMET goal blocks, carrying goal, evidence and continuation", async () => {
-  const port = 18781;
+  const port = freePort();
   const srv = stubJudge(port, false, "two suites still red");
   await settle();
   const { dir, transcript } = fixture("it-unmet", "every suite in the repo is green", {
@@ -88,7 +89,7 @@ test("a GREEN check with an UNMET goal blocks, carrying goal, evidence and conti
 }, 120_000);
 
 test("a GREEN check with a MET goal releases the hold", async () => {
-  const port = 18782;
+  const port = freePort();
   const srv = stubJudge(port, true, "all green");
   await settle();
   const { dir, transcript } = fixture("it-met", "every suite is green");
@@ -130,7 +131,7 @@ socketserver.TCPServer(("127.0.0.1", ${port}), H).serve_forever()
 }
 
 test("Jev below the threshold blocks, and reports the probability it gave", async () => {
-  const port = 18783;
+  const port = freePort();
   const srv = stubDecisions(port, 0.21);
   await settle();
   const { dir, transcript } = fixture("it-jev-low", "every suite is green");
@@ -151,7 +152,7 @@ test("Jev below the threshold blocks, and reports the probability it gave", asyn
 }, 120_000);
 
 test("Jev above the threshold releases the hold", async () => {
-  const port = 18784;
+  const port = freePort();
   const srv = stubDecisions(port, 0.93);
   await settle();
   const { dir, transcript } = fixture("it-jev-high", "every suite is green");
@@ -213,7 +214,7 @@ function compactedTranscript(dir: string, marker: string | null) {
 }
 
 test("the compaction summary REACHES the judge — a marker only in it flips the verdict", async () => {
-  const port = 18785;
+  const port = freePort();
   const marker = "MARKER-ONLY-IN-THE-COMPACTION-SUMMARY";
   const srv = stubDecisionsEchoing(port, marker);
   await settle();
@@ -243,7 +244,7 @@ test("the compaction summary REACHES the judge — a marker only in it flips the
 }, 240_000);
 
 test("the round record travels to the judge too", async () => {
-  const port = 18786;
+  const port = freePort();
   const marker = "judge UNMET: the fixture is still stubbed";
   const srv = stubDecisionsEchoing(port, marker);
   await settle();
