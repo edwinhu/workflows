@@ -88,10 +88,10 @@ function legs(out: string): Record<string, string> {
 /** A summary table whose page cells are the truth the compiled PDF reports. */
 function calibrate(typPath: string) {
   const pdf = typPath.replace(/\.typ$/, ".pdf");
-  spawnSync("typst", ["compile", "--root", path.dirname(path.dirname(typPath)), typPath, pdf], {
+  spawnSync("typst", ["compile", "--root", path.dirname(path.dirname(typPath)), typPath, pdf], { timeout: 120_000,
     encoding: "utf8",
   });
-  const r = spawnSync("python3", [CHECK_ADDENDUM, typPath, pdf], { encoding: "utf8" });
+  const r = spawnSync("python3", [CHECK_ADDENDUM, typPath, pdf], { timeout: 120_000, encoding: "utf8" });
   const truth = [...`${r.stdout ?? ""}`.matchAll(/^\s*\[pp\. (\d+)--(\d+)\],$/gm)];
   let i = 0;
   const src = fs.readFileSync(typPath, "utf8");
@@ -192,7 +192,7 @@ describe("check.sh", () => {
     });
     expect(out).toContain("reading 2/2");
     expect(code).toBe(0);
-  }, 300_000);
+  }, 600_000);
 
   test("every leg still runs when an earlier leg fails", () => {
     const typ = fixture("broken-compile", [2, 3]);
@@ -215,7 +215,7 @@ describe("check.sh", () => {
     expect(seen.compile).toBe("FAIL");
     expect(seen.quotes).toBe("PASS"); // ran to completion despite the failed compile
     expect(code).not.toBe(0);
-  }, 300_000);
+  }, 600_000);
 
   test("the caption list is derived from the .typ, not passed in", () => {
     const extra =
@@ -228,7 +228,7 @@ describe("check.sh", () => {
     const typ = fixture("five", [2, 3], extra, { calibrate: false });
     const { out } = run(["--addendum", typ]);
     for (let i = 1; i <= 5; i++) expect(out).toContain(`reading ${i}/5`);
-  }, 300_000);
+  }, 600_000);
 
   test("a mutated table page range fails and names the addendum leg", () => {
     const typ = fixture("mutated", [2, 3]);
@@ -240,7 +240,7 @@ describe("check.sh", () => {
     expect(legs(out).addendum).toBe("FAIL");
     expect(out).toContain("LEG addendum: FAIL");
     expect(code).not.toBe(0);
-  }, 300_000);
+  }, 600_000);
 
   test("a reading with no resolvable source fails and names that reading", () => {
     const typ = fixture(
@@ -254,7 +254,7 @@ describe("check.sh", () => {
     expect(out).toContain("IN RE ZZZQQQ WIDGETS LITIGATION");
     expect(out).not.toContain("reading 3/3\": PASS");
     expect(code).not.toBe(0);
-  }, 300_000);
+  }, 600_000);
 
   test("two captions resolving to one source still get checked, and the sharing fails", () => {
     const typ = fixture(
@@ -271,7 +271,7 @@ describe("check.sh", () => {
     expect(out).toMatch(/reading 3\/3 "[^"]*": (PASS|FAIL) \[derived\]/);
     expect(legs(out).quotes).toBe("FAIL");
     expect(code).not.toBe(0);
-  }, 300_000);
+  }, 600_000);
 
   test("a declared source overrides the heuristic and is reported as declared", () => {
     const typ = fixture("declared", [3], "", { calibrate: false });
@@ -285,7 +285,7 @@ describe("check.sh", () => {
     );
     const { out } = run(["--addendum", typ]);
     expect(out).toMatch(/reading 1\/1 "[^"]*": PASS \[declared\]/);
-  }, 300_000);
+  }, 600_000);
 
   // An editors' note is authored commentary, never a quotation. Graded against the reporter
   // it always reports as missing, so ANY addendum carrying one failed the quotes leg by
@@ -305,7 +305,7 @@ describe("check.sh", () => {
     expect(out).not.toContain("This paragraph is the editor's own commentary");
     expect(out).toMatch(/reading 1\/1 "[^"]*": PASS \[derived\]/);
     expect(legs(out).quotes).toBe("PASS");
-  }, 300_000);
+  }, 600_000);
 
   // The marker names a file that must EXIST, which is what stops it fabricating a pass:
   // otherwise `// elide-source:` would be a self-exemption wearing a different hat.
@@ -324,7 +324,7 @@ describe("check.sh", () => {
     expect(out).toMatch(/reading 1\/1 "[^"]*": FAIL \[declared\]/);
     expect(legs(out).quotes).toBe("FAIL");
     expect(code).not.toBe(0);
-  }, 300_000);
+  }, 600_000);
 
   test("a reading the PLAN declares non-court prints DECLARED-UNCHECKED and does not fail", () => {
     const typ = fixture(
@@ -347,7 +347,7 @@ ${scopeSection([
     expect(out).toContain("blog post, no reporter text");
     expect(legs(out).quotes).toBe("PASS");
     expect(legs(out).plan).toBe("PASS");
-  }, 300_000);
+  }, 600_000);
 
   test("an in-.typ elide-unchecked marker is self-exempting and FAILS, naming the reading", () => {
     // The authority to call a reading non-court text belongs to the instructor. A marker
@@ -376,7 +376,7 @@ ${scopeSection([
     const second = run(["--addendum", typ, "--plan", plan]);
     expect(legs(second.out).quotes).toBe("FAIL");
     expect(second.code).not.toBe(0);
-  }, 600_000);
+  }, 900_000);
 
   test("an addendum where every reading is plan-declared unchecked verifies nothing and fails", () => {
     // The floor: a leg that ran no check has no verdict to report, so "PASS" would
@@ -399,7 +399,7 @@ ${scopeSection([
     expect(out).toContain("2 declared unchecked");
     expect(legs(out).quotes).toBe("FAIL");
     expect(code).not.toBe(0);
-  }, 300_000);
+  }, 600_000);
 
   describe("the --plan leg enforces the interview", () => {
     // Fail closed: an optional leg whose absence passes is an interview enforced by nothing.
@@ -409,7 +409,7 @@ ${scopeSection([
       expect(legs(out).plan).toBe("FAIL");
       expect(out).toContain("--no-plan");
       expect(code).not.toBe(0);
-    }, 300_000);
+    }, 600_000);
 
     test("--no-plan waives the leg loudly and does not fail", () => {
       // An otherwise-clean addendum, so a non-zero exit could only come from the plan leg.
@@ -419,7 +419,7 @@ ${scopeSection([
       expect(out).toContain("NOBODY IS CHECKING THE INTERVIEW ANSWERS");
       expect(legs(out).plan).toBeUndefined(); // neither PASS nor FAIL
       expect(code).toBe(0);
-    }, 300_000);
+    }, 600_000);
 
     test("--plan and --no-plan together are contradictory and FAIL", () => {
       const typ = fixture("plan-both", [3], "", { calibrate: false });
@@ -427,7 +427,7 @@ ${scopeSection([
       const { code, out } = runRaw(["--addendum", typ, "--plan", plan, "--no-plan", "--no-target"]);
       expect(legs(out).plan).toBe("FAIL");
       expect(code).not.toBe(0);
-    }, 300_000);
+    }, 600_000);
 
     test("a plan carrying both answers passes the leg", () => {
       const typ = fixture("plan-good", [3], "", { calibrate: false });
@@ -437,7 +437,7 @@ ${scopeSection([
       );
       const { out } = run(["--addendum", typ, "--plan", plan]);
       expect(legs(out).plan).toBe("PASS");
-    }, 300_000);
+    }, 600_000);
 
     test("a plan with no '## Doctrinal target' section fails", () => {
       const typ = fixture("plan-none", [3], "", { calibrate: false });
@@ -446,7 +446,7 @@ ${scopeSection([
       expect(legs(out).plan).toBe("FAIL");
       expect(out).toContain("## Doctrinal target");
       expect(code).not.toBe(0);
-    }, 300_000);
+    }, 600_000);
 
     // Each missing answer must be named, so the agent is told which one to go ask for.
     const missing: [string, string, string][] = [
@@ -480,7 +480,7 @@ ${scopeSection([
         expect(legs(out).plan).toBe("FAIL");
         expect(out).toContain(names);
         expect(code).not.toBe(0);
-      }, 300_000);
+      }, 600_000);
     }
 
     // The interview check is an elide constraint, so the runner reaches it with no check.sh: a
@@ -507,7 +507,7 @@ ${scopeSection([
       expect(good.out).toMatch(/^[\w-]+: 1 plan\(s\) examined/m);
       expect(good.code).toBe(0);
       expect(gate().out).toMatch(/^[\w-]+: 0 plan\(s\) examined — nothing in scope \(no --plan given\)/m);
-    }, 300_000);
+    }, 600_000);
   });
 
   // A '## Non-court readings' bullet switches the FIRST Iron Law off the reading it hits, so
@@ -548,7 +548,7 @@ ${scopeSection([
       expect(out).toMatch(/reading 1\/3 "[^"]*": PASS \[derived\]/);
       expect(legs(out).quotes).toBe("PASS");
       expect(legs(out).plan).toBe("PASS");
-    }, 300_000);
+    }, 600_000);
 
     test("a generic bullet matching several captions exempts none and FAILS naming them", () => {
       const typ = blogFixture("bullet-generic");
@@ -561,7 +561,7 @@ ${scopeSection([
       expect(out).not.toContain("DECLARED-UNCHECKED");
       expect(legs(out).quotes).toBe("FAIL");
       expect(code).not.toBe(0);
-    }, 300_000);
+    }, 600_000);
 
     test("a bullet matching no caption FAILS naming the bullet", () => {
       const typ = blogFixture("bullet-none");
@@ -570,7 +570,7 @@ ${scopeSection([
       expect(out).toContain('PLAN BULLET MATCHES NO READING: "IN RE ZZZQQQ WIDGETS"');
       expect(legs(out).quotes).toBe("FAIL");
       expect(code).not.toBe(0);
-    }, 300_000);
+    }, 600_000);
 
     test("a bullet matching only inside a word is no match, and does not exempt", () => {
       // "log" is a substring of "BLOG" but not one of its words. Under the old raw-substring
@@ -582,7 +582,7 @@ ${scopeSection([
       expect(out).not.toContain("DECLARED-UNCHECKED");
       expect(legs(out).quotes).toBe("FAIL");
       expect(code).not.toBe(0);
-    }, 300_000);
+    }, 600_000);
   });
 
   // Same rule as the plan leg, applied to length: an optional flag whose absence passes is a
@@ -596,7 +596,7 @@ ${scopeSection([
       expect(out).toContain("--no-target");
       expect(out).not.toContain("and length all hold");
       expect(code).not.toBe(0);
-    }, 300_000);
+    }, 600_000);
 
     test("--no-target waives the length check loudly and does not claim it holds", () => {
       // An otherwise-clean addendum, so a non-zero exit could only come from this decision.
@@ -609,7 +609,7 @@ ${scopeSection([
       expect(out).not.toContain("and length all hold");
       expect(out).toContain("per-reading length NOT CHECKED");
       expect(code).toBe(0);
-    }, 300_000);
+    }, 600_000);
 
     test("--target 2-6 on a too-long reading FAILS naming the reading and its page count", () => {
       const filler = Array.from(
@@ -623,7 +623,7 @@ ${scopeSection([
       expect(out).toMatch(/FAIL length: reading 1 \([^)]*\) is \d+ page\(s\) at pp\. \d+--\d+; target is 2-6/);
       expect(legs(out).addendum).toBe("FAIL");
       expect(code).not.toBe(0);
-    }, 300_000);
+    }, 600_000);
   });
 
   // The page target used to be typed at the command line, which meant an agent could invent
@@ -643,7 +643,7 @@ ${scopeSection([
       expect(out).toContain("MUTUAL BENEFITS CORP.");
       expect(out).toContain("has no page target");
       expect(code).not.toBe(0);
-    }, 300_000);
+    }, 600_000);
 
     test("a placeholder page target FAILS the plan leg", () => {
       const typ = fixture("scope-tbd", [3], "", { calibrate: false });
@@ -652,7 +652,7 @@ ${scopeSection([
       expect(legs(out).plan).toBe("FAIL");
       expect(out).toContain("has no page target");
       expect(code).not.toBe(0);
-    }, 300_000);
+    }, 600_000);
 
     test("a missing '## Readings In Scope' section FAILS the plan leg", () => {
       const typ = fixture("scope-absent", [3], "", { calibrate: false });
@@ -661,7 +661,7 @@ ${scopeSection([
       expect(legs(out).plan).toBe("FAIL");
       expect(out).toContain("## Readings In Scope");
       expect(code).not.toBe(0);
-    }, 300_000);
+    }, 600_000);
 
     // The test that proves PER-READING rather than global. Life Partners runs 2 pages and
     // Mutual Benefits 4, so targets of 2-2 and 6-8 pass the first and fail the second. No
@@ -696,7 +696,7 @@ ${scopeSection([
       expect(second.out).toContain("is within");
       expect(legs(second.out).addendum).toBe("PASS");
       expect(second.code).toBe(0);
-    }, 600_000);
+    }, 900_000);
 
     test("with a plan, an explicit --target is IGNORED and the plan's value is used", () => {
       const typ = fixture("target-ignored", [2, 3]);
@@ -716,7 +716,7 @@ ${scopeSection([
       expect(out).not.toContain("target is 1-1");
       expect(legs(out).addendum).toBe("PASS");
       expect(code).toBe(0);
-    }, 300_000);
+    }, 600_000);
 
     // REGRESSION GUARD, not a fail-first test: --no-plan --target has always worked, and this
     // pins that the override survived the move. It would have passed before the change too.
@@ -731,7 +731,7 @@ ${scopeSection([
       expect(fail.out).toMatch(/FAIL length: reading 2 .*target is 1-3/);
       expect(legs(fail.out).addendum).toBe("FAIL");
       expect(fail.code).not.toBe(0);
-    }, 600_000);
+    }, 900_000);
   });
 
   // check-quotes.py proves the WORDS match the reporter and proves nothing about how
@@ -754,11 +754,11 @@ ${scopeSection([
     // `typst-constraints --dir` names.
     const LISTED: string[] = (() => {
       const r = spawnSync("python3", [path.join(import.meta.dir, "..", "..", "..", "bin", "workflow-check"), "workshop", "--list"],
-        { encoding: "utf8" });
+        { timeout: 120_000, encoding: "utf8" });
       return r.status === 0 ? JSON.parse(r.stdout).constraints : [];
     })();
     const CANON_DIRS = (() => {
-      const r = spawnSync("typst-constraints", ["--dir"], { encoding: "utf8" });
+      const r = spawnSync("typst-constraints", ["--dir"], { timeout: 30_000, encoding: "utf8" });
       return [...(r.status === 0 && r.stdout.trim() ? [r.stdout.trim()] : []),
               `${process.env.HOME}/.claude/skills/typst/constraints`, `${process.env.HOME}/projects/typst/constraints`];
     })();
@@ -932,7 +932,7 @@ ${scopeSection([
       const { out } = runRaw(["--addendum", typ, "--no-plan", "--no-target"]);
       expect(legs(out).strays).toBe("PASS");
       expect(out).not.toContain("NOBODY IS CHECKING PAGE BREAKS OR RUNTS");
-    }, 300_000);
+    }, 600_000);
 
     // FAIL-CLOSED, for the RUNT sub-check specifically. A new sub-check whose absence
     // passes is a defect class enforced by nothing. Naming no flag must RUN it, and
@@ -944,7 +944,7 @@ ${scopeSection([
       // into another's: that is how the runt class stayed invisible while the leg
       // called a 20-runt document clean.
       expect(subChecks(out).sort()).toEqual(["orphan", "runt", "stranded-heading", "widow"]);
-    }, 300_000);
+    }, 600_000);
 
     // FAIL-CLOSED on the canonical checkers themselves. They live in another plugin,
     // so "not installed" is a real state — and a leg that skipped them quietly would
@@ -968,7 +968,7 @@ ${scopeSection([
       expect(out).toContain("nothing checked runts");
       expect(legs(out).strays).toBe("FAIL");
       expect(code).not.toBe(0);
-    }, 300_000);
+    }, 600_000);
 
     // The typst plugin keeps the three under checks/workshop/constraints/ (the workshop workflow's
     // layout), while `typst-constraints --dir` still names its constraints/ — which then holds none of
@@ -997,14 +997,14 @@ ${scopeSection([
       for (const n of ["widows", "orphans", "runts"]) expect(out).toMatch(new RegExp(`stub-${n} ran: \\S+\\.pdf --prose`));
       expect(out).not.toContain("not found (TYPST_CHECKERS_DIR");
       expect(legs(out).strays).toBe("PASS");
-    }, 300_000);
+    }, 600_000);
 
     test("--no-strays waives the canonical sub-checks too, and says so", () => {
       const typ = fixture("runt-waived", [3]);
       const { out } = runRaw(["--addendum", typ, "--no-plan", "--no-target", "--no-strays"]);
       expect(out).toContain("NOBODY IS CHECKING PAGE BREAKS OR RUNTS");
       expect(out).not.toMatch(/^\s*SUB runt:/m);
-    }, 300_000);
+    }, 600_000);
 
     // REGRESSION GUARD, not fail-first: the leg was renamed and its callers were not,
     // so the old flag name must keep working. --no-widows passed before this change too.
@@ -1013,7 +1013,7 @@ ${scopeSection([
       const { code, out } = runRaw(["--addendum", typ, "--no-plan", "--no-target", "--no-widows"]);
       expect(out).toContain("LEG strays: NOT CHECKED");
       expect(code).toBe(0);
-    }, 300_000);
+    }, 600_000);
 
     /**
      * The same fixture set ragged right — Typst's own default, and how the real
@@ -1039,7 +1039,7 @@ ${scopeSection([
       expect(out).not.toContain("NOT JUDGED");
       expect(out).not.toContain("REFUSED");
       expect(subChecks(out).sort()).toEqual(["orphan", "runt", "stranded-heading", "widow"]);
-    }, 300_000);
+    }, 600_000);
 
     test("--no-strays waives the leg loudly and never claims stray lines hold", () => {
       // Calibrated, so every other leg passes and the waiver reaches the PASS summary.
@@ -1049,7 +1049,7 @@ ${scopeSection([
       expect(out).toContain("NOBODY IS CHECKING PAGE BREAKS OR RUNTS");
       expect(legs(out).strays).toBeUndefined(); // neither PASS nor FAIL
       expect(out).toContain("stray lines, which --no-strays waived");
-    }, 300_000);
+    }, 600_000);
 
     test("--strays and --no-strays together are contradictory and FAIL", () => {
       const typ = fixture("widows-both", [3], "", { calibrate: false });
@@ -1058,7 +1058,7 @@ ${scopeSection([
       ]);
       expect(legs(out).strays).toBe("FAIL");
       expect(code).not.toBe(0);
-    }, 300_000);
+    }, 600_000);
 
     // A compile failure must not let the widows leg report a stale or absent PDF as
     // clean — there is nothing to inspect, and that is a FAIL, not a pass.
@@ -1070,7 +1070,7 @@ ${scopeSection([
       expect(legs(out).strays).toBe("FAIL");
       expect(out).toContain("no compiled PDF to inspect");
       expect(code).not.toBe(0);
-    }, 300_000);
+    }, 600_000);
   });
 
   test("a gap-matched sentence surfaces its warning even when the reading PASSES", () => {
@@ -1079,7 +1079,7 @@ ${scopeSection([
     const raw = spawnSync(
       "python3",
       [path.join(CHECKERS, "check-quotes.py"), typ, path.join(ROOT, "gap", "docs", DOC_FILES[1])],
-      { encoding: "utf8" },
+      { timeout: 120_000, encoding: "utf8" },
     );
     const rawOut = `${raw.stdout ?? ""}${raw.stderr ?? ""}`;
     // Only meaningful if the underlying checker actually reports a gap here AND passes.
@@ -1087,7 +1087,7 @@ ${scopeSection([
     expect(rawOut).toContain("matched across a source gap");
     expect(legs(out).quotes).toBe("PASS");
     expect(out).toContain("matched across a source gap");
-  }, 300_000);
+  }, 900_000);
 
   test("--docs points the resolver at an arbitrary directory", () => {
     const typ = fixture("docsflag", [3], "", { calibrate: false });
@@ -1095,7 +1095,7 @@ ${scopeSection([
     fs.renameSync(path.join(ROOT, "docsflag", "docs"), elsewhere);
     expect(legs(run(["--addendum", typ]).out).quotes).toBe("FAIL");
     expect(legs(run(["--addendum", typ, "--docs", elsewhere]).out).quotes).toBe("PASS");
-  }, 600_000);
+  }, 900_000);
 
   // The run-level `elide-check` invokes this fixture with --no-plan, which the plan leg
   // requires: a fixture has no interview to record, and the leg fails closed rather than
@@ -1114,11 +1114,11 @@ ${scopeSection([
       constraints: "PASS",
     });
     expect(code).toBe(0);
-  }, 300_000);
+  }, 600_000);
 
   describe("the marks leg decides elision marks and footnote numbering from the .typ", () => {
     const CHECK_MARKS = path.join(CHECKERS, "check-marks.py");
-    const marks = (typ: string) => spawnSync("python3", [CHECK_MARKS, typ], { encoding: "utf8" });
+    const marks = (typ: string) => spawnSync("python3", [CHECK_MARKS, typ], { timeout: 30_000, encoding: "utf8" });
     const variant = (name: string, edit: (s: string) => string) => {
       const typ = fixture(name, [3], "", { calibrate: false });
       const before = fs.readFileSync(typ, "utf8");
@@ -1162,7 +1162,7 @@ ${scopeSection([
       expect(legs(out).marks).toBe("FAIL");
       expect(out).toContain("marks=FAIL");
       expect(code).not.toBe(0);
-    }, 300_000);
+    }, 600_000);
   });
 
   test("the same fixture invocation WITHOUT a plan flag is refused", () => {
@@ -1170,7 +1170,7 @@ ${scopeSection([
     const { code, out } = runRaw(["--addendum", fixtureTyp, "--target", "1-6"]);
     expect(legs(out).plan).toBe("FAIL");
     expect(code).not.toBe(0);
-  }, 300_000);
+  }, 600_000);
 
   // Membership is the directory: a constraint dropped into checks/elide/constraints/ of any plugin
   // root on WORKFLOW_CHECKS_PATH is run on the addendum with no edit to check.sh.
@@ -1192,5 +1192,5 @@ ${scopeSection([
     expect(legs(out).quotes).toBe("PASS");
     expect(out).toContain("constraints=FAIL");
     expect(code).toBe(1);
-  }, 300_000);
+  }, 600_000);
 });

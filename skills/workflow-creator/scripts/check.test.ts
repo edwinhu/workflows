@@ -14,7 +14,7 @@ const SCRIPTS = import.meta.dir
 
 // Every case spawns a check.sh that runs seven legs; bun's 5 s default kills one at load and strands
 // the leg's leg-o/leg-e temp files in TMPDIR (the run's leak guard then fails).
-setDefaultTimeout(30_000)
+setDefaultTimeout(120_000)
 const CHECK = join(SCRIPTS, 'check.sh')
 
 const trash: string[] = []
@@ -314,7 +314,7 @@ test('an unknown flag is an error, not a default', () => {
 const LEG_COUNTS_DIR = join(SCRIPTS, '..', '..', 'work', 'scripts')
 function audit(out: string): string[] {
   const py = 'import sys, json; sys.path.insert(0, sys.argv[1]); from leg_counts import audit; print(json.dumps(audit(sys.stdin.read())))'
-  const r = spawnSync('python3', ['-c', py, LEG_COUNTS_DIR], { input: out, encoding: 'utf8' })
+  const r = spawnSync('python3', ['-c', py, LEG_COUNTS_DIR], { timeout: 120_000, input: out, encoding: 'utf8' })
   return JSON.parse(r.stdout)
 }
 const combined = (r: { stdout: string; stderr: string }) => r.stdout + r.stderr
@@ -329,7 +329,7 @@ test('non-vacuity: every leg of a fixture target prints a count line, so the aud
 test('non-vacuity: a real skill in this repo (jev-rules) passes the audit through the real check.sh', () => {
   const r = run(CHECK, ['--target', join(SCRIPTS, '..', '..', 'jev-rules')])
   expect(audit(combined(r))).toEqual([])
-}, 30_000)
+}, 120_000)
 
 test('non-vacuity: a leg that examined nothing says `nothing in scope (...)`, never a bare 0', () => {
   const r = run(harness(), ['--target', target()]) // no .js, no scripts/

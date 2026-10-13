@@ -17,7 +17,7 @@ beforeAll(() => {
 });
 
 function runHook(payload: any, env?: any) {
-  const result = spawnSync("bun", [hookPath], {
+  const result = spawnSync("bun", [hookPath], { timeout: 120_000,
     input: JSON.stringify(payload),
     env: { ...process.env, ...env },
     encoding: "utf-8",

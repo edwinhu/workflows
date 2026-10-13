@@ -12,7 +12,7 @@ import { findSyncCalls, hasTimeout } from "./lib/sync-spawn-scan.ts";
 const ROOT = dirname(import.meta.dir);
 
 function suiteFiles(): string[] {
-  const r = spawnSync("git", ["ls-files", "--cached", "--others", "--exclude-standard", "tests", "skills/work"],
+  const r = spawnSync("git", ["ls-files", "--cached", "--others", "--exclude-standard"],
                       { cwd: ROOT, encoding: "utf8", timeout: 30_000 });
   if (r.status !== 0) throw new Error(`git ls-files exited ${r.status}: ${r.stderr}`);
   return r.stdout.split("\n").filter((f) =>

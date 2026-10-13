@@ -24,7 +24,7 @@ import { useTmp } from '../../../tests/helpers/tmp.ts'
 useTmp()
 import { classify, parseEvents, wakeable, wakeText, type View } from '../../../hooks/watch/runs.ts'
 
-setDefaultTimeout(60_000)
+setDefaultTimeout(120_000)
 
 const GRIND = `${import.meta.dir}/grind.sh`
 
@@ -100,7 +100,7 @@ function watchPass(eventDir: string): View[] {
   const names = existsSync(eventDir) ? readdirSync(eventDir).filter(n => /^\d+\.ndjson$/.test(n)) : []
   const runs = names.flatMap(n =>
     parseEvents(readFileSync(join(eventDir, n), 'utf8'), join(eventDir, n), Number(n.split('.')[0]), SESSION))
-  const alive = new Set(runs.map(r => r.pid).filter(p => spawnSync('kill', ['-0', String(p)]).status === 0))
+  const alive = new Set(runs.map(r => r.pid).filter(p => spawnSync('kill', ['-0', String(p)], { timeout: 10_000 }).status === 0))
   const present = new Set(runs.flatMap(r => [r.out, ...r.claims]).filter(p => p && existsSync(p)))
   return classify(runs, {
     alive, present, firstSeen: new Map(), loopExit: new Map(), round: new Map(), phase: new Map(),
@@ -254,7 +254,7 @@ describe('grind.sh — the watcher mod reads the stream without being taught a s
     // The loop's pid is long gone by now, but it wrote DONE, so it ended rather than died.
     expect(views[0]!.state).toBe('done')
     expect(views[0]!.done).toEqual({ status: 'budget', detail: 'budget rc=4' })
-  }, 60_000)
+  }, 120_000)
 
   test('a SIGKILLed loop leaves START with no DONE, and the watcher reports it GONE', () => {
     const { d, env, eventDir } = sandbox('grind-ev-kill')
@@ -285,16 +285,16 @@ describe('grind.sh — the watcher mod reads the stream without being taught a s
         lines = eventFile(eventDir).lines
         if (lines.some(l => l.includes(' START '))) break
       }
-      spawnSync('sleep', ['0.1'])
+      spawnSync('sleep', ['0.1'], { timeout: 10_000 })
     }
     expect(lines.some(l => l.includes(' START '))).toBe(true)
     // Alive and parked: running, not gone.
     expect(watchPass(eventDir)[0]!.state).toBe('running')
 
     // The hard kill: no trap runs, no journal ending, no DONE.
-    spawnSync('kill', ['-9', String(pid)])
-    for (let i = 0; i < 100 && spawnSync('kill', ['-0', String(pid)]).status === 0; i++) {
-      spawnSync('sleep', ['0.1'])
+    spawnSync('kill', ['-9', String(pid)], { timeout: 10_000 })
+    for (let i = 0; i < 100 && spawnSync('kill', ['-0', String(pid)], { timeout: 10_000 }).status === 0; i++) {
+      spawnSync('sleep', ['0.1'], { timeout: 10_000 })
     }
 
     const ev = eventFile(eventDir)
@@ -308,7 +308,7 @@ describe('grind.sh — the watcher mod reads the stream without being taught a s
     const views = watchPass(eventDir)
     expect(views[0]!.state).toBe('gone')
     expect(wakeText(views[0]!, Date.now())).toContain(`grind loop grind journal.jsonl is GONE: pid ${pid}`)
-  }, 60_000)
+  }, 120_000)
 
   test('a grind file in the directory leaves the farm run\'s classification unchanged', () => {
     // The watcher reads every file in the directory. A grind loop parked beside a farm dispatch must
@@ -319,7 +319,7 @@ describe('grind.sh — the watcher mod reads the stream without being taught a s
       'farm: CLAIM review path=/tmp/x/result.json ',
       'farm: DONE review ok toolCalls=7',
     ]
-    spawnSync('mkdir', ['-p', eventDir])
+    spawnSync('mkdir', ['-p', eventDir], { timeout: 10_000 })
     // A pid that is gone: 2^22 is above every Linux pid_max default, so nothing owns it.
     writeFileSync(join(eventDir, '4194304.ndjson'), farmLines.join('\n') + '\n')
 
@@ -332,5 +332,5 @@ describe('grind.sh — the watcher mod reads the stream without being taught a s
     expect(farmOnly(before)).toEqual([['review', 'done', { status: 'ok', detail: 'ok toolCalls=7' }]])
     expect(farmOnly(after)).toEqual(farmOnly(before))
     expect(wakeable(after).map(v => v.kind).sort()).toEqual(['farm', 'grind'])
-  }, 60_000)
+  }, 120_000)
 })

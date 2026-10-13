@@ -331,7 +331,7 @@ function stubPath(dir: string, stubs: string[]): { env: Record<string, string>; 
   const log = join(dir, 'calls.txt')
   for (const name of stubs) script(bin, name, `printf '%s %s\\n' ${name} "$*" >> ${log}`)
   for (const tool of SYSTEM_TOOLS) {
-    const real = spawnSync('bash', ['-c', `PATH=/usr/bin:/bin command -v ${tool}`], { encoding: 'utf8' }).stdout.trim()
+    const real = spawnSync('bash', ['-c', `PATH=/usr/bin:/bin command -v ${tool}`], { timeout: 30_000, encoding: 'utf8' }).stdout.trim()
     if (real && !existsSync(join(bin, tool))) symlinkSync(real, join(bin, tool))
   }
   return { env: { PATH: bin, HOME: dir }, log }

@@ -172,7 +172,7 @@ const mkTmp = useTmp()
 // 60s does not hide a hang (a hang never returns and is caught by any finite ceiling); it stops
 // standing in for a latency budget this suite never had. Set per file because bun 1.4.0 ignores
 // `[test] timeout` in bunfig.toml and applies a preload's setDefaultTimeout to the first file only.
-setDefaultTimeout(60_000)
+setDefaultTimeout(240_000)
 
 // Loose alias: a missing export surfaces as one failed assertion, not a load error.
 const probe: any = WcProbe
@@ -198,7 +198,7 @@ const read = (f: string) => readFileSync(f, 'utf8')
 
 /** Run the CLI out-of-process so the test covers main()/argv, not just runProbe(). */
 function cli(args: string[]): { code: number; out: string; err: string } {
-  const r = Bun.spawnSync(['bun', join(SELF_DIR, 'wc-probe.ts'), ...args], { env: { ...process.env } })
+  const r = Bun.spawnSync(['bun', join(SELF_DIR, 'wc-probe.ts'), ...args], { timeout: 120_000, env: { ...process.env } })
   return { code: r.exitCode, out: r.stdout.toString(), err: r.stderr.toString() }
 }
 
@@ -732,7 +732,7 @@ describe('D12 — write-time and gate-time agree', () => {
 
   test('the write-time hook emits no finding on this skill’s own SKILL.md', () => {
     const payload = JSON.stringify({ tool_input: { file_path: join(SKILL_DIR, 'SKILL.md') } })
-    const r = Bun.spawnSync(['bun', join(SELF_DIR, 'validate-skill-write.ts')], { stdin: Buffer.from(payload) })
+    const r = Bun.spawnSync(['bun', join(SELF_DIR, 'validate-skill-write.ts')], { timeout: 120_000, stdin: Buffer.from(payload) })
     expect(r.exitCode).toBe(0)
     // "no FINDING", not "no output". The hook emits NOT CHECKED notes now, deliberately — the gate
     // prints them and the two surfaces must not disagree about what did not run. Asserting empty
@@ -1606,7 +1606,7 @@ describe('the probe against its own skill', () => {
 
 /** Run the write-time hook out-of-process, the way Claude Code invokes it. */
 function writeHook(filePath: string): string {
-  const r = Bun.spawnSync(['bun', join(SELF_DIR, 'validate-skill-write.ts')], {
+  const r = Bun.spawnSync(['bun', join(SELF_DIR, 'validate-skill-write.ts')], { timeout: 120_000,
     stdin: Buffer.from(JSON.stringify({ tool_input: { file_path: filePath } })),
   })
   return r.stdout.toString()
@@ -1956,7 +1956,7 @@ describe('D16 — an agent file outside the skill is gated with --agent', () => 
   // depending on where the walk started. A parity test must compare tuples, as parity-check.sh does
   // for the gate-vs-write-hook axis.
   const rulesForAgent = (args: string[]) => {
-    const r = Bun.spawnSync(['bun', join(SELF_DIR, 'wc-probe.ts'), ...args, '--json'])
+    const r = Bun.spawnSync(['bun', join(SELF_DIR, 'wc-probe.ts'), ...args, '--json'], { timeout: 120_000 })
     const parsed = JSON.parse(r.stdout.toString())
     return [
       ...new Set(
