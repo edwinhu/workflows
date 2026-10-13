@@ -166,23 +166,37 @@ def _hop_imports(f, ctx):
     return ctx['cache'][f]
 
 
-def _connected(path, tree, touched, ctx):
-    """An import joins the file to a touched one: it imports a touched module (or a name from it), a touched
-    file imports it, or -- exactly one hop -- a module it imports inside the root imports a touched module. A
-    package's __init__.py is such a module, which is how a re-export (`from .curve import build`) connects.
-    Never a second hop, and at most MAX_HOP_FILES modules per file. Static: trees are parsed, never imported."""
-    mine = _imports(tree, path)
-    if any(_hits(mine, path, t, ctx) or _hits(_imports(t_tree, t), t, path, ctx) for t, t_tree in touched):
-        return True
-    skip = {os.path.realpath(path)} | {os.path.realpath(t) for t, _ in touched}
+def _hop_files(imports, path, skip, ctx):
+    """The distinct modules inside the root that path's imports resolve to, outside skip, at most MAX_HOP_FILES."""
     hops = []
-    for c, absolute in mine:
+    for c, absolute in imports:
         f = _resolve(c, absolute, path, ctx['root'])
         if f and f not in skip and f not in hops:
             hops.append(f)
             if len(hops) == MAX_HOP_FILES:
                 break
-    return any(_hits(_hop_imports(f, ctx), f, t, ctx) for f in hops for t, _ in touched)
+    return hops
+
+
+def _connected(path, tree, touched, ctx):
+    """An import joins the file to a touched one: it imports a touched module (or a name from it), a touched
+    file imports it, or -- exactly one hop, either direction -- a module it imports inside the root imports a
+    touched module, or a module a touched file imports inside the root imports it. A package's __init__.py is
+    such a module, which is how a re-export (`from .curve import build`) connects. Never a second hop, and at
+    most MAX_HOP_FILES modules per file. Static: trees are parsed, never imported."""
+    mine = _imports(tree, path)
+    t_imports = [(t, _imports(t_tree, t)) for t, t_tree in touched]
+    if any(_hits(mine, path, t, ctx) or _hits(imps, t, path, ctx) for t, imps in t_imports):
+        return True
+    touched_real = {os.path.realpath(t) for t, _ in touched}
+    me = os.path.realpath(path)
+    hops = _hop_files(mine, path, touched_real | {me}, ctx)
+    if any(_hits(_hop_imports(f, ctx), f, t, ctx) for f in hops for t, _ in touched):
+        return True
+    # the touched files' own hops are the same for every sibling file: resolved once per evidence call
+    if 'touched_hops' not in ctx:
+        ctx['touched_hops'] = [f for t, imps in t_imports for f in _hop_files(imps, t, touched_real, ctx)]
+    return any(_hits(_hop_imports(f, ctx), f, path, ctx) for f in ctx['touched_hops'] if f != me)
 
 
 def _sibling_checks(siblings, touched):
