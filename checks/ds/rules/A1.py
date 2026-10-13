@@ -90,9 +90,91 @@ def _module(path):
     return tuple(parts[:-1] if parts[-1] == '__init__' else parts)
 
 
-def _imports(tree, path):
+def _dotted(node):
+    """`a.b.c` for a Name/Attribute chain, else None."""
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.Attribute):
+        head = _dotted(node.value)
+        return head and head + '.' + node.attr
+    return None
+
+
+# a non-literal module name or sys.path entry (a variable, f-string, env lookup) stays unresolved
+def _literal_module(node):
+    """The dotted name an importlib.import_module / __import__ call names, when it is an absolute literal."""
+    if not isinstance(node, ast.Call) or not node.args or (_dotted(node.func) or '').split('.')[-1] \
+            not in ('import_module', '__import__'):
+        return None
+    arg = node.args[0]
+    if isinstance(arg, ast.Constant) and isinstance(arg.value, str) and arg.value and not arg.value.startswith('.'):
+        return tuple(arg.value.split('.'))
+    return None
+
+
+def _static_dir(node, path, root):
+    """The directory a sys.path expression names, when built from literals, __file__, os.path.join/dirname/
+    abspath/realpath/normpath, str() and Path(...).parent/.parents[n]/.resolve()/`/`; else None. A relative
+    literal is taken against the project root, the directory a pipeline is conventionally run from."""
+    def ev(n):
+        if isinstance(n, ast.Constant) and isinstance(n.value, str):
+            return n.value
+        if isinstance(n, ast.Name) and n.id == '__file__':
+            return os.path.realpath(path)
+        if isinstance(n, ast.BinOp) and isinstance(n.op, ast.Div):
+            left, right = ev(n.left), (n.right.value if isinstance(n.right, ast.Constant)
+                                       and isinstance(n.right.value, str) else ev(n.right))
+            return left and right and os.path.join(left, right)
+        if isinstance(n, ast.Attribute) and n.attr == 'parent':
+            inner = ev(n.value)
+            return inner and os.path.dirname(os.path.normpath(inner))
+        if isinstance(n, ast.Subscript) and isinstance(n.value, ast.Attribute) and n.value.attr == 'parents' \
+                and isinstance(n.slice, ast.Constant) and isinstance(n.slice.value, int):
+            inner = ev(n.value.value)
+            for _ in range(n.slice.value + 1):
+                inner = inner and os.path.dirname(os.path.normpath(inner))
+            return inner
+        if not isinstance(n, ast.Call):
+            return None
+        name = _dotted(n.func) or ''
+        if isinstance(n.func, ast.Attribute) and n.func.attr in ('resolve', 'absolute') and not n.args:
+            return ev(n.func.value)
+        if name.split('.')[-1] == 'join' and name.endswith('path.join') and n.args:
+            parts = [ev(a) if not isinstance(a, ast.Constant) else a.value for a in n.args]
+            return None if any(not isinstance(x, str) for x in parts) else os.path.join(*parts)
+        if name in ('os.path.dirname', 'path.dirname') and len(n.args) == 1:
+            inner = ev(n.args[0])
+            return inner and os.path.dirname(os.path.normpath(inner))
+        if name in ('os.path.abspath', 'os.path.realpath', 'os.path.normpath', 'path.abspath', 'path.realpath',
+                    'path.normpath', 'str', 'os.fspath', 'Path', 'pathlib.Path') and len(n.args) == 1:
+            return ev(n.args[0])
+        return None
+
+    d = ev(node)
+    if d and not os.path.isabs(d):
+        d = root and os.path.join(root, d)
+    return os.path.realpath(d) if d else None
+
+
+def _path_bases(tree, path, root):
+    """Directories a module-top-level sys.path.insert/append adds, when statically resolvable."""
+    out = []
+    for stmt in tree.body:
+        call = stmt.value if isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call) else None
+        name = call and _dotted(call.func)
+        arg = (call.args[1] if name == 'sys.path.insert' and len(call.args) == 2
+               else call.args[0] if name == 'sys.path.append' and len(call.args) == 1 else None) if call else None
+        d = arg is not None and _static_dir(arg, path, root)
+        if d and os.path.isdir(d) and d not in out:
+            out.append(d)
+    return out
+
+
+def _imports(tree, path, ctx=None):
     """[(components, absolute)] of every module or name the file's imports could name. A relative import is
-    resolved against the file's own package to full real-path components; an absolute one is a suffix."""
+    resolved against the file's own package to full real-path components; an absolute one is a suffix. A literal
+    importlib.import_module/__import__ name counts as an import; with ctx, the file's resolvable sys.path
+    additions are recorded as extra import bases."""
     mod = _module(path)
     pkg = mod if os.path.basename(path) == '__init__.py' else mod[:-1]
     out = []
@@ -104,6 +186,10 @@ def _imports(tree, path):
             target = base + tuple((node.module or '').split('.')) if node.module else base
             out.append((target, not node.level))
             out += [(target + (a.name,), not node.level) for a in node.names if a.name != '*']
+        elif (name := _literal_module(node)):
+            out.append((name, True))
+    if ctx is not None:
+        ctx['bases'][os.path.realpath(path)] = _path_bases(tree, path, ctx['root'])
     return out
 
 
@@ -122,10 +208,12 @@ def _root(siblings):
     return None
 
 
-def _resolve(c, absolute, path, root):
+def _resolve(c, absolute, path, ctx):
     """The real .py file inside root that an import candidate names -- a module, or a package's __init__.py --
     or None. An absolute candidate is rooted at the importer's own directory, then each ancestor up to root,
-    nearest first; a relative one is already full real-path components."""
+    nearest first, then each directory its sys.path additions name; a relative one is already full real-path
+    components."""
+    root = ctx['root']
     if not c or not root:
         return None
     heads = [os.sep + os.path.join(*c)]
@@ -136,6 +224,7 @@ def _resolve(c, absolute, path, root):
             if d == root:
                 break
             d = os.path.dirname(d)
+        heads += [os.path.join(b, *c) for b in ctx['bases'].get(os.path.realpath(path), ())]
     for h in heads:
         for f in (h + '.py', os.path.join(h, '__init__.py')):
             real = os.path.realpath(f)
@@ -153,7 +242,7 @@ def _hits(imports, path, target, ctx):
         if not c or (module[-len(c):] != c if absolute else module != c):
             continue
         if not absolute or len(c) > 1 or ctx['names'][c[0]] < 2 \
-                or _resolve(c, True, path, ctx['root']) == os.path.realpath(target):
+                or _resolve(c, True, path, ctx) == os.path.realpath(target):
             return True
     return False
 
@@ -162,7 +251,7 @@ def _hop_imports(f, ctx):
     """The imports of a module one hop away, parsed once per evidence call."""
     if f not in ctx['cache']:
         tree = next((parse(lines) for _, lines in sources([(f, f)])), None)
-        ctx['cache'][f] = _imports(tree, f) if tree is not None else []
+        ctx['cache'][f] = _imports(tree, f, ctx) if tree is not None else []
     return ctx['cache'][f]
 
 
@@ -170,7 +259,7 @@ def _hop_files(imports, path, skip, ctx):
     """The distinct modules inside the root that path's imports resolve to, outside skip, at most MAX_HOP_FILES."""
     hops = []
     for c, absolute in imports:
-        f = _resolve(c, absolute, path, ctx['root'])
+        f = _resolve(c, absolute, path, ctx)
         if f and f not in skip and f not in hops:
             hops.append(f)
             if len(hops) == MAX_HOP_FILES:
@@ -184,8 +273,8 @@ def _connected(path, tree, touched, ctx):
     touched module, or a module a touched file imports inside the root imports it. A package's __init__.py is
     such a module, which is how a re-export (`from .curve import build`) connects. Never a second hop, and at
     most MAX_HOP_FILES modules per file. Static: trees are parsed, never imported."""
-    mine = _imports(tree, path)
-    t_imports = [(t, _imports(t_tree, t)) for t, t_tree in touched]
+    mine = _imports(tree, path, ctx)
+    t_imports = [(t, _imports(t_tree, t, ctx)) for t, t_tree in touched]
     if any(_hits(mine, path, t, ctx) or _hits(imps, t, path, ctx) for t, imps in t_imports):
         return True
     touched_real = {os.path.realpath(t) for t, _ in touched}
@@ -209,7 +298,7 @@ def _sibling_checks(siblings, touched):
     own = {os.path.dirname(os.path.abspath(t)) for t, _ in touched}
     near = own | {os.path.dirname(d) for d in own}
     tree_files = {os.path.realpath(p) for _, p in py_files(siblings)} | {os.path.realpath(t) for t, _ in touched}
-    ctx = {'root': _root(siblings), 'cache': {}, 'names': Counter(_stem(f) for f in tree_files)}
+    ctx = {'root': _root(siblings), 'cache': {}, 'bases': {}, 'names': Counter(_stem(f) for f in tree_files)}
     out, read, n_lines, dropped = [], [], 0, 0
     for rel, path in py_files(siblings):
         for _, lines in sources([(rel, path)]):
