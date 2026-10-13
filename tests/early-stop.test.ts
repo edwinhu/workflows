@@ -1,6 +1,6 @@
 import { expect, test } from 'bun:test'
 import { spawn } from 'node:child_process'
-import { chmodSync, closeSync, mkdirSync, mkdtempSync, openSync, readFileSync, utimesSync, writeFileSync } from 'node:fs'
+import { appendFileSync, chmodSync, closeSync, mkdirSync, mkdtempSync, openSync, readFileSync, utimesSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
@@ -1615,3 +1615,89 @@ test('noWakeUnderMandate: a live background job defeats it; the probe is asked l
   expect(noWakeUnderMandate(ctx, [], () => ['bg: sleep 60'])).toBe(false)
   expect(noWakeUnderMandate({ ...ctx, heartbeatAlive: true }, [], () => { throw new Error('probed') })).toBe(false)
 })
+
+// ---- the stop right after a block: work-hold.ts skips every stop_hook_active stop, so this hook evaluates it ----
+
+const reblock = (p: Record<string, unknown>) => ({ ...p, stop_hook_active: true })
+/** What the harness records for a blocked stop: meta hook feedback, never a turn boundary. */
+const feedback = (path: string, n: number) =>
+  appendFileSync(path, JSON.stringify({ type: 'user', uuid: `meta-${n}`, isMeta: true, message: { content: 'Stop hook feedback:\nkeep going' } }) + '\n')
+
+test('reblock: an armed hold with a check, stop_hook_active true — this hook EVALUATES the stop instead of standing down', async () => {
+  const port = 18965
+  const srv = stubDecisions(port, 0.99)
+  await settle()
+  const { dir, transcript } = fixture()
+  goalHoldFile(dir, 'rb-a', { check: 'bun test' })
+  const env = childEnv(dir, decisionsAt(port))
+  const r = runHook(env, reblock(stopPayload('rb-a', transcript)))
+  // The same hold, stop_hook_active false: the stand-down is unchanged, so the two never both block.
+  const plain = fixture()
+  goalHoldFile(plain.dir, 'rb-a2', { check: 'bun test' })
+  const r2 = runHook(childEnv(plain.dir, decisionsAt(port)), stopPayload('rb-a2', plain.transcript))
+  srv.kill()
+  // The hold's goal is the mandate and nothing will wake the session, so the no-wake leg blocks first.
+  expect(JSON.parse(r.out).decision).toBe('block')
+  expect(JSON.parse(r.out).reason).toBe(NO_WAKE_REASON)
+  expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).not.toContain('work-hold is armed')
+  expect(r2.out).toBe('')
+  expect(readFileSync(join(plain.dir, 'early-stop.log'), 'utf8')).toContain('work-hold is armed')
+  // And work-hold.ts really does skip that stop: without this hook it would go unchecked.
+  expect(runWorkHold(env, reblock(stopPayload('rb-a', transcript)))).toBe('')
+}, 60000)
+
+test('reblock: the hold goal is the mandate, so the no-wake leg runs on a check-less hold', () => {
+  const { dir, transcript } = mandateSession()
+  goalHoldFile(dir, 'rb-b')
+  const r = runHook(childEnv(dir, DEAD), reblock(stopPayload('rb-b', transcript, 'All done, nothing is running.')))
+  expect(r.out).toContain('"decision":"block"')
+  expect(JSON.parse(r.out).reason).toBe(NO_WAKE_REASON)
+}, 30000)
+
+test('reblock: a hold block followed by this hook\'s blocks is capped per turn — the third stop is allowed', async () => {
+  const port = 18966
+  const srv = stubDecisions(port, 0.99)
+  await settle()
+  const { dir, transcript } = fixture()
+  goalHoldFile(dir, 'rb-c', { check: 'exit 1' })
+  const env = childEnv(dir, decisionsAt(port))
+  const outs: string[] = []
+  try {
+    // Stop 0 is the hold's own block (this hook stands down); every stop after it is stop_hook_active.
+    expect(runHook(env, stopPayload('rb-c', transcript)).out).toBe('')
+    for (let i = 1; i <= 4; i++) {
+      feedback(transcript, i)
+      outs.push(runHook(env, reblock(stopPayload('rb-c', transcript))).out)
+    }
+  } finally {
+    srv.kill()
+  }
+  expect(outs[0]).toContain('"decision":"block"')
+  expect(outs[1]).toContain('"decision":"block"')
+  expect(outs[2]).toBe('')
+  expect(outs[3]).toBe('')
+  expect(readFileSync(join(dir, 'early-stop.log'), 'utf8')).toContain('cap: 2 blocks already this turn')
+}, 60000)
+
+test('reblock: under an afk-silent hold stop_hook_active changes nothing — the same afk block either way', () => {
+  const a = mandateSession()
+  afkHoldFile(a.dir, 'rb-d')
+  const plain = runHook(childEnv(a.dir, DEAD), stopPayload('rb-d', a.transcript, 'All done, nothing is running.'))
+  const b = mandateSession()
+  afkHoldFile(b.dir, 'rb-d2')
+  const active = runHook(childEnv(b.dir, DEAD), reblock(stopPayload('rb-d2', b.transcript, 'All done, nothing is running.')))
+  expect(plain.out).toContain('"decision":"block"')
+  expect(active.out).toBe(plain.out)
+}, 30000)
+
+test('reblock: with a live heartbeat the no-wake leg is quiet and the JUDGE blocks the stop', async () => {
+  const port = 18967
+  const srv = stubDecisions(port, 0.99)
+  await settle()
+  const { dir, transcript } = mandateSession([cronCreate('eeee5555', '2026-10-07T01:01:00.000Z')])
+  goalHoldFile(dir, 'rb-e', { check: 'exit 1' })
+  const r = runHook(childEnv(dir, decisionsAt(port)), reblock(stopPayload('rb-e', transcript)))
+  srv.kill()
+  expect(r.out).toContain('"decision":"block"')
+  expect(r.out).toContain('Do not end a turn while work the user asked for is still owed')
+}, 30000)

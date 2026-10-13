@@ -28,7 +28,9 @@
  *      objective and speaks for itself; this one stands down for the duration. The exception is an
  *      afk hold with no check and no run before its ceiling: `work-hold.ts` allows every such stop
  *      (`unjudged`), so this hook speaks for it, with reasons that never send the model to AskUserQuestion.
- *      Any other check-less hold carries a goal, which `work-hold.ts` judges and blocks on.
+ *      Any other check-less hold carries a goal, which `work-hold.ts` judges and blocks on. And a
+ *      `stop_hook_active` stop, which `work-hold.ts` skips unread, is judged here with the hold's goal as
+ *      the mandate; rule 2's per-turn cap bounds the hold-block, this-block chain.
  *   4. NEVER BLOCKS WHILE THE WATCHER WILL WAKE THE SESSION. When a farm or work run this session
  *      launched is still live and the watcher mod (`hooks/watch/watcher.ts`) is running here — its
  *      beacon is fresh — the owed work is in flight and its finish arrives as a `$.prompt.submit`, so a
@@ -811,6 +813,16 @@ export function afkHold(session: string, nowSeconds = Math.floor(Date.now() / 10
   }
 }
 
+/** The goal of this session's armed hold, whatever its origin, or null. */
+export function holdGoal(session: string): string | null {
+  try {
+    const g = (JSON.parse(readFileSync(statePath(session), 'utf8')) as { goal?: unknown }).goal
+    return typeof g === 'string' && g.trim() ? g : null
+  } catch {
+    return null
+  }
+}
+
 /** The goal of this session's armed `/afk` hold, or null: the hold itself is the mandate. */
 export function afkHoldGoal(session: string): string | null {
   return afkHold(session)?.goal ?? null
@@ -1096,8 +1108,12 @@ function main(): void {
   if (!session) return allowNow('-', '-', 'no session id: the per-turn cap cannot be keyed')
 
   const afk = afkHold(session)
-  if (workHoldArmed(session) && !afk?.silent)
+  // `work-hold.ts` exits at once on a stop_hook_active stop, so that one is this hook's to judge.
+  const reblock = payload.stop_hook_active === true
+  const held = workHoldArmed(session)
+  if (held && !afk?.silent && !reblock)
     return allowNow(session, '-', 'a work-hold is armed: it speaks for this session')
+  const mandate = afk?.goal ?? (held ? holdGoal(session) : null)
 
   const live = liveOwnedRuns(session)
   if (live.length && watcherActive(session))
@@ -1116,7 +1132,7 @@ function main(): void {
     turn = jsonl ? latestUserTurn(jsonl) : null
     if (turn) {
       try {
-        ctx = judgeContext(jsonl, afk?.goal ?? null)
+        ctx = judgeContext(jsonl, mandate)
       } catch {
         /* the old two-part state still judges */
       }
