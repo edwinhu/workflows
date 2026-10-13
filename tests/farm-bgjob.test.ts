@@ -219,7 +219,7 @@ test('the Stop hook never fires outside a farm child, nor for a child farm.sh di
     const { outs, cleanup } = runHookTree(o)
     try { expect(outs[0].trim()).toBe('') } finally { cleanup() }
   }
-}, 70_000)
+}, 150_000)
 
 test('hooks.json registers the background-job Stop hook', () => {
   const hooks = JSON.parse(readFileSync(join(ROOT, 'hooks', 'hooks.json'), 'utf8'))

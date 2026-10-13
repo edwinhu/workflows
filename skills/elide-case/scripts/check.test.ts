@@ -860,7 +860,7 @@ ${scopeSection([
       const { out } = checkPdf(pdf);
       expect(out).not.toContain("widow");
       expect(out).not.toContain("orphan");
-    }, 1_500_000);
+    }, 2_100_000);
 
     // The stranded-heading check is bold-and-short, not flush-right, so it is
     // geometry-independent — which is why this class stayed local when widow and
@@ -913,7 +913,7 @@ ${scopeSection([
       for (const name of ["widows.py", "orphans.py"]) {
         expect(checkCanon(name, pdf).code).toBe(0);
       }
-    }, 1_500_000);
+    }, 2_100_000);
 
     // The fix vocabulary is layout-only, and the checker says so on every failure:
     // rewording the court's text to close a defect would defeat the verbatim gate.

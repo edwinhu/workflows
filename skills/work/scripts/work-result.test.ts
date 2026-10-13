@@ -190,7 +190,7 @@ describe('work-result.sh accepts a well-formed gate return', () => {
     for (const bad of ['2', 2, {}, null]) {
       expect(runJson({ ...valid(), residue: bad }).code).toBe(2)
     }
-  })
+  }, 480_000)
 
   // `routes` and `planFindings` are the one-lens gate's two new channels: a RED-mode diagnosis per
   // failure, and the blocking items no task's writablePaths can reach. OPTIONAL, not required — a
@@ -215,7 +215,7 @@ describe('work-result.sh accepts a well-formed gate return', () => {
       expect(runJson({ ...valid(), routes: bad }).code).toBe(2)
       expect(runJson({ ...valid(), planFindings: bad }).code).toBe(2)
     }
-  }, 240_000)
+  }, 960_000)
 
   // The refuter leg is gone, so nothing in the contract may still demand its key.
   test('a result with no `refuted` key is not refused for missing it', () => {

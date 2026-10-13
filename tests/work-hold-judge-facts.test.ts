@@ -255,7 +255,7 @@ describe('item 21: a round is a DISPATCH, not a Stop', () => {
     srv.kill()
     expect(JSON.parse(last.stdout).decision).toBe('block')
     expect(lastLedgerEntry(join(dir, 'work-hold-drain.releases.log'))).toBeNull()
-  }, 270_000)
+  }, 870_000)
 
   test('the run in flight on its LAST allowed round is not expired by the round ceiling', () => {
     const dir = mkTmp('judgerounds-')

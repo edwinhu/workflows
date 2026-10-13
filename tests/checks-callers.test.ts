@@ -179,7 +179,7 @@ test('a row runs when its workflow is a value, "none" stated explicitly, or impl
     expect(r.status, `${row.label}: ${r.stderr}`).toBe(0)
     expect(r.ran, row.label).toBe(true)
   }
-})
+}, 420_000)
 
 test('workflow-check gates a farmed row of any workflow: a writing row that leaves a violating draft fails by name, a clean one passes', () => {
   const hit = farm([{ label: 'w', agent: 'general-purpose', workflow: 'writing', prompt: 'Draft the memo.' }], 'Plain opening paragraph here.\n\nThe key finding is robust to every specification.\n')

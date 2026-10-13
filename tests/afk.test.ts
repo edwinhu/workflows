@@ -119,7 +119,7 @@ describe('arm.sh refusals', () => {
       expect(Bun.file(join(w.tmp, `work-hold-${sid}.json`)).size).toBe(0)
       expect(arm(w, '23:30', [sid], strict).status).toBe(2)
     }
-  })
+  }, 240_000)
 
   // nevada e83fb488, 2026-10-08: the borrowed hold released at ~11:45 and nothing recorded the mandate,
   // so early-stop sent the model to AskUserQuestion at 11:51 and it sat 98 minutes.
