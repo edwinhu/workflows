@@ -122,6 +122,25 @@ printf '{"type":"result","result":"done"}\\n'`
   } finally { rmSync(root, { recursive: true, force: true }) }
 }, 120_000)
 
+test('an ignored long-lived helper the row happened to start outlives the row: the reap neither reports nor kills it', () => {
+  // zvec-grep's `zg server --stdio` bridge starts the shared `zg server run` daemon detached; it carries
+  // the FARM_ROW_ID of whichever row started it, and every other session uses it after that row ends.
+  const stub = `zg="$TMPDIR/bin/zg"
+mkdir -p "$TMPDIR/bin" && printf '#!/usr/bin/env bash\\nsleep 30\\n' > "$zg"
+setsid bash "$zg" server run </dev/null >/dev/null 2>&1 & echo $! > "$TMPDIR/bg.pid"
+printf '{"type":"result","result":"done"}\\n'`
+  const { row, root, pidFile } = runFarm(stub)
+  const pid = Number(readFileSync(pidFile, 'utf8').trim())
+  try {
+    expect(row.orphaned).toEqual([])
+    expect(row.ok).toBe(true)
+    expect(alive(pid)).toBe(true)
+  } finally {
+    try { process.kill(-pid, 'SIGKILL') } catch {}  // setsid made it a group leader: its sleep goes too
+    rmSync(root, { recursive: true, force: true })
+  }
+}, 120_000)
+
 // What a real `claude -p` child writes when its turn ends with a run_in_background Bash live
 // (captured 2026-10-03): the harness kills the task AFTER the result event, so no process survives
 // for a scan to find. The stream is the evidence.

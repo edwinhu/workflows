@@ -8,6 +8,8 @@
 
 ### Fixed
 
+- **The farm reap no longer kills a helper `FARM_BG_IGNORE` exempts:** `bgjobs.py reap` skipped ignored processes when reporting orphans but still SIGTERMed every process carrying the row id, so the shared `zg server run` daemon (exempt as `\bzg server\b`) died when the row that happened to start it ended, and every other session using it lost it. An ignored process, and anything running under it with the same row id, is now neither reported nor killed; the ignored helpers end on their own. This supersedes the "the reap still kills it" notes in the two chrome-devtools-mcp entries below. A test in `tests/farm-bgjob.test.ts` beside the watchdog one: a detached `bash .../zg server run` running `sleep 30` is still alive after its row ends (red before).
+
 - **`tests/farm-bgjob.test.ts`'s Stop-hook fixture waits for its fake jobs instead of sleeping 0.3 s:** under load the jobs had not exec'd yet when `bgjobs.py hook` ran, and `JSON.parse('')` failed. The fixture now polls each job's `/proc/<pid>/cmdline` until all three show their command, bounded at 10 s. No assertion changed; the four Stop-hook tests passed 3 of 3 runs beside 2×nproc busy loops.
 
 - **`scripts/test.sh` drops the caller's `FARM_*` and `GRIND_*` variables:** a suite run inside a farm child inherited `FARM_OUT_CHILD=1` and its `FARM_ROW_ID`, and `tests/farm-bgjob.test.ts` failed 8 of 9 because its fixture rows took that identity as their own. Every inherited `FARM_*` / `GRIND_*` is unset before the run; the `FARM_OUTCOMES` the script sets itself stays. `tests/test-sh-env.test.ts` runs a probe test through `test.sh` with `FARM_OUT_CHILD=1 FARM_ROW_ID=x GRIND_RUN=y` set and sees only `FARM_OUTCOMES` (red before).
