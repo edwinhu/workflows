@@ -646,8 +646,7 @@ test('A1: a touched file alone in its directory sees exactly the state it saw be
 // ---- A1 wider scope: the parent package and its sibling packages, never above the project root -----
 // A git repo makes the project root (evidence.py's root_dir); the layout under it is the package tree.
 
-function a1Project(layout: Record<string, string>, under = '') {
-  const outer = mkTmp('rule-check-a1-wide-');
+function a1Project(layout: Record<string, string>, under = '', outer = mkTmp('rule-check-a1-wide-')) {
   const root = join(outer, under);
   fs.mkdirSync(root, { recursive: true });
   spawnSync('git', ['-C', root, 'init', '-q'], { timeout: 120_000 });
@@ -825,6 +824,58 @@ test('A1: a one-component import that resolves to another file of that name does
   expect(a1.verdict).toBe('VIOLATED');
   expect(res.exitCode).toBe(2);
   expect(state.n_unconnected_sibling_package_files_dropped).toBe(1);
+});
+
+// importlib and sys.path: only a literal module name or a statically resolvable directory connects
+test('A1: a sibling package doing importlib.import_module of the touched module satisfies it', async () => {
+  const { root } = a1Project({
+    'src/models/curve.py': BUILD,
+    'src/robustness/loo.py': 'import importlib\ncurve = importlib.import_module("src.models.curve")\n' + VERIFY,
+  });
+  const { res, a1, state } = await a1Run([join(root, 'src/models/curve.py')]);
+  expect(a1.verdict).toBe('MET');
+  expect(res.exitCode).toBe(0);
+  expect(state.robustness_check_sites.map((c: any) => c.file)).toEqual(['src/robustness/loo.py']);
+});
+
+test('A1: a non-literal importlib.import_module does not connect a sibling package', async () => {
+  const { root } = a1Project({
+    'src/models/curve.py': BUILD,
+    'src/robustness/loo.py': 'import importlib\nname = "src.models.curve"\ncurve = importlib.import_module(name)\n' + VERIFY,
+  });
+  const { res, a1, state } = await a1Run([join(root, 'src/models/curve.py')]);
+  expect(a1.verdict).toBe('VIOLATED');
+  expect(res.exitCode).toBe(2);
+  expect(state.robustness_check_sites).toEqual([]);
+  expect(state.n_unconnected_sibling_package_files_dropped).toBe(1);
+});
+
+// a second drops.py makes the bare `import drops` ambiguous (never `loo`: that word is itself a check line), so only the sys.path base can resolve it
+test('A1: the touched file adding a literal dir to sys.path, then importing the check module there, satisfies it', async () => {
+  const outer = mkTmp('rule-check-a1-syspath-');
+  const checks = join(outer, 'src/checks');
+  const { root } = a1Project({
+    'src/models/curve.py': `import sys\nsys.path.insert(0, ${JSON.stringify(checks)})\nimport drops\n` + BUILD,
+    'src/checks/drops.py': VERIFY,
+    'src/io/drops.py': 'def load(p):\n    return p\n',
+  }, '', outer);
+  const { res, a1, state } = await a1Run([join(root, 'src/models/curve.py')]);
+  expect(a1.verdict).toBe('MET');
+  expect(res.exitCode).toBe(0);
+  expect(state.robustness_check_sites.map((c: any) => c.file)).toEqual(['src/checks/drops.py']);
+});
+
+test('A1: a sys.path entry built from __file__ resolves statically too', async () => {
+  const { root } = a1Project({
+    'src/models/curve.py': 'import os, sys\nfrom pathlib import Path\n'
+      + 'sys.path.append(os.path.join(os.path.dirname(__file__), "..", "checks"))\n'
+      + 'sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "other"))\nimport drops\n' + BUILD,
+    'src/checks/drops.py': VERIFY,
+    'src/io/drops.py': 'def load(p):\n    return p\n',
+  });
+  const { a1, state } = await a1Run([join(root, 'src/models/curve.py')]);
+  expect(a1.verdict).toBe('MET');
+  expect(state.robustness_check_sites.map((c: any) => c.file)).toEqual(['src/checks/drops.py']);
 });
 
 test('A1: a check above the project root does not count', async () => {
