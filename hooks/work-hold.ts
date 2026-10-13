@@ -246,6 +246,21 @@ export function inFlight(s: { run?: string }): boolean {
 }
 
 /**
+ * The run's loop.exit code, or '' when it is absent, empty or older than args.json. Both dispatchers
+ * rewrite args.json before launching a round, and only work-dispatch.sh clears loop.exit: after a hand
+ * `work-redispatch.sh --dispatch` the dead loop's code is still on disk, and it is not this round's.
+ */
+function loopExitCode(run: string): string {
+  try {
+    const f = join(run, 'loop.exit')
+    if (statSync(f).mtimeMs < statSync(join(run, 'args.json')).mtimeMs) return ''
+    return readFileSync(f, 'utf8').trim()
+  } catch {
+    return ''
+  }
+}
+
+/**
  * Did the watched run end as a READ-ONLY verdict? Returns `PASS, loop.exit 0` / `FAIL, loop.exit 8`,
  * else null. work-loop.sh exits 0 on ANY accepted PASS and 8 only on a readOnly FAIL, so both are a
  * verdict — secreg 2026-10-03, 1003-slides-18-diag PASSED at exit 0 and its "reach a verdict" goal
@@ -255,7 +270,7 @@ export function inFlight(s: { run?: string }): boolean {
 export function verdictReached(s: { run?: string }): string | null {
   if (!s.run) return null
   try {
-    const rc = readFileSync(join(s.run, 'loop.exit'), 'utf8').trim()
+    const rc = loopExitCode(s.run)
     if (rc !== '0' && rc !== '8') return null
     if (JSON.parse(readFileSync(join(s.run, 'args.json'), 'utf8')).readOnly !== true) return null
     return `${rc === '0' ? 'PASS' : 'FAIL'}, loop.exit ${rc}`
@@ -318,12 +333,8 @@ export function runDied(s: { run?: string }, session: string, root?: string): st
     }
   }
   if (pids.some(alive)) return null
-  let rc = ''
-  try {
-    rc = readFileSync(join(s.run, 'loop.exit'), 'utf8').trim()
-  } catch {
-    /* absent: killed before the wrapper could write it */
-  }
+  // '' when absent (killed before the wrapper could write it) or an earlier loop's.
+  const rc = loopExitCode(s.run)
   return rc
     ? `its loop exited ${rc} and no result.json was written`
     : `no process is left (pid ${pids.join(', ')}), and it wrote no loop.exit and no result.json — the loop was killed`
