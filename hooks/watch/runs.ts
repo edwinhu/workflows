@@ -65,6 +65,8 @@ export type View = Run & {
   nested: boolean
   alive: boolean
   artifactsPresent: boolean
+  /** Some artifact exists non-empty but predates the run's START: an earlier run's, not this one's. */
+  artifactsStale: boolean
   state: 'running' | 'done' | 'gone'
   startedMs: number
   /** For a work-loop: loop.exit's content when present. */
@@ -176,6 +178,8 @@ export type Facts = {
   alive: Set<number>
   /** Paths that exist non-empty. */
   present: Set<string>
+  /** present path -> mtime (ms). A file older than a run's START is an earlier run's, so it is not that run's artifact. */
+  presentAt?: Map<string, number>
   /** file -> fallback start time (ms), the first time the watcher saw the file. */
   firstSeen: Map<string, number>
   loopExit: Map<string, string>
@@ -194,7 +198,11 @@ export function classify(runs: Run[], facts: Facts): View[] {
   return runs.map(r => {
     const kind = kindOf(r)
     const arts = artifactsOf(r)
-    const artifactsPresent = arts.length > 0 && arts.every(p => facts.present.has(p))
+    const startedMs = r.t ? r.t * 1000 : facts.firstSeen.get(r.file) ?? 0
+    // Several runs can name one path, so freshness is judged per run, against its own START.
+    const stale = (p: string) => (facts.presentAt?.get(p) ?? Infinity) < startedMs
+    const artifactsPresent = arts.length > 0 && arts.every(p => facts.present.has(p) && !stale(p))
+    const artifactsStale = arts.some(p => facts.present.has(p) && stale(p))
     let runDir: string | undefined
     if (kind === 'work-round' || kind === 'work-loop') runDir = r.out ? dirname(r.out) : undefined
     else if (kind === 'farm') runDir = [r.out, ...r.claims].map(p => p && dirname(p)).find(d => d && workDirs.has(d))
@@ -209,9 +217,8 @@ export function classify(runs: Run[], facts: Facts): View[] {
     // Killed after its artifact landed: the deliverable is there, so it finished rather than died.
     else if (artifactsPresent) state = 'done'
     else state = 'gone'
-    const startedMs = r.t ? r.t * 1000 : facts.firstSeen.get(r.file) ?? 0
     return {
-      ...r, kind, runDir, nested, alive, artifactsPresent, state, startedMs, loopExit,
+      ...r, kind, runDir, nested, alive, artifactsPresent, artifactsStale, state, startedMs, loopExit,
       round: runDir ? facts.round.get(runDir) : undefined,
       phase: runDir ? facts.phase.get(runDir) : undefined,
     }
@@ -276,7 +283,7 @@ export function table(views: View[], nowMs: number): string {
     (v.nested ? '  ↳ ' : '') + name(v),
     stateWord(v),
     elapsed(nowMs - v.startedMs),
-    artifactsOf(v).length ? (v.artifactsPresent ? 'present' : 'missing') : '-',
+    artifactsOf(v).length ? (v.artifactsPresent ? 'present' : v.artifactsStale ? 'stale' : 'missing') : '-',
     report(v),
   ])
   const head = ['run', 'state', 'elapsed', 'artifact', 'report']
@@ -320,8 +327,8 @@ export function wakeText(v: View, nowMs: number): string {
   const arts = artifactsOf(v)
   if (v.state === 'gone') {
     return `${what} ${v.label} is GONE: pid ${v.pid} exited with no DONE line after ${took}` +
-      (arts.length ? `; expected artifact missing: ${arts.join(', ')}` : '') + `. ${ev}`
+      (arts.length ? `; expected artifact ${v.artifactsStale ? 'stale (older than START)' : 'missing'}: ${arts.join(', ')}` : '') + `. ${ev}`
   }
   return `${what} ${v.label} finished: ${v.done?.detail || 'artifact present, no DONE line'} after ${took}.` +
-    (arts.length ? ` Report: ${arts.join(', ')} (${v.artifactsPresent ? 'present' : 'MISSING'}).` : '') + ` ${ev}`
+    (arts.length ? ` Report: ${arts.join(', ')} (${v.artifactsPresent ? 'present' : v.artifactsStale ? 'STALE, older than START' : 'MISSING'}).` : '') + ` ${ev}`
 }

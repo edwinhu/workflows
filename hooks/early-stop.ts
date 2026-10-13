@@ -826,11 +826,13 @@ function pidAlive(pid: number): boolean {
   }
 }
 
-function nonEmpty(p: string): boolean {
+/** mtime (ms) of a non-empty file, else undefined. */
+function nonEmptyAt(p: string): number | undefined {
   try {
-    return statSync(p).size > 0
+    const s = statSync(p)
+    return s.size > 0 ? s.mtimeMs : undefined
   } catch {
-    return false
+    return undefined
   }
 }
 
@@ -866,9 +868,15 @@ export function liveOwnedRuns(session: string, nowMs: number = Date.now()): stri
     }
   }
   if (!runs.length) return []
+  const presentAt = new Map<string, number>()
+  for (const p of new Set(runs.flatMap((r) => [r.out, ...r.claims]))) {
+    const at = p.startsWith('/') ? nonEmptyAt(p) : undefined
+    if (at !== undefined) presentAt.set(p, at)
+  }
   const facts: Facts = {
     alive: new Set(runs.filter((r) => !r.done && pidAlive(r.pid)).map((r) => r.pid)),
-    present: new Set(runs.flatMap((r) => [r.out, ...r.claims]).filter((p) => p.startsWith('/') && nonEmpty(p))),
+    present: new Set(presentAt.keys()),
+    presentAt,
     firstSeen, loopExit: new Map(), loopExitAt: new Map(), round: new Map(), phase: new Map(),
   }
   // A work loop is done once loop.exit holds its code, whatever its pid says.

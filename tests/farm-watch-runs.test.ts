@@ -206,6 +206,40 @@ describe('a stale loop.exit never decides a live loop', () => {
   })
 })
 
+describe('an artifact counts only if written at or after its run\'s START', () => {
+  const A = '/w/report.md'
+  const T = 1791000000
+  const start = (pid: number, t: number) =>
+    parseEvents(`farm: START row cwd=/w expect=${A} t=${t}\nfarm: CLAIM row path=${A}\n`, `/e/${pid}.ndjson`, pid, 'S')
+
+  test('a dead run whose artifact predates its START is GONE, and nothing says "present"', () => {
+    const [v] = classify(start(1, T), facts({ present: new Set([A]), presentAt: new Map([[A, (T - 600) * 1000]]) }))
+    expect([v!.state, v!.artifactsPresent, v!.artifactsStale]).toEqual(['gone', false, true])
+    expect(table([v!], (T + 60) * 1000)).toContain('stale')
+    expect(table([v!], (T + 60) * 1000)).not.toContain('present')
+    expect(wakeText(v!, (T + 60) * 1000)).toContain(`expected artifact stale (older than START): ${A}`)
+    expect(wakeText(v!, (T + 60) * 1000)).not.toContain('present')
+  })
+
+  test('a dead run whose artifact landed after its START is done', () => {
+    const [v] = classify(start(1, T), facts({ present: new Set([A]), presentAt: new Map([[A, (T + 30) * 1000]]) }))
+    expect([v!.state, v!.artifactsPresent, v!.artifactsStale]).toEqual(['done', true, false])
+  })
+
+  test('two runs naming one path: the older run is satisfied, the newer is not', () => {
+    const runs = [...start(1, T), ...start(2, T + 120)]
+    const views = classify(runs, facts({ present: new Set([A]), presentAt: new Map([[A, (T + 60) * 1000]]) }))
+    expect(views.map(v => [v.pid, v.state, v.artifactsPresent])).toEqual([[1, 'done', true], [2, 'gone', false]])
+  })
+
+  test('without a START t= the file\'s firstSeen is the start', () => {
+    const runs = parseEvents(`farm: START row cwd=/w expect=${A}\nfarm: CLAIM row path=${A}\n`, '/e/3.ndjson', 3, 'S')
+    const f = (at: number) => facts({ present: new Set([A]), presentAt: new Map([[A, at]]), firstSeen: new Map([['/e/3.ndjson', 5_000]]) })
+    expect(classify(runs, f(4_000))[0]!.state).toBe('gone')
+    expect(classify(runs, f(6_000))[0]!.state).toBe('done')
+  })
+})
+
 describe('WAIT lines (grind: a gate shut N passes running)', () => {
   const START = 'grind: START grind%20j.jsonl cwd=/w journal=/w/j.jsonl t=1800000000 \n'
   const wait = (n: number, why: string) =>
