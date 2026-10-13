@@ -26,8 +26,9 @@
  *      this hook's own blocks cannot rotate the key that caps them.
  *   3. NEVER DOUBLE-BLOCKS WITH `work-hold`. An armed hold is already holding the session on an
  *      objective and speaks for itself; this one stands down for the duration. The exception is an
- *      afk hold with no check and no run before its ceiling: `work-hold.ts` allows every such stop,
- *      so this hook speaks for it, with reasons that never send the model to AskUserQuestion.
+ *      afk hold with no check and no run before its ceiling: `work-hold.ts` allows every such stop
+ *      (`unjudged`), so this hook speaks for it, with reasons that never send the model to AskUserQuestion.
+ *      Any other check-less hold carries a goal, which `work-hold.ts` judges and blocks on.
  *   4. NEVER BLOCKS WHILE THE WATCHER WILL WAKE THE SESSION. When a farm or work run this session
  *      launched is still live and the watcher mod (`hooks/watch/watcher.ts`) is running here — its
  *      beacon is fresh — the owed work is in flight and its finish arrives as a `$.prompt.submit`, so a
@@ -54,7 +55,7 @@ import { appendFileSync, existsSync, readdirSync, readFileSync, readlinkSync, st
 import { createHash } from 'node:crypto'
 import { basename, join, resolve } from 'node:path'
 import { homedir, tmpdir } from 'node:os'
-import { ceilingReached, decisionsCall, lastLedgerEntry, ledgerPath, parseNoul, statePath } from './work-hold.ts'
+import { ceilingReached, decisionsCall, lastLedgerEntry, ledgerPath, parseNoul, statePath, unjudged } from './work-hold.ts'
 import {
   BEACON, beaconFresh, classify, dirname, parseEvents, wakeable, WAKE_HORIZON_MS, type Facts, type Run,
 } from './watch/runs.ts'
@@ -307,11 +308,16 @@ export function judgeContext(jsonl: string, holdGoal?: string | null, timeZone?:
 
 /**
  * Does a stop leave the session with no way to be woken under a standing mandate? The user typed an
- * overnight or autonomous instruction, no heartbeat cron is alive, and no owned run is live, so ending
+ * overnight or autonomous instruction, no heartbeat cron is alive, no owned run is live, and no
+ * run_in_background job it launched is alive (`bgJobs`, asked last because it reads `/proc`), so ending
  * the turn idles the session until the user returns. Deterministic: no judge is consulted.
  */
-export function noWakeUnderMandate(ctx: JudgeContext | undefined, liveRuns: readonly string[]): boolean {
-  return !!ctx?.standing && !ctx.heartbeatAlive && !ctx.monitorLive && liveRuns.length === 0
+export function noWakeUnderMandate(
+  ctx: JudgeContext | undefined,
+  liveRuns: readonly string[],
+  bgJobs: () => readonly string[] = () => [],
+): boolean {
+  return !!ctx?.standing && !ctx.heartbeatAlive && !ctx.monitorLive && liveRuns.length === 0 && bgJobs().length === 0
 }
 
 /**
@@ -723,11 +729,9 @@ export function progressingJobs(jsonl: string, session: string, sinceMs: number,
   const procs = probe.procs().filter((p) => p.pid !== process.pid)
   const kids = new Map<number, number[]>()
   for (const p of procs) kids.set(p.ppid, [...(kids.get(p.ppid) ?? []), p.pid])
-  const sameArgv = (a: string[], b: string[]) =>
-    a.length === b.length && a.length > 0 && basename(a[0]) === basename(b[0]) && a.every((x, i) => i === 0 || x === b[i])
   const found: string[] = []
   for (const l of launches) {
-    const roots = procs.filter((p) => (l.kind === 'bg' ? evalBody(p.argv) === l.cmd : sameArgv(l.argv, p.argv)) && probe.owner(p.pid) === session)
+    const roots = jobRoots(l, procs, session, probe)
     if (!roots.length) continue
     const files = new Set(l.outs)
     const stack = roots.map((p) => p.pid)
@@ -739,10 +743,32 @@ export function progressingJobs(jsonl: string, session: string, sinceMs: number,
       for (const f of probe.writing(pid)) files.add(f)
       stack.push(...(kids.get(pid) ?? []))
     }
-    if ([...files].some((f) => (probe.mtimeMs(f) ?? -Infinity) > sinceMs))
-      found.push(l.kind === 'bg' ? `bg: ${l.cmd.slice(0, 60)}` : l.argv.join(' ').slice(0, 80))
+    if ([...files].some((f) => (probe.mtimeMs(f) ?? -Infinity) > sinceMs)) found.push(jobLabel(l))
   }
   return found
+}
+
+type Proc = { pid: number; ppid: number; argv: string[] }
+
+/** The live processes that are launch `l`, run by this session. */
+function jobRoots(l: Launch, procs: Proc[], session: string, probe: JobProbe): Proc[] {
+  const sameArgv = (a: string[], b: string[]) =>
+    a.length === b.length && a.length > 0 && basename(a[0]) === basename(b[0]) && a.every((x, i) => i === 0 || x === b[i])
+  return procs.filter((p) => (l.kind === 'bg' ? evalBody(p.argv) === l.cmd : sameArgv(l.argv, p.argv)) && probe.owner(p.pid) === session)
+}
+
+const jobLabel = (l: Launch): string => (l.kind === 'bg' ? `bg: ${l.cmd.slice(0, 60)}` : l.argv.join(' ').slice(0, 80))
+
+/**
+ * The run_in_background jobs this session launched that are still alive. The harness re-invokes the
+ * session when one exits, so each is a wake; liveness alone counts, since the question is whether the
+ * session can be woken, not whether the job is moving. A `setsid`/`nohup` job notifies nobody.
+ */
+export function liveBackgroundJobs(jsonl: string, session: string, probe: JobProbe = PROC_PROBE): string[] {
+  const bg = handLaunches(jsonl).filter((l) => l.kind === 'bg')
+  if (!bg.length) return []
+  const procs = probe.procs().filter((p) => p.pid !== process.pid)
+  return bg.filter((l) => jobRoots(l, procs, session, probe).length).map(jobLabel)
 }
 
 /**
@@ -763,7 +789,7 @@ export function workHoldArmed(session: string): boolean {
 
 /**
  * This session's armed `/afk` hold before its ceiling, or null. `silent` is a hold `work-hold.ts`
- * never blocks for (no check, no run), so this hook speaks in its place.
+ * never judges (`unjudged`: no check, no run), so this hook speaks in its place.
  *
  * An afk hold QUEUED behind another (arm.sh over a borrowed hold) is the mandate too, but never
  * `silent`: the hold on top is the one `work-hold.ts` evaluates and it speaks for the session, so
@@ -777,7 +803,7 @@ export function afkHold(session: string, nowSeconds = Math.floor(Date.now() / 10
     !ceilingReached({ ...h, rounds: 0, maxRounds: Infinity }, nowSeconds)
   try {
     const h = JSON.parse(readFileSync(statePath(session), 'utf8')) as H & { queued?: H[] }
-    if (live(h)) return { goal: h.goal || 'afk hold', silent: !h.check?.trim() && !h.run }
+    if (live(h)) return { goal: h.goal || 'afk hold', silent: unjudged(h) }
     const q = (h.queued ?? []).find(x => x && typeof x === 'object' && live(x))
     return q ? { goal: q.goal || 'afk hold', silent: false } : null
   } catch {
@@ -1134,7 +1160,15 @@ function main(): void {
   if (spent >= MAX_BLOCKS_PER_TURN)
     return allowNow(session, turn.marker, `cap: ${spent} blocks already this turn`)
 
-  if (noWakeUnderMandate(ctx, live)) {
+  // A background job that cannot be checked fails open: it counts as a wake, so nothing blocks on it.
+  const bgWakes = (): string[] => {
+    try {
+      return liveBackgroundJobs(jsonl, session)
+    } catch {
+      return ['(check failed)']
+    }
+  }
+  if (noWakeUnderMandate(ctx, live, bgWakes)) {
     if (!record(spent + 1, tickSpent)) return allowNow(session, turn.marker, 'counter unwritable: cannot cap, so not blocking')
     audit(session, turn.marker, '-', 'block', `no wake under mandate: ${spent + 1}/${MAX_BLOCKS_PER_TURN} this turn`)
     process.stdout.write(JSON.stringify({ decision: 'block', reason: afk ? AFK_NO_WAKE_REASON : NO_WAKE_REASON }))
