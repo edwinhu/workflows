@@ -25,10 +25,12 @@ import tempfile
 import time
 
 MAX_BLOCKS = 8
-# chrome-devtools-mcp's telemetry watchdog is spawned detached and outlives its MCP server by a network
-# round trip -- often past the reap grace -- so it reads as an escaped job of whichever row ran it.
+# chrome-devtools-mcp spawns two bounded helpers detached -- its telemetry watchdog and its daily update
+# check -- and each outlives the MCP server by a network round trip, often past the reap grace, so it
+# reads as an escaped job of whichever row ran it.
 IGNORE = re.compile(os.environ.get("FARM_BG_IGNORE")
-                    or r"\[mux\]|ssh-agent|gpg-agent|\bzg server\b|chrome-devtools-mcp/build/src/telemetry/watchdog/")
+                    or r"\[mux\]|ssh-agent|gpg-agent|\bzg server\b|chrome-devtools-mcp/build/src/"
+                       r"(telemetry/watchdog/|bin/check-latest-version\.js)")
 SNAPSHOT = "shell-snapshots/snapshot-"
 
 
