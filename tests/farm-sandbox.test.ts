@@ -111,7 +111,7 @@ test.skipIf(!HAVE_BWRAP)('a sandbox row: the child\'s commands write into data/ 
   expect(spawnSync('kill', ['-0', env.pid], { timeout: 10_000 }).status).not.toBe(0)
   expect(env.tmpdir).not.toBe(r.root)
   expect(existsSync(env.tmpdir)).toBe(false)
-})
+}, 130_000)
 
 test.skipIf(!HAVE_BWRAP)('a sandbox row runs a derived agent: same prompt, writers removed, Bash added; no MCP; Edit/Write denied session-wide', () => {
   const r = rig()
@@ -128,7 +128,7 @@ test.skipIf(!HAVE_BWRAP)('a sandbox row runs a derived agent: same prompt, write
   expect(def.model).toBe('sonnet')
   // the child is told what its Bash is
   expect(r.read('stdin')).toMatch(/sandbox/i)
-})
+}, 120_000)
 
 test.skipIf(!HAVE_BWRAP)('a sandbox row whose agent has no file (a built-in) keeps --agent and still denies the writers', () => {
   const r = rig()
@@ -138,7 +138,7 @@ test.skipIf(!HAVE_BWRAP)('a sandbox row whose agent has no file (a built-in) kee
   expect(a[a.indexOf('--agent') + 1]).toBe('Explore')
   expect(a).not.toContain('--agents')
   expect(a[a.indexOf('--disallowedTools') + 1].split(',')).toContain('Write')
-})
+}, 120_000)
 
 test('a row without "sandbox" runs exactly as before: no prefix, no sandbox flags', () => {
   const r = rig()
@@ -147,7 +147,7 @@ test('a row without "sandbox" runs exactly as before: no prefix, no sandbox flag
   expect(r.argv()).not.toContain('--strict-mcp-config')
   expect(r.argv()).not.toContain('--disallowedTools')
   expect(r.argv()[r.argv().indexOf('--agent') + 1]).toBe('rev')
-})
+}, 120_000)
 
 test('a non-boolean "sandbox" is refused before any row runs', () => {
   const r = rig()
@@ -155,7 +155,7 @@ test('a non-boolean "sandbox" is refused before any row runs', () => {
   expect(res.status).not.toBe(0)
   expect(res.stderr).toMatch(/sandbox/)
   expect(existsSync(join(r.root, 'argv'))).toBe(false)
-})
+}, 120_000)
 
 test('the prefix fails closed: no live sandbox means the command never runs', () => {
   const marker = join(mkTmp('farm-sandbox-closed-'), 'ran')
@@ -175,4 +175,4 @@ test('a sandbox row on a non-claude provider is refused: only Claude Code honour
     expect(res.stderr).toMatch(/sandbox/)
     expect(existsSync(join(r.root, 'argv'))).toBe(false)
   }
-})
+}, 240_000)

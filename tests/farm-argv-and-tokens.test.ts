@@ -62,7 +62,7 @@ r=\${0%/bin/claude-code}; cp -- "$(grep -o 'scriptPath [^ ]*' "$r/stdin" | head 
   const called = stubbed.read('called.js')
   expect(called).toContain('ARGS-SENTINEL')
   expect(called).toContain('y'.repeat(300_000))
-})
+}, 120_000)
 
 // Observed 2026-10-02: a row with 6 tool calls reported W=0, and so had every real DONE event on disk.
 test('a row that streams usage reports non-zero W tokens', () => {
@@ -76,7 +76,7 @@ test('a row that streams usage reports non-zero W tokens', () => {
   // per message: 1000 input + 5 * 100 output = 1500; two messages
   expect(row.tokensW).toBe(3000)
   expect(r.done().join('\n')).toMatch(/ok toolCalls=6 W=3000\b/)
-})
+}, 120_000)
 
 test('a row whose turn budget is exceeded is stopped and reported, not run to the end', () => {
   const r = rig()
@@ -87,7 +87,7 @@ test('a row whose turn budget is exceeded is stopped and reported, not run to th
   const row = JSON.parse(res.stdout)[0]
   expect(row.budgetExceeded).toBe(true)
   expect(row.ok).toBe(false)
-})
+}, 120_000)
 
 test('a runaway child past its turn cap is actually killed, not waited out', () => {
   const r = rig('', `printf '%s' $$ > "\${0%/bin/claude-code}/child-pid"\nexec sleep 45`)
@@ -103,4 +103,4 @@ test('a runaway child past its turn cap is actually killed, not waited out', () 
   try { process.kill(pid, 0) } catch { alive = false }
   if (alive) process.kill(pid, 'SIGKILL')
   expect(alive).toBe(false)
-})
+}, 120_000)

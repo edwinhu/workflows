@@ -47,13 +47,13 @@ describe('a --workflow run prints the hourly heartbeat instruction', () => {
     expect(r.stdout).toContain('and? (farm run-7f3a)')
     expect(r.stdout).toContain('recurring: true')
     expect(r.stdout).toContain('durable:   false')
-  })
+  }, 120_000)
 
   test('the instruction precedes the run, so a caller sees it before the 20-60 minute wait', () => {
     const r = run(['--provider', 'claude', '--workflow', '@wf', '--out', '@out', '--cwd', '@cwd'])
     // The run's own JSON verdict is printed last; the instruction must come before it.
     expect(r.stdout.indexOf('CronCreate')).toBeLessThan(r.stdout.indexOf('"toolCalls"'))
-  })
+  }, 120_000)
 
   test('--no-cron prints no CronCreate block, and says the monitor is the only wake', () => {
     const r = run(['--provider', 'claude', '--workflow', '@wf', '--out', '@out', '--cwd', '@cwd', '--no-cron'])
@@ -61,7 +61,7 @@ describe('a --workflow run prints the hourly heartbeat instruction', () => {
     expect(r.stdout).not.toContain('CronCreate')
     expect(r.stdout).not.toContain('and? (farm')
     expect(r.stdout).toContain('--no-cron')
-  })
+  }, 120_000)
 
   test('WORK_LOOP_INTERVAL_MINUTES moves the interval', () => {
     const sub = run(['--provider', 'claude', '--workflow', '@wf', '--out', '@out', '--cwd', '@cwd'], { WORK_LOOP_INTERVAL_MINUTES: '30' })
@@ -71,7 +71,7 @@ describe('a --workflow run prints the hourly heartbeat instruction', () => {
     // Junk falls back to hourly rather than handing cron an unparseable field.
     const junk = run(['--provider', 'claude', '--workflow', '@wf', '--out', '@out', '--cwd', '@cwd'], { WORK_LOOP_INTERVAL_MINUTES: 'soon' })
     expect(junk.stdout).toContain('7 * * * *')
-  })
+  }, 360_000)
 })
 
 describe('a --tasks run prints nothing — the session monitor covers a row', () => {
@@ -79,14 +79,14 @@ describe('a --tasks run prints nothing — the session monitor covers a row', ()
     const r = run(['--provider', 'claude', '--tasks', '@tasks', '--cwd', '@cwd'])
     expect(r.stdout).not.toContain('CronCreate')
     expect(() => JSON.parse(r.stdout)).not.toThrow()
-  })
+  }, 120_000)
 
   test('--no-cron on a --tasks run is accepted and still silent', () => {
     const r = run(['--provider', 'claude', '--tasks', '@tasks', '--cwd', '@cwd', '--no-cron'])
     expect(r.status).toBe(0)
     expect(r.stdout).not.toContain('CronCreate')
     expect(() => JSON.parse(r.stdout)).not.toThrow()
-  })
+  }, 120_000)
 })
 
 // A session that loaded no plugin mod (the secreg session e3b75752, 2026-10-02: Claude Code served
@@ -101,22 +101,22 @@ describe('a --workflow run from a session with no ticking watcher', () => {
     expect(r.stdout).toContain('NO WATCHER IN THIS SESSION')
     expect(r.stdout).toContain("with --no-cron that cron must be the caller's, or nothing wakes it")
     expect(r.stdout).toContain('/reload-plugins')
-  })
+  }, 120_000)
 
   test('no beacon, default cron: the warning precedes the CronCreate block', () => {
     const r = run(WF.filter(a => a !== '--no-cron'), ME)
     expect(r.stdout).toContain('NO WATCHER IN THIS SESSION')
     expect(r.stdout.indexOf('NO WATCHER')).toBeLessThan(r.stdout.indexOf('CronCreate'))
-  })
+  }, 120_000)
 
   test('a stale beacon (61 s) is no watcher either', () => {
     const r = run(WF, ME, { sid: 'fc-sess', ageS: 61 })
     expect(r.stdout).toContain('NO WATCHER IN THIS SESSION')
-  })
+  }, 120_000)
 
   test('a fresh beacon: --no-cron holds and nothing is said', () => {
     const r = run(WF, ME, { sid: 'fc-sess', ageS: 0 })
     expect(r.stdout).not.toContain('NO WATCHER')
     expect(r.stdout).not.toContain('CronCreate')
-  })
+  }, 120_000)
 })

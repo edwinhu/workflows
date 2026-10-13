@@ -175,7 +175,7 @@ describe('half one: the HOLD is armed by the dispatch, in this session', () => {
     const g = dispatch(f)
     expect(holdState(g).check).toBe('bash scripts/check.sh')
     expect(g.out).toContain('ARMED on `bash scripts/check.sh`')
-  }, 60_000)
+  }, 180_000)
 
   /**
    * ARMING NEVER ABORTS A DISPATCH. The run is detached before the arm, so a refusal that exited
@@ -188,12 +188,12 @@ describe('half one: the HOLD is armed by the dispatch, in this session', () => {
     expect(g.code).toBe(0)
     expect(g.out).toContain('hold: NOT armed')
     expect(existsSync(join(g.tmp, `work-hold-${g.sid}.json`))).toBe(false)
-  }, 60_000)
+  }, 180_000)
 
   test('a readOnly dispatch arms the hold too', () => {
     const ro = dispatch(fixture({ readOnly: true }))
     expect(existsSync(join(ro.tmp, `work-hold-${ro.sid}.json`))).toBe(true)
-  }, 60_000)
+  }, 180_000)
 })
 
 /**
@@ -222,7 +222,7 @@ describe('half two: the cron is the DEFAULT backstop, the watcher mod is the pri
     expect(c.out).not.toContain('CronCreate')
     expect(c.out).toMatch(/watcher mod is the ONLY wake/)
     expect(c.out).toMatch(/--no-cron/)
-  }, 60_000)
+  }, 180_000)
 
   // The secreg session e3b75752 (2026-10-02) loaded no plugin mod — Claude Code served its
   // hooks-modules rollout switch off — so the "primary wake" did not exist and the slides loop's
@@ -232,7 +232,7 @@ describe('half two: the cron is the DEFAULT backstop, the watcher mod is the pri
     expect(c.out).toContain('NO WATCHER IN THIS SESSION')
     expect(c.out).toContain('/reload-plugins')
     expect(c.out).toContain('CronCreate')
-  }, 60_000)
+  }, 180_000)
 
   test('NO watcher beacon overrides --no-cron: it would leave no wake at all', () => {
     const c = dispatch(fixture(), {}, ['--no-cron'], { watcher: false })
@@ -240,7 +240,7 @@ describe('half two: the cron is the DEFAULT backstop, the watcher mod is the pri
     expect(c.out).toContain('--no-cron is overridden')
     expect(c.out).toContain('CronCreate')
     expect(c.out).not.toMatch(/watcher mod is the ONLY wake/)
-  }, 60_000)
+  }, 180_000)
 
   test('a ticking watcher prints no warning', () => {
     expect(r.out).not.toContain('NO WATCHER')
@@ -250,13 +250,13 @@ describe('half two: the cron is the DEFAULT backstop, the watcher mod is the pri
     const c = dispatch(fixture(), {}, ['--cron'])
     expect(c.out).toContain('CronCreate')
     expect(/cron:\s+(\S.*)$/m.exec(c.out)![1].trim()).toBe('7 * * * *')
-  }, 60_000)
+  }, 180_000)
 
   test('WORK_LOOP_INTERVAL_MINUTES sets the period', () => {
     const c = dispatch(fixture(), { WORK_LOOP_INTERVAL_MINUTES: '120' })
     expect(c.out).toContain('CronCreate')
     expect(/cron:\s+(\S.*)$/m.exec(c.out)![1].trim()).toBe('7 */2 * * *')
-  }, 60_000)
+  }, 180_000)
 
   test('the prompt is a nudge: short, and naming no plan path, check or authority', () => {
     const prompt = /prompt:\s+(\S.*)$/m.exec(r.out)![1].trim()

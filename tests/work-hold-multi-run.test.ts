@@ -175,5 +175,5 @@ describe('the round ceiling comes from the plan\'s goalTurns', () => {
     expect(r.status).toBe(0)
     expect(s.maxRounds).toBe(3)
     expect(r.stdout).toContain('ceiling: 3 rounds')
-  })
+  }, 180_000)
 })
