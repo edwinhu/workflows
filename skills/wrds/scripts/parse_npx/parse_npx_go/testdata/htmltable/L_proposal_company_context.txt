@@ -1,0 +1,300 @@
+          <tr valign="bottom">
+            <td colspan="3"> <b><font size="2" face="Arial-BoldMT,Arial,Helvetica,sans-serif">SHENZHEN YINGHE TECHNOLOGY CO LTD.</font></b></td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+          </tr>
+          <tr>
+            <td colspan="6"> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td colspan="2"> <i><font size="2" face="Arial-ItalicMT,Arial,Helvetica,sans-serif">Security ID: Y7748U108</font></i></td>
+            <td> <i><font size="2" face="Arial-ItalicMT,Arial,Helvetica,sans-serif">Ticker: 300457</font></i></td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+          </tr>
+          <tr>
+            <td colspan="6"> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td colspan="2"> <font size="2" face="Arial,Arial,Helvetica,sans-serif">Meeting Date: 17-Jul-20</font></td>
+            <td> <font size="2" face="Arial,Arial,Helvetica,sans-serif">Meeting Type: Special</font></td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+          </tr>
+          <tr>
+            <td colspan="6"> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">1</font></td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Cash Management With Idle Raised Funds And</font></td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td> &#160;</td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Proprietary Funds</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Management</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">For</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Voted - For</font></td>
+          </tr>
+          <tr valign="bottom">
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">2</font></td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Amendments to the Company's Articles of Association</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Management</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">For</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Voted - For</font></td>
+          </tr>
+          <tr valign="bottom">
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">3</font></td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Elect WANG Jun as a Supervisor</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Management</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">For</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Voted - Against</font></td>
+          </tr>
+          <tr>
+            <td colspan="6"> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td colspan="2"> <font size="2" face="Arial,Arial,Helvetica,sans-serif">Meeting Date: 14-Dec-20</font></td>
+            <td> <font size="2" face="Arial,Arial,Helvetica,sans-serif">Meeting Type: Special</font></td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+          </tr>
+          <tr>
+            <td colspan="6"> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">1</font></td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Cash Management With Some Idle Raised Funds</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Management</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">For</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Voted - For</font></td>
+          </tr>
+          <tr valign="bottom">
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">2</font></td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Extension Of Some Projects Financed With Raised</font></td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td> &#160;</td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Funds</font></td>
+            <td> &#160;</td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Management</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">For</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Voted - For</font></td>
+          </tr>
+          <tr valign="bottom">
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">3</font></td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Amendments to the Company's Articles of Association</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Management</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">For</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Voted - For</font></td>
+          </tr>
+          <tr>
+            <td colspan="6"> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td colspan="2"> <font size="2" face="Arial,Arial,Helvetica,sans-serif">Meeting Date: 11-Jan-21</font></td>
+            <td> <font size="2" face="Arial,Arial,Helvetica,sans-serif">Meeting Type: Special</font></td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+          </tr>
+          <tr>
+            <td colspan="6"> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">1</font></td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">A Controlled Subsidiary S Share Restructuring And</font></td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td> &#160;</td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Application For Listing On The National Equities</font></td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td> &#160;</td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Exchange And Quotations</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Management</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">For</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Voted - For</font></td>
+          </tr>
+          <tr>
+            <td colspan="6"> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td colspan="2"> <font size="2" face="Arial,Arial,Helvetica,sans-serif">Meeting Date: 15-Mar-21</font></td>
+            <td> <font size="2" face="Arial,Arial,Helvetica,sans-serif">Meeting Type: Special</font></td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+          </tr>
+          <tr>
+            <td colspan="6"> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">1</font></td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Adjustment Of The Performance Commitments Of</font></td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td> &#160;</td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Controlled Subsidiaries</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Management</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">For</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Voted - For</font></td>
+          </tr>
+          <tr valign="bottom">
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">2</font></td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Estimated 2021 Continuing Connected Transactions</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Management</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">For</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Voted - For</font></td>
+          </tr>
+
+      </table>
+    </div>
+    <p style="MARGIN:0px">&#160;</p>
+    <p style="text-align: center;"> <font size="1" face="Times New Roman,Times New Roman,Times,serif">771</font></p>
+  </div>
+  <hr width="100%" noshade="noshade" size="2" align="center">
+  <div style="page-break-before: always">&#160;</div>
+  <!--$$/page=--> <a name="page_777"></a><br>
+  <a name="_bclPageBorder777"></a>
+  <div style="PADDING-RIGHT: 0%; PADDING-LEFT: 0%">
+    <div align="left">
+      <table cellspacing="0" border="0" style="width:100pc">
+
+          <tr>
+            <td width="4%"></td>
+            <td width="17%"></td>
+            <td width="33%"></td>
+            <td width="15%"></td>
+            <td width="13%"></td>
+            <td width="16%"></td>
+          </tr>
+          <tr valign="bottom">
+            <td> &#160;</td>
+            <td> &#160;</td>
+            <td colspan="3"> <b><font size="5" face="TimesNewRomanPS-BoldMT,Times New Roman,Times,serif">Global X Lithium &amp; Battery Tech ETF</font></b></td>
+            <td> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td colspan="2"> <b><font size="2" face="TimesNewRomanPS-BoldMT,Times New Roman,Times,serif">Proposal</font></b></td>
+            <td> &#160;</td>
+            <td> <b><font size="2" face="TimesNewRomanPS-BoldMT,Times New Roman,Times,serif">Proposed by</font></b></td>
+            <td> <b><font size="2" face="TimesNewRomanPS-BoldMT,Times New Roman,Times,serif">Mgt. Position</font></b></td>
+            <td> <b><font size="2" face="TimesNewRomanPS-BoldMT,Times New Roman,Times,serif">Registrant Voted</font></b></td>
+          </tr>
+          <tr>
+            <td colspan="6"> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">3</font></td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Connected Transaction Regarding the Financial</font></td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td> &#160;</td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Service Framework Agreement to be Signed with a</font></td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td> &#160;</td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Company</font></td>
+            <td> &#160;</td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Management</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">For</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Voted - For</font></td>
+          </tr>
+          <tr>
+            <td colspan="6"> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td colspan="2"> <font size="2" face="Arial,Arial,Helvetica,sans-serif">Meeting Date: 29-Jun-21</font></td>
+            <td> <font size="2" face="Arial,Arial,Helvetica,sans-serif">Meeting Type: Annual</font></td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+          </tr>
+          <tr>
+            <td colspan="6"> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">1</font></td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">2020 Work Report Of The Board Of Directors</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Management</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">For</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Voted - For</font></td>
+          </tr>
+          <tr valign="bottom">
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">2</font></td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">2020 Annual Report And Its Summary</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Management</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">For</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Voted - For</font></td>
+          </tr>
+          <tr valign="bottom">
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">3</font></td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">2020 Profit Distribution Plan</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Management</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">For</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Voted - For</font></td>
+          </tr>
+          <tr valign="bottom">
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">4</font></td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">2020 Annual Accounts</font></td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td> &#160;</td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Management</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">For</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Voted - For</font></td>
+          </tr>
+          <tr valign="bottom">
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">5</font></td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Remuneration For Members Of The Board Of Directors</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Management</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">For</font></td>
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Voted - For</font></td>
+          </tr>
+          <tr valign="bottom">
+            <td> <font size="2" face="Times New Roman,Times New Roman,Times,serif">6</font></td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">2021 Application For The Bank Comprehensive Credit</font></td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td> &#160;</td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Line By The Company And Its Subsidiaries And</font></td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+            <td> &#160;</td>
+          </tr>
+          <tr valign="bottom">
+            <td> &#160;</td>
+            <td colspan="2"> <font size="2" face="Times New Roman,Times New Roman,Times,serif">Provision Of Guarantee For Subsidiaries</font></td>

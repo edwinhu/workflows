@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
 	"hash/fnv"
 	"sort"
@@ -17,11 +19,44 @@ import (
 
 // layoutEntry pairs a layout name with a cheap signature predicate over the head
 // of the normalized text and the parser that handles that grammar.
+//
+// ParseRaw is the alternative to Parse for a grammar whose structure normalization
+// destroys. stripHTML preserves WHERE the lines were, which is all a line-oriented
+// layout needs, but a <table> grammar's only record of which cell belongs to which
+// column is the markup itself. A layout setting ParseRaw receives the
+// charset-decoded bytes and is preferred over Parse; the two are never both used.
 type layoutEntry struct {
-	Name  string
-	Match func(head string) bool
-	Parse func(text string, meta FilingMeta) ([]VoteRow, error)
+	Name     string
+	Match    func(head string) bool
+	Parse    func(text string, meta FilingMeta) ([]VoteRow, error)
+	ParseRaw func(raw []byte, text string, meta FilingMeta) ([]VoteRow, error)
+	// HeadBytes overrides how much text this layout's matcher sees. Zero means the
+	// default. THE WINDOW IS PER-LAYOUT AND NOT GLOBAL, because widening it globally
+	// changes WHICH layout wins in a first-hit-wins registry: raising it to 16 MB for
+	// everyone let issnpx match filings deep in documents it had never seen, and it
+	// reads them far worse than the layout that had been handling them --
+	// 13,784 rows (pvtext) -> 2,860 (issnpx) on one filing, 7,120 (htmltable) -> 369
+	// on another, for a net loss of 5,673 rows against a gain of four filings.
+	HeadBytes int
 }
+
+// errLayoutDeclined is returned by a layout that matched on its cheap signature
+// but, having read the body, cannot parse it. The registry then treats the entry
+// as no match and carries on, so the filing lands in parse_status=skip with a
+// body-derived signature rather than being parsed against a guess.
+//
+// This exists for htmltable, whose match test IS the header search: whether a
+// document prints an identifiable column header cannot be decided from the
+// stripped head, and a mis-mapped column on this population cannot be caught
+// downstream, so declining is the only safe answer.
+var errLayoutDeclined = errors.New("layout declined the body")
+
+// errLayoutNoActivity is a successful zero-row parse proved by a layout from the
+// document's own structured body. It differs from a parser merely returning no
+// rows: the latter is withdrawn when the filing still prints vote-table
+// vocabulary, while the former is affirmative evidence that the table says it
+// holds no votes.
+var errLayoutNoActivity = errors.New("layout identified a no-activity report")
 
 // layoutRegistry is matched in order; the first hit wins.
 var layoutRegistry = []layoutEntry{
@@ -40,11 +75,63 @@ var layoutRegistry = []layoutEntry{
 		Match: matchBroadridge,
 		Parse: parseBroadridge,
 	},
+	// The ISS vote-summary grammar is fixed-width TEXT inside EDGAR's <TABLE>
+	// pseudo-markup, so it reads the raw bytes; normalization would collapse the
+	// column runs it is laid out on.
+	{
+		Name:     "votesummary",
+		Match:    matchVoteSummary,
+		ParseRaw: parseVoteSummaryRaw,
+		// The report's stacked header can sit behind a holdings cover: in
+		// Principal Variable Contracts Fund 2005 `Ballot Issues` first occurs at
+		// byte 2,161,971 of the normalized text, past signatureHeadBytes, and
+		// the matcher never saw the only line it tests for. Measured on the two
+		// filings, the parser reads 5,688 rows out of each once it does. 16 MB
+		// is what the sibling text layouts use.
+		HeadBytes: 16 << 20,
+	},
+	// htmltable follows every named layout: it is the generic fallback for the
+	// unclaimed HTML-table residue, and it offers itself to every body the named
+	// layouts declined. Ahead of any of them it would steal filings whose vendor
+	// grammar a specific parser reads better.
+	{
+		Name:     "htmltable",
+		Match:    matchHTMLTable,
+		ParseRaw: parseHTMLTableRaw,
+	},
+	// fixedwidth is LAST and must stay last. It recognises one strict Glass Lewis
+	// text-table shape after htmltable has had the first chance to read real cell
+	// markup, so it cannot steal a filing from any structured layout above it.
+	{
+		Name:  "fixedwidth",
+		Match: matchFixedWidth,
+		Parse: parseFixedWidth,
+	},
 }
+
+// matchHTMLTable admits every body the named layouts declined. There is nothing
+// cheaper it could honestly test: the head it is handed has already had its
+// markup stripped, so the table this layout keys on is not visible here. The
+// real gate is parseHTMLTableRaw, which declines a body with no identifiable
+// header; the cheap bail for a document with no table markup at all lives there,
+// where the raw bytes are.
+func matchHTMLTable(string) bool { return true }
 
 // signatureHeadBytes bounds how much normalized text a signature predicate sees.
 // Signatures are banners and column headers, which live in the head; scanning a
 // 200 MB body for one per registry entry would be a per-filing waste.
+// signatureHeadBytes bounds how much normalized text a signature predicate sees.
+//
+// 128 KB was too small and the failure was invisible: a layout simply never claimed
+// the filing, which showed up as `skip` with an `unknown:` signature rather than as an
+// error. Measured over 40 filings that yielded nothing, the byte offset of the pvtext
+// header has median 2,784 but p90 2,260,260 and max 10,972,887 -- 12 of the 40 sit
+// beyond 128 KB. One 5.5 MB filing carries its first vote table at line 28,340; its
+// fixture passed while the filing itself returned zero rows.
+//
+// This is the DEFAULT. A layout that needs more opts in with layoutEntry.HeadBytes;
+// raising it for everyone was measured and cost 5,673 rows, because it changed which
+// layout wins rather than only how much each one can see.
 const signatureHeadBytes = 128 << 10
 
 // noActivitySentinels mark a fund that had nothing to vote. A filing whose funds
@@ -56,14 +143,21 @@ const signatureHeadBytes = 128 << 10
 // the same fact a dozen ways and the negation is what carries the meaning, so
 // "held no voting securities" and "did not hold any voting securities" are one
 // family and missing either loses a whole cohort of filings to the skip bucket.
-// Every entry must be lowercase ASCII — hasNoActivitySentinel folds the body
-// against it in place rather than lowercasing a copy.
+// Every entry must be lowercase ASCII with single spaces between words —
+// hasNoActivitySentinel folds the body against it in place rather than
+// lowercasing a copy, and each of those spaces matches a whole run of
+// whitespace, the line break included.
+//
+// Each phrase is the SHORTEST form that still carries the negation. A longer
+// spelling that merely prefixes a subject ("the fund did not vote any proxies")
+// is not a separate entry: the scan is a substring search run over the whole
+// body of every filing no layout claimed, so a redundant needle is a full extra
+// pass over the corpus that can never match anything the short form missed.
 var noActivitySentinels = []string{
-	"there is no proxy voting activity for the fund",
-	"there is no proxy voting activity for this fund",
 	"no proxy voting activity",
-	"the fund did not vote any proxies",
-	"the registrant did not vote any proxies",
+	"did not vote any proxies",
+	"no matters were voted",
+	"there were no proxy votes",
 	"did not hold any voting securities",
 	"did not hold any equity securities",
 	"held no voting securities",
@@ -74,7 +168,56 @@ var noActivitySentinels = []string{
 	"no proxies voted",
 	"no securities were voted",
 	"not required to vote any proxies",
+	"no companies in which the registrant held voting securities",
+	// Added 2026-08-31 from the 13,515 filings still unread after the issnpx
+	// zero-row fix. The first is the SEC's own Item 1 wording and the single
+	// largest nil phrasing left in that residue at 563 filings; the second is 93
+	// more. Both are quoted at their shortest negating form, as this list
+	// requires -- the filings spell them "There were no matters relating to a
+	// portfolio security considered at any shareholder meeting[s] held during
+	// the reporting period" and "NO RECORDS TO REPORT".
+	"no matters relating to a portfolio security",
+	"no records to report",
+	// A second pass over the residue, 2026-08-31, sweeping whole documents for
+	// negation sentences rather than an Item 1 span. Counts are filings in the
+	// 11,235 then unread: 651, 153, ~300 and 86.
+	//
+	// "there were no proxy votes" was already here and does NOT match "there ARE
+	// no proxy votes to report", which is the commoner spelling -- the tense is
+	// the whole difference, which is why this list keeps the shortest negating
+	// form rather than a sentence.
+	"no proxy votes to report",
+	"no votes have been cast",
+	"held no securities",
+	"no proxy voting record is listed",
+	// A third pass, over the 7,568 unread after the guard split. This is the
+	// long tail: the largest phrasing left is 61 filings where the first pass
+	// found 651, so these are the last ones worth naming individually and what
+	// remains after them is per-grammar extraction work, not vocabulary.
+	"has not voted any proxies",             // 61
+	"no voting records to report",           // 83, over two spellings
+	"did not purchase portfolio securities", // 31, "... for which it was entitled to vote"
+	"no securities required voting",         // 26
+	"did not solicit any vote",              // 37, a master fund reporting for its feeders
 }
+
+// Sentences the same sweep surfaced that are NOT nil reports, recorded because
+// each looks like one and each appears on filings that DO carry votes. They are
+// held out by hasVoteTableVocabulary, but the list exists so nobody mines this
+// residue again and promotes them:
+//
+//	"'n/a' is used to indicate that there is no ..."   a table's own LEGEND, 452
+//	"the votes reported do not reflect any votes cast pursuant to a regulatory
+//	 requirement"                                       a disclaimer, 267
+//	"in determining votes against management, any ballot that management did
+//	 not ..."                                           a methodology note, 192
+//	"the registrant did not cast a vote since the securities in question were
+//	 preferred ..."                                     a per-vote FOOTNOTE, 88
+//	"to permit further solicitation of proxies if there are not sufficient
+//	 votes"                                             an ADJOURNMENT PROPOSAL, 69
+//
+// The last is the sharpest warning: it is the text of a ballot item, so a filing
+// matching it necessarily has a vote table.
 
 // voteTableVocabulary is the column and label vocabulary a legacy vote table
 // cannot be written without. Its presence is what separates "this fund had
@@ -83,8 +226,36 @@ var noActivitySentinels = []string{
 // meeting dates was shipping as parse_status=ok with n_rows=0 because one of its
 // funds reported no activity. Entries must be lowercase ASCII, and must be
 // phrases a nothing-to-report sentence would never contain.
+// voteTableVocabulary is split by how much a term PROVES, which is not the same
+// as how often it appears.
+//
+// The strong terms name a vote COLUMN and occur nowhere else, so one is enough.
+// The weak ones also occur in explanatory prose, and on 2026-08-31 that cost 606
+// filings: the ISS "VOTE SUMMARY REPORT" header carries a note --
+//
+//	Note: The Security ID will be the CUSIP (Committee on Uniform Securities
+//	Identification Procedures) when available. When CUSIP is not available, an
+//	alternate identifier, e.g., CINS, will be provided.
+//
+// -- which is printed above the fund's section whether or not the fund voted.
+// Each of those 606 then says "There is no proxy voting activity for the fund",
+// and the guard withheld the sentinel on the strength of a sentence explaining
+// what a CUSIP is. The filings were recorded as `skip`.
+//
+// Counting separates the two cases by orders of magnitude rather than by a
+// judgement call. Measured on 0000028540-23-000018, a nil report carrying the
+// note, against 0001144204-11-049903, a real table:
+//
+//	                 nil report    real table
+//	cusip                     6         2,916
+//	security id               3         5,487
+//	meeting date              0         5,491
+//	vote cast                 0         5,486   <- strong, and decisive alone
+//
+// So a weak term must appear voteTableWeakMin times to count. A genuinely small
+// table is not at risk: it prints a strong column label like every other, and
+// one occurrence of that is enough.
 var voteTableVocabulary = []string{
-	"meeting date",
 	"vote cast",
 	"votes cast",
 	"how voted",
@@ -92,9 +263,22 @@ var voteTableVocabulary = []string{
 	"management recommendation",
 	"mgt rec",
 	"mgmt rec",
+}
+
+// voteTableWeakVocabulary are labels a vote table prints once per meeting and
+// prose prints once in a sentence.
+var voteTableWeakVocabulary = []string{
+	"meeting date",
 	"security id",
 	"cusip",
 }
+
+// voteTableWeakMin is how many times a weak term must appear before it is read
+// as a table. The boilerplate note above mentions CUSIP twice and Security ID
+// once; a report with even a handful of meetings clears this many times over,
+// and the separation measured above is three orders of magnitude, so the exact
+// value is not delicate.
+const voteTableWeakMin = 25
 
 // matchISSNPX recognises the ISS-generated report, the highest-volume legacy
 // layout. The banner is the obvious signal but it is not a reliable one: 23.5%
@@ -130,8 +314,7 @@ func hasISSColumnHeader(head string) bool {
 // column header or by a FUND: line followed by ISSUER: records.
 func matchVanguard(head string) bool {
 	up := strings.ToUpper(head)
-	if strings.Contains(up, "PROPOSAL:") &&
-		strings.Contains(up, "PROPOSED BY") && strings.Contains(up, "VOTE CAST") {
+	if hasVanguardColumnHeader(up) {
 		return true
 	}
 	fund := strings.Index(up, "FUND:")
@@ -139,6 +322,104 @@ func matchVanguard(head string) bool {
 		return false
 	}
 	return strings.Contains(up[fund:], "ISSUER:")
+}
+
+// hasVanguardColumnHeader looks for the one physical line that carries
+// PROPOSAL:, PROPOSED BY and VOTE CAST together — the column header the grammar
+// actually prints, and the same line parseVanguard reads its column arity off:
+//
+//	PROPOSAL:              PROPOSED BY      VOTED?      VOTE CAST           MGMT
+//
+// Anchoring to a line is what makes this a signature. The three tokens searched
+// for separately over the whole 128 KB window claimed 288 filings in an
+// unrelated HTML <table> grammar, where "Proposed By" and "Vote Cast" are <th>
+// cells alone on their own lines and "PROPOSAL:" is the tail of the phrase
+// "SHAREHOLDER PROPOSAL:" inside a proposal description; that grammar orders its
+// columns differently, so the 60,719 rows it yielded were shredded across the
+// wrong ones. A layout must not claim what it cannot parse — the registry lands
+// an unclaimed family in parse_status=skip with a body-derived signature, which
+// keeps it countable instead of silently wrong.
+//
+// head must already be uppercased. The scan walks the window once, without
+// materialising a slice of its lines.
+func hasVanguardColumnHeader(head string) bool {
+	for len(head) > 0 {
+		line := head
+		if i := strings.IndexByte(head, '\n'); i >= 0 {
+			line, head = head[:i], head[i+1:]
+		} else {
+			head = ""
+		}
+		if strings.Contains(line, "PROPOSAL:") &&
+			strings.Contains(line, "PROPOSED BY") &&
+			strings.Contains(line, "VOTE CAST") {
+			return true
+		}
+	}
+	return false
+}
+
+// dropUuencodedBlocks removes uuencoded binary attachments from a dissemination
+// file. A filing may carry its report a second time as a `<PDF>` document whose
+// body is a uuencode block (`begin 644 a.pdf` … `end`); its payload uses `<` and
+// `>` as ordinary data bytes, so stripHTML reads a payload `<` as a tag open and
+// deletes everything through the next `>`, newlines included, welding hundreds
+// of 61-byte lines into one pseudo-line up to a quarter of a megabyte long. No
+// layout can read those bytes, and every downstream rule that is superlinear in
+// line length then runs on them.
+//
+// The block is bounded exactly as uuencode defines it — a `begin <mode> <name>`
+// line through the next line that is `end` alone — so nothing a layout reads is
+// touched; an unterminated block is dropped to the end of the body, which is
+// what an EOF-truncated attachment is.
+func dropUuencodedBlocks(decoded []byte) []byte {
+	if !bytes.Contains(decoded, []byte("\nbegin ")) && !bytes.HasPrefix(decoded, []byte("begin ")) {
+		return decoded
+	}
+	out := make([]byte, 0, len(decoded))
+	rest := decoded
+	dropping := false
+	for len(rest) > 0 {
+		line := rest
+		next := rest[:0]
+		if i := bytes.IndexByte(rest, '\n'); i >= 0 {
+			line, next = rest[:i+1], rest[i+1:]
+		} else {
+			next = nil
+		}
+		rest = next
+		trimmed := strings.TrimRight(string(line), "\r\n")
+		if dropping {
+			if strings.TrimSpace(trimmed) == "end" {
+				dropping = false
+			}
+			continue
+		}
+		if isUuencodeBegin(trimmed) {
+			dropping = true
+			continue
+		}
+		out = append(out, line...)
+	}
+	return out
+}
+
+// isUuencodeBegin reports whether a line opens a uuencode block: `begin`, an
+// octal mode, and a file name.
+func isUuencodeBegin(line string) bool {
+	f := strings.Fields(line)
+	if len(f) != 3 || f[0] != "begin" {
+		return false
+	}
+	if len(f[1]) < 3 || len(f[1]) > 4 {
+		return false
+	}
+	for _, c := range f[1] {
+		if c < '0' || c > '7' {
+			return false
+		}
+	}
+	return f[2] != ""
 }
 
 // parseText normalizes a legacy filing body, dispatches it through
@@ -158,11 +439,9 @@ func parseText(body []byte, meta FilingMeta) *ParseResult {
 		return res
 	}
 
+	decoded = dropUuencodedBlocks(decoded)
+
 	text := string(stripHTML(decoded))
-	head := text
-	if len(head) > signatureHeadBytes {
-		head = head[:signatureHeadBytes]
-	}
 
 	// A matcher that blew up is not a match, but it is also not silence: the
 	// message is carried to the skip row below so a broken signature predicate is
@@ -170,6 +449,14 @@ func parseText(body []byte, meta FilingMeta) *ParseResult {
 	matchErr := ""
 
 	for _, entry := range layoutRegistry {
+		limit := entry.HeadBytes
+		if limit <= 0 {
+			limit = signatureHeadBytes
+		}
+		head := text
+		if len(head) > limit {
+			head = head[:limit]
+		}
 		matched, merr := runLayoutMatcher(entry, head)
 		if merr != nil {
 			if matchErr == "" {
@@ -181,12 +468,54 @@ func parseText(body []byte, meta FilingMeta) *ParseResult {
 			continue
 		}
 		res.Meta.Layout = entry.Name
-		rows, perr := runLayoutParser(entry, text, res.Meta)
+		rows, perr := runLayoutParser(entry, decoded, text, res.Meta)
+		if errors.Is(perr, errLayoutNoActivity) {
+			res.Meta.ParseStatus = "ok"
+			res.Meta.NRows = 0
+			return res
+		}
+		if errors.Is(perr, errLayoutDeclined) {
+			// Not a parse failure: the layout read the body and found nothing it
+			// can key on. Unset the name so the filing keeps its body-derived
+			// skip signature and stays countable in the manifest.
+			res.Meta.Layout = ""
+			continue
+		}
 		if perr != nil {
 			res.Meta.ParseStatus = "error"
 			res.Meta.ErrorMsg = perr.Error()
 			res.Meta.NRows = 0
 			return res
+		}
+		// A layout that claimed the filing and read NOTHING out of it reaches the
+		// same ok/n_rows=0 the nil-report branch below reaches -- but by a path that
+		// never consults the vocabulary check, because it never gets there. An audit
+		// of every filing classified nil found 6 carrying vote-table vocabulary,
+		// which the stated rule forbids outright, and this is how: a signature
+		// matched, the walk produced no row, and the manifest recorded "we read this
+		// filing and it held no votes" about a body printing `Vote Cast`. Zero rows
+		// out of a body that reads like a vote table is a failure to read it, so the
+		// claim is withdrawn the same way errLayoutDeclined withdraws one: the name
+		// is unset and the filing carries on to the layouts behind this one, and to
+		// skip if none of them can read it either.
+		if len(rows) == 0 && hasVoteTableVocabulary(text) {
+			res.Meta.Layout = ""
+			continue
+		}
+		// A mixed document prints more than one grammar. The winner read its own;
+		// the icr blocks it stepped over are read here, once each.
+		if entry.Name != "icr" {
+			rows = icrSupplement(rows, text, res.Meta)
+		}
+		// The filing may state, in its own words, that a declared series cast no
+		// vote at all. When that leaves exactly ONE series able to have voted, the
+		// rows whose heading named nothing belong to it.
+		if sole := soleOperationalSeries(text, res.Meta.SeriesDecls); sole != "" {
+			for i := range rows {
+				if rows[i].SeriesID == "" {
+					rows[i].SeriesID = sole
+				}
+			}
 		}
 		res.Rows = stampRows(rows, res.Meta)
 		res.Meta.ParseStatus = "ok"
@@ -199,11 +528,22 @@ func parseText(body []byte, meta FilingMeta) *ParseResult {
 	// votes carries both, and calling that "nothing to report" records the loss of
 	// every vote in it as a success. A body we could not parse is a skip; that is
 	// the honest answer and the one the manifest exists to give.
-	if hasNoActivitySentinel(text) && !hasVoteTableVocabulary(text) {
-		res.Meta.Layout = "no-activity"
-		res.Meta.ParseStatus = "ok"
-		res.Meta.NRows = 0
-		return res
+	if !hasVoteTableVocabulary(text) {
+		if hasNoActivitySentinel(text) {
+			res.Meta.Layout = "no-activity"
+			res.Meta.ParseStatus = "ok"
+			res.Meta.NRows = 0
+			return res
+		}
+		// Raw markup may also prove the table is empty, but only in the narrow case
+		// htmlPrintsNoVoteTable recognises. A low parse yield proves nothing: compact,
+		// unclosed and vertically padded vote records must remain skip.
+		if htmlPrintsNoVoteTable(decoded) {
+			res.Meta.Layout = "cover-page"
+			res.Meta.ParseStatus = "ok"
+			res.Meta.NRows = 0
+			return res
+		}
 	}
 
 	res.Meta.Layout = unmatchedSignature(signatureBody(decoded, text))
@@ -266,13 +606,16 @@ func signatureBody(decoded []byte, normalized string) string {
 // runLayoutParser calls one registry entry's parser with a panic recovered into
 // an error, so a nil dereference deep in a layout is one bad manifest row rather
 // than a dead worker.
-func runLayoutParser(entry layoutEntry, text string, meta FilingMeta) (rows []VoteRow, err error) {
+func runLayoutParser(entry layoutEntry, raw []byte, text string, meta FilingMeta) (rows []VoteRow, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			rows = nil
 			err = fmt.Errorf("panic in layout %s: %v", entry.Name, r)
 		}
 	}()
+	if entry.ParseRaw != nil {
+		return entry.ParseRaw(raw, text, meta)
+	}
 	if entry.Parse == nil {
 		return nil, fmt.Errorf("layout %s has no parser", entry.Name)
 	}
@@ -282,6 +625,68 @@ func runLayoutParser(entry layoutEntry, text string, meta FilingMeta) (rows []Vo
 // stampRows carries the filing-level identity onto every row a layout produced.
 // A layout that already set a field wins, because it is the only layer that
 // knows which fund or series a vote belongs to.
+// issExclusionPhrases are the ways a filing states that a named series cast no
+// vote in the period, so the votes it prints cannot be that series'.
+var issExclusionPhrases = []string{
+	"was not operational",
+	"were not operational",
+	"did not vote",
+	"did not cast any votes",
+	"did not hold any voting securities",
+}
+
+// soleOperationalSeries is the one declared series a filing leaves able to have
+// voted after its own text excludes the others by name (Uncommon Investment
+// Funds Trust 2022: `The Uncommon Generosity 50 Equity ETF was not operational
+// during the reporting period ...`, 111 rows under an acronym banner that names
+// nothing declared). It is empty unless at least one series is excluded and
+// EXACTLY one survives, so a filing that excludes nobody -- or everybody but
+// two -- still leaves the rows blank rather than guessing.
+func soleOperationalSeries(text string, decls []SeriesDecl) string {
+	ids := map[string]bool{}
+	for _, d := range decls {
+		if d.SeriesID != "" && d.Name != "" {
+			ids[d.SeriesID] = true
+		}
+	}
+	if len(ids) < 2 {
+		return ""
+	}
+	excluded := false
+	for _, line := range strings.Split(strings.ToLower(text), "\n") {
+		line = strings.Join(strings.Fields(line), " ")
+		if line == "" {
+			continue
+		}
+		hit := false
+		for _, p := range issExclusionPhrases {
+			if strings.Contains(line, p) {
+				hit = true
+				break
+			}
+		}
+		if !hit {
+			continue
+		}
+		for _, d := range decls {
+			if d.SeriesID == "" || d.Name == "" || !ids[d.SeriesID] {
+				continue
+			}
+			if strings.Contains(line, strings.ToLower(strings.Join(strings.Fields(d.Name), " "))) {
+				delete(ids, d.SeriesID)
+				excluded = true
+			}
+		}
+	}
+	if !excluded || len(ids) != 1 {
+		return ""
+	}
+	for id := range ids {
+		return id
+	}
+	return ""
+}
+
 func stampRows(rows []VoteRow, meta FilingMeta) []VoteRow {
 	out := make([]VoteRow, 0, len(rows))
 	for _, r := range rows {
@@ -321,11 +726,31 @@ func hasNoActivitySentinel(text string) bool {
 // the guard on the sentinel: a body carrying this vocabulary is one we failed to
 // parse, never one with nothing to report.
 func hasVoteTableVocabulary(text string) bool {
-	return containsAnyFolded(text, voteTableVocabulary)
+	if containsAnyFolded(text, voteTableVocabulary) {
+		return true
+	}
+	for _, w := range voteTableWeakVocabulary {
+		if countFolded(text, w) >= voteTableWeakMin {
+			return true
+		}
+	}
+	return false
 }
 
 // containsAnyFolded reports whether text carries any of the lowercase ASCII
-// needles, comparing case-insensitively in place.
+// needles, comparing case-insensitively in place and letting ONE space in a
+// needle match a whole run of whitespace in the text.
+//
+// The whitespace run is what makes this work on HTML bodies. A filer's editor
+// hard-wraps prose mid-sentence and stripHTML preserves the break, so
+// "There is no\nproxy voting activity for the Fund" carries the sentinel with a
+// newline inside it; an exact-space needle misses it and the filing lands in
+// parse_status=skip, claiming we failed to read a document that says in plain
+// English it has nothing in it to read. Block tags contribute breaks the same
+// way, so the wrap column is not the only place this happens.
+//
+// text is already whitespace-collapsed by stripHTML, so the run a space consumes
+// is short; the scan stays O(len(text)) per needle with no allocation.
 func containsAnyFolded(text string, needles []string) bool {
 	for _, s := range needles {
 		if s == "" || len(s) > len(text) {
@@ -336,25 +761,84 @@ func containsAnyFolded(text string, needles []string) bool {
 		if lo >= 'a' && lo <= 'z' {
 			up = lo - 'a' + 'A'
 		}
+		// A match is at least len(s) bytes long -- a space may consume more than
+		// one byte, never fewer -- so this bound cannot cut a real match short.
 		for i := 0; i+len(s) <= len(text); i++ {
 			if c := text[i]; c != lo && c != up {
 				continue
 			}
-			match := true
-			for j := 1; j < len(s); j++ {
-				d := text[i+j]
-				if d >= 'A' && d <= 'Z' {
-					d += 'a' - 'A'
-				}
-				if d != s[j] {
-					match = false
-					break
-				}
-			}
-			if match {
+			if matchFoldedAt(text, i, s) {
 				return true
 			}
 		}
+	}
+	return false
+}
+
+// countFolded counts non-overlapping matches of one needle under the same
+// case-folding and whitespace-run rules containsAnyFolded uses. It stops at the
+// caller's threshold: the bodies here reach 200 MB and the answer is a
+// comparison, never the total.
+func countFolded(text, s string) int {
+	if s == "" || len(s) > len(text) {
+		return 0
+	}
+	lo := s[0]
+	up := lo
+	if lo >= 'a' && lo <= 'z' {
+		up = lo - 'a' + 'A'
+	}
+	n := 0
+	for i := 0; i+len(s) <= len(text); i++ {
+		if c := text[i]; c != lo && c != up {
+			continue
+		}
+		if matchFoldedAt(text, i, s) {
+			n++
+			if n >= voteTableWeakMin {
+				return n
+			}
+			i += len(s) - 1
+		}
+	}
+	return n
+}
+
+// matchFoldedAt matches needle s against text starting at i, folding ASCII case
+// and expanding each space in s to one or more whitespace bytes.
+func matchFoldedAt(text string, i int, s string) bool {
+	t := i
+	for j := 0; j < len(s); j++ {
+		if s[j] == ' ' {
+			n := 0
+			for t < len(text) && isASCIISpace(text[t]) {
+				t++
+				n++
+			}
+			if n == 0 {
+				return false
+			}
+			continue
+		}
+		if t >= len(text) {
+			return false
+		}
+		d := text[t]
+		if d >= 'A' && d <= 'Z' {
+			d += 'a' - 'A'
+		}
+		if d != s[j] {
+			return false
+		}
+		t++
+	}
+	return true
+}
+
+func isASCIISpace(c byte) bool {
+	switch c {
+	case ' ', '\t', '\n', '\r', '\v', '\f':
+		return true
 	}
 	return false
 }

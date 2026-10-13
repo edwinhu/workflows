@@ -1,0 +1,46 @@
+		COMPANY CONFORMED NAME:			MANNING & NAPIER FUND, INC.
+		CENTRAL INDEX KEY:			0000751173
+<SERIES>
+<OWNER-CIK>0000751173
+<SERIES-ID>S000003640
+<SERIES-NAME>Pro-Blend(R) Maximum Term Series
+</SERIES>
+<TEXT>
+<PRE STYLE="font-size: 8pt">
+Manning &amp; Napier Fund, Inc. Pro-Blend Maximum Term Series
+--------------------------------------------------------------------------------------------------------------------------
+ 3M COMPANY                                                                                  Agenda Number:  935791550
+--------------------------------------------------------------------------------------------------------------------------
+    Security:  88579Y101                                                             Meeting Type:  Annual
+      Ticker:  MMM                                                                   Meeting Date:  09-May-2023
+        ISIN:  US88579Y1010
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+
+1a.    Election of Director for a term of one year: Thomas       Mgmt          For                            For
+       "Tony" K. Brown
+
+
+
+AIRBUS SE
+--------------------------------------------------------------------------------------------------------------------------
+ AIR LIQUIDE SA                                                                              Agenda Number:  716824164
+--------------------------------------------------------------------------------------------------------------------------
+    Security:  F01764103                                                             Meeting Type:  MIX
+      Ticker:  AI                                                                      Meeting Date:  03-May-2023
+        ISIN:  FR0000120073
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+
+1      APPROVAL OF THE CORPORATE FINANCIAL STATEMENTS FOR THE    Mgmt          For                            For
+       FINANCIAL YEAR ENDED 31 DECEMBER 2022
+
+2      APPROVAL OF THE CONSOLIDATED FINANCIAL STATEMENTS FOR     Mgmt          For                            For
+       THE FINANCIAL YEAR ENDED 31 DECEMBER 2022
+

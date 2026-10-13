@@ -1,0 +1,12 @@
+
+BASF SE
+
+Ticker:       BAS            Security ID:  D06216317
+Meeting Date: APR 30, 2015   Meeting Type: Annual
+Record Date:  APR 23, 2015
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Non-Voting Meeting Note                 None      DNV (do not  Management
+                                                        vote)
+2     Non-Voting Meeting Note                 None      DNV (do not  Management
+                                                        vote)

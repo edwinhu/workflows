@@ -1,0 +1,95 @@
+<SEC-DOCUMENT>0000928816-11-001081.txt : 20110808
+<SEC-HEADER>0000928816-11-001081.hdr.sgml : 20110808
+<ACCEPTANCE-DATETIME>20110808151356
+ACCESSION NUMBER:		0000928816-11-001081
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		3
+CONFORMED PERIOD OF REPORT:	20110630
+FILED AS OF DATE:		20110808
+DATE AS OF CHANGE:		20110808
+EFFECTIVENESS DATE:		20110808
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PUTNAM VARIABLE TRUST
+		CENTRAL INDEX KEY:			0000822671
+		IRS NUMBER:				046649095
+		STATE OF INCORPORATION:			NY
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-05346
+		FILM NUMBER:		111016912
+
+	BUSINESS ADDRESS:	
+		STREET 1:		ONE POST OFFICE SQ
+		STREET 2:		MAILSTOP A 14
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02109
+		BUSINESS PHONE:		8002551581
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PUTNAM CAPITAL MANAGER TRUST /MA/
+		DATE OF NAME CHANGE:	19920703
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000822671
+<SERIES-ID>S000003883
+<SERIES-NAME>Putnam VT Capital Opportunities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010861
+<CLASS-CONTRACT-NAME>Class IA Shares
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000010862
+<CLASS-CONTRACT-NAME>Class IB Shares
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>a_variabletrustnpx.htm
+<DESCRIPTION>PUTNAM VARIABLE TRUST
+<TEXT>
+<html><body>
+<TABLE cellpadding=2 border=0 width="95%">
+
+
+
+ <TR vAlign=top><TD></TD><TD><B>Registrant :</B></TD><TD colspan=4> Putnam Variable Trust</TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD><B>Fund Name :</B></TD><TD colspan=4> Putnam VT Capital Opportunities Fund</TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD><B>Date of fiscal year end:</B></TD><TD colspan=4> 12/31/2010</TD><TD></TD><TD></TD></TR>
+ <TR height=50><TD></TD><TD  colspan=8><HR noShade size=2></TD> <TR>
+	<TD></TD> <TR vAlign=top><TD></TD><TD><B>AAON, Inc.</B></TD><TD></TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD><B>Ticker</B></TD><TD><B>Security ID:</B></TD><TD></TD><TD><B>Meeting Date</B></TD><TD></TD><TD><B>Meeting Status</B></TD><TD></TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>AAON</TD><TD>CUSIP 000360206</TD><TD></TD><TD>05/17/2011</TD><TD></TD><TD>Voted</TD><TD></TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD><B>Meeting Type</B></TD><TD><B>Country of Trade</B></TD><TD></TD><TD></TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>Annual</TD><TD>United States</TD><TD></TD><TD></TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD><B>Issue No.</B></TD><TD><B>Description</B></TD><TD></TD><TD><B>Proponent</B></TD><TD><B>Mgmt Rec</B></TD><TD><B>Vote Cast</B></TD><TD><B>For/Agnst Mgmt</B></TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>1.1</TD><TD>Elect Jack Short</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>For</TD><TD>For</TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>1.2</TD><TD>Elect Jerry Levine</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>For</TD><TD>For</TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>2</TD><TD>Advisory Vote on Executive Compensation</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>For</TD><TD>For</TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>3</TD><TD>Frequency of Advisory Vote on Executive Compensation</TD><TD></TD><TD>Mgmt</TD><TD>3 Years</TD><TD>1 Year</TD><TD>Against</TD><TD></TD><TD></TD></TR>
+ <TR height=50><TD></TD><TD  colspan=8><HR noShade size=2></TD> <TR>
+	<TD></TD> <TR vAlign=top><TD></TD><TD><B>Abercrombie & Fitch Co.</B></TD><TD></TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD><B>Ticker</B></TD><TD><B>Security ID:</B></TD><TD></TD><TD><B>Meeting Date</B></TD><TD></TD><TD><B>Meeting Status</B></TD><TD></TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>ANF</TD><TD>CUSIP 002896207</TD><TD></TD><TD>02/28/2011</TD><TD></TD><TD>Voted</TD><TD></TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD><B>Meeting Type</B></TD><TD><B>Country of Trade</B></TD><TD></TD><TD></TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>Special</TD><TD>United States</TD><TD></TD><TD></TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD><B>Issue No.</B></TD><TD><B>Description</B></TD><TD></TD><TD><B>Proponent</B></TD><TD><B>Mgmt Rec</B></TD><TD><B>Vote Cast</B></TD><TD><B>For/Agnst Mgmt</B></TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>1</TD><TD>Reincorporation</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>For</TD><TD>For</TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>2</TD><TD>Right to Adjourn Meeting</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>For</TD><TD>For</TD><TD></TD><TD></TD></TR>
+ <TR vAlign=top><TD></TD><TD></TD><TD>3</TD><TD>Transaction of Other Business</TD><TD></TD><TD>Mgmt</TD><TD>For</TD><TD>Against</TD><TD>Against</TD><TD></TD><TD></TD></TR>
+</TABLE>
+</body></html>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

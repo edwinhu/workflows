@@ -1,0 +1,69 @@
+ACCESSION NUMBER:		0001145443-06-002812
+CONFORMED SUBMISSION TYPE:	N-PX
+CONFORMED PERIOD OF REPORT:	20060630
+FILED AS OF DATE:		20060830
+		COMPANY CONFORMED NAME:			UNDISCOVERED MANAGERS FUNDS
+		CENTRAL INDEX KEY:			0001047712
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<SERIES>
+<OWNER-CIK>0001047712
+<SERIES-ID>S000004187
+<SERIES-NAME>JPMorgan Realty Income Fund
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<TEXT>
+<HTML>
+<BODY bgcolor="#ffffff">
+<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="0" WIDTH="100%" STYLE="border-collapse:collapse">
+    <tr >
+        <TD WIDTH="18%" VALIGN="TOP">
+            <p style='margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=2>Date of reporting period:</font></p></td>
+        <TD WIDTH="82%" VALIGN="TOP">
+            <p style='border-bottom: solid 1pt black; margin-left:0pt;text-indent:0pt;text-align:left;margin-top:0pt;margin-bottom:0pt'><font size=2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;July 1, 2005 through June 30, 2006</font></p></td> </table>
+<h3>==================== JPMORGAN REALTY INCOME FUND ====================</h3>
+<h3>ALEXANDRIA REAL ESTATE EQUITIES, INC.</h3>
+<table width="400px">
+<tr align="left">
+<td width="25%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\"><b>Ticker:&nbsp;&nbsp;&nbsp;</b> ARE </FONT></td>
+<td width="25%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\"><b>Security ID:&nbsp;&nbsp;&nbsp;</b> 015271109 </FONT></td><tr align="left">
+<td width="25%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\"><b>Meeting Date:&nbsp;&nbsp;&nbsp;</b> MAY 18, 2006 </FONT></td>
+<td width="25%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\"><b>Meeting Type:&nbsp;&nbsp;&nbsp;</b> Annual </FONT></td><tr align="left">
+<td width="25%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\"><b>Record Date:&nbsp;&nbsp;&nbsp;</b> MAR 31, 2006 </FONT></td>
+<td width="25%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\"></FONT></td>
+</table>
+
+<p></p>
+<table width="700px">
+<tr align="left">
+<td width="10%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\"><b>#    </b></FONT></td>
+<td width="50%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\"><b>Proposal                                 </b></FONT></td>
+<td width="15%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\"><b>Mgt Rec  </b></FONT></td>
+<td width="15%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\"><b>Vote Cast </b></FONT></td>
+<td width="15%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\"><b>Sponsor    </b></FONT></td>
+</tr>
+<tr align="left">
+<td width="10%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\">1.1  </FONT></td>
+<td width="50%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\">Elect Director Jerry M. Sudarsky         </FONT></td>
+<td width="15%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\">For      </FONT></td>
+<td width="15%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\">Withhold  </FONT></td>
+<td width="15%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\">Management </FONT></td>
+</tr>
+<tr align="left">
+<td width="10%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\">1.2  </FONT></td>
+<td width="50%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\">Elect Director Joel S. Marcus            </FONT></td>
+<td width="15%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\">For      </FONT></td>
+<td width="15%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\">For       </FONT></td>
+<td width="15%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\">Management </FONT></td>
+</tr>
+<tr align="left">
+<td width="10%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\">1.3  </FONT></td>
+<td width="50%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\">Elect Director James H. Richardson       </FONT></td>
+<td width="15%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\">For      </FONT></td>
+<td width="15%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\">For       </FONT></td>
+<td width="15%"><FONT FACE="TIMES NEW ROMAN, TIMES, SERIF" SIZE="2\">Management </FONT></td>
+</tr>

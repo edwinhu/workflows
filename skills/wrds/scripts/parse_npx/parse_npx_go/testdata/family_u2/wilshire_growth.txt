@@ -1,0 +1,54 @@
+<SEC-DOCUMENT>0000935069-04-001304.txt : 20040830
+<SEC-HEADER>0000935069-04-001304.hdr.sgml : 20040830
+<ACCEPTANCE-DATETIME>20040830165707
+ACCESSION NUMBER:		0000935069-04-001304
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040830
+DATE AS OF CHANGE:		20040830
+EFFECTIVENESS DATE:		20040830
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			WILSHIRE MUTUAL FUNDS INC
+		CENTRAL INDEX KEY:			0000890453
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>wilshirenpx.txt
+<DESCRIPTION>WILSHIRE N-PX
+<TEXT>
+Large Company Growth Portfolio 1-1-2004 through 6-30-2004
+<TABLE>
+<CAPTION>
+ISSUER NAME                                        TICKER          CUSIP          MTG DATE           MTG TYPE
+                                                                                  PROPOSAL TYPE      VOTED?    VOTE       FOR/
+3M CO                                              MMM             88579Y101      5/11/04            ANNUAL               AGNST MGMT
+<S>       <C>    <C>                              <C>              <C>            <C>                <C>       <C>        <C>
+          1.01   Elect Edward A. Brennan                                          MGMT               YES       FOR        FOR
+          1.02   Elect Michael L. Eskew                                           MGMT               YES       FOR        FOR
+          1.03   Elect W. James McNerney Jr.                                      MGMT               YES       FOR        FOR
+          1.04   Elect Kevin W. Sharer                                            MGMT               YES       FOR        FOR
+             2   Ratify Selection of Auditors                                     MGMT               YES       FOR        FOR
+             3   Increase Authorized Common Stock                                 MGMT               YES       FOR        FOR
+             4   Independent Board Chairman                                       SHLDR              YES       FOR        AGNST
+</TABLE>
+Large Company Value Portfolio 1-1-2004 through 6-30-2004
+
+<TABLE>
+<CAPTION>
+ISSUER NAME                                         TICKER        CUSIP             MTG DATE           MTG TYPE
+                                                                                    PROPOSAL TYPE      VOTED?    VOTE      FOR/AGNST
+3M CO                                               MMM           88579Y101         5/11/04            ANNUAL              Mgmt
+          <S>                                      <C>            <C>               <C>                <C>       <C>       <C>
+          1.01   Elect Edward A. Brennan                                            MGMT               YES       FOR       FOR
+          1.02   Elect Michael L. Eskew                                             MGMT               YES       FOR       FOR
+          1.03   Elect W. James McNerney Jr.                                        MGMT               YES       FOR       FOR
+          1.04   Elect Kevin W. Sharer                                              MGMT               YES       FOR       FOR
+             2   Ratify Selection of Auditors                                       MGMT               YES       FOR       FOR
+             3   Increase Authorized Common Stock                                   MGMT               YES       FOR       FOR
+             4   Independent Board Chairman                                         SHLDR              YES       FOR       AGNST
+</TABLE>

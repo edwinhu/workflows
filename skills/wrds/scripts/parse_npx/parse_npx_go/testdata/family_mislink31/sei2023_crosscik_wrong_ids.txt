@@ -1,0 +1,1149 @@
+<SEC-DOCUMENT>0001135428-23-000250.txt : 20230830
+<SEC-HEADER>0001135428-23-000250.hdr.sgml : 20230830
+<ACCEPTANCE-DATETIME>20230830172040
+ACCESSION NUMBER:		0001135428-23-000250
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20230630
+FILED AS OF DATE:		20230830
+DATE AS OF CHANGE:		20230830
+EFFECTIVENESS DATE:		20230830
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SEI INSTITUTIONAL INVESTMENTS TRUST
+		CENTRAL INDEX KEY:			0000939934
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			0531
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-07257
+		FILM NUMBER:		231226157
+
+	BUSINESS ADDRESS:	
+		STREET 1:		1 FREEDOM VALLEY DRIVE
+		CITY:			OAK
+		STATE:			PA
+		ZIP:			19456
+		BUSINESS PHONE:		610 676-3097
+
+	MAIL ADDRESS:	
+		STREET 1:		1 FREEDOM VALLEY DRIVE
+		CITY:			OAK
+		STATE:			PA
+		ZIP:			19456
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000006762
+<SERIES-NAME>SIIT LONG DURATION FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018351
+<CLASS-CONTRACT-NAME>SIIT LONG DURATION FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>LDRAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000006763
+<SERIES-NAME>SIIT HIGH YIELD BOND FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018352
+<CLASS-CONTRACT-NAME>SIIT HIGH YIELD BOND FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>SGYAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000006764
+<SERIES-NAME>SIIT EMERGING MARKETS DEBT FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018353
+<CLASS-CONTRACT-NAME>SIIT EMERGING MARKETS DEBT FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>SEDAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000006765
+<SERIES-NAME>SIIT WORLD EQUITY EX-US FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018354
+<CLASS-CONTRACT-NAME>SIIT WORLD EQUITY EX-US FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>WEUSX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000006766
+<SERIES-NAME>SIIT CORE FIXED INCOME
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018355
+<CLASS-CONTRACT-NAME>SIIT CORE FIXED INCOME - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>SCOAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000006767
+<SERIES-NAME>SIIT LARGE CAP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018356
+<CLASS-CONTRACT-NAME>SIIT LARGE CAP FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>SLCAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000006768
+<SERIES-NAME>SIIT LARGE CAP INDEX FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018357
+<CLASS-CONTRACT-NAME>SIIT LARGE CAP INDEX FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>LCIAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000006769
+<SERIES-NAME>SIIT LARGE CAP DISCIPLINED EQUITY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018358
+<CLASS-CONTRACT-NAME>SIIT LARGE CAP DISCIPLINED EQUITY FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>SCPAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000006770
+<SERIES-NAME>SIIT SMALL MID CAP EQUITY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018359
+<CLASS-CONTRACT-NAME>SIIT SMALL MID CAP EQUITY FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>SSMAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000006772
+<SERIES-NAME>SIIT SMALL CAP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000018361
+<CLASS-CONTRACT-NAME>SIIT SMALL CAP FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>SLPAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000010543
+<SERIES-NAME>SIIT LARGE CAP DIVERSIFIED ALPHA FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000029091
+<CLASS-CONTRACT-NAME>SIIT LARGE CAP DIVERSIFIED ALPHA FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>SCDAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000010881
+<SERIES-NAME>SIIT EMERGING MARKETS EQUITY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000030145
+<CLASS-CONTRACT-NAME>SIIT EMERGING MARKETS EQUITY FUND - CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>SMQFX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000013605
+<SERIES-NAME>SIIT U.S. Managed Volatility Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000036888
+<CLASS-CONTRACT-NAME>SIIT U.S. Managed Volatility Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SVYAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000013606
+<SERIES-NAME>SIIT Real Return Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000036889
+<CLASS-CONTRACT-NAME>SIIT Real Return Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>RRPAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000014581
+<SERIES-NAME>SIIT Opportunistic Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000039813
+<CLASS-CONTRACT-NAME>SIIT Opportunistic Income Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>ENIAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000019597
+<SERIES-NAME>SIIT Screened World Equity Ex-US Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000054521
+<CLASS-CONTRACT-NAME>SIIT Screened World Equity Ex-US Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SSEAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000027147
+<SERIES-NAME>SIIT Dynamic Asset Allocation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000081914
+<CLASS-CONTRACT-NAME>SIIT Dynamic Asset Allocation Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SDLAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000031047
+<SERIES-NAME>SIIT Ultra Short Duration Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000096276
+<CLASS-CONTRACT-NAME>SIIT Ultra Short Duration Bond Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SUSAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000033123
+<SERIES-NAME>SIIT Multi-Asset Real Return Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000102014
+<CLASS-CONTRACT-NAME>SIIT Multi-Asset Real Return Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SEIAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000035814
+<SERIES-NAME>SIIT Extended Market Index Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000109763
+<CLASS-CONTRACT-NAME>SIIT Extended Market Index Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SMXAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000036633
+<SERIES-NAME>SIIT Small Cap II Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111997
+<CLASS-CONTRACT-NAME>SIIT Small Cap II Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SECAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000036875
+<SERIES-NAME>SIIT Long Duration Credit Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000112815
+<CLASS-CONTRACT-NAME>SIIT Long Duration Credit Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SLDAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000043383
+<SERIES-NAME>SIIT S&P 500 Index Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000134335
+<CLASS-CONTRACT-NAME>SIIT S&P 500 Index Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SPINX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000046099
+<SERIES-NAME>SIIT Limited Duration Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000144225
+<CLASS-CONTRACT-NAME>SIIT Limited Duration Bond Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SLDBX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000047944
+<SERIES-NAME>SIIT Intermediate Duration Credit Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000150792
+<CLASS-CONTRACT-NAME>SIIT Intermediate Duration Credit Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SIDCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000050969
+<SERIES-NAME>SIIT Global Managed Volatility Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000160603
+<CLASS-CONTRACT-NAME>SIIT Global Managed Volatility Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SGMAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000056248
+<SERIES-NAME>SIIT World Select Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000177051
+<CLASS-CONTRACT-NAME>SIIT World Select Equity Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SWSAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000939934
+<SERIES-ID>S000061159
+<SERIES-NAME>SIIT U.S. Equity Factor Allocation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000198133
+<CLASS-CONTRACT-NAME>SIIT U.S. Equity Factor Allocation Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SEHAX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>institutinv-npx.htm
+<DESCRIPTION>ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT COMPANY
+<TEXT>
+<html>
+  <head>
+    <title></title>
+    <!-- Licensed to: Printerlink
+         Document created using Broadridge PROfile 23.7.1.5162
+         Copyright 1995 - 2023 Broadridge -->
+  </head>
+<body bgcolor="#ffffff" style="font-family: 'Times New Roman', Times, serif; font-size: 10pt; text-align: left; color: #000000;">
+  <div style="font-family: 'Times New Roman';"><br>
+  </div>
+  <div>
+    <div><font style="font-family: 'Times New Roman';"><br>
+      </font> </div>
+    <font style="font-family: 'Times New Roman';"> &#160; </font>
+    <div>
+      <hr align="center" style="border: none; border-bottom: 1px solid black; border-top: 4px solid black; height: 10px; color: #ffffff; background-color: #ffffff; text-align: center; margin-left: auto; margin-right: auto;"></div>
+    <font style="font-family: 'Times New Roman';"> &#160; </font>
+    <div>
+      <div style="text-align: center; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">UNITED STATES</div>
+      <div style="text-align: center; margin-bottom: 3pt; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">SECURITIES AND EXCHANGE COMMISSION</div>
+      <div style="text-align: center; font-weight: bold; font-family: 'Times New Roman';">Washington, D.C. 20549</div>
+      <div><font style="font-family: 'Times New Roman';"><br>
+        </font> </div>
+      <div style="text-align: center; font-family: 'Times New Roman';">________</div>
+      <div><font style="font-family: 'Times New Roman';"><br>
+        </font> </div>
+      <div style="text-align: center; font-size: 14pt; font-weight: bold; font-family: 'Times New Roman';">FORM N-PX</div>
+      <div style="text-align: center; font-weight: bold; font-family: 'Times New Roman';">________</div>
+      <div><font style="font-family: 'Times New Roman';"><br>
+        </font> </div>
+      <div style="text-align: center; font-size: 14pt; font-weight: bold; font-family: 'Times New Roman';">ANNUAL REPORT OF PROXY VOTING RECORD OF</div>
+      <div style="text-align: center; font-size: 14pt; font-weight: bold; font-family: 'Times New Roman';">REGISTERED MANAGEMENT INVESTMENT COMPANY</div>
+      <div><font style="font-family: 'Times New Roman';"><br>
+        </font> </div>
+      <div style="text-align: center; font-family: 'Times New Roman';">Investment Company Act File Number:&#160; 811-07257</div>
+      <div><font style="font-family: 'Times New Roman';"><br>
+        </font> </div>
+      <div style="text-align: center; margin-top: 3pt; font-size: 14pt; font-weight: bold; font-family: 'Times New Roman';">SEI Institutional Investments Trust</div>
+      <div style="text-align: center; margin-top: 3pt; font-size: 8pt; font-family: 'Times New Roman';">(Exact name of registrant as specified in charter)</div>
+      <div><font style="font-family: 'Times New Roman';"><br>
+        </font> </div>
+      <div style="text-align: center; font-family: 'Times New Roman';">________</div>
+      <div><font style="font-family: 'Times New Roman';"><br>
+        </font> </div>
+      <div><font style="font-family: 'Times New Roman'; font-weight: bold;"><br>
+        </font> </div>
+      <font style="font-weight: bold;"> </font>
+      <div style="text-align: center; font-family: 'Times New Roman'; font-weight: bold;">One Freedom Valley Drive</div>
+      <font style="font-weight: bold;"> </font>
+      <div style="text-align: center; font-family: 'Times New Roman'; font-weight: bold;">Oaks, PA 19456</div>
+      <div style="text-align: center; margin-top: 3pt; font-size: 8pt; font-family: 'Times New Roman';">&#160;(Address of principal executive offices)</div>
+      <div><font style="font-family: 'Times New Roman';"><br>
+        </font> </div>
+      <div style="text-align: center; font-family: 'Times New Roman';">________</div>
+      <div><font style="font-family: 'Times New Roman';"><br>
+        </font> </div>
+      <div><font style="font-family: 'Times New Roman';"><br>
+        </font> </div>
+      <div style="text-align: center; font-family: 'Times New Roman'; font-weight: bold;">Timothy D. Barto, Esquire</div>
+      <font style="font-weight: bold;"> </font>
+      <div style="text-align: center; margin-top: 3pt; font-family: 'Times New Roman'; font-weight: bold;">SEI Institutional Investments Trust</div>
+      <font style="font-weight: bold;"> </font>
+      <div style="text-align: center; font-family: 'Times New Roman'; font-weight: bold;">SEI Investments</div>
+      <font style="font-weight: bold;"> </font>
+      <div style="text-align: center; font-family: 'Times New Roman'; font-weight: bold;">One Freedom Valley Drive</div>
+      <font style="font-weight: bold;"> </font>
+      <div style="text-align: center; font-family: 'Times New Roman'; font-weight: bold;">Oaks, PA 19456</div>
+      <div style="text-align: center; margin-top: 3pt; font-size: 8pt; font-family: 'Times New Roman';">(Name and address of agent for service)</div>
+      <div style="margin-top: 3pt;"><font style="font-family: 'Times New Roman';"><br>
+        </font> </div>
+      <div style="text-align: center; margin-top: 3pt; font-family: 'Times New Roman'; font-weight: bold;">CC:</div>
+      <font style="font-weight: bold;"> </font>
+      <div style="margin-top: 3pt;"><font style="font-family: 'Times New Roman'; font-weight: bold;"><br>
+        </font> </div>
+      <font style="font-weight: bold;"> </font>
+      <div style="text-align: center; margin-top: 3pt; font-family: 'Times New Roman'; font-weight: bold;">Timothy W. Levin, Esquire</div>
+      <font style="font-weight: bold;"> </font>
+      <div style="text-align: center; margin-top: 3pt; font-family: 'Times New Roman'; font-weight: bold;">Morgan, Lewis &amp; Brockius LLP</div>
+      <font style="font-weight: bold;"> </font>
+      <div style="text-align: center; margin-top: 3pt; font-family: 'Times New Roman'; font-weight: bold;">1701 Market Street</div>
+      <font style="font-weight: bold;"> </font>
+      <div style="text-align: center; margin-top: 3pt; font-family: 'Times New Roman'; font-weight: bold;">Philadelphia, Pennsylvania 19103</div>
+      <div><font style="font-family: 'Times New Roman';"><br>
+        </font> </div>
+      <div style="text-align: center; font-family: 'Times New Roman';">________</div>
+      <div><font style="font-family: 'Times New Roman'; font-weight: bold;"><br>
+        </font> </div>
+      <font style="font-weight: bold;"> </font>
+      <div><font style="font-family: 'Times New Roman'; font-weight: bold;"><br>
+        </font> </div>
+      <font style="font-weight: bold;"> </font>
+      <div style="text-align: center; font-family: 'Times New Roman'; font-weight: bold;">Registrant&#8217;s telephone number, including area code: 1-800-342-5734</div>
+      <font style="font-weight: bold;"> </font>
+      <div style="text-align: center; font-family: 'Times New Roman'; font-weight: bold;">Date of Fiscal Year End: May 31</div>
+      <font style="font-weight: bold;"> </font>
+      <div style="text-align: center; font-family: 'Times New Roman'; font-weight: bold;">Date of Reporting Period: July 1, 2022 to June 30, 2023</div>
+    </div>
+    <font style="font-family: 'Times New Roman';"> </font>
+    <div><font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; font-family: Arial;"> <font style="font-family: 'Times New Roman';"><br>
+        </font> </div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; font-family: 'Times New Roman';">________</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div><font style="font-family: 'Times New Roman';"><br>
+        </font> </div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div><font style="font-family: 'Times New Roman';"><br>
+        </font> </div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div>
+        <hr align="center" style="border: none; border-bottom: 4px solid black; border-top: 1px solid black; height: 10px; color: #ffffff; background-color: #ffffff; text-align: center; margin-left: auto; margin-right: auto;"></div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div><font style="font-family: 'Times New Roman';"><br>
+        </font> </div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div class="BRPFPageBreakArea" style="clear: both; margin-top: 10pt; margin-bottom: 10pt;">
+        <div class="BRPFPageBreak" style="page-break-after:always;">
+          <hr noshade="noshade" style="margin: 4px 0px; width: 100%; border-width: 0; height: 2px; color: #808080; background-color: #808080; clear: both;"></div>
+      </div>
+      <div style="margin-bottom: 8pt;"><font style="font-family: 'Times New Roman';"><br>
+        </font> </div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div><font style="font-family: 'Times New Roman';"><br>
+        </font> </div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">Item 1. Proxy Voting Record.</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div><font style="font-family: 'Times New Roman';"><br>
+        </font> </div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; margin-top: 3pt; font-style: italic; font-family: 'Times New Roman';">Attached are the proxy voting records for the following funds, each of which<br>
+        is a series of&#160; SEI Institutional Investments Trust:</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="margin-top: 3pt;"><font style="font-family: 'Times New Roman';"><br>
+        </font> </div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; margin-top: 3pt; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">Limited Duration Bond Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; margin-top: 3pt; font-size: 12pt; font-weight: bold; font-family: Arial;"><font style="font-family: 'Times New Roman';">&#160;Intermediate Duration Credit Fund<br>
+        </font> </div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; margin-top: 3pt; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;Core Fixed Income Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; margin-top: 3pt; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;Long Duration Credit Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; margin-top: 3pt; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;Ultra Short Duration Bond Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; margin-top: 3pt; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;Emerging Markets Debt Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; margin-top: 3pt; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;Real Return Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; margin-top: 3pt; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;Opportunistic Income Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; margin-top: 3pt; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;Dynamic Asset Allocation Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; margin-top: 3pt; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;Emerging Markets Equity Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; margin-top: 3pt; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;Extended Market Index Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;Global Managed Volatility Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;High Yield Bond Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;Large Cap Disciplined Equity Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;Large Cap Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;Large Cap Index Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;Long Duration Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;Multi-Asset Real Return Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;S&amp;P 500 Index Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;Screened World Equity Ex-US Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;Small Cap Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;Small Cap II Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;Small/Mid Cap Equity Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;U.S. Equity Factor Allocation Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;U.S. Managed Volatility Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;World Equity Ex-US Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div style="text-align: center; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">&#160;World Select Equity Fund</div>
+      <font style="font-family: 'Times New Roman';"> </font>
+      <div><font style="font-family: Arial;"><br>
+        </font> </div>
+    </div>
+  </div>
+  <div><br>
+  </div>
+  <div><br>
+  </div>
+  <div><br>
+  </div>
+  <div><br>
+  </div>
+  <div><br>
+  </div>
+  <div><br>
+  </div>
+  <div><br>
+  </div>
+  <div><br>
+  </div>
+  <div><br>
+  </div>
+  <div><br>
+  </div>
+  <div><br>
+  </div>
+  <div><br>
+  </div>
+  <div><br>
+  </div>
+  <div style="clear: both; margin-top: 10pt; margin-bottom: 10pt;" class="BRPFPageBreakArea">
+    <div style="page-break-after: always;" class="BRPFPageBreak">
+      <hr noshade="noshade" style="border-width: 0px; clear: both; margin: 4px 0px; width: 100%; height: 2px; color: #000000; background-color: #000000;"></div>
+  </div>
+  <div><br>
+  </div>
+  <div><br>
+  </div>
+  <div>
+    <pre>Registrant Name : SEI Institutional Investments Trust
+Fund Name : Real Return Fund
+Date of Fiscal Year End : 05/31/2023
+In all markets, for all statuses, for
+Key-
+The fund did not vote proxies relating to portfolio securities
+ during the period covered by this
+ report.
+
+Registrant Name : SEI Institutional Investments Trust
+Fund Name : Limited Duration Bond Fund
+Date of Fiscal Year End : 05/31/2023
+In all markets, for all statuses, for
+Key-
+The fund did not vote proxies relating to portfolio securities
+ during the period covered by this
+ report.
+
+Registrant Name : SEI Institutional Investments Trust
+Fund Name : Intermediate Duration Credit Fund
+Date of Fiscal Year End : 05/31/2023
+In all markets, for all statuses, for
+Key-
+The fund did not vote proxies relating to portfolio securities
+ during the period covered by this
+ report.
+
+Registrant Name : SEI Institutional Investments Trust
+Fund Name : Opportunistic Income Fund
+Date of Fiscal Year End : 05/31/2023
+In all markets, for all statuses, for
+Key-
+The fund did not vote proxies relating to portfolio securities
+ during the period covered by this
+ report.
+
+Registrant Name : SEI Institutional Investments Trust
+Fund Name : CORE FIXED INCOME FUND
+Date of Fiscal Year End : 05/31/2023
+In all markets, for all statuses, for
+Key-
+The fund did not vote proxies relating to portfolio securities
+ during the period covered by this
+ report.
+
+Registrant Name : SEI Institutional Investments Trust
+Fund Name : LONG DURATION FUND
+Date of Fiscal Year End : 05/31/2023
+In all markets, for all statuses, for
+Key-
+The fund did not vote proxies relating to portfolio securities
+ during the period covered by this
+ report.
+
+Registrant Name : SEI Institutional Investments Trust
+Fund Name : Long Duration Credit Fund
+Date of Fiscal Year End : 05/31/2023
+In all markets, for all statuses, for
+Key-
+The fund did not vote proxies relating to portfolio securities
+ during the period covered by this
+ report.
+
+Registrant Name : SEI Institutional Investments Trust
+Fund Name : Ultra Short Duration Bond Fund
+Date of Fiscal Year End : 05/31/2023
+In all markets, for all statuses, for
+Key-
+The fund did not vote proxies relating to portfolio securities
+ during the period covered by this
+ report.
+
+
+
+
+
+
+
+Item 1: Proxy Voting Record - Item1 Proxy Voting Record -
+
+Registrant : SEI Institutional Investments Trust
+
+Fund Name : Extended Market Index Fund
+
+Date of fiscal year end: 05/31/2023
+
+In all markets, for all statuses, for
+
+Key-
+
+________________________________________________________________________________
+10x Genomics, Inc.
+Ticker     Security ID:             Meeting Date          Meeting Status
+TXG        CUSIP 88025U109          06/14/2023            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1          Elect Benjamin J         Mgmt       For        For        For
+            Hindson
+
+2          Elect Serge Saxonov      Mgmt       For        For        For
+3          Elect John R.            Mgmt       For        For        For
+            Stuelpnagel
+
+4          Ratification of Auditor  Mgmt       For        For        For
+5          Advisory Vote on         Mgmt       For        Against    Against
+            Executive
+            Compensation
+
+________________________________________________________________________________
+1-800-FLOWERS.COM, Inc.
+Ticker     Security ID:             Meeting Date          Meeting Status
+FLWS       CUSIP 68243Q106          12/08/2022            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1.1        Elect Celia R. Brown     Mgmt       For        For        For
+1.2        Elect James A.           Mgmt       For        For        For
+            Cannavino
+
+1.3        Elect Dina Colombo       Mgmt       For        For        For
+1.4        Elect Eugene F. DeMark   Mgmt       For        For        For
+1.5        Elect Leonard J. Elmore  Mgmt       For        Withhold   Against
+1.6        Elect Adam Hanft         Mgmt       For        For        For
+1.7        Elect Stephanie Redish   Mgmt       For        For        For
+            Hofmann
+
+1.8        Elect Christopher G.     Mgmt       For        For        For
+            McCann
+
+1.9        Elect James F. McCann    Mgmt       For        For        For
+1.10       Elect Katherine Oliver   Mgmt       For        For        For
+1.11       Elect Larry Zarin        Mgmt       For        For        For
+2          Ratification of Auditor  Mgmt       For        For        For
+________________________________________________________________________________
+1Life Healthcare, Inc.
+Ticker     Security ID:             Meeting Date          Meeting Status
+ONEM       CUSIP 68269G107          09/22/2022            Voted
+Meeting Type                        Country of Trade
+Special                             United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1          Merger                   Mgmt       For        For        For
+2          Advisory Vote on         Mgmt       For        Against    Against
+            Golden
+            Parachutes
+
+3          Right to Adjourn         Mgmt       For        For        For
+            Meeting
+
+Item 1: Proxy Voting Record - Item1 Proxy Voting Record -
+
+Registrant : SEI Institutional Investments Trust
+
+Fund Name : Global Managed Volatility Fund
+
+Date of fiscal year end: 05/31/2023
+
+In all markets, for all statuses, for
+
+Key-
+
+________________________________________________________________________________
+3i Group plc
+Ticker     Security ID:             Meeting Date          Meeting Status
+III        CINS G88473148           06/29/2023            Voted
+Meeting Type                        Country of Trade
+Annual                              United Kingdom
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1          Accounts and Reports     Mgmt       For        For        For
+2          Remuneration Report      Mgmt       For        For        For
+3          Remuneration Policy      Mgmt       For        For        For
+4          Increase in NED Fee Cap  Mgmt       For        For        For
+5          Final Dividend           Mgmt       For        For        For
+6          Elect Simon A. Borrows   Mgmt       For        For        For
+7          Elect Stephen Daintith   Mgmt       For        For        For
+8          Elect Jasi Halai         Mgmt       For        For        For
+9          Elect James Hatchley     Mgmt       For        For        For
+10         Elect David Hutchison    Mgmt       For        For        For
+11         Elect Lesley Knox        Mgmt       For        For        For
+12         Elect Coline McConville  Mgmt       For        For        For
+13         Elect Peter McKellar     Mgmt       For        For        For
+14         Elect Alexandra          Mgmt       For        For        For
+            Schaapveld
+
+15         Appointment of Auditor   Mgmt       For        For        For
+16         Authority to Set         Mgmt       For        For        For
+            Auditor's
+            Fees
+
+17         Authorisation of         Mgmt       For        For        For
+            Political
+            Donations
+
+18         Authority to Issue       Mgmt       For        For        For
+            Shares w/ Preemptive
+            Rights
+
+19         Authority to Issue       Mgmt       For        For        For
+            Shares w/o Preemptive
+            Rights
+
+20         Authority to Issue       Mgmt       For        For        For
+            Shares w/o Preemptive
+            Rights (Specified
+            Capital
+            Investment)
+
+21         Authority to             Mgmt       For        For        For
+            Repurchase
+            Shares
+
+22         Authority to Set         Mgmt       For        For        For
+            General Meeting
+            Notice Period at 14
+            Days
+
+________________________________________________________________________________
+A2A S.p.A.
+Ticker     Security ID:             Meeting Date          Meeting Status
+A2A        CINS T0579B105           04/28/2023            Voted
+Meeting Type                        Country of Trade
+Annual                              Italy
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1          Non-Voting Meeting Note  N/A        N/A        N/A        N/A
+2          Non-Voting Meeting Note  N/A        N/A        N/A        N/A
+3          Non-Voting Meeting Note  N/A        N/A        N/A        N/A
+4          Accounts and Reports     Mgmt       For        For        For
+5          Allocation of            Mgmt       For        For        For
+            Profits/Dividends
+
+6          Remuneration Policy      Mgmt       For        Against    Against
+7          Remuneration Report      Mgmt       For        Against    Against
+8          Authority to             Mgmt       For        For        For
+            Repurchase and
+            Reissue
+            Shares
+
+9          Appointment of Auditor   Mgmt       For        For        For
+10         Non-Voting Agenda Item   N/A        N/A        N/A        N/A
+11         List Presented by        Mgmt       N/A        N/A        N/A
+            Municipalities of
+            Milano and
+            Brescia
+
+12         List Presented by        Mgmt       N/A        N/A        N/A
+            Group of
+            Shareholders
+
+13         List Presented by        Mgmt       N/A        For        N/A
+            Group of
+            Institutional
+            Investors
+            Representing 1.08% of
+            Share
+            Capital
+
+14         Directors' Fees          Mgmt       For        For        For
+15         Non-Voting Agenda Item   N/A        N/A        N/A        N/A
+16         List Presented by        Mgmt       N/A        Abstain    N/A
+            Municipalities of
+            Milano and
+            Brescia
+
+17         List Presented by        Mgmt       N/A        Abstain    N/A
+            Group of
+            Shareholders
+
+18         List Presented by        Mgmt       N/A        For        N/A
+            Group of
+            Institutional
+            Investors
+            Representing 1.08% of
+            Share
+            Capital
+
+19         Statutory Auditors'      Mgmt       For        For        For
+            Fees
+
+20         Non-Voting Meeting Note  N/A        N/A        N/A        N/A
+
+________________________________________________________________________________
+AbbVie Inc.
+Ticker     Security ID:             Meeting Date          Meeting Status
+ABBV       CUSIP 00287Y109          05/05/2023            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1          Elect Robert J. Alpern   Mgmt       For        For        For
+2          Elect Melody B. Meyer    Mgmt       For        For        For
+3          Elect Frederick H.       Mgmt       For        For        For
+            Waddell
+
+4          Ratification of Auditor  Mgmt       For        For        For
+5          Advisory Vote on         Mgmt       For        For        For
+            Executive
+            Compensation
+
+6          Elimination of           Mgmt       For        For        For
+            Supermajority
+            Requirement
+
+7          Shareholder Proposal     ShrHoldr   Against    Against    For
+            Regarding Simple
+            Majority
+            Vote
+
+8          Shareholder Proposal     ShrHoldr   Against    Against    For
+            Regarding Report on
+            Political
+            Expenditures and
+            Values
+            Congruency
+
+9          Shareholder Proposal     ShrHoldr   Against    Against    For
+            Regarding Lobbying
+            Report
+
+10         Shareholder Proposal     ShrHoldr   Against    Against    For
+            Regarding Extended
+            Patent Exclusivities
+            and Application for
+            Secondary and
+            Tertiary
+            Patents
+
+Item 1: Proxy Voting Record - Item1 Proxy Voting Record -
+
+Registrant : SEI Institutional Investments Trust
+
+Fund Name : Multi-Asset Real Return Fund
+
+Date of fiscal year end: 05/31/2023
+
+In all markets, for all statuses, for
+
+Key-
+
+________________________________________________________________________________
+10x Genomics, Inc.
+Ticker     Security ID:             Meeting Date          Meeting Status
+TXG        CUSIP 88025U109          06/14/2023            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1          Elect Benjamin J         Mgmt       For        For        For
+            Hindson
+
+2          Elect Serge Saxonov      Mgmt       For        For        For
+3          Elect John R.            Mgmt       For        For        For
+            Stuelpnagel
+
+4          Ratification of Auditor  Mgmt       For        For        For
+5          Advisory Vote on         Mgmt       For        Against    Against
+            Executive
+            Compensation
+
+________________________________________________________________________________
+1Life Healthcare, Inc.
+Ticker     Security ID:             Meeting Date          Meeting Status
+ONEM       CUSIP 68269G107          09/22/2022            Voted
+Meeting Type                        Country of Trade
+Special                             United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1          Merger                   Mgmt       For        For        For
+2          Advisory Vote on         Mgmt       For        Against    Against
+            Golden
+            Parachutes
+
+3          Right to Adjourn         Mgmt       For        For        For
+            Meeting
+
+________________________________________________________________________________
+Abbott Laboratories
+Ticker     Security ID:             Meeting Date          Meeting Status
+ABT        CUSIP 002824100          04/28/2023            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1          Elect Robert J. Alpern   Mgmt       For        For        For
+2          Elect Claire             Mgmt       For        For        For
+            Babineaux-Fontenot
+
+3          Elect Sally E. Blount    Mgmt       For        For        For
+4          Elect Robert B. Ford     Mgmt       For        For        For
+5          Elect Paola Gonzalez     Mgmt       For        For        For
+6          Elect Michelle A.        Mgmt       For        For        For
+            Kumbier
+
+7          Elect Darren W. McDew    Mgmt       For        For        For
+8          Elect Nancy McKinstry    Mgmt       For        Against    Against
+9          Elect Michael G.         Mgmt       For        For        For
+            O'Grady
+
+10         Elect Michael F. Roman   Mgmt       For        For        For
+11         Elect Daniel J. Starks   Mgmt       For        For        For
+12         Elect John G. Stratton   Mgmt       For        For        For
+13         Ratification of Auditor  Mgmt       For        For        For
+14         Advisory Vote on         Mgmt       For        For        For
+            Executive
+            Compensation
+
+15         Frequency of Advisory    Mgmt       1 Year     1 Year     For
+            Vote on Executive
+            Compensation
+
+16         Shareholder Proposal     ShrHoldr   Against    Against    For
+            Regarding Right to
+            Call Special
+            Meetings
+
+17         Shareholder Proposal     ShrHoldr   Against    For        Against
+            Regarding Independent
+            Chair
+
+18         Shareholder Proposal     ShrHoldr   Against    For        Against
+            Regarding Lobbying
+            Report
+
+19         Shareholder Proposal     ShrHoldr   Against    For        Against
+            Prohibiting
+            Adjustments for Legal
+            and Compliance
+            Costs
+
+Item 1: Proxy Voting Record - Item1 Proxy Voting Record -
+
+Registrant : SEI Institutional Investments Trust
+
+Fund Name : SMALL MID CAP EQUITY FUND
+
+Date of fiscal year end: 05/31/2023
+
+In all markets, for all statuses, for
+
+Key-
+
+________________________________________________________________________________
+2seventy bio, Inc.
+Ticker     Security ID:             Meeting Date          Meeting Status
+TSVT       CUSIP 901384107          06/13/2023            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1.1        Elect Daniel S. Lynch    Mgmt       For        For        For
+1.2        Elect Sarah Glickman     Mgmt       For        For        For
+1.3        Elect Wei Lin            Mgmt       For        For        For
+2          Ratification of Auditor  Mgmt       For        For        For
+3          Amendment to Articles    Mgmt       For        Against    Against
+            to Limit the
+            Liability of Certain
+            Officers
+
+________________________________________________________________________________
+8x8, Inc.
+Ticker     Security ID:             Meeting Date          Meeting Status
+EGHT       CUSIP 282914100          07/12/2022            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1.1        Elect Jaswinder Pal      Mgmt       For        For        For
+            Singh
+
+1.2        Elect David Sipes        Mgmt       For        For        For
+1.3        Elect Monique Bonner     Mgmt       For        For        For
+1.4        Elect Todd R. Ford       Mgmt       For        For        For
+1.5        Elect Alison Gleeson     Mgmt       For        For        For
+1.6        Elect Vladimir           Mgmt       For        For        For
+            Jacimovic
+
+1.7        Elect Eric Salzman       Mgmt       For        For        For
+1.8        Elect Elizabeth          Mgmt       For        For        For
+            Theophille
+
+2          Ratification of Auditor  Mgmt       For        For        For
+3          Advisory Vote on         Mgmt       For        For        For
+            Executive
+            Compensation
+
+4          Approval of the 2022     Mgmt       For        For        For
+            Equity Incentive
+            Plan
+
+5          Amendment to the 1996    Mgmt       For        For        For
+            Employee Stock
+            Purchase
+            Plan
+
+6          Increase in Authorized   Mgmt       For        For        For
+            Common
+            Stock
+
+________________________________________________________________________________
+ABM Industries Incorporated
+Ticker     Security ID:             Meeting Date          Meeting Status
+ABM        CUSIP 000957100          03/22/2023            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1          Elect Quincy L. Allen    Mgmt       For        For        For
+2          Elect LeighAnne G.       Mgmt       For        For        For
+            Baker
+
+3          Elect Donald F.          Mgmt       For        For        For
+            Colleran
+
+4          Elect James D. DeVries   Mgmt       For        For        For
+5          Elect Art A. Garcia      Mgmt       For        For        For
+6          Elect Thomas M.          Mgmt       For        For        For
+            Gartland
+
+7          Elect Jill M. Golder     Mgmt       For        For        For
+8          Elect Sudhakar Kesavan   Mgmt       For        For        For
+9          Elect Scott Salmirs      Mgmt       For        For        For
+10         Elect Winifred Webb      Mgmt       For        For        For
+11         Advisory Vote on         Mgmt       For        For        For
+            Executive
+            Compensation
+
+12         Frequency of Advisory    Mgmt       1 Year     1 Year     For
+            Vote on Executive
+            Compensation
+
+13         Ratification of Auditor  Mgmt       For        For        For
+</pre>
+  </div>
+  <div style="clear: both; margin-top: 10pt; margin-bottom: 10pt;" class="BRPFPageBreakArea">
+    <div style="page-break-after: always;" class="BRPFPageBreak">
+      <hr noshade="noshade" style="border-width: 0px; clear: both; margin: 4px 0px; width: 100%; height: 2px; color: #000000; background-color: #000000;"></div>
+  </div>
+  <div>
+    <div style="text-align: center; margin-top: 12pt; margin-bottom: 3pt; font-size: 14pt; font-weight: bold;"> <font style="font-family: 'Times New Roman';"><br>
+      </font></div>
+    <font style="font-family: 'Times New Roman';"> </font>
+    <div style="text-align: center; margin-top: 12pt; margin-bottom: 3pt; font-size: 14pt; font-weight: bold; font-family: 'Times New Roman';">SIGNATURES</div>
+    <font style="font-family: 'Times New Roman';"> </font>
+    <div style="margin-top: 12.6pt; font-family: 'Times New Roman';">Pursuant to the requirements of the Investment Company Act of 1940, the registrant has duly caused this report to be signed on its behalf by the undersigned, thereunto duly
+      authorized.</div>
+    <font style="font-family: 'Times New Roman';"> </font>
+    <div><font style="font-family: 'Times New Roman';"><br>
+      </font> </div>
+    <font style="font-family: 'Times New Roman';"> </font>
+    <div style="margin-top: 3pt; font-size: 12pt; font-weight: bold; font-family: 'Times New Roman';">SEI Institutional Investments Trust</div>
+    <font style="font-family: 'Times New Roman';"> </font>
+    <div><font style="font-family: 'Times New Roman';"><br>
+      </font> </div>
+    <font style="font-family: 'Times New Roman';"> </font>
+    <div><font style="font-family: 'Times New Roman';"><br>
+      </font> </div>
+    <font style="font-family: 'Times New Roman';"> </font>
+    <div style="margin-left: 21.6pt; font-family: 'Times New Roman';">By: <u>/s/ Robert Nesher</u></div>
+    <font style="font-family: 'Times New Roman';"> </font>
+    <div style="margin-left: 21.6pt; font-family: 'Times New Roman';">Robert Nesher</div>
+    <font style="font-family: 'Times New Roman';"> </font>
+    <div style="margin-left: 21.6pt; font-family: 'Times New Roman';">President</div>
+    <font style="font-family: 'Times New Roman';"> </font>
+    <div style="margin-left: 21.6pt; font-family: 'Times New Roman';">Date: August 31, 2023<br>
+    </div>
+    <div style="margin-top: 12pt; margin-bottom: 3pt;"><font style="font-family: Arial;"><br>
+      </font> </div>
+  </div>
+</body>
+</html>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

@@ -1,0 +1,10 @@
+
+DELL TECHNOLOGIES INC.
+
+Ticker:       DELL           Security ID:  US24703L2025
+Meeting Date: JUN 22, 2021   Meeting Type: Annual
+Record Date:  APR 26, 2021
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Election of Directors                   For       Withold      Management
+1     Election of Directors                   For       For          Management

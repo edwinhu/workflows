@@ -1,0 +1,33 @@
+		COMPANY CONFORMED NAME:			AXP VARIABLE PORTFOLIO MANAGED SERIES INC
+		CENTRAL INDEX KEY:			0000764546
+<TEXT>
+=========== AXP VARIABLE PORTFOLIO - DIVERSIFIED EQUITY INCOME FUND ============
+
+
+ABBOTT LABORATORIES
+
+Ticker:       ABT            Security ID:  002824100
+Meeting Date: APR 22, 2005   Meeting Type: ANNUAL
+Record Date:  FEB 23, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.01  Elect Roxanne S. Austin                   FOR       FOR        Management
+1.02  Elect William M. Daley                    FOR       FOR        Management
+1.03  Elect H. Laurance Fuller                  FOR       FOR        Management
+1.04  Elect Richard A. Gonzalez                 FOR       FOR        Management
+1.05  Elect Jack M. Greenberg                   FOR       FOR        Management
+1.06  Elect Jeffrey M. Leiden                   FOR       FOR        Management
+1.07  Elect David Owen                          FOR       FOR        Management
+
+==================== AXP VARIABLE PORTFOLIO - MANAGED FUND =====================
+
+
+ACE LTD
+
+Ticker:                      Security ID:  G0070K103
+Meeting Date: MAY 26, 2005   Meeting Type: ANNUAL
+Record Date:  APR 8, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.01  Elect Evan G. Greenberg                   FOR       FOR        Management
+1.02  Elect John A. Krol                        FOR       FOR        Management

@@ -1,0 +1,24 @@
+		COMPANY CONFORMED NAME:			JANUS ADVISER SERIES
+		CENTRAL INDEX KEY:			0001110822
+<TEXT>
+======================== ADVISER RISK-MANAGED CORE FUND ========================
+
+
+3M CO
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 11, 2004   Meeting Type: Annual
+Record Date:  MAR 12, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Edward A. Brennan         For       Withhold   Management
+1.2   Elect  Director Michael L. Eskew          For       For        Management
+1.3   Elect  Director W. James McNerney, Jr.    For       Withhold   Management
+1.4   Elect  Director Kevin W. Sharer           For       Withhold   Management
+2     Ratify Auditors                           For       For        Management
+3     Increase Authorized Common Stock          For       For        Management
+4     Separate Chairman and CEO Positions       Against   For        Shareholder
+
+
+- --------------------------------------------------------------------------------
+

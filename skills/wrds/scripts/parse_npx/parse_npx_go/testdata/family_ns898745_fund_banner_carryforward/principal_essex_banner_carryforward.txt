@@ -1,0 +1,4281 @@
+<SEC-DOCUMENT>0000898745-11-000564.txt : 20110818
+<SEC-HEADER>0000898745-11-000564.hdr.sgml : 20110818
+<ACCEPTANCE-DATETIME>20110818121502
+ACCESSION NUMBER:		0000898745-11-000564
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20110630
+FILED AS OF DATE:		20110818
+DATE AS OF CHANGE:		20110818
+EFFECTIVENESS DATE:		20110818
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PRINCIPAL FUNDS INC
+		CENTRAL INDEX KEY:			0000898745
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-07572
+		FILM NUMBER:		111044302
+
+	BUSINESS ADDRESS:	
+		STREET 1:		FORMERLY PRINCIPAL INVESTORS FUND, INC.
+		STREET 2:		PRINCIPAL FINANCIAL GROUP 711 HIGH ST
+		CITY:			DES MOINES
+		STATE:			IA
+		ZIP:			50392
+		BUSINESS PHONE:		515-247-5476
+
+	MAIL ADDRESS:	
+		STREET 1:		FORMERLY PRINCIPAL INVESTORS FUND, INC.
+		STREET 2:		PRINCIPAL FINANCIAL GROUP 711 HIGH ST
+		CITY:			DES MOINES
+		STATE:			IA
+		ZIP:			50392
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PRINCIPAL INVESTORS FUND INC
+		DATE OF NAME CHANGE:	20001012
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PRINCIPAL SPECIAL MARKETS FUND INC
+		DATE OF NAME CHANGE:	19930714
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000007175
+<SERIES-NAME>SmallCap Growth Fund I
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019625
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>PNASX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019626
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>PPNNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019627
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>PPNMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019628
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>PPNPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019629
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>PPNSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019630
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PGRTX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019631
+<CLASS-CONTRACT-NAME>Class J
+<CLASS-CONTRACT-TICKER-SYMBOL>PSIJX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000007176
+<SERIES-NAME>SmallCap Growth Fund II
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019632
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>PPASX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019633
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>PPMNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019634
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>PPMMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019635
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>PPMPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019636
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>PPMSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019637
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PSIIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019638
+<CLASS-CONTRACT-NAME>Class J
+<CLASS-CONTRACT-TICKER-SYMBOL>PPMIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000007201
+<SERIES-NAME>Principal LifeTime 2010 Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019699
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>PVASX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019700
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>PTANX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019701
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>PTAMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019702
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>PTAPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019703
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>PTASX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019704
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PTTIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019705
+<CLASS-CONTRACT-NAME>Class J
+<CLASS-CONTRACT-TICKER-SYMBOL>PTAJX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019706
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>PENAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000007202
+<SERIES-NAME>SmallCap Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019707
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>PSARX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019708
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>PSLPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019709
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>PTARX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019710
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>PVARX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019711
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>PSAGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019712
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>SCPGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019713
+<CLASS-CONTRACT-NAME>Class J
+<CLASS-CONTRACT-TICKER-SYMBOL>PSGJX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038794
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>PSOWX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038875
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>PMAAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038876
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>PSCBX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000007207
+<SERIES-NAME>Principal LifeTime 2020 Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019740
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>PWASX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019741
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>PTBNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019742
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>PTBMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019743
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>PTBPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019744
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>PTBSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019745
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PLWIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019746
+<CLASS-CONTRACT-NAME>Class J
+<CLASS-CONTRACT-TICKER-SYMBOL>PLFJX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019747
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>PTBAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019748
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>PLIBX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000007208
+<SERIES-NAME>Principal LifeTime 2030 Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019749
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>PXASX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019750
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>PTCNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019751
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>PTCMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019752
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>PTCPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019753
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>PTCSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019754
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PMTIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019755
+<CLASS-CONTRACT-NAME>Class J
+<CLASS-CONTRACT-TICKER-SYMBOL>PLTJX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019756
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>PTCAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019757
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>PTCBX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000007209
+<SERIES-NAME>Principal LifeTime 2040 Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019758
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>PYASX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019759
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>PTDNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019760
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>PTDMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019761
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>PTDPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019762
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>PTDSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019763
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PTDIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019764
+<CLASS-CONTRACT-NAME>Class J
+<CLASS-CONTRACT-TICKER-SYMBOL>PTDJX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019765
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>PTDAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019766
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>PTDBX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000007210
+<SERIES-NAME>Principal LifeTime 2050 Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019767
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>PZASX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019768
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>PLTFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019769
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>PTENX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019770
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>PTERX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019771
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>PTEFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019772
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>PTESX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019773
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PPLIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019774
+<CLASS-CONTRACT-NAME>Class J
+<CLASS-CONTRACT-TICKER-SYMBOL>PFLJX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019775
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>PPEAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000007211
+<SERIES-NAME>Principal LifeTime Strategic Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019776
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>PLAIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019777
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>PLTSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019778
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>PLSNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019779
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>PLSMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019780
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>PLSPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019781
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>PLSSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019782
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PLSIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019783
+<CLASS-CONTRACT-NAME>Class J
+<CLASS-CONTRACT-TICKER-SYMBOL>PLSJX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019784
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>PALTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000007212
+<SERIES-NAME>Real Estate Securities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019785
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>PRAEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019786
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>PRENX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019787
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>PRERX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019788
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>PREPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019789
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>PRETX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019790
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PIREX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019791
+<CLASS-CONTRACT-NAME>Class J
+<CLASS-CONTRACT-TICKER-SYMBOL>PREJX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019792
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>PRRAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019793
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>PRLEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038802
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>PRCEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000092700
+<CLASS-CONTRACT-NAME>Class P Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>PIRPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000007214
+<SERIES-NAME>SmallCap Blend Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019802
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>PSABX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019803
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>PSBNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019804
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>PSBMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019805
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>PSBPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019806
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>PSBSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019807
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PSLIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019808
+<CLASS-CONTRACT-NAME>Class J
+<CLASS-CONTRACT-TICKER-SYMBOL>PSBJX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019809
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>PLLAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019810
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>PLLBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038804
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>PSMCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000014245
+<SERIES-NAME>Short-Term Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038764
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SRHQX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038766
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>STCCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000038767
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>PSHIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000090493
+<CLASS-CONTRACT-NAME>Class J Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>PSJIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000090494
+<CLASS-CONTRACT-NAME>Class R-1 Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>PSIMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000090495
+<CLASS-CONTRACT-NAME>Class R-2 Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>PSINX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000090496
+<CLASS-CONTRACT-NAME>Class R-3 Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>PSIOX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000090497
+<CLASS-CONTRACT-NAME>Class R-4 Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>PSIPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000090498
+<CLASS-CONTRACT-NAME>Class R-5 Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>PSIQX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000092705
+<CLASS-CONTRACT-NAME>Class P Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>PSTPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000022103
+<SERIES-NAME>Principal LifeTime 2015 Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063422
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>LTASX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063423
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>LTINX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063424
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>LTAPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063425
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>LTSGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063426
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>LTPFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063427
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>LTSLX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000022104
+<SERIES-NAME>Principal LifeTime 2025 Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063428
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>LTEEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063429
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>LTSTX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063430
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>LTADX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063431
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>LTVPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063432
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>LTSNX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063433
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>LTPDX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000022105
+<SERIES-NAME>Principal LifeTime 2035 Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063434
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>LTVIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063435
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>LTAOX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063436
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>LTANX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063437
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>LTPEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063438
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>LTSEX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063439
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>LTIUX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000022106
+<SERIES-NAME>Principal LifeTime 2045 Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063440
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>LTRSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063441
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>LTRVX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063442
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>LTRGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063443
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>LTRDX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063444
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>LTRLX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063445
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>LTRIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000898745
+<SERIES-ID>S000022107
+<SERIES-NAME>Principal LifeTime 2055 Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063446
+<CLASS-CONTRACT-NAME>R-2
+<CLASS-CONTRACT-TICKER-SYMBOL>LTFSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063447
+<CLASS-CONTRACT-NAME>R-3
+<CLASS-CONTRACT-TICKER-SYMBOL>LTFDX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063448
+<CLASS-CONTRACT-NAME>R-1
+<CLASS-CONTRACT-TICKER-SYMBOL>LTFGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063449
+<CLASS-CONTRACT-NAME>R-5
+<CLASS-CONTRACT-TICKER-SYMBOL>LTFPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063450
+<CLASS-CONTRACT-NAME>R-4
+<CLASS-CONTRACT-TICKER-SYMBOL>LTFLX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000063451
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>LTFIX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>pfi-npxpart6.htm
+<DESCRIPTION>PFI 2011 N-PX PART 6
+<TEXT>
+
+<HTML>
+<HEAD>
+   <TITLE>pficoverpage-6.htm - Generated by SEC Publisher for SEC Filing</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<!--$$/page=-->
+<A name="page_825"></A><BR>
+<a name="_bclPageBorder825"></a><DIV style="PADDING-LEFT: 0%; WIDTH: 100%; PADDING-RIGHT: 0%">
+<DIV align=left>
+<TABLE style="WIDTH: 100%" border=0 cellSpacing=0>
+<TR>
+     <TD width="100%"></TD></TR>
+<TR height=20>
+     <TD align=left><B><FONT size=2 face=sans-serif>FUND:&nbsp; Principal Funds, Inc. - SmallCap Growth Fund II</FONT></B></TD></TR>
+<TR height=20>
+     <TD align=left><B><FONT size=2 face=sans-serif>SUB-ADVISOR:&nbsp; Essex Investment Management Company, LLC</FONT></B></TD></TR>
+<TR height=20>
+     <TD align=left><B><FONT size=2 face=sans-serif></FONT></B></TD></TR>
+<TR height=20>
+     <TD align=left><B><FONT size=2 face=sans-serif></FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><B><FONT size=2 face=sans-serif>Vote Summary Report</FONT></B>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT size=1 face=sans-serif>Report was run from: 7/1/10 to 6/30/11</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT size=1 face=sans-serif>Location(s): Essex Investment Management Company, LLC</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT size=1 face=sans-serif>Institution Account(s): Principal Investors Fund, Inc</FONT>&nbsp;</TD></TR></TABLE></DIV>
+<P style="MARGIN: 0px">&nbsp;</P>
+<DIV align=left>
+<TABLE style="WIDTH: 100%" border=0 cellSpacing=0>
+<TR>
+     <TD width="4%"></TD>
+     <TD width="14%"></TD>
+     <TD width="7%"></TD>
+     <TD width="11%"></TD>
+     <TD width="9%"></TD>
+     <TD width="10%"></TD>
+     <TD width="9%"></TD>
+     <TD width="11%"></TD>
+     <TD width="11%"></TD>
+     <TD width="8%"></TD></TR>
+<TR vAlign=bottom>
+     <TD colSpan=10 align=center><B><FONT size=2 face=sans-serif>Westport Innovations Inc.</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD align=center><B><FONT size=1 face=sans-serif>Ticker</FONT></B>&nbsp;</TD>
+     <TD align=center><B><FONT size=1 face=sans-serif>Meeting Date</FONT></B>&nbsp;</TD>
+     <TD align=right><B><FONT size=1 face=sans-serif>Country</FONT></B>&nbsp;</TD>
+     <TD align=center><B><FONT size=1 face=sans-serif>Security ID</FONT></B>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 2px" align=left><B><FONT size=1 face=sans-serif>Meeting Type</FONT></B>&nbsp;</TD>
+     <TD align=center><B><FONT size=1 face=sans-serif>Record Date</FONT></B>&nbsp;</TD>
+     <TD align=center><B><FONT size=1 face=sans-serif>Shares Voted</FONT></B>&nbsp;</TD>
+     <TD align=right><B><FONT size=1 face=sans-serif>Shares Instructed</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT size=1 face=sans-serif>Shares Available</FONT></B>&nbsp;</TD>
+     <TD align=right><B><FONT size=1 face=sans-serif>Shares on Loan</FONT></B>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=right><FONT size=1 face=sans-serif>WPT</FONT>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=sans-serif>15-Jul-10</FONT>&nbsp;</TD>
+     <TD align=center><FONT size=1 face=sans-serif>Canada</FONT>&nbsp;</TD>
+     <TD align=center><FONT size=1 face=sans-serif>960908309</FONT>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=sans-serif>Annual/Special</FONT>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 1px" align=left><FONT size=1 face=sans-serif>01-Jun-10</FONT>&nbsp;</TD>
+     <TD align=right><FONT size=1 face=sans-serif>82,105</FONT>&nbsp;</TD>
+     <TD align=right><FONT size=1 face=sans-serif>82,105</FONT>&nbsp;</TD>
+     <TD align=center><FONT size=1 face=sans-serif>82,105</FONT>&nbsp;</TD>
+     <TD align=right><FONT size=1 face=sans-serif>0</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><B><FONT size=1 face=sans-serif>CUSIP: </FONT></B><FONT size=1 face=sans-serif>960908309</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=center><B><FONT size=1 face=sans-serif>ISIN: </FONT></B><FONT size=1 face=sans-serif>CA9609083097</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 1px" align=left><B><FONT size=1 face=sans-serif>SEDOL: </FONT></B><FONT size=1 face=sans-serif>2956811</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=10>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>Vote</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" colSpan=2 align=left><FONT size=1 face=sans-serif>Proponent</FONT>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 4px" align=left><FONT size=1 face=sans-serif>Mgmt Rec</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" colSpan=2 align=left><FONT size=1 face=sans-serif>Instruction</FONT>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=10>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 1px" align=left><FONT size=1 face=sans-serif>1.1</FONT>&nbsp;</TD>
+     <TD colSpan=2 align=left><FONT size=1 face=sans-serif>Elect Director John A. Beaulieu</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 4px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 1px" align=left><FONT size=1 face=sans-serif>1.2</FONT>&nbsp;</TD>
+     <TD colSpan=2 align=left><FONT size=1 face=sans-serif>Elect Director Warren J. Baker</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 4px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 1px" align=left><FONT size=1 face=sans-serif>1.3</FONT>&nbsp;</TD>
+     <TD colSpan=2 align=left><FONT size=1 face=sans-serif>Elect Director M.A. (Jill) Bodkin</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 4px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 1px" align=left><FONT size=1 face=sans-serif>1.4</FONT>&nbsp;</TD>
+     <TD colSpan=2 align=left><FONT size=1 face=sans-serif>Elect Director David R. Demers</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 4px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 1px" align=left><FONT size=1 face=sans-serif>1.5</FONT>&nbsp;</TD>
+     <TD colSpan=2 align=left><FONT size=1 face=sans-serif>Elect Director Dezso J. Horvath</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 4px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 1px" align=left><FONT size=1 face=sans-serif>1.6</FONT>&nbsp;</TD>
+     <TD colSpan=2 align=left><FONT size=1 face=sans-serif>Elect Director Sarah Liao Sau Tung</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 4px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 1px" align=left><FONT size=1 face=sans-serif>1.7</FONT>&nbsp;</TD>
+     <TD colSpan=2 align=left><FONT size=1 face=sans-serif>Elect Director Albert Maringer</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 4px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 1px" align=left><FONT size=1 face=sans-serif>1.8</FONT>&nbsp;</TD>
+     <TD colSpan=2 align=left><FONT size=1 face=sans-serif>Elect Director Gottfried (Guff) Muench</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 4px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 1px" align=left><FONT size=1 face=sans-serif>2</FONT>&nbsp;</TD>
+     <TD colSpan=3 align=left><FONT size=1 face=sans-serif>Approve KPMG LLP as Auditors and Authorize Board to Fix</FONT>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 4px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT size=1 face=sans-serif>Their Remuneration</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 1px" align=left><FONT size=1 face=sans-serif>3</FONT>&nbsp;</TD>
+     <TD colSpan=2 align=left><FONT size=1 face=sans-serif>Approve Omnibus Incentive Plan</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 4px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=10>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD colSpan=10 align=center><B><FONT size=2 face=sans-serif>Park Electrochemical Corp.</FONT></B></TD></TR>
+<TR vAlign=bottom>
+     <TD align=center><B><FONT size=1 face=sans-serif>Ticker</FONT></B>&nbsp;</TD>
+     <TD align=center><B><FONT size=1 face=sans-serif>Meeting Date</FONT></B>&nbsp;</TD>
+     <TD align=right><B><FONT size=1 face=sans-serif>Country</FONT></B>&nbsp;</TD>
+     <TD align=center><B><FONT size=1 face=sans-serif>Security ID</FONT></B>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 2px" align=left><B><FONT size=1 face=sans-serif>Meeting Type</FONT></B>&nbsp;</TD>
+     <TD align=center><B><FONT size=1 face=sans-serif>Record Date</FONT></B>&nbsp;</TD>
+     <TD align=center><B><FONT size=1 face=sans-serif>Shares Voted</FONT></B>&nbsp;</TD>
+     <TD align=right><B><FONT size=1 face=sans-serif>Shares Instructed</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT size=1 face=sans-serif>Shares Available</FONT></B>&nbsp;</TD>
+     <TD align=right><B><FONT size=1 face=sans-serif>Shares on Loan</FONT></B>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left><FONT size=1 face=sans-serif>PKE</FONT>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><FONT size=1 face=sans-serif>20-Jul-10</FONT>&nbsp;</TD>
+     <TD align=center><FONT size=1 face=sans-serif>USA</FONT>&nbsp;</TD>
+     <TD align=center><FONT size=1 face=sans-serif>700416209</FONT>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 2px" align=left><FONT size=1 face=sans-serif>Annual</FONT>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 1px" align=left><FONT size=1 face=sans-serif>28-May-10</FONT>&nbsp;</TD>
+     <TD align=right><FONT size=1 face=sans-serif>33,869</FONT>&nbsp;</TD>
+     <TD align=right><FONT size=1 face=sans-serif>33,869</FONT>&nbsp;</TD>
+     <TD align=center><FONT size=1 face=sans-serif>33,869</FONT>&nbsp;</TD>
+     <TD align=right><FONT size=1 face=sans-serif>0</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 5px" align=left><B><FONT size=1 face=sans-serif>CUSIP: </FONT></B><FONT size=1 face=sans-serif>700416209</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=center><B><FONT size=1 face=sans-serif>ISIN: </FONT></B><FONT size=1 face=sans-serif>US7004162092</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 1px" align=left><B><FONT size=1 face=sans-serif>SEDOL: </FONT></B><FONT size=1 face=sans-serif>2671307</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=10>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>Vote</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" colSpan=2 align=left><FONT size=1 face=sans-serif>Proponent</FONT>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 4px" align=left><FONT size=1 face=sans-serif>Mgmt Rec</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" colSpan=2 align=left><FONT size=1 face=sans-serif>Instruction</FONT>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=10>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 1px" align=left><FONT size=1 face=sans-serif>1.1</FONT>&nbsp;</TD>
+     <TD colSpan=2 align=left><FONT size=1 face=sans-serif>Elect Director Dale Blanchfield</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 4px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 1px" align=left><FONT size=1 face=sans-serif>1.2</FONT>&nbsp;</TD>
+     <TD align=left><FONT size=1 face=sans-serif>Elect Director Lloyd Frank</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 4px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 1px" align=left><FONT size=1 face=sans-serif>1.3</FONT>&nbsp;</TD>
+     <TD colSpan=2 align=left><FONT size=1 face=sans-serif>Elect Director Emily J. Groehl</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 4px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 1px" align=left><FONT size=1 face=sans-serif>1.4</FONT>&nbsp;</TD>
+     <TD colSpan=2 align=left><FONT size=1 face=sans-serif>Elect Director Brian E. Shore</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 4px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 1px" align=left><FONT size=1 face=sans-serif>1.5</FONT>&nbsp;</TD>
+     <TD colSpan=2 align=left><FONT size=1 face=sans-serif>Elect Director Steven T. Warshaw</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 4px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD style="TEXT-INDENT: 1px" align=left><FONT size=1 face=sans-serif>2</FONT>&nbsp;</TD>
+     <TD align=left><FONT size=1 face=sans-serif>Ratify Auditors</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 4px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD style="TEXT-INDENT: 10px" align=left><FONT size=1 face=sans-serif>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR></TABLE></DIV>
+<P style="MARGIN: 0px">&nbsp;</P>
+</DIV>
+<HR align=center SIZE=2 width="100%" noShade>
+
+
+<!--$$/page=-->
+<A name="page_826"></A><BR>
+
+<a name="_bclPageBorder826"></a><DIV STYLE="WIDTH: 100%; PADDING-RIGHT: 0%; PADDING-LEFT: 0%">
+<DIV align="left">
+<TABLE border=0 style="width:100%" cellspacing=0>
+<TR>
+     <TD width=100%></TD></TR>
+<TR valign="bottom">
+	<TD align=left>
+<B><FONT size=2 face="sans-serif">Vote Summary Report</FONT></B>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+<FONT size=1 face="sans-serif">Report was run from: 7/1/10 to 6/30/11</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+<FONT size=1 face="sans-serif">Location(s): Essex Investment Management Company, LLC</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+<FONT size=1 face="sans-serif">Institution Account(s): Principal Investors Fund, Inc</FONT>&nbsp;</TD>
+</TR>
+</TABLE>
+</DIV>
+<P style="MARGIN:0px">&nbsp;</P>
+<DIV align="left">
+<TABLE border=0 style="width:100%" cellspacing=0>
+<TR>
+     <TD width=4%></TD>
+     <TD width=14%></TD>
+     <TD width=6%></TD>
+     <TD width=12%></TD>
+     <TD width=9%></TD>
+     <TD width=11%></TD>
+     <TD width=9%></TD>
+     <TD width=11%></TD>
+     <TD width=11%></TD>
+     <TD width=8%></TD></TR>
+<TR valign="bottom">
+	<TD align=center colspan=10>
+<B><FONT size=2 face="sans-serif">Cirrus Logic, Inc.</FONT></B></TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Ticker</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Meeting Date</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Country</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Security ID</FONT></B>&nbsp;</TD>
+	<TD align=left>
+<B><FONT size=1 face="sans-serif">Meeting Type</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Record Date</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Shares Voted</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Shares Instructed</FONT></B>&nbsp;</TD>
+	<TD align=left>
+<B><FONT size=1 face="sans-serif">Shares Available</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Shares on Loan</FONT></B>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=right>
+<FONT size=1 face="sans-serif">CRUS</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:5.000000px">
+<FONT size=1 face="sans-serif">23-Jul-10</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">USA</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">172755100</FONT>&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Annual</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">26-May-10</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">89,048</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">89,048</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">89,048</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">0</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:5.000000px">
+<B><FONT size=1 face="sans-serif">CUSIP: </FONT></B><FONT size=1 face="sans-serif">172755100</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">ISIN: </FONT></B><FONT size=1 face="sans-serif">US1727551004</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<B><FONT size=1 face="sans-serif">SEDOL: </FONT></B><FONT size=1 face="sans-serif">2197308</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Vote</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Proponent</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">Mgmt Rec</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Instruction</FONT>&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.1</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Michael L. Hackworth</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.2</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director John C. Carter</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.3</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Timothy R. Dehne</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.4</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director D. James Guzy</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.5</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Jason P. Rhode</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.6</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director William D. Sherman</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.7</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Robert H. Smith</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">2</FONT>&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Ratify Auditors</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center colspan=10>
+<B><FONT size=2 face="sans-serif">Volcano Corporation</FONT></B></TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Ticker</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Meeting Date</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Country</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Security ID</FONT></B>&nbsp;</TD>
+	<TD align=left>
+<B><FONT size=1 face="sans-serif">Meeting Type</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Record Date</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Shares Voted</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Shares Instructed</FONT></B>&nbsp;</TD>
+	<TD align=left>
+<B><FONT size=1 face="sans-serif">Shares Available</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Shares on Loan</FONT></B>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=right>
+<FONT size=1 face="sans-serif">VOLC</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:5.000000px">
+<FONT size=1 face="sans-serif">29-Jul-10</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">USA</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">928645100</FONT>&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Annual</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">01-Jun-10</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">47,584</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">47,584</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">47,584</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">0</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:5.000000px">
+<B><FONT size=1 face="sans-serif">CUSIP: </FONT></B><FONT size=1 face="sans-serif">928645100</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">ISIN: </FONT></B><FONT size=1 face="sans-serif">US9286451003</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<B><FONT size=1 face="sans-serif">SEDOL: </FONT></B><FONT size=1 face="sans-serif">B17BCR3</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Vote</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Proponent</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">Mgmt Rec</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Instruction</FONT>&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.1</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Kieran T. Gallahue</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.2</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Alexis V. Lukianov</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.3</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director John Onopchenko</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">2</FONT>&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Ratify Auditors</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center colspan=10>
+<B><FONT size=2 face="sans-serif">Acxiom Corporation</FONT></B></TD>
+</TR>
+</TABLE>
+</DIV>
+<P style="MARGIN:0px">&nbsp;</P>
+</DIV>
+
+<!--$$/page=-->
+<A name="page_854"></A><BR>
+
+<a name="_bclPageBorder854"></a><DIV STYLE="WIDTH: 100%; PADDING-RIGHT: 0%; PADDING-LEFT: 0%">
+<DIV align="left">
+<TABLE border=0 style="width:100%" cellspacing=0>
+<TR>
+     <TD width=100%></TD></TR>
+<TR valign="bottom">
+	<TD align=left>
+<B><FONT size=2 face="sans-serif">Vote Summary Report</FONT></B>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+<FONT size=1 face="sans-serif">Report was run from: 7/1/10 to 6/30/11</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+<FONT size=1 face="sans-serif">Location(s): Essex Investment Management Company, LLC</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+<FONT size=1 face="sans-serif">Institution Account(s): Principal Investors Fund, Inc</FONT>&nbsp;</TD>
+</TR>
+</TABLE>
+</DIV>
+<P style="MARGIN:0px">&nbsp;</P>
+<DIV align="left">
+<TABLE border=0 style="width:100%" cellspacing=0>
+<TR>
+     <TD width=4%></TD>
+     <TD width=15%></TD>
+     <TD width=7%></TD>
+     <TD width=11%></TD>
+     <TD width=8%></TD>
+     <TD width=11%></TD>
+     <TD width=9%></TD>
+     <TD width=11%></TD>
+     <TD width=11%></TD>
+     <TD width=8%></TD></TR>
+<TR valign="bottom">
+	<TD align=center colspan=10>
+<B><FONT size=2 face="sans-serif">Ixia</FONT></B></TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Ticker</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Meeting Date</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Country</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Security ID</FONT></B>&nbsp;</TD>
+	<TD align=left>
+<B><FONT size=1 face="sans-serif">Meeting Type</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Record Date</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Shares Voted</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Shares Instructed</FONT></B>&nbsp;</TD>
+	<TD align=left>
+<B><FONT size=1 face="sans-serif">Shares Available</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Shares on Loan</FONT></B>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=right>
+<FONT size=1 face="sans-serif">XXIA</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:5.000000px">
+<FONT size=1 face="sans-serif">19-May-11</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">USA</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">45071R109</FONT>&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Annual</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:2.000000px">
+<FONT size=1 face="sans-serif">25-Mar-11</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">59,742</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">59,742</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">59,742</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">0</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:5.000000px">
+<B><FONT size=1 face="sans-serif">CUSIP: </FONT></B><FONT size=1 face="sans-serif">45071R109</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">ISIN: </FONT></B><FONT size=1 face="sans-serif">US45071R1095</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:2.000000px">
+<B><FONT size=1 face="sans-serif">SEDOL: </FONT></B><FONT size=1 face="sans-serif">2654245</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Vote</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Proponent</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">Mgmt Rec</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Instruction</FONT>&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.1</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Laurent Asscher</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.2</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Atul Bhatnagar</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.3</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Jonathan Fram</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.4</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Errol Ginsberg</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.5</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Gail Hamilton</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.6</FONT>&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Elect Director Jon F. Rager</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">2</FONT>&nbsp;</TD>
+	<TD align=left colspan=3>
+<FONT size=1 face="sans-serif">Advisory Vote to Ratify Named Executive Officers'</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Compensation</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">3</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Advisory Vote on Say on Pay Frequency</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">One Year</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">One Year</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">4</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Amend Omnibus Stock Plan</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">5</FONT>&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Ratify Auditors</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center colspan=10>
+<B><FONT size=2 face="sans-serif">STEC, Inc.</FONT></B></TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Ticker</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Meeting Date</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Country</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Security ID</FONT></B>&nbsp;</TD>
+	<TD align=left>
+<B><FONT size=1 face="sans-serif">Meeting Type</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Record Date</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Shares Voted</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Shares Instructed</FONT></B>&nbsp;</TD>
+	<TD align=left>
+<B><FONT size=1 face="sans-serif">Shares Available</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Shares on Loan</FONT></B>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=right>
+<FONT size=1 face="sans-serif">STEC</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:5.000000px">
+<FONT size=1 face="sans-serif">19-May-11</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">USA</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">784774101</FONT>&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Annual</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:2.000000px">
+<FONT size=1 face="sans-serif">22-Mar-11</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">35,194</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">35,194</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">35,194</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">0</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:5.000000px">
+<B><FONT size=1 face="sans-serif">CUSIP: </FONT></B><FONT size=1 face="sans-serif">784774101</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">ISIN: </FONT></B><FONT size=1 face="sans-serif">US7847741011</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:2.000000px">
+<B><FONT size=1 face="sans-serif">SEDOL: </FONT></B><FONT size=1 face="sans-serif">2641140</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Vote</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Proponent</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">Mgmt Rec</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Instruction</FONT>&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.1</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Manouch Moshayedi</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.2</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Mark Moshayedi</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.3</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director F. Michael Ball</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.4</FONT>&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Elect Director Rajat Bahri</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.5</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Christopher W. Colpitts</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.6</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Kevin C. Daly</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+</TABLE>
+</DIV>
+<P style="MARGIN:0px">&nbsp;</P>
+</DIV>
+
+<HR noshade align="center" width="100%" size=2>
+
+
+
+<!--$$/page=-->
+<A name="page_855"></A><BR>
+
+<a name="_bclPageBorder855"></a><DIV STYLE="WIDTH: 100%; PADDING-RIGHT: 0%; PADDING-LEFT: 0%">
+<DIV align="left">
+<TABLE border=0 style="width:100%" cellspacing=0>
+<TR>
+     <TD width=100%></TD></TR>
+<TR valign="bottom">
+	<TD align=left>
+<B><FONT size=2 face="sans-serif">Vote Summary Report</FONT></B>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+<FONT size=1 face="sans-serif">Report was run from: 7/1/10 to 6/30/11</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+<FONT size=1 face="sans-serif">Location(s): Essex Investment Management Company, LLC</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+<FONT size=1 face="sans-serif">Institution Account(s): Principal Investors Fund, Inc</FONT>&nbsp;</TD>
+</TR>
+</TABLE>
+</DIV>
+<P style="MARGIN:0px">&nbsp;</P>
+<DIV align="left">
+<TABLE border=0 style="width:100%" cellspacing=0>
+<TR>
+     <TD width=4%></TD>
+     <TD width=14%></TD>
+     <TD width=8%></TD>
+     <TD width=11%></TD>
+     <TD width=9%></TD>
+     <TD width=10%></TD>
+     <TD width=10%></TD>
+     <TD width=11%></TD>
+     <TD width=11%></TD>
+     <TD width=8%></TD></TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.7</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Matthew L. Witte</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<FONT size=1 face="sans-serif">2</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Amend Omnibus Stock Plan</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<FONT size=1 face="sans-serif">3</FONT>&nbsp;</TD>
+	<TD align=left colspan=3>
+<FONT size=1 face="sans-serif">Advisory Vote to Ratify Named Executive Officers'</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Compensation</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<FONT size=1 face="sans-serif">4</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Advisory Vote on Say on Pay Frequency</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">Three Years</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">One Year</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<FONT size=1 face="sans-serif">5</FONT>&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Ratify Auditors</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center colspan=10>
+<B><FONT size=2 face="sans-serif">Wabash National Corporation</FONT></B></TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Ticker</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Meeting Date</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Country</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Security ID</FONT></B>&nbsp;</TD>
+	<TD align=left>
+<B><FONT size=1 face="sans-serif">Meeting Type</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Record Date</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Shares Voted</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Shares Instructed</FONT></B>&nbsp;</TD>
+	<TD align=left>
+<B><FONT size=1 face="sans-serif">Shares Available</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Shares on Loan</FONT></B>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<FONT size=1 face="sans-serif">WNC</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:5.000000px">
+<FONT size=1 face="sans-serif">19-May-11</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">USA</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">929566107</FONT>&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Annual</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">07-Apr-11</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">75,485</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">75,485</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">75,485</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">0</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:5.000000px">
+<B><FONT size=1 face="sans-serif">CUSIP: </FONT></B><FONT size=1 face="sans-serif">929566107</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">ISIN: </FONT></B><FONT size=1 face="sans-serif">US9295661071</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<B><FONT size=1 face="sans-serif">SEDOL: </FONT></B><FONT size=1 face="sans-serif">2932048</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Vote</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Proponent</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">Mgmt Rec</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Instruction</FONT>&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<FONT size=1 face="sans-serif">1</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Richard J. Giromini</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<FONT size=1 face="sans-serif">2</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Martin C. Jischke</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<FONT size=1 face="sans-serif">3</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director James D. Kelly</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<FONT size=1 face="sans-serif">4</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director John E. Kunz</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<FONT size=1 face="sans-serif">5</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Larry J. Magee</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<FONT size=1 face="sans-serif">6</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Scott K. Sorensen</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<FONT size=1 face="sans-serif">7</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Approve Omnibus Stock Plan</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<FONT size=1 face="sans-serif">8</FONT>&nbsp;</TD>
+	<TD align=left colspan=3>
+<FONT size=1 face="sans-serif">Advisory Vote to Ratify Named Executive Officers'</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Compensation</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<FONT size=1 face="sans-serif">9</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Advisory Vote on Say on Pay Frequency</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">One Year</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">One Year</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">10</FONT>&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Ratify Auditors</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center colspan=10>
+<B><FONT size=2 face="sans-serif">Interface, Inc.</FONT></B></TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Ticker</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Meeting Date</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Country</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Security ID</FONT></B>&nbsp;</TD>
+	<TD align=left>
+<B><FONT size=1 face="sans-serif">Meeting Type</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Record Date</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Shares Voted</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Shares Instructed</FONT></B>&nbsp;</TD>
+	<TD align=left>
+<B><FONT size=1 face="sans-serif">Shares Available</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Shares on Loan</FONT></B>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<FONT size=1 face="sans-serif">IFSIA</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:5.000000px">
+<FONT size=1 face="sans-serif">23-May-11</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">USA</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">458665106</FONT>&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Annual</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">30-Mar-11</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">56,066</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">56,066</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">56,066</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">0</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:5.000000px">
+<B><FONT size=1 face="sans-serif">CUSIP: </FONT></B><FONT size=1 face="sans-serif">458665106</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">ISIN: </FONT></B><FONT size=1 face="sans-serif">US4586651063</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<B><FONT size=1 face="sans-serif">SEDOL: </FONT></B><FONT size=1 face="sans-serif">2462910</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Vote</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Proponent</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">Mgmt Rec</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Instruction</FONT>&nbsp;</TD>
+</TR>
+</TABLE>
+</DIV>
+<P style="MARGIN:0px">&nbsp;</P>
+</DIV>
+
+<HR noshade align="center" width="100%" size=2>
+
+
+
+<!--$$/page=-->
+<A name="page_856"></A><BR>
+
+<a name="_bclPageBorder856"></a><DIV STYLE="WIDTH: 100%; PADDING-RIGHT: 0%; PADDING-LEFT: 0%">
+<DIV align="left">
+<TABLE border=0 style="width:100%" cellspacing=0>
+<TR>
+     <TD width=100%></TD></TR>
+<TR valign="bottom">
+	<TD align=left>
+<B><FONT size=2 face="sans-serif">Vote Summary Report</FONT></B>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+<FONT size=1 face="sans-serif">Report was run from: 7/1/10 to 6/30/11</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+<FONT size=1 face="sans-serif">Location(s): Essex Investment Management Company, LLC</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+<FONT size=1 face="sans-serif">Institution Account(s): Principal Investors Fund, Inc</FONT>&nbsp;</TD>
+</TR>
+</TABLE>
+</DIV>
+<P style="MARGIN:0px">&nbsp;</P>
+<DIV align="left">
+<TABLE border=0 style="width:100%" cellspacing=0>
+<TR>
+     <TD width=4%></TD>
+     <TD width=14%></TD>
+     <TD width=8%></TD>
+     <TD width=10%></TD>
+     <TD width=9%></TD>
+     <TD width=11%></TD>
+     <TD width=9%></TD>
+     <TD width=11%></TD>
+     <TD width=12%></TD>
+     <TD width=7%></TD></TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.1</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Dianne Dillon-Ridgley</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Withhold</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.2</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director June M. Henton</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Withhold</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.3</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Christopher G. Kennedy</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Withhold</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.4</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director K. David Kohler</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Withhold</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">2</FONT>&nbsp;</TD>
+	<TD align=left colspan=3>
+<FONT size=1 face="sans-serif">Advisory Vote to Ratify Named Executive Officers'</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Compensation</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">3</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Advisory Vote on Say on Pay Frequency</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">Three Years</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">One Year</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">4</FONT>&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Ratify Auditors</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center colspan=10>
+<B><FONT size=2 face="sans-serif">SureWest Communications</FONT></B></TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Ticker</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Meeting Date</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Country</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Security ID</FONT></B>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:2.000000px">
+<B><FONT size=1 face="sans-serif">Meeting Type</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Record Date</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Shares Voted</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Shares Instructed</FONT></B>&nbsp;</TD>
+	<TD align=left>
+<B><FONT size=1 face="sans-serif">Shares Available</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Shares on Loan</FONT></B>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<FONT size=1 face="sans-serif">SURW</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:5.000000px">
+<FONT size=1 face="sans-serif">25-May-11</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">USA</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">868733106</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:2.000000px">
+<FONT size=1 face="sans-serif">Annual</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">28-Mar-11</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">35,785</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">35,785</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">35,785</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">0</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:5.000000px">
+<B><FONT size=1 face="sans-serif">CUSIP: </FONT></B><FONT size=1 face="sans-serif">868733106</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">ISIN: </FONT></B><FONT size=1 face="sans-serif">US8687331061</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<B><FONT size=1 face="sans-serif">SEDOL: </FONT></B><FONT size=1 face="sans-serif">2762193</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Vote</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Proponent</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">Mgmt Rec</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Instruction</FONT>&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.1</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Kirk C. Doyle</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.2</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Guy R. Gibson</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.3</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Robert D. Kittredge</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.4</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Steven C. Oldham</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.5</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director John R. Roberts, III</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.6</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Timothy D. Taron</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.7</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Roger J. Valine</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">2</FONT>&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Ratify Auditors</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">3</FONT>&nbsp;</TD>
+	<TD align=left colspan=3>
+<FONT size=1 face="sans-serif">Advisory Vote to Ratify Named Executive Officers'</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Compensation</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">4</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Advisory Vote on Say on Pay Frequency</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">Two Years</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">One Year</FONT>&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center colspan=10>
+<B><FONT size=2 face="sans-serif">Thoratec Corporation</FONT></B></TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Ticker</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Meeting Date</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Country</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Security ID</FONT></B>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:2.000000px">
+<B><FONT size=1 face="sans-serif">Meeting Type</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Record Date</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Shares Voted</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Shares Instructed</FONT></B>&nbsp;</TD>
+	<TD align=left>
+<B><FONT size=1 face="sans-serif">Shares Available</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Shares on Loan</FONT></B>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=right>
+<FONT size=1 face="sans-serif">THOR</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:5.000000px">
+<FONT size=1 face="sans-serif">25-May-11</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">USA</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">885175307</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:2.000000px">
+<FONT size=1 face="sans-serif">Annual</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">01-Apr-11</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">32,503</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">32,503</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">32,503</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">0</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:5.000000px">
+<B><FONT size=1 face="sans-serif">CUSIP: </FONT></B><FONT size=1 face="sans-serif">885175307</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">ISIN: </FONT></B><FONT size=1 face="sans-serif">US8851753074</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<B><FONT size=1 face="sans-serif">SEDOL: </FONT></B><FONT size=1 face="sans-serif">2889962</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+</TABLE>
+</DIV>
+<P style="MARGIN:0px">&nbsp;</P>
+</DIV>
+
+<HR noshade align="center" width="100%" size=2>
+
+
+
+<!--$$/page=-->
+<A name="page_857"></A><BR>
+
+<a name="_bclPageBorder857"></a><DIV STYLE="WIDTH: 100%; PADDING-RIGHT: 0%; PADDING-LEFT: 0%">
+<DIV align="left">
+<TABLE border=0 style="width:100%" cellspacing=0>
+<TR>
+     <TD width=100%></TD></TR>
+<TR valign="bottom">
+	<TD align=left>
+<B><FONT size=2 face="sans-serif">Vote Summary Report</FONT></B>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+<FONT size=1 face="sans-serif">Report was run from: 7/1/10 to 6/30/11</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+<FONT size=1 face="sans-serif">Location(s): Essex Investment Management Company, LLC</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+<FONT size=1 face="sans-serif">Institution Account(s): Principal Investors Fund, Inc</FONT>&nbsp;</TD>
+</TR>
+</TABLE>
+</DIV>
+<P style="MARGIN:0px">&nbsp;</P>
+<DIV align="left">
+<TABLE border=0 style="width:100%" cellspacing=0>
+<TR>
+     <TD width=4%></TD>
+     <TD width=14%></TD>
+     <TD width=7%></TD>
+     <TD width=11%></TD>
+     <TD width=9%></TD>
+     <TD width=11%></TD>
+     <TD width=9%></TD>
+     <TD width=11%></TD>
+     <TD width=11%></TD>
+     <TD width=8%></TD></TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Vote</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Proponent</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">Mgmt Rec</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Instruction</FONT>&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.1</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Neil F. Dimick</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.2</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Gerhard F. Burbach</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.3</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director J. Daniel Cole</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.4</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Steven H. Collis</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.5</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Elisha W. Finney</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.6</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director D. Keith Grossman</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.7</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Paul A. Laviolette</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.8</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Daniel M. Mulvena</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">2</FONT>&nbsp;</TD>
+	<TD align=left colspan=3>
+<FONT size=1 face="sans-serif">Advisory Vote to Ratify Named Executive Officers'</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Compensation</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">3</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Advisory Vote on Say on Pay Frequency</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">Three Years</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">One Year</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">4</FONT>&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Ratify Auditors</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center colspan=10>
+<B><FONT size=2 face="sans-serif">Chart Industries, Inc.</FONT></B></TD>
+</TR>
+<TR valign="bottom">
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Ticker</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Meeting Date</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Country</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Security ID</FONT></B>&nbsp;</TD>
+	<TD align=left>
+<B><FONT size=1 face="sans-serif">Meeting Type</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Record Date</FONT></B>&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">Shares Voted</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Shares Instructed</FONT></B>&nbsp;</TD>
+	<TD align=left>
+<B><FONT size=1 face="sans-serif">Shares Available</FONT></B>&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">Shares on Loan</FONT></B>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=right>
+<FONT size=1 face="sans-serif">GTLS</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:5.000000px">
+<FONT size=1 face="sans-serif">26-May-11</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">USA</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">16115Q308</FONT>&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Annual</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">29-Mar-11</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">16,023</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">16,023</FONT>&nbsp;</TD>
+	<TD align=center>
+<FONT size=1 face="sans-serif">16,023</FONT>&nbsp;</TD>
+	<TD align=right>
+<FONT size=1 face="sans-serif">0</FONT>&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">CUSIP: </FONT></B><FONT size=1 face="sans-serif">16115Q308</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=center>
+<B><FONT size=1 face="sans-serif">ISIN: </FONT></B><FONT size=1 face="sans-serif">US16115Q3083</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=right>
+<B><FONT size=1 face="sans-serif">SEDOL: </FONT></B><FONT size=1 face="sans-serif">B19HNF4</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Vote</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Proponent</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">Mgmt Rec</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">Instruction</FONT>&nbsp;</TD>
+</TR>
+<TR>
+	<TD colspan=10>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.1</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Samuel F. Thomas</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.2</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director W. Douglas Brown</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.3</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Richard E. Goodrich</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.4</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Steven W. Krablin</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.5</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Michael W. Press</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.6</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director James M. Tidwell</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">1.7</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Elect Director Thomas L. Williams</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">2</FONT>&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Ratify Auditors</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">3</FONT>&nbsp;</TD>
+	<TD align=left colspan=3>
+<FONT size=1 face="sans-serif">Advisory Vote to Ratify Named Executive Officers'</FONT>&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">For</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+<FONT size=1 face="sans-serif">Compensation</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+</TR>
+<TR valign="bottom">
+	<TD align=left style="TEXT-INDENT:1.000000px">
+<FONT size=1 face="sans-serif">4</FONT>&nbsp;</TD>
+	<TD align=left colspan=2>
+<FONT size=1 face="sans-serif">Advisory Vote on Say on Pay Frequency</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:8.000000px">
+<FONT size=1 face="sans-serif">Mgmt</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left style="TEXT-INDENT:4.000000px">
+<FONT size=1 face="sans-serif">One Year</FONT>&nbsp;</TD>
+	<TD align=left>
+&nbsp;</TD>
+	<TD align=left colspan=2 style="TEXT-INDENT:10.000000px">
+<FONT size=1 face="sans-serif">One Year</FONT>&nbsp;</TD>
+</TR>
+</TABLE>
+</DIV>
+<P style="MARGIN:0px">&nbsp;</P>
+</DIV>
+
+<HR noshade align="center" width="100%" size=2>
+
+
+
+</BODY>
+
+</HTML>
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

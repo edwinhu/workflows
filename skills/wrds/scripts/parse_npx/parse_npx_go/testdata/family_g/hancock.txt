@@ -1,0 +1,74 @@
+
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
+  <TR VALIGN="TOP">
+    <TD WIDTH="9%"><font face="Times New Roman, Times, serif" size="2"></font></td>
+    <TD WIDTH="2%"><font face="Times New Roman, Times, serif" size="2"></font></td>
+    <TD WIDTH="35%"><font face="Times New Roman, Times, serif" size="2"></font></td>
+    <TD WIDTH="14%"><font face="Times New Roman, Times, serif" size="2"></font></td>
+    <TD WIDTH="14%"><font face="Times New Roman, Times, serif" size="2"></font></td>
+    <TD WIDTH="7%"><font face="Times New Roman, Times, serif" size="2"></font></td>
+    <TD WIDTH="7%"><font face="Times New Roman, Times, serif" size="2"></font></td>
+    <TD WIDTH="8%"><font face="Times New Roman, Times, serif" size="2"></font></td>
+    <TD WIDTH="4%"><font face="Times New Roman, Times, serif" size="2"></font></td>
+  </tr>
+  <TR VALIGN="BOTTOM">
+    <TD><b><font face="Times New Roman, Times, serif" size="2">Meeting<br>
+      Date</font></b></td>
+    <TD COLSPAN="2"><b><font face="Times New Roman, Times, serif" size="2">Issuer\<br>
+      Agenda Items</font></b></td>
+    <TD><b><font face="Times New Roman, Times, serif" size="2">Security [Symbol]</font></b></td>
+    <TD><b><font face="Times New Roman, Times, serif" size="2">Meet Type<br>
+      Prop Type</font></b></td>
+    <TD>
+      <div align="center"><b><font face="Times New Roman, Times, serif" size="2">Vote<br>
+        Cast</font></b></div>
+    </td>
+    <TD>
+      <div align="center"><b><font face="Times New Roman, Times, serif" size="2">For/Agst<br>
+        Mgmnt</font></b></div>
+    </td>
+    <TD ALIGN="CENTER">
+      <div align="center"><b><font face="Times New Roman, Times, serif" size="2">Record<br>
+        Date</font></b></div>
+    </td>
+    <TD>
+      <div align="center"><b><font face="Times New Roman, Times, serif" size="2">Shares<br>
+        Voted</font></b></div>
+    </td>
+  </tr>
+  <TR VALIGN="TOP">
+    <TD COLSPAN="9">
+      <hr size="2" color="#000000" noshade>
+    </td>
+  </tr>
+  <TR VALIGN="TOP">
+    <TD CLASS="smallbold1"><font face="Times New Roman, Times, serif" size="2"><b>07-17-2003&nbsp;</b></font></td>
+    <TD CLASS="smallbold1" COLSPAN="2"><font face="Times New Roman, Times, serif" size="2"><b>APRIA
+      HEALTHCARE GROUP INC.&nbsp;</b></font></td>
+    <TD CLASS="smallbold1"><font face="Times New Roman, Times, serif" size="2"><b>037933108[AHG]</b></font></td>
+    <TD CLASS="smallbold1"><font face="Times New Roman, Times, serif" size="2"><b>Annual
+      Meeting </b></font></td>
+    <TD CLASS="smallbold1" COLSPAN="2">&nbsp;</td>
+    <TD CLASS="smallbold1"><font face="Times New Roman, Times, serif" size="2"><b>05-30-2003&nbsp;</b></font></td>
+    <TD CLASS="smallbold1" ALIGN="right"><font face="Times New Roman, Times, serif" size="2"><b>25000</b></font></td>
+  </tr>
+  <TR VALIGN="TOP">
+    <TD CLASS="smalldata1" VALIGN="top"><font size="2"></font></td>
+    <TD CLASS="smalldata1" VALIGN="top"><font face="Times New Roman, Times, serif" size="2">1&nbsp;</font></td>
+    <TD CLASS="smalldata1" VALIGN="top" COLSPAN="2"><font face="Times New Roman, Times, serif" size="2">Election
+      of Directors&nbsp;</font></td>
+    <TD CLASS="smalldata1" VALIGN="top" ALIGN="center"><font face="Times New Roman, Times, serif" size="2">Mgmnt&nbsp;&nbsp;</font></td>
+    <TD CLASS="smalldata1" VALIGN="top" ALIGN="center"><font face="Times New Roman, Times, serif" size="2">For</font></td>
+    <TD CLASS="smalldata1" VALIGN="top" ALIGN="center"><font face="Times New Roman, Times, serif" size="2">For&nbsp;&nbsp;</font></td>
+    <TD CLASS="smalldata1" COLSPAN="2"><font size="2"></font></td>
+  </tr>
+  <TR VALIGN="TOP">
+    <TD CLASS="smalldata1" VALIGN="top"><font size="2"></font></td>
+    <TD CLASS="smalldata1" VALIGN="top"><font face="Times New Roman, Times, serif" size="2">2&nbsp;</font></td>
+    <TD CLASS="smalldata1" VALIGN="top" COLSPAN="2"><font face="Times New Roman, Times, serif" size="2">Approval
+      of the Companys 2003 Performance Incentive Plan.&nbsp;</font></td>
+    <TD CLASS="smalldata1" VALIGN="top" ALIGN="center"><font face="Times New Roman, Times, serif" size="2">Mgmnt&nbsp;&nbsp;</font></td>
+    <TD CLASS="smalldata1" VALIGN="top" ALIGN="center"><font face="Times New Roman, Times, serif" size="2">For</font></td>
+    <TD CLASS="smalldata1" VALIGN="top" ALIGN="center"><font face="Times New Roman, Times, serif" size="2">For&nbsp;&nbsp;</font></td>
+    <TD CLASS="smalldata1" COLSPAN="2"><font size="2"></font></td>
+  </tr>

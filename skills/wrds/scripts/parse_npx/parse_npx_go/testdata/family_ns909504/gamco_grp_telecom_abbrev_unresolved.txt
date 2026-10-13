@@ -1,0 +1,98 @@
+<SEC-DOCUMENT>0000935069-06-002240.txt : 20060822
+<SEC-HEADER>0000935069-06-002240.hdr.sgml : 20060822
+<ACCEPTANCE-DATETIME>20060822142135
+ACCESSION NUMBER:		0000935069-06-002240
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20060630
+FILED AS OF DATE:		20060822
+DATE AS OF CHANGE:		20060822
+EFFECTIVENESS DATE:		20060822
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			GABELLI GLOBAL SERIES FUNDS INC
+		CENTRAL INDEX KEY:			0000909504
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MD
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000909504
+<SERIES-ID>S000001064
+<SERIES-NAME>GABELLI GLOBAL CONVERTIBLE SECURITIES FUND
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000909504
+<SERIES-ID>S000001065
+<SERIES-NAME>GABELLI GLOBAL GROWTH FUND
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000909504
+<SERIES-ID>S000001066
+<SERIES-NAME>GABELLI GLOBAL OPPORTUNITY FUND
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000909504
+<SERIES-ID>S000001067
+<SERIES-NAME>GABELLI GLOBAL TELECOMMUNICATIONS FUND
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>gabelliglobal_series-funds.txt
+<DESCRIPTION>GLOBAL SERIES NPX 0806
+<TEXT>
+<PAGE>
+
+                               PROXY VOTING RECORD
+
+                    FOR PERIOD JULY 1, 2005 TO JUNE 30, 2006
+
+                    THE GAMCO GLOBAL TELECOMMUNICATIONS FUND
+
+
+ProxyEdge - Investment Company Report
+Meeting Date Range: 07/01/2005 to 06/30/2006
+Selected Accounts: GLOBAL TELECOMM FUND GRP                        Page 1 of 103
+
+<TABLE>
+<S>                                            <C>                         <C>                          <C>
+- ------------------------------------------------------------------------------------------------------------------------------------
+HELLENIC TELECOMMUNICATIONS ORGANIZATION S A                                                            OGM MEETING DATE: 07/06/2005
+
+ISSUER: X3258B102                              ISIN: GRS260333000          BLOCKING
+
+SEDOL: 5051605, B02NXN0, 5437506
+- ------------------------------------------------------------------------------------------------------------------------------------
+</TABLE>
+
+VOTE GROUP: GLOBAL
+
+<TABLE>
+<CAPTION>
+Proposal                                                                   Proposal       Vote            For or Against
+ Number   Proposal                                                         Type           Cast                Mgmt.
+- ------------------------------------------------------------------------------------------------------------------------------------
+<S>       <C>                                                              <C>            <C>      <C>
+   2.     AMEND ARTICLE 5 SHARE CAPITAL OF THE COMPANY                     Management      For     *Management Position Unknown
+          S ARTICLES OF ASSOCIATION AND THE CODIFICATION
+
+   1.     APPROVE THE CANCELLATION OF 676,420 OWN SHARES                   Management      For     *Management Position Unknown
+          FOLLOWING THE THREE-YEAR PERIOD SINCE THEIR ACQUISITION
+          WITH SUBSEQUENT REDUCTION OF SHARE CAPITAL BY
+          AN AMOUNT EQUAL TO THE ONE OF THE SHARES CANCELLED,
+          AS PER THE ARTICLE 16, PARAGRAPH 12 OF CODIFIED
+          LAW 2190/1920 AND THE TRANSFER OF THE RESERVES
+          FUND FOR OWN SHARES PURCHASE TO THE EXTRAORDINARY
+          RESERVES
+   3.     MISCELLANEOUS ANNOUNCEMENTS                                      Other           For     *Management Position Unknown
+</TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

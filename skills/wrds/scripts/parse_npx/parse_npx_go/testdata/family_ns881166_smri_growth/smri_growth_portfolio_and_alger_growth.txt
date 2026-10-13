@@ -1,0 +1,1003 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ NQIGB/CyPBjx/aOozOADM1tEUjVB2UzaflvDnjXn3mJWW3xaz9coN5i1zD1geot7
+ Yy7dhajHC0DUvE7mb6Q+0g==
+
+<SEC-DOCUMENT>0000881166-07-000015.txt : 20070829
+<SEC-HEADER>0000881166-07-000015.hdr.sgml : 20070829
+<ACCEPTANCE-DATETIME>20070829161155
+ACCESSION NUMBER:		0000881166-07-000015
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20070630
+FILED AS OF DATE:		20070829
+DATE AS OF CHANGE:		20070829
+EFFECTIVENESS DATE:		20070829
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SM&R INVESTMENTS, INC.
+		CENTRAL INDEX KEY:			0000881166
+		IRS NUMBER:				760360347
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			0831
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-06477
+		FILM NUMBER:		071087824
+
+	BUSINESS ADDRESS:	
+		STREET 1:		2450 SO. SHORE BLVD.
+		STREET 2:		SUITE 400
+		CITY:			LEAGUE CITY
+		STATE:			TX
+		ZIP:			77573
+		BUSINESS PHONE:		(281)334-2469
+
+	MAIL ADDRESS:	
+		STREET 1:		PO BOX 58969
+		CITY:			HOUSTON
+		STATE:			TX
+		ZIP:			77258-8969
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	SM&R INVESTMENTS INC
+		DATE OF NAME CHANGE:	19990416
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	SM&R CAPITAL FUNDS INC
+		DATE OF NAME CHANGE:	19920929
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000881166
+<SERIES-ID>S000010236
+<SERIES-NAME>SM&R Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028306
+<CLASS-CONTRACT-NAME>SM&R Growth Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SMWAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028307
+<CLASS-CONTRACT-NAME>SM&R Growth Fund - Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>SMWBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028308
+<CLASS-CONTRACT-NAME>SM&R Growth Fund - Class T
+<CLASS-CONTRACT-TICKER-SYMBOL>AMRNX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000881166
+<SERIES-ID>S000010237
+<SERIES-NAME>SM&R Alger Aggressive Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028309
+<CLASS-CONTRACT-NAME>SM&R Alger Aggressive Growth Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SRAAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028310
+<CLASS-CONTRACT-NAME>SM&R Alger Aggressive Growth Fund - Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>SRABX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000881166
+<SERIES-ID>S000010238
+<SERIES-NAME>SM&R Alger Technology Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028311
+<CLASS-CONTRACT-NAME>SM&R Alger Technology Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SATCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028312
+<CLASS-CONTRACT-NAME>SM&R Alger Technology Fund - Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>SBTCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000881166
+<SERIES-ID>S000010239
+<SERIES-NAME>SM&R Equity Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028313
+<CLASS-CONTRACT-NAME>SM&R Equity Income Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SQUAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028314
+<CLASS-CONTRACT-NAME>SM&R Equity Income Fund - Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>SQUBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028315
+<CLASS-CONTRACT-NAME>SM&R Equity Income Fund - Class T
+<CLASS-CONTRACT-TICKER-SYMBOL>AMNIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000881166
+<SERIES-ID>S000010240
+<SERIES-NAME>SM&R Balanced Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028316
+<CLASS-CONTRACT-NAME>SM&R Balanced Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SMRAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028317
+<CLASS-CONTRACT-NAME>SM&R Balanced Fund - Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>SMRBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028318
+<CLASS-CONTRACT-NAME>SM&R Balanced Fund - Class T
+<CLASS-CONTRACT-TICKER-SYMBOL>ANTRX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000881166
+<SERIES-ID>S000010241
+<SERIES-NAME>SM&R Government Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028319
+<CLASS-CONTRACT-NAME>SM&R Government Bond Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SGBAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028320
+<CLASS-CONTRACT-NAME>SM&R Government Bond Fund - Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>SGBBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028321
+<CLASS-CONTRACT-NAME>SM&R Government Bond Fund - Class T
+<CLASS-CONTRACT-TICKER-SYMBOL>SMRGX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000881166
+<SERIES-ID>S000010242
+<SERIES-NAME>SM&R Primary Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028322
+<CLASS-CONTRACT-NAME>SM&R Primary Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>SMRPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000881166
+<SERIES-ID>S000010243
+<SERIES-NAME>SM&R Tax Free Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028323
+<CLASS-CONTRACT-NAME>SM&R Tax Free Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SMXAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028324
+<CLASS-CONTRACT-NAME>SM&R Tax Free Fund - Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>SMXBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028325
+<CLASS-CONTRACT-NAME>SM&R Tax Free Fund - Class T
+<CLASS-CONTRACT-TICKER-SYMBOL>SMRTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000881166
+<SERIES-ID>S000010244
+<SERIES-NAME>SM&R Money Market Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028326
+<CLASS-CONTRACT-NAME>SM&R Money Market Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>SRMXX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000881166
+<SERIES-ID>S000010245
+<SERIES-NAME>SM&R Alger Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028327
+<CLASS-CONTRACT-NAME>SM&R Alger Growth Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SMAGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028328
+<CLASS-CONTRACT-NAME>SM&R Alger Growth Fund - Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>SMBGX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000881166
+<SERIES-ID>S000010246
+<SERIES-NAME>SM&R Alger Small Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028329
+<CLASS-CONTRACT-NAME>SM&R Alger Small Cap Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>SMSAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028330
+<CLASS-CONTRACT-NAME>SM&R Alger Small Cap Fund - Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>SMSBX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>smrifundsnpx06302007.htm
+<TEXT>
+<html>
+<head>
+
+
+<!--table
+	{mso-displayed-decimal-separator:"\.";
+	mso-displayed-thousand-separator:"\,";}
+@page
+	{margin:1.0in .75in 1.0in 1.0in;
+	mso-header-margin:.5in;
+	mso-footer-margin:.5in;}
+..font11
+	{color:black;
+	font-size:8.0pt;
+	font-weight:400;
+	font-style:normal;
+	text-decoration:none;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;}
+..font16
+	{color:windowtext;
+	font-size:10.0pt;
+	font-weight:400;
+	font-style:normal;
+	text-decoration:underline;
+	text-underline-style:single;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;}
+tr
+	{mso-height-source:auto;}
+col
+	{mso-width-source:auto;}
+br
+	{mso-data-placement:same-cell;}
+..style0
+	{mso-number-format:General;
+	text-align:general;
+	vertical-align:bottom;
+	white-space:nowrap;
+	mso-rotate:0;
+	mso-background-source:auto;
+	mso-pattern:auto;
+	color:windowtext;
+	font-size:10.0pt;
+	font-weight:400;
+	font-style:normal;
+	text-decoration:none;
+	font-family:Arial;
+	mso-generic-font-family:auto;
+	mso-font-charset:0;
+	border:none;
+	mso-protection:locked visible;
+	mso-style-name:Normal;
+	mso-style-id:0;}
+..style22
+	{mso-number-format:General;
+	text-align:general;
+	vertical-align:bottom;
+	white-space:nowrap;
+	mso-rotate:0;
+	mso-background-source:auto;
+	mso-pattern:auto;
+	color:black;
+	font-size:10.0pt;
+	font-weight:400;
+	font-style:normal;
+	text-decoration:none;
+	font-family:Arial;
+	mso-generic-font-family:auto;
+	mso-font-charset:0;
+	border:none;
+	mso-protection:locked visible;
+	mso-style-name:"Normal_SMRI Growth";}
+td
+	{mso-style-parent:style0;
+	padding-top:1px;
+	padding-right:1px;
+	padding-left:1px;
+	mso-ignore:padding;
+	color:windowtext;
+	font-size:10.0pt;
+	font-weight:400;
+	font-style:normal;
+	text-decoration:none;
+	font-family:Arial;
+	mso-generic-font-family:auto;
+	mso-font-charset:0;
+	mso-number-format:General;
+	text-align:general;
+	vertical-align:bottom;
+	border:none;
+	mso-background-source:auto;
+	mso-pattern:auto;
+	mso-protection:locked visible;
+	white-space:nowrap;
+	mso-rotate:0;}
+..xl25
+	{mso-style-parent:style22;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;}
+..xl26
+	{mso-style-parent:style22;
+	font-size:9.0pt;
+	font-weight:700;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:left;
+	vertical-align:top;
+	white-space:normal;}
+..xl27
+	{mso-style-parent:style22;
+	font-size:8.0pt;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:left;
+	vertical-align:top;}
+..xl28
+	{mso-style-parent:style22;
+	font-size:8.0pt;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	mso-number-format:"\@";
+	text-align:left;
+	vertical-align:top;}
+..xl29
+	{mso-style-parent:style0;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;}
+..xl30
+	{mso-style-parent:style0;
+	font-size:9.0pt;
+	font-weight:700;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:left;
+	vertical-align:top;
+	white-space:normal;}
+..xl31
+	{mso-style-parent:style0;
+	font-size:8.0pt;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;}
+..xl32
+	{mso-style-parent:style0;
+	font-size:8.0pt;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	mso-number-format:"\@";}
+..xl33
+	{mso-style-parent:style0;
+	font-size:16.0pt;
+	font-weight:700;
+	font-style:italic;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:left;}
+..xl34
+	{mso-style-parent:style0;
+	font-size:8.0pt;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	white-space:normal;}
+..xl35
+	{mso-style-parent:style0;
+	font-size:8.0pt;
+	font-weight:700;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;}
+..xl36
+	{mso-style-parent:style0;
+	font-size:8.0pt;
+	font-weight:700;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	white-space:normal;}
+..xl37
+	{mso-style-parent:style22;
+	font-size:8.0pt;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;}
+..xl38
+	{mso-style-parent:style0;
+	mso-number-format:Scientific;}
+..xl39
+	{mso-style-parent:style0;
+	text-align:center-across;}
+..xl40
+	{mso-style-parent:style0;
+	text-align:center-across;
+	white-space:normal;}
+..xl41
+	{mso-style-parent:style0;
+	font-weight:700;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:center-across;}
+..xl42
+	{mso-style-parent:style0;
+	white-space:normal;}
+..xl43
+	{mso-style-parent:style0;
+	text-decoration:underline;
+	text-underline-style:single;}
+..xl44
+	{mso-style-parent:style22;
+	font-size:8.0pt;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:left;
+	vertical-align:top;
+	white-space:normal;}
+..xl45
+	{mso-style-parent:style22;
+	font-size:16.0pt;
+	font-weight:700;
+	font-style:italic;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:left;
+	vertical-align:top;}
+..xl46
+	{mso-style-parent:style22;
+	font-size:16.0pt;
+	font-weight:700;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:left;}
+..xl47
+	{mso-style-parent:style0;
+	font-size:16.0pt;
+	font-weight:700;
+	font-style:italic;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:left;
+	vertical-align:top;}
+..xl48
+	{mso-style-parent:style0;
+	font-size:16.0pt;
+	font-weight:700;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:left;}
+..xl49
+	{mso-style-parent:style0;
+	font-size:8.0pt;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:left;
+	vertical-align:top;
+	white-space:normal;}
+..xl50
+	{mso-style-parent:style0;
+	font-size:8.0pt;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	white-space:normal;
+	mso-text-control:shrinktofit;}
+..xl51
+	{mso-style-parent:style22;
+	font-size:16.0pt;
+	font-weight:700;
+	font-style:italic;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:left;}
+..xl52
+	{mso-style-parent:style0;
+	text-align:justify;
+	white-space:normal;}
+..xl53
+	{mso-style-parent:style0;
+	text-align:justify;}
+..xl54
+	{mso-style-parent:style0;
+	font-weight:700;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:center;}
+..xl55
+	{mso-style-parent:style0;
+	text-align:center;}
+..xl56
+	{mso-style-parent:style0;
+	font-size:12.0pt;
+	font-weight:700;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:center;}
+- -->
+</head>
+<body link=blue vlink=purple class=xl25>
+<table border=0 cellpadding=0 cellspacing=0 width=964 style='border-collapse:
+ collapse;table-layout:fixed;width:726pt'>
+
+ <tr height=17 style='height:12.75pt'>
+  <td colspan=22 height=17 class=xl55 width=776 style='height:12.75pt;
+  width:585pt'>UNITED STATES</td>
+  <td class=xl25 width=11 style='width:8pt'></td>
+  <td class=xl25 width=86 style='width:65pt'></td>
+  <td class=xl25 width=16 style='width:12pt'></td>
+  <td class=xl25 width=75 style='width:56pt'></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td colspan=22 height=17 class=xl55 style='height:12.75pt'>SECURITIES AND
+  EXCHANGE COMMISSION</td>
+  <td colspan=4 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td colspan=22 height=17 class=xl55 style='height:12.75pt'>Washington, DC
+  20549</td>
+  <td colspan=4 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=9 style='height:12.75pt;'></td>
+  <td colspan=17 class=xl25></td>
+ </tr>
+ <tr height=21 style='height:15.75pt'>
+  <td colspan=22 height=21 class=xl56 style='height:15.75pt'>FORM N-PX</td>
+  <td colspan=4 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 class=xl39 style='height:12.75pt'></td>
+  <td class=xl40></td>
+  <td colspan=5 class=xl39></td>
+  <td colspan=2></td>
+  <td colspan=17 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td colspan=22 height=17 class=xl54 style='height:12.75pt'>ANNUAL REPORT OF
+  PROXY VOTING RECORD OF REGISTERED MANAGEMENT</td>
+  <td colspan=4 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td colspan=22 height=17 class=xl54 style='height:12.75pt'>INVESTMENT COMPANY</td>
+  <td colspan=4 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 style='height:12.75pt'></td>
+  <td class=xl42></td>
+  <td colspan=7></td>
+  <td colspan=17 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 class=xl25 style='height:12.75pt'></td>
+        <td colspan=8>Investment Company Act file
+  number:&nbsp; 811-6477</td>
+  <td colspan=2></td>
+  <td colspan=15 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 style='height:12.75pt'></td>
+  <td class=xl42></td>
+  <td colspan=7></td>
+  <td colspan=17 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 class=xl25 style='height:12.75pt'></td>
+  <td colspan=4>SM&amp;R Investments Inc.</td>
+  <td colspan=4></td>
+  <td colspan=17 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 class=xl25 style='height:12.75pt'></td>
+  <td colspan=8>(Exact name of registrant as
+  specified in charter)</td>
+  <td colspan=17 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 style='height:12.75pt'></td>
+  <td class=xl42></td>
+  <td colspan=7></td>
+  <td colspan=17 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 class=xl25 style='height:12.75pt'></td>
+  <td colspan=8>2450 South Shore Blvd., Suite 400</td>
+  <td colspan=17 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 class=xl25 style='height:12.75pt'></td>
+  <td colspan=4>League City, TX 77573</td>
+  <td colspan=4></td>
+  <td colspan=17 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 class=xl25 style='height:12.75pt'></td>
+  <td colspan=8>(Address of principal executive
+  offices) (Zip code)</td>
+  <td colspan=17 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 style='height:12.75pt'></td>
+  <td class=xl42></td>
+  <td colspan=7></td>
+  <td colspan=17 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 class=xl25 style='height:12.75pt'></td>
+  <td colspan=4>Michael W. McCroskey</td>
+  <td colspan=4></td>
+  <td colspan=17 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 class=xl25 style='height:12.75pt'></td>
+  <td colspan=8>Securities Management and Research,
+  Inc.</td>
+  <td colspan=17 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 class=xl25 style='height:12.75pt'></td>
+  <td colspan=8>2450 South Shore Blvd., Suite 400</td>
+  <td colspan=17 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 class=xl25 style='height:12.75pt'></td>
+  <td colspan=4>League City, TX 77573</td>
+  <td colspan=4></td>
+  <td colspan=17 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 class=xl25 style='height:12.75pt'></td>
+  <td colspan=8>(Name and address of agent for
+  service)</td>
+  <td colspan=17 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 style='height:12.75pt'></td>
+  <td class=xl42></td>
+  <td colspan=7></td>
+  <td colspan=17 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 class=xl25 style='height:12.75pt'></td>
+        <td colspan=11>Registrant's telephone number,
+  including area code:&nbsp; (281) 334-2469</td>
+  <td colspan=14 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 style='height:12.75pt'></td>
+  <td class=xl42></td>
+  <td colspan=7></td>
+  <td colspan=17 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 class=xl25 style='height:12.75pt'></td>
+        <td colspan=8>Date of fiscal year end:&nbsp; August 31</td>
+  <td colspan=17 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 style='height:12.75pt'></td>
+  <td class=xl42></td>
+  <td colspan=7></td>
+  <td colspan=17 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 class=xl25 style='height:12.75pt'></td>
+        <td colspan=9>Date of reporting period:&nbsp; July 1, 2006 - June 30, 2007</td>
+  <td colspan=16 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=26 class=xl25 style='height:12.75pt;'></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=26 class=xl25 style='height:12.75pt;'></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=26 class=xl25 style='height:12.75pt;'></td>
+ </tr>
+ <tr height=27 style='height:20.25pt'>
+  <td height=27 class=xl25 style='height:20.25pt'></td>
+  <td colspan=24 class=xl45>SMRI GROWTH PORTFOLIO</td>
+  <td class=xl25></td>
+ </tr>
+ <tr height=6 style='height:5.1pt'>
+  <td height=6 colspan=26 class=xl25 style='height:5.1pt;'></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=2 class=xl25 style='height:12.75pt;'></td>
+  <td colspan=22 class=xl26 width=802 style='width:604pt'>3M COMPANY</td>
+  <td colspan=2 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=2 class=xl25 style='height:12.75pt;'></td>
+  <td colspan=3 class=xl26 width=127 style='width:95pt'>Security</td>
+  <td class=xl25></td>
+  <td colspan=3 class=xl27>88579Y101</td>
+  <td colspan=3 class=xl25></td>
+  <td colspan=6 class=xl26 width=180 style='width:135pt'>Meeting Type</td>
+  <td class=xl25></td>
+        <td colspan=6 class=xl27>Annual&nbsp;&nbsp;</td>
+  <td class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=2 class=xl25 style='height:12.75pt;'></td>
+  <td colspan=3 class=xl26 width=127 style='width:95pt'>Ticker Symbol</td>
+  <td class=xl25></td>
+        <td colspan=3 class=xl27>MMM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+  <td colspan=3 class=xl25></td>
+  <td colspan=6 class=xl26 width=180 style='width:135pt'>Meeting Date</td>
+  <td class=xl25></td>
+  <td colspan=4 class=xl27>08-May-2007</td>
+  <td colspan=3 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=2 class=xl25 style='height:12.75pt;'></td>
+  <td colspan=3 class=xl26 width=127 style='width:95pt'>ISIN</td>
+  <td class=xl25></td>
+  <td colspan=3 class=xl25></td>
+  <td colspan=3 class=xl25></td>
+  <td colspan=6 class=xl26 width=180 style='width:135pt'>Agenda</td>
+  <td class=xl25></td>
+  <td colspan=6 class=xl44 width=207 style='width:156pt'>932657832 - Management</td>
+  <td class=xl25></td>
+ </tr>
+ <tr height=36 style='height:27.0pt'>
+  <td height=36 colspan=2 class=xl25 style='height:27.0pt;'></td>
+  <td class=xl26 width=68 style='width:51pt'>Item</td>
+  <td colspan=11 class=xl26 width=399 style='width:301pt'>Proposal</td>
+  <td colspan=3 class=xl26 width=109 style='width:82pt'>Type</td>
+  <td class=xl25></td>
+  <td colspan=4 class=xl26 width=110 style='width:83pt'>Vote</td>
+  <td class=xl25></td>
+  <td colspan=2 class=xl26 width=102 style='width:77pt'>For/Against<br>
+    Management</td>
+  <td class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=2 class=xl25 style='height:12.75pt;'></td>
+        <td class=xl27>01&nbsp;&nbsp;&nbsp;</td>
+  <td colspan=11 class=xl44 width=399 style='width:301pt'>DIRECTOR</td>
+  <td colspan=3 class=xl27>Management</td>
+  <td colspan=9 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=3 class=xl25 style='height:12.75pt;'></td>
+  <td class=xl28>1</td>
+        <td colspan=10 class=xl27>LINDA G.
+  ALVARADO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+  <td colspan=4 class=xl25></td>
+  <td colspan=4 class=xl27>Withheld</td>
+  <td class=xl25></td>
+  <td colspan=2 class=xl27>Against</td>
+  <td class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=3 class=xl25 style='height:12.75pt;'></td>
+  <td class=xl28>2</td>
+        <td colspan=10 class=xl27>GEORGE W.
+  BUCKLEY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+  <td colspan=4 class=xl25></td>
+  <td colspan=4 class=xl27>For</td>
+  <td class=xl25></td>
+  <td colspan=2 class=xl27>For</td>
+  <td class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=3 class=xl25 style='height:12.75pt;'></td>
+  <td class=xl28>3</td>
+        <td colspan=10 class=xl27>VANCE D.
+  COFFMAN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+  <td colspan=4 class=xl25></td>
+  <td colspan=4 class=xl27>For</td>
+  <td class=xl25></td>
+  <td colspan=2 class=xl27>For</td>
+  <td class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=3 class=xl25 style='height:12.75pt;'></td>
+  <td class=xl28>4</td>
+        <td colspan=10 class=xl27>MICHAEL L.
+  ESKEW&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+  <td colspan=4 class=xl25></td>
+  <td colspan=4 class=xl27>For</td>
+  <td class=xl25></td>
+  <td colspan=2 class=xl27>For</td>
+  <td class=xl25></td>
+ </tr>
+ <tr height=48 style='height:36.0pt'>
+  <td height=48 colspan=2 class=xl25 style='height:36.0pt;'></td>
+  <td class=xl33 colspan=9>SM &amp; R ALGER GROWTH
+  FUND</td>
+  <td></td>
+  <td colspan=2 class=xl25></td>
+  <td></td>
+  <td colspan=8 class=xl25></td>
+  <td></td>
+  <td colspan=2 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=2 class=xl25 style='height:12.75pt;'></td>
+  <td></td>
+  <td colspan=8 class=xl25></td>
+  <td></td>
+  <td colspan=2 class=xl25></td>
+  <td></td>
+  <td colspan=8 class=xl25></td>
+  <td></td>
+  <td colspan=2 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=2 class=xl25 style='height:12.75pt;'></td>
+  <td></td>
+  <td colspan=8 class=xl25></td>
+  <td></td>
+  <td colspan=2 class=xl25></td>
+  <td></td>
+  <td colspan=8 class=xl25></td>
+  <td></td>
+  <td colspan=2 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=2 class=xl25 style='height:12.75pt;'></td>
+  <td>3M CO</td>
+  <td colspan=8 class=xl25></td>
+  <td></td>
+  <td colspan=2 class=xl25></td>
+  <td></td>
+  <td colspan=8 class=xl25></td>
+  <td></td>
+  <td colspan=2 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=2 class=xl25 style='height:12.75pt;'></td>
+  <td></td>
+  <td colspan=8 class=xl25></td>
+  <td></td>
+  <td colspan=2 class=xl25></td>
+  <td></td>
+  <td colspan=8 class=xl25></td>
+  <td></td>
+  <td colspan=2 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=2 class=xl25 style='height:12.75pt;'></td>
+        <td colspan=8>Ticker:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MMM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Security ID:&nbsp; 88579Y101</td>
+  <td class=xl25></td>
+  <td></td>
+  <td colspan=2 class=xl25></td>
+  <td></td>
+  <td colspan=8 class=xl25></td>
+  <td></td>
+  <td colspan=2 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=2 class=xl25 style='height:12.75pt;'></td>
+        <td colspan=8>Meeting Date: MAY 8, 2007&nbsp;&nbsp;&nbsp; Meeting Type: Annual</td>
+  <td class=xl25></td>
+  <td></td>
+  <td colspan=2 class=xl25></td>
+  <td></td>
+  <td colspan=8 class=xl25></td>
+  <td></td>
+  <td colspan=2 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=2 class=xl25 style='height:12.75pt;'></td>
+        <td colspan=5>Record Date:&nbsp; MAR 9, 2007</td>
+  <td colspan=4 class=xl25></td>
+  <td></td>
+  <td colspan=2 class=xl25></td>
+  <td></td>
+  <td colspan=8 class=xl25></td>
+  <td></td>
+  <td colspan=2 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=2 class=xl25 style='height:12.75pt;'></td>
+  <td></td>
+  <td colspan=8 class=xl25></td>
+  <td></td>
+  <td colspan=2 class=xl25></td>
+  <td></td>
+  <td colspan=8 class=xl25></td>
+  <td></td>
+  <td colspan=2 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=2 class=xl25 style='height:12.75pt;'></td>
+        <td colspan=2>#&nbsp;&nbsp;&nbsp;&nbsp;
+  Proposal</td>
+  <td colspan=7 class=xl25></td>
+  <td>Mgt Rec</td>
+  <td colspan=2 class=xl25></td>
+  <td>Vote Cast</td>
+  <td colspan=8 class=xl25></td>
+  <td>Sponsor</td>
+  <td colspan=2 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=2 class=xl25 style='height:12.75pt;'></td>
+        <td colspan=7>1.1&nbsp;&nbsp;
+  Elect Director Linda G. Alvarado</td>
+  <td colspan=2 class=xl25></td>
+  <td>For</td>
+  <td colspan=2 class=xl25></td>
+  <td>For</td>
+  <td colspan=8 class=xl25></td>
+  <td>Management</td>
+  <td colspan=2 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=2 class=xl25 style='height:12.75pt;'></td>
+        <td colspan=7>1.2&nbsp;&nbsp;
+  Elect Director George W. Buckley</td>
+  <td colspan=2 class=xl25></td>
+  <td>For</td>
+  <td colspan=2 class=xl25></td>
+  <td>For</td>
+  <td colspan=8 class=xl25></td>
+  <td>Management</td>
+  <td colspan=2 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=2 class=xl25 style='height:12.75pt;'></td>
+        <td colspan=7>1.3&nbsp;&nbsp;
+  Elect Director Vance D. Coffman</td>
+  <td colspan=2 class=xl25></td>
+  <td>For</td>
+  <td colspan=2 class=xl25></td>
+  <td>For</td>
+  <td colspan=8 class=xl25></td>
+  <td>Management</td>
+  <td colspan=2 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=2 class=xl25 style='height:12.75pt;'></td>
+        <td colspan=7>1.4&nbsp;&nbsp;
+  Elect Director Michael L. Eskew</td>
+  <td colspan=2 class=xl25></td>
+  <td>For</td>
+  <td colspan=2 class=xl25></td>
+  <td>For</td>
+  <td colspan=8 class=xl25></td>
+  <td>Management</td>
+  <td colspan=2 class=xl25></td>
+ </tr>
+ <tr height=17 style='height:12.75pt'>
+  <td height=17 colspan=2 class=xl25 style='height:12.75pt;'></td>
+        <td colspan=7>1.5&nbsp;&nbsp;
+  Elect Director W. James Farrell</td>
+  <td colspan=2 class=xl25></td>
+  <td>For</td>
+  <td colspan=2 class=xl25></td>
+  <td>For</td>
+  <td colspan=8 class=xl25></td>
+  <td>Management</td>
+  <td colspan=2 class=xl25></td>
+ </tr>
+</table>
+</body>
+</html>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

@@ -1,0 +1,183 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ U2FBjfEK0/3oYSjggVWa42bIzFCwg1YzKF9qMBAaJ0ztOQ5h/PivcqMZY+tmkPmq
+ YRnv3ybyGdvMljJR+3ynCg==
+
+<SEC-DOCUMENT>0000809593-04-000019.txt : 20040831
+<SEC-HEADER>0000809593-04-000019.hdr.sgml : 20040831
+<ACCEPTANCE-DATETIME>20040831165314
+ACCESSION NUMBER:		0000809593-04-000019
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040831
+DATE AS OF CHANGE:		20040831
+EFFECTIVENESS DATE:		20040831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			AMERICAN AADVANTAGE FUNDS
+		CENTRAL INDEX KEY:			0000809593
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-04984
+		FILM NUMBER:		041009000
+
+	BUSINESS ADDRESS:	
+		STREET 1:		4151 AMON CARTER BLVD
+		STREET 2:		MD 2450
+		CITY:			FORT WORTH
+		STATE:			TX
+		ZIP:			76155
+		BUSINESS PHONE:		8179673509
+
+	MAIL ADDRESS:	
+		STREET 1:		PO BOX 619003
+		STREET 2:		MD 2450
+		CITY:			DFW AIRPORT
+		STATE:			TX
+		ZIP:			75261-9003
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	AMERICAN EAGLE FUNDS
+		DATE OF NAME CHANGE:	19890813
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx2004adv.txt
+<DESCRIPTION>AADVANTAGE FUNDS PROXY VOTE RECORD
+<TEXT>
+                                UNITED STATES
+                     SECURITIES AND EXCHANGE COMMISSION
+                           Washington, D.C. 20549
+
+                                  FORM N-PX
+
+ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT COMPANY
+
+
+                 Investment Company Act file number: 811-04984
+
+                          AMERICAN AADVANTAGE FUNDS
+              (Exact name of registrant as specified in charter)
+
+                    4151 Amon Carter Boulevard, MD 2450
+                          Fort Worth, Texas 76155
+            (Address of principal executive offices)-(Zip code)
+
+                        WILLIAM F. QUINN, PRESIDENT
+                    4151 Amon Carter Boulevard, MD 2450
+                          Fort Worth, Texas 76155
+                  (Name and address of agent for service)
+
+      Registrant's telephone number, including area code: (817) 967-3509
+
+                  Date of fiscal year end:
+
+                  Date of reporting period: July 1, 2003 - June 30, 2004
+
+<PAGE>
+
+ITEM 1. PROXY VOTING RECORD.
+
+===============================================================================
+                      AMERICAN AADVANTAGE BALANCED FUND
+===============================================================================
+- --------------------------------------------------------------------------------
+CONAGRA FOODS, INC.
+- --------------------------------------------------------------------------------
+
+    CUSIP/CIN:205887102                    MEETING TYPE:ANNUAL
+      TICKER: CAG                          MEETING DATE:9/25/2003
+        ISIN:                                    AGENDA:
+        CITY:                                   HOLDINGS
+     COUNTRY:UNITED                 RECONCILIATION DATE:
+             STATES                        VOTE DEADLINE
+       SEDOL:                                      DATE:9/24/2003
+<Table>
+<Caption>
+- --------------------------------------------------------------------------------
+                                                                  FOR/AGAINST
+ITEM                   PROPOSAL                       TYPE  VOTE  MANAGEMENT
+- --------------------------------------------------------------------------------
+<S>                                                   <C>   <C>   <C>
+01  DIRECTORS                                         Mgmt
+    1   DAVID H. BATCHELDER                                 For      For
+    2   ROBERT A. KRANE                                     For      For
+    3   MARK H. RAUENHORST                                  For      For
+    4   BRUCE ROHDE                                         For      For
+02  RATIFY THE APPOINTMENT OF INDEPENDENT AUDITORS    Mgmt  For      For
+03  STOCKHOLDER PROPOSAL - GENETICALLY ENGINEERED     Shr  Against   For
+    FOOD
+04  STOCKHOLDER PROPOSAL - STOCK OPTION PLAN          Shr  Against   For
+    CHANGES
+05  STOCKHOLDER PROPOSAL - STOCKHOLDER RIGHTS PLAN    Shr  Against   For
+</Table>
+===============================================================================
+                  AMERICAN AADVANTAGE LARGE CAP VALUE FUND
+===============================================================================
+
+- --------------------------------------------------------------------------------
+ARCHER-DANIELS-MIDLAND COMPANY
+- --------------------------------------------------------------------------------
+       CUSIP/CINS:039483102                    MEETING TYPE:ANNUAL
+          TICKER: adm                          MEETING DATE:11/6/2003
+            ISIN:                                    AGENDA:
+            CITY:                                   HOLDINGS
+                                        RECONCILIATION DATE:
+         COUNTRY:UNITED                        VOTE DEADLINE:
+                 STATES                                DATE:11/5/2003
+           SEDOL:
+<Table>
+<Caption>
+- --------------------------------------------------------------------------------
+                                                                  FOR/AGAINST
+ITEM                   PROPOSAL                       TYPE  VOTE  MANAGEMENT
+- --------------------------------------------------------------------------------
+<S>                                                   <C>   <C>   <C>
+01     DIRECTORS                                      Mgmt
+       1       G.A. ANDRAS                                   For    For
+       2       M.H. CARTER                                   For    For
+       3       R.S. JOSLIN                                   For    For
+       4       D.J. MIMRAN                                   For    For
+       5       P.J. MOORE                                    For    For
+       6       M.B. MULRONEY                                 For    For
+       7       J.K. VANIER                                   For    For
+       8       O.G. WEBB                                     For    For
+       9       K.R. WESTBROOK                                For    For
+</Table>
+
+
+<PAGE>
+
+                                  SIGNATURES
+
+Pursuant to the requirements of the Investment Company Act of 1940, the
+registrant has duly caused this report to be signed on its behalf by the
+undersigned, thereunto duly authorized.
+
+(Registrant): American AAdvantage Funds
+
+By /s/ William F. Quinn
+   --------------------
+   William F. Quinn
+   President
+
+Date: August 31, 2004
+
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

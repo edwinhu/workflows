@@ -1,0 +1,47 @@
+<SEC-DOCUMENT>0001206774-04-001363.txt : 20040902
+<SEC-HEADER>0001206774-04-001363.hdr.sgml : 20040902
+<ACCEPTANCE-DATETIME>20040902174623
+ACCESSION NUMBER:		0001206774-04-001363
+CONFORMED SUBMISSION TYPE:	N-PX/A
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040902
+DATE AS OF CHANGE:		20040902
+EFFECTIVENESS DATE:		20040902
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			MANUFACTURERS INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0000756913
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			0630
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX/A
+<SEQUENCE>1
+<FILENAME>mi031_0000756913.txt
+<DESCRIPTION>FORM N-PX/AMENDMENT
+<TEXT>
+<TABLE>
+<S>    <C>                                                            <C>        <C>        <C>
+2A01 MIT Emerging Small Company Trust
+
+- --------------------------------------------------------------------------------------------------------
+ABX AIR, INC.                                                                  Agenda: 932135038
+      CUSIP: 00080S101                        Meeting Type: Annual
+     Ticker: ABXA                             Meeting Date: 5/6/2004             ISIN:
+                                                                                            For/Against
+Proposal                                                              Type       Vote        Management
+- --------------------------------------------------------------------------------------------------------
+01     JAMES E. BUSHMAN                                                Mgmt         For            For
+02     TO CONSIDER AND VOTE UPON A PROPOSAL                            Mgmt         For            For
+       TO RATIFY THE APPOINTMENT OF DELOITTE
+       & TOUCHE LLP AS INDEPENDENT AUDITORS
+       FOR 2004.
+
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

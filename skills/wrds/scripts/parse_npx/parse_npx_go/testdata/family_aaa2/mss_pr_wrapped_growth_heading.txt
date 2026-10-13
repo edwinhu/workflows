@@ -1,0 +1,318 @@
+<SEC-DOCUMENT>0001193125-23-202408.txt : 20230803
+<SEC-HEADER>0001193125-23-202408.hdr.sgml : 20230803
+<ACCEPTANCE-DATETIME>20230803095629
+ACCESSION NUMBER:		0001193125-23-202408
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20230630
+FILED AS OF DATE:		20230803
+DATE AS OF CHANGE:		20230803
+EFFECTIVENESS DATE:		20230803
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Multi-Select Securities Fund for Puerto Rico Residents
+		CENTRAL INDEX KEY:			0001852344
+		IRS NUMBER:				666048106
+		STATE OF INCORPORATION:			PR
+		FISCAL YEAR END:			0331
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-23686
+		FILM NUMBER:		231138399
+
+	BUSINESS ADDRESS:	
+		STREET 1:		250 MUNOZ RIVERA
+		STREET 2:		TENTH FLOOR
+		CITY:			SAN JUAN
+		STATE:			PR
+		ZIP:			00918
+		BUSINESS PHONE:		7877733888
+
+	MAIL ADDRESS:	
+		STREET 1:		250 MUNOZ RIVERA
+		STREET 2:		TENTH FLOOR
+		CITY:			SAN JUAN
+		STATE:			PR
+		ZIP:			00918
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	Multi-Select Securities Puerto Rico Fund
+		DATE OF NAME CHANGE:	20210319
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001852344
+<SERIES-ID>S000074345
+<SERIES-NAME>Large Cap Value Portfolio I
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000232096
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000232097
+<CLASS-CONTRACT-NAME>Class L
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000232098
+<CLASS-CONTRACT-NAME>Class P
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001852344
+<SERIES-ID>S000074346
+<SERIES-NAME>Large Cap Core Portfolio I
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000232099
+<CLASS-CONTRACT-NAME>Class L
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000232100
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000232101
+<CLASS-CONTRACT-NAME>Class P
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001852344
+<SERIES-ID>S000074347
+<SERIES-NAME>Large Cap Growth Portfolio I
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000232102
+<CLASS-CONTRACT-NAME>Class P
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000232103
+<CLASS-CONTRACT-NAME>Class L
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000232104
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001852344
+<SERIES-ID>S000074348
+<SERIES-NAME>Mid Cap Core Portfolio I
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000232105
+<CLASS-CONTRACT-NAME>Class L
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000232106
+<CLASS-CONTRACT-NAME>Class P
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000232107
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001852344
+<SERIES-ID>S000074349
+<SERIES-NAME>Small Cap Core Portfoliko I
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000232108
+<CLASS-CONTRACT-NAME>Class L
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000232109
+<CLASS-CONTRACT-NAME>Class P
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000232110
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001852344
+<SERIES-ID>S000074350
+<SERIES-NAME>International Portfolio I
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000232111
+<CLASS-CONTRACT-NAME>Class A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000232112
+<CLASS-CONTRACT-NAME>Class L
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000232113
+<CLASS-CONTRACT-NAME>Class P
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>d532382dnpx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML><HEAD>
+<TITLE>N-PX</TITLE>
+</HEAD>
+</TABLE>
+
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always"> </p>
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>Vote Summary Report </B></P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman" ALIGN="center"><B>July&nbsp;1, 2022 &#150; June&nbsp;30, 2023 </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman"><B>Large Cap Growth Portfolio I </B></P>
+
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always"> </p>
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman"><B>Large Cap Growth </B></P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Times New Roman"><B>Portfolio I </B></P> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:Times New Roman; font-size:10pt" ALIGN="center">
+
+
+<TR>
+
+<TD WIDTH="14%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="5%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="8%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="10%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="6%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="12%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="7%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="6%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="5%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="5%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="8%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="8%"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:8pt">
+<TD VALIGN="bottom">Issuer&nbsp;Name</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center">Ticker</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center">Meeting&nbsp;Date</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center">Primary&nbsp;CUSIP</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:8pt; font-family:Times New Roman" ALIGN="center">Proposal</P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center">Number</P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center">Proposal&nbsp;Text</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center">Proponent</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:8pt; font-family:Times New Roman" ALIGN="center">Votable</P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center">Proposal</P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:8pt; font-family:Times New Roman" ALIGN="center">Mgmt</P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center">Rec</P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:8pt; font-family:Times New Roman" ALIGN="center">Voting</P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center">Policy</P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:8pt; font-family:Times New Roman" ALIGN="center">Voting</P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center">Policy Rec</P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" ALIGN="center"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:8pt; font-family:Times New Roman" ALIGN="center">Vote</P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:Times New Roman" ALIGN="center">Instruction</P></TD></TR>
+
+
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">Linde Plc</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">LIN</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">07/25/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">G5494J103</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">1a</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Elect Director Stephen F. Angel</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">ISS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">Linde Plc</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">LIN</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">07/25/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">G5494J103</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">1b</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Elect Director Sanjiv Lamba</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">ISS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TR STYLE="page-break-inside:avoid ; font-family:Times New Roman; font-size:10pt">
+<TD VALIGN="top">Tesla, Inc.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">TSLA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">08/04/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">88160R101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">13</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Report on Water Risk Exposure</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">SH</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">ISS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">For</TD></TR></TABLE>

@@ -1,0 +1,85 @@
+<SEC-DOCUMENT>0000948221-04-000353.txt : 20040831
+<SEC-HEADER>0000948221-04-000353.hdr.sgml : 20040831
+<ACCEPTANCE-DATETIME>20040831155202
+ACCESSION NUMBER:		0000948221-04-000353
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040831
+DATE AS OF CHANGE:		20040831
+EFFECTIVENESS DATE:		20040831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			UMB SCOUT FUNDS
+		CENTRAL INDEX KEY:			0001105128
+		IRS NUMBER:				431882569
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			0630
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>scout17200.txt
+<TEXT>
+<PAGE>
+
+
+ITEM 1. PROXY VOTING RECORD
+
+
+ProxyEdge - Investment Company Report with Ballot Detail
+Meeting Date Range: 06/30/2003 to 06/30/2004
+Selected Accounts: Scout Equity Index
+
+<TABLE>
+<CAPTION>
+
+                                                            UMB SCOUT EQUITY INDEX FUND
+- -----------------------------------------------------------------------------------------------------------------------------------
+ANDREW CORPORATION                                                    ANDW                         SPECIAL MEETING DATE: 07/15/2003
+ISSUER: 034425                           ISIN:
+SEDOL:
+- -----------------------------------------------------------------------------------------------------------------------------------
+
+VOTE GROUP: GLOBAL
+<S>     <C>                            <C>                           <C>               <C>            <C>
+Proposal                                                              Proposal          Vote           Against
+ Number  Proposal                                                     Type              Cast            Mgmt.
+- -----------------------------------------------------------------------------------------------------------------------------------
+   01    APPROVE MERGER AGREEMENT                                     Management         For             No
+
+   02    AUTHORIZE A NEW CLASS OF PREFERRED STOCK                     Shareholder        For             No
+
+   03    SET/CHANGE NUMBER OF DIRECTORS ON BOARD                      Management         For             No
+
+   04    APPROVE MOTION TO ADJOURN MEETING                            Management         For             No
+
+
+- -----------------------------------------------------------------------------------------------------------------------------------
+CENTEX CORP./3333 HOLDING CORP.                                       CTX                           ANNUAL MEETING DATE: 07/17/2003
+ISSUER: 152312                           ISIN:
+SEDOL:
+- -----------------------------------------------------------------------------------------------------------------------------------
+
+VOTE GROUP: GLOBAL
+
+Proposal                                                              Proposal          Vote           Against
+ Number  Proposal                                                     Type              Cast            Mgmt.
+- -----------------------------------------------------------------------------------------------------------------------------------
+   01    ELECTION OF DIRECTORS                                        Management         For             No
+
+   C2    ADOPT OMNIBUS STOCK OPTION PLAN                              Management         For             No
+
+   C3    ADOPT OMNIBUS STOCK OPTION PLAN                              Management         For             No
+
+   C4    RATIFY APPOINTMENT OF INDEPENDENT AUDITORS                   Management         For             No
+
+  3H2    RATIFY APPOINTMENT OF INDEPENDENT AUDITORS                   Management         For             No
+
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

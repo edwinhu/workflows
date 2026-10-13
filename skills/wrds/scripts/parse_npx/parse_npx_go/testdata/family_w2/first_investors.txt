@@ -1,0 +1,47 @@
+<SEC-DOCUMENT>0000352564-05-000021.txt : 20050826
+<SEC-HEADER>0000352564-05-000021.hdr.sgml : 20050826
+<ACCEPTANCE-DATETIME>20050826100146
+ACCESSION NUMBER:		0000352564-05-000021
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050826
+DATE AS OF CHANGE:		20050826
+EFFECTIVENESS DATE:		20050826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			FIRST INVESTORS SERIES FUND II INC
+		CENTRAL INDEX KEY:			0000886048
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>series2.txt
+<DESCRIPTION>FIRST INVESTORS SERIES FUND II, INC.
+<TEXT>
+
+                                 FORM N-PX
+   First Investors Mid-Cap Opportunity Fund
+
+   ISSUER NAME    TICKER    CUSIP    MTG    DATE    MTG    TYPE
+
+        Proposal Type Voted? Vote For/Agnst Mgmt
+
+   Accredo Health Inc ACDO  00437V104  11/22/04  Annual
+   1.01   Elect William Edward Evans 			MGMT YES FOR FOR
+   1.02   Elect Nancy-Ann DeParle 			MGMT YES FOR FOR
+   1.03   Elect Kenneth R. Masterson 			MGMT YES FOR FOR
+   2.00   Ratify Selection of Auditors 			MGMT YES FOR FOR
+   3.00   Add Shares to Stock Option Plan 		MGMT YES FOR FOR
+   First Investors Value Fund
+
+   ISSUER NAME    TICKER    CUSIP    MTG    DATE   MTG    TYPE
+
+           Proposal Type Voted? Vote For/Agnst Mgmt
+
+   Abbott Laboratories ABT  002824100  4/22/05  Annual
+   1.01   Elect Roxanne S. Austin 			MGMT YES FOR FOR
+   1.02   Elect William M. Daley 			MGMT YES FOR FOR
+   1.03   Elect H. Laurance Fuller 			MGMT YES FOR FOR

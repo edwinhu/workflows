@@ -1,0 +1,152 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ QW97wFHHCOSLbzYvfLcg7VGSWU1wqtM60LiSs8XO7eem0yPjNjRKPR4hZwBR0B9x
+ qfXNX3NUlb/muU9svqV3FA==
+
+<SEC-DOCUMENT>0000811803-05-000031.txt : 20050114
+<SEC-HEADER>0000811803-05-000031.hdr.sgml : 20050114
+<ACCEPTANCE-DATETIME>20050114145023
+ACCESSION NUMBER:		0000811803-05-000031
+CONFORMED SUBMISSION TYPE:	N-PX/A
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20050114
+DATE AS OF CHANGE:		20050114
+EFFECTIVENESS DATE:		20050114
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PRINCIPAL VARIABLE CONTRACTS FUND INC
+		CENTRAL INDEX KEY:			0000012601
+		IRS NUMBER:				420948301
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX/A
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-01944
+		FILM NUMBER:		05530431
+
+	BUSINESS ADDRESS:	
+		STREET 1:		PRINCIPAL FINANCIAL GROUP
+		STREET 2:		711 HIGH STREET
+		CITY:			DES MOINES
+		STATE:			IA
+		ZIP:			50392-2080
+		BUSINESS PHONE:		515-247-5476
+
+	MAIL ADDRESS:	
+		STREET 1:		PRINCIPAL FINANCIAL GROUP
+		STREET 2:		711 HIGH STREET
+		CITY:			DES MOINES
+		STATE:			IA
+		ZIP:			50392-2080
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PRINCIPAL CAPITAL ACCUMULATION FUND INC
+		DATE OF NAME CHANGE:	19920703
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PRINCOR INVESTMENT FUND INC
+		DATE OF NAME CHANGE:	19880906
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PRINCOR FUND INC
+		DATE OF NAME CHANGE:	19871013
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX/A
+<SEQUENCE>1
+<FILENAME>pvc-2004.txt
+<DESCRIPTION>PRINCIPAL VARIABLE CONTRACTS FUND, INC.-2004
+<TEXT>
+ISSUER NAME TICKER CUSIP MTG DATE MTG TYPE
+           Proposal Type Voted? Vote For/Agnst Mgmt
+   Abbott Laboratories ABT  002824100  4/23/04  Annual
+   1.01   Elect Roxanne S. Austin MGMT YES FOR FOR
+   1.02   Elect H. Laurance Fuller MGMT YES FOR FOR
+   1.03   Elect Richard A. Gonzalez MGMT YES FOR FOR
+   1.04   Elect Jack M. Greenberg MGMT YES FOR FOR
+   1.05   Elect Jeffrey M. Leiden MGMT YES FOR FOR
+   1.06   Elect David Owen MGMT YES FOR FOR
+   1.07   Elect Boone Powell Jr. MGMT YES FOR FOR
+   1.08   Elect Addison Barry Rand MGMT YES FOR FOR
+   1.09   Elect W. Ann Reynolds MGMT YES FOR FOR
+   1.10   Elect Roy S. Roberts MGMT YES FOR FOR
+   1.11   Elect William D. Smithburg MGMT YES FOR FOR
+   1.12   Elect John R. Walter MGMT YES FOR FOR
+   1.13   Elect Miles D. White MGMT YES FOR FOR
+   2.00   Ratify Selection of Auditors MGMT YES FOR FOR
+   3.00   Review Drug Pricing or Distribution SHLDR YES AGNST FOR
+   4.00   Review Political Spending SHLDR YES AGNST FOR
+   5.00   Restrict Executive Compensation SHLDR YES AGNST FOR
+   6.00   Review AIDS Pandemic's Impact on Company SHLDR YES AGNST FOR
+
+   AES AES  00130H105  4/28/04  Annual
+   1.01   Elect Richard Darman MGMT YES FOR FOR
+   1.02   Elect Alice F. Emerson MGMT YES FOR FOR
+   1.03   Elect Paul T. Hanrahan MGMT YES FOR FOR
+   1.04   Elect Kristina M. Johnson MGMT YES FOR FOR
+   1.05   Elect John A. Koskinen MGMT YES FOR FOR
+   1.06   Elect Philip Lader MGMT YES FOR FOR
+   1.07   Elect John H. McArthur MGMT YES FOR FOR
+   1.08   Elect Sandra O. Moose MGMT YES FOR FOR
+   1.09   Elect Phillip A. Odeen MGMT YES FOR FOR
+   1.10   Elect Charles O. Rossotti MGMT YES FOR FOR
+   1.11   Elect Sven Sandstrom MGMT YES FOR FOR
+   1.12   Elect Roger W. Sant MGMT YES FOR FOR
+   2.00   Ratify Selection of Auditors MGMT YES FOR FOR
+
+   Alcoa AA  013817101  4/30/04  Annual
+   1.01   Elect Alain J.P. Belda MGMT YES FOR FOR
+   1.02   Elect Carlos Ghosn MGMT YES FOR FOR
+   1.03   Elect Henry B. Schacht MGMT YES FOR FOR
+   1.04   Elect Franklin A. Thomas MGMT YES FOR FOR
+   2.00   Adopt Stock Option Plan MGMT YES AGNST AGNST
+   3.01   Link Executive Pay to Social Criteria SHLDR YES AGNST FOR
+   3.02   Golden Parachutes SHLDR YES AGNST FOR
+
+   Allstate Corp ALL  020002101  5/18/04  Annual
+   1.01   Elect F. Duane Ackerman MGMT YES FOR FOR
+   1.02   Elect James G. Andress MGMT YES FOR FOR
+   1.03   Elect Edward A. Brennan MGMT YES FOR FOR
+   1.04   Elect W. James Farrell MGMT YES FOR FOR
+   1.05   Elect Jack M. Greenberg MGMT YES FOR FOR
+   1.06   Elect Ronald T. LeMay MGMT YES FOR FOR
+   1.07   Elect Edward M. Liddy MGMT YES FOR FOR
+   1.08   Elect J. Christopher Reyes MGMT YES FOR FOR
+   1.09   Elect H. John Riley Jr. MGMT YES FOR FOR
+   1.10   Elect Joshua I. Smith MGMT YES FOR FOR
+   1.11   Elect Judith A. Sprieser MGMT YES FOR FOR
+   1.12   Elect Mary Alice Taylor MGMT YES FOR FOR
+   2.00   Ratify Selection of Auditors MGMT YES FOR FOR
+   3.00   Approve Annual Bonus Plan MGMT YES FOR FOR
+   4.00   Approve Long-Term Bonus Plan MGMT YES FOR FOR
+   5.00   Adopt Cumulative Voting SHLDR YES AGNST FOR
+
+   Altria Group MO  02209S103  4/29/04  Annual
+   1.01   Elect Elizabeth E. Bailey MGMT YES FOR FOR
+   1.02   Elect Mathis Cabiallavetta MGMT YES FOR FOR
+   1.03   Elect Loius C. Camilleri MGMT YES FOR FOR
+   1.04   Elect Dudley Fishburn MGMT YES FOR FOR
+   1.05   Elect Robert E.R. Huntley MGMT YES FOR FOR
+   1.06   Elect Thomas W. Jones MGMT YES FOR FOR
+   1.07   Elect Lucio A. Noto MGMT YES FOR FOR
+   1.08   Elect John S. Reed MGMT YES FOR FOR
+   1.09   Elect Carlos Slim Helu MGMT YES FOR FOR
+   1.10   Elect Stephen M. Wolf MGMT YES FOR FOR
+   2.00   Ratify Selection of Auditors MGMT YES FOR FOR
+   3.00   Review or Reduce Tobacco Harm to Health SHLDR YES AGNST FOR
+   4.00   Review or Reduce Tobacco Harm to Health SHLDR YES AGNST FOR
+   5.00   Review Political Spending SHLDR YES AGNST FOR
+   6.00   Review or Reduce Tobacco Harm to Health SHLDR YES AGNST FOR
+   7.00   Review or Reduce Tobacco Harm to Health SHLDR YES AGNST FOR
+</TEXT>
+</DOCUMENT>

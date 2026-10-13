@@ -1,0 +1,11 @@
+
+LINK R/EST INVEST
+
+Ticker:       Y5281M111      Security ID:  Y5281M111
+Meeting Date: Jul 29, 2009   Meeting Type: AGM
+Record Date:  Jul 23, 2009
+
+#     Proposal                                  Mgt Rec   Vote Cast Sponsor
+N/A   Abstain Vote Same as Take no Action Vote  Non-Votin Non-Votin Management
+1.    Present Financial Statements              Non-Votin Non-Votin Management
+2.    Appointment/Remuneration of Auditors      Non-Votin Non-Votin Management

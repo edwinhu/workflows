@@ -1,0 +1,13 @@
+- --------------------------------------------------------------------------------
+
+American International Group, Inc.
+
+Ticker:        AIG                 Security ID:     026874107
+Meeting Date:  May 14, 2008        Meeting Type:    Annual
+
+#     Proposal                        For/Agnt Mgt   Vote Cast   Sponsor
+1     Election of Directors               For       For         Management
+2     Ratify appointment of independent   For       For         Management
+      Auditors
+3     Human right to water                For       Angst       Shareholder
+4     Reporting of political contributionsFor       Against     Shareholder

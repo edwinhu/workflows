@@ -1,0 +1,262 @@
+<TABLE>
+<CAPTION>
+
+                                                                      Proposal
+Institutional Account Name     Meeting Date  Record Date  Proponent   Number    Proposal Text
+--------------------------     ------------  -----------  ----------- --------  ----------------------------------------
+<S>                            <C>           <C>          <C>         <C>       <C>
+HC Capital Trust The Value
+Equity Portfolio                26-Jan-17    30-Nov-16    Management    1d      Elect Director Chadwick C. Deaton
+HC Capital Trust The Value
+Equity Portfolio                26-Jan-17    30-Nov-16    Management    1e      Elect Director David H. Y. Ho
+HC Capital Trust The Value
+Equity Portfolio                26-Jan-17    30-Nov-16    Management    1f      Elect Director Margaret G. McGlynn
+HC Capital Trust The Value
+Equity Portfolio                26-Jan-17    30-Nov-16    Management    1g      Elect Director Edward L. Monser
+HC Capital Trust The Value
+Equity Portfolio                26-Jan-17    30-Nov-16    Management    1h      Elect Director Matthew H. Paull
+HC Capital Trust The Value                                                      Advisory Vote to Ratify Named Executive
+Equity Portfolio                26-Jan-17    30-Nov-16    Management    2       Officers' Compensation
+HC Capital Trust The Value
+Equity Portfolio                26-Jan-17    30-Nov-16    Management    3       Advisory Vote on Say on Pay Frequency
+HC Capital Trust The Value
+Equity Portfolio                26-Jan-17    30-Nov-16    Management    4       Ratify KPMG LLP as Auditors
+HC Capital Trust The Value
+Equity Portfolio                27-Jan-17    01-Dec-16    Management    1.1     Elect Director James Hagedorn
+HC Capital Trust The Value
+Equity Portfolio                27-Jan-17    01-Dec-16    Management    1.2     Elect Director Brian D. Finn
+HC Capital Trust The Value
+Equity Portfolio                27-Jan-17    01-Dec-16    Management    1.3     Elect Director James F. McCann
+</TABLE>
+<TABLE>
+<CAPTION>
+
+                               Management                               Vote Against
+Institutional Account Name     Recommendation  Vote Instruction  Voted  Management
+--------------------------     --------------  ----------------  -----  ------------
+<S>                            <C>             <C>               <C>    <C>
+HC Capital Trust The Value
+Equity Portfolio                 For              For            Yes        No
+HC Capital Trust The Value
+Equity Portfolio                 For              For            Yes        No
+HC Capital Trust The Value
+Equity Portfolio                 For              For            Yes        No
+HC Capital Trust The Value
+Equity Portfolio                 For              For            Yes        No
+HC Capital Trust The Value
+Equity Portfolio                 For              For            Yes        No
+HC Capital Trust The Value
+Equity Portfolio                 For              For            Yes        No
+HC Capital Trust The Value
+Equity Portfolio                 One Year         One Year       Yes        No
+HC Capital Trust The Value
+Equity Portfolio                 For              For            Yes        No
+HC Capital Trust The Value
+Equity Portfolio                 For              For            Yes        No
+HC Capital Trust The Value
+Equity Portfolio                 For              For            Yes        No
+HC Capital Trust The Value
+Equity Portfolio                 For              For            Yes        No
+</TABLE>
+
+<PAGE>
+
+<TABLE>
+<CAPTION>
+                               Institutional
+                               Account                                                         Provider
+Institutional Account Name     Number         Company Name                    Ticker  Country  Security ID  Meeting Type
+--------------------------     -------------  ------------------------------- ------  -------  -----------  ------------
+<S>                            <C>            <C>                             <C>     <C>      <C>          <C>
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       The Scotts Miracle-Gro Company   SMG     USA     810186106      Annual
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       The Scotts Miracle-Gro Company   SMG     USA     810186106      Annual
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       The Scotts Miracle-Gro Company   SMG     USA     810186106      Annual
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       The Scotts Miracle-Gro Company   SMG     USA     810186106      Annual
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       WestRock Company                 WRK     USA     96145D105      Annual
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       WestRock Company                 WRK     USA     96145D105      Annual
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       WestRock Company                 WRK     USA     96145D105      Annual
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       WestRock Company                 WRK     USA     96145D105      Annual
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       WestRock Company                 WRK     USA     96145D105      Annual
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       WestRock Company                 WRK     USA     96145D105      Annual
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       WestRock Company                 WRK     USA     96145D105      Annual
+</TABLE>
+<TABLE>
+<CAPTION>
+
+                                                                      Proposal
+Institutional Account Name     Meeting Date  Record Date  Proponent   Number    Proposal Text
+--------------------------     ------------  -----------  ----------- --------  -----------------------------------------
+<S>                            <C>           <C>          <C>         <C>       <C>
+HC Capital Trust The Value
+Equity Portfolio                27-Jan-17    01-Dec-16    Management    1.4     Elect Director Nancy G. Mistretta
+HC Capital Trust The Value                                                      Advisory Vote to Ratify Named Executive
+Equity Portfolio                27-Jan-17    01-Dec-16    Management    2       Officers' Compensation
+HC Capital Trust The Value
+Equity Portfolio                27-Jan-17    01-Dec-16    Management    3       Amend Omnibus Stock Plan
+HC Capital Trust The Value
+Equity Portfolio                27-Jan-17    01-Dec-16    Management    4       Ratify Deloitte & Touche LLP as Auditors
+HC Capital Trust The Value
+Equity Portfolio                27-Jan-17    02-Dec-16    Management    1a      Elect Director Timothy J. Bernlohr
+HC Capital Trust The Value
+Equity Portfolio                27-Jan-17    02-Dec-16    Management    1b      Elect Director J. Powell Brown
+HC Capital Trust The Value
+Equity Portfolio                27-Jan-17    02-Dec-16    Management    1c      Elect Director Michael E. Campbell
+HC Capital Trust The Value
+Equity Portfolio                27-Jan-17    02-Dec-16    Management    1d      Elect Director Terrell K. Crews
+HC Capital Trust The Value
+Equity Portfolio                27-Jan-17    02-Dec-16    Management    1e      Elect Director Russell M. Currey
+HC Capital Trust The Value
+Equity Portfolio                27-Jan-17    02-Dec-16    Management    1f      Elect Director John A. Luke, Jr.
+HC Capital Trust The Value
+Equity Portfolio                27-Jan-17    02-Dec-16    Management    1g      Elect Director Gracia C. Martore
+</TABLE>
+<TABLE>
+<CAPTION>
+
+                               Management                               Vote Against
+Institutional Account Name     Recommendation  Vote Instruction  Voted  Management
+--------------------------     --------------  ----------------  -----  ------------
+<S>                            <C>             <C>               <C>    <C>
+HC Capital Trust The Value
+Equity Portfolio                    For              For         Yes        No
+HC Capital Trust The Value
+Equity Portfolio                    For              For         Yes        No
+HC Capital Trust The Value
+Equity Portfolio                    For              For         Yes        No
+HC Capital Trust The Value
+Equity Portfolio                    For              For         Yes        No
+HC Capital Trust The Value
+Equity Portfolio                    For              For         Yes        No
+HC Capital Trust The Value
+Equity Portfolio                    For              For         Yes        No
+HC Capital Trust The Value
+Equity Portfolio                    For              For         Yes        No
+HC Capital Trust The Value
+Equity Portfolio                    For              For         Yes        No
+HC Capital Trust The Value
+Equity Portfolio                    For              For         Yes        No
+HC Capital Trust The Value
+Equity Portfolio                    For              For         Yes        No
+HC Capital Trust The Value
+Equity Portfolio                    For              For         Yes        No
+</TABLE>
+
+<PAGE>
+
+<TABLE>
+<CAPTION>
+                               Institutional
+                               Account                                                   Provider
+Institutional Account Name     Number         Company Name              Ticker  Country  Security ID  Meeting Type  Meeting Date
+--------------------------     -------------  ------------------------- ------  -------  -----------  ------------  ------------
+<S>                            <C>            <C>                       <C>     <C>      <C>          <C>           <C>
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       WestRock Company           WRK     USA     96145D105      Annual       27-Jan-17
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       WestRock Company           WRK     USA     96145D105      Annual       27-Jan-17
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       WestRock Company           WRK     USA     96145D105      Annual       27-Jan-17
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       WestRock Company           WRK     USA     96145D105      Annual       27-Jan-17
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       WestRock Company           WRK     USA     96145D105      Annual       27-Jan-17
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       WestRock Company           WRK     USA     96145D105      Annual       27-Jan-17
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       WestRock Company           WRK     USA     96145D105      Annual       27-Jan-17
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       WestRock Company           WRK     USA     96145D105      Annual       27-Jan-17
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       Energizer Holdings, Inc.   ENR     USA     29272W109      Annual       30-Jan-17
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       Energizer Holdings, Inc.   ENR     USA     29272W109      Annual       30-Jan-17
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       Energizer Holdings, Inc.   ENR     USA     29272W109      Annual       30-Jan-17
+</TABLE>
+<TABLE>
+<CAPTION>
+
+                                                        Proposal                                           Management
+Institutional Account Name     Record Date  Proponent   Number    Proposal Text                            Recommendation
+--------------------------     -----------  ----------- --------  ---------------------------------------- --------------
+<S>                            <C>          <C>         <C>       <C>                                      <C>
+HC Capital Trust The Value
+Equity Portfolio               02-Dec-16    Management    1h      Elect Director James E. Nevels             For
+HC Capital Trust The Value
+Equity Portfolio               02-Dec-16    Management    1i      Elect Director Timothy H. Powers           For
+HC Capital Trust The Value
+Equity Portfolio               02-Dec-16    Management    1j      Elect Director Steven C. Voorhees          For
+HC Capital Trust The Value
+Equity Portfolio               02-Dec-16    Management    1k      Elect Director Bettina M. Whyte            For
+HC Capital Trust The Value
+Equity Portfolio               02-Dec-16    Management    1l      Elect Director Alan D. Wilson              For
+HC Capital Trust The Value                                        Advisory Vote to Ratify Named Executive
+Equity Portfolio               02-Dec-16    Management    2       Officers' Compensation                     For
+HC Capital Trust The Value
+Equity Portfolio               02-Dec-16    Management    3       Advisory Vote on Say on Pay Frequency      One Year
+HC Capital Trust The Value
+Equity Portfolio               02-Dec-16    Management    4       Ratify Ernst & Young LLP as Auditors       For
+HC Capital Trust The Value
+Equity Portfolio               30-Nov-16    Management    1.1     Elect Director Cynthia J. Brinkley         For
+HC Capital Trust The Value
+Equity Portfolio               30-Nov-16    Management    1.2     Elect Director John E. Klein               For
+HC Capital Trust The Value                                        Ratify PricewaterhouseCoopers LLP as
+Equity Portfolio               30-Nov-16    Management    2       Auditors                                   For
+</TABLE>
+<TABLE>
+<CAPTION>
+
+                                                        Vote Against
+Institutional Account Name     Vote Instruction  Voted  Management
+--------------------------     ----------------  -----  ------------
+<S>                            <C>               <C>    <C>
+HC Capital Trust The Value
+Equity Portfolio                  For            Yes        No
+HC Capital Trust The Value
+Equity Portfolio                  For            Yes        No
+HC Capital Trust The Value
+Equity Portfolio                  For            Yes        No
+HC Capital Trust The Value
+Equity Portfolio                  For            Yes        No
+HC Capital Trust The Value
+Equity Portfolio                  For            Yes        No
+HC Capital Trust The Value
+Equity Portfolio                  For            Yes        No
+HC Capital Trust The Value
+Equity Portfolio                  One Year       Yes        No
+HC Capital Trust The Value
+Equity Portfolio                  For            Yes        No
+HC Capital Trust The Value
+Equity Portfolio                  Against        Yes        Yes
+HC Capital Trust The Value
+Equity Portfolio                  For            Yes        No
+HC Capital Trust The Value
+Equity Portfolio                  For            Yes        No
+</TABLE>
+
+<PAGE>
+
+<TABLE>
+<CAPTION>
+                               Institutional
+                               Account                                                   Provider
+Institutional Account Name     Number         Company Name              Ticker  Country  Security ID  Meeting Type  Meeting Date
+--------------------------     -------------  ------------------------- ------  -------  -----------  ------------  ------------
+<S>                            <C>            <C>                       <C>     <C>      <C>          <C>           <C>
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       Energizer Holdings, Inc.   ENR     USA     29272W109      Annual       30-Jan-17
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       Energizer Holdings, Inc.   ENR     USA     29272W109      Annual       30-Jan-17
+HC Capital Trust The Value
+Equity Portfolio                  HCVEP       Emerson Electric Co.       EMR     USA     291011104      Annual       07-Feb-17

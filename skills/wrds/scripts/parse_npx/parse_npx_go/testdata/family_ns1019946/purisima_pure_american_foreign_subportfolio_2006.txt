@@ -1,0 +1,251 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ SJ0jT29OJH3OXS/JcplOKUjy5Scfd7fhBJqjvVqqHi/YkxYaOv++6Fw+BTkZLpHa
+ xJs0i/NRqTZTls/CGCGacA==
+
+<SEC-DOCUMENT>0000909012-06-000924.txt : 20060818
+<SEC-HEADER>0000909012-06-000924.hdr.sgml : 20060818
+<ACCEPTANCE-DATETIME>20060818105634
+ACCESSION NUMBER:		0000909012-06-000924
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20060630
+FILED AS OF DATE:		20060818
+DATE AS OF CHANGE:		20060818
+EFFECTIVENESS DATE:		20060818
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PURISIMA FUNDS
+		CENTRAL INDEX KEY:			0001019946
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-07737
+		FILM NUMBER:		061042545
+
+	BUSINESS ADDRESS:	
+		STREET 1:		C/O FISHER INVESTMENTS
+		STREET 2:		13100 SKYLINE BLVD
+		CITY:			WOODSIDE
+		STATE:			CA
+		ZIP:			94062
+		BUSINESS PHONE:		650-851-3334
+
+	MAIL ADDRESS:	
+		STREET 1:		C/O FISHER INVESTMENTS
+		STREET 2:		13100 SKYLINE BLVD
+		CITY:			WOODSIDE
+		STATE:			CA
+		ZIP:			94062
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001019946
+<SERIES-ID>S000005935
+<SERIES-NAME>The Purisima Total Return Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016365
+<CLASS-CONTRACT-NAME>The Purisima Total Return Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>PURIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001019946
+<SERIES-ID>S000005936
+<SERIES-NAME>The Purisima All-Purpose Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016366
+<CLASS-CONTRACT-NAME>The Purisima All-Purpose Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>PURLX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>t302725.txt
+<DESCRIPTION>6/30/06
+<TEXT>
+
+                                  UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                              Washington, DC 20549
+
+                                    FORM N-PX
+                     ANNUAL REPORT OF PROXY VOTING RECORD OF
+                    REGISTERED MANAGEMENT INVESTMENT COMPANY
+
+
+                  Investment Company Act file number 811-07737
+
+
+                               THE PURISIMA FUNDS
+               (Exact name of registrant as specified in charter)
+
+
+
+                             13100 Skyline Boulevard
+                             Woodside, CA 94062-4547
+               (Address of principal executive offices) (Zip code)
+
+
+                          Kenneth L. Fisher, President
+                             13100 Skyline Boulevard
+                             Woodside, CA 94062-4547
+                     (Name and address of agent for service)
+
+                                    Copy to:
+                                 David A. Hearth
+                      Paul, Hastings, Janofsky & Walker LLP
+                          55 Second Street, 24th Floor
+                             San Francisco, CA 94105
+
+       Registrant's telephone number, including area code: (650) 851-7925
+                                 ---------------
+
+
+Date of fiscal year end: AUGUST, 31
+                        -----------
+
+
+Date of reporting period: JUNE 30, 2006
+                          -------------
+<PAGE>
+
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-07737
+Reporting Period: 07/01/2005 - 06/30/2006
+The Purisima Funds
+
+
+
+
+
+
+
+
+
+========================== PURISIMA ALL PURPOSE FUND ===========================
+
+
+
+
+============================ PURISIMA PURE AMERICAN ============================
+
+
+AMERICAN INTERNATIONAL GROUP, INC.
+
+Ticker:       AIG            Security ID:  026874107
+Meeting Date: AUG 11, 2005   Meeting Type: Annual
+Record Date:  JUN 24, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director M. Aidinoff                For       For        Management
+1.2   Elect Director P. Chia                    For       For        Management
+1.3   Elect Director M. Cohen                   For       Withhold   Management
+1.4   Elect Director W. Cohen                   For       For        Management
+1.5   Elect Director M. Feldstein               For       For        Management
+1.6   Elect Director E. Futter                  For       For        Management
+1.7   Elect Director S. Hammerman               For       For        Management
+1.8   Elect Director C. Hills                   For       For        Management
+1.9   Elect Director R. Holbrooke               For       For        Management
+1.10  Elect Director D. Kanak                   For       For        Management
+1.11  Elect Director G. Miles, Jr               For       For        Management
+1.12  Elect Director M. Offit                   For       For        Management
+1.13  Elect Director M. Sullivan                For       For        Management
+1.14  Elect Director E. Tse                     For       For        Management
+1.15  Elect Director F. Zarb                    For       For        Management
+2     Ratify Auditors                           For       For        Management
+
+
+
+
+
+
+============================ PURISIMA PURE FOREIGN =============================
+
+
+ABN AMRO HOLDING NV
+
+Ticker:       ABN            Security ID:  000937102
+Meeting Date: NOV 24, 2005   Meeting Type: Special
+Record Date:  NOV 2, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     CORPORATE GOVERNANCE IN RELATION TO THE   None      For        Management
+      APPOINTMENT OF THE NEW MANAGING BOARD
+      MEMBERS.
+2     NOMINATION FOR THE APPOINTMENT OF HUIBERT For       For        Management
+      G. BOUMEESTER.
+3     NOMINATION FOR THE APPOINTMENT OF PIETER  For       For        Management
+      (PIERO) S. OVERMARS.
+4     NOMINATION FOR THE APPOINTMENT OF RONALD  For       For        Management
+      (RON) TEERLINK.
+
+
+
+
+
+============================ PURISIMA TOTAL RETURN =============================
+
+
+ALEXANDRIA REAL ESTATE EQUITIES, INC.
+
+Ticker:       ARE            Security ID:  015271109
+Meeting Date: MAY 18, 2006   Meeting Type: Annual
+Record Date:  MAR 31, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Jerry M. Sudarsky          For       Withhold   Management
+1.2   Elect Director Joel S. Marcus             For       For        Management
+1.3   Elect Director James H. Richardson        For       For        Management
+1.4   Elect Director Richard B. Jennings        For       For        Management
+1.5   Elect Director Richard H. Klein           For       For        Management
+1.6   Elect Director Martin A. Simonetti        For       For        Management
+1.7   Elect Director Alan G. Walton             For       For        Management
+1.8   Elect Director Richmond A. Wolf           For       For        Management
+2     Ratify Auditors                           For       For        Management
+
+=========================== END NPX REPORT======================================
+<PAGE>
+
+                                   SIGNATURES
+
+
+Pursuant to the requirements of the Investment Company Act of 1940, the
+registrant has duly caused this report to be signed on its behalf by the
+undersigned, thereunto duly authorized.
+
+
+(Registrant) THE PURISIMA FUNDS
+
+
+         By (Signature and Title)*  /s/ KENNETH L. FISHER
+                                  ----------------------------------------------
+                                  Kenneth L. Fisher, President
+                                  Principal Executive Officer
+
+
+Date:  August  15, 2006
+     ---------------------------------------------------------------------------
+* Print the name and title of each signing officer under his or her signature.
+
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

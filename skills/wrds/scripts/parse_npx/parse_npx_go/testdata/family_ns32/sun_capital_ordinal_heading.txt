@@ -1,0 +1,98 @@
+<SEC-DOCUMENT>0001065698-04-000036.txt : 20040830
+<SEC-HEADER>0001065698-04-000036.hdr.sgml : 20040830
+<ACCEPTANCE-DATETIME>20040830112043
+ACCESSION NUMBER:		0001065698-04-000036
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040830
+DATE AS OF CHANGE:		20040830
+EFFECTIVENESS DATE:		20040830
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SUN CAPITAL ADVISERS TRUST
+		CENTRAL INDEX KEY:			0001065698
+		IRS NUMBER:				043132283
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08879
+		FILM NUMBER:		041004194
+
+	BUSINESS ADDRESS:	
+		STREET 1:		ONE SUN LIFE EXECUTIVE PARK
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>formnpx.htm
+<TEXT>
+<HTML>
+<HEAD>
+<META CONTENT="text/html; charset=windows-1252">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>Form N-PX</TITLE>
+</HEAD>
+<BODY>
+<FONT FACE="Palatino Linotype" SIZE=2><P ALIGN="CENTER">UNITED STATES</P>
+<P ALIGN="CENTER">SECURITIES AND EXCHANGE COMMISSION</P>
+<P ALIGN="CENTER">Washington, DC  20549</P>
+<P ALIGN="CENTER"></P>
+<P ALIGN="CENTER">FORM N-PX</P>
+<P ALIGN="CENTER"></P>
+<P ALIGN="CENTER">ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT</P>
+<P ALIGN="CENTER">Investment Company</P>
+<P ALIGN="CENTER"></P>
+<P ALIGN="CENTER">Investment Company Act file number: 811-08879</P>
+<P ALIGN="CENTER"></P>
+<P>&nbsp;</P>
+<P ALIGN="CENTER">SUN CAPITAL ADVISERS TRUST</P>
+<P ALIGN="CENTER">------------------------------------------------------------</P>
+<P ALIGN="CENTER">(Exact name of registrant as specified in charter)</P>
+<P>Date of Fiscal year-end :   12/31</P>
+<P>Date of reporting period:  07/01/2003 - 06/30/2004</P>
+
+<P>&nbsp;</P>
+<B><P>Item 1. Proxy Voting Record</P>
+</B></FONT><FONT SIZE=2>
+</FONT><FONT FACE="Palatino Linotype" SIZE=2><P>Listed below is the Proxy Voting Record for each series of Sun Capital Advisers Trust</P>
+
+</FONT><B><U><FONT FACE="Palatino Linotype"><P>&nbsp;</P>
+<P></A>1.D.  Sun Capital Real Estate Fund</P>
+</B></U></FONT><FONT FACE="Palatino Linotype" SIZE=2>
+<P>&nbsp;</P></FONT>
+<FONT FACE="Palatino Linotype" SIZE=2>
+<P>&nbsp;</P>
+</FONT><B><U><FONT FACE="Palatino Linotype"><P>&nbsp;</P>
+<P>1.E.  SC Alger Growth Fund</P>
+</B></U></FONT><FONT FACE="Palatino Linotype" SIZE=2>
+<P>&nbsp;</P>
+<P>ADVANCED FIBRE COMMUNICATIONS, INC.                                             </P>
+
+<P>Ticker:       AFCI           Security ID:  00754A105                            </P>
+<P>Meeting Date: MAY 20, 2004   Meeting Type: Annual                               </P>
+<P>Record Date:  MAR 23, 2004                                                      </P>
+
+<P>#     Proposal                                  Mgt Rec   Vote Cast  Sponsor    </P>
+<P>1.1   Elect  Director John A. Schofield         For       For        Management </P>
+<P>1.2   Elect  Director Ruann F. Ernst            For       For        Management </P>
+<P>1.3   Elect  Director Frank Ianna               For       For        Management </P>
+<P>2     Ratify Auditors                           For       For        Management </P>
+
+<P>&nbsp;</P>
+<P>--------------------------------------------------------------------------------</P>
+
+<P>ADVANCED MICRO DEVICES, INC.                                                    </P>
+
+<P>Ticker:       AMD            Security ID:  007903107                            </P>
+</HTML>
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

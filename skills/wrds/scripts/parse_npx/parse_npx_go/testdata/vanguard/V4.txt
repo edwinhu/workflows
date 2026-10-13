@@ -1,0 +1,40 @@
+            <tr>
+               <td style="font-size:10pt" align="left" colSpan="5">								TICKER: 						ASVI														 &nbsp;&nbsp;&nbsp;&nbsp;SECURITY ID: 001963107<br></td>
+            </tr>
+            <tr>
+               <th style="font-size:10pt" width="10%">Proposal No</th>
+               <th style="font-size:10pt" width="55%">Proposal</th>
+               <th style="font-size:10pt" width="15%">Proposed By</th>
+               <th style="font-size:10pt" width="10%">Management Recommendation</th>
+               <th style="font-size:10pt" width="10%">Vote Cast</th>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.1</td>
+               <td style="font-size:10pt">ELECT RICHARD A. BENSON AS A DIRECTOR</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">For</td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">1.2</td>
+               <td style="font-size:10pt">ELECT JAMES H. DAHL AS A DIRECTOR</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">Management</td>
+               <td style="font-size:10pt">For</td>
+               <td style="font-size:10pt">Abstain</td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">23</td>
+               <td style="font-size:10pt">PLEASE NOTE THAT THIS IS A SHAREHOLDER PROPOSAL: APPROVE TO REMOVE KPMG AS THE AUDITORS</td>
+               <td style="font-size:10pt">Shareholder</td>
+               <td style="font-size:10pt">Against</td>
+               <td style="font-size:10pt">Against</td>
+            </tr>
+            <tr>
+               <td style="font-size:10pt">24</td>
+               <td style="font-size:10pt">PLEASE NOTE THAT THIS IS A SHAREHOLDER PROPOSAL: APPOINT MR. NIALL MURPHY AS A DIRECTOR OF THE COMPANY</td>
+               <td style="font-size:10pt">Shareholder</td>
+               <td style="font-size:10pt">Against</td>
+               <td style="font-size:10pt">Against</td>
+            </tr>
+            <tr>

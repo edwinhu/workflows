@@ -1,0 +1,26 @@
+Ticker:       MGM            Security ID:  552953101
+Meeting Date: MAY 28, 2015   Meeting Type: Annual
+Record Date:  MAR 30, 2015
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Robert H. Baldwin                 For       For          Management
+1.2   Elect William A. Bible                  For       For          Management
+1.3   Elect Mary Chris Gay                    For       For          Management
+1.4   Elect William W. Grounds                For       For          Management
+1.5   Elect Alexis M. Herman                  For       For          Management
+1.6   Elect Roland A. Hernandez               For       For          Management
+1.7   Elect Anthony Mandekic                  For       For          Management
+1.8   Elect Rose E. McKinney-James            For       For          Management
+1.9   Elect James J. Murren                   For       For          Management
+1.10  Elect Gregory M. E. Spierkel            For       For          Management
+1.11  Elect Daniel J. Taylor                  For       For          Management
+2     Ratification of Auditor                 For       For          Management
+3     Advisory Vote on Executive Compensation For       For          Management
+1.1   Elect Dissident Nominee Matthew J. Hart Do Not    DNV          Management
+                                              Vote
+1.2   Elect Dissident Nominee Richard Kincaid Do Not    DNV          Management
+                                              Vote
+1.3   Elect Dissident Nominee Jonathan Litt   Do Not    DNV          Management
+                                              Vote
+1.4   Elect Dissident Nominee Marc A. Weisman Do Not    DNV          Management
+                                              Vote

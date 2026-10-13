@@ -1,0 +1,16 @@
+
+1ST SOURCE CORPORATION
+
+Ticker:       SRCE           Security ID:  336901103
+Meeting Date: APR 20, 2023   Meeting Type: A
+Record Date:  FEB 15, 2023
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Election of Directors (Majority Voting) F         F            Management
+2     Election of Directors (Majority Voting) F         F            Management
+3     Election of Directors (Majority Voting) F         F            Management
+4     Election of Directors (Majority Voting) F         F            Management
+5     14A Executive Compensation              F         F            Management
+6     14A Executive Compensation Vote         3         3            Management
+      Frequency
+7     Ratify Appointment of Independent       F         F            Management

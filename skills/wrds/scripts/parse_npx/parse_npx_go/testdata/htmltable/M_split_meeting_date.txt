@@ -1,0 +1,32 @@
+<TABLE cellspacing=0><TR><TD valign=bottom width=166.667><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt"><B>Security Name</B></P>
+</TD><TD valign=bottom width=52.933><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt"><B>Symbol</B></P>
+</TD><TD valign=bottom width=74.667><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt"><B>CUSIP</B></P>
+</TD><TD valign=bottom width=74.667><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt"><B>Meeting</B></P>
+</TD><TD valign=bottom width=64.8><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><B>Sequence</B></P>
+</TD><TD valign=bottom width=309.333><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><B>Proposal</B></P>
+</TD><TD valign=bottom width=14.8>&nbsp;</TD><TD valign=bottom width=14.8>&nbsp;</TD><TD valign=bottom width=110.667><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt"><B>Proposed by</B></P>
+</TD><TD width=130.667><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><B>Mgt. Recommendation </B></P>
+</TD><TD valign=bottom width=89.333><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><B>Fund Voted For or Against &nbsp;Proposal</B></P>
+</TD><TD valign=bottom width=133.2 colspan=2 align="center"><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt"><B>Fund voted For or</B></P>
+</TD></TR>
+<TR><TD valign=bottom width=166.667>&nbsp;</TD><TD valign=bottom width=52.933>&nbsp;</TD><TD valign=bottom width=74.667>&nbsp;</TD><TD valign=bottom width=74.667><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt"><B>Date</B></P>
+</TD><TD valign=bottom width=64.8>&nbsp;</TD><TD valign=bottom width=309.333>&nbsp;</TD><TD valign=bottom width=14.8>&nbsp;</TD><TD valign=bottom width=14.8>&nbsp;</TD><TD valign=bottom width=110.667>&nbsp;</TD><TD width=130.667><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><B>For or Against</B></P>
+</TD><TD valign=bottom width=89.333><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><B>or Against</B></P>
+</TD><TD valign=bottom width=118.4 align="center"><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt"><B>Against </B></P>
+</TD><TD valign=bottom width=14.8 align="center">&nbsp;</TD></TR>
+<TR><TD valign=bottom width=166.667>&nbsp;</TD><TD valign=bottom width=52.933>&nbsp;</TD><TD valign=bottom width=74.667>&nbsp;</TD><TD valign=bottom width=74.667>&nbsp;</TD><TD valign=bottom width=64.8>&nbsp;</TD><TD valign=bottom width=309.333>&nbsp;</TD><TD valign=bottom width=14.8>&nbsp;</TD><TD valign=bottom width=14.8>&nbsp;</TD><TD valign=bottom width=110.667>&nbsp;</TD><TD width=130.667><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><B>Proposal</B></P>
+</TD><TD valign=bottom width=89.333><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center><B>Proposal</B></P>
+</TD><TD valign=bottom width=133.2 colspan=2 align="center"><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt"><B>Recommendation</B></P>
+</TD></TR>
+<TR><TD valign=bottom width=166.667>&nbsp;</TD><TD valign=bottom width=52.933>&nbsp;</TD><TD valign=bottom width=74.667>&nbsp;</TD><TD valign=bottom width=74.667>&nbsp;</TD><TD valign=bottom width=64.8>&nbsp;</TD><TD valign=bottom width=309.333>&nbsp;</TD><TD valign=bottom width=14.8>&nbsp;</TD><TD valign=bottom width=14.8>&nbsp;</TD><TD valign=bottom width=110.667>&nbsp;</TD><TD valign=bottom width=130.667>&nbsp;</TD><TD valign=bottom width=89.333>&nbsp;</TD><TD valign=bottom width=118.4>&nbsp;</TD><TD valign=bottom width=14.8>&nbsp;</TD></TR>
+<TR><TD valign=bottom width=166.667><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">UBS Group</P>
+</TD><TD valign=bottom width=52.933><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">UBS</P>
+</TD><TD valign=bottom width=74.667><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">H42097107</P>
+</TD><TD valign=bottom width=74.667><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=right>4/1/2022</P>
+</TD><TD valign=bottom width=64.8><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>1</P>
+</TD><TD valign=bottom width=309.333><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>Elect 11 directors</P>
+</TD><TD valign=bottom width=14.8>&nbsp;</TD><TD valign=bottom width=14.8>&nbsp;</TD><TD valign=bottom width=110.667><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>MANAGEMENT </P>
+</TD><TD valign=bottom width=130.667><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>FOR</P>
+</TD><TD valign=bottom width=89.333><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>FOR</P>
+</TD><TD valign=bottom width=118.4><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>FOR</P>
+</TD><TD valign=bottom width=14.8>&nbsp;</TD></TR>

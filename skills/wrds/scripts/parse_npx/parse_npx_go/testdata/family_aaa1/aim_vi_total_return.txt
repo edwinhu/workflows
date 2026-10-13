@@ -1,0 +1,38 @@
+ACCESSION NUMBER:		0000950129-05-008709
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050826
+DATE AS OF CHANGE:		20050826
+EFFECTIVENESS DATE:		20050826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			AIM VARIABLE INSURANCE FUNDS
+		CENTRAL INDEX KEY:			0000896435
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>h27798nvpx.txt
+<DESCRIPTION>AIM VARIABLE INSURANCE FUNDS - DATED 6/30/2005
+<TEXT>
+
+
+
+========================== AIM V.I. TOTAL RETURN FUND ==========================
+
+
+AIR PRODUCTS & CHEMICALS, INC.
+
+Ticker:       APD            Security ID:  009158106
+Meeting Date: JAN 27, 2005   Meeting Type: Annual
+Record Date:  NOV 30, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Michael J. Donahue        For       For        Management
+1.2   Elect  Director Ursula F. Fairbairn       For       For        Management
+1.3   Elect  Director John P. Jones III         For       For        Management
+1.4   Elect  Director Lawrence S. Smith         For       For        Management
+2     Ratify Auditors                           For       For        Management

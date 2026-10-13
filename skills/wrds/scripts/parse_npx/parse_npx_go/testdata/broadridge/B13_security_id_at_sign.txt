@@ -1,0 +1,68 @@
+
+--------------------------------------------------------------------------------------------------------------------------
+ JNL GOVERNMENT MONEY MARKET FUND                                                            Agenda Number:  100001184
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  46655@109
+    Meeting Type:  Special
+    Meeting Date:  15-Mar-2021
+          Ticker:
+            ISIN:
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1      To approve new investment advisory                        Mgmt          For                            For
+       agreements (IPO or the Demerger).
+
+2      To approve new investment advisory                        Mgmt          For                            For
+       agreements (IPO only).
+
+3      To approve new investment sub-advisory                    Mgmt          For                            For
+       agreements and new investment
+       sub-sub-advisory agreements (IPO or the
+       Demerger).
+
+4      To approve new investment sub-advisory                    Mgmt          For                            For
+       agreements and new investment
+       sub-sub-advisory agreements (IPO only).
+
+5      To approve new distribution agreements (IPO               Mgmt          For                            For
+       or the Demerger).
+
+6      To approve new distribution agreements (IPO               Mgmt          For                            For
+       only).
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------
+ JNL SECURITIES LENDING COLLATERAL FUND                                                      Agenda Number:  100001181
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  46628D411
+    Meeting Type:  Special
+    Meeting Date:  15-Mar-2021
+          Ticker:
+            ISIN:  US46628D4117
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1      To approve new investment advisory                        Mgmt          For                            For
+       agreements (IPO or the Demerger).
+
+2      To approve new investment advisory                        Mgmt          For                            For
+       agreements (IPO only).
+
+3      To approve new investment sub-advisory                    Mgmt          For                            For
+       agreements and new investment
+       sub-sub-advisory agreements (IPO or the
+       Demerger).
+
+4      To approve new investment sub-advisory                    Mgmt          For                            For
+       agreements and new investment
+       sub-sub-advisory agreements (IPO only).
+
+5      To approve new distribution agreements (IPO               Mgmt          For                            For
+       or the Demerger).

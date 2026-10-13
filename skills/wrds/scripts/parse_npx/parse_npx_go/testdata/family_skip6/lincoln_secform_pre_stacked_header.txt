@@ -1,0 +1,87 @@
+<SEC-DOCUMENT>0001193125-21-253580.txt : 20210823
+<SEC-HEADER>0001193125-21-253580.hdr.sgml : 20210823
+<ACCEPTANCE-DATETIME>20210823104358
+ACCESSION NUMBER:		0001193125-21-253580
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20210630
+FILED AS OF DATE:		20210823
+DATE AS OF CHANGE:		20210823
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			LINCOLN VARIABLE INSURANCE PRODUCTS TRUST
+		CENTRAL INDEX KEY:			0000914036
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000914036
+<SERIES-ID>S000042336
+<SERIES-NAME>LVIP American Century Select Mid Cap Managed Volatility Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000131265
+<CLASS-CONTRACT-NAME>Standard Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000131266
+<CLASS-CONTRACT-NAME>Service Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000914036
+<SERIES-ID>S000042337
+<SERIES-NAME>LVIP ClearBridge Franklin Select Large Cap Managed Volatility Fund
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>d186592dnpx.htm
+<DESCRIPTION>LINCOLN VARIABLE INSURANCE PRODUCTS TRUST
+<TEXT>
+<HTML><HEAD>
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER"><DIV ALIGN="LEFT">
+<PRE>
+
+LVIP American Century Select Mid Cap Managed Volatility Fund
+
+REPORTING PERIOD:    07/01/2020 - 06/30/2021
+NAME OF SERIES (AS APPLICABLE): __LVIP American Century Select Mid Cap Managed
+Volatility Fund
+
+                                                                                                                  Fund's Vote
+                                                                                                                    For or
+                                                                                                                    Against
+                                                                                                                  Proposal, or
+                                                                                                         Whether  Abstain; For
+                                                                                                          Fund    or Withhold
+                             Exchange             Shareholder                            Who Proposed     Cast     Regarding
+                             Ticker                Meeting        Summary of Matter      Matter: Issuer  Vote on  Election of
+Issuer of Portfolio Security Symbol     CUSIP#       Date              Voted On          / Shareholder   Matter    Directors
+---------------------------- --------  ---------- -----------  ------------------------- --------------  -------  ------------
+     Constellation                                             Elect Director Christy
+     Brands, Inc.              STZ     21036P108  21-Jul-20    Clark                      Management      Yes      For
+     Constellation                                             Elect Director Jennifer
+     Brands, Inc.              STZ     21036P108  21-Jul-20    M. Daniels                 Management      Yes      For
+</PRE>
+ </DIV>
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER"><DIV ALIGN="LEFT">
+<PRE>
+
+Constellation                                  Elect Director Judy A.
+Brands, Inc.       STZ   21036P108  21-Jul-20  Schmeling                Management  Yes  Withhold  Yes
+Constellation                                  Ratify KPMG LLP as
+Brands, Inc.       STZ   21036P108  21-Jul-20  Auditor                  Management  Yes  For       No
+Constellation                                  Advisory Vote to Ratify
+Brands, Inc.                                   Named Executive
+                   STZ   21036P108  21-Jul-20  Officers' Compensation   Management  Yes  For       No
+</PRE>
+ </DIV>
+</BODY></HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

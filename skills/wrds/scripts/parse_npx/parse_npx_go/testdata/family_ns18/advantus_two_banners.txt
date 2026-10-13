@@ -1,0 +1,60 @@
+<SEC-DOCUMENT>0001206774-04-001285.txt : 20040831
+<SEC-HEADER>0001206774-04-001285.hdr.sgml : 20040831
+<ACCEPTANCE-DATETIME>20040831152515
+ACCESSION NUMBER:		0001206774-04-001285
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040831
+DATE AS OF CHANGE:		20040831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			ADVANTUS SERIES FUND INC
+		CENTRAL INDEX KEY:			0000766351
+		STATE OF INCORPORATION:			MN
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>as021_0000766351.txt
+<DESCRIPTION>FORM N-PX
+<TEXT>
+<PAGE>
+
+<TABLE>
+<S>    <C>                                                            <C>        <C>        <C>
+ASF-Index 400
+
+- -------------------------------------------------------------------------------------------------------
+AGL RESOURCES INC.                                                             Agenda: 932099826
+      CUSIP: 001204106                        Meeting Type: Annual
+     Ticker: ATG                              Meeting Date: 4/28/2004            ISIN:
+                                                                                            For/Against
+Proposal                                                              Type       Vote        Management
+- -------------------------------------------------------------------------------------------------------
+01     HENRY C. WOLF                                                   Mgmt         For           For
+       THOMAS D. BELL, JR.                                             Mgmt         For           For
+       MICHAEL J. DURHAM                                               Mgmt         For           For
+       D. RAYMOND RIDDLE                                               Mgmt         For           For
+       FELKER W. WARD, JR.                                             Mgmt         For           For
+<PAGE>
+
+ASF-Index 500
+
+- -------------------------------------------------------------------------------------------------------
+ADC TELECOMMUNICATIONS, INC.                                                   Agenda: 932086920
+      CUSIP: 000886101                        Meeting Type: Annual
+     Ticker: ADCT                             Meeting Date: 3/2/2004             ISIN:
+                                                                                            For/Against
+Proposal                                                              Type       Vote        Management
+- -------------------------------------------------------------------------------------------------------
+01     ROBERT E. SWITZ                                                 Mgmt         For           For
+       ROBERT ANNUNZIATA                                               Mgmt         For           For
+       JOHN J. BOYLE III                                               Mgmt         For           For
+       LARRY W. WANGBERG                                               Mgmt         For           For
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

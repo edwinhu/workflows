@@ -1,0 +1,54 @@
+<SEC-DOCUMENT>0000950116-06-000724.txt : 20060307
+<SEC-HEADER>0000950116-06-000724.hdr.sgml : 20060307
+<ACCEPTANCE-DATETIME>20060307163447
+ACCESSION NUMBER:		0000950116-06-000724
+CONFORMED SUBMISSION TYPE:	N-PX/A
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20060307
+DATE AS OF CHANGE:		20060307
+EFFECTIVENESS DATE:		20060307
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			WT MUTUAL FUND
+		CENTRAL INDEX KEY:			0000927413
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX/A
+<SEQUENCE>1
+<FILENAME>n-pxa.txt
+<DESCRIPTION>N-PX/A
+<TEXT>
+******************************* FORM N-PX/A REPORT *****************************
+
+ICA File Number: 811-08648
+Reporting Period: 07/01/2004 - 06/30/2005
+WT Mutual Fund
+===================== WILMINGTON LARGE CAP CORE PORTFOLIO ======================
+
+
+3M CO
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 10, 2005   Meeting Type: Annual
+Record Date:  MAR 11, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Vance D. Coffman           For       For        Management
+1.2   Elect Director Rozanne L. Ridgway         For       For        Management
+1.3   Elect Director Louis W. Sullivan          For       For        Management
+==================== WILMINGTON LARGE CAP GROWTH PORTFOLIO =====================
+
+
+3M CO
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 10, 2005   Meeting Type: Annual
+Record Date:  MAR 11, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Vance D. Coffman           For       For        Management
+1.2   Elect Director Rozanne L. Ridgway         For       For        Management
+1.3   Elect Director Louis W. Sullivan          For       For        Management

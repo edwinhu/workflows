@@ -1,0 +1,90 @@
+<SEC-DOCUMENT>0001193125-21-260148.txt : 20210830
+ACCESSION NUMBER:		0001193125-21-260148
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20210630
+FILED AS OF DATE:		20210830
+DATE AS OF CHANGE:		20210830
+FILER:
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			EQ ADVISORS TRUST
+		CENTRAL INDEX KEY:			0001027263
+		FORM TYPE:		N-PX
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001027263
+<SERIES-ID>S000009044
+<SERIES-NAME>1290 VT Equity Income Portfolio
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001027263
+<SERIES-ID>S000009045
+<SERIES-NAME>1290 VT Socially Responsible Portfolio
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001027263
+<SERIES-ID>S000009047
+<SERIES-NAME>EQ/International Core Managed Volatility Portfolio
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001027263
+<SERIES-ID>S000009048
+<SERIES-NAME>EQ/Capital Group Research Portfolio
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001027263
+<SERIES-ID>S000009051
+<SERIES-NAME>EQ/All Asset Growth Allocation Portfolio
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001027263
+<SERIES-ID>S000010734
+<SERIES-NAME>EQ/Common Stock Index Portfolio
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>d216357dnpx.htm
+<DESCRIPTION>EQ ADVISORS TRUST N-PX
+<TEXT>
+<PRE>
+
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-07953
+Reporting Period: 07/01/2020 - 06/30/2021
+EQ Advisors Trust
+========================= 1290 VT Micro Cap Portfolio ==========================
+
+
+1-800-FLOWERS.COM, INC.
+
+Ticker:       FLWS           Security ID:  68243Q106
+Meeting Date: DEC 09, 2020   Meeting Type: Annual
+Record Date:  OCT 13, 2020
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+2     Advisory Vote to Ratify Named           For       For          Management
+      Executive Officers' Compensation
+3     Ratify KPMG LLP as Auditors             For       For          Management
+4     Amend Omnibus Stock Plan                For       For          Management
+5A    Increase Authorized Common Stock        For       For          Management
+5B    Authorize a New Class of Non-Voting     For       For          Management
+      Common Stock
+
+
+--------------------------------------------------------------------------------
+
+TRIUMPH BANCORP, INC.
+
+Ticker:       TBK            Security ID:  89679E300
+Meeting Date: APR 27, 2021   Meeting Type: Annual
+Record Date:  FEB 26, 2021
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Director Carlos M. Sepulveda, Jr. For       For          Management
+1.2   Elect Director Aaron P. Graft           For       For          Management

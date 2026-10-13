@@ -160,15 +160,25 @@ func TestChassis(t *testing.T) {
 
 	t.Run("vote row serializes in voteColumns order", func(t *testing.T) {
 		// Each field is set to the name of the column it must occupy, so the
-		// serialized line is the column order itself.
+		// serialized line is the column order itself. Only string-kind fields
+		// are counted against voteColumns: every serialized column is a string,
+		// so a non-string field (a bool like FundFromAccountCell) is parser-only
+		// bookkeeping that TSV() never reads, not an extra column this test must
+		// track.
 		var r VoteRow
 		v := reflect.ValueOf(&r).Elem()
-		if v.NumField() != len(voteColumns) {
-			t.Fatalf("VoteRow has %d fields but voteColumns has %d entries",
-				v.NumField(), len(voteColumns))
-		}
+		var strFields []int
 		for i := 0; i < v.NumField(); i++ {
-			v.Field(i).SetString(voteColumns[i])
+			if v.Field(i).Kind() == reflect.String {
+				strFields = append(strFields, i)
+			}
+		}
+		if len(strFields) != len(voteColumns) {
+			t.Fatalf("VoteRow has %d string fields but voteColumns has %d entries",
+				len(strFields), len(voteColumns))
+		}
+		for i, fi := range strFields {
+			v.Field(fi).SetString(voteColumns[i])
 		}
 		got := r.TSV()
 		want := strings.Join(voteColumns, "\t")

@@ -1,0 +1,111 @@
+<SEC-DOCUMENT>0001829126-23-005165.txt : 20230807
+<SEC-HEADER>0001829126-23-005165.hdr.sgml : 20230807
+<ACCEPTANCE-DATETIME>20230807143636
+ACCESSION NUMBER:		0001829126-23-005165
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20230630
+FILED AS OF DATE:		20230807
+DATE AS OF CHANGE:		20230807
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			AdvisorShares Trust
+		CENTRAL INDEX KEY:			0001408970
+		IRS NUMBER:				260636087
+		STATE OF INCORPORATION:			DE
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001408970
+<SERIES-ID>S000071547
+<SERIES-NAME>AdvisorShares Restaurant ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000226856
+<CLASS-CONTRACT-NAME>AdvisorShares Restaurant ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>EATZ
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001408970
+<SERIES-ID>S000072084
+<SERIES-NAME>AdvisorShares Gerber Kawasaki ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000227805
+<CLASS-CONTRACT-NAME>AdvisorShares Gerber Kawasaki ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>GK
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>advisorshares_npx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<P STYLE="text-align: center; font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt"><FONT STYLE="font-family: Times New Roman, Times, Serif">=========================== ADVISORSHARES GERBER KAWASAKI ETF =======================</FONT></P>
+<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" STYLE="font: 10pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+  <TR STYLE="page-break-inside: avoid; vertical-align: top; background-color: Gainsboro">
+    <TD STYLE="padding-top: 1pt; border: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; vertical-align: bottom; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt"><B>Account Name</B></FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; vertical-align: bottom; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt"><B>Company<BR> Name</B></FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; vertical-align: bottom; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt"><B>Security ID</B></FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; vertical-align: bottom; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt"><B>Ticker<BR> Symbol</B></FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; vertical-align: bottom; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt"><B>Meeting<BR> Date</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="padding-top: 1pt; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; vertical-align: bottom; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt"><B>Director Label</B></FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; vertical-align: bottom; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt"><B>Director Name</B></FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; vertical-align: bottom; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt"><B>Proposed By</B></FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; vertical-align: bottom; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt"><B>Proposal Label</B></FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; vertical-align: bottom; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt"><B>Proposal Long Text</B></FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; vertical-align: bottom; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt"><B>Management<BR> Recommendation</B></FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; vertical-align: bottom; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt"><B>Recorded<BR> Vote</B></FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; vertical-align: bottom; text-align: center; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt"><B>Compare Vote With/Against Management</B></FONT></TD></TR>
+  <TR STYLE="page-break-inside: avoid; font: 10pt Times New Roman, Times, Serif; vertical-align: top">
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: left; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">ADVISORSHARES GERBER KAWASAKI ETF</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: left; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">ARCIMOTO, INC.</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">039587100</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">FUV</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">29-Jul-2022</FONT></TD>
+    <TD COLSPAN="2" STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">1.</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">Terry L. Becker</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">Management</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">1.</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: left; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">DIRECTOR</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">For</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">For</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">With Management</FONT></TD></TR>
+  <TR STYLE="page-break-inside: avoid; font: 10pt Times New Roman, Times, Serif; vertical-align: top">
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: left; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">ADVISORSHARES GERBER KAWASAKI ETF</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: left; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">ARCIMOTO, INC.</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">039587100</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">FUV</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">29-Jul-2022</FONT></TD>
+    <TD COLSPAN="2" STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">1.</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">Nancy E. Calderon</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">Management</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">1.</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: left; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">DIRECTOR</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">For</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">For</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">With Management</FONT></TD></TR>
+  <TR STYLE="page-break-inside: avoid; font: 10pt Times New Roman, Times, Serif">
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: left; vertical-align: top; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">RK2404400N</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: left; vertical-align: top; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">ROBLOX CORPORATION</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; vertical-align: top; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">771049103</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; vertical-align: top; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">RBLX</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; vertical-align: top; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">25-May-2023</FONT></TD>
+    <TD COLSPAN="2" STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; vertical-align: bottom; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; vertical-align: bottom; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; vertical-align: top; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">Management</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; vertical-align: top; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">3.</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: left; vertical-align: top; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">Ratification of Independent Registered Public Accounting Firm.</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; vertical-align: top; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">For</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; text-align: center; vertical-align: top; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">For</FONT></TD>
+    <TD STYLE="padding-top: 1pt; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; vertical-align: top; text-align: center; padding-bottom: 1pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">With Management</FONT></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>

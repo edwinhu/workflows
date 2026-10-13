@@ -1,0 +1,90 @@
+
+
+<!-- Field: Page; Sequence: 1 -->
+    <DIV STYLE="margin-bottom: 6pt; border-bottom: Black 1pt solid"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <DIV STYLE="break-before: page; margin-top: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <!-- Field: /Page -->
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">ITEM 1. PROXY VOTING RECORD.</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: bold 11pt Arial, Helvetica, Sans-Serif; margin: 0; text-align: justify">Fund Name: Karner Blue</P>
+
+<P STYLE="font: bold 11pt Arial, Helvetica, Sans-Serif; margin: 0; text-align: justify">Proxy Voting Record</P>
+
+<P STYLE="font: bold 11pt Arial, Helvetica, Sans-Serif; margin: 0 0 8pt; text-align: justify">July 1, 2022 - June 30, 2023</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 9pt Arial, Helvetica, Sans-Serif">
+  <TR STYLE="vertical-align: top">
+    <TD STYLE="font-weight: bold; text-align: left; width: 10%">Company Name</TD>
+    <TD STYLE="font-weight: bold; text-align: left; width: 9%">Ticker</TD>
+    <TD STYLE="font-weight: bold; text-align: left; width: 9%">Primary CUSIP</TD>
+    <TD STYLE="font-weight: bold; text-align: left; width: 9%">Meeting Date</TD>
+    <TD STYLE="font-weight: bold; text-align: left; width: 9%">Proposal Number</TD>
+    <TD STYLE="font-weight: bold; text-align: left; width: 9%">Proposal Text</TD>
+    <TD STYLE="font-weight: bold; text-align: left; width: 9%">Proponent</TD>
+    <TD STYLE="font-weight: bold; text-align: left; width: 9%">Voted</TD>
+    <TD STYLE="font-weight: bold; text-align: left; width: 9%">Vote Instruction</TD>
+    <TD STYLE="font-weight: bold; text-align: left; width: 9%">Vote Against Management</TD>
+    <TD STYLE="font-weight: bold; text-align: left; width: 9%">Meeting Type</TD></TR>
+  <TR STYLE="vertical-align: top">
+    <TD STYLE="text-align: left">ABB Ltd.</TD>
+    <TD STYLE="text-align: left">ABBN</TD>
+    <TD STYLE="text-align: left">H0010V101</TD>
+    <TD STYLE="text-align: left">&nbsp;07-Sep-22</TD>
+    <TD STYLE="text-align: left">1</TD>
+    <TD STYLE="text-align: left">Approve Spin-Off of Accelleron Industries AG</TD>
+    <TD STYLE="text-align: left">Management</TD>
+    <TD STYLE="text-align: left">Yes</TD>
+    <TD STYLE="text-align: left">For</TD>
+    <TD STYLE="text-align: left">No</TD>
+    <TD STYLE="text-align: left">Extraordinary Shareholders</TD></TR>
+  <TR STYLE="vertical-align: top">
+    <TD STYLE="text-align: left">ABB Ltd.</TD>
+    <TD STYLE="text-align: left">ABBN</TD>
+    <TD STYLE="text-align: left">H0010V101</TD>
+    <TD STYLE="text-align: left">&nbsp;07-Sep-22</TD>
+    <TD STYLE="text-align: left">2</TD>
+    <TD STYLE="text-align: left">Transact Other Business (Voting)</TD>
+    <TD STYLE="text-align: left">Management</TD>
+    <TD STYLE="text-align: left">Yes</TD>
+    <TD STYLE="text-align: left">Against</TD>
+    <TD STYLE="text-align: left">Yes</TD>
+    <TD STYLE="text-align: left">Extraordinary Shareholders</TD></TR>
+  <TR STYLE="vertical-align: top">
+    <TD STYLE="text-align: left">Prologis, Inc.</TD>
+    <TD STYLE="text-align: left">PLD</TD>
+    <TD STYLE="text-align: left">74340W103</TD>
+    <TD STYLE="text-align: left">&nbsp;28-Sep-22</TD>
+    <TD STYLE="text-align: left">1</TD>
+    <TD STYLE="text-align: left">Issue Shares in Connection with Merger</TD>
+    <TD STYLE="text-align: left">Management</TD>
+    <TD STYLE="text-align: left">Yes</TD>
+    <TD STYLE="text-align: left">For</TD>
+    <TD STYLE="text-align: left">No</TD>
+    <TD STYLE="text-align: left">Special</TD></TR>
+  <TR STYLE="vertical-align: top">
+    <TD STYLE="text-align: left">Prologis, Inc.</TD>
+    <TD STYLE="text-align: left">PLD</TD>
+    <TD STYLE="text-align: left">74340W103</TD>
+    <TD STYLE="text-align: left">&nbsp;28-Sep-22</TD>
+    <TD STYLE="text-align: left">2</TD>
+    <TD STYLE="text-align: left">Adjourn Meeting</TD>
+    <TD STYLE="text-align: left">Management</TD>
+    <TD STYLE="text-align: left">Yes</TD>
+    <TD STYLE="text-align: left">For</TD>
+    <TD STYLE="text-align: left">No</TD>
+    <TD STYLE="text-align: left">Special</TD></TR>
+  <TR STYLE="vertical-align: top">
+    <TD STYLE="text-align: left">The Procter &amp; Gamble Company</TD>
+    <TD STYLE="text-align: left">PG</TD>
+    <TD STYLE="text-align: left">742718109</TD>
+    <TD STYLE="text-align: left">&nbsp;11-Oct-22</TD>
+    <TD STYLE="text-align: left">1a</TD>
+    <TD STYLE="text-align: left">Elect Director B. Marc Allen</TD>
+    <TD STYLE="text-align: left">Management</TD>
+    <TD STYLE="text-align: left">Yes</TD>
+</TABLE>

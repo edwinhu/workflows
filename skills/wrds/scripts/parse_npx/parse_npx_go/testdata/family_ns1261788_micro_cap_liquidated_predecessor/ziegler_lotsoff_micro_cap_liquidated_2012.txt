@@ -1,0 +1,385 @@
+<SEC-DOCUMENT>0001398344-12-002719.txt : 20120823
+<SEC-HEADER>0001398344-12-002719.hdr.sgml : 20120823
+<ACCEPTANCE-DATETIME>20120823105037
+ACCESSION NUMBER:		0001398344-12-002719
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20120630
+FILED AS OF DATE:		20120823
+DATE AS OF CHANGE:		20120823
+EFFECTIVENESS DATE:		20120823
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			ZIEGLER LOTSOFF CAPITAL MANAGEMENT INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0001261788
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			0930
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-21422
+		FILM NUMBER:		121051236
+
+	BUSINESS ADDRESS:	
+		STREET 1:		20 NORTH CLARK STREET
+		STREET 2:		34TH FL
+		CITY:			CHICAGO
+		STATE:			IL
+		ZIP:			60602-4019
+		BUSINESS PHONE:		3123681442
+
+	MAIL ADDRESS:	
+		STREET 1:		20 NORTH CLARK STREET
+		STREET 2:		34TH FL
+		CITY:			CHICAGO
+		STATE:			IL
+		ZIP:			60602-4019
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	LOTSOFF CAPITAL MANAGEMENT INVESTMENT TRUST
+		DATE OF NAME CHANGE:	20050915
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	LOTSOFF CAPITAL MANAGEMENT EQUITY TRUST
+		DATE OF NAME CHANGE:	20030828
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001261788
+<SERIES-ID>S000000850
+<SERIES-NAME>LOTSOFF CAPITAL MANAGEMENT MICRO CAP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002465
+<CLASS-CONTRACT-NAME>LOTSOFF CAPITAL MANAGEMENT MICRO CAP FUND
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001261788
+<SERIES-ID>S000034546
+<SERIES-NAME>ZIEGLER LOTSOFF CAPITAL MANAGEMENT LONG/SHORT CREDIT FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000106225
+<CLASS-CONTRACT-NAME>ZIEGLER LOTSOFF CAPITAL MANAGEMENT LONG/SHORT CREDIT FUND
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>fp0005366_npx.htm
+<TEXT>
+<html>
+<head>
+    <title>fp0005366_npx.htm</title>
+    <!--Licensed to: FilePoint EDGAR Services LLC-->
+    <!--Document Created using EDGARizerAgent 5.4.3.1-->
+    <!--Copyright 1995 - 2009 Thomson Reuters. All rights reserved.-->
+</head>
+<body bgcolor="#ffffff" style="DISPLAY: inline; FONT-FAMILY: Times New Roman; FONT-SIZE: 11pt">
+<div>&#160;</div>
+
+<div>
+</div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="justify">&#160;</div>
+
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: Times New Roman; FONT-SIZE: 11pt; FONT-WEIGHT: bold">Item 1. Proxy Voting Record</font></div>
+</div>
+
+<div>&#160;</div>
+
+<div>
+<div align="left">
+<table cellpadding="4" cellspacing="0" width="100%" style="FONT-FAMILY: times new roman; FONT-SIZE: 10pt; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">
+<tr>
+<td align="left" valign="bottom" width="15%" style="BORDER-BOTTOM: black 2px solid">
+<div style="TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Company Name</font></div>
+</td>
+<td valign="bottom" width="6%" style="BORDER-BOTTOM: black 2px solid; TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Meeting Date</font></div>
+</td>
+<td valign="bottom" width="6%" style="BORDER-BOTTOM: black 2px solid; TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Record Date</font></div>
+</td>
+<td valign="bottom" width="7%" style="BORDER-BOTTOM: black 2px solid; TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Ticker Symbol</font></div>
+</td>
+<td valign="bottom" width="8%" style="BORDER-BOTTOM: black 2px solid; TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Security</font></div>
+</td>
+<td valign="bottom" width="4%" style="BORDER-BOTTOM: black 2px solid; TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Item</font></div>
+</td>
+<td valign="bottom" width="27%" style="BORDER-BOTTOM: black 2px solid; TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Proposal</font></div>
+</td>
+<td valign="bottom" width="9%" style="BORDER-BOTTOM: black 2px solid; TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Type</font></div>
+</td>
+<td valign="bottom" width="1%" style="BORDER-BOTTOM: black 2px solid; TEXT-ALIGN: left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">&#160;</font></td>
+<td valign="bottom" width="11%" style="BORDER-BOTTOM: black 2px solid; TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Management Recommendation</font></div>
+</td>
+<td valign="bottom" width="6%" style="BORDER-BOTTOM: black 2px solid; TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Vote</font></div>
+</td>
+</tr><tr bgcolor="gainsboro">
+<td valign="top" width="15%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">ORTHOVITA, INC.</font></div>
+</td>
+<td valign="top" width="6%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">20110706</font></div>
+</td>
+<td valign="top" width="6%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">20110421</font></div>
+</td>
+<td valign="top" width="7%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">VITA</font></div>
+</td>
+<td valign="top" width="8%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">68750U102</font></div>
+</td>
+<td valign="top" width="4%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">2</font></div>
+</td>
+<td valign="top" width="27%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">TO APPROVE THE AMENDMENT TO THE AMENDED AND RESTATED EMPLOYEE STOCK PURCHASE PLAN WHICH INCREASES BY 300,000 THE NUMBER OF SHARES RESERVED FOR ISSUANCE THEREUNDER.</font></div>
+</td>
+<td valign="top" width="9%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Management</font></div>
+</td>
+<td valign="top" width="1%" style="TEXT-ALIGN: left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">&#160;</font></td>
+<td valign="top" width="11%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">For</font></div>
+</td>
+<td valign="top" width="6%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">For</font></div>
+</td>
+</tr><tr bgcolor="white">
+<td valign="top" width="15%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">ORTHOVITA, INC.</font></div>
+</td>
+<td valign="top" width="6%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">20110706</font></div>
+</td>
+<td valign="top" width="6%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">20110421</font></div>
+</td>
+<td valign="top" width="7%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">VITA</font></div>
+</td>
+<td valign="top" width="8%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">68750U102</font></div>
+</td>
+<td valign="top" width="4%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">3</font></div>
+</td>
+<td valign="top" width="27%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">TO RATIFY THE APPOINTMENT OF KPMG LLP AS OUR INDEPENDENT REGISTERED PUBLIC ACCOUNTING FIRM FOR THE YEAR ENDING DECEMBER 31, 2011.</font></div>
+</td>
+<td valign="top" width="9%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Management</font></div>
+</td>
+<td valign="top" width="1%" style="TEXT-ALIGN: left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">&#160;</font></td>
+<td valign="top" width="11%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">For</font></div>
+</td>
+<td valign="top" width="6%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">For</font></div>
+</td>
+</tr><tr bgcolor="gainsboro">
+<td valign="top" width="15%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">ORTHOVITA, INC.</font></div>
+</td>
+<td valign="top" width="6%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">20110706</font></div>
+</td>
+<td valign="top" width="6%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">20110421</font></div>
+</td>
+<td valign="top" width="7%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">VITA</font></div>
+</td>
+<td valign="top" width="8%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">68750U102</font></div>
+</td>
+<td valign="top" width="4%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">4</font></div>
+</td>
+<td valign="top" width="27%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">TO APPROVE, IN AN ADVISORY VOTE, THE RESOLUTION RELATING TO THE COMPANY'S EXECUTIVE COMPENSATION.</font></div>
+</td>
+<td valign="top" width="9%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Management</font></div>
+</td>
+<td valign="top" width="1%" style="TEXT-ALIGN: left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">&#160;</font></td>
+<td valign="top" width="11%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">For</font></div>
+</td>
+<td valign="top" width="6%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">For</font></div>
+</td>
+</tr></table>
+</div>
+
+<div>&#160;</div>
+
+<div>
+<div>The Micro Cap Fund was liquidated and ceased operations after the close of trading on November 15, 2011.</div>
+</div>
+
+<div>&#160;</div>
+
+<div>
+<div align="left">
+<table cellpadding="4" cellspacing="0" width="100%" style="FONT-FAMILY: times new roman; FONT-SIZE: 10pt; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">
+<tr>
+<td valign="bottom" width="15%" style="BORDER-BOTTOM: black 2px solid; TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Company Name</font></div>
+</td>
+<td valign="bottom" width="6%" style="BORDER-BOTTOM: black 2px solid; TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Meeting Date</font></div>
+</td>
+<td valign="bottom" width="6%" style="BORDER-BOTTOM: black 2px solid; TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Record Date</font></div>
+</td>
+<td valign="bottom" width="7%" style="BORDER-BOTTOM: black 2px solid; TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Ticker Symbol</font></div>
+</td>
+<td valign="bottom" width="8%" style="BORDER-BOTTOM: black 2px solid; TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Security</font></div>
+</td>
+<td valign="bottom" width="4%" style="BORDER-BOTTOM: black 2px solid; TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Item</font></div>
+</td>
+<td valign="bottom" width="27%" style="BORDER-BOTTOM: black 2px solid; TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Proposal</font></div>
+</td>
+<td valign="bottom" width="9%" style="BORDER-BOTTOM: black 2px solid; TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Type</font></div>
+</td>
+<td valign="bottom" width="1%" style="BORDER-BOTTOM: black 2px solid; TEXT-ALIGN: left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">&#160;</font></td>
+<td valign="bottom" width="11%" style="BORDER-BOTTOM: black 2px solid; TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Management Recommendation</font></div>
+</td>
+<td valign="bottom" width="6%" style="BORDER-BOTTOM: black 2px solid; TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Vote</font></div>
+</td>
+</tr><tr bgcolor="gainsboro">
+<td valign="top" width="15%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">AMERICAN CAPITAL AGENCY CORP.</font></div>
+</td>
+<td valign="top" width="6%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">20120501</font></div>
+</td>
+<td valign="top" width="6%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">20120309</font></div>
+</td>
+<td valign="top" width="7%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">AGNC</font></div>
+</td>
+<td valign="top" width="8%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">02503X105</font></div>
+</td>
+<td valign="top" width="4%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">1-01</font></div>
+</td>
+<td valign="top" width="27%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">ELECTION OF DIRECTOR: ROBERT M. COUCH</font></div>
+</td>
+<td valign="top" width="9%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Management</font></div>
+</td>
+<td valign="top" width="1%" style="TEXT-ALIGN: left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">&#160;</font></td>
+<td valign="top" width="11%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">For</font></div>
+</td>
+<td valign="top" width="6%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">*</font></div>
+</td>
+</tr><tr bgcolor="white">
+<td valign="top" width="15%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">AMERICAN CAPITAL AGENCY CORP.</font></div>
+</td>
+<td valign="top" width="6%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">20120501</font></div>
+</td>
+<td valign="top" width="6%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">20120309</font></div>
+</td>
+<td valign="top" width="7%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">AGNC</font></div>
+</td>
+<td valign="top" width="8%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">02503X105</font></div>
+</td>
+<td valign="top" width="4%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">1-02</font></div>
+</td>
+<td valign="top" width="27%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">ELECTION OF DIRECTOR: MORRIS A. DAVIS</font></div>
+</td>
+<td valign="top" width="9%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Management</font></div>
+</td>
+<td valign="top" width="1%" style="TEXT-ALIGN: left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">&#160;</font></td>
+<td valign="top" width="11%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">For</font></div>
+</td>
+<td valign="top" width="6%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">*</font></div>
+</td>
+</tr><tr bgcolor="gainsboro">
+<td valign="top" width="15%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">AMERICAN CAPITAL AGENCY CORP.</font></div>
+</td>
+<td valign="top" width="6%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">20120501</font></div>
+</td>
+<td valign="top" width="6%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">20120309</font></div>
+</td>
+<td valign="top" width="7%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">AGNC</font></div>
+</td>
+<td valign="top" width="8%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">02503X105</font></div>
+</td>
+<td valign="top" width="4%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">1-03</font></div>
+</td>
+<td valign="top" width="27%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">ELECTION OF DIRECTOR: RANDY E. DOBBS</font></div>
+</td>
+<td valign="top" width="9%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">Management</font></div>
+</td>
+<td valign="top" width="1%" style="TEXT-ALIGN: left"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">&#160;</font></td>
+<td valign="top" width="11%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">For</font></div>
+</td>
+<td valign="top" width="6%" style="TEXT-ALIGN: left">
+<div style="TEXT-ALIGN: left; TEXT-INDENT: 0pt; DISPLAY: block; MARGIN-LEFT: 0pt; MARGIN-RIGHT: 0pt"><font style="DISPLAY: inline; FONT-FAMILY: times new roman; FONT-SIZE: 10pt">*</font></div>
+</td>
+</tr></table>
+</div>
+</div>
+
+<div>&#160;</div>
+
+<div>
+<div>* The Adviser did not vote any proxies on behalf of the Long/Short Credit Fund during the reporting period.</div>
+
+<div>&#160;</div>
+</div>
+</body>
+</html>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

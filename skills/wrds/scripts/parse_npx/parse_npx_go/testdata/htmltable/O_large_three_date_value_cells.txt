@@ -1,0 +1,286 @@
+<TABLE border=0 width=576 cellspacing=1 cellpadding=0>
+			<TR valign="bottom">
+				<TD nowrap colspan=5 align=left><FONT size=2>======================== SMALL-CAP VALUE FUND ==========================</FONT>&nbsp;
+	</TD>
+			</TR>
+			<TR>
+	<TD colspan=5>
+&nbsp;
+	</TD>
+</TR>
+			<TR valign="bottom">
+	<TD width=22% nowrap colspan=2 align=left>
+<FONT size=2>3D SYSTEMS CORP.</FONT>&nbsp;
+	</TD>
+	<TD width=4% nowrap align=left>
+&nbsp;
+	</TD>
+	<TD width=9% nowrap align=left>
+&nbsp;
+	</TD>
+	<TD width=63% nowrap align=left>
+&nbsp;
+	</TD>
+</TR>
+<TR>
+	<TD colspan=5 align="left">
+&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD width=13% nowrap align=left>
+<FONT size=2>Ticker:</FONT>&nbsp;
+	</TD>
+	<TD width=9% nowrap align=left>
+<FONT size=2>TDSC</FONT>&nbsp;
+	</TD>
+	<TD width=4% nowrap align=left>
+&nbsp;
+	</TD>
+	<TD width=9% nowrap align=left>
+&nbsp;
+	</TD>
+	<TD width=63% nowrap align=left>
+<FONT size=2>Security ID: 88554D205</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+				<td width=13% nowrap align=left><font size=2>Meeting Date:</font>&nbsp;</td>
+				<td width=6% nowrap align=left><font size=2>MAY</font>&nbsp;</td>
+				<TD width=4% nowrap align=left>
+<FONT size=2>17,</FONT>&nbsp;
+	</TD>
+				<TD width=9% nowrap align=left>
+<FONT size=2>2005</FONT>&nbsp;
+	</TD>
+	<TD width=63% nowrap align=left>
+<FONT size=2>Meeting Type: Annual</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+				<td width=13% nowrap align=left><font size=2>Record Date:</font>&nbsp;</td>
+				<td width=6% nowrap align=left><font size=2>MAR</font>&nbsp;</td>
+				<TD width=4% nowrap align=left>
+<FONT size=2>21,</FONT>&nbsp;
+	</TD>
+				<TD width=9% nowrap align=left>
+<FONT size=2>2005</FONT>&nbsp;
+	</TD>
+	<TD width=63% nowrap align=left>
+&nbsp;
+	</TD>
+</TR>
+</TABLE><BR>
+<TABLE border=0 width=576 cellspacing=1 cellpadding=0>
+<TR valign="bottom">
+	<TD width=5% nowrap align=left>
+<FONT size=2>#</FONT>&nbsp;
+	</TD>
+	<TD width=53% nowrap colspan=2 align=left>
+<FONT size=2>Proposal</FONT>&nbsp;
+	</TD>
+	<TD width=12% nowrap align=left>
+<FONT size=2>Mgt Rec</FONT>&nbsp;
+	</TD>
+	<TD width=14% nowrap align=left>
+<FONT size=2>Vote Cast</FONT>&nbsp;
+	</TD>
+	<TD width=13% nowrap align=left>
+<FONT size=2>Sponsor</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD width=5% nowrap align=left>
+<FONT size=2>1.1</FONT>&nbsp;
+	</TD>
+	<TD width=9% nowrap align=left>
+<FONT size=2>Elect</FONT>&nbsp;
+	</TD>
+	<TD width=44% nowrap align=left>
+<FONT size=2>Director Miriam V. Gold</FONT>&nbsp;
+	</TD>
+	<TD width=12% nowrap align=left>
+<FONT size=2>For</FONT>&nbsp;
+	</TD>
+	<TD width=14% nowrap align=left>
+<FONT size=2>For</FONT>&nbsp;
+	</TD>
+	<TD width=13% nowrap align=left>
+<FONT size=2>Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD width=5% nowrap align=left>
+<FONT size=2>1.2</FONT>&nbsp;
+	</TD>
+	<TD width=9% nowrap align=left>
+<FONT size=2>Elect</FONT>&nbsp;
+	</TD>
+	<TD width=44% nowrap align=left>
+<FONT size=2>Director Jim D. Kever</FONT>&nbsp;
+	</TD>
+	<TD width=12% nowrap align=left>
+<FONT size=2>For</FONT>&nbsp;
+	</TD>
+	<TD width=14% nowrap align=left>
+<FONT size=2>For</FONT>&nbsp;
+	</TD>
+	<TD width=13% nowrap align=left>
+<FONT size=2>Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD width=5% nowrap align=left>
+<FONT size=2>1.3</FONT>&nbsp;
+	</TD>
+	<TD width=9% nowrap align=left>
+<FONT size=2>Elect</FONT>&nbsp;
+	</TD>
+	<TD width=44% nowrap align=left>
+<FONT size=2>Director Kevin S. Moore</FONT>&nbsp;
+	</TD>
+	<TD width=12% nowrap align=left>
+<FONT size=2>For</FONT>&nbsp;
+	</TD>
+	<TD width=14% nowrap align=left>
+<FONT size=2>For</FONT>&nbsp;
+	</TD>
+	<TD width=13% nowrap align=left>
+<FONT size=2>Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD width=5% nowrap align=left>
+<FONT size=2>1.4</FONT>&nbsp;
+	</TD>
+	<TD width=9% nowrap align=left>
+<FONT size=2>Elect</FONT>&nbsp;
+	</TD>
+	<TD width=44% nowrap align=left>
+<FONT size=2>Director Richard C. Spalding</FONT>&nbsp;
+	</TD>
+	<TD width=12% nowrap align=left>
+<FONT size=2>For</FONT>&nbsp;
+	</TD>
+	<TD width=14% nowrap align=left>
+<FONT size=2>For</FONT>&nbsp;
+	</TD>
+	<TD width=13% nowrap align=left>
+<FONT size=2>Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD width=5% nowrap align=left>
+<FONT size=2>1.5</FONT>&nbsp;
+	</TD>
+	<TD width=9% nowrap align=left>
+<FONT size=2>Elect</FONT>&nbsp;
+	</TD>
+	<TD width=44% nowrap align=left>
+<FONT size=2>Director Charles W. Hull</FONT>&nbsp;
+	</TD>
+	<TD width=12% nowrap align=left>
+<FONT size=2>For</FONT>&nbsp;
+	</TD>
+	<TD width=14% nowrap align=left>
+<FONT size=2>For</FONT>&nbsp;
+	</TD>
+	<TD width=13% nowrap align=left>
+<FONT size=2>Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD width=5% nowrap align=left>
+<FONT size=2>1.6</FONT>&nbsp;
+	</TD>
+	<TD width=9% nowrap align=left>
+<FONT size=2>Elect</FONT>&nbsp;
+	</TD>
+	<TD width=44% nowrap align=left>
+<FONT size=2>Director G. Walter Loewenbaum, II</FONT>&nbsp;
+	</TD>
+	<TD width=12% nowrap align=left>
+<FONT size=2>For</FONT>&nbsp;
+	</TD>
+	<TD width=14% nowrap align=left>
+<FONT size=2>For</FONT>&nbsp;
+	</TD>
+	<TD width=13% nowrap align=left>
+<FONT size=2>Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD width=5% nowrap align=left>
+<FONT size=2>1.7</FONT>&nbsp;
+	</TD>
+	<TD width=9% nowrap align=left>
+<FONT size=2>Elect</FONT>&nbsp;
+	</TD>
+	<TD width=44% nowrap align=left>
+<FONT size=2>Director Abraham N. Reichental</FONT>&nbsp;
+	</TD>
+	<TD width=12% nowrap align=left>
+<FONT size=2>For</FONT>&nbsp;
+	</TD>
+	<TD width=14% nowrap align=left>
+<FONT size=2>For</FONT>&nbsp;
+	</TD>
+	<TD width=13% nowrap align=left>
+<FONT size=2>Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD width=5% nowrap align=left>
+<FONT size=2>1.8</FONT>&nbsp;
+	</TD>
+	<TD width=9% nowrap align=left>
+<FONT size=2>Elect</FONT>&nbsp;
+	</TD>
+	<TD width=44% nowrap align=left>
+<FONT size=2>Director Daniel S. Van Riper</FONT>&nbsp;
+	</TD>
+	<TD width=12% nowrap align=left>
+<FONT size=2>For</FONT>&nbsp;
+	</TD>
+	<TD width=14% nowrap align=left>
+<FONT size=2>For</FONT>&nbsp;
+	</TD>
+	<TD width=13% nowrap align=left>
+<FONT size=2>Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD width=5% nowrap align=left>
+<FONT size=2>2</FONT>&nbsp;
+	</TD>
+	<TD width=53% nowrap colspan=2 align=left>
+<FONT size=2>Increase Authorized Common Stock</FONT>&nbsp;
+	</TD>
+	<TD width=12% nowrap align=left>
+<FONT size=2>For</FONT>&nbsp;
+	</TD>
+	<TD width=14% nowrap align=left>
+<FONT size=2>For</FONT>&nbsp;
+	</TD>
+	<TD width=13% nowrap align=left>
+<FONT size=2>Management</FONT>&nbsp;
+	</TD>
+</TR>
+<TR valign="bottom">
+	<TD width=5% nowrap align=left>
+<FONT size=2>3</FONT>&nbsp;
+	</TD>
+	<TD width=53% nowrap colspan=2 align=left>
+<FONT size=2>Ratify Auditors</FONT>&nbsp;
+	</TD>
+	<TD width=12% nowrap align=left>
+<FONT size=2>For</FONT>&nbsp;
+	</TD>
+	<TD width=14% nowrap align=left>
+<FONT size=2>For</FONT>&nbsp;
+	</TD>
+	<TD width=13% nowrap align=left>
+<FONT size=2>Management</FONT>&nbsp;
+	</TD>
+</TR>
+</TABLE><BR>

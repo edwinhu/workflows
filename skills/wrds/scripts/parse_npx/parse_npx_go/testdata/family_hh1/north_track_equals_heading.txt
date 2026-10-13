@@ -1,0 +1,36 @@
+		COMPANY CONFORMED NAME:			NORTH TRACK FUNDS INC
+		CENTRAL INDEX KEY:			0000775689
+<TEXT>
+===========================================================================================================
+S&P 100 INDEX FUND
+===========================================================================================================
+            CAMPBELL SOUP COMPANY
+                CUSIP/CINS: 134429                           MEETING TYPE:         ANNUAL
+                TICKER:     CPB                              MEETING DATE:         21-Nov-03
+                ISIN:                                         AGENDA:              932054694 - Management
+- -----------------------------------------------------------------------------------------------------------
+                                                                                                FOR/AGAINST
+            ITEM PROPOSAL                                               TYPE           VOTE     MANAGEMENT
+- -----------------------------------------------------------------------------------------------------------
+            01  DIRECTOR                                                Mgmt
+                1    EDMUND M. CARPENTER                                               For          For
+                2    DOUGLAS R. CONANT                                                 For          For
+                3    PAUL R. CHARRON                                                   For          For
+                4    BENNETT DORRANCE                                                  For          For
+                5    KENT B. FOSTER                                                    For          For
+                6    HARVEY GOLUB                                                      For          For
+                7    RANDALL W. LARRIMORE                                              For          For
+                8    PHILIP E. LIPPINCOTT                                              For          For
+                9    MARY ALICE D. MALONE                                              For          For
+                10   DAVID C. PATTERSON                                                For          For
+                11   CHARLES R. PERRIN                                                 For          For
+                12   GEORGE M. SHERMAN                                                 For          For
+                13   DONALD M. STEWART                                                 For          For
+                14   GEORGE STRAWBRIDGE, JR.                                           For          For
+                15   LES C. VINNEY                                                     For          For
+                16   CHARLOTTE C. WEBER                                                For          For
+
+            02  RATIFICATION OF APPOINTMENT OF AUDITORS                 Mgmt           For          For
+
+            03  APPROVAL OF THE 2003 LONG-TERM INCENTIVE PLAN           Mgmt           For          For
+

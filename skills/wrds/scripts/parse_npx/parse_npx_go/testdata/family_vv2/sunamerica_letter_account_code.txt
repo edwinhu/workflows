@@ -1,0 +1,35 @@
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SUNAMERICA FOCUSED SERIES INC
+		CENTRAL INDEX KEY:			0001020861
+<PAGE>
+
+
+   Item 1. Proxy Voting Record
+   Account Number: JUGH Focused Growth and Income
+
+   ISSUER NAME TICKER CUSIP MTG DATE MTG TYPE
+           Proposal Type Voted? Vote For/Agnst Mgmt
+   Alcan Inc AL  013716105  4/28/05  Annual
+   1.01   Elect Roland Berger MGMT YES FOR FOR
+   1.02   Elect O.C. L. Denis Desautels MGMT YES FOR FOR
+   1.03   Elect Travis Engen MGMT YES FOR FOR
+   1.04   Elect L. Yves Fortier MGMT YES FOR FOR
+   1.05   Elect Jean-Paul Jacamon MGMT YES FOR FOR
+   1.06   Elect William R. Loomis Jr. MGMT YES FOR FOR
+   1.07   Elect Yves Mansion MGMT YES FOR FOR
+   1.08   Elect Christine Morin-Postel MGMT YES FOR FOR
+   1.09   Elect H. Onno Ruding MGMT YES FOR FOR
+   1.10   Elect Guy Saint-Pierre MGMT YES FOR FOR
+   1.11   Elect Gerhard Schulmeyer MGMT YES FOR FOR
+   1.12   Elect Paul M. Tellier MGMT YES FOR FOR
+   1.13   Elect Milton K. Wong MGMT YES FOR FOR
+   2   Appoint outside auditors MGMT YES FOR FOR
+   3   Adopt poison-pill-style defense MGMT YES AGNST AGNST
+   4   Amend stock option plan MGMT YES FOR FOR
+
+   Boeing Co BA  097023105  5/2/05  Annual
+   1.01   Elect Kenneth M. Duberstein MGMT YES FOR FOR
+   1.02   Elect W. James McNerney Jr. MGMT YES FOR FOR
+   1.03   Elect Lewis E. Platt MGMT YES FOR FOR
+   1.04   Elect Mike S. Zafirovski MGMT YES FOR FOR
+   2   Ratify selection of auditors MGMT YES FOR FOR

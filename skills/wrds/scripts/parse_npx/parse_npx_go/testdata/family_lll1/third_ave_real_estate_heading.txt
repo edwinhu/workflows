@@ -1,0 +1,102 @@
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			THIRD AVENUE TRUST
+		CENTRAL INDEX KEY:			0001031661
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08039
+		FILM NUMBER:		121060469
+
+	BUSINESS ADDRESS:	
+		STREET 1:		622 THIRD AVENUE
+		STREET 2:		32ND FLOOR
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10017
+		BUSINESS PHONE:		2128886685
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001031661
+<SERIES-ID>S000001464
+<SERIES-NAME>THIRD AVENUE VALUE FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000003885
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>TAVFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085634
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>TVFVX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001031661
+<SERIES-ID>S000001466
+<SERIES-NAME>THIRD AVENUE REAL ESTATE VALUE FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000003887
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>TAREX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000085636
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>TVRVX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>brd_DJ60001031661.txt
+<DESCRIPTION>BRD_DJ60001031661
+<TEXT>
+                                  UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                              WASHINGTON, D.C. 20549
+
+                                   FORM N-PX
+Third Ave Real Estate
+--------------------------------------------------------------------------------------------------------------------------
+ BELLWAY PLC                                                                                 Agenda Number:  703473380
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  G09744155
+    Meeting Type:  AGM
+    Meeting Date:  13-Jan-2012
+          Ticker:
+            ISIN:  GB0000904986
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1      To receive and adopt the Accounts and the                 Mgmt          For                            For
+       Directors' Report and the Auditors' Report
+       thereon
+
+2      To declare a final dividend                               Mgmt          For                            For
+
+3      To re-elect Mr H C Dawe as a director of                  Mgmt          For                            For
+       the Company
+
+4      To re-elect Mr J K Watson as a director of                Mgmt          For                            For
+       the Company
+
+5      To re-elect Mr EF Ayres as a director of                  Mgmt          For                            For
+       the Company
+
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

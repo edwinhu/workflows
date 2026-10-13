@@ -1,0 +1,50 @@
+		COMPANY CONFORMED NAME:			WELLS FARGO FUNDS TRUST
+		CENTRAL INDEX KEY:			0001081400
+================ WELLS FARGO ADVANTAGE C&B LARGE CAP VALUE FUND ================
+
+
+FREDDIE MAC
+
+Ticker:       FRE            Security ID:  313400301
+Meeting Date: NOV 4, 2004    Meeting Type: Annual
+Record Date:  SEP 10, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Barbara T. Alexander      For       For        Management
+1.2   Elect  Director Geoffrey T. Boisi         For       For        Management
+1.3   Elect  Director Michelle Engler           For       For        Management
+1.4   Elect  Director Richard Karl Goeltz       For       For        Management
+1.5   Elect  Director Thomas S. Johnson         For       For        Management
+1.6   Elect  Director William M. Lewis, Jr.     For       For        Management
+1.7   Elect  Director John B. Mccoy             For       For        Management
+1.8   Elect  Director Eugene M. Mcquade         For       For        Management
+1.9   Elect  Director Shaun F. O'Malley         For       For        Management
+1.10  Elect  Director Ronald F. Poe             For       For        Management
+1.11  Elect  Director Stephen A. Ross           For       For        Management
+1.12  Elect  Director Richard F. Syron          For       For        Management
+1.13  Elect  Director William J. Turner         For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Approve Omnibus Stock Plan                For       For        Management
+4     Amend Employee Stock Purchase Plan        For       For        Management
+
+
+- --------------------------------------------------------------------------------
+================ WELLS FARGO ADVANTAGE DIVERSIFIED EQUITY FUND =================
+
+
+3M CO
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 10, 2005   Meeting Type: Annual
+Record Date:  MAR 11, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Vance D. Coffman           For       For        Management
+1.2   Elect Director Rozanne L. Ridgway         For       For        Management
+1.3   Elect Director Louis W. Sullivan          For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Approve Omnibus Stock Plan                For       For        Management
+4     Eliminate Animal Testing                  Against   Against    Shareholder
+5     Implement China Principles                Against   Against    Shareholder
+
+

@@ -1,0 +1,67 @@
+ACCESSION NUMBER:		0001111830-09-000754
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20090630
+FILED AS OF DATE:		20090716
+DATE AS OF CHANGE:		20090716
+EFFECTIVENESS DATE:		20090716
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			CM ADVISERS FAMILY OF FUNDS
+		CENTRAL INDEX KEY:			0001208252
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001208252
+<SERIES-ID>S000010533
+<SERIES-NAME>CM Advisers Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000029066
+<CLASS-CONTRACT-NAME>CM Advisers Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>CMAFX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001208252
+<SERIES-ID>S000010534
+<SERIES-NAME>CM Advisers Fixed Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000029067
+<CLASS-CONTRACT-NAME>CM Advisers Fixed Income Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>CMFIX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npx-0609.txt
+<TABLE>
+<CAPTION>
+INVESTMENT COMPANY REPORT
+
+MEETING DATE RANGE:        01-Jul-2008  -  30-Jun-2009               REPORT DATE:             7/1/2009
+                                                                                     Page 1 of 64
+CM ADVISORS FUND
+- ----------------------------------------------------------------------------------------------------------------------
+  3M COMPANY
+- ----------------------------------------------------------------------------------------------------------------------
+       SECURITY:      88579Y101                                                 AGENDA NUMBER:         933025985
+           TICKER:    MMM                                                        MEETING TYPE:         Annual
+           ISIN:      US88579Y1010                                               MEETING DATE:         5/12/2009
+- ----------------------------------------------------------------------------------------------------------------------
+                                                                                                       FOR/AGAINST
+PROP. #    PROPOSAL                                               PROPOSED BY         PROPOSAL VOTE    MANAGEMENT
+- ----------------------------------------------------------------------------------------------------------------------
+<S>        <C>                                                       <C>                    <C>          <C>
+1A         ELECTION OF DIRECTOR: LINDA G.                            Mgmt                   For          For
+           ALVARADO
+
+1B         ELECTION OF DIRECTOR: GEORGE W.                           Mgmt                   For          For
+           BUCKLEY
+
+1C         ELECTION OF DIRECTOR: VANCE D.                            Mgmt                   For          For

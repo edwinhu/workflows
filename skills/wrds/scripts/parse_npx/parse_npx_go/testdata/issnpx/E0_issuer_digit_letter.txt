@@ -1,0 +1,47 @@
+3I GROUP PLC
+
+Ticker:       III            Security ID:  G88473148
+Meeting Date: JUL 17, 2014   Meeting Type: Annual
+Record Date:  JUL 15, 2014
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Accept Financial Statements and         For       For          Management
+      Statutory Reports
+2     Approve Remuneration Report             For       For          Management
+3     Approve Remuneration Policy             For       For          Management
+4     Approve Final Dividend                  For       For          Management
+5     Re-elect Jonathan Asquith as Director   For       For          Management
+6     Re-elect Simon Borrows as Director      For       For          Management
+7     Re-elect Alistair Cox as Director       For       For          Management
+8     Elect David Hutchison as Director       For       For          Management
+9     Re-elect Sir Adrian Montague as         For       For          Management
+      Director
+10    Re-elect Martine Verluyten as Director  For       For          Management
+11    Re-elect Julia Wilson as Director       For       For          Management
+12    Reappoint Ernst &amp; Young LLP as Auditors For       For          Management
+13    Authorise Board to Fix Remuneration of  For       For          Management
+      Auditors
+14    Adopt the Revised Investment Policy     For       For          Management
+15    Authorise EU Political Donations and    For       For          Management
+      Expenditure
+16    Authorise Issue of Equity with          For       For          Management
+      Pre-emptive Rights
+17    Authorise Issue of Equity without       For       For          Management
+      Pre-emptive Rights
+18    Authorise Market Purchase of Ordinary   For       For          Management
+      Shares
+19    Authorise the Company to Call EGM with  For       For          Management
+      Two Weeks Notice
+
+
+--------------------------------------------------------------------------------
+
+3I GROUP PLC
+
+Ticker:       III            Security ID:  G88473148
+Meeting Date: JUN 25, 2015   Meeting Type: Annual
+Record Date:  JUN 23, 2015
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Accept Financial Statements and         For       For          Management
+      Statutory Reports

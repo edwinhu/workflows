@@ -1,0 +1,22 @@
+
+ALIGN TECHNOLOGY, INC.
+
+Ticker:       ALGN           Security ID:  US0162551016
+Meeting Date: MAY 17, 2017   Meeting Type: Annual
+Record Date:  MAR 22, 2017
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1A.   Election of Directors (Majority Voting) F         F            Management
+1B.   Election of Directors (Majority Voting) F         F            Management
+1C.   Election of Directors (Majority Voting) F         F            Management
+1D.   Election of Directors (Majority Voting) F         F            Management
+1E.   Election of Directors (Majority Voting) F         F            Management
+1F.   Election of Directors (Majority Voting) F         F            Management
+1H.   Election of Directors (Majority Voting) F         F            Management
+1I.   Election of Directors (Majority Voting) F         F            Management
+2.    Ratify Appointment of Independent       F         F            Management
+      Auditors
+3.    14A Executive Compensation              F         F            Management
+4.    14A Executive Compensation Vote         F         1            Management
+      Frequency
+1G.   Election of Directors (Majority Voting) F         F            Management

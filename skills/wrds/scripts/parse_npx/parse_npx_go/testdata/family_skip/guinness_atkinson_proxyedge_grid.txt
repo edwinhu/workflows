@@ -1,0 +1,93 @@
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			GUINNESS ATKINSON FUNDS
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>v232544_npx.htm
+<TEXT>
+<div style="DISPLAY: block; TEXT-INDENT: 0pt; TEXT-ALIGN: center">
+<table cellpadding="0" cellspacing="0" width="100%" style="FONT-SIZE: 10pt; FONT-FAMILY: times new roman; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">
+<tr>
+<td align="left" valign="top" width="81%">
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Guinness Atkinson Alternative Energy Fund</font></div>
+</td>
+<td valign="bottom" width="4%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160; </font></td>
+</tr><tr>
+</tr></table>
+</div>
+<div style="DISPLAY: block; TEXT-INDENT: 0pt; TEXT-ALIGN: center">
+<table cellpadding="0" cellspacing="0" width="100%" style="FONT-SIZE: 10pt; FONT-FAMILY: times new roman; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">
+<tr bgcolor="#004f75">
+<td align="left" colspan="8" valign="top" width="70%" style="BORDER-TOP: #000000 0.5pt solid; BORDER-LEFT: #000000 0.5pt solid; BORDER-BOTTOM: #000000 2px solid">
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; COLOR: #ffffff; FONT-FAMILY: times new roman">ENERGY DEVELOPMENT (EDC) CORPORATION</font></div>
+</td>
+<td align="left" valign="bottom" width="4%" style="BORDER-TOP: #000000 0.5pt solid; BORDER-BOTTOM: #000000 2px solid"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160; </font></td>
+<td align="left" valign="bottom" width="3%" style="BORDER-TOP: #000000 0.5pt solid; BORDER-BOTTOM: #000000 2px solid"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160; </font></td>
+<td align="left" valign="bottom" width="4%" style="BORDER-TOP: #000000 0.5pt solid; BORDER-BOTTOM: #000000 2px solid"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160; </font></td>
+<td align="left" valign="bottom" width="4%" style="BORDER-TOP: #000000 0.5pt solid; BORDER-BOTTOM: #000000 2px solid"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160; </font></td>
+</tr><tr>
+</tr><tr>
+<td align="left" colspan="2" valign="top" width="12%">
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Ticker:</font></div>
+</td>
+<td colspan="3" valign="bottom" width="43%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160; </font></td>
+<td valign="bottom" width="4%"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">&#160; </font></td>
+<td align="left" colspan="3" valign="top" width="15%">
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Meeting Date:</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="10%">
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">29-Jul-2010</font></div>
+</td>
+</tr><tr>
+</tr><tr bgcolor="#004f75">
+<td align="left" valign="top" width="5%" style="BORDER-LEFT: #000000 0.5pt solid; BORDER-BOTTOM: #000000 2px solid">
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; COLOR: #ffffff; FONT-FAMILY: times new roman">Item</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="37%" style="BORDER-BOTTOM: #000000 2px solid">
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; COLOR: #ffffff; FONT-FAMILY: times new roman">Proposal</font></div>
+</td>
+<td align="left" valign="top" width="14%" style="BORDER-BOTTOM: #000000 2px solid">
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; COLOR: #ffffff; FONT-FAMILY: times new roman">Recommendation</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="8%" style="BORDER-BOTTOM: #000000 2px solid">
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; COLOR: #ffffff; FONT-FAMILY: times new roman">For</font></div>
+</td>
+<td align="left" valign="top" width="7%" style="BORDER-BOTTOM: #000000 2px solid">
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; COLOR: #ffffff; FONT-FAMILY: times new roman">Against</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%" style="BORDER-BOTTOM: #000000 2px solid">
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; COLOR: #ffffff; FONT-FAMILY: times new roman">Abstain</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="8%" style="BORDER-BOTTOM: #000000 2px solid">
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-WEIGHT: bold; FONT-SIZE: 10pt; COLOR: #ffffff; FONT-FAMILY: times new roman">Take No Action</font></div>
+</td>
+</tr><tr>
+<td align="left" valign="top" width="5%">
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">1</font></div>
+</td>
+<td align="left" colspan="3" valign="top" width="37%">
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">Call to order</font></div>
+</td>
+<td valign="top" width="14%">
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="center"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">For</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="8%">
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">16068000</font></div>
+</td>
+<td align="left" valign="top" width="7%">
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="7%">
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">0</font></div>
+</td>
+<td align="left" colspan="2" valign="top" width="8%">
+<div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: times new roman">0</font></div>
+</td>
+</tr></table>
+</div>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

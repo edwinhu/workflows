@@ -1,0 +1,39 @@
+		COMPANY CONFORMED NAME:			PAX WORLD FUNDS SERIES TRUST I
+		CENTRAL INDEX KEY:			0000076721
+<TEXT>
+
+
+
+
+Item 1: Proxy Voting Record
+
+Fund Name : Agg Growth LB Pax World
+
+07/01/2011 - 06/30/2012
+
+________________________________________________________________________________
+3M Company
+Ticker     Security ID:             Meeting Date          Meeting Status
+MMM        CUSIP 88579Y101          05/08/2012            Voted
+Meeting Type                        Country of Trade
+Annual                              United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1          Elect Linda Alvarado     Mgmt       For        For        For
+2          Elect Vance Coffman      Mgmt       For        Against    Against
+3          Elect Michael  Eskew     Mgmt       For        For        For
+4          Elect W. James Farrell   Mgmt       For        For        For
+5          Elect Herbert Henkel     Mgmt       For        For        For
+6          Elect Edward Liddy       Mgmt       For        Against    Against
+7          Elect Robert Morrison    Mgmt       For        Against    Against
+8          Elect Aulana Peters      Mgmt       For        Against    Against
+9          Elect Inge Thulin        Mgmt       For        For        For
+10         Elect Robert Ulrich      Mgmt       For        Against    Against
+11         Ratification of Auditor  Mgmt       For        For        For
+12         Advisory Vote on         Mgmt       For        Against    Against
+            Executive
+            Compensation
+
+13         Amendment to the         Mgmt       For        For        For
+            General Employees

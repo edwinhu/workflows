@@ -1,0 +1,700 @@
+<SEC-DOCUMENT>0000897101-11-001512.txt : 20110829
+<SEC-HEADER>0000897101-11-001512.hdr.sgml : 20110829
+<ACCEPTANCE-DATETIME>20110829165959
+ACCESSION NUMBER:		0000897101-11-001512
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20110630
+FILED AS OF DATE:		20110829
+DATE AS OF CHANGE:		20110829
+EFFECTIVENESS DATE:		20110829
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			CLEARWATER INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0000811161
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MN
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-05038
+		FILM NUMBER:		111063425
+
+	BUSINESS ADDRESS:	
+		STREET 1:		2000 WELLS FARGO PLACE
+		STREET 2:		30 EAST 7TH STREET
+		CITY:			ST PAUL
+		STATE:			MN
+		ZIP:			55101-4930
+		BUSINESS PHONE:		6122280935
+
+	MAIL ADDRESS:	
+		STREET 1:		2000 WELLS FARGO PLACE
+		STREET 2:		30 EAST 7TH STREET
+		CITY:			ST PAUL
+		STATE:			MN
+		ZIP:			55101
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000000697
+<SERIES-NAME>Clearwater Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002050
+<CLASS-CONTRACT-NAME>Clearwater Growth Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000000698
+<SERIES-NAME>Clearwater Small Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002051
+<CLASS-CONTRACT-NAME>Clearwater Small Cap Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000000699
+<SERIES-NAME>Clearwater Tax-Exempt Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002052
+<CLASS-CONTRACT-NAME>Clearwater Tax-Exempt Bond Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000024756
+<SERIES-NAME>CLEARWATER INTERNATIONAL FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000073549
+<CLASS-CONTRACT-NAME>CLEARWATER INTERNATIONAL FUND
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>clearwater113902_npx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY STYLE="font: 10pt Times New Roman, Times, Serif">
+
+<P STYLE="margin: 0"></P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">UNITED STATES<BR>
+SECURITIES AND EXCHANGE COMMISSION<BR>
+<FONT STYLE="text-transform: uppercase">W</FONT>ashington, DC 20549</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">&nbsp;</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center"><B>FORM N-PX</B></P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">&nbsp;</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center"><B>ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT COMPANY</B></P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">&nbsp;</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">Investment Company Act file number <U>811-05038</U></P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">&nbsp;</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center"><U>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Clearwater
+Investment Trust&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<BR></U>(Exact name of registrant as specified in charter)</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">&nbsp;</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">2000 Wells Fargo Place, 30 East 7<SUP>th</SUP>Street,</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center"><U>St. Paul, Minnesota 55101-4930<BR></U>(Address of principal executive offices) (Zip code)</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">&nbsp;</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">200 Clarendon Street, 27<SUP>th</SUP> Floor</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center"><U>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Boston, Massachusetts
+02116-5021&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<BR>
+</U>(Name and address of agents for service)</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">&nbsp;</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">Registrant's telephone number, including area
+code: <U> (651) 228-0935</U></P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">&nbsp;</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">Date of fiscal year end: <U>12/31/2011</U></P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">&nbsp;</P>
+<P STYLE="font-size: 10pt; margin: 0; text-align: center">Date of reporting period: <U>07/01/10 - 06/30/11</U></P>
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: justify"><B>Item 1. Proxy Voting Record.</B></P>
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0 0 0 0.5in; text-align: justify"><B>&nbsp;</B></P>
+
+<BR>
+
+<HR NOSHADE ALIGN=CENTER WIDTH="100%" SIZE=3><P STYLE='PAGE-BREAK-BEFORE: ALWAYS'></P><PAGE>
+
+<BR>
+
+
+<P><FONT SIZE="2"><B>CLEARWATER GROWTH FUND</B> </FONT></P>
+
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+<TR STYLE="FONT-SIZE:1PX">
+<TD WIDTH="8%"><P>&nbsp;</P></TD>
+<TD WIDTH="7%"><P>&nbsp;</P></TD>
+<TD WIDTH="38%"><P>&nbsp;</P></TD>
+<TD WIDTH="4%"><P>&nbsp;</P></TD>
+<TD WIDTH="13%"><P>&nbsp;</P></TD>
+<TD WIDTH="7%"><P>&nbsp;</P></TD>
+<TD WIDTH="10%"><P>&nbsp;</P></TD>
+<TD WIDTH="13%"><P>&nbsp;</P></TD></TR>
+<TR><TD><P><FONT SIZE="1"><B>Fund Name</B> </FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1><B>CLEARWATER
+ INVESTMENT TRUST</B></FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>Issuer</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1><B>CEMEX,
+ S.A.B. DE C.V.</B></FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD COLSPAN=2><P><FONT SIZE=1><B>Security
+ ID<BR>
+ Ticker Symbol<BR>
+ ISIN</B></FONT></P></TD>
+<TD><P><FONT SIZE=1>151290889<BR>
+ CX<BR>
+ US1512908898</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1><B>Meeting
+ Type<BR>
+ Meeting Date<BR>
+ Agenda</B></FONT></P></TD>
+<TD><P><FONT SIZE=1>Special<BR>
+ 24-Feb-2011<BR>
+ 933370796</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1><B>Item</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Proposal</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Type</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Vote</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>For/Against
+ Management</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Shares
+ Voted</B></FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>1</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>PROPOSAL TO AMEND ARTICLE 8
+ OF THE BY LAWS, IN ACCORDANCE WITH THE PROVISIONS SET FORTH IN ARTICLES 13,
+ NUMERAL V, AND 48 OF THE MEXICAN SECURITIES MARKET LAW (LEY DEL MERCADO DE
+ VALORES).</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>AGAINST</FONT></P></TD>
+<TD><P><FONT SIZE=1>AGAINST</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>2</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>PROPOSAL TO INCREASE THE
+ CAPITAL STOCK OF THE COMPANY IN ITS VARIABLE PORTION, AND TO ISSUE NOTES
+ CONVERTIBLE INTO SHARES.</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>3</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>APPOINTMENT OF DELEGATES TO
+ FORMALIZE THE RESOLUTIONS ADOPTED AT THE MEETING.</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>4</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>PRESENTATION OF THE REPORT
+ BY THE CHIEF EXECUTIVE OFFICER, ALL AS MORE FULLY DESCRIBED IN THE PROXY
+ STATEMENT.</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>5</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>RESOLUTION ON ALLOCATION OF
+ PROFITS.</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>6</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>PROPOSAL TO INCREASE THE
+ CAPITAL STOCK OF THE COMPANY IN ITS VARIABLE PORTION THROUGH: (A)
+ CAPITALIZATION OF RETAINED EARNINGS; AND (B) ISSUANCE OF TREASURY SHARES IN
+ ORDER TO PRESERVE THE RIGHTS OF NOTE HOLDERS PURSUANT TO THE COMPANY&#146;S
+ ISSUANCE OF CONVERTIBLE NOTES.</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>7</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>APPROVAL OF A PROPOSAL TO
+ EXTEND UNTIL DECEMBER 2013 THE CURRENT OPTIONAL STOCK PURCHASE PROGRAM FOR
+ THE COMPANY&#146;S EMPLOYEES, OFFICERS, AND MEMBERS OF THE BOARD OF DIRECTORS.</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>8</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>APPOINTMENT OF DIRECTORS,
+ MEMBERS AND PRESIDENT OF THE AUDIT, CORPORATE PRACTICES AND FINANCE
+ COMMITTEES.</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>ABSTAIN</FONT></P></TD>
+<TD><P><FONT SIZE=1>AGAINST</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>9</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>COMPENSATION OF THE MEMBERS
+ OF THE BOARD OF DIRECTORS AND OF THE AUDIT, CORPORATE PRACTICES AND FINANCE
+ COMMITTEE.</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>10</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1>APPOINTMENT OF DELEGATES TO
+ FORMALIZE THE RESOLUTIONS ADOPTED AT THE MEETING.</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>MANAGEMENT</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>FOR</FONT></P></TD>
+<TD><P><FONT SIZE=1>126000</FONT></P></TD></TR>
+</TABLE>
+
+<BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+<TR STYLE="FONT-SIZE:1PX">
+<TD WIDTH="8%"><P>&nbsp;</P></TD>
+<TD WIDTH="7%"><P>&nbsp;</P></TD>
+<TD WIDTH="38%"><P>&nbsp;</P></TD>
+<TD WIDTH="4%"><P>&nbsp;</P></TD>
+<TD WIDTH="13%"><P>&nbsp;</P></TD>
+<TD WIDTH="7%"><P>&nbsp;</P></TD>
+<TD WIDTH="10%"><P>&nbsp;</P></TD>
+<TD WIDTH="13%"><P>&nbsp;</P></TD></TR>
+<TR><TD><P><FONT SIZE="1"><B>Issuer</B> </FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1><B>CEMEX,
+ S.A.B. DE C.V.</B></FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD COLSPAN=2><P><FONT SIZE=1><B>Security
+ ID<BR>
+ Ticker Symbol<BR>
+ ISIN</B></FONT></P></TD>
+<TD><P><FONT SIZE=1>151290889<BR>
+ CX<BR>
+ US1512908898</FONT></P></TD>
+<TD COLSPAN=2><P><FONT SIZE=1><B>Meeting
+ Type<BR>
+ Meeting Date<BR>
+ Agenda</B></FONT></P></TD>
+<TD><P><FONT SIZE=1>Special<BR>
+ 25-Mar-11<BR>
+ 933378487</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1><B>Item</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Proposal</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B></FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Type</B></FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1><B>Investec plc</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1><B>Ticker <BR>
+N/A</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Meeting Date</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Country</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Security ID</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Meeting Type</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Record Date</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Shares Voted</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Shares
+Instructed</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Shares Available</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Shares on Loan</B> </FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P ALIGN=LEFT><FONT STYLE="font-size:8pt">12-Aug-10</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">United Kingdom</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">G49188116</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Annual</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P ALIGN=LEFT><FONT STYLE="font-size:8pt">10-Aug-10</FONT></P></TD>
+<TD><P ALIGN=LEFT><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P ALIGN=LEFT><FONT STYLE="font-size:8pt">8,249.00</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P ALIGN=LEFT><FONT STYLE="font-size:8pt">8,249.00</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P ALIGN=LEFT><FONT STYLE="font-size:8pt">8,249.00</FONT></P></TD>
+<TD><P ALIGN=LEFT><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P ALIGN=LEFT><FONT STYLE="font-size:8pt">0.00</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">CUSIP: N/A</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">ISIN: N/A</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">SEDOL: B1DHG40</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Proxy Level:
+ N/A</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Meeting ID:
+ 549984</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Votable
+Proposal</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Vote
+Instruction</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1><B>Voting Policy:
+NO POLICY</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Ballot Count: 1</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Proponent</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Mgmt Rec</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>ISS Rec</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>Policy Rec</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD>
+<TD><P><FONT SIZE=1><B>&nbsp;</B> </FONT></P></TD></TR>
+<TR><TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Common Business:
+ Investec plc an<FONT SIZE=1>d</FONT><FONT STYLE="font-size:8pt"> Investec Ltd</FONT></FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Mgmt</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">No</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD><P><FONT STYLE="font-size:8pt">1</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Re-elect Samuel
+ Abrahams as Director</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Mgmt</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Yes</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Against</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD><P><FONT STYLE="font-size:8pt">2</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Re-elect George
+ Alford as Director</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Mgmt</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Yes</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD><P><FONT STYLE="font-size:8pt">3</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Re-elect Glynn
+ Burger as Director</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Mgmt</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Yes</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD><P><FONT STYLE="font-size:8pt">4</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Re-elect Hugh
+ Herman as Director</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Mgmt</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Yes</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD><P><FONT STYLE="font-size:8pt">5</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Re-elect Ian
+ Kantor as Director</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Mgmt</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Yes</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD><P><FONT STYLE="font-size:8pt">6</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Re-elect Peter
+ Thomas as Director</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Mgmt</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Yes</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Against</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD><P><FONT STYLE="font-size:8pt">7</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Re-elect Alan
+ Tapnack as Director</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Mgmt</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Yes</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD><P><FONT STYLE="font-size:8pt">8</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Re-elect Fani
+ Titi as Director</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Mgmt</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Yes</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD><P><FONT STYLE="font-size:8pt">9</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Elect Bradley
+ Fried as Director</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Mgmt</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Yes</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD><P><FONT STYLE="font-size:8pt">10</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Elect Peregrine
+ Crosthwaite as Director</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Mgmt</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Yes</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">For</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD></TR>
+<TR><TD><P><FONT STYLE="font-size:8pt">11</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Authorise Board
+ to Ratify and Execute Approved Resolutions</FONT></P></TD>
+<TD><P><FONT SIZE=1>&nbsp;</FONT></P></TD>
+<TD><P><FONT STYLE="font-size:8pt">Mgmt</FONT></P></TD>

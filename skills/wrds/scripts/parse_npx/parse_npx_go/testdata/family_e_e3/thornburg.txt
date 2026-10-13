@@ -1,0 +1,37 @@
+<H3 ALIGN="CENTER"> <FONT COLOR="#0000FF"><B>======Thornburg Value Fund ======</B> </FONT>
+</H3>
+
+
+
+
+<H3 ALIGN="CENTER"> <FONT COLOR="#0000FF">Affiliated Computer Services, Inc. *ACS* CUSIP 008190100, 10/30/03 Meeting </FONT>
+</H3><TABLE BORDER="2" WIDTH="100%">
+<TR VALIGN=Bottom>
+     <TH BGCOLOR="#cccccc"><FONT FACE="Times New Roman, Times, Serif" SIZE="2" COLOR="#0000FF">&nbsp; </FONT></TH>
+     <TH BGCOLOR="#cccccc"><FONT FACE="Times New Roman, Times, Serif" SIZE="2" COLOR="#0000FF">Proposal<BR>
+Description </FONT><FONT COLOR="#0000FF"></FONT><HR WIDTH=60% SIZE=1 COLOR=BLACK NOSHADE> </TH>
+     <TH ALIGN="CENTER" BGCOLOR="#cccccc"><FONT FACE="Times New Roman, Times, Serif" SIZE="2" COLOR="#0000FF">Proposed<BR>
+By </FONT><FONT COLOR="#0000FF"></FONT><HR WIDTH=60% SIZE=1 COLOR=BLACK NOSHADE> </TH>
+     <TH ALIGN="CENTER" BGCOLOR="#cccccc"><FONT FACE="Times New Roman, Times, Serif" SIZE="2" COLOR="#0000FF">Our<BR>
+Vote </FONT><FONT COLOR="#0000FF"></FONT><HR WIDTH=60% SIZE=1 COLOR=BLACK NOSHADE> </TH>
+     <TH ALIGN="CENTER" BGCOLOR="#cccccc"><FONT FACE="Times New Roman, Times, Serif" SIZE="2" COLOR="#0000FF">Agree With<BR>
+Management </FONT><FONT COLOR="#0000FF"></FONT><HR WIDTH=60% SIZE=1 COLOR=BLACK NOSHADE> </TH></TR>
+<TR VALIGN=Bottom>
+     <TD WIDTH="6%" ALIGN="RIGHT" BGCOLOR="#cccccc"><FONT FACE="Times New Roman, Times, Serif" SIZE="2" COLOR="#0000FF">1&nbsp; </FONT></TD>
+     <TD WIDTH="70%" ALIGN="LEFT" BGCOLOR="#cccccc"><FONT FACE="Times New Roman, Times, Serif" SIZE="2" COLOR="#0000FF">Elect Directors </FONT></TD>
+     <TD WIDTH="11%" ALIGN="CENTER" BGCOLOR="#cccccc"><FONT FACE="Times New Roman, Times, Serif" SIZE="2" COLOR="#0000FF">Mgmt </FONT></TD>
+     <TD WIDTH="9%" ALIGN="CENTER" BGCOLOR="#cccccc"><FONT FACE="Times New Roman, Times, Serif" SIZE="2" COLOR="#0000FF">For </FONT></TD>
+     <TD WIDTH="4%" ALIGN="CENTER" BGCOLOR="#cccccc"><FONT FACE="Times New Roman, Times, Serif" SIZE="2" COLOR="#0000FF">Yes </FONT></TD></TR>
+<TR VALIGN=Bottom>
+     <TD ALIGN="RIGHT" BGCOLOR="#cccccc"><FONT FACE="Times New Roman, Times, Serif" SIZE="2" COLOR="#0000FF">2&nbsp; </FONT></TD>
+     <TD ALIGN="LEFT" BGCOLOR="#cccccc"><FONT FACE="Times New Roman, Times, Serif" SIZE="2" COLOR="#0000FF">Approve Executive Incentive Bonus Plan </FONT></TD>
+     <TD ALIGN="CENTER" BGCOLOR="#cccccc"><FONT FACE="Times New Roman, Times, Serif" SIZE="2" COLOR="#0000FF">Mgmt </FONT></TD>
+     <TD ALIGN="CENTER" BGCOLOR="#cccccc"><FONT FACE="Times New Roman, Times, Serif" SIZE="2" COLOR="#0000FF">For </FONT></TD>
+     <TD ALIGN="CENTER" BGCOLOR="#cccccc"><FONT FACE="Times New Roman, Times, Serif" SIZE="2" COLOR="#0000FF">Yes </FONT></TD></TR>
+<TR VALIGN=Bottom>
+     <TD ALIGN="RIGHT" BGCOLOR="#cccccc"><FONT FACE="Times New Roman, Times, Serif" SIZE="2" COLOR="#0000FF">3&nbsp; </FONT></TD>
+     <TD ALIGN="LEFT" BGCOLOR="#cccccc"><FONT FACE="Times New Roman, Times, Serif" SIZE="2" COLOR="#0000FF">Ratify Auditors </FONT></TD>
+     <TD ALIGN="CENTER" BGCOLOR="#cccccc"><FONT FACE="Times New Roman, Times, Serif" SIZE="2" COLOR="#0000FF">Mgmt </FONT></TD>
+     <TD ALIGN="CENTER" BGCOLOR="#cccccc"><FONT FACE="Times New Roman, Times, Serif" SIZE="2" COLOR="#0000FF">For </FONT></TD>
+     <TD ALIGN="CENTER" BGCOLOR="#cccccc"><FONT FACE="Times New Roman, Times, Serif" SIZE="2" COLOR="#0000FF">Yes </FONT></TD></TR>
+</TABLE>

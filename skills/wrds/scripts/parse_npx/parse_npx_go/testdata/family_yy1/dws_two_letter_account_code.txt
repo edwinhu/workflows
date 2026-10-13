@@ -1,0 +1,46 @@
+ACCESSION NUMBER:		0000088053-06-001068
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20060630
+FILED AS OF DATE:		20060831
+DATE AS OF CHANGE:		20060831
+EFFECTIVENESS DATE:		20060831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			DWS VARIABLE SERIES II
+		CENTRAL INDEX KEY:			0000810573
+		IRS NUMBER:				810105002
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-05002
+Reporting Period: 07/01/2005 - 06/30/2006
+DWS Variable Series II
+=========================== AA      DWS BALANCED VIP ===========================
+
+
+ABBOTT LABORATORIES
+
+Ticker:       ABT            Security ID:  002824100
+Meeting Date: APR 28, 2006   Meeting Type: Annual
+Record Date:  MAR 1, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Roxanne S. Austin          For       For        Management
+1.2   Elect Director William M. Daley           For       For        Management
+1.3   Elect Director W. James Farrell           For       For        Management
+1.4   Elect Director H. Laurance Fuller         For       For        Management
+1.5   Elect Director Richard A. Gonzalez        For       For        Management
+1.6   Elect Director Jack M. Greenberg          For       For        Management
+1.7   Elect Director Lord Owen                  For       For        Management
+1.8   Elect Director Boone Powell, Jr.          For       For        Management
+1.9   Elect Director W. Ann Reynolds, Ph.D.     For       For        Management
+1.10  Elect Director Roy S. Roberts             For       For        Management
+1.11  Elect Director William D. Smithburg       For       For        Management
+1.12  Elect Director John R. Walter             For       For        Management
+1.13  Elect Director Miles D. White             For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Performance-Based Equity Awards           Against   Against    Shareholder
+4     Report on Political Contributions         Against   Against    Shareholder
+5     Separate Chairman and CEO Positions       Against   For        Shareholder

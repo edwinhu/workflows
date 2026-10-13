@@ -1,0 +1,531 @@
+<SEC-DOCUMENT>0001144204-17-045152.txt : 20170825
+<SEC-HEADER>0001144204-17-045152.hdr.sgml : 20170825
+<ACCEPTANCE-DATETIME>20170825133451
+ACCESSION NUMBER:		0001144204-17-045152
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20170630
+FILED AS OF DATE:		20170825
+DATE AS OF CHANGE:		20170825
+EFFECTIVENESS DATE:		20170825
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			TOUCHSTONE FUNDS GROUP TRUST
+		CENTRAL INDEX KEY:			0000914243
+		IRS NUMBER:				680325521
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			0930
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08104
+		FILM NUMBER:		171051453
+
+	BUSINESS ADDRESS:	
+		STREET 1:		303 BROADWAY
+		STREET 2:		SUITE 1100
+		CITY:			CINCINNATI
+		STATE:			OH
+		ZIP:			45202
+		BUSINESS PHONE:		5133628000
+
+	MAIL ADDRESS:	
+		STREET 1:		303 BROADWAY
+		STREET 2:		SUITE 1100
+		CITY:			CINCINNATI
+		STATE:			OH
+		ZIP:			45202
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	CONSTELLATION FUNDS
+		DATE OF NAME CHANGE:	20040412
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	ALPHA SELECT FUNDS
+		DATE OF NAME CHANGE:	19981216
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	TIP INSTITUTIONAL FUNDS
+		DATE OF NAME CHANGE:	19971205
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000914243
+<SERIES-ID>S000005840
+<SERIES-NAME>TOUCHSTONE SANDS CAPITAL SELECT GROWTH FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016013
+<CLASS-CONTRACT-NAME>CLASS Y
+<CLASS-CONTRACT-TICKER-SYMBOL>CFSIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016014
+<CLASS-CONTRACT-NAME>CLASS Z
+<CLASS-CONTRACT-TICKER-SYMBOL>PTSGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000093498
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>TSNAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000093499
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>TSNCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000914243
+<SERIES-ID>S000005842
+<SERIES-NAME>TOUCHSTONE MID CAP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016016
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>TMCPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000039629
+<CLASS-CONTRACT-NAME>Class Z
+<CLASS-CONTRACT-TICKER-SYMBOL>TMCTX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000048891
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>TMAPX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000048892
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>TMCJX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000112484
+<CLASS-CONTRACT-NAME>Institutional
+<CLASS-CONTRACT-TICKER-SYMBOL>TMPIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000914243
+<SERIES-ID>S000006456
+<SERIES-NAME>TOUCHSTONE SMALL CAP VALUE FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000051266
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>TVOAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000051267
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>TVOCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099303
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>TVOYX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099304
+<CLASS-CONTRACT-NAME>Institutional
+<CLASS-CONTRACT-TICKER-SYMBOL>TVOIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000914243
+<SERIES-ID>S000006457
+<SERIES-NAME>TOUCHSTONE ULTRA SHORT DURATION FIXED INCOME FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000017655
+<CLASS-CONTRACT-NAME>CLASS Z
+<CLASS-CONTRACT-TICKER-SYMBOL>TSDOX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000109425
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>TSDAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000109426
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>TSDCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000109427
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>TSYYX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000109428
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>TSDIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000193831
+<CLASS-CONTRACT-NAME>Class T
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000193832
+<CLASS-CONTRACT-NAME>Class S
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000914243
+<SERIES-ID>S000019681
+<SERIES-NAME>TOUCHSTONE PREMIUM YIELD EQUITY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000055086
+<CLASS-CONTRACT-NAME>CLASS A
+<CLASS-CONTRACT-TICKER-SYMBOL>TPYAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000055087
+<CLASS-CONTRACT-NAME>CLASS C
+<CLASS-CONTRACT-TICKER-SYMBOL>TPYCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000067757
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>TPYYX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000914243
+<SERIES-ID>S000026595
+<SERIES-NAME>Touchstone Emerging Markets Small Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000079883
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>TEMAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000079884
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>TEFCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000079885
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>TEMYX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000079886
+<CLASS-CONTRACT-NAME>Institutional
+<CLASS-CONTRACT-TICKER-SYMBOL>TMEIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000914243
+<SERIES-ID>S000026598
+<SERIES-NAME>Touchstone Mid Cap Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000079895
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>TMFCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000079896
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>TCVYX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000079897
+<CLASS-CONTRACT-NAME>Institutional
+<CLASS-CONTRACT-TICKER-SYMBOL>TCVIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000079898
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>TCVAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000914243
+<SERIES-ID>S000026604
+<SERIES-NAME>Touchstone Total Return Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000079919
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>TCPAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000079920
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>TCPCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000079921
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>TCPYX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000079922
+<CLASS-CONTRACT-NAME>Institutional
+<CLASS-CONTRACT-TICKER-SYMBOL>TCPNX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000914243
+<SERIES-ID>S000033560
+<SERIES-NAME>Touchstone Merger Arbitrage Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000103037
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>TMGAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000103038
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>TMGCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000103039
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>TMGYX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000103040
+<CLASS-CONTRACT-NAME>Institutional
+<CLASS-CONTRACT-TICKER-SYMBOL>TMGLX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000914243
+<SERIES-ID>S000042224
+<SERIES-NAME>Touchstone Arbitrage Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000131056
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>TMARX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000131057
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>TMACX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000131058
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>TMAYX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000131059
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>TARBX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000914243
+<SERIES-ID>S000056166
+<SERIES-NAME>Touchstone Active Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000176882
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>TOBAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000176883
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>TODCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000176884
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>TOBYX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000176885
+<CLASS-CONTRACT-NAME>Institutional
+<CLASS-CONTRACT-TICKER-SYMBOL>TOBIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000193833
+<CLASS-CONTRACT-NAME>Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000914243
+<SERIES-ID>S000056167
+<SERIES-NAME>Touchstone High Yield Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000176886
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>THYAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000176887
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>THYCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000176888
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>THYYX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000176889
+<CLASS-CONTRACT-NAME>Institutional
+<CLASS-CONTRACT-TICKER-SYMBOL>THIYX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>v473835_npx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+     <TITLE></TITLE>
+</HEAD>
+<BODY STYLE="font: 10pt Times New Roman, Times, Serif">
+
+<P STYLE="margin: 0"></P>
+
+<P STYLE="margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">UNITED STATES<BR>
+SECURITIES AND EXCHANGE COMMISSION<BR>
+Washington, DC 20549</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><B>FORM N-PX</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><B>ANNUAL REPORT OF PROXY VOTING
+RECORD OF REGISTERED <BR>
+MANAGEMENT INVESTMENT COMPANY</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Investment Company Act file number:
+<U>811-08104&#9;</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><U>&#9;&#9;&#9;Touchstone Funds
+Group Trust&#9;</U><BR>
+(Exact name of registrant as specified in charter)</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">303 Broadway, Suite 1100</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><U>&#9;Cincinnati, Ohio 45202-4203&#9;
+&#9;</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; text-align: center; margin-bottom: 0pt">(Address of principal executive
+offices) (Zip code)</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Jill T. McGruder</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">303 Broadway, Suite 1100</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center"><U>&#9;Cincinnati, Ohio 45202-4203&#9;
+&#9;</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">(Name and address of agent for
+service)</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Registrant's telephone number,
+including area code: <U>800-638-8194</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Date of fiscal year end: <U>September
+30</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; text-align: center">Date of reporting period: <U>July
+1, 2016 &ndash; June 30, 2017</U></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0 0pt 40.5pt; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; margin-left: 0in; text-indent: 0in; text-align: justify">Form
+N-PX is to be used by a registered management investment company, other than a small business investment company registered on
+Form N-5 (&sect;&sect; 239.24 and 274.5 of this chapter), to file reports with the Commission, not later than August 31 of each
+year, containing the registrant&rsquo;s proxy voting record for the most recent twelve-month period ended June 30, pursuant to
+section 30 of the Investment Company Act of 1940 and rule 30b1-4 thereunder (17 CFR 270.30b1-4). The Commission may use the information
+provided on Form N-PX in its regulatory, disclosure review, inspection, and policymaking roles.</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0 0pt 40.5pt; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; margin-left: 0in; text-indent: 0in; text-align: justify">A
+registrant is required to disclose the information specified by Form N-PX, and the Commission will make this information public.
+A registrant is not required to respond to the collection of information contained in Form N-PX unless the Form displays a currently
+valid Office of Management and Budget (&ldquo;OMB&rdquo;) control number. Please direct comments concerning the accuracy of the
+information collection burden estimate and any suggestions for reducing the burden to the Secretary, Securities and Exchange Commission,
+450 Fifth Street, NW, Washington, DC 20549-0609. The OMB has reviewed this collection of information under the clearance requirements
+of 44 U.S.C. &sect; 3507.</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0 0pt 40.5pt; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0 0pt 40.5pt; text-align: justify">&nbsp;</P>
+
+<!-- Field: Page; Sequence: 1 -->
+    <DIV STYLE="margin-top: 12pt; margin-bottom: 6pt; border-bottom: Black 1pt solid"><P STYLE="margin: 0pt">&nbsp;</P></DIV>
+    <DIV STYLE="page-break-before: always; margin-top: 6pt; margin-bottom: 12pt"><P STYLE="margin: 0pt">&nbsp;</P></DIV>
+    <!-- Field: /Page -->
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0 0pt 40.5pt; text-align: justify"></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0 0pt 40.5pt; text-align: justify">&nbsp;&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0 0pt 40.5pt; text-align: center"><B>PROXY VOTING RECORD</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0 0pt 40.5pt; text-align: center"><B>FOR PERIOD JULY 1, 2016 TO
+JUNE 30, 2017</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0 0pt 40.5pt; text-align: center"><B>&nbsp;</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0 0pt 40.5pt; text-align: center"></P>
+<pre>
+TFGT Small Cap Fund
+--------------------------------------------------------------------------------------------------------------------------
+ ALEXANDER & BALDWIN, INC.                                                                   Agenda Number:  934537260
+--------------------------------------------------------------------------------------------------------------------------
+    Security:  014491104                                                             Meeting Type:  Annual
+      Ticker:  ALEX                                                                  Meeting Date:  25-Apr-2017
+        ISIN:  US0144911049
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+
+1.     DIRECTOR
+       W. ALLEN DOANE                                            Mgmt          For                            For
+       DAVID C. HULIHEE                                          Mgmt          For                            For
+       STANLEY M. KURIYAMA                                       Mgmt          For                            For
+
+2.     PROPOSAL TO APPROVE THE ADVISORY RESOLUTION RELATING      Mgmt          For                            For
+       TO EXECUTIVE COMPENSATION
+
+3.     PROPOSAL TO RATIFY THE APPOINTMENT OF DELOITTE &          Mgmt          For                            For
+       TOUCHE LLP AS THE INDEPENDENT REGISTERED PUBLIC
+       ACCOUNTING FIRM OF THE CORPORATION
+
+
+
+</pre>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin-top: 0; margin-bottom: 0; margin-left: 0in; text-indent: 0in; text-align: justify">&nbsp;</P>
+
+<P STYLE="margin: 0"></P>
+
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

@@ -1,0 +1,698 @@
+<SEC-DOCUMENT>0001580642-21-004055.txt : 20210830
+<SEC-HEADER>0001580642-21-004055.hdr.sgml : 20210830
+<ACCEPTANCE-DATETIME>20210830161613
+ACCESSION NUMBER:		0001580642-21-004055
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20210630
+FILED AS OF DATE:		20210830
+DATE AS OF CHANGE:		20210830
+EFFECTIVENESS DATE:		20210830
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Ultimus Managers Trust
+		CENTRAL INDEX KEY:			0001545440
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22680
+		FILM NUMBER:		211223702
+
+	BUSINESS ADDRESS:	
+		STREET 1:		225 PICTORIA DRIVE
+		STREET 2:		SUITE 450
+		CITY:			CINCINNATI
+		STATE:			OH
+		ZIP:			45246
+		BUSINESS PHONE:		513-587-3400
+
+	MAIL ADDRESS:	
+		STREET 1:		225 PICTORIA DRIVE
+		STREET 2:		SUITE 450
+		CITY:			CINCINNATI
+		STATE:			OH
+		ZIP:			45246
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001545440
+<SERIES-ID>S000039711
+<SERIES-NAME>Lyrical U.S. Value Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000123053
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>LYRIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000138389
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>LYRBX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001545440
+<SERIES-ID>S000042074
+<SERIES-NAME>Wavelength Interest Rate Neutral Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000130673
+<CLASS-CONTRACT-NAME>Wavelength Interest Rate Neutral Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>WAVLX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001545440
+<SERIES-ID>S000046711
+<SERIES-NAME>Blue Current Global Dividend Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000145851
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BCGFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000145852
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BCGDX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001545440
+<SERIES-ID>S000047779
+<SERIES-NAME>Ryan Labs Core Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000150128
+<CLASS-CONTRACT-NAME>Ryan Labs Core Bond Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>RLCBX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001545440
+<SERIES-ID>S000050261
+<SERIES-NAME>Ryan Labs Long Credit Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000158692
+<CLASS-CONTRACT-NAME>Ryan Labs Long Credit Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>RLLCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001545440
+<SERIES-ID>S000052208
+<SERIES-NAME>Marshfield Concentrated Opportunity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000164234
+<CLASS-CONTRACT-NAME>Marshfield Concentrated Opportunity Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>MRFOX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001545440
+<SERIES-ID>S000054831
+<SERIES-NAME>HVIA Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000172452
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>HVEIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000172453
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>HVENX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001545440
+<SERIES-ID>S000056709
+<SERIES-NAME>Meehan Focus Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000179800
+<CLASS-CONTRACT-NAME>Meehan Focus Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>MEFOX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001545440
+<SERIES-ID>S000057335
+<SERIES-NAME>Kempner Multi-Cap Deep Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000182952
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>FIKDX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000182953
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>FAKDX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001545440
+<SERIES-ID>S000062564
+<SERIES-NAME>ADLER VALUE FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000202991
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>ADLVX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001545440
+<SERIES-ID>S000066472
+<SERIES-NAME>KARNER BLUE BIODIVERSITY IMPACT FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000214376
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>KAIIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000214377
+<CLASS-CONTRACT-NAME>Butterfly Class
+<CLASS-CONTRACT-TICKER-SYMBOL>KAIBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000214378
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>KAIAX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001545440
+<SERIES-ID>S000067444
+<SERIES-NAME>Q3 ALL-WEATHER SECTOR ROTATION FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000216822
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>QAWSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000216823
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>QAISX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001545440
+<SERIES-ID>S000068142
+<SERIES-NAME>Lyrical International Value Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000218236
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>LYRWX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000218237
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>LYRNX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001545440
+<SERIES-ID>S000068289
+<SERIES-NAME>Blueprint Adaptive Growth Allocation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000218613
+<CLASS-CONTRACT-NAME>Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BLUIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000218614
+<CLASS-CONTRACT-NAME>Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>BLUPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001545440
+<SERIES-ID>S000069399
+<SERIES-NAME>EVOLUTIONARY TREE INNOVATORS FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000221442
+<CLASS-CONTRACT-NAME>EVOLUTIONARY TREE INNOVATORS FUND
+<CLASS-CONTRACT-TICKER-SYMBOL>INVNX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001545440
+<SERIES-ID>S000071596
+<SERIES-NAME>Left Brain Compound Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000226954
+<CLASS-CONTRACT-NAME>Left Brain Compound Growth Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>LBCGX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>umtnpx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY>
+
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center">UNITED STATES</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center">SECURITIES AND EXCHANGE COMMISSION</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center">Washington, DC 20549</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center">FORM N-PX</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center">ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED
+MANAGEMENT</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center">INVESTMENT COMPANY</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Verdana, Helvetica, Sans-Serif; margin: 0">&nbsp;</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+    <TD STYLE="width: 44%; font: 12pt Arial Unicode MS"><FONT STYLE="font-family: Verdana, Helvetica, Sans-Serif; font-size: 10pt">Investment Company Act file number</FONT></TD>
+    <TD STYLE="width: 15%; font: 12pt Arial Unicode MS"><FONT STYLE="font-family: Verdana, Helvetica, Sans-Serif; font-size: 10pt"><U>811-22680</U></FONT></TD>
+    <TD STYLE="width: 41%; font: 12pt Arial Unicode MS">&nbsp;</TD></TR>
+</TABLE>
+<P STYLE="font: 10pt Verdana, Helvetica, Sans-Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+    <TD STYLE="width: 100%; font: 12pt Arial Unicode MS; text-align: center"><FONT STYLE="font-family: Verdana, Helvetica, Sans-Serif; font-size: 10pt"><U>Ultimus Managers Trust</U></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 12pt Arial Unicode MS; text-align: center"><FONT STYLE="font-family: Verdana, Helvetica, Sans-Serif; font-size: 10pt">(Exact name of registrant as specified in charter)</FONT></TD></TR>
+</TABLE>
+<P STYLE="font: 10pt Verdana, Helvetica, Sans-Serif; margin: 0; text-align: left">&nbsp;</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+    <TD STYLE="width: 100%; font: 12pt Arial Unicode MS; text-align: center"><FONT STYLE="font-family: Verdana, Helvetica, Sans-Serif; font-size: 10pt"><U>225 Pictoria Drive, Suite 450, Cincinnati, Ohio, 45246</U></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 12pt Arial Unicode MS; text-align: center"><FONT STYLE="font-family: Verdana, Helvetica, Sans-Serif; font-size: 10pt">(Address of principal executive offices) (Zip code)</FONT></TD></TR>
+</TABLE>
+<P STYLE="font: 10pt Verdana, Helvetica, Sans-Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 10pt Verdana, Helvetica, Sans-Serif; margin: 0; text-align: center">David James</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+    <TD STYLE="width: 100%; padding-right: 5.4pt; padding-left: 5.4pt">
+        <P STYLE="font: 10pt Verdana, Helvetica, Sans-Serif; margin: 0; text-align: center">Ultimus Fund Solutions, LLC</P>
+        <P STYLE="font: 10pt Verdana, Helvetica, Sans-Serif; margin: 0; text-align: center">225 Pictoria Drive, Suite 450</P>
+        <P STYLE="font: 10pt Verdana, Helvetica, Sans-Serif; margin: 0; text-align: center"><U>_______Cincinnati, Ohio 45246__________</U></P></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 12pt Arial Unicode MS; text-align: center"><FONT STYLE="font-family: Verdana, Helvetica, Sans-Serif; font-size: 10pt">(Name and address of agent for service)</FONT></TD></TR>
+</TABLE>
+<P STYLE="font: 10pt Verdana, Helvetica, Sans-Serif; margin: 0">&nbsp;</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+    <TD STYLE="width: 390px; font: 12pt Arial Unicode MS"><FONT STYLE="font-family: Verdana, Helvetica, Sans-Serif; font-size: 10pt">Registrant's telephone number, including area code:</FONT></TD>
+    <TD STYLE="width: 210px; font: 12pt Arial Unicode MS"><FONT STYLE="font-family: Verdana, Helvetica, Sans-Serif; font-size: 10pt"><U>(513) 587-3400</U></FONT></TD>
+    <TD STYLE="font: 12pt Arial Unicode MS">&nbsp;</TD></TR>
+</TABLE>
+<P STYLE="font: 10pt Verdana, Helvetica, Sans-Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="width: 100%; font: 12pt Arial Unicode MS; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Verdana, Helvetica, Sans-Serif; font-size: 10pt">Date of fiscal year end:</FONT></TD>
+    <TD><FONT STYLE="font-family: Verdana, Helvetica, Sans-Serif; font-size: 10pt"><U>February 28, May 31, August 31 &amp; November 30</U></FONT></TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD><FONT STYLE="font-family: Verdana, Helvetica, Sans-Serif; font-size: 10pt">Date of reporting period:</FONT></TD>
+    <TD><FONT STYLE="font-family: Verdana, Helvetica, Sans-Serif; font-size: 10pt"><U>July 1, 2020 &#8211; June 30, 2021</U></FONT></TD>
+    <TD>&nbsp;</TD></TR>
+</TABLE>
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10.5pt Consolas; margin: 0; text-align: justify; text-indent: 0.5in"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Form
+N-PX is to be used by a registered management investment company, other than a small business investment company registered on
+Form N-5 (</FONT><FONT STYLE="font-size: 10pt">&sect;&sect;</FONT><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">.
+239.24 and 274.5 of this chapter), to file reports with the Commission, not later than August 31 of each year, containing the registrant's
+proxy voting record for the most recent twelve-month period ended June 30, pursuant to section 30 of the Investment Company Act
+of 1940 and rule 30b1-4 thereunder (17 CFR 270.30b1-4). The Commission may use the information provided on Form N-PX in its regulatory,
+disclosure review, inspection, and policymaking roles.</FONT></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: justify">&nbsp;</P>
+
+<P STYLE="font: 10.5pt Consolas; margin: 0; text-align: justify; text-indent: 0.5in"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">A
+registrant is required to disclose the information specified by Form N-PX, and the Commission will make this information public.
+A registrant is not required to respond to the collection of information contained in Form N-PX unless the Form displays a currently
+valid Office of Management and Budget (&quot;OMB&quot;) control number. Please direct comments concerning the accuracy of the information
+collection burden estimate and any suggestions for reducing the burden to the Secretary, Securities and Exchange Commission, 450
+Fifth Street, NW, Washington, DC 20549-0609. The OMB has reviewed this collection of information under the clearance requirements
+of 44 U.S.C. </FONT><FONT STYLE="font-size: 10pt">&sect;</FONT> <FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">3507.</FONT></P>
+
+
+<!-- Field: Page; Sequence: 1 -->
+    <DIV STYLE="margin-bottom: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <DIV STYLE="break-before: page; margin-top: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <!-- Field: /Page -->
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">ITEM 1. PROXY VOTING RECORD.</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Times New Roman, Times, Serif">
+<TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="2" STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif">Fund Name: Blue Current Global Dividend Fund (BCGDX)</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; width: 31%">Proxy Voting Record</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center; width: 4%">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center; width: 7%">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center; width: 7%">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; width: 15%">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center; width: 8%">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center; width: 8%">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center; width: 11%">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center; width: 9%">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif">July 1, 2020 - June 30, 2021</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-family: Arial, Helvetica, Sans-Serif; text-align: center">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">Shareholder</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">Brief Identification</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">Proposed</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">Did the</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">How did the Fund</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-top: Black 0.5pt solid; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">Did the Fund Vote</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">Ticker</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">&nbsp;</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">Meeting</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">of the Matter</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">by Issuer or</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">Fund</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">Cast its Vote?</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">&nbsp;For or Against</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center">Issuer Name</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">Symbol</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">CUSIP</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">Date</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">Voted On</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">Security Holder?</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">Vote?</TD>
+    <TD STYLE="font-weight: bold; font-style: italic; font-family: Arial, Helvetica, Sans-Serif; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">For, Against, Abstain</TD>
+    <TD STYLE="font-weight: bold; font-family: Arial, Helvetica, Sans-Serif; border-right: Black 0.5pt solid; border-bottom: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">Management?</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-left: Black 0.5pt solid">DEUTSCHE POST AG</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left: Black 0.5pt solid">DPW:GR</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">D19225107</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">27-Aug-2020</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Management Proposal</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Issuer</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">Yes</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">For</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">For</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-left: Black 0.5pt solid">DEUTSCHE POST AG</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left: Black 0.5pt solid">DPW:GR</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">D19225107</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">27-Aug-2020</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Management Proposal</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Issuer</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">Yes</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">For</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">For</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-left: Black 0.5pt solid">DEUTSCHE POST AG</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left: Black 0.5pt solid">DPW:GR</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">D19225107</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">27-Aug-2020</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Management Proposal</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; border-left-color: Black; border-left-width: 0.5pt">Issuer</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">Yes</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">For</TD>
+    <TD STYLE="border-right: Black 0.5pt solid; text-align: center; border-left-color: Black; border-left-width: 0.5pt">For</TD></TR>
+</TABLE>
+</TABLE>
+
+<P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0; text-align: center"></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>&nbsp;</B></P>
+
+
+<!-- Field: Page; Sequence: 12 -->
+    <DIV STYLE="margin-bottom: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <DIV STYLE="break-before: page; margin-top: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <!-- Field: /Page -->
+
+<P STYLE="border-bottom: Black 1pt solid; font: 10.5pt Consolas; margin: 0"></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B></B></P>
+
+<P STYLE="border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>Q3 ALL-WEATHER SECTOR ROTATION FUND (QAWSX/QAISX)</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>Proxy Voting Record</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>July 1, 2020 &#8211; June 30, 2021</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">The Q3 All-Weather Sector Rotation Fund held no securities entitled
+to vote at a meeting of shareholders during the reporting period (July 1, 2020 through June 30, 2021).</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+
+<!-- Field: Page; Sequence: 13 -->
+    <DIV STYLE="margin-bottom: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <DIV STYLE="break-before: page; margin-top: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <!-- Field: /Page -->
+
+<P STYLE="border-bottom: Black 1pt solid; font: 10.5pt Consolas; margin: 0"></P>
+
+<P STYLE="border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>Q3 ALL-WEATHER TACTICAL FUND (QAWTX/QAITX/QACTX)</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>Proxy Voting Record</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>July 1, 2020 &#8211; June 30, 2021</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">The Q3 All-Weather Tactical Fund held no securities entitled to
+vote at a meeting of shareholders during the reporting period (July 1, 2020 through June 30, 2021).</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"></P>
+
+
+<!-- Field: Page; Sequence: 14 -->
+    <DIV STYLE="margin-bottom: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <DIV STYLE="break-before: page; margin-top: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <!-- Field: /Page -->
+
+<P STYLE="border-bottom: Black 1pt solid; font: 10.5pt Consolas; margin: 0; text-align: center"></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>RYAN LABS CORE BOND FUND (RLCBX)</B></P>
+
+<P STYLE="border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center"></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center"></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>Proxy Voting Record</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>July 1, 2020 &#8211; June 30, 2021</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">The Ryan Labs Core Bond Fund held no securities entitled to vote
+at a meeting of shareholders during the reporting period (July 1, 2020 through June 30, 2021).</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>&nbsp;</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>&nbsp;</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"></P>
+
+
+<!-- Field: Page; Sequence: 15 -->
+    <DIV STYLE="margin-bottom: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <DIV STYLE="break-before: page; margin-top: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <!-- Field: /Page -->
+
+<P STYLE="border-bottom: Black 1pt solid; font: 10.5pt Consolas; margin: 0; text-align: center"></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>RYAN LABS LONG CREDIT FUND (RLLCX)</B></P>
+
+<P STYLE="border-bottom: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; margin: 0; text-align: center"></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>Proxy Voting Record</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>July 1, 2020 &#8211; June 30, 2021</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">The Ryan Labs Long Credit Fund held no securities entitled to vote
+at a meeting of shareholders during the reporting period (July 1, 2020 through June 30, 2021).</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>&nbsp;</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>&nbsp;</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>&nbsp;</B></P>
+
+
+<!-- Field: Page; Sequence: 16 -->
+    <DIV STYLE="margin-bottom: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <DIV STYLE="break-before: page; margin-top: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <!-- Field: /Page -->
+
+<P STYLE="border-bottom: Black 1pt solid; font: 10.5pt Consolas; margin: 0; text-align: center"></P>
+
+<P STYLE="border-bottom: Black 1pt solid; font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>WAVELENGTH INTEREST RATE NEUTRAL FUND (WAVLX)</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>Proxy Voting Record</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>July 1, 2020 &#8211; June 30, 2021</B></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">The Wavelength Interest Rate Neutral Fund held no securities entitled
+to vote at a meeting of shareholders during the reporting period (July 1, 2020 through June 30, 2021).</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>&nbsp;</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"><B>&nbsp;</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+
+<!-- Field: Page; Sequence: 17 -->
+    <DIV STYLE="margin-bottom: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <DIV STYLE="break-before: page; margin-top: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <!-- Field: /Page -->
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: center"><U>SIGNATURES</U></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: justify">Pursuant to the requirements of the Investment
+Company Act of 1940, the registrant has duly caused this report to be signed on its behalf by the undersigned, thereunto duly authorized.</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">(Registrant) <U>Ultimus Managers Trust&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</U></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+    <TD COLSPAN="2" STYLE="padding-right: 5.4pt; padding-left: 5.4pt">
+        <P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+        <P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">By (Signature and Title)*</P></TD>
+    <TD STYLE="border-bottom: Black 1pt solid; padding-right: 5.4pt; padding-left: 5.4pt">
+        <P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+        <P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">/s/ Todd E. Heim</P></TD>
+    <TD STYLE="font: 10.5pt Consolas; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD COLSPAN="2" STYLE="font: 10.5pt Consolas; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt">
+        <P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: justify">Todd E. Heim, President of the Trust</P>
+        <P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0; text-align: justify">Principal Executive Officer of Adler Value
+Fund, Blue Current Global Dividend Fund, Blueprint Adaptive Growth Allocation Fund, Evolutionary Tree Innovators Fund, HVIA Equity Fund,
+Karner Blue Biodiversity Impact Fund, Kempner Multi-Cap Deep Value Fund, Lyrical U.S. Value Equity Fund, Lyrical International Value
+Equity Fund, Left Brain Compound Growth Fund, Marshfield Concentrated Opportunity Fund, Meehan Focus Fund, Q3 All-Weather Sector Rotation
+Fund, Q3 All-Weather Tactical Fund, Ryan Labs Core Bond Fund, Ryan Labs Long Credit Fund, and Wavelength Interest Rate Neutral Fund</P>
+        <P STYLE="font: 12pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P></TD>
+    <TD STYLE="font: 10.5pt Consolas; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="font: 10.5pt Consolas; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Date</FONT></TD>
+    <TD COLSPAN="2" STYLE="border-bottom: Black 1pt solid; font: 10.5pt Consolas; padding-right: 5.4pt; padding-left: 0.6pt"><FONT STYLE="font: 11pt Times New Roman, Times, Serif">August 30, 2021</FONT></TD>
+    <TD STYLE="font: 10.5pt Consolas; padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="width: 5%">&nbsp;</TD>
+    <TD STYLE="width: 15%">&nbsp;</TD>
+    <TD STYLE="width: 57%">&nbsp;</TD>
+    <TD STYLE="width: 23%">&nbsp;</TD></TR>
+</TABLE>
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0">* Print the name and title of each signing officer under his or
+her signature.</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0"></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="border-bottom: Black 1pt solid; font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

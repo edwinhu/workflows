@@ -1,0 +1,21 @@
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			GARTMORE VARIABLE INSURANCE TRUST
+		CENTRAL INDEX KEY:			0000353905
+******************************* FORM N-Px REPORT *******************************
+
+======================= DREYFUS GVIT MID CAP INDEX FUND ========================
+
+
+3COM CORP.
+
+Ticker:       COMS           Security ID:  885535104
+Meeting Date: SEP 23, 2003   Meeting Type: Annual
+Record Date:  JUL 25, 2003
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Bruce L. Claflin           For       For        Management
+1.2   Elect Director Paul G. Yovovich           For       For        Management
+2     Approve Omnibus Stock Plan                For       For        Management
+3     Amend Employee Stock Purchase Plan        For       For        Management
+4     Ratify Auditors                           For       For        Management
+

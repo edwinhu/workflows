@@ -1,0 +1,474 @@
+<SEC-DOCUMENT>0001398344-22-017468.txt : 20220829
+<SEC-HEADER>0001398344-22-017468.hdr.sgml : 20220829
+<ACCEPTANCE-DATETIME>20220829140817
+ACCESSION NUMBER:		0001398344-22-017468
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20220630
+FILED AS OF DATE:		20220829
+DATE AS OF CHANGE:		20220829
+EFFECTIVENESS DATE:		20220829
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Vericimetry Funds
+		CENTRAL INDEX KEY:			0001524968
+		IRS NUMBER:				000000000
+		FISCAL YEAR END:			0930
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22578
+		FILM NUMBER:		221210344
+
+	BUSINESS ADDRESS:	
+		STREET 1:		972 WEST CAMPUS LANE
+		CITY:			GOLETA
+		STATE:			CA
+		ZIP:			93117
+		BUSINESS PHONE:		805-570-1086
+
+	MAIL ADDRESS:	
+		STREET 1:		972 WEST CAMPUS LANE
+		CITY:			GOLETA
+		STATE:			CA
+		ZIP:			93117
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001524968
+<SERIES-ID>S000033942
+<SERIES-NAME>Vericimetry U.S. Small Cap Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000104657
+<CLASS-CONTRACT-NAME>Vericimetry U.S. Small Cap Value Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>VYSVX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>fp0078961_npx.htm
+<TEXT>
+<HTML>
+<HEAD>
+     <TITLE></TITLE>
+</HEAD>
+<BODY STYLE="font: 10pt Times New Roman, Times, Serif">
+
+<P STYLE="margin: 0"><FONT STYLE="font-size: 11pt"></FONT></P>
+
+<P STYLE="margin: 0"></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">UNITED STATES<BR>
+SECURITIES AND EXCHANGE COMMISSION<BR>
+Washington, D.C. 20549</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">&nbsp;</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt"><B>FORM N-PX</B></FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">&nbsp;</FONT></P>
+
+<P STYLE="font: bold 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">ANNUAL
+REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT COMPANY</FONT></P>
+
+<P STYLE="font: bold 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">&nbsp;</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">Investment
+Company Act File Number <U>811-22578</U></FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">&nbsp;</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">Vericimetry
+Funds</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">(Exact name
+of registrant as specified in charter)</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">&nbsp;</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">972 West
+Campus Lane</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">Goleta, CA
+93117</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">&nbsp;</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">(Address
+of principal executive offices) (Zip code)</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">&nbsp;</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">Dr. Mendel
+Fygenson</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">Vericimetry
+Advisors LLC</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">972 West
+Campus Lane</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">Goleta, CA
+93117</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">(Name and
+address of agent for service)</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">&nbsp;</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">Registrant's
+telephone number, including area code: <U>(805) 570-1086</U></FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">&nbsp;</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">Date of fiscal
+year end: <U>September 30</U></FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">&nbsp;</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">Date of reporting
+period: <U>July 1, 2021 through June 30, 2022</U></FONT></P>
+
+
+
+
+<!-- Field: Page; Sequence: 1 -->
+    <DIV STYLE="margin-bottom: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <DIV STYLE="page-break-before: always; margin-top: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%"><TR><TD STYLE="text-align: center; width: 100%">&nbsp;</TD></TR></TABLE></DIV>
+    <!-- Field: /Page -->
+
+
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: left"><FONT STYLE="font-size: 11pt"><B>Item 1.
+Proxy Voting Record</B></FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: left"><FONT STYLE="font-size: 11pt">&nbsp;</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: left"><FONT STYLE="font-size: 11pt"></FONT></P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 11pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+  <TR STYLE="vertical-align: bottom; background-color: White">
+    <TD><FONT STYLE="font-size: 10pt">LANDSEA HOMES CORPORATION Annual Meeting</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">TICKER:</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: White">
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">MEETING DATE:</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">be held Wednesday, June 8, 2022 at 9:00 AM Pacific Time</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">MEETING TYPE:</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">ANNUAL</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: White">
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">RECORD DATE:</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">April 11, 2022.</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">SECURITY ID:</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">51509P103</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: White">
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">#PROPOSAL</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">BOARD REC</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">VOTE CAST</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">SPONSOR</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD STYLE="text-align: right"><FONT STYLE="font-size: 10pt">7,450</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">Election of Director: Mollie Fadule</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">MANAGEMENT</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: White">
+    <TD STYLE="text-align: right"><FONT STYLE="font-size: 10pt">2</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">Ratification, on a non-binding, advisory basis, of the appointment of PricewaterhouseCoopers LLP
+    as the Company's independent registered public accounting firm for fiscal year 2022.</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">MANAGEMENT</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD><FONT STYLE="font-size: 10pt">&quot;MATSON, INC. Annual Meeting&quot;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: White">
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">TICKER:</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">MATX</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">MEETING DATE:</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">be held Thursday, April 28, 2022</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: White">
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">MEETING TYPE:</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">ANNUAL</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">RECORD DATE:</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">February 25, 2022.</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: White">
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">SECURITY ID:</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">57686G105</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">#PROPOSAL</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">BOARD REC</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">VOTE CAST</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">SPONSOR</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: White">
+    <TD STYLE="text-align: right"><FONT STYLE="font-size: 10pt">1</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">Election of Director: Jenai S. Wall</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">MANAGEMENT</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD STYLE="text-align: right"><FONT STYLE="font-size: 10pt">2</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">Advisory vote to approve executive compensation.</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">MANAGEMENT</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: White">
+    <TD STYLE="text-align: right"><FONT STYLE="font-size: 10pt">3</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">To ratify the appointment of Deloitte &amp; Touche LLP as the Company's independent registered
+    public accounting firm for the year ending December 31, 2022.</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">MANAGEMENT</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: White">
+    <TD><FONT STYLE="font-size: 10pt">VALARIS LIMITED Annual Meeting</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">TICKER:</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: White">
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">MEETING DATE:</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">be held Wednesday, 8 June 2022</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">MEETING TYPE:</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">ANNUAL</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: White">
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">RECORD DATE:</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">13 April 2022.</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">SECURITY ID:</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">G9460G101</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: White">
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">#PROPOSAL</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">BOARD REC</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">VOTE CAST</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">SPONSOR</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD STYLE="text-align: right"><FONT STYLE="font-size: 10pt">3,410</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">Election of Director to serve until the 2023 Annual General Meeting: Anton Dibowitz</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">MANAGEMENT</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: White">
+    <TD><FONT STYLE="font-size: 10pt">1B.</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">Election of Director to serve until the 2023 Annual General Meeting: Gunnar Eliassen</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">MANAGEMENT</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD><FONT STYLE="font-size: 10pt">1C.</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">Election of Director to serve until the 2023 Annual General Meeting: Dick Fagerstal</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">MANAGEMENT</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: White">
+    <TD><FONT STYLE="font-size: 10pt">1D.</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">Election of Director to serve until the 2023 Annual General Meeting: Joseph Goldschmid</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">MANAGEMENT</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD><FONT STYLE="font-size: 10pt">1E.</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">Election of Director to serve until the 2023 Annual General Meeting: Elizabeth D. Leykum</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">MANAGEMENT</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: White">
+    <TD><FONT STYLE="font-size: 10pt">1F.</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">Election of Director to serve until the 2023 Annual General Meeting: Deepak Munganahalli</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">MANAGEMENT</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD><FONT STYLE="font-size: 10pt">1G.</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">Election of Director to serve until the 2023 Annual General Meeting: James W. Swent, III</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">MANAGEMENT</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: White">
+    <TD STYLE="text-align: right"><FONT STYLE="font-size: 10pt">2</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">To approve the appointment of KPMG LLP as our independent registered public accounting firm until
+    the close of the 2023 Annual General Meeting of Shareholders and to authorize the Board, acting by its Audit Committee, to set KPMG
+    LLP's remuneration.</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">MANAGEMENT</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: Gainsboro">
+    <TD STYLE="text-align: right"><FONT STYLE="font-size: 10pt">3</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">To approve on a non-binding, advisory basis the compensation of our named executive officers.</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">For</FONT></TD>
+    <TD><FONT STYLE="font-size: 10pt">MANAGEMENT</FONT></TD></TR>
+  </TABLE>
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0 0 8pt">&nbsp;</P>
+
+<P STYLE="margin: 0"></P>
+
+
+<!-- Field: Page; Sequence: 1 -->
+    <DIV STYLE="margin-top: 6pt; margin-bottom: 6pt"><P STYLE="margin-top: 0pt; text-align: center; margin-bottom: 0pt; font: 9pt Times New Roman, Times, Serif">&nbsp;</P></DIV>
+    <DIV STYLE="page-break-before: always; margin-top: 6pt; margin-bottom: 0pt"><P STYLE="margin: 0pt">&nbsp;</P></DIV>
+    <!-- Field: /Page -->
+
+
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt"><B>SIGNATURES</B></FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><FONT STYLE="font-size: 11pt">&nbsp;</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0"><FONT STYLE="font-size: 11pt">Pursuant to the requirements
+of the Securities Exchange Act of 1934 and the Investment Company Act of 1940, the registrant has duly caused this report to be
+signed on its behalf by the undersigned, thereunto duly authorized.</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0"><FONT STYLE="font-size: 11pt">&nbsp;</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0"><FONT STYLE="font-size: 11pt">Vericimetry Funds</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0"><FONT STYLE="font-size: 11pt">&nbsp;</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0"></P>
+
+<TABLE CELLPADDING="0" CELLSPACING="0" STYLE="border-collapse: collapse; font: 10pt Times New Roman, Times, Serif; width: 100%">
+<TR STYLE="vertical-align: top; text-align: left">
+    <TD STYLE="width: 35%; border-bottom: Black 1pt solid"><FONT STYLE="font-size: 11pt">&nbsp;/s/ Mendel Fygenson</FONT></TD>
+    <TD STYLE="width: 65%"><FONT STYLE="font-size: 11pt">&nbsp;</FONT></TD></TR>
+</TABLE>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0"></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0"><FONT STYLE="font-size: 11pt">Dr. Mendel Fygenson&nbsp;</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0"><FONT STYLE="font-size: 11pt">President</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0"><FONT STYLE="font-size: 11pt">&nbsp;</FONT></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0"></P>
+
+<TABLE CELLPADDING="0" CELLSPACING="0" STYLE="border-collapse: collapse; font: 10pt Times New Roman, Times, Serif; width: 100%">
+<TR STYLE="vertical-align: top; text-align: left">
+    <TD STYLE="width: 25%; border-bottom: Black 1pt solid"><FONT STYLE="font-size: 11pt">&nbsp;August 25, 2022</FONT></TD>
+    <TD STYLE="width: 75%"><FONT STYLE="font-size: 11pt">&nbsp;</FONT></TD></TR>
+</TABLE>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0"></P>
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0"><FONT STYLE="font-size: 11pt">Date</FONT></P>
+
+
+
+
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0"></P>
+
+
+
+<P STYLE="margin: 0"></P>
+
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

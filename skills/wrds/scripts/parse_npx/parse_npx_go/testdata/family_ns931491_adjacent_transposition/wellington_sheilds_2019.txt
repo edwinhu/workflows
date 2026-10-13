@@ -1,0 +1,343 @@
+<SEC-DOCUMENT>0001413042-19-000225.txt : 20190813
+<SEC-HEADER>0001413042-19-000225.hdr.sgml : 20190813
+<ACCEPTANCE-DATETIME>20190812173850
+ACCESSION NUMBER:		0001413042-19-000225
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20190630
+FILED AS OF DATE:		20190813
+DATE AS OF CHANGE:		20190812
+EFFECTIVENESS DATE:		20190813
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			CAPITAL MANAGEMENT INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0000931491
+		IRS NUMBER:				566459396
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1130
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08822
+		FILM NUMBER:		191017675
+
+	BUSINESS ADDRESS:	
+		STREET 1:		630 FITZWATERTOWN ROAD
+		STREET 2:		BUILDING "A", 2ND FLOOR
+		CITY:			WILLOW GROVE
+		STATE:			PA
+		ZIP:			19090-1904
+		BUSINESS PHONE:		888-626-3863
+
+	MAIL ADDRESS:	
+		STREET 1:		630 FITZWATERTOWN ROAD
+		STREET 2:		BUILDING "A", 2ND FLOOR
+		CITY:			WILLOW GROVE
+		STATE:			PA
+		ZIP:			19090-1904
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000931491
+<SERIES-ID>S000010455
+<SERIES-NAME>Wellington Shields Small-Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028880
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>WSSSX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000931491
+<SERIES-ID>S000010456
+<SERIES-NAME>Wellington Shields All-Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028882
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>WSACX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>wellingtonsheildsformnpx2019.htm
+<TEXT>
+<!doctype html public "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>Capital Management Investment Trust</TITLE>
+</HEAD>
+<BODY style="line-height:12pt; font-size:10pt; color:#000000">
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman; font-size:12pt" align=center>&nbsp;</P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman; font-size:12pt" align=center><B>UNITED STATES</B></P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman; font-size:12pt" align=center><B>SECURITIES AND EXCHANGE COMMISSION</B></P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman; font-size:12pt" align=center><B>Washington, DC 20549</B></P>
+<P style="margin:0pt; font-family:Times New Roman" align=center><BR></P>
+<P style="margin:0pt; font-family:Times New Roman; font-size:12pt" align=right><BR></P>
+<P style="margin:0pt; line-height:18pt; font-family:Times New Roman; font-size:14pt" align=center><B>FORM N-PX</B></P>
+<P style="margin:0pt; font-family:Times New Roman; font-size:12pt" align=center><BR></P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman; font-size:12pt" align=center><B>ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT COMPANY</B></P>
+<P style="margin:0pt; font-family:Times New Roman; font-size:12pt" align=center><BR></P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman; font-size:12pt" align=center>Investment Company Act file number <U>811-08822</U></P>
+<P style="margin:0pt; font-family:Times New Roman; "><font size="4"><BR></font></P>
+<P style="margin:0pt; line-height:14pt; font-family:Times New Roman; " align=center><B>
+<font size="4">CAPITAL MANAGEMENT INVESTMENT TRUST</font></B></P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman" align=center>(Exact name of registrant as specified in charter)</P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman" align=center>&nbsp;</P>
+<P style="margin-top:4.15pt; margin-bottom:4.15pt; line-height:13pt; font-family:Times New Roman; font-size:12pt" align=center><U>140 Broadway, New York, New York 10005</U> <BR>
+<font size="2">(Address of principal executive offices) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Zip code)</font></P>
+<P style="margin:0pt; font-family:Times New Roman"><BR></P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman; font-size:12pt" align=center>CT Corporation System</P>
+<P style="margin:0pt; line-height:14pt; font-family:Times New Roman; font-size:12pt" align=center><U>155 Federal Street, Suite 700, Boston, MA 02110</U> </P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman" align=center>&nbsp;(Name and address of agent for service)</P>
+<P style="margin:0pt; font-family:Arial"><BR></P>
+<P style="margin:0pt; line-height:14pt; font-family:Times New Roman"><BR></P>
+<P style="margin:0pt; line-height:14pt; font-family:Times New Roman">&nbsp;</P>
+<P style="margin:0pt; line-height:14pt; font-family:Times New Roman">Registrant's telephone number, including area code: <U>(888) 626-3863</U></P>
+<P style="margin:0pt; font-family:Times New Roman"><BR></P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman">Date of fiscal year end: <U>November 30</U></P>
+<P style="margin:0pt; font-family:Times New Roman"><BR></P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman">Date of reporting period: <U>July 1, 2018 &#150; June 30, 2019</U></P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman"><BR></P>
+<P style="margin:0pt; font-family:Times New Roman"><BR></P>
+<P style="margin:0pt; text-indent:36pt; line-height:13pt; font-family:Times New Roman">Form N-PX is to be used by a registered management investment company, other than a small business investment company registered on Form N-5 (&#167;&#167; 239.24 and 274.5 of this chapter), to file reports with the Commission, not later than August 31 of each year, containing the registrant&#146;s proxy voting record for the most recent twelve-month period ended June 30, pursuant to section 30 of the Investment Company Act of 1940 and rule 30b1-4 thereunder (17 CFR 270.30b1-4). &nbsp;The Commission may use the information provided on Form N-PX in its regulatory, disclosure review, inspection, and policymaking notes.</P>
+<P style="margin:0pt; font-family:Times New Roman"><BR></P>
+<P style="margin:0pt; text-indent:36pt; line-height:13pt; font-family:Times New Roman">A registrant is required to disclose the information specified by Form N-PX, and the Commission will make this information public. &nbsp;A registrant is not required to respond to the collection of information contained in Form N-PX unless the Form displays a currently valid Office of Management and Budget (&#147;OMB&#148;) control number. &nbsp;Please direct comments concerning the accuracy of the information collection burden estimate and any suggestions for reducing the burden to the Secretary, Securities and Exchange Commission, 450 Fifth Street, NW, Washington, DC 20549-0609. &nbsp;The OMB has reviewed this collection of information under the clearance requirements of 44 U.S.C. &#167; 3507.</P>
+<P style="margin:0pt; text-indent:36pt; line-height:13pt; font-family:Times New Roman">&nbsp;</P>
+<P style="margin:0pt; text-indent:36pt; line-height:13pt; font-family:Times New Roman">&nbsp;</P>
+<HR style="padding-top:7.2pt; padding-bottom:7.2pt" noshade size=1.333>
+<P style="margin:0pt; font-family:Times New Roman; font-size:12pt"><BR></P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman"><B>ITEM 1. PROXY VOTING RECORD:</B></P>
+<P style="margin:0pt; font-family:Times New Roman"><BR></P>
+<P style="margin:0pt; text-indent:36pt; line-height:13pt; font-family:Times New Roman">Disclose the following information for each matter relating to a portfolio security considered at any shareholder meeting held during the period covered by the report and with respect to which the registrant was entitled to vote:</P>
+<P style="margin:0pt; font-family:Times New Roman"><BR></P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman">(a). The name of the issuer of the portfolio security;</P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman">(b). The exchange ticker symbol of the portfolio security;</P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman">(c). The Council on Uniform Securities Identification Procedures (&quot;CUSIP&quot;) number for the portfolio security;</P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman">(d). The shareholder meeting date;</P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman">(e). A brief identification of the matter voted on;</P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman">&nbsp;(f). Whether the matter was proposed by the issuer or by a security holder;</P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman">(g). Whether the Registrant cast its vote on the matter;</P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman">(h). How the Registrant cast its vote (e.g., for or against proposal, or abstain; for or withhold regarding &nbsp;&nbsp;</P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;election of directors); and</P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman">&nbsp;(i). Whether the Registrant cast its vote for or against management.</P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman"><BR></P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman"><B>Proxy Voting Record.</B></P>
+<P style="margin:0pt; line-height:13pt; font-family:Times New Roman"><BR></P>
+<TABLE cellspacing=0 width="914"><TR><A NAME="OLE_LINK3"></A><A NAME="OLE_LINK4"></A>
+  <TD style="background-color:#00007F" valign=bottom width=622><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>Account Name: WELLINGTON SHEILDS SMALL-CAP FUND</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=21><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=82><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=21><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=82><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=21><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=21><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=28><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD></TR>
+<TR><TD style="background-color:#00007F" valign=bottom width=622><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>Custodian Name: US BANK, N.A.</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=21><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=82><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=21><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=82><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=21><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=21><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=28><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD></TR>
+</TABLE>
+<TABLE cellspacing=0><TR><TD valign=bottom width=18.133>&nbsp;</TD><TD valign=top width=757.2 colspan=17><P style="margin:0pt; line-height:13pt; font-family:Arial; font-size:11pt"><B>3D SYSTEMS CORPORATION &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</B></P>
+</TD><TD valign=bottom width=103.933>&nbsp;</TD></TR>
+<TR><TD valign=bottom width=18.133>&nbsp;</TD><TD valign=bottom width=20>&nbsp;</TD><TD valign=top width=98 colspan=4><P style="margin:0pt; font-family:Arial" align=right><B>Security:</B></P>
+</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=top width=110.8 colspan=2><P style="margin:0pt; font-family:Arial">88554D205</P>
+</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=top width=278.067 colspan=3><P style="margin:0pt; font-family:Arial" align=right><B>Agenda Number:</B></P>
+</TD><TD valign=top width=150.667 colspan=2><P style="margin:0pt; font-family:Arial">934971309</P>
+</TD><TD valign=bottom width=103.933>&nbsp;</TD></TR>
+<TR><TD valign=bottom width=18.133>&nbsp;</TD><TD valign=bottom width=20>&nbsp;</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=top width=58.133 colspan=2><P style="margin:0pt; font-family:Arial" align=right><B>Ticker:</B></P>
+</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=top width=110.8 colspan=2><P style="margin:0pt; font-family:Arial">DDD &nbsp;&nbsp;</P>
+</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=top width=258.133 colspan=2><P style="margin:0pt; font-family:Arial" align=right><B>Meeting Type:</B></P>
+</TD><TD valign=top width=150.667 colspan=2><P style="margin:0pt; font-family:Arial">Annual</P>
+</TD><TD valign=bottom width=103.933>&nbsp;</TD></TR>
+<TR><TD valign=bottom width=18.133>&nbsp;</TD><TD valign=bottom width=20>&nbsp;</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=top width=58.133 colspan=2><P style="margin:0pt; font-family:Arial" align=right><B>ISIN:</B></P>
+</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=top width=110.8 colspan=2><P style="margin:0pt; font-family:Arial">US88554D2053</P>
+</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=top width=258.133 colspan=2><P style="margin:0pt; font-family:Arial" align=right><B>Meeting Date:</B></P>
+</TD><TD valign=top width=150.667 colspan=2><P style="margin:0pt; font-family:Arial">5/21/2019</P>
+</TD><TD valign=bottom width=103.933>&nbsp;</TD></TR>
+<TR><TD style="border-left:0.5pt solid #DFDFDF" valign=bottom width=18.133><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD valign=bottom width=20><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD valign=bottom width=19.933><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD valign=bottom width=19.933><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD valign=bottom width=29.067><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD valign=bottom width=29.067><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD valign=bottom width=19.933><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD valign=bottom width=55.667><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD valign=bottom width=55.133><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD valign=bottom width=19.933><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD valign=bottom width=19.933><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD valign=bottom width=19.933><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD valign=bottom width=19.933><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD valign=bottom width=19.933><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD valign=bottom width=19.933><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD valign=bottom width=238.2><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD valign=bottom width=19.933><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD valign=bottom width=130.733><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD style="border-top:0.5pt solid #DFDFDF; border-right:0.5pt solid #DFDFDF" valign=bottom width=103.933><P style="margin:0pt; font-family:Arial; font-size:8pt" align=center>&nbsp;</P>
+</TD></TR>
+<TR><TD style="background-color:#00007F; border-left:0.5pt solid #DFDFDF; border-bottom:0.5pt solid #DFDFDF" valign=top width=58.067 colspan=3><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt; color:#FFFFFF"><B>Prop. #</B></P>
+</TD><TD style="background-color:#00007F; border-bottom:0.5pt solid #DFDFDF" valign=bottom width=19.933><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD style="background-color:#00007F; border-bottom:0.5pt solid #DFDFDF" valign=bottom width=29.067><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD style="background-color:#00007F; border-bottom:0.5pt solid #DFDFDF" valign=top width=104.667 colspan=3><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt; color:#FFFFFF"><B>Proposal</B></P>
+</TD><TD style="background-color:#00007F; border-bottom:0.5pt solid #DFDFDF" valign=bottom width=55.133><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD style="background-color:#00007F; border-bottom:0.5pt solid #DFDFDF" valign=bottom width=19.933><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD style="background-color:#00007F; border-bottom:0.5pt solid #DFDFDF" valign=bottom width=19.933><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD>
+  <TD style="border-bottom:0.5pt solid #DFDFDF" valign=top width=79.733 colspan=4 bgcolor="#00007F"><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt; color:#FFFFFF" align=center><B>Proposed by</B></P>
+</TD>
+  <TD style="border-bottom:0.5pt solid #DFDFDF" valign=top width=238.2 bgcolor="#00007F"><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt; color:#FFFFFF" align=center><B>Proposal Vote</B></P>
+</TD>
+  <TD style="border-bottom:0.5pt solid #DFDFDF" valign=top width=150.667 colspan=2 bgcolor="#00007F"><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt; color:#FFFFFF" align=center><B>For/Against Management's Recommendation</B></P>
+</TD>
+  <TD style="border-bottom:0.5pt solid #DFDFDF" valign=top width=103.933 bgcolor="#00007F"><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt; color:#FFFFFF" align=center><B>Management Recommendation</B></P>
+</TD></TR>
+<TR><TD valign=top width=58.067 colspan=3><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">1a. &nbsp;</P>
+</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=top width=228.733 colspan=7><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">Election of Director: Malissia Clinton</P>
+</TD><TD valign=top width=79.733 colspan=4><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>Management</P>
+</TD><TD valign=top width=238.2><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=top width=130.733><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD><TD valign=bottom width=103.933><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD></TR>
+<TR><TD valign=top width=58.067 colspan=3><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">1b. &nbsp;</P>
+</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=top width=228.733 colspan=7><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">Election of Director: William E. Curran</P>
+</TD><TD valign=top width=79.733 colspan=4><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>Management</P>
+</TD><TD valign=top width=238.2><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=top width=130.733><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD><TD valign=bottom width=103.933><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD></TR>
+<TR><TD valign=top width=58.067 colspan=3><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">1c. &nbsp;</P>
+</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=top width=228.733 colspan=7><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">Election of Director: Thomas W. Erickson</P>
+</TD><TD valign=top width=79.733 colspan=4><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>Management</P>
+</TD><TD valign=top width=238.2><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=top width=130.733><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD><TD valign=bottom width=103.933><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD></TR>
+<TR><TD valign=top width=58.067 colspan=3><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">1d. &nbsp;</P>
+</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=top width=228.733 colspan=7><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">Election of Director: Charles W. Hull</P>
+</TD><TD valign=top width=79.733 colspan=4><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>Management</P>
+</TD><TD valign=top width=238.2><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD><TD valign=bottom width=19.933>&nbsp;</TD><TD valign=top width=130.733><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD><TD valign=bottom width=103.933><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD></TR>
+</TABLE>
+<TABLE cellspacing=0 width="905"><TR>
+  <TD style="background-color:#00007F" valign=bottom width=514><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>Account Name: WELLINGTON SHIELDS ALL-CAP FUND</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=18><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=68><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=18><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=68><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=18><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=57><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=18><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=108><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD></TR>
+<TR><TD style="background-color:#00007F" valign=bottom width=514><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>Custodian Name: US BANK, N.A.</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=18><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=68><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=18><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=68><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=18><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=57><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=18><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD><TD style="background-color:#00007F" valign=bottom width=108><P style="margin:0pt; font-family:Arial; color:#FFFFFF"><B>&nbsp;</B></P>
+</TD></TR>
+</TABLE>
+<TABLE cellspacing=0><TR><TD valign=bottom width=18.133>&nbsp;</TD><TD valign=top width=746.067 colspan=17><P style="margin:0pt; line-height:13pt; font-family:Arial; font-size:11pt"><B>ACCENTURE PLC &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</B></P>
+</TD><TD valign=bottom width=103.933>&nbsp;</TD></TR>
+<TR><TD valign=bottom width=18.133>&nbsp;</TD><TD valign=bottom width=19.533>&nbsp;</TD><TD valign=top width=97.2 colspan=4><P style="margin:0pt; font-family:Arial" align=right><B>Security:</B></P>
+</TD><TD valign=bottom width=19.467>&nbsp;</TD><TD valign=top width=113 colspan=2><P style="margin:0pt; font-family:Arial">G1151C101</P>
+</TD><TD valign=bottom width=19.467>&nbsp;</TD><TD valign=bottom width=19.467>&nbsp;</TD><TD valign=bottom width=19.467>&nbsp;</TD><TD valign=bottom width=19.467>&nbsp;</TD><TD valign=top width=271.733 colspan=3><P style="margin:0pt; font-family:Arial" align=right><B>Agenda Number:</B></P>
+</TD><TD valign=top width=147.267 colspan=2><P style="margin:0pt; font-family:Arial">934912634</P>
+</TD><TD valign=bottom width=103.933>&nbsp;</TD></TR>
+<TR><TD valign=bottom width=18.133>&nbsp;</TD><TD valign=bottom width=19.533>&nbsp;</TD><TD valign=bottom width=19.533>&nbsp;</TD><TD valign=bottom width=19.533>&nbsp;</TD><TD valign=top width=58.133 colspan=2><P style="margin:0pt; font-family:Arial" align=right><B>Ticker:</B></P>
+</TD><TD valign=bottom width=19.467>&nbsp;</TD><TD valign=top width=113 colspan=2><P style="margin:0pt; font-family:Arial">ACN &nbsp;&nbsp;</P>
+</TD><TD valign=bottom width=19.467>&nbsp;</TD><TD valign=bottom width=19.467>&nbsp;</TD><TD valign=bottom width=19.467>&nbsp;</TD><TD valign=bottom width=19.467>&nbsp;</TD><TD valign=bottom width=19.467>&nbsp;</TD><TD valign=top width=252.267 colspan=2><P style="margin:0pt; font-family:Arial" align=right><B>Meeting Type:</B></P>
+</TD><TD valign=top width=147.267 colspan=2><P style="margin:0pt; font-family:Arial">Annual</P>
+</TD><TD valign=bottom width=103.933>&nbsp;</TD></TR>
+<TR><TD valign=bottom width=18.133>&nbsp;</TD><TD valign=bottom width=19.533>&nbsp;</TD><TD valign=bottom width=19.533>&nbsp;</TD><TD valign=bottom width=19.533>&nbsp;</TD><TD valign=top width=58.133 colspan=2><P style="margin:0pt; font-family:Arial" align=right><B>ISIN:</B></P>
+</TD><TD valign=bottom width=19.467>&nbsp;</TD><TD valign=top width=113 colspan=2><P style="margin:0pt; font-family:Arial">IE00B4BNMY34</P>
+</TD><TD valign=bottom width=19.467>&nbsp;</TD><TD valign=bottom width=19.467>&nbsp;</TD><TD valign=bottom width=19.467>&nbsp;</TD><TD valign=bottom width=19.467>&nbsp;</TD><TD valign=bottom width=19.467>&nbsp;</TD><TD valign=top width=252.267 colspan=2><P style="margin:0pt; font-family:Arial" align=right><B>Meeting Date:</B></P>
+</TD><TD valign=top width=147.267 colspan=2><P style="margin:0pt; font-family:Arial">2/1/2019</P>
+</TD><TD valign=bottom width=103.933>&nbsp;</TD></TR>
+<TR><TD style="border-left:0.5pt solid #DFDFDF" valign=bottom width=18.133><P style="margin:0pt; font-family:Arial">&nbsp;</P>
+</TD><TD valign=bottom width=19.533><P style="margin:0pt; font-family:Arial">&nbsp;</P>
+</TD><TD valign=bottom width=19.533><P style="margin:0pt; font-family:Arial">&nbsp;</P>
+</TD><TD valign=bottom width=19.533><P style="margin:0pt; font-family:Arial">&nbsp;</P>
+</TD><TD valign=bottom width=37.2><P style="margin:0pt; font-family:Arial">&nbsp;</P>
+</TD><TD valign=bottom width=20.933><P style="margin:0pt; font-family:Arial">&nbsp;</P>
+</TD><TD valign=bottom width=19.467><P style="margin:0pt; font-family:Arial">&nbsp;</P>
+</TD><TD valign=bottom width=56.8><P style="margin:0pt; font-family:Arial">&nbsp;</P>
+</TD><TD valign=bottom width=56.2><P style="margin:0pt; font-family:Arial">&nbsp;</P>
+</TD><TD valign=bottom width=19.467><P style="margin:0pt; font-family:Arial">&nbsp;</P>
+</TD><TD valign=bottom width=19.467><P style="margin:0pt; font-family:Arial">&nbsp;</P>
+</TD><TD valign=bottom width=19.467><P style="margin:0pt; font-family:Arial">&nbsp;</P>
+</TD><TD valign=bottom width=19.467><P style="margin:0pt; font-family:Arial">&nbsp;</P>
+</TD><TD valign=bottom width=19.467><P style="margin:0pt; font-family:Arial">&nbsp;</P>
+</TD><TD valign=bottom width=19.467><P style="margin:0pt; font-family:Arial">&nbsp;</P>
+</TD><TD valign=bottom width=232.8><P style="margin:0pt; font-family:Arial">&nbsp;</P>
+</TD><TD valign=bottom width=19.467><P style="margin:0pt; font-family:Arial">&nbsp;</P>
+</TD><TD valign=bottom width=127.8><P style="margin:0pt; font-family:Arial">&nbsp;</P>
+</TD><TD style="border-right:0.5pt solid #DFDFDF" valign=bottom width=103.933><P style="margin:0pt; font-family:Arial">&nbsp;</P>
+</TD></TR>
+<TR><TD style="background-color:#00007F; border-left:0.5pt solid #DFDFDF; border-bottom:0.5pt solid #DFDFDF" valign=top width=57.2 colspan=3><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt; color:#FFFFFF"><B>Prop. #</B></P>
+</TD><TD style="background-color:#00007F; border-bottom:0.5pt solid #DFDFDF" valign=bottom width=19.533><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD style="background-color:#00007F; border-bottom:0.5pt solid #DFDFDF" valign=bottom width=37.2><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD style="background-color:#00007F; border-bottom:0.5pt solid #DFDFDF" valign=top width=97.2 colspan=3><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt; color:#FFFFFF"><B>Proposal</B></P>
+</TD><TD style="background-color:#00007F; border-bottom:0.5pt solid #DFDFDF" valign=bottom width=56.2><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD style="background-color:#00007F; border-bottom:0.5pt solid #DFDFDF" valign=bottom width=19.467><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD><TD style="background-color:#00007F; border-bottom:0.5pt solid #DFDFDF" valign=bottom width=19.467><P style="margin:0pt; font-family:Arial; font-size:8pt">&nbsp;</P>
+</TD>
+  <TD style="border-bottom:0.5pt solid #DFDFDF" valign=top width=77.867 colspan=4 bgcolor="#00007F"><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt; color:#FFFFFF" align=center><B>Proposed by</B></P>
+</TD>
+  <TD style="border-bottom:0.5pt solid #DFDFDF" valign=top width=232.8 bgcolor="#00007F"><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt; color:#FFFFFF" align=center><B>Proposal Vote</B></P>
+</TD>
+  <TD style="border-bottom:0.5pt solid #DFDFDF" valign=top width=147.267 colspan=2 bgcolor="#00007F"><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt; color:#FFFFFF" align=center><B>For/Against Management's Recommendation</B></P>
+</TD>
+  <TD style="border-bottom:0.5pt solid #DFDFDF" valign=top width=103.933 bgcolor="#00007F"><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt; color:#FFFFFF" align=center><B>Management Recommendation</B></P>
+</TD></TR>
+<TR><TD valign=top width=57.2 colspan=3><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">1a. &nbsp;</P>
+</TD><TD valign=bottom width=19.533>&nbsp;</TD><TD valign=top width=229.533 colspan=7><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">Re-Appointment of Director: Jaime Ardila</P>
+</TD><TD valign=top width=77.867 colspan=4><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>Management</P>
+</TD><TD valign=top width=232.8><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD><TD valign=bottom width=19.467>&nbsp;</TD><TD valign=top width=127.8><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD><TD valign=top width=103.933><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD></TR>
+<TR><TD valign=top width=57.2 colspan=3><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">1b. &nbsp;</P>
+</TD><TD valign=bottom width=19.533>&nbsp;</TD><TD valign=top width=229.533 colspan=7><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">Re-Appointment of Director: Herbert Hainer</P>
+</TD><TD valign=top width=77.867 colspan=4><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>Management</P>
+</TD><TD valign=top width=232.8><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD><TD valign=bottom width=19.467>&nbsp;</TD><TD valign=top width=127.8><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD><TD valign=top width=103.933><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD></TR>
+<TR><TD valign=top width=57.2 colspan=3><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">1c. &nbsp;</P>
+</TD><TD valign=bottom width=19.533>&nbsp;</TD><TD valign=top width=229.533 colspan=7><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">Re-Appointment of Director: Marjorie Magner</P>
+</TD><TD valign=top width=77.867 colspan=4><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>Management</P>
+</TD><TD valign=top width=232.8><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD><TD valign=bottom width=19.467>&nbsp;</TD><TD valign=top width=127.8><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD><TD valign=top width=103.933><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD></TR>
+<TR><TD valign=top width=57.2 colspan=3><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">1d. &nbsp;</P>
+</TD><TD valign=bottom width=19.533>&nbsp;</TD><TD valign=top width=229.533 colspan=7><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt">Re-Appointment of Director: Nancy McKinstry</P>
+</TD><TD valign=top width=77.867 colspan=4><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>Management</P>
+</TD><TD valign=top width=232.8><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD><TD valign=bottom width=19.467>&nbsp;</TD><TD valign=top width=127.8><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD><TD valign=top width=103.933><P style="margin:0pt; line-height:10pt; font-family:Arial; font-size:8pt" align=center>For</P>
+</TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

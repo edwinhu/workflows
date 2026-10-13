@@ -1,0 +1,60 @@
+<SEC-DOCUMENT>0000067590-16-002828.txt : 20161220
+<SEC-HEADER>0000067590-16-002828.hdr.sgml : 20161220
+		COMPANY CONFORMED NAME:			ADVANCED SERIES TRUST
+		CENTRAL INDEX KEY:			0000814679
+<SERIES-ID>S000006796
+<SERIES-NAME>AST PRUDENTIAL GROWTH ALLOCATION PORTFOLIO
+<SERIES-ID>S000019376
+<SERIES-NAME>AST SCHRODERS GLOBAL TACTICAL PORTFOLIO
+<SERIES-ID>S000019377
+<SERIES-NAME>AST RCM World Trends Portfolio
+<SERIES-ID>S000036492
+<SERIES-NAME>AST New Discovery Asset Allocation Portfolio
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX/A
+<SEQUENCE>1
+<FILENAME>ast.htm
+<TEXT>
+<HTML>
+<br style="page-break-after: always"><p style="text-align: center">AST Franklin Templeton Founding Funds Allocation Portfolio - Sub-Adviser: Franklin Templeton</p>
+<table cellpadding="2" cellspacing="0" border="1" style="width: 100%">
+<td colspan="5" style="font-size: 10pt; font-weight: bold">ACE LIMITED
+<br>Meeting Date:&nbsp;&nbsp;MAY 16, 2013
+</td>
+</tr>
+<tr>
+<td colspan="5" style="font-size: 10pt">
+Ticker:&nbsp;&nbsp;ACE
+<br>Security ID:&nbsp;&nbsp;H0023R105
+</td>
+</tr>
+<tr>
+<th style="font-size: 10pt; width: 10%">Proposal No</th>
+<th style="font-size: 10pt; width: 55%">Proposal</th>
+<th style="font-size: 10pt; width: 15%">Proposed By</th>
+<th style="font-size: 10pt; width: 15%">Management Recommendation</th>
+<th style="font-size: 10pt; width: 10%">Vote Cast</th>
+</tr>
+<tr>
+<td>1.1</td>
+<td>Elect Robert M. Hernandez as Director</td>
+<td>Management</td>
+<td>For</td>
+<td>For</td>
+</tr>
+<tr>
+<td>1.2</td>
+<td>Elect Peter Menikoff as Director</td>
+<td>Management</td>
+<td>For</td>
+<td>For</td>
+</tr>
+<tr>
+<td>1.3</td>
+<td>Elect Robert Ripp as Director</td>
+<td>Management</td>
+<td>For</td>
+<td>For</td>
+</tr>
+</table>

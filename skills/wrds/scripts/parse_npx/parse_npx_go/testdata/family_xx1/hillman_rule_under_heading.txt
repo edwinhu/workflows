@@ -1,0 +1,32 @@
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040827
+DATE AS OF CHANGE:		20040826
+EFFECTIVENESS DATE:		20040827
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			HILLMAN CAPITAL MANAGEMENT INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0001122649
+<PAGE>
+
+
+
+                              PROXY VOTING RECORDS
+
+<TABLE>
+<S>         <C>                                   <C>         <C>              <C>                 <C>                   <C>
+THE HILLMAN TOTAL RETURN FUND
+- -----------------------------
+
+
+ISSUER NAME                                       TICKER      CUSIP            MTG DATE            MTG TYPE
+                                                                               Proposal Type       Voted?    Vote        For/Agnst
+3M Co                                             MMM         88579Y101        5/11/04             Annual                Mgmt
+            1.01   Elect Edward A. Brennan                                     MGMT                YES       FOR         FOR
+            1.02   Elect Michael L. Eskew                                      MGMT                YES       FOR         FOR
+            1.03   Elect W. James McNerney Jr.                                 MGMT                YES       FOR         FOR
+            1.04   Elect Kevin W. Sharer                                       MGMT                YES       FOR         FOR
+               2   Ratify Selection of Auditors                                MGMT                YES       FOR         FOR

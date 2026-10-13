@@ -1,0 +1,39 @@
+==================== THE VANTAGEPOINT 500 STOCK INDEX FUND =====================
+
+
+--------------------------------------------------------------------------------
+
+ECOLAB INC.
+
+Ticker:       ECL            Security ID:  278865100
+Meeting Date: MAY 05, 2011   Meeting Type: Annual
+Record Date:  MAR 08, 2011
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Elect Director Douglas M. Baker, Jr.    For       Against      Management
+2     Elect Director Barbara J. Beck          For       Against      Management
+3     Elect Director Jerry W. Levin           For       Against      Management
+4     Elect Director Robert L. Lumpkins       For       Against      Management
+5     Ratify Auditors                         For       For          Management
+6     Amend Nonqualified Employee Stock       For       For          Management
+      Purchase Plan
+7     Advisory Vote to Ratify Named Executive For       For          Management
+      Officers' Compensation
+8     Advisory Vote on Say on Pay Frequency   One Year  One Year     Management
+9     Adopt Policy on Human Right to Water    Against   Against      Shareholder
+10    Reduce Supermajority Vote Requirement   Against   For          Shareholder
+
+
+--------------------------------------------------------------------------------
+
+EDISON INTERNATIONAL
+
+Ticker:       EIX            Security ID:  281020107
+Meeting Date: APR 28, 2011   Meeting Type: Annual
+Record Date:  MAR 02, 2011
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Elect Director Jagjeet S. Bindra        For       For          Management
+2     Elect Director Vanessa C.L. Chang       For       For          Management
+3     Elect Director France A. Cordova        For       For          Management
+4     Elect Director Theodore F. Craver, Jr.  For       For          Management

@@ -57,9 +57,22 @@ Stdlib only. There is no third-party dependency and `go.mod` requires nothing.
 | `-manifest` | — (**required**) | manifest TSV; gzipped iff the path ends in `.gz` |
 | `-archive-root` | `/wrds/sec/archives` | prepended to **relative** filelist paths only; an absolute path is used as given |
 | `-concurrency` | `runtime.NumCPU()*4` | worker goroutines |
+| `-issnpx-registrant-prefix-strip` | `true` | `issnpx` only: when a fund banner begins, at a token boundary, with the filing's own `COMPANY CONFORMED NAME`, retry the series lookup with that prefix removed |
 | `-version` | `false` | print version and exit |
 
 A missing required flag prints to stderr and exits **2**.
+
+`-issnpx-registrant-prefix-strip=false` turns the strip off. It exists as a switch,
+not a constant, because the rule ships **without a measured false-positive rate**:
+the held-out apparatus that scored every other candidate rule cannot score this one
+— the headings it fires on are precisely the ones that never exact-match anywhere,
+so they never enter the ground-truth index and the test returns `0/0` usable
+observations. Every decidable check passed (0 disagreements, 0 sibling collisions
+among the 275 at-risk declared names, 134/134 protected by ordering, 0 errors in 30
+hand-checked accepts), but a set of passed necessary conditions is not a rate. The
+audit that closes the gap begins with a re-parse at `=false` to snapshot the
+repaired headings, then compares against a re-parse at `=true` to confirm the strip
+only ever fills a blank. Removing the flag makes that audit unrunnable.
 
 ```bash
 parse_npx_go \

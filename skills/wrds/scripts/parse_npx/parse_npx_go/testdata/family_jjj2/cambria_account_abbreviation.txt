@@ -1,0 +1,125 @@
+<SEC-DOCUMENT>0001213900-21-040275.txt : 20210804
+<SEC-HEADER>0001213900-21-040275.hdr.sgml : 20210804
+<ACCEPTANCE-DATETIME>20210804143137
+ACCESSION NUMBER:		0001213900-21-040275
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20210630
+FILED AS OF DATE:		20210804
+DATE AS OF CHANGE:		20210804
+EFFECTIVENESS DATE:		20210804
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Cambria ETF Trust
+		CENTRAL INDEX KEY:			0001529390
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001529390
+<SERIES-ID>S000054369
+<SERIES-NAME>Cambria Tail Risk ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000170791
+<CLASS-CONTRACT-NAME>Cambria Tail Risk ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>TAIL
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001529390
+<SERIES-ID>S000058208
+<SERIES-NAME>Cambria Global Real Estate ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000190833
+<CLASS-CONTRACT-NAME>Cambria Global Real Estate ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>BLDG
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>s133102_npx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+     <TITLE></TITLE>
+</HEAD>
+<BODY STYLE="font: 10pt Times New Roman, Times, Serif">
+
+<TABLE CELLSPACING="0" CELLPADDING="2" STYLE="font: 10pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="text-align: left; width: 8%; vertical-align: bottom"><FONT STYLE="font-size: 8pt">Custodian Account Number</FONT></TD>
+    <TD STYLE="text-align: left; width: 15%; vertical-align: bottom"><FONT STYLE="font-size: 8pt">Account Name</FONT></TD>
+    <TD STYLE="text-align: left; width: 15%; vertical-align: bottom"><FONT STYLE="font-size: 8pt">Issuer Name</FONT></TD>
+    <TD STYLE="text-align: left; width: 5%; vertical-align: bottom"><FONT STYLE="font-size: 8pt">Issuer Cusip</FONT></TD>
+    <TD STYLE="text-align: left; width: 3%; vertical-align: bottom"><FONT STYLE="font-size: 8pt">Issuer Ticker</FONT></TD>
+    <TD STYLE="text-align: left; width: 3%; vertical-align: bottom"><FONT STYLE="font-size: 8pt">Meeting Date</FONT></TD>
+    <TD STYLE="text-align: left; width: 3%; vertical-align: bottom"><FONT STYLE="font-size: 8pt">Proposal Label</FONT></TD>
+    <TD STYLE="text-align: left; width: 30%; vertical-align: bottom"><FONT STYLE="font-size: 8pt">Proposal Description</FONT></TD>
+    <TD STYLE="text-align: left; width: 6%; vertical-align: bottom"><FONT STYLE="font-size: 8pt">Proposed By</FONT></TD>
+    <TD STYLE="text-align: left; width: 4%; vertical-align: bottom"><FONT STYLE="font-size: 8pt">Vote</FONT></TD>
+    <TD STYLE="text-align: left; width: 4%; vertical-align: bottom"><FONT STYLE="font-size: 8pt">With Management</FONT></TD>
+    <TD STYLE="text-align: left; width: 4%; vertical-align: bottom"><FONT STYLE="font-size: 8pt">Vote Shares</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: rgb(204,238,255)">
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">5500616</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">GLBL RL ESTATE ETF</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">INDUSTRIAL LOGISTICS PROPERTY</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">456237106</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">ILPT</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">2021-06-02</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">1.</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">ELECTION OF DIRECTOR: JOSEPH L. MOREA</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">ISSUER</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">FOR</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">Yes</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">7092</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: White">
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">5500616</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">GLBL RL ESTATE ETF</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">INDUSTRIAL LOGISTICS PROPERTY</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">456237106</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">ILPT</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">2021-06-02</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">2.</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">ADVISORY VOTE TO APPROVE EXECUTIVE COMPENSATION.</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">ISSUER</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">FOR</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">Yes</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">7092</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: rgb(204,238,255)">
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">5500616</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">GLBL RL ESTATE ETF</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">INDUSTRIAL LOGISTICS PROPERTY</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">456237106</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">ILPT</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">2021-06-02</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">3.</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">RATIFICATION OF THE APPOINTMENT OF DELOITTE &amp;
+    TOUCHE LLP AS INDEPENDENT AUDITORS TO SERVE FOR THE 2021 FISCAL YEAR.</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">ISSUER</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">FOR</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">Yes</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">7092</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: White">
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">5500616</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">GLBL RL ESTATE ETF</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">DIGITAL REALTY TRUST, INC.</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">253868103</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">DLR</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">2021-06-03</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">1A.</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">ELECTION OF DIRECTOR: LAURENCE A. CHAPMAN</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">ISSUER</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">AGAINST</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">No</FONT></TD>
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">1017</FONT></TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: rgb(204,238,255)">
+    <TD STYLE="text-align: left; vertical-align: top"><FONT STYLE="font-size: 8pt">5500616</FONT></TD>
+</TABLE></BODY></HTML>
+</TEXT>
+</DOCUMENT>

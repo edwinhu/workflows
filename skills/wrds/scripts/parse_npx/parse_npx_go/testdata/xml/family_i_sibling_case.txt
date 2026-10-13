@@ -1,0 +1,42 @@
+  <inf:proxyTable>
+    <inf:issuerName>CORECARD CORPORATION</inf:issuerName>
+    <inf:meetingDate>10/28/2025</inf:meetingDate>
+    <inf:voteDescription>Proposal to approve, on an advisory (non-binding) basis, the compensation that may be paid or become payable to CoreCard's named executive officers that is based on or otherwise relates to the Merger (the &#34;Advisory Compensation Proposal&#34;).</inf:voteDescription>
+    <inf:voteCategories>
+      <inf:voteCategory>
+        <inf:categoryType>SECTION 14A SAY-ON-PAY VOTES</inf:categoryType>
+      </inf:voteCategory>
+    </inf:voteCategories>
+    <inf:voteSource>ISSUER</inf:voteSource>
+    <inf:sharesVoted>459</inf:sharesVoted>
+    <inf:sharesOnLoan>0</inf:sharesOnLoan>
+    <inf:vote>
+      <inf:voteRecord>
+        <inf:howVoted>ABSTAIN</inf:howVoted>
+        <inf:sharesVoted>459</inf:sharesVoted>
+        <inf:managementRecommendation>FOR</inf:managementRecommendation>
+      </inf:voteRecord>
+    </inf:vote>
+  </inf:proxyTable>
+  <inf:proxyTable>
+    <inf:issuerName>CoreCard Corporation</inf:issuerName>
+    <inf:cusip>45816D100</inf:cusip>
+    <inf:isin>US45816D1000</inf:isin>
+    <inf:meetingDate>10/28/2025</inf:meetingDate>
+    <inf:voteDescription>Proposal to approve, on an advisory (non-binding) basis, the compensation that may be paid or become payable to CoreCard's named executive officers that is based on or otherwise relates to the Merger (the &#34;Advisory Compensation Proposal&#34;).</inf:voteDescription>
+    <inf:voteCategories>
+      <inf:voteCategory>
+        <inf:categoryType>SECTION 14A SAY-ON-PAY VOTES</inf:categoryType>
+      </inf:voteCategory>
+    </inf:voteCategories>
+    <inf:voteSource>ISSUER</inf:voteSource>
+    <inf:sharesVoted>632</inf:sharesVoted>
+    <inf:sharesOnLoan>0</inf:sharesOnLoan>
+    <inf:vote>
+      <inf:voteRecord>
+        <inf:howVoted>FOR</inf:howVoted>
+        <inf:sharesVoted>632</inf:sharesVoted>
+        <inf:managementRecommendation>FOR</inf:managementRecommendation>
+      </inf:voteRecord>
+    </inf:vote>
+  </inf:proxyTable>

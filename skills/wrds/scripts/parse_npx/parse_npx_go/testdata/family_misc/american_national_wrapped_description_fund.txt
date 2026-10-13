@@ -1,0 +1,78 @@
+<SEC-DOCUMENT>0000867050-09-000007.txt : 20090817
+<SEC-HEADER>0000867050-09-000007.hdr.sgml : 20090817
+<ACCEPTANCE-DATETIME>20090817093150
+ACCESSION NUMBER:		0000867050-09-000007
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20090630
+FILED AS OF DATE:		20090817
+DATE AS OF CHANGE:		20090817
+EFFECTIVENESS DATE:		20090817
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			AMERICAN NATIONAL INVESTMENT ACCOUNTS, INC.
+		CENTRAL INDEX KEY:			0000867050
+		IRS NUMBER:				760324563
+		STATE OF INCORPORATION:			MD
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>anianpx06302009.htm
+<TEXT>
+<html>
+<body link=blue vlink="#99CCFF" class=xl24>
+<table border=0 cellpadding=0 cellspacing=0 width=1012 style='border-collapse:
+ collapse;table-layout:fixed;width:761pt'>
+ <tr height=26 style='height:19.5pt'>
+  <td colspan=10 height=26 class=xl48 style='height:19.5pt'>ANIA Growth
+  Portfolio
+ <tr height=32 style='height:24.0pt'>
+  <td colspan=8 height=32 class=xl25 width=499 style='height:24.0pt;width:375pt'>BED
+  BATH &amp; BEYOND INC.
+ <tr height=24 style='height:18.0pt'>
+  <td colspan=3 height=24 class=xl52 width=144 style='height:18.0pt;width:108pt'>Security:
+  <td colspan=2 class=xl27 width=203 style='width:152pt'>075896100
+  <td class=xl24>
+  <td colspan=3 class=xl52 width=160 style='width:121pt'>Meeting Type:
+  <td class=xl28 width=81 style='width:61pt'>Annual
+  <td colspan=6 class=xl24>
+ <tr height=32 style='height:24.0pt'>
+  <td height=32 class=xl25 width=39 style='height:24.0pt;width:29pt'>Item
+  <td colspan=4 class=xl30 width=308 style='width:231pt'>Proposal
+  <td colspan=2 class=xl30 width=60 style='width:46pt'>For
+  <td class=xl30 width=92 style='width:69pt'>Against
+  <td colspan=2 class=xl30 width=123 style='width:93pt'>Abstain
+  <td colspan=6 class=xl24>
+ <tr height=20 style='height:15.0pt'>
+  <td height=20 class=xl31 style='height:15.0pt'>1
+  <td colspan=4 class=xl28 width=308 style='width:231pt'>DIRECTOR
+  <td colspan=11 class=xl24>
+ <tr height=20 style='height:15.0pt'>
+  <td height=20 class=xl24 style='height:15.0pt'>
+  <td class=xl31>1
+  <td colspan=3 class=xl28 width=262 style='width:196pt'>WARREN EISENBERG
+  <td colspan=2 class=xl31>2000
+  <td class=xl31>0
+  <td colspan=2 class=xl31>0
+ <tr height=49 style='height:36.75pt'>
+  <td height=49 class=xl31 style='height:36.75pt'>8
+  <td colspan=4 class=xl28 width=308 style='width:231pt'>TO AMEND AIUK TRUSTEES
+  LIMITED'S ARTICLES OF ASSOCIATION AS DESCRIBED IN APPENDIX III OF THE
+  ATTACHED PROXY STATEMENT.
+  <td colspan=2 class=xl31>2000
+  <td class=xl31>0
+  <td colspan=2 class=xl31>0
+  <td colspan=6 class=xl24>
+ <tr height=20 style='height:15.0pt'>
+  <td height=20 class=xl24 style='height:15.0pt'>
+  <td class=xl31>39
+  <td colspan=3 class=xl28 width=262 style='width:196pt'>HEATHER KITSON
+  <td colspan=2 class=xl31>2000
+  <td class=xl31>0
+  <td colspan=2 class=xl31>0
+  <td colspan=6 class=xl24>
+</html>
+</TEXT>

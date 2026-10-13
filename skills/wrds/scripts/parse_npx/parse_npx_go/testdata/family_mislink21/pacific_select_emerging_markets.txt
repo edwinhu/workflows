@@ -1,0 +1,80 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+<SEC-DOCUMENT>0000892569-08-001214.txt : 20080829
+<SEC-HEADER>0000892569-08-001214.hdr.sgml : 20080829
+<ACCEPTANCE-DATETIME>20080829164407
+ACCESSION NUMBER:		0000892569-08-001214
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20080630
+FILED AS OF DATE:		20080829
+DATE AS OF CHANGE:		20080829
+EFFECTIVENESS DATE:		20080829
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PACIFIC SELECT FUND
+		CENTRAL INDEX KEY:			0000813900
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000813900
+<SERIES-ID>S000007766
+<SERIES-NAME>Pacific Select Fund (811-05141)
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000021137
+<CLASS-CONTRACT-NAME>Emerging Markets Portfolio
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>a42539nvpx.txt
+<DESCRIPTION>N-PX FOR THE PERIOD ENDED 6-30-2008
+<TEXT>
+<PAGE>
+
+******************************* FORM N-PX REPORT *******************************
+
+ICA File Number: 811-05141
+Reporting Period: 07/01/2007 - 06/30/2008
+Pacific Select Fund
+
+
+
+======================= AMERICAN FUNDS GROWTH PORTFOLIO ========================
+
+The portfolio had no proxy voting activity during the reporting period. The
+registrant is a feeder portfolio and only held securities of another mutual
+fund. Please refer to the Master Fund's Statement of Additional Information on
+how to obtain the Master Fund's votes during the period.
+
+
+========================== EMERGING MARKETS PORTFOLIO ==========================
+
+
+ABB LTD INDIA
+
+Ticker:                      Security ID:  Y0005K103
+Meeting Date: JUN 3, 2008    Meeting Type: Annual
+Record Date:  MAY 28, 2008
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Accept Financial Statements and Statutory For       For        Management
+      Reports
+2     Approve Dividend of INR 2.20 Per Share+   For       For        Management
+3     Reappoint D.E. Udwadia as Director        For       For        Management
+4     Reappoint B. Jucker as Director           For       For        Management
+
+
+- --------------------------------------------------------------------------------
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

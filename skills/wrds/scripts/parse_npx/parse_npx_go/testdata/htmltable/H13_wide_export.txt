@@ -1,0 +1,1090 @@
+<SEC-DOCUMENT>0001683863-17-000255.txt : 20170828
+<SEC-HEADER>0001683863-17-000255.hdr.sgml : 20170828
+<ACCEPTANCE-DATETIME>20170828092436
+ACCESSION NUMBER:		0001683863-17-000255
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20170630
+FILED AS OF DATE:		20170828
+DATE AS OF CHANGE:		20170828
+EFFECTIVENESS DATE:		20170828
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			FEDERATED EQUITY FUNDS
+		CENTRAL INDEX KEY:			0000745968
+		IRS NUMBER:				251470423
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-04017
+		FILM NUMBER:		171053331
+
+	BUSINESS ADDRESS:	
+		STREET 1:		4000 ERICSSON DRIVE
+		CITY:			WARRENDALE
+		STATE:			PA
+		ZIP:			15086-7561
+		BUSINESS PHONE:		8003417400
+
+	MAIL ADDRESS:	
+		STREET 1:		4000 ERICSSON DRIVE
+		CITY:			WARRENDALE
+		STATE:			PA
+		ZIP:			15086-7561
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	FEDERATED GROWTH TRUST/CGF/FED ADV/FEDMGT/FED INV
+		DATE OF NAME CHANGE:	19930708
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000745968
+<SERIES-ID>S000009729
+<SERIES-NAME>Federated Kaufmann Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000026729
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>KAUAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000026730
+<CLASS-CONTRACT-NAME>Class B Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>KAUBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000026731
+<CLASS-CONTRACT-NAME>Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>KAUCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000026732
+<CLASS-CONTRACT-NAME>Class R Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>KAUFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000176447
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>KAUIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000188311
+<CLASS-CONTRACT-NAME>Class T Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>KAUTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000745968
+<SERIES-ID>S000009730
+<SERIES-NAME>Federated Kaufmann Small Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000026733
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FKASX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000026734
+<CLASS-CONTRACT-NAME>Class B Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FKBSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000026735
+<CLASS-CONTRACT-NAME>Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FKCSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000026736
+<CLASS-CONTRACT-NAME>Class R Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FKKSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000164583
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FKAIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000188312
+<CLASS-CONTRACT-NAME>Class T Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FKTSX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000745968
+<SERIES-ID>S000009732
+<SERIES-NAME>Federated Absolute Return Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000026740
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FMAAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000026741
+<CLASS-CONTRACT-NAME>Class B Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FMBBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000026742
+<CLASS-CONTRACT-NAME>Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FMRCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000051881
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FMIIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000188313
+<CLASS-CONTRACT-NAME>Class T Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FRTTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000745968
+<SERIES-ID>S000009733
+<SERIES-NAME>Federated MDT Mid-Cap Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000026743
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FGSAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000026744
+<CLASS-CONTRACT-NAME>Class B Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FGSBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000026745
+<CLASS-CONTRACT-NAME>Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FGSCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000043493
+<CLASS-CONTRACT-NAME>Class R6 Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FGSKX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082649
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FGSIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000188314
+<CLASS-CONTRACT-NAME>Class T Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FGSTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000745968
+<SERIES-ID>S000009734
+<SERIES-NAME>Federated Strategic Value Dividend Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000026746
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>SVAAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000026747
+<CLASS-CONTRACT-NAME>Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>SVACX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000026748
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>SVAIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000170851
+<CLASS-CONTRACT-NAME>Class R6 Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>SVALX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000188315
+<CLASS-CONTRACT-NAME>Class T Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>SVATX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000745968
+<SERIES-ID>S000018134
+<SERIES-NAME>Federated InterContinental Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000050152
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>RIMAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000050153
+<CLASS-CONTRACT-NAME>Class B Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ICFBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000050154
+<CLASS-CONTRACT-NAME>Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ICFFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000050156
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ICFIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000129975
+<CLASS-CONTRACT-NAME>Class R6 Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ICRSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000188316
+<CLASS-CONTRACT-NAME>Class T Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ICFTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000745968
+<SERIES-ID>S000019678
+<SERIES-NAME>Federated Kaufmann Large Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000055072
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>KLCAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000055073
+<CLASS-CONTRACT-NAME>Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>KLCCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000055074
+<CLASS-CONTRACT-NAME>Class R Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>KLCKX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000055075
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>KLCIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000138433
+<CLASS-CONTRACT-NAME>Class R6 Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>KLCSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000188317
+<CLASS-CONTRACT-NAME>Class T Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>KLCTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000745968
+<SERIES-ID>S000022420
+<SERIES-NAME>Federated International Strategic Value Dividend Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000064507
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>IVFAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000064508
+<CLASS-CONTRACT-NAME>Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>IVFCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000064509
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>IVFIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000181876
+<CLASS-CONTRACT-NAME>Class R6 Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>IVFLX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000188318
+<CLASS-CONTRACT-NAME>Class T Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>IVFTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000745968
+<SERIES-ID>S000023465
+<SERIES-NAME>Federated Prudent Bear Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000068994
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>BEARX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000068995
+<CLASS-CONTRACT-NAME>Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>PBRCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000068996
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>PBRIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000188319
+<CLASS-CONTRACT-NAME>Class T Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>PBFTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000745968
+<SERIES-ID>S000024783
+<SERIES-NAME>Federated Clover Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000073694
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>VFCAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000073695
+<CLASS-CONTRACT-NAME>Class B Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>VFCBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000073696
+<CLASS-CONTRACT-NAME>Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>VFCCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000073697
+<CLASS-CONTRACT-NAME>Class R Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>VFCKX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000073698
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>VFCIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000188320
+<CLASS-CONTRACT-NAME>Class T Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>VFCTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000745968
+<SERIES-ID>S000024784
+<SERIES-NAME>Federated Clover Small Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000073699
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>VSFAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000073700
+<CLASS-CONTRACT-NAME>Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>VSFCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000073701
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>VSFIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000096922
+<CLASS-CONTRACT-NAME>Class R Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>VSFRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000168179
+<CLASS-CONTRACT-NAME>Class R6 Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>VSFSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000188321
+<CLASS-CONTRACT-NAME>Class T Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>VSFTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000745968
+<SERIES-ID>S000030478
+<SERIES-NAME>Federated Emerging Markets Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000093651
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FGLEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000745968
+<SERIES-ID>S000043134
+<SERIES-NAME>Federated Managed Risk Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000133506
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FDRAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000133507
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FDRIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000745968
+<SERIES-ID>S000047453
+<SERIES-NAME>Federated Managed Volatility Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000148975
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FVOAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000148976
+<CLASS-CONTRACT-NAME>Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FVOCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000148977
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>FVOIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000745968
+<SERIES-ID>S000056112
+<SERIES-NAME>Federated Global Strategic Value Dividend Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000176717
+<CLASS-CONTRACT-NAME>Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>GVDSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000176718
+<CLASS-CONTRACT-NAME>Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>GVDCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000176719
+<CLASS-CONTRACT-NAME>Class R6 Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>GVDLX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000176720
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>GVDIX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>f326_d1-SEC.htm
+<DESCRIPTION>FEF
+<TEXT>
+<table border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;  width:99.94%;">
+<tr>
+<td style="width:10.16%;"></td>
+<td style="width:6.63%;"></td>
+<td style="width:6.17%;"></td>
+<td style="width:5.8%;"></td>
+<td style="width:8.61%;"></td>
+<td style="width:6.7%;"></td>
+<td style="width:5.45%;"></td>
+<td style="width:19.48%;"></td>
+<td style="width:5.53%;"></td>
+<td style="width:5.1%;"></td>
+<td style="width:5.19%;"></td>
+<td style="width:8.08%;"></td>
+<td style="width:7.05%;"></td>
+<tr>
+<td valign="Top" style=" border-top: solid 0.75pt   border-left: solid 0.75pt   border-top: solid 0.75pt   border-left: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Issuer Name&nbsp;</p></td>
+<td valign="Top" style=" border-top: solid 0.75pt   border-top: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Country&nbsp;</p></td>
+<td valign="Top" style=" border-top: solid 0.75pt   border-top: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Meeting Date&nbsp;</p></td>
+<td valign="Top" style=" border-top: solid 0.75pt   border-top: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Meeting Type&nbsp;</p></td>
+<td valign="Top" style=" border-top: solid 0.75pt   border-top: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Ticker&nbsp;</p></td>
+<td valign="Top" style=" border-top: solid 0.75pt   border-top: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Security ID&nbsp;</p></td>
+<td valign="Top" style=" border-top: solid 0.75pt   border-top: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Symbol Type&nbsp;</p></td>
+<td valign="Top" style=" border-top: solid 0.75pt   border-top: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Proposal Text&nbsp;</p></td>
+<td valign="Top" style=" border-top: solid 0.75pt   border-top: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Proponent&nbsp;</p></td>
+<td valign="Top" style=" border-top: solid 0.75pt   border-top: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Mgmt Reco&nbsp;</p></td>
+<td valign="Top" style=" border-top: solid 0.75pt   border-top: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Vote Cast&nbsp;</p></td>
+<td valign="Top" style=" border-top: solid 0.75pt   border-top: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Fund Name&nbsp;</p></td>
+<td valign="Top" style=" border-top: solid 0.75pt   border-right: solid 0.75pt   border-top: solid 0.75pt   border-right: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Logical Ballot Status&nbsp;</p></td>
+</tr>
+<tr>
+<td valign="Top" style=" border-left: solid 0.75pt   border-left: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Aaron's, Inc.&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">United States&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">5/2/2017&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Annual&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">AAN&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">002535300&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">CUSIP&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Elect Kathy T. Betty&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Mgmt&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Federated Clover Small Value Fund&nbsp;</p></td>
+<td valign="Top" style=" border-right: solid 0.75pt   border-right: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Voted&nbsp;</p></td>
+</tr>
+<tr>
+<td valign="Top" style=" border-left: solid 0.75pt   border-left: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Aaron's, Inc.&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">United States&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">5/2/2017&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Annual&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">AAN&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">002535300&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">CUSIP&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Elect Douglas C. Curling&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Mgmt&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Federated Clover Small Value Fund&nbsp;</p></td>
+<td valign="Top" style=" border-right: solid 0.75pt   border-right: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Voted&nbsp;</p></td>
+</tr>
+<tr>
+<td valign="Top" style=" border-left: solid 0.75pt   border-left: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Aaron's, Inc.&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">United States&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">5/2/2017&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Annual&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">AAN&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">002535300&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">CUSIP&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Elect Cynthia N. Day&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Mgmt&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Federated Clover Small Value Fund&nbsp;</p></td>
+<td valign="Top" style=" border-right: solid 0.75pt   border-right: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Voted&nbsp;</p></td>
+</tr>
+<tr>
+<td valign="Top" style=" border-left: solid 0.75pt   border-left: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Aaron's, Inc.&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">United States&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">5/2/2017&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Annual&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">AAN&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">002535300&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">CUSIP&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Elect Curtis L. Doman&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Mgmt&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Federated Clover Small Value Fund&nbsp;</p></td>
+<td valign="Top" style=" border-right: solid 0.75pt   border-right: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Voted&nbsp;</p></td>
+</tr>
+<tr>
+<td valign="Top" style=" border-left: solid 0.75pt   border-left: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Aaron's, Inc.&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">United States&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">5/2/2017&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Annual&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">AAN&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">002535300&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">CUSIP&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Elect Walter G. Ehmer&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Mgmt&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Federated Clover Small Value Fund&nbsp;</p></td>
+<td valign="Top" style=" border-right: solid 0.75pt   border-right: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Voted&nbsp;</p></td>
+</tr>
+<tr>
+<td valign="Top" style=" border-left: solid 0.75pt   border-left: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Aaron's, Inc.&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">United States&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">5/2/2017&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Annual&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">AAN&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">002535300&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">CUSIP&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Elect Hubert L. Harris, Jr.&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Mgmt&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Federated Clover Small Value Fund&nbsp;</p></td>
+<td valign="Top" style=" border-right: solid 0.75pt   border-right: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Voted&nbsp;</p></td>
+</tr>
+<tr>
+<td valign="Top" style=" border-left: solid 0.75pt   border-left: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Aaron's, Inc.&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">United States&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">5/2/2017&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Annual&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">AAN&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">002535300&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">CUSIP&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Elect John W. Robinson III&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Mgmt&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Federated Clover Small Value Fund&nbsp;</p></td>
+<td valign="Top" style=" border-right: solid 0.75pt   border-right: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Voted&nbsp;</p></td>
+</tr>
+<tr>
+<td valign="Top" style=" border-left: solid 0.75pt   border-left: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Aaron's, Inc.&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">United States&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">5/2/2017&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Annual&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">AAN&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">002535300&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">CUSIP&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Elect Ray M. Robinson&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Mgmt&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Against&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Federated Clover Small Value Fund&nbsp;</p></td>
+<td valign="Top" style=" border-right: solid 0.75pt   border-right: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Voted&nbsp;</p></td>
+</tr>
+<tr>
+<td valign="Top" style=" border-left: solid 0.75pt   border-left: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Aaron's, Inc.&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">United States&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">5/2/2017&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Annual&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">AAN&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">002535300&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">CUSIP&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Elect Robert H Yanker&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Mgmt&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Federated Clover Small Value Fund&nbsp;</p></td>
+<td valign="Top" style=" border-right: solid 0.75pt   border-right: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Voted&nbsp;</p></td>
+</tr>
+<tr>
+<td valign="Top" style=" border-left: solid 0.75pt   border-left: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Aaron's, Inc.&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">United States&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">5/2/2017&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Annual&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">AAN&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">002535300&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">CUSIP&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Advisory Vote on Executive Compensation&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Mgmt&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Federated Clover Small Value Fund&nbsp;</p></td>
+<td valign="Top" style=" border-right: solid 0.75pt   border-right: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Voted&nbsp;</p></td>
+</tr>
+<tr>
+<td valign="Top" style=" border-left: solid 0.75pt   border-left: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Aaron's, Inc.&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">United States&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">5/2/2017&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Annual&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">AAN&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">002535300&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">CUSIP&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Frequency of Advisory Vote on Executive Compensation&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Mgmt&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">1 Year&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">1 Year&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Federated Clover Small Value Fund&nbsp;</p></td>
+<td valign="Top" style=" border-right: solid 0.75pt   border-right: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Voted&nbsp;</p></td>
+</tr>
+<tr>
+<td valign="Top" style=" border-left: solid 0.75pt   border-left: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Aaron's, Inc.&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">United States&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">5/2/2017&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Annual&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">AAN&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">002535300&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">CUSIP&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Ratification of Auditor&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Mgmt&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Federated Clover Small Value Fund&nbsp;</p></td>
+<td valign="Top" style=" border-right: solid 0.75pt   border-right: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Voted&nbsp;</p></td>
+</tr>
+<tr>
+<td valign="Top" style=" border-left: solid 0.75pt   border-left: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Actuant Corporation&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">United States&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">1/17/2017&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Annual&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">ATU&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">00508X203&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">CUSIP&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Elect Randal W. Baker&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Mgmt&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Federated Clover Small Value Fund&nbsp;</p></td>
+<td valign="Top" style=" border-right: solid 0.75pt   border-right: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Voted&nbsp;</p></td>
+</tr>
+<tr>
+<td valign="Top" style=" border-left: solid 0.75pt   border-left: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Actuant Corporation&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">United States&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">1/17/2017&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Annual&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">ATU&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">00508X203&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">CUSIP&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Elect Gurminder S. Bedi&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Mgmt&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Federated Clover Small Value Fund&nbsp;</p></td>
+<td valign="Top" style=" border-right: solid 0.75pt   border-right: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Voted&nbsp;</p></td>
+</tr>
+<tr>
+<td valign="Top" style=" border-left: solid 0.75pt   border-left: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Actuant Corporation&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">United States&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">1/17/2017&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Annual&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">ATU&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">00508X203&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">CUSIP&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Elect Danny&#160; l. Cunningham&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Mgmt&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Federated Clover Small Value Fund&nbsp;</p></td>
+<td valign="Top" style=" border-right: solid 0.75pt   border-right: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Voted&nbsp;</p></td>
+</tr>
+<tr>
+<td valign="Top" style=" border-left: solid 0.75pt   border-left: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Actuant Corporation&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">United States&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">1/17/2017&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Annual&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">ATU&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">00508X203&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">CUSIP&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Elect E. James Ferland&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Mgmt&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Federated Clover Small Value Fund&nbsp;</p></td>
+<td valign="Top" style=" border-right: solid 0.75pt   border-right: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Voted&nbsp;</p></td>
+</tr>
+<tr>
+<td valign="Top" style=" border-left: solid 0.75pt   border-left: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Actuant Corporation&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">United States&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">1/17/2017&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Annual&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">ATU&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">00508X203&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">CUSIP&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Elect R. Alan Hunter, Jr.&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Mgmt&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Federated Clover Small Value Fund&nbsp;</p></td>
+<td valign="Top" style=" border-right: solid 0.75pt   border-right: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Voted&nbsp;</p></td>
+</tr>
+<tr>
+<td valign="Top" style=" border-left: solid 0.75pt   border-left: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Actuant Corporation&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">United States&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">1/17/2017&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Annual&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">ATU&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">00508X203&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">CUSIP&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Elect Robert A. Peterson&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Mgmt&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Federated Clover Small Value Fund&nbsp;</p></td>
+<td valign="Top" style=" border-right: solid 0.75pt   border-right: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Voted&nbsp;</p></td>
+</tr>
+<tr>
+<td valign="Top" style=" border-left: solid 0.75pt   border-left: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Actuant Corporation&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">United States&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">1/17/2017&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Annual&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">ATU&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">00508X203&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">CUSIP&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Elect Holly A. Van Deursen&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Mgmt&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Federated Clover Small Value Fund&nbsp;</p></td>
+<td valign="Top" style=" border-right: solid 0.75pt   border-right: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Voted&nbsp;</p></td>
+</tr>
+<tr>
+<td valign="Top" style=" border-left: solid 0.75pt   border-left: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Actuant Corporation&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">United States&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">1/17/2017&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Annual&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">ATU&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">00508X203&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">CUSIP&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Elect Dennis K. Williams&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Mgmt&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">For&nbsp;</p></td>
+<td valign="Top" style="">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Federated Clover Small Value Fund&nbsp;</p></td>
+<td valign="Top" style=" border-right: solid 0.75pt   border-right: solid 0.75pt  ">
+<p style="margin-bottom:0pt;margin-top:0pt;margin-left:0pt;text-indent:0pt;font-size:9pt;font-family:''; font-size:9pt;font-family:'Times New Roman';font-weight:normal;font-style:normal;text-transform:none;font-variant: normal;">Voted&nbsp;</p></td>
+</tr>
+
+</table>
+</TEXT>
+</DOCUMENT>

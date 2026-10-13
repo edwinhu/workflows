@@ -1,0 +1,205 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ GiRB4TYHdJIjS44DWlWjF4Mc55imeNcxoG7YsFI1TZ3ySW6Ox3euyDA/CHiUUkCl
+ x7m4kY/QSnVdzGvajobwCw==
+
+<SEC-DOCUMENT>0001010521-04-000174.txt : 20040826
+<SEC-HEADER>0001010521-04-000174.hdr.sgml : 20040826
+<ACCEPTANCE-DATETIME>20040826110736
+ACCESSION NUMBER:		0001010521-04-000174
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040826
+DATE AS OF CHANGE:		20040826
+EFFECTIVENESS DATE:		20040826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			HANCOCK JOHN INVESTMENT TRUST /MA/
+		CENTRAL INDEX KEY:			0000022370
+		IRS NUMBER:				746035056
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			0831
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-00560
+		FILM NUMBER:		04997768
+
+	BUSINESS ADDRESS:	
+		STREET 1:		101 HUNTINGTON AVENUE
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02199
+		BUSINESS PHONE:		7137512400
+
+	MAIL ADDRESS:	
+		STREET 1:		101 HUNTINGTON AVENUE
+		STREET 2:		1000 LOUISIANA, SUITE 6100
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02199
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	TRANSAMERICA INVESTMENT TRUST
+		DATE OF NAME CHANGE:	19950131
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	CRITERION INCOME TRUST
+		DATE OF NAME CHANGE:	19890820
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	COMMERCE INCOME SHARES INC
+		DATE OF NAME CHANGE:	19860924
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>invment.txt
+<DESCRIPTION>INVESTMENT TRUST (3753)
+<TEXT>
+ISSUER NAME TICKER CUSIP MTG DATE MTG TYPE
+           Proposal Type Voted? Vote For/Agnst Mgmt
+   3M Co MMM  88579Y101  5/11/04  Annual
+   1.01   Elect Edward A. Brennan MGMT YES FOR FOR
+   1.02   Elect Michael L. Eskew MGMT YES FOR FOR
+   1.03   Elect W. James McNerney Jr. MGMT YES FOR FOR
+   1.04   Elect Kevin W. Sharer MGMT YES FOR FOR
+   2.00   Ratify Selection of Auditors MGMT YES FOR FOR
+   3.00   Increase Authorized Common Stock MGMT YES FOR FOR
+   4.00   Independent Board Chairman SHLDR YES AGNST FOR
+
+   Accenture Ltd. ACN  G1150G111  2/5/04  Annual
+   1.01   Elect Dennis F. Hightower MGMT YES FOR FOR
+   1.02   Elect William L. Kimsey MGMT YES FOR FOR
+   1.03   Elect Robert I. Lipp MGMT YES FOR FOR
+   1.04   Elect Wulf von Schimmelmann MGMT YES FOR FOR
+   2.00   Ratify Selection of Auditors MGMT YES FOR FOR
+
+   Aetna AET  00817Y108  4/30/04  Annual
+   1.01   Elect Betsy Z. Cohen MGMT YES FOR FOR
+   1.02   Elect Barbara Hackman Franklin MGMT YES FOR FOR
+   1.03   Elect Jeffery E. Garten MGMT YES FOR FOR
+   1.04   Elect Earl G. Graves Sr. MGMT YES FOR FOR
+   1.05   Elect Gerald Greenwald MGMT YES FOR FOR
+   1.06   Elect Ellen M. Hancock MGMT YES FOR FOR
+   1.07   Elect Michael H. Jordan MGMT YES FOR FOR
+   1.08   Elect Jack D. Kuehler MGMT YES FOR FOR
+   1.09   Elect Edward J. Ludwig MGMT YES FOR FOR
+   1.10   Elect Joseph P. Newhouse MGMT YES FOR FOR
+   1.11   Elect Judith Rodin MGMT YES FOR FOR
+   1.12   Elect John W. Rowe MGMT YES FOR FOR
+   1.13   Elect Ronald A. Williams MGMT YES FOR FOR
+   1.14   Elect R. David Yost MGMT YES FOR FOR
+   2.00   Ratify Selection of Auditors MGMT YES FOR FOR
+   3.00   Adopt Cumulative Voting SHLDR YES AGNST FOR
+   4.00   Restrict Executive Compensation SHLDR YES AGNST FOR
+
+   Agco AG  001084102  4/22/04  Annual
+   1.01   Elect W. Wayne Booker MGMT YES FOR FOR
+   1.02   Elect Gerald B. Johanneson MGMT YES FOR FOR
+   1.03   Elect Curtis E. Moll MGMT YES FOR FOR
+   1.04   Elect Robert J. Ratliff MGMT YES FOR FOR
+   2.00   Report on Sustainability SHLDR YES ABSTAIN AGNST
+
+                                    Page 14
+
+<PAGE>
+
+   American Express AXP  025816109  4/26/04  Annual
+   1.01   Elect Daniel F. Akerson MGMT YES FOR FOR
+   1.02   Elect Charlene Barshefsky MGMT YES FOR FOR
+   1.03   Elect William G. Bowen MGMT YES FOR FOR
+   1.04   Elect Ursula M. Burns MGMT YES FOR FOR
+   1.05   Elect Kenneth I. Chenault MGMT YES FOR FOR
+   1.06   Elect Peter R. Dolan MGMT YES FOR FOR
+   1.07   Elect Vernon E. Jordan Jr. MGMT YES FOR FOR
+   1.08   Elect Jan Leschly MGMT YES FOR FOR
+   1.09   Elect Richard A. McGinn MGMT YES FOR FOR
+   1.10   Elect Edward D. Miller MGMT YES FOR FOR
+   1.11   Elect Frank P. Popoff MGMT YES FOR FOR
+   1.12   Elect Robert D. Walter MGMT YES FOR FOR
+   2.00   Ratify Selection of Auditors MGMT YES FOR FOR
+   3.00   Director Tenure/Retirement Age SHLDR YES AGNST FOR
+   4.00   Review Political Spending SHLDR YES ABSTAIN AGNST
+
+   American International Group AIG  026874107  5/19/04  Annual
+   1.01   Elect M. Bernard Aidinoff MGMT YES FOR FOR
+   1.02   Elect Pei-Yuan Chia MGMT YES FOR FOR
+   1.03   Elect Marshall A. Cohen MGMT YES FOR FOR
+   1.04   Elect William S. Cohen MGMT YES FOR FOR
+   1.05   Elect Martin S. Feldstein MGMT YES FOR FOR
+   1.06   Elect Ellen V. Futter MGMT YES FOR FOR
+   1.07   Elect Maurice R. Greenberg MGMT YES FOR FOR
+   1.08   Elect Carla A. Hills MGMT YES FOR FOR
+   1.09   Elect Frank J. Hoenemeyer MGMT YES FOR FOR
+   1.10   Elect Richard C. Holbrooke MGMT YES FOR FOR
+   1.11   Elect Donald P. Kanak MGMT YES FOR FOR
+   1.12   Elect Howard I. Smith MGMT YES FOR FOR
+   1.13   Elect Martin J. Sullivan MGMT YES FOR FOR
+   1.14   Elect Edmund S.W. Tse MGMT YES FOR FOR
+   1.15   Elect Frank G. Zarb MGMT YES FOR FOR
+   2.00   Approve Annual Bonus Plan MGMT YES FOR FOR
+   3.00   Adopt Director Stock Award Plan MGMT YES AGNST AGNST
+   4.00   Ratify Selection of Auditors MGMT YES FOR FOR
+   5.00   Review Political Spending SHLDR YES ABSTAIN AGNST
+   6.00   Sever Links with Tobacco Industry SHLDR YES ABSTAIN AGNST
+   7.00   Link Executive Pay to Social Criteria SHLDR YES AGNST FOR
+
+   Analog Devices ADI  032654105  3/9/04  Annual
+   1.01   Elect Jerald G. Fishman MGMT YES FOR FOR
+   1.02   Elect F. Grant Saviers MGMT YES FOR FOR
+   2.00   Increase Authorized Common Stock MGMT YES FOR FOR
+   3.00   Ratify Selection of Auditors MGMT YES FOR FOR
+
+   ASML Holding ASML  N07059111  3/25/04  Annual
+   1.00   Approve Financial Statements MGMT NO TAKE NO ACTION
+   2.00   Set Dividend/Allocate Profits MGMT NO TAKE NO ACTION
+   3.00   Ratify Management Acts-Legal MGMT NO TAKE NO ACTION
+   4.00   Ratify Board Acts-Legal MGMT NO TAKE NO ACTION
+   5.00   Approve Remuneration Policy MGMT NO TAKE NO ACTION
+   6.00   Approve Stock Option Grants MGMT NO TAKE NO ACTION
+   7.00   Elect Supervisory Board/Corporate Assembly MGMT NO TAKE NO
+   ACTION
+       Amend Board/Supervisory Board Size
+   8.00   Amend Board Powers/Procedures/Qualifications MGMT NO TAKE NO
+   ACTION
+       Amend Meeting Procedures/Change Date
+   9.00   Issue Stock w/ or w/o Preemptive Rights MGMT NO TAKE NO ACTION
+   10.00   Authorize Share Repurchase MGMT NO TAKE NO ACTION
+
+   Bank Of America BAC  060505104  3/17/04  Special
+
+                                    Page 15
+
+<PAGE>
+
+   1.00   Approve Common Stock Issuance MGMT YES FOR FOR
+       Approve Merger/Acquisition
+   2.00   Adopt Stock Option Plan MGMT YES ABSTAIN AGNST
+   3.00   Increase Authorized Common Stock MGMT YES FOR FOR
+   4.00   Adjourn Meeting MGMT YES FOR FOR
+
+   Bank of America Corp BAC  060505104  5/26/04  Annual
+   1.01   Elect William Barnet III MGMT YES FOR FOR
+   1.02   Elect Charles W. Coker MGMT YES FOR FOR
+   1.03   Elect John T. Collins MGMT YES FOR FOR
+   1.04   Elect Gary L. Countryman MGMT YES FOR FOR
+   1.05   Elect Paul Fulton MGMT YES FOR FOR
+   1.06   Elect Charles K. Gifford MGMT YES FOR FOR
+   1.07   Elect Donald E. Guinn MGMT YES FOR FOR
+   1.08   Elect James H. Hance Jr. MGMT YES FOR FOR
+   1.09   Elect Kenneth D. Lewis MGMT YES FOR FOR
+   1.10   Elect Walter E. Massey MGMT YES FOR FOR
+   1.11   Elect J. Thomas May MGMT YES FOR FOR
+   1.12   Elect C. Steven McMillan MGMT YES FOR FOR
+</TEXT>
+</DOCUMENT>

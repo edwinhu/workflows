@@ -1,0 +1,282 @@
+<SEC-DOCUMENT>0000728889-17-001521.txt : 20170829
+<SEC-HEADER>0000728889-17-001521.hdr.sgml : 20170829
+<ACCEPTANCE-DATETIME>20170829153943
+ACCESSION NUMBER:		0000728889-17-001521
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20170630
+FILED AS OF DATE:		20170829
+DATE AS OF CHANGE:		20170829
+EFFECTIVENESS DATE:		20170829
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Rochester Portfolio Series
+		CENTRAL INDEX KEY:			0000876409
+		IRS NUMBER:				161399853
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-06332
+		FILM NUMBER:		171057781
+
+	BUSINESS ADDRESS:	
+		STREET 1:		6803 SOUTH TUCSON WAY
+		CITY:			CENTENNIAL
+		STATE:			CO
+		ZIP:			80112-3924
+		BUSINESS PHONE:		303-768-3200
+
+	MAIL ADDRESS:	
+		STREET 1:		6803 SOUTH TUCSON WAY
+		CITY:			CENTENNIAL
+		STATE:			CO
+		ZIP:			80112-3924
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	OPPENHEIMER LIMITED TERM NEW YORK MUNICIPAL FUND
+		DATE OF NAME CHANGE:	20020930
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	ROCHESTER PORTFOLIO SERIES
+		DATE OF NAME CHANGE:	19920717
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000876409
+<SERIES-ID>S000010049
+<SERIES-NAME>OPPENHEIMER ROCHESTER LIMITED TERM NEW YORK MUNICIPAL FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000027833
+<CLASS-CONTRACT-NAME>A
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000027834
+<CLASS-CONTRACT-NAME>B
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000027835
+<CLASS-CONTRACT-NAME>C
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099311
+<CLASS-CONTRACT-NAME>Y
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npxfiling.htm
+<TEXT>
+<HTML>
+<HEAD>
+     <TITLE></TITLE>
+</HEAD>
+<BODY STYLE="font: 10pt Times New Roman, Times, Serif">
+
+<P STYLE="margin: 0"></P>
+
+<!-- Field: Include-Text; File: psltdtrmnymuninpx2017.htm; Date: 2017%2D08%2D28T12:36:19; Size: 12004 -->
+<P STYLE="font: 8pt Times New Roman, Times, Serif; margin: 0; text-align: center">UNITED STATES</P>
+
+<P STYLE="font: 8pt Times New Roman, Times, Serif; margin: 0; text-align: center">SECURITIES AND EXCHANGE COMMISSION</P>
+
+<P STYLE="font: 8pt Times New Roman, Times, Serif; margin: 0; text-align: center">Washington, DC 20549</P>
+
+<P STYLE="font: 8pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 8pt Times New Roman, Times, Serif; margin: 0; text-align: center">FORM N-PX</P>
+
+<P STYLE="font: 8pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 8pt Times New Roman, Times, Serif; margin: 0; text-align: center">ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED</P>
+
+<P STYLE="font: 8pt Times New Roman, Times, Serif; margin: 0; text-align: center">MANAGEMENT INVESTMENT COMPANY</P>
+
+<P STYLE="font: 8pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 8pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="width: 100%; font: 10.5pt Consolas; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+    <TD STYLE="width: 50%; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">Investment Company Act file number: </FONT></TD>
+    <TD STYLE="width: 50%; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">811-06332</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">Exact name of registrant as specified in charter: </FONT></TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">Rochester Portfolio Series on behalf of </FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">Oppenheimer Rochester Limited Term New York Municipal Fund </FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">Address of principal executive offices: </FONT></TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">6803 South Tucson Way</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">Centennial, CO 80112-3924 </FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">Name and address of agent for service: </FONT></TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">Cynthia Lo Bessette,</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">Executive Vice President &amp; General Counsel</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">OFI Global Asset Management, Inc.</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">225 Liberty Street</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">&nbsp;</FONT></TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">New York, NY 10281-1008</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">Registrant's telephone number, including area code: </FONT></TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">303-768-3200</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">Date of fiscal year end: </FONT></TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">12/31</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">Date of reporting period: </FONT></TD>
+    <TD STYLE="padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 8pt">07/01/2016-06/30/2017</FONT></TD></TR>
+</TABLE>
+<P STYLE="font: 8pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 8pt Times New Roman, Times, Serif; margin: 0">Item 1.</P>
+
+<P STYLE="font: 8pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 8pt Times New Roman, Times, Serif; margin: 0; text-align: center">&nbsp;</P>
+
+<P STYLE="font: 8pt Times New Roman, Times, Serif; margin: 0; text-align: center"></P>
+
+<!-- Field: Include-Text; File: npx811%2D06332_9.htm; Date: 2017%2D08%2D14T16:05:09; Size: 182756 -->
+<p align='center' style='font-weight:bold'>FORM N-PX</p>
+<br><br>
+<p >ICA File Number:&nbsp;&nbsp;811-06332</p><p >Registrant Name:&nbsp;&nbsp;Rochester Portfolio Series</p><p >Reporting Period:&nbsp;&nbsp;07/01/2016 - 06/30/2017</p>
+<br style='page-break-after:always;'><p align='center'>Oppenheimer Rochester Limited Term New York Municipal Fund</p>
+
+<table cellPadding='2' cellSpacing='0' width='100%' border='1'>
+<tr style='font-size:10pt;border:none;'><th style='font-size:10pt;border:none;' colspan='5'>&nbsp;</th></tr>
+<td style='font-size:10pt;font-weight:bold;' colSpan='5'>CHILDREN'S TRUST, PUERTO RICO
+<br>Meeting Date:&nbsp;&nbsp;MAR 30, 2017
+<br>Record Date:&nbsp;&nbsp;NOV 17, 2016
+<br>Meeting Type:&nbsp;&nbsp;WRITTEN CONSENT
+</td>
+</tr>
+<tr>
+<td style='font-size:10pt;' colSpan='5'>
+Ticker:&nbsp;&nbsp;
+<br>Security ID:&nbsp;&nbsp;16876QBE8
+<br>
+</td>
+</tr>
+<tr>
+<th style='font-size:10pt' width='10%'>Proposal No</th>
+<th style='font-size:10pt' width='55%'>Proposal</th>
+<th style='font-size:10pt' width='15%'>Proposed By</th>
+<th style='font-size:10pt' width='15%'>Management Recommendation</th>
+<th style='font-size:10pt' width='10%'>Vote Cast</th>
+</tr>
+<tr>
+<td style='font-size=10pt'>1</td>
+<td style='font-size=10pt'>By Marking For I Direct The Institution Holding My Bonds to Transmit and Confirm My Bond Holding Information for Recording In The Registry. By Marking Against My Bonds Shall Be Missing From The Registry.</td>
+<td style='font-size=10pt'>Management</td>
+<td style='font-size=10pt'>None</td>
+<td style='font-size=10pt'>Did Not Vote</td>
+</tr>
+</table>
+
+<table cellPadding='2' cellSpacing='0' width='100%' border='1'>
+<tr style='font-size:10pt;border:none;'><th style='font-size:10pt;border:none;' colspan='5'>&nbsp;</th></tr>
+<td style='font-size:10pt;font-weight:bold;' colSpan='5'>CHILDREN'S TRUST, PUERTO RICO
+<br>Meeting Date:&nbsp;&nbsp;MAR 30, 2017
+<br>Record Date:&nbsp;&nbsp;NOV 17, 2016
+<br>Meeting Type:&nbsp;&nbsp;WRITTEN CONSENT
+</td>
+</tr>
+<tr>
+<td style='font-size:10pt;' colSpan='5'>
+Ticker:&nbsp;&nbsp;
+<br>Security ID:&nbsp;&nbsp;16876QBF5
+<br>
+</td>
+</tr>
+<tr>
+<th style='font-size:10pt' width='10%'>Proposal No</th>
+<th style='font-size:10pt' width='55%'>Proposal</th>
+<th style='font-size:10pt' width='15%'>Proposed By</th>
+<th style='font-size:10pt' width='15%'>Management Recommendation</th>
+<th style='font-size:10pt' width='10%'>Vote Cast</th>
+</tr>
+<tr>
+<td style='font-size=10pt'>1</td>
+<td style='font-size=10pt'>By Marking For I Direct The Institution Holding My Bonds to Transmit and Confirm My Bond Holding Information for Recording In The Registry. By Marking Against My Bonds Shall Be Missing From The Registry.</td>
+<td style='font-size=10pt'>Management</td>
+<td style='font-size=10pt'>None</td>
+<td style='font-size=10pt'>Did Not Vote</td>
+</tr>
+</table>
+
+<table cellPadding='2' cellSpacing='0' width='100%' border='1'>
+<tr style='font-size:10pt;border:none;'><th style='font-size:10pt;border:none;' colspan='5'>&nbsp;</th></tr>
+<td style='font-size:10pt;font-weight:bold;' colSpan='5'>CHILDREN'S TRUST, PUERTO RICO
+<br>Meeting Date:&nbsp;&nbsp;MAR 30, 2017
+<br>Record Date:&nbsp;&nbsp;NOV 17, 2016
+<br>Meeting Type:&nbsp;&nbsp;WRITTEN CONSENT
+</td>
+</tr>
+<tr>
+<td style='font-size:10pt;' colSpan='5'>
+Ticker:&nbsp;&nbsp;
+<br>Security ID:&nbsp;&nbsp;16876QBG3
+<br>
+</td>
+</tr>
+<tr>
+<th style='font-size:10pt' width='10%'>Proposal No</th>
+<th style='font-size:10pt' width='55%'>Proposal</th>
+<th style='font-size:10pt' width='15%'>Proposed By</th>
+<th style='font-size:10pt' width='15%'>Management Recommendation</th>
+<th style='font-size:10pt' width='10%'>Vote Cast</th>
+</tr>
+<tr>
+<td style='font-size=10pt'>1</td>
+<td style='font-size=10pt'>By Marking For I Direct The Institution Holding My Bonds to Transmit and Confirm My Bond Holding Information for Recording In The Registry. By Marking Against My Bonds Shall Be Missing From The Registry.</td>
+<td style='font-size=10pt'>Management</td>
+<td style='font-size=10pt'>None</td>
+<td style='font-size=10pt'>Did Not Vote</td>
+</tr>
+</table>
+
+<table cellPadding='2' cellSpacing='0' width='100%' border='1'>
+<tr style='font-size:10pt;border:none;'><th style='font-size:10pt;border:none;' colspan='5'>&nbsp;</th></tr>
+</TABLE>
+</TEXT>
+</DOCUMENT>

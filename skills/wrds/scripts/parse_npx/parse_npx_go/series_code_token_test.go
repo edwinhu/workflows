@@ -1,0 +1,152 @@
+package main
+
+import "testing"
+
+// A sleeve or account code printed before the fund name: `2DCN Emerging Markets
+// Value Fund`, `3347 JHFII Emerging Markets Fund`, `(ZW4X) Total Return Blackrock
+// ACWI xUS Index` (John Hancock Funds II, JHVIT, GE Investments: the largest
+// unmatched-heading blocks on run65). The code is 2-6 letters or digits with at
+// least one digit, or a parenthesised code; the rest resolves under the ordinary
+// rules, and an ambiguous rest still stamps nothing.
+func TestSeriesLeadingCodeToken(t *testing.T) {
+	decls := []SeriesDecl{
+		{SeriesID: "S1", Name: "Emerging Markets Value Fund"},
+		{SeriesID: "S2", Name: "Total Return Blackrock ACWI xUS Index"},
+		{SeriesID: "S3", Name: "International Equity Index Trust B"},
+	}
+	for banner, want := range map[string]string{
+		"2DCN Emerging Markets Value Fund":             "S1",
+		"(ZW4X) Total Return Blackrock ACWI xUS Index": "S2",
+		"ZW4X Total Return Blackrock ACWI xUS Index":   "S2",
+		"3347 International Equity Index Trust B":      "S3",
+		// A plain word is never a code: `Value Fund` must not lose `Emerging`.
+		"Emerging Markets Value Fund":        "S1",
+		"Growth Emerging Markets Value Fund": "",
+	} {
+		if got := resolve(t, decls, "JOHN HANCOCK FUNDS II", banner); got != want {
+			t.Errorf("%q -> %q, want %q", banner, got, want)
+		}
+	}
+	decls = []SeriesDecl{
+		{SeriesID: "S1", Name: "Growth Fund"},
+		{SeriesID: "S2", Name: "growth fund"},
+	}
+	if got := resolve(t, decls, "SOME TRUST", "2A32 Growth Fund"); got != "" {
+		t.Errorf("ambiguous rest after the code stamped %q", got)
+	}
+}
+
+// A bare TM token is NOT a trademark mark: AQR declares both `AQR Emerging
+// Multi-Style Fund` and `AQR TM Emerging Multi-Style Fund` (TM = tax-managed),
+// and folding the token made 145k rows ambiguous on r67. The two stay distinct.
+func TestSeriesBareTMTokenStaysDistinct(t *testing.T) {
+	if normalizeSeriesName("AQR TM Emerging Multi-Style Fund") == normalizeSeriesName("AQR Emerging Multi-Style Fund") {
+		t.Error("TM folded away")
+	}
+}
+
+// A heading naming a series the SAME registrant declared in another filing but
+// not in this one (Xtrackers, SPDR, iShares: 370k rows in run65's top 60). The
+// header stays the authority for what it declares; a heading it does not know
+// may still be stamped when it equals, EXACTLY, one dictionary name of that CIK.
+func TestDictionaryExactFallbackForUndeclaredHeading(t *testing.T) {
+	d := &cikSeries{byCIK: map[string][]SeriesDecl{"1503123": {
+		{SeriesID: "S000000001", Name: "Xtrackers Russell 1000 Comprehensive Factor ETF"},
+		{SeriesID: "S000000002", Name: "Xtrackers MSCI ACWI ex USA ESG Leaders Equity ETF"},
+		{SeriesID: "S000000003", Name: "Xtrackers Dup Fund"},
+		{SeriesID: "S000000004", Name: "XTRACKERS DUP FUND"},
+	}}}
+	meta := FilingMeta{CIK: "1503123", SeriesDecls: []SeriesDecl{{SeriesID: "S000000001", Name: "Xtrackers Russell 1000 Comprehensive Factor ETF"}}}
+	fb := d.exactFallback(meta)
+
+	r := VoteRow{FundName: "Xtrackers MSCI ACWI ex USA ESG Leaders Equity ETF"}
+	fb.apply(&r)
+	if r.SeriesID != "S000000002" {
+		t.Fatalf("exact dictionary name: got %q want S000000002", r.SeriesID)
+	}
+	r = VoteRow{FundName: "Xtrackers MSCI ACWI ex USA ESG Leaders Equity"}
+	fb.apply(&r)
+	if r.SeriesID != "" {
+		t.Fatalf("one edit away is not exact: got %q", r.SeriesID)
+	}
+	r = VoteRow{FundName: "Xtrackers Dup Fund"}
+	fb.apply(&r)
+	if r.SeriesID != "" {
+		t.Fatalf("two dictionary series under one name must refuse: got %q", r.SeriesID)
+	}
+	r = VoteRow{FundName: "Xtrackers MSCI ACWI ex USA ESG Leaders Equity ETF", SeriesID: "S000000009"}
+	fb.apply(&r)
+	if r.SeriesID != "S000000009" {
+		t.Fatalf("a series already set must stand: got %q", r.SeriesID)
+	}
+	var none *cikSeries
+	if fb := none.exactFallback(meta); fb != nil {
+		t.Fatal("no dictionary must yield no fallback")
+	}
+}
+
+// A sub-adviser after a colon: `<B>Clearwater Core Equity Fund: AQR Capital
+// Management, LLC</B>` (Clearwater Investment Trust; the largest no-heading
+// shape in run65's htmltable top 40, 205k rows). Same rule as the dash: one
+// side equals a declared name exactly and the other is dropped.
+func TestSeriesColonSubAdviser(t *testing.T) {
+	decls := []SeriesDecl{
+		{SeriesID: "S1", Name: "Clearwater Core Equity Fund"},
+		{SeriesID: "S2", Name: "Clearwater Small Companies Fund"},
+	}
+	for banner, want := range map[string]string{
+		"Clearwater Core Equity Fund: AQR Capital Management, LLC": "S1",
+		"Fund: Clearwater Small Companies Fund":                    "S2",
+		"Clearwater Balanced Fund: Some Adviser":                   "",
+	} {
+		if got := resolve(t, decls, "CLEARWATER INVESTMENT TRUST", banner); got != want {
+			t.Errorf("%q -> %q, want %q", banner, got, want)
+		}
+	}
+}
+
+// A trailing parenthetical that is not a class marker -- `(Master Trust)`, a
+// sleeve, a former name -- is cut before the dictionary lookup, the same cut the
+// header rules already make (Wells Fargo Master Trust 2010, 109,230 rows under
+// `Wells Fargo Advantage Diversified Stock Portfolio (Master Trust)` with the
+// dictionary naming `Wells Fargo Advantage Diversified Stock Portfolio`). A class
+// marker is never cut: `FUND (A)` is a class-pair question, not a dictionary one.
+func TestDictionaryFallbackCutsATrailingParenthetical(t *testing.T) {
+	d := &cikSeries{byCIK: map[string][]SeriesDecl{"1087961": {
+		{SeriesID: "S000013207", Name: "Wells Fargo Advantage Diversified Stock Portfolio"},
+		{SeriesID: "S000013206", Name: "Wells Fargo Advantage Diversified Fixed Income Portfolio"},
+	}}}
+	meta := FilingMeta{CIK: "1087961", SeriesDecls: []SeriesDecl{{SeriesID: "S000007541", Name: "Managed Fixed Income Portfolio"}}}
+	fb := d.exactFallback(meta)
+	r := VoteRow{FundName: "Wells Fargo Advantage Diversified Stock Portfolio (Master Trust)"}
+	fb.apply(&r)
+	if r.SeriesID != "S000013207" {
+		t.Fatalf("dictionary name plus a trailing parenthetical: got %q want S000013207", r.SeriesID)
+	}
+	r = VoteRow{FundName: "Wells Fargo Advantage Diversified Stock Portfolio (A)"}
+	fb.apply(&r)
+	if r.SeriesID != "" {
+		t.Fatalf("a class marker is not cut: got %q", r.SeriesID)
+	}
+}
+
+// The header declares the id under one name and the registrant's other filings
+// under another: 0001140361-10-035309 declares S000013207 as `Diversified Stock
+// Portfolio` while the dictionary also holds `Wells Fargo Advantage Diversified
+// Stock Portfolio` for it, and the heading prints the latter. An alternate name
+// of a DECLARED id is the registrant's own evidence and resolves; the header's
+// own spelling stays the rules' business and is not repeated here.
+func TestDictionaryFallbackKnowsADeclaredIdsOtherNames(t *testing.T) {
+	d := &cikSeries{byCIK: map[string][]SeriesDecl{"1087961": {
+		{SeriesID: "S000013207", Name: "Diversified Stock Portfolio"},
+		{SeriesID: "S000013207", Name: "Wells Fargo Advantage Diversified Stock Portfolio"},
+		{SeriesID: "S000013206", Name: "Wells Fargo Advantage Diversified Fixed Income Portfolio"},
+	}}}
+	meta := FilingMeta{CIK: "1087961", SeriesDecls: []SeriesDecl{{SeriesID: "S000013207", Name: "Diversified Stock Portfolio"}}}
+	fb := d.exactFallback(meta)
+	r := VoteRow{FundName: "Wells Fargo Advantage Diversified Stock Portfolio (Master Trust)"}
+	fb.apply(&r)
+	if r.SeriesID != "S000013207" {
+		t.Fatalf("alternate name of a declared id: got %q want S000013207", r.SeriesID)
+	}
+}

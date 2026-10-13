@@ -1,0 +1,56 @@
+
+<P STYLE="margin: 0"><B>&nbsp;</B></P>
+
+<TABLE BORDER="0" CELLPADDING="2" CELLSPACING="0" STYLE="font: 11pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+  <TR STYLE="vertical-align: bottom">
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">Company Name :&nbsp;</TD>
+    <TD COLSPAN="2">&nbsp;ABB LTD</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">Ticker :&nbsp;</TD>
+    <TD>&nbsp;ABB</TD>
+    <TD STYLE="text-align: right">CUSPID :&nbsp;</TD>
+    <TD COLSPAN="3">&nbsp;000375204</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD>&nbsp;</TD>
+    <TD STYLE="text-align: right">Meeting Date :&nbsp;</TD>
+    <TD>&nbsp;03/23/2023</TD>
+    <TD STYLE="text-align: right">Meeting Type :&nbsp;</TD>
+    <TD COLSPAN="3">&nbsp;Annual</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="width: 6%">&nbsp;</TD>
+    <TD STYLE="width: 25%">&nbsp;</TD>
+    <TD STYLE="width: 24%">&nbsp;</TD>
+    <TD STYLE="width: 24%">&nbsp;</TD>
+    <TD STYLE="width: 7%">&nbsp;</TD>
+    <TD STYLE="width: 7%">&nbsp;</TD>
+    <TD STYLE="width: 7%">&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: bottom">
+    <TD STYLE="text-align: center">#</TD>
+    <TD COLSPAN="3" STYLE="font-weight: bold; text-align: center">Description</TD>
+    <TD STYLE="font-weight: bold; text-align: center">Mgmt Rec</TD>
+    <TD STYLE="font-weight: bold; text-align: center">Voted</TD>
+    <TD STYLE="font-weight: bold; text-align: center">Vote Cast</TD></TR>
+  <TR STYLE="vertical-align: bottom; background-color: #FFFFCC">
+    <TD STYLE="text-align: center">&nbsp;</TD>
+    <TD COLSPAN="3" STYLE="font-size: 14pt; font-weight: bold">Management Proposal</TD>
+    <TD STYLE="text-align: center">&nbsp;</TD>
+    <TD STYLE="text-align: center">&nbsp;</TD>
+    <TD STYLE="text-align: center">&nbsp;</TD></TR>
+  <TR STYLE="vertical-align: top">
+    <TD STYLE="text-align: center; background-color: #FFE5CC">1&nbsp;</TD>
+    <TD COLSPAN="3">Approval of the management report, the consolidated financial statements and the annual financial statements for 2022&nbsp;</TD>
+    <TD STYLE="text-align: center; background-color: #FFE5CC">For</TD>
+    <TD STYLE="text-align: center">Yes</TD>
+    <TD STYLE="text-align: center; background-color: #FFE5CC">For</TD></TR>
+  <TR STYLE="vertical-align: top">
+    <TD STYLE="text-align: center; background-color: #FFE5CC">2&nbsp;</TD>
+    <TD COLSPAN="3">Consultative vote on the 2022 Compensation Report&nbsp;</TD>
+    <TD STYLE="text-align: center; background-color: #FFE5CC">For</TD>
+    <TD STYLE="text-align: center">Yes</TD>
+    <TD STYLE="text-align: center; background-color: #FFE5CC">For</TD></TR>
+  <TR STYLE="vertical-align: top">

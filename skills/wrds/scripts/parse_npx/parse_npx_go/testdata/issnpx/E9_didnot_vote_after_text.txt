@@ -1,0 +1,21 @@
+
+ING GROEP NV
+
+Ticker:       ING            Security ID:  456837103
+Meeting Date: APR 22, 2008   Meeting Type: Annual
+Record Date:  MAR 12, 2008
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     ANNUAL ACCOUNTS FOR 2007.                 For       Did Not    Management
+                                                          Vote
+2     DIVIDEND FOR 2007.                        For       Did Not    Management
+                                                          Vote
+3     MAXIMUM NUMBER OF STOCK OPTIONS,          For       Did Not    Management
+      PERFORMANCE SHARES
+ AND CONDITIONAL                 Vote
+      SHARES TO BE GRANTED TO MEMBERS OF THE
+
+      EXECUTIVE BOARD FOR 2007.
+4     DISCHARGE OF THE EXECUTIVE BOARD IN       For       Did Not    Management
+      RESPECT OF THE
+ DUTIES PERFORMED DURING             Vote

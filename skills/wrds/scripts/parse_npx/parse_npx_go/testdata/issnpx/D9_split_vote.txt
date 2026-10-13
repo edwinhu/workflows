@@ -1,0 +1,19 @@
+<PRE>
+
+==================== Spectrum Conservative Allocation Fund =====================
+
+
+10X GENOMICS, INC.
+
+Ticker:       TXG            Security ID:  88025U109
+Meeting Date: JUN 14, 2023   Meeting Type: Annual
+Record Date:
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.1   Elect Director Benjamin J. Hindson      For       Split Vote   Management
+1.2   Elect Director Serge Saxonov            For       Split Vote   Management
+1.3   Elect Director John R. Stuelpnagel      For       Split Vote   Management
+2     Ratify Ernst &amp; Young LLP as Auditors    For       Split Vote   Management
+3     Advisory Vote to Ratify Named           For       Split Vote   Management
+      Executive Officers' Compensation
+

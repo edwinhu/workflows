@@ -1,0 +1,108 @@
+SECURITY               205887102        MEETING TYPE    Annual
+TICKER SYMBOL          CAG              MEETING DATE    24-Sep-2010
+ISIN                   US2058871029     AGENDA          933318392 - Management
+
+<TABLE>
+<CAPTION>
+                                                                             FOR/AGAINST
+ITEM  PROPOSAL                                       TYPE            VOTE    MANAGEMENT
+<S>   <C>                                            <C>             <C>     <C>
+01    DIRECTOR                                       Management
+      1  MOGENS C. BAY                                               For     For
+      2  STEPHEN G. BUTLER                                           For     For
+      3  STEVEN F. GOLDSTONE                                         For     For
+      4  JOIE A. GREGOR                                              For     For
+      5  RAJIVE JOHRI                                                For     For
+      6  W.G. JURGENSEN                                              For     For
+      7  RICHARD H. LENNY                                            For     For
+      8  RUTH ANN MARSHALL                                           For     For
+      9  GARY M. RODKIN                                              For     For
+      10  ANDREW J. SCHINDLER                                        For     For
+      11  KENNETH E. STINSON                                         For     For
+02    RATIFY THE APPOINTMENT OF INDEPENDENT AUDITOR   Management     For     For
+</TABLE>
+
+GENERAL MILLS, INC.
+
+SECURITY         370334104               MEETING TYPE    Annual
+TICKER SYMBOL    GIS                     MEETING DATE    27-Sep-2010
+ISIN             US3703341046            AGENDA          933315966 - Management
+
+<TABLE>
+<CAPTION>
+                                                                              FOR/AGAINST
+ITEM  PROPOSAL                                          TYPE          VOTE    MANAGEMENT
+<S>   <C>                                               <C>           <C>     <C>
+1A    ELECTION OF DIRECTOR: BRADBURY H. ANDERSON        Management    For     For
+1B    ELECTION OF DIRECTOR: R. KERRY CLARK              Management    For     For
+1C    ELECTION OF DIRECTOR: PAUL DANOS                  Management    For     For
+1D    ELECTION OF DIRECTOR: WILLIAM T. ESREY            Management    For     For
+1E    ELECTION OF DIRECTOR: RAYMOND V. GILMARTIN        Management    For     For
+1F    ELECTION OF DIRECTOR: JUDITH RICHARDS HOPE        Management    For     For
+1G    ELECTION OF DIRECTOR: HEIDI G. MILLER             Management    For     For
+1H    ELECTION OF DIRECTOR: HILDA OCHOA-BRILLEMBOURG    Management    For     For
+1I    ELECTION OF DIRECTOR: STEVE ODLAND                Management    For     For
+1J    ELECTION OF DIRECTOR: KENDALL J. POWELL           Management    For     For
+1K    ELECTION OF DIRECTOR: LOIS E. QUAM                Management    For     For
+1L    ELECTION OF DIRECTOR: MICHAEL D. ROSE             Management    For     For
+1M    ELECTION OF DIRECTOR: ROBERT L. RYAN              Management    For     For
+</TABLE>
+
+
+<PAGE>
+
+ProxyEdge                                             Report Date:07/08/2011
+Meeting Date Range: 07/01/2010 to 06/30/2011                              9
+The Gabelli Dividend Income Trust
+
+<TABLE>
+<CAPTION>
+                                                                FOR/AGAINST
+ITEM    PROPOSAL                        TYPE          VOTE      MANAGEMENT
+<S>     <C>                             <C>           <C>       <C>
+        ELECTION OF DIRECTOR:           Management
+1N      DOROTHY A. TERRELL                              For      For
+        APPROVE EXECUTIVE               Management
+02      INCENTIVE PLAN.                                 For      For
+03      RATIFY THE APPOINTMENT          Management      For      For
+        OF KPMG LLP AS
+        GENERAL MILLS' INDEPENDENT
+        REGISTERED PUBLIC
+        ACCOUNTING FIRM.
+04      CAST AN ADVISORY                Management      For      For
+        VOTE ON EXECUTIVE
+        COMPENSATION.
+</TABLE>
+
+SKYLINE CORPORATION
+
+SECURITY       830830105      MEETING TYPE  Annual
+TICKER SYMBOL  SKY            MEETING DATE  27-Sep-2010
+ISIN           US8308301055   AGENDA        933321503 - Management
+
+<TABLE>
+<CAPTION>
+                                                                       FOR/AGAINST
+ITEM    PROPOSAL                             TYPE           VOTE       MANAGEMENT
+<S>     <C>                                  <C>            <C>         <C>
+01      DIRECTOR                             Management
+        1 ARTHUR J. DECIO                                   For         For
+        2 THOMAS G. DERANEK                                 For         For
+        3 JOHN C. FIRTH                                     For         For
+        4 JERRY HAMMES                                      For         For
+        5 WILLIAM H. LAWSON                                 For         For
+        6 DAVID T. LINK                                     For         For
+        7 ANDREW J. MCKENNA                                 For         For
+02      RATIFICATION OF THE                  Management     For         For
+        APPOINTMENT OF INDEPENDENT
+        ACCOUNTING FIRM: THE
+        BOARD AND AUDIT COMMITTEE
+        HAVE APPOINTED CROWE
+        HORWATH LLP AS
+        SKYLINE'S INDEPENDENT
+        REGISTERED PUBLIC
+        ACCOUNTING FIRM FOR
+        THE FISCAL YEAR ENDING MAY 31, 2011.
+</TABLE>
+
+AMERICREDIT CORP.

@@ -1,0 +1,30 @@
+
+
+============ AST ADVANCED STRATEGIES PORTFOLIO - SUB-ADVISER: PIMCO ============
+
+
+EDISON MISSION (MEH) HOLDING
+
+Ticker:                      Security ID:  605056AB6
+Consent Date: APR 18, 2007   Meeting Type:
+Record Date:
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Consent to the proposed amendments in the For       For        Management
+      Indenture
+
+
+- --------------------------------------------------------------------------------
+
+EL PASO CORP
+
+Ticker:                      Security ID:  835415AF7
+Consent Date: FEB 28, 2007   Meeting Type:
+Record Date:
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Consent to the proposed amendments in the N/A       N/A        Management
+      Indenture
+
+
+- --------------------------------------------------------------------------------

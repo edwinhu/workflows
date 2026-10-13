@@ -1,0 +1,137 @@
+<SEC-DOCUMENT>0001121257-07-000037.txt : 20070829
+<SEC-HEADER>0001121257-07-000037.hdr.sgml : 20070829
+<ACCEPTANCE-DATETIME>20070829171756
+ACCESSION NUMBER:		0001121257-07-000037
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20070630
+FILED AS OF DATE:		20070829
+DATE AS OF CHANGE:		20070829
+EFFECTIVENESS DATE:		20070829
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			JNL INVESTORS SERIES TRUST
+		CENTRAL INDEX KEY:			0001121257
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-10041
+		FILM NUMBER:		071088514
+
+	BUSINESS ADDRESS:	
+		STREET 1:		1 CORPORATE WAY
+		STREET 2:		ATTN: LEGAL DEPARTMENT
+		CITY:			LANSING
+		STATE:			MI
+		ZIP:			48951
+		BUSINESS PHONE:		(517)381-5500
+
+	MAIL ADDRESS:	
+		STREET 1:		1 CORPORATE WAY
+		CITY:			LANSING
+		STATE:			MI
+		ZIP:			48951
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001121257
+<SERIES-ID>S000014530
+<SERIES-NAME>Jackson Perspective 5 Fund (A)
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000039510
+<CLASS-CONTRACT-NAME>Jackson Perspective 5 Fund (A)
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001121257
+<SERIES-ID>S000014531
+<SERIES-NAME>Jackson Perspective 5 Fund (C)
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000039511
+<CLASS-CONTRACT-NAME>Jackson Perspective 5 Fund (C)
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>jnlist_npx.txt
+<TEXT>
+UNITED STATES
+SECURITIES AND EXCHANGE COMMISSION
+Washington, DC 20549
+
+FORM N-PX
+
+ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED
+MANAGEMENT INVESTMENT COMPANY
+
+Investment Company Act File Number: 811-10041
+
+JNL Investors Series Trust
+(Exact name of registrant as specified in charter)
+
+1 Corporate Way
+Lansing, Michigan 48951
+(Address of principal executive offices)
+========================== JACKSON PERSPECTIVE 5 FUND ==========================
+
+ABBOTT LABORATORIES
+
+Ticker: ABT Security ID: 002824100
+Meeting Date: APR 27, 2007 Meeting Type: Annual
+Record Date: FEB 28, 2007
+
+# Proposal Mgt Rec Vote Cast Sponsor
+1.1 Elect Director R.S. Austin For For Management
+1.2 Elect Director W.M. Daley For For Management
+1.3 Elect Director W.J. Farrell For For Management
+1.4 Elect Director H.L. Fuller For For Management
+1.5 Elect Director R.A. Gonzalez For For Management
+1.6 Elect Director D.A.L. Owen For For Management
+1.7 Elect Director B. Powell Jr. For For Management
+1.8 Elect Director W.A. Reynolds For For Management
+1.9 Elect Director R.S. Roberts For For Management
+1.10 Elect Director S.C. Scott III For For Management
+1.11 Elect Director W.D. Smithburg For For Management
+1.12 Elect Director G.F. Tilton For For Management
+1.13 Elect Director M.D. White For For Management
+2 Ratify Auditors For For Management
+3 Advisory Vote to Ratify Named Executive Against For Shareholder
+Officers' Compensation
+4 Separate Chairman and CEO Positions Against Against Shareholder
+
+- --------------------------------------------------------------------------------
+
+ADVANCED ENERGY INDUSTRIES, INC.
+
+Ticker: AEIS Security ID: 007973100
+Meeting Date: MAY 2, 2007 Meeting Type: Annual
+Record Date: MAR 12, 2007
+
+# Proposal Mgt Rec Vote Cast Sponsor
+1.1 Elect Director Douglas S. Schatz For For Management
+1.2 Elect Director Richard P. Beck For For Management
+1.3 Elect Director Hans Georg Betz For For Management
+1.4 Elect Director Joseph R. Bronson For For Management
+1.5 Elect Director Trung T. Doan For For Management
+1.6 Elect Director Barry Z. Posner For For Management
+1.7 Elect Director Thomas M. Rohrs For For Management
+1.8 Elect Director Elwood Spedden For For Management
+2 Amend Non-Employee Director Omnibus Stock For For Management
+Plan
+3 Amend Omnibus Stock Plan For For Management
+4 Ratify Auditors For For Management
+
+- --------------------------------------------------------------------------------
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

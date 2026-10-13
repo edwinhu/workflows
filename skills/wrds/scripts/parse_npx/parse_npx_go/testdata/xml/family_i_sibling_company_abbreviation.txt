@@ -1,0 +1,42 @@
+  <proxyTable>
+    <issuerName>Victoria's Secret &amp; Co.</issuerName>
+    <cusip>926400102</cusip>
+    <isin>US9264001028</isin>
+    <meetingDate>06/11/2026</meetingDate>
+    <voteDescription>To approve, on an advisory basis, the compensation of the Company's named executive officers.</voteDescription>
+    <voteCategories>
+      <voteCategory>
+        <categoryType>SECTION 14A SAY-ON-PAY VOTES</categoryType>
+      </voteCategory>
+    </voteCategories>
+    <voteSource>ISSUER</voteSource>
+    <sharesVoted>213</sharesVoted>
+    <sharesOnLoan>0</sharesOnLoan>
+    <vote>
+      <voteRecord>
+        <howVoted>AGAINST</howVoted>
+        <sharesVoted>213</sharesVoted>
+        <managementRecommendation>NONE</managementRecommendation>
+      </voteRecord>
+    </vote>
+  </proxyTable>
+  <proxyTable>
+    <issuerName>VICTORIA'S SECRET &amp; COMPANY</issuerName>
+    <meetingDate>06/11/2026</meetingDate>
+    <voteDescription>To approve, on an advisory basis, the compensation of the Company's named executive officers.</voteDescription>
+    <voteCategories>
+      <voteCategory>
+        <categoryType>SECTION 14A SAY-ON-PAY VOTES</categoryType>
+      </voteCategory>
+    </voteCategories>
+    <voteSource>ISSUER</voteSource>
+    <sharesVoted>3954</sharesVoted>
+    <sharesOnLoan>0</sharesOnLoan>
+    <vote>
+      <voteRecord>
+        <howVoted>AGAINST</howVoted>
+        <sharesVoted>3954</sharesVoted>
+        <managementRecommendation>NONE</managementRecommendation>
+      </voteRecord>
+    </vote>
+  </proxyTable>

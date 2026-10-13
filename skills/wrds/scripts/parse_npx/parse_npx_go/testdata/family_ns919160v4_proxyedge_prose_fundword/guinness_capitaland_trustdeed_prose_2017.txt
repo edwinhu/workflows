@@ -1,0 +1,974 @@
+<SEC-DOCUMENT>0001398344-17-011006.txt : 20170828
+<SEC-HEADER>0001398344-17-011006.hdr.sgml : 20170828
+<ACCEPTANCE-DATETIME>20170828142401
+ACCESSION NUMBER:		0001398344-17-011006
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20170630
+FILED AS OF DATE:		20170828
+DATE AS OF CHANGE:		20170828
+EFFECTIVENESS DATE:		20170828
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			GUINNESS ATKINSON FUNDS
+		CENTRAL INDEX KEY:			0000919160
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08360
+		FILM NUMBER:		171054228
+
+	BUSINESS ADDRESS:	
+		STREET 1:		21550 OXNARD STREET
+		STREET 2:		SUITE 850
+		CITY:			WOODLAND HILLS
+		STATE:			CA
+		ZIP:			91367
+		BUSINESS PHONE:		626-914-1041
+
+	MAIL ADDRESS:	
+		STREET 1:		21550 OXNARD STREET
+		STREET 2:		SUITE 850
+		CITY:			WOODLAND HILLS
+		STATE:			CA
+		ZIP:			91367
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	INVESTEC FUNDS
+		DATE OF NAME CHANGE:	20000927
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	GUINNESS FLIGHT INVESTMENT FUNDS
+		DATE OF NAME CHANGE:	19970506
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	GUINNESS FLIGHT INVESTMENT FUNDS INC
+		DATE OF NAME CHANGE:	19940217
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000919160
+<SERIES-ID>S000005893
+<SERIES-NAME>Guinness Atkinson Asia Focus Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016117
+<CLASS-CONTRACT-NAME>Guinness Atkinson Asia Focus Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>IASMX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000919160
+<SERIES-ID>S000005894
+<SERIES-NAME>Guinness Atkinson China & Hong Kong Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016118
+<CLASS-CONTRACT-NAME>Guinness Atkinson China & Hong Kong Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>ICHKX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000919160
+<SERIES-ID>S000005895
+<SERIES-NAME>Guinness Atkinson Global Innovators Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016119
+<CLASS-CONTRACT-NAME>Guinness Atkinson Global Innovators Fund - Investor Class
+<CLASS-CONTRACT-TICKER-SYMBOL>IWIRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000161072
+<CLASS-CONTRACT-NAME>Guinness Atkinson Global Innovators Fund - Institutional Class
+<CLASS-CONTRACT-TICKER-SYMBOL>GINNX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000919160
+<SERIES-ID>S000005896
+<SERIES-NAME>Guinness Atkinson Global Energy Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016120
+<CLASS-CONTRACT-NAME>Guinness Atkinson Global Energy Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>GAGEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000919160
+<SERIES-ID>S000009156
+<SERIES-NAME>Guinness Atkinson Alternative Energy Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000024897
+<CLASS-CONTRACT-NAME>Guinness Atkinson Alternative Energy Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>GAAEX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000919160
+<SERIES-ID>S000009157
+<SERIES-NAME>Guinness Atkinson Asia Pacific Dividend Builder Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000024898
+<CLASS-CONTRACT-NAME>Guinness Atkinson Asia Pacific Dividend Builder Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>GAADX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000919160
+<SERIES-ID>S000032927
+<SERIES-NAME>Renminbi Yuan & Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000101629
+<CLASS-CONTRACT-NAME>Renminbi Yuan & Bond Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>GARBX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000919160
+<SERIES-ID>S000036495
+<SERIES-NAME>Guinness Atkinson Dividend Builder Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111794
+<CLASS-CONTRACT-NAME>Guinness Atkinson Dividend Builder Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>GAINX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>fp0027631_npx.htm
+<TEXT>
+<html>
+<head>
+<title></title>
+<!--Licensed to: FilePoint
+    Document created using EDGARfilings PROfile 4.3.2.0
+    Copyright 1995 - 2017 Summit Financial Printing, LLC.  All rights reserved.-->
+</head>
+<body style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif" bgcolor="#ffffff" text="#000000">
+<div>
+<div style="CLEAR: both; LINE-HEIGHT: 1.15">&#160;</div>
+
+<div style="CLEAR: both; LINE-HEIGHT: 1.15">
+<table id="zc44eb5d8cd91451dbe3048df1d43b5f9" style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; WIDTH: 25%" cellspacing="0" cellpadding="4" align="right" border="0">
+<tr>
+<td style="BORDER-TOP: #000000 2px solid; BORDER-RIGHT: #000000 2px solid; WIDTH: 100%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BORDER-LEFT: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">OMB APPROVAL</div>
+</td>
+</tr>
+
+<tr>
+<td style="BORDER-RIGHT: #000000 2px solid; WIDTH: 100%; VERTICAL-ALIGN: top; BORDER-LEFT: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">OMB Number: 3235-0582</div>
+</td>
+</tr>
+
+<tr>
+<td style="BORDER-RIGHT: #000000 2px solid; WIDTH: 100%; VERTICAL-ALIGN: top; BORDER-LEFT: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Expires: March 31, 2018</div>
+</td>
+</tr>
+
+<tr>
+<td style="BORDER-RIGHT: #000000 2px solid; WIDTH: 100%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BORDER-LEFT: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Estimated average burden hours per response 7.2</div>
+</td>
+</tr>
+</table>
+</div>
+
+<div style="CLEAR: both; LINE-HEIGHT: 1.15">&#160;</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">UNITED STATES</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">SECURITIES AND EXCHANGE COMMISSION</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Washington, DC 20549</div>
+
+<div style="LINE-HEIGHT: 1.15"><br style="LINE-HEIGHT: 1.15">
+</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">FORM N-PX</div>
+
+<div style="LINE-HEIGHT: 1.15"><br style="LINE-HEIGHT: 1.15">
+</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">INVESTMENT COMPANY</div>
+
+<div style="LINE-HEIGHT: 1.15"><br style="LINE-HEIGHT: 1.15">
+</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Investment Company Act file number <font style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold"><u>811-08360</u></font></div>
+
+<div style="LINE-HEIGHT: 1.15"><br style="LINE-HEIGHT: 1.15">
+</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">GUINNESS ATKINSON FUNDS
+
+<hr style="BORDER-TOP: medium none; HEIGHT: 2px; BORDER-RIGHT: medium none; BORDER-BOTTOM: medium none; COLOR: #000000; TEXT-ALIGN: center; MARGIN-LEFT: auto; BORDER-LEFT: medium none; BACKGROUND-COLOR: #000000; MARGIN-RIGHT: auto" align="center" noshade="noshade">
+</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">(Exact name of registrant as specified in charter)</div>
+
+<div style="LINE-HEIGHT: 1.15"><br style="LINE-HEIGHT: 1.15">
+</div>
+
+<table id="z27cdfc41c2ed453d8f085b742977c9f5" style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; WIDTH: 100%" cellspacing="0" cellpadding="4" border="0">
+<tr>
+<td style="WIDTH: 78.02%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">21550 Oxnard Street, Suite 850, Woodland Hills, CA</div>
+</td>
+<td style="WIDTH: 21.98%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">91367</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 78.02%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">(Address of principal executive offices)</div>
+</td>
+<td style="WIDTH: 21.98%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">(Zip code)</div>
+</td>
+</tr>
+</table>
+
+<div style="LINE-HEIGHT: 1.15"><br style="LINE-HEIGHT: 1.15">
+</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">James J. Atkinson Jr.</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">21550 Oxnard Street, Suite 850, Woodland Hills, CA 91367
+
+<hr style="BORDER-TOP: medium none; HEIGHT: 2px; BORDER-RIGHT: medium none; BORDER-BOTTOM: medium none; COLOR: #000000; TEXT-ALIGN: center; MARGIN-LEFT: auto; BORDER-LEFT: medium none; BACKGROUND-COLOR: #000000; MARGIN-RIGHT: auto" align="center" noshade="noshade">
+</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">(Name and address of agent for service)</div>
+
+<div style="TEXT-ALIGN: left; LINE-HEIGHT: 1.15"><br style="LINE-HEIGHT: 1.15">
+</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Registrant's telephone number, including area code: <font style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif"><u>(800) 915-9566</u></font></div>
+
+<div style="LINE-HEIGHT: 1.15"><br style="LINE-HEIGHT: 1.15">
+</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Date of fiscal year end: <font style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif"><u>December 31</u></font></div>
+
+<div style="TEXT-ALIGN: left; LINE-HEIGHT: 1.15"><br style="LINE-HEIGHT: 1.15">
+</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Date of reporting period: <font style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif"><u>July 1, 2016 to June 30, 2017</u></font></div>
+
+<div style="TEXT-ALIGN: left; LINE-HEIGHT: 1.15"><br style="LINE-HEIGHT: 1.15">
+</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: justify; LINE-HEIGHT: 1.15; TEXT-INDENT: 36pt">Form N-PX is to be used by a registered management investment company, other than a small business investment company registered on Form N-5 (ss.ss. 239.24 and 274.5 of this chapter), to file reports with the Commission, not later than August 31 of each year, containing the registrant's proxy voting record for the most recent twelve-month period ended June 30, pursuant to section 30 of the Investment Company Act of 1940 and rule 30b1-4 thereunder (17 CFR 270.30b1-4). The Commission may use the information provided on Form N-PX in its regulatory, disclosure review, inspection, and policymaking roles.</div>
+
+<div style="TEXT-ALIGN: justify; LINE-HEIGHT: 1.15"><br style="LINE-HEIGHT: 1.15">
+</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: justify; LINE-HEIGHT: 1.15; TEXT-INDENT: 36pt">A registrant is required to disclose the information specified by Form N-PX, and the Commission will make this information public. A registrant is not required to respond to the collection of information contained in Form N-PX unless the Form displays a currently valid Office of Management and Budget ("OMB") control number. Please direct comments concerning the accuracy of the information collection burden estimate and any suggestions for reducing the burden to the Secretary, Securities and Exchange Commission, 450 Fifth Street, NW, Washington, DC 20549-0609. The OMB has reviewed this collection of information under the clearance requirements of 44 U.S.C. ss. 3507.</div>
+
+<div id="DSPFPageBreakArea" style="MARGIN-BOTTOM: 11pt; CLEAR: both; MARGIN-TOP: 11pt">
+<div id="DSPFPageBreak" style="PAGE-BREAK-AFTER: always">
+<hr style="BORDER-LEFT-WIDTH: 0px; HEIGHT: 1px; BORDER-RIGHT-WIDTH: 0px; WIDTH: 100%; BORDER-BOTTOM-WIDTH: 0px; COLOR: #555555; CLEAR: both; MARGIN: 4px 0px; BORDER-TOP-WIDTH: 0px; BACKGROUND-COLOR: #555555" noshade="noshade">
+</div>
+</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">ITEM 1. PROXY VOTING RECORD.</div>
+</div>
+
+<div>&#160;</div>
+
+<div>
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Guinness Atkinson Alternative Energy</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Meeting Date Range: 01-Jul-2016 To 30-Jun-2017</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Selected Accounts</div>
+
+<div style="LINE-HEIGHT: 1.15"><br style="LINE-HEIGHT: 1.15">
+</div>
+
+<table id="z0c503e5973254fa8bfde5925d7425181" style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; WIDTH: 100%" cellspacing="0" cellpadding="3" border="0">
+<tr>
+<td style="WIDTH: 68.63%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75" colspan="10">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">CHINA LONGYUAN POWER GROUP CORPORATION LTD</div>
+</td>
+<td style="WIDTH: 1.59%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 7.23%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 3.29%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 1.61%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 4.56%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 4.11%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 8.98%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 10%; VERTICAL-ALIGN: top" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Security:</div>
+</td>
+<td style="WIDTH: 13.94%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Y1501T101</div>
+</td>
+<td style="WIDTH: 9.68%; VERTICAL-ALIGN: bottom">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 5.3%; VERTICAL-ALIGN: bottom">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 11.88%; VERTICAL-ALIGN: bottom">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 6.19%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 13.23%; VERTICAL-ALIGN: top" colspan="4">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Meeting Type:</div>
+</td>
+<td style="WIDTH: 20.81%; VERTICAL-ALIGN: top" colspan="5">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">ExtraOrdinary General Meeting</div>
+</td>
+<td style="WIDTH: 8.98%; VERTICAL-ALIGN: bottom">&#160;</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 10%; VERTICAL-ALIGN: top" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Ticker:</div>
+</td>
+<td style="WIDTH: 13.94%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 9.68%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 5.3%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 11.88%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 6.19%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 13.23%; VERTICAL-ALIGN: top" colspan="4">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Meeting Date:</div>
+</td>
+<td style="WIDTH: 20.81%; VERTICAL-ALIGN: top" colspan="5">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">12-Aug-2016</div>
+</td>
+<td style="WIDTH: 8.98%; VERTICAL-ALIGN: bottom">&#160;</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 10%; VERTICAL-ALIGN: top" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">ISIN</div>
+</td>
+<td style="WIDTH: 13.94%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">CNE100000HD4</div>
+</td>
+<td style="WIDTH: 9.68%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 5.3%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 11.88%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 6.19%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 13.23%; VERTICAL-ALIGN: top" colspan="4">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Vote Deadline Date:</div>
+</td>
+<td style="WIDTH: 20.81%; VERTICAL-ALIGN: top" colspan="5">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">09-Aug-2016</div>
+</td>
+<td style="WIDTH: 8.98%; VERTICAL-ALIGN: bottom">&#160;</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 10%; VERTICAL-ALIGN: top" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Agenda</div>
+</td>
+<td style="WIDTH: 13.94%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">707215744</div>
+</td>
+<td style="WIDTH: 9.68%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+<td style="WIDTH: 5.3%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 11.88%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 6.19%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 13.23%; VERTICAL-ALIGN: top" colspan="4">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Total Ballot Shares:</div>
+</td>
+<td style="WIDTH: 20.81%; VERTICAL-ALIGN: top" colspan="5">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">478000</div>
+</td>
+<td style="WIDTH: 8.98%; VERTICAL-ALIGN: bottom">&#160;</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 10%; VERTICAL-ALIGN: top" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Last Vote Date:</div>
+</td>
+<td style="WIDTH: 13.94%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">05-Jul-2016</div>
+</td>
+<td style="WIDTH: 9.68%; VERTICAL-ALIGN: bottom">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 5.3%; VERTICAL-ALIGN: bottom">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 11.88%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 6.19%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 4.68%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 5.38%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.59%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.59%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 7.23%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 3.29%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.61%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 4.56%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 4.11%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 8.98%; VERTICAL-ALIGN: bottom">&#160;</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 9.79%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Item</div>
+</td>
+<td style="WIDTH: 29.14%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75" colspan="4">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Proposal</div>
+</td>
+<td style="WIDTH: 11.88%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Recommendation</div>
+</td>
+<td style="WIDTH: 10.86%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Default Vote</div>
+</td>
+<td style="WIDTH: 6.97%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 8.81%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Against</div>
+</td>
+<td style="WIDTH: 3.29%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 6.18%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Abstain</div>
+</td>
+<td style="WIDTH: 13.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Take No Action</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 9.79%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">1</div>
+</td>
+<td style="WIDTH: 29.14%; VERTICAL-ALIGN: top" colspan="4">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Please reference meeting materials.</div>
+</td>
+<td style="WIDTH: 11.88%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">None</div>
+</td>
+<td style="WIDTH: 16.24%; VERTICAL-ALIGN: top" colspan="3">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">None</div>
+</td>
+<td style="WIDTH: 23.98%; VERTICAL-ALIGN: top" colspan="7">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Non Voting</div>
+</td>
+<td style="WIDTH: 8.98%; VERTICAL-ALIGN: bottom">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 9.79%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">2</div>
+</td>
+<td style="WIDTH: 23.84%; VERTICAL-ALIGN: top" colspan="3">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management Proposal</div>
+</td>
+<td style="WIDTH: 5.3%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 11.88%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 10.86%; VERTICAL-ALIGN: top" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">None</div>
+</td>
+<td style="WIDTH: 5.38%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: right; LINE-HEIGHT: 1.15">478000</div>
+</td>
+<td style="WIDTH: 10.4%; VERTICAL-ALIGN: top" colspan="3">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: right; LINE-HEIGHT: 1.15">0</div>
+</td>
+<td style="WIDTH: 4.9%; VERTICAL-ALIGN: top" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: right; LINE-HEIGHT: 1.15">0</div>
+</td>
+<td style="WIDTH: 17.65%; VERTICAL-ALIGN: top" colspan="3">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: right; LINE-HEIGHT: 1.15">0</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 9.79%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">3</div>
+</td>
+<td style="WIDTH: 23.84%; VERTICAL-ALIGN: top" colspan="3">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management Proposal</div>
+</td>
+<td style="WIDTH: 5.3%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 11.88%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 10.86%; VERTICAL-ALIGN: top" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">None</div>
+</td>
+<td style="WIDTH: 5.38%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: right; LINE-HEIGHT: 1.15">478000</div>
+</td>
+<td style="WIDTH: 10.4%; VERTICAL-ALIGN: top" colspan="3">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: right; LINE-HEIGHT: 1.15">0</div>
+</td>
+<td style="WIDTH: 4.9%; VERTICAL-ALIGN: top" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: right; LINE-HEIGHT: 1.15">0</div>
+</td>
+<td style="WIDTH: 17.65%; VERTICAL-ALIGN: top" colspan="3">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: right; LINE-HEIGHT: 1.15">0</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 68.63%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75" colspan="10">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">JOHNSON CONTROLS, INC.</div>
+</td>
+<td style="WIDTH: 1.59%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 7.23%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 3.29%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 1.61%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 4.56%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 4.11%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 8.98%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 10%; VERTICAL-ALIGN: top" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Security:</div>
+</td>
+<td style="WIDTH: 13.94%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">478366107</div>
+</td>
+<td style="WIDTH: 9.68%; VERTICAL-ALIGN: bottom">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 5.3%; VERTICAL-ALIGN: bottom">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 11.88%; VERTICAL-ALIGN: bottom">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 6.19%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 13.23%; VERTICAL-ALIGN: top" colspan="4">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Meeting Type:</div>
+</td>
+<td style="WIDTH: 20.81%; VERTICAL-ALIGN: top" colspan="5">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Special</div>
+</td>
+<td style="WIDTH: 8.98%; VERTICAL-ALIGN: bottom">&#160;</td>
+</tr>
+</table>
+
+<div style="LINE-HEIGHT: 1.15">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Guinness Atkinson Asia Pacific Dividend Builder Fund</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Meeting Date Range: 01-Jul-2016 To 30-Jun-2017</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Selected Accounts</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #00007f; FONT-STYLE: italic; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Vote Summary</div>
+
+<div style="LINE-HEIGHT: 1.15"><br style="LINE-HEIGHT: 1.15">
+</div>
+
+<table id="zb4f4f4bdcaa24ccf9de4106ca2ddf5d2" style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; WIDTH: 100%" cellspacing="0" cellpadding="3" border="0">
+<tr>
+<td style="WIDTH: 79.54%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75" colspan="12">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">CAPITALAND MALL TRUST, SINGAPORE</div>
+</td>
+<td style="WIDTH: 20.46%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 16.34%; VERTICAL-ALIGN: top" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Security</div>
+</td>
+<td style="WIDTH: 11.27%; VERTICAL-ALIGN: top" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Y1100L160</div>
+</td>
+<td style="WIDTH: 11.07%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 9.66%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 8.05%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 19.56%; VERTICAL-ALIGN: top" colspan="3">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Meeting Type</div>
+</td>
+<td style="WIDTH: 20.46%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Annual General Meeting</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 16.34%; VERTICAL-ALIGN: top" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Ticker Symbol</div>
+</td>
+<td style="WIDTH: 11.27%; VERTICAL-ALIGN: bottom" colspan="2">&#160;</td>
+<td style="WIDTH: 11.07%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 9.66%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 8.05%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 19.56%; VERTICAL-ALIGN: top" colspan="3">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Meeting Date</div>
+</td>
+<td style="WIDTH: 20.46%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">13-Apr-2017</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 16.34%; VERTICAL-ALIGN: top" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">ISIN</div>
+</td>
+<td style="WIDTH: 11.27%; VERTICAL-ALIGN: top" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">SG1M51904654</div>
+</td>
+<td style="WIDTH: 11.07%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 9.66%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 8.05%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 19.56%; VERTICAL-ALIGN: top" colspan="3">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Agenda</div>
+</td>
+<td style="WIDTH: 20.46%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">707838833 - Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 16.34%; VERTICAL-ALIGN: top" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Record Date</div>
+</td>
+<td style="WIDTH: 11.27%; VERTICAL-ALIGN: bottom" colspan="2">&#160;</td>
+<td style="WIDTH: 11.07%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 9.66%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 8.05%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 19.56%; VERTICAL-ALIGN: top" colspan="3">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Holding Recon Date</div>
+</td>
+<td style="WIDTH: 20.46%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">11-Apr-2017</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 6.01%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">City /</div>
+</td>
+<td style="WIDTH: 10.33%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Country</div>
+</td>
+<td style="WIDTH: 9.48%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">SINGAP ORE</div>
+</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">/</div>
+</td>
+<td style="WIDTH: 11.07%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Singapore</div>
+</td>
+<td style="WIDTH: 9.66%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 8.05%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 19.56%; VERTICAL-ALIGN: top" colspan="3">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Vote Deadline Date</div>
+</td>
+<td style="WIDTH: 20.46%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">06-Apr-2017</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 16.34%; VERTICAL-ALIGN: top" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">SEDOL(s)</div>
+</td>
+<td style="WIDTH: 32%; VERTICAL-ALIGN: top" colspan="4">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">6420129 - 6535421 - B063JZ0 - B11DTF2 - B66FHM1 - B898Y08</div>
+</td>
+<td style="WIDTH: 8.05%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 19.56%; VERTICAL-ALIGN: top" colspan="3">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Quick Code</div>
+</td>
+<td style="WIDTH: 20.46%; VERTICAL-ALIGN: bottom">&#160;</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 6.01%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 10.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 9.48%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 11.07%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 9.66%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 8.05%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 10.77%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 7%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 20.46%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 6.01%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Item</div>
+</td>
+<td style="WIDTH: 32.67%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75" colspan="4">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Proposal</div>
+</td>
+<td style="WIDTH: 9.66%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 8.05%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Proposed by</div>
+</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 12.57%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Vote</div>
+</td>
+<td style="WIDTH: 8.79%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">For/Against Management</div>
+</td>
+<td style="WIDTH: 20.46%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 6.01%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">1</div>
+</td>
+<td style="WIDTH: 42.33%; VERTICAL-ALIGN: top" colspan="5">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RECEIVE AND ADOPT THE REPORT OF HSBC INSTITUTIONAL TRUST SERVICES (SINGAPORE) LIMITED, AS TRUSTEE OF CMT (THE "TRUSTEE"), THE STATEMENT BY CAPITALAND MALL TRUST MANAGEMENT LIMITED, AS MANAGER OF CMT (THE "MANAGER"), AND THE AUDITED FINANCIAL STATEMENTS OF CMT FOR THE FINANCIAL YEAR ENDED 31 DECEMBER 2016 AND THE AUDITORS' REPORT THEREON</div>
+</td>
+<td style="WIDTH: 9.84%; VERTICAL-ALIGN: top" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 10.77%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 7%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 20.46%; VERTICAL-ALIGN: bottom">&#160;</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 6.01%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">2</div>
+</td>
+<td style="WIDTH: 42.33%; VERTICAL-ALIGN: top" colspan="5">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RE-APPOINT KPMG LLP AS AUDITORS OF CMT AND TO AUTHORISE THE MANAGER TO FIX THEIR REMUNERATION</div>
+</td>
+<td style="WIDTH: 9.84%; VERTICAL-ALIGN: top" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 10.77%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 7%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 20.46%; VERTICAL-ALIGN: bottom">&#160;</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 6.01%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">3</div>
+</td>
+<td style="WIDTH: 42.33%; VERTICAL-ALIGN: top" colspan="5">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">THAT AUTHORITY BE AND IS HEREBY GIVEN TO THE MANAGER TO: (A) (I) ISSUE UNITS IN CMT ("UNITS") WHETHER BY WAY OF RIGHTS, BONUS OR OTHERWISE; AND/OR (II) MAKE OR GRANT OFFERS, AGREEMENTS OR OPTIONS (COLLECTIVELY, "INSTRUMENTS") THAT MIGHT OR WOULD REQUIRE UNITS TO BE ISSUED, INCLUDING BUT NOT LIMITED TO THE CREATION AND ISSUE OF (AS WELL AS ADJUSTMENTS TO) SECURITIES, WARRANTS, DEBENTURES OR OTHER INSTRUMENTS CONVERTIBLE INTO UNITS, AT ANY TIME AND UPON SUCH TERMS AND CONDITIONS AND FOR SUCH PURPOSES AND TO SUCH PERSONS AS THE MANAGER MAY IN ITS ABSOLUTE DISCRETION DEEM FIT; AND (B) ISSUE UNITS IN PURSUANCE OF ANY INSTRUMENT MADE OR GRANTED BY THE MANAGER WHILE THIS RESOLUTION WAS IN FORCE (NOTWITHSTANDING THAT THE AUTHORITY CONFERRED BY THIS RESOLUTION MAY HAVE CEASED TO BE IN FORCE AT THE TIME SUCH UNITS ARE ISSUED), PROVIDED THAT: (1) THE AGGREGATE NUMBER OF UNITS TO BE ISSUED PURSUANT TO THIS RESOLUTION (INCLUDING UNITS TO BE ISSUED IN PURSUANCE OF INSTRUMENTS MADE OR GRANTED PURSUANT TO THIS RESOLUTION) SHALL NOT EXCEED FIFTY PER CENT. (50.0%) OF THE TOTAL NUMBER OF ISSUED UNITS (AS CALCULATED IN ACCORDANCE WITH SUB-PARAGRAPH (2) BELOW), OF WHICH THE</div>
+</td>
+<td style="WIDTH: 9.84%; VERTICAL-ALIGN: top" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 10.77%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Against</div>
+</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 7%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Against</div>
+</td>
+<td style="WIDTH: 20.46%; VERTICAL-ALIGN: bottom">&#160;</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 6.01%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 42.33%; VERTICAL-ALIGN: top" colspan="5">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">AGGREGATE NUMBER OF UNITS TO BE ISSUED OTHER THAN ON A PRO RATA BASIS TO UNITHOLDERS (INCLUDING UNITS TO BE ISSUED IN PURSUANCE OF INSTRUMENTS MADE OR GRANTED PURSUANT TO THIS RESOLUTION) SHALL NOT EXCEED TWENTY PER CENT. (20.0%) OF THE TOTAL NUMBER OF ISSUED UNITS (AS CALCULATED IN ACCORDANCE WITH SUB- PARAGRAPH (2) BELOW); (2) SUBJECT TO SUCH MANNER OF CALCULATION AS MAY BE PRESCRIBED BY SINGAPORE EXCHANGE SECURITIES TRADING LIMITED (THE "SGX-ST") FOR THE PURPOSE OF DETERMINING THE AGGREGATE NUMBER OF UNITS THAT MAY BE ISSUED UNDER SUB-PARAGRAPH (1) ABOVE, THE TOTAL NUMBER OF ISSUED UNITS SHALL BE BASED ON THE TOTAL NUMBER OF ISSUED UNITS AT THE TIME THIS RESOLUTION IS PASSED, AFTER ADJUSTING FOR: (A) ANY NEW UNITS ARISING FROM THE CONVERSION OR EXERCISE OF ANY CONVERTIBLE SECURITIES OR OPTIONS WHICH ARE OUTSTANDING OR SUBSISTING AT THE TIME THIS RESOLUTION IS PASSED; AND (B) ANY SUBSEQUENT BONUS ISSUE, CONSOLIDATION OR SUBDIVISION OF UNITS; (3) IN EXERCISING THE AUTHORITY CONFERRED BY THIS RESOLUTION, THE MANAGER SHALL COMPLY WITH THE PROVISIONS OF THE LISTING MANUAL OF THE SGX- ST FOR THE TIME BEING IN FORCE (UNLESS SUCH COMPLIANCE HAS BEEN WAIVED BY THE SGX-ST) AND THE TRUST DEED DATED 29 OCTOBER 2001 CONSTITUTING CMT (AS AMENDED) (THE "TRUST DEED") FOR THE TIME BEING IN FORCE (UNLESS OTHERWISE EXEMPTED OR WAIVED BY THE MONETARY AUTHORITY OF SINGAPORE); (4) (UNLESS REVOKED OR VARIED BY THE UNITHOLDERS IN A GENERAL MEETING) THE AUTHORITY CONFERRED BY THIS RESOLUTION SHALL CONTINUE IN FORCE UNTIL (I) THE CONCLUSION OF THE NEXT ANNUAL GENERAL MEETING OF CMT OR (II) THE DATE BY WHICH THE NEXT ANNUAL GENERAL MEETING OF CMT IS REQUIRED BY APPLICABLE LAWS AND REGULATIONS OR THE TRUST DEED TO BE HELD, WHICHEVER IS THE EARLIER; (5) WHERE THE TERMS OF THE ISSUE OF THE INSTRUMENTS PROVIDE FOR ADJUSTMENT TO THE NUMBER OF INSTRUMENTS OR UNITS INTO WHICH THE INSTRUMENTS MAY BE CONVERTED IN THE EVENT OF RIGHTS, BONUS OR OTHER CAPITALISATION ISSUES OR ANY OTHER EVENTS, THE MANAGER IS AUTHORISED TO ISSUE ADDITIONAL INSTRUMENTS OR UNITS PURSUANT TO SUCH ADJUSTMENT NOTWITHSTANDING THAT THE AUTHORITY CONFERRED BY THIS RESOLUTION MAY HAVE CEASED TO BE IN FORCE AT THE TIME THE INSTRUMENTS OR UNITS ARE ISSUED; AND (6) THE</div>
+</td>
+<td style="WIDTH: 8.05%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 10.77%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 7%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 20.46%; VERTICAL-ALIGN: bottom">&#160;</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 6.01%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 42.33%; VERTICAL-ALIGN: top" colspan="5">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">MANAGER AND THE TRUSTEE BE AND ARE HEREBY SEVERALLY AUTHORISED TO COMPLETE AND DO ALL SUCH ACTS AND THINGS (INCLUDING EXECUTING ALL SUCH DOCUMENTS AS MAY BE REQUIRED) AS THE MANAGER OR, AS THE CASE MAY BE, THE TRUSTEE MAY CONSIDER EXPEDIENT OR NECESSARY OR IN THE INTERESTS OF CMT TO GIVE EFFECT TO THE AUTHORITY CONFERRED BY THIS RESOLUTION</div>
+</td>
+<td style="WIDTH: 8.05%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 10.77%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 7%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 20.46%; VERTICAL-ALIGN: bottom">&#160;</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 6.01%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">4</div>
+</td>
+<td style="WIDTH: 42.33%; VERTICAL-ALIGN: top" colspan="5">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">THAT: (A) THE EXERCISE OF ALL THE POWERS OF THE MANAGER TO REPURCHASE ISSUED UNITS FOR AND ON BEHALF OF CMT NOT EXCEEDING IN AGGREGATE THE MAXIMUM LIMIT (AS HEREAFTER DEFINED), AT SUCH PRICE OR PRICES AS MAY BE DETERMINED BY THE MANAGER FROM TIME TO TIME UP TO THE MAXIMUM PRICE (AS HEREAFTER DEFINED), WHETHER BY WAY OF: (I) MARKET REPURCHASE(S) ON THE SGX-ST AND/OR, AS THE CASE MAY BE, SUCH OTHER STOCK EXCHANGE FOR THE TIME BEING ON WHICH THE UNITS MAY BE LISTED AND QUOTED; AND/OR (II) OFF-MARKET REPURCHASE(S) (WHICH ARE NOT MARKET REPURCHASE(S)) IN ACCORDANCE WITH ANY EQUAL ACCESS SCHEME(S) AS MAY BE DETERMINED OR FORMULATED BY THE MANAGER AS IT CONSIDERS FIT IN ACCORDANCE WITH THE TRUST DEED, AND OTHERWISE IN ACCORDANCE WITH ALL APPLICABLE LAWS AND REGULATIONS INCLUDING THE RULES OF THE SGX-ST OR, AS THE CASE MAY BE, SUCH OTHER STOCK EXCHANGE FOR THE TIME BEING ON WHICH THE UNITS MAY BE LISTED AND QUOTED, BE AND IS HEREBY AUTHORISED AND APPROVED GENERALLY AND UNCONDITIONALLY (THE "UNIT BUY-BACK MANDATE"); (B) (UNLESS REVOKED OR VARIED BY THE UNITHOLDERS IN A GENERAL MEETING) THE AUTHORITY CONFERRED ON THE MANAGER PURSUANT TO THE UNIT BUY-BACK MANDATE MAY BE EXERCISED BY THE MANAGER AT ANY TIME AND FROM TIME TO TIME DURING THE PERIOD COMMENCING FROM THE DATE OF THE PASSING OF THIS RESOLUTION AND EXPIRING ON THE EARLIEST OF: (I) THE DATE ON WHICH THE NEXT ANNUAL GENERAL MEETING OF CMT IS HELD; (II) THE DATE BY WHICH THE NEXT ANNUAL GENERAL MEETING OF CMT IS REQUIRED BY APPLICABLE LAWS AND REGULATIONS OR THE TRUST DEED TO BE HELD; OR (III) THE DATE ON WHICH REPURCHASES OF UNITS PURSUANT TO THE UNIT BUY-BACK MANDATE ARE CARRIED OUT TO THE FULL EXTENT MANDATED; (C) IN THIS RESOLUTION: "AVERAGE CLOSING PRICE" MEANS THE AVERAGE OF THE CLOSING MARKET PRICES OF THE UNITS OVER THE LAST FIVE MARKET DAYS, ON WHICH TRANSACTIONS IN THE UNITS WERE RECORDED, IMMEDIATELY PRECEDING THE DATE OF THE MARKET REPURCHASE OR, AS THE CASE MAY BE,</div>
+</td>
+<td style="WIDTH: 9.84%; VERTICAL-ALIGN: top" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 10.77%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 7%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 20.46%; VERTICAL-ALIGN: bottom">&#160;</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 6.01%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 42.33%; VERTICAL-ALIGN: top" colspan="5">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">THE DATE OF THE MAKING OF THE OFFER PURSUANT TO THE OFF-MARKET REPURCHASE, AND DEEMED TO BE ADJUSTED FOR ANY CORPORATE ACTION THAT OCCURS AFTER THE RELEVANT FIVE MARKET DAYS; "DATE OF THE MAKING OF THE OFFER" MEANS THE DATE ON WHICH THE MANAGER MAKES AN OFFER FOR AN OFF-MARKET REPURCHASE, STATING THEREIN THE REPURCHASE PRICE (WHICH SHALL NOT BE MORE THAN THE MAXIMUM PRICE FOR AN OFF- MARKET REPURCHASE) FOR EACH UNIT AND THE RELEVANT TERMS OF THE EQUAL ACCESS SCHEME FOR EFFECTING THE OFF-MARKET REPURCHASE; "MARKET DAY" MEANS A DAY ON WHICH THE SGX-ST AND/OR, AS THE CASE MAY BE, SUCH OTHER STOCK EXCHANGE FOR THE TIME BEING ON WHICH THE UNITS MAY BE LISTED AND QUOTED, IS OPEN FOR TRADING IN SECURITIES; "MAXIMUM LIMIT" MEANS THAT NUMBER OF UNITS REPRESENTING 1.5% OF THE TOTAL NUMBER OF ISSUED UNITS AS AT THE DATE OF THE PASSING OF THIS RESOLUTION; AND "MAXIMUM PRICE" IN RELATION TO A UNIT TO BE REPURCHASED, MEANS THE REPURCHASE PRICE (EXCLUDING BROKERAGE, STAMP DUTY, COMMISSION, APPLICABLE GOODS AND SERVICES TAX AND OTHER RELATED EXPENSES) WHICH SHALL NOT EXCEED: (I) IN THE CASE OF A MARKET REPURCHASE OF A UNIT, 105.0% OF THE AVERAGE CLOSING PRICE OF THE UNITS; AND (II) IN THE CASE OF AN OFF-MARKET REPURCHASE OF A UNIT, 110.0% OF THE AVERAGE CLOSING PRICE OF THE UNITS; AND (D) THE MANAGER AND THE TRUSTEE BE AND ARE HEREBY SEVERALLY AUTHORISED TO COMPLETE AND DO ALL SUCH ACTS AND THINGS (INCLUDING EXECUTING ALL SUCH DOCUMENTS AS MAY BE REQUIRED) AS THE MANAGER OR, AS THE CASE MAY BE, THE TRUSTEE MAY CONSIDER EXPEDIENT OR NECESSARY OR IN THE INTERESTS OF CMT TO GIVE EFFECT TO THE TRANSACTIONS CONTEMPLATED AND/OR AUTHORISED BY THIS RESOLUTION</div>
+</td>
+<td style="WIDTH: 8.05%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 10.77%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 7%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 20.46%; VERTICAL-ALIGN: bottom">&#160;</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 6.01%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">CMMT</div>
+</td>
+<td style="WIDTH: 42.33%; VERTICAL-ALIGN: top" colspan="5">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">PLEASE NOTE THAT SHAREHOLDERS ARE ALLOWED TO VOTE 'IN FAVOR' OR 'AGAINST' FOR- ALL RESOLUTIONS, ABSTAIN IS NOT A VOTING OPTION ON THIS MEETING</div>
+</td>
+<td style="WIDTH: 9.84%; VERTICAL-ALIGN: top" colspan="2">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Non-Voting</div>
+</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 10.77%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 1.8%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 7%; VERTICAL-ALIGN: bottom">&#160;</td>
+<td style="WIDTH: 20.46%; VERTICAL-ALIGN: bottom">&#160;</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 79.54%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75" colspan="12">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TISCO FINANCIAL GROUP PUBLIC COMPANY LTD</div>
+</td>
+<td style="WIDTH: 20.46%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #004f75">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</body>
+</html>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

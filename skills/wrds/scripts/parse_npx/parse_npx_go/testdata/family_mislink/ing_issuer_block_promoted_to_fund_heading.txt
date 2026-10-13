@@ -1,0 +1,62 @@
+<SEC-DOCUMENT>0000950153-05-003259.txt : 20051230
+<SEC-HEADER>0000950153-05-003259.hdr.sgml : 20051230
+<ACCEPTANCE-DATETIME>20051230110948
+ACCESSION NUMBER:		0000950153-05-003259
+CONFORMED SUBMISSION TYPE:	N-PX/A
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20051230
+DATE AS OF CHANGE:		20051230
+EFFECTIVENESS DATE:		20051230
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			ING MUTUAL FUNDS
+		CENTRAL INDEX KEY:			0000895430
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX/A
+<SEQUENCE>1
+<FILENAME>p71598nvpxza.txt
+<DESCRIPTION>FORM N-PX/A ING MUTUAL FUNDS
+<TEXT>
+=============================== ING FOREIGN FUND ===============================
+
+
+A.P. MOELLER - MAERSK 'B' (FRMLY D/S SVENDBORG )
+
+Ticker:                      Security ID:  K0514G101
+Meeting Date: APR 28, 2004   Meeting Type: Annual
+Record Date:  APR 2, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Receive Report of Board                   None      None       Management
+2     Accept Financial Statements and Statutory For       For        Management
+      Reports
+
+- --------------------------------------------------------------------------------
+
+CANADIAN NATURAL RESOURCES LTD.
+
+Ticker:       CNQ.           Security ID:  136385101
+Meeting Date: MAY 6, 2004    Meeting Type: Annual/Special
+Record Date:  MAR 25, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Elect Catherine Best, N. Murray Edwards,  For       For        Management
+      Ambassador Gordon D. Giffin, James T.
+      Grenon, John G. Langille, Keith A.J.
+      MacPhail, Allan Markin, James Palmer,
+      Eldon Smith and David Tuer as Directors
+2     Appoint PricewaterhouseCoopers LLP as     For       For        Management
+      Auditors and Authorize Board to Fix
+      Remuneration of Auditors
+3     Amend Stock Option Plan                   For       Against    Management
+4     Approve 2:1 Stock Split                   For       For        Management
+
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

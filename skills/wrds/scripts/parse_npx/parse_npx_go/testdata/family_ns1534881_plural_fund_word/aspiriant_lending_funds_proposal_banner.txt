@@ -1,0 +1,257 @@
+<SEC-DOCUMENT>0001398344-23-015308.txt : 20230818
+<SEC-HEADER>0001398344-23-015308.hdr.sgml : 20230818
+<ACCEPTANCE-DATETIME>20230818162858
+ACCESSION NUMBER:		0001398344-23-015308
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20230630
+FILED AS OF DATE:		20230818
+DATE AS OF CHANGE:		20230818
+EFFECTIVENESS DATE:		20230818
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Aspiriant Trust
+		CENTRAL INDEX KEY:			0001534881
+		IRS NUMBER:				205458457
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			0228
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22648
+		FILM NUMBER:		231186181
+
+	BUSINESS ADDRESS:	
+		STREET 1:		11100 SANTA MONICA BOULEVARD SUITE 600
+		CITY:			LOS ANGELES
+		STATE:			CA
+		ZIP:			90025
+		BUSINESS PHONE:		(310) 806-4000
+
+	MAIL ADDRESS:	
+		STREET 1:		11100 SANTA MONICA BOULEVARD SUITE 600
+		CITY:			LOS ANGELES
+		STATE:			CA
+		ZIP:			90025
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	Aspiriant Global Equity Trust
+		DATE OF NAME CHANGE:	20111214
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	Advanced Global Equity Trust
+		DATE OF NAME CHANGE:	20111213
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	Advanced Capital Intelligence LLC
+		DATE OF NAME CHANGE:	20111115
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001534881
+<SERIES-ID>S000036290
+<SERIES-NAME>Aspiriant Risk-Managed Equity Allocation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111026
+<CLASS-CONTRACT-NAME>Advisor Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>RMEAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111027
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>RMEIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001534881
+<SERIES-ID>S000049584
+<SERIES-NAME>Aspiriant Risk-Managed Municipal Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000156767
+<CLASS-CONTRACT-NAME>Aspiriant Risk-Managed Municipal Bond Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>RMMBX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001534881
+<SERIES-ID>S000051603
+<SERIES-NAME>Aspiriant Defensive Allocation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000162347
+<CLASS-CONTRACT-NAME>Aspiriant Defensive Allocation Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>RMDFX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001534881
+<SERIES-ID>S000059404
+<SERIES-NAME>Aspiriant Risk-Managed Taxable Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000194824
+<CLASS-CONTRACT-NAME>Aspiriant Risk-Managed Taxable Bond Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>RMTBX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>fp0084373-1_npx.htm
+    <!-- Field: /Page -->
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; color: #231F20"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Item
+1. Proxy Voting Record</FONT></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; color: #231F20"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></P>
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; color: #231F20"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><U>Aspiriant
+Risk-Managed Equity Allocation Fund</U></FONT></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin-top: 0pt; margin-bottom: 0pt; color: #231F20"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></P>
+
+<TABLE CELLSPACING="0" CELLPADDING="4" STYLE="font: 11pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+    <TD STYLE="width: 11%; text-align: left; vertical-align: bottom; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Company
+    Name</B></FONT></TD>
+    <TD STYLE="width: 8%; text-align: left; vertical-align: bottom; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Primary
+    ISIN</B></FONT></TD>
+    <TD STYLE="width: 10%; text-align: left; vertical-align: bottom; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Meeting&nbsp;Date</B></FONT></TD>
+    <TD STYLE="width: 8%; text-align: left; vertical-align: bottom; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Proposal
+    Code Category</B></FONT></TD>
+    <TD STYLE="width: 45%; text-align: left; vertical-align: bottom; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Proposal
+    Text</B></FONT></TD>
+    <TD STYLE="width: 9%; text-align: left; vertical-align: bottom; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Management
+    Recommendation</B></FONT></TD>
+    <TD STYLE="width: 9%; text-align: left; vertical-align: bottom; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Vote
+    Instruction</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Taiwan Semiconductor Manufacturing Co., Ltd.</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">TW0002330008</FONT></TD>
+    <TD STYLE="text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">06-Jun-23</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Company Articles</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Amend the Name of Audit Committee in the Policies (I)Procedures for Acquisition or Disposal of Assets (II)Procedures for Financial Derivatives Transactions (III)Procedures for Lending Funds to Other Parties (IV)Procedures for Endorsement and Guarantee</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD></TR>
+</TABLE>
+
+
+<TABLE CELLSPACING="0" CELLPADDING="2" STYLE="font: 10pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="background-color: #004F75">
+    <TD COLSPAN="10" STYLE="vertical-align: top; border-top: black 1pt solid; border-bottom: black 1pt solid; border-left: black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>AVANGRID,
+    INC.</B></FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom; border-top: black 1pt solid; border-bottom: black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom; border-top: black 1pt solid; border-bottom: black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom; border-top: black 1pt solid; border-bottom: black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom; border-top: black 1pt solid; border-bottom: black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom; border-top: black 1pt solid; border-bottom: black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom; border-top: black 1pt solid; border-right: black 1pt solid; border-bottom: black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD></TR>
+<TR>
+    <TD COLSPAN="2" STYLE="vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Security:</B></FONT></TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">05351W103</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Meeting
+    Type:</B></FONT></TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Annual</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD></TR>
+<TR>
+    <TD COLSPAN="2" STYLE="vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Ticker:</B></FONT></TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">AGR</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Meeting
+    Date:</B></FONT></TD>
+    <TD COLSPAN="4" STYLE="white-space: nowrap; vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">20-Jul-2022</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD></TR>
+<TR>
+    <TD COLSPAN="2" STYLE="vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>ISIN</B></FONT></TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">US05351W1036</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Vote&nbsp;Deadline&nbsp;Date:</B></FONT></TD>
+    <TD COLSPAN="4" STYLE="white-space: nowrap; vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">19-Jul-2022</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD></TR>
+<TR>
+    <TD COLSPAN="2" STYLE="vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Agenda</B></FONT></TD>
+    <TD STYLE="vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">935671900</FONT></TD>
+    <TD COLSPAN="2" STYLE="white-space: nowrap; vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Management</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Total
+    Ballot Shares:</B></FONT></TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">61995</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD></TR>
+<TR>
+    <TD COLSPAN="2" STYLE="vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>Last
+    Vote Date:</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="white-space: nowrap; vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">14-Jun-2022</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD></TR>
+<TR STYLE="background-color: #004F75">
+    <TD STYLE="text-align: left; border-top: black 1pt solid; border-left: black 1pt solid; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>Item</B></FONT></TD>
+    <TD COLSPAN="3" STYLE="text-align: left; border-top: black 1pt solid; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>Proposal</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="text-align: left; border-top: black 1pt solid; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>Recommendation</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="text-align: left; border-top: black 1pt solid; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>Default
+    Vote</B></FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-top: black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>For</B></FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center; border-top: black 1pt solid; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: bottom; border-top: black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>Against</B></FONT></TD>
+    <TD STYLE="white-space: nowrap; text-align: center; border-top: black 1pt solid; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="vertical-align: bottom; border-top: black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>Abstain</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: bottom; border-top: black 1pt solid; border-right: black 1pt solid; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: white"><B>Take
+    No Action</B></FONT></TD></TR>
+<TR>
+    <TD STYLE="white-space: nowrap; vertical-align: top; border-bottom: black 1pt solid; border-left: black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">1</FONT></TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; border-bottom: black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">DIRECTOR</FONT></TD>
+    <TD COLSPAN="2" STYLE="white-space: nowrap; vertical-align: top; border-bottom: black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD COLSPAN="3" STYLE="white-space: nowrap; vertical-align: top; border-bottom: black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">None</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom; border-bottom: black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom; border-bottom: black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom; border-bottom: black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom; border-bottom: black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom; border-bottom: black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom; border-bottom: black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom; border-right: black 1pt solid; border-bottom: black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD></TR>
+<TR>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">1</FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Ignacio
+    S. Gal&aacute;n</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: top; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">5895</FONT></TD>
+    <TD COLSPAN="3" STYLE="white-space: nowrap; vertical-align: top; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">0</FONT></TD>
+    <TD COLSPAN="2" STYLE="white-space: nowrap; vertical-align: top; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">0</FONT></TD>
+    <TD COLSPAN="2" STYLE="white-space: nowrap; vertical-align: top; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">0</FONT></TD></TR>
+<TR>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">2</FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">John
+    Baldacci</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;</FONT></TD>
+    <TD STYLE="white-space: nowrap; vertical-align: top; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">5895</FONT></TD>
+    <TD COLSPAN="3" STYLE="white-space: nowrap; vertical-align: top; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">0</FONT></TD>
+    <TD COLSPAN="2" STYLE="white-space: nowrap; vertical-align: top; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">0</FONT></TD>
+    <TD COLSPAN="2" STYLE="white-space: nowrap; vertical-align: top; text-align: right"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">0</FONT></TD></TR>
+</TABLE>
+
+</BODY>
+</HTML>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

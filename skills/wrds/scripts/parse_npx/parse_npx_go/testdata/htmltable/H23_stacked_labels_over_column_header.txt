@@ -1,0 +1,237 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ D++eH7cpkAA4h8LsrfTvmpz0hSIPZuBYeQXctAgakXOCj7pTUEJrhHUEqMKKI2zk
+ /s1jy0DwVdMgB0pc6TTuYg==
+
+<SEC-DOCUMENT>0000928816-05-000968.txt : 20050803
+<SEC-HEADER>0000928816-05-000968.hdr.sgml : 20050803
+<ACCEPTANCE-DATETIME>20050803112258
+ACCESSION NUMBER:		0000928816-05-000968
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050803
+DATE AS OF CHANGE:		20050803
+EFFECTIVENESS DATE:		20050803
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PUTNAM ASSET ALLOCATION FUNDS
+		CENTRAL INDEX KEY:			0000914209
+		IRS NUMBER:				046746612
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			0930
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-07121
+		FILM NUMBER:		05994396
+
+	BUSINESS ADDRESS:	
+		STREET 1:		ONE POST OFFICE SQUARE
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02109
+		BUSINESS PHONE:		6172921000
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PUTNAM LIFE STAGES ASSET ALLOCATION TRUST
+		DATE OF NAME CHANGE:	19931027
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>aa5.htm
+<DESCRIPTION>PUTNAM ASSET ALLOCATION FUNDS
+<TEXT>
+<html>
+<body>
+<center><b>
+FORM N-PX<br>
+<br>
+ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT COMPANY
+</b></center>
+
+
+<pre>
+Investment Company Act file number: 811-7121
+
+Putnam Asset Allocation Funds
+- -------------------------------------------------------------------------
+  (Exact name of registrant as specified in charter)
+
+One Post Office Square, Boston, Massachusetts 02109
+- -------------------------------------------------------------------------
+  (Address of principal executive offices)
+
+Beth S. Mazor, Vice President
+
+Putnam Asset Allocation Funds
+
+One Post Office Square
+
+Boston, Massachusetts 02109
+
+
+
+Copy to:
+
+John W. Gerstmayr, Esq.
+
+Ropes & Gray LLP
+
+One International Place
+
+Boston, Massachusetts 02110
+- -------------------------------------------------------------------------
+  (Name and address of agent for service)
+
+
+Registrant's telephone number, including area code: <u>(617) 292-1000</u>
+
+Date of Fiscal year-end: <u>9/30</u>
+
+Date of reporting period: <u>7/1/2004 - 6/30/2005</u>
+</pre>
+
+
+Item 1.  Proxy Voting Record<br>
+<br>
+
+Account Number: <u>Putnam Asset Allocation: Balanced Portfolio</u> <br>
+
+<br>
+<table border=0>
+<tr>
+	<td colspan="2"><b>ISSUER NAME</b></td>
+	<td><b>TICKER</b></td>
+	<td><b>CUSIP</b></td>
+	<td><b>MTG DATE</b></td>
+	<td colspan="3"><b>MTG TYPE</b></td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+	<td><b>Proposal Type</b></td>
+	<td><b>Voted</b></td>
+	<td><b>Vote</b></td>
+	<td><b>For/Agnst Mgmt</b></td>
+</tr>
+<tr>
+	<td colspan="2"><b><i>3M Co</i></b></td>
+	<td><b><i>MMM</i></b>&nbsp;</td>
+	<td><b><i>88579Y101</i></b>&nbsp;</td>
+	<td><b><i>5/10/05</i></b>&nbsp;</td>
+	<td colspan="3"><b><i>Annual</i></b>&nbsp;</td>
+</tr>
+<tr>
+	<td>1.01 </td>
+	<td colspan="3">&nbsp;&nbsp;Elect Vance D. Coffman</td>
+	<td>MGMT</td>
+	<td>YES</td>
+	<td>FOR</td>
+	<td>FOR</td>
+</tr>
+<tr>
+	<td>1.02 </td>
+	<td colspan="3">&nbsp;&nbsp;Elect Rozanne L. Ridgway</td>
+	<td>MGMT</td>
+	<td>YES</td>
+	<td>FOR</td>
+	<td>FOR</td>
+</tr>
+<tr>
+	<td>1.03 </td>
+	<td colspan="3">&nbsp;&nbsp;Elect Louis W. Sullivan</td>
+	<td>MGMT</td>
+	<td>YES</td>
+	<td>WHOLD</td>
+	<td>AGNST</td>
+</tr>
+<tr>
+	<td>2.00 </td>
+	<td colspan="3">&nbsp;&nbsp;Ratify selection of auditors</td>
+	<td>MGMT</td>
+	<td>YES</td>
+	<td>FOR</td>
+	<td>FOR</td>
+</tr>
+<tr>
+	<td>3.00 </td>
+	<td colspan="3">&nbsp;&nbsp;Adopt Stock Incentive Plan</td>
+	<td>MGMT</td>
+	<td>YES</td>
+	<td>AGNST</td>
+	<td>AGNST</td>
+</tr>
+<tr>
+	<td>4.00 </td>
+	<td colspan="3">&nbsp;&nbsp;Review or promote animal welfare</td>
+	<td>SHLDR</td>
+	<td>YES</td>
+	<td>AGNST</td>
+	<td>FOR</td>
+</tr>
+<tr>
+	<td>5.00 </td>
+	<td colspan="3">&nbsp;&nbsp;China--adopt code of conduct</td>
+	<td>SHLDR</td>
+	<td>YES</td>
+	<td>AGNST</td>
+	<td>FOR</td>
+</tr>
+
+<tr>
+	<td colspan="8">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="2"><b><i>4 Kids Entertainment Inc</i></b></td>
+	<td><b><i>KDE</i></b>&nbsp;</td>
+	<td><b><i>350865101</i></b>&nbsp;</td>
+	<td><b><i>5/26/05</i></b>&nbsp;</td>
+	<td colspan="3"><b><i>Annual</i></b>&nbsp;</td>
+</tr>
+<tr>
+	<td>1.01 </td>
+	<td colspan="3">&nbsp;&nbsp;Elect Richard Block</td>
+	<td>MGMT</td>
+	<td>YES</td>
+	<td>FOR</td>
+	<td>FOR</td>
+</tr>
+<tr>
+	<td>1.02 </td>
+	<td colspan="3">&nbsp;&nbsp;Elect Jay Emmett</td>
+	<td>MGMT</td>
+	<td>YES</td>
+	<td>FOR</td>
+	<td>FOR</td>
+</tr>
+<tr>
+	<td>1.03 </td>
+	<td colspan="3">&nbsp;&nbsp;Elect Joseph P. Garrity</td>
+	<td>MGMT</td>
+	<td>YES</td>
+	<td>FOR</td>
+	<td>FOR</td>
+</tr>
+<tr>
+	<td>1.04 </td>
+	<td colspan="3">&nbsp;&nbsp;Elect Michael Goldstein</td>
+	<td>MGMT</td>
+	<td>YES</td>
+	<td>FOR</td>
+	<td>FOR</td>
+</tr>
+</table>
+</TEXT>
+</DOCUMENT>

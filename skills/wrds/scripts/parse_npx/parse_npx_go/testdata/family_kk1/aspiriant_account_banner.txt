@@ -1,0 +1,223 @@
+		COMPANY CONFORMED NAME:			Aspiriant Trust
+		CENTRAL INDEX KEY:			0001534881
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001534881
+<SERIES-ID>S000036290
+<SERIES-NAME>Aspiriant Risk-Managed Equity Allocation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111026
+<CLASS-CONTRACT-NAME>Advisor Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>RMEAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000111027
+<CLASS-CONTRACT-NAME>Institutional Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>RMEIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001534881
+<SERIES-ID>S000049584
+<SERIES-NAME>Aspiriant Risk-Managed Municipal Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000156767
+<CLASS-CONTRACT-NAME>Aspiriant Risk-Managed Municipal Bond Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>RMMBX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001534881
+<SERIES-ID>S000051603
+<SERIES-NAME>Aspiriant Defensive Allocation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000162347
+<CLASS-CONTRACT-NAME>Aspiriant Defensive Allocation Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>RMDFX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+<TEXT>
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15"><u>Aspiriant Risk-Managed Equity Allocation&#160;Fund</u></div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">
+<div>&#160;</div>
+
+<div style="TEXT-ALIGN: right"><img src="fp0027600_01.jpg"><br>
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Vote Summary Report</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Reporting Period: 02/14/2017 to 06/30/2017</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Location(s): Acadian Asset Management</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Institution Account(s): Aspiriant Risk-Managed Global Equity Fund (GMV)</div>
+
+<div style="LINE-HEIGHT: 1.15">&#160;</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15"><font style="FONT-WEIGHT: bold">Novartis AG </font>
+
+<hr style="BORDER-TOP: medium none; HEIGHT: 4px; BORDER-RIGHT: medium none; BORDER-BOTTOM: medium none; COLOR: #000000; TEXT-ALIGN: center; MARGIN-LEFT: auto; BORDER-LEFT: medium none; BACKGROUND-COLOR: #000000; MARGIN-RIGHT: auto" align="center" noshade="noshade">
+</div>
+
+<table id="z9df86f1d1eaa4548803c1764131adf15" style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; WIDTH: 100%" cellspacing="0" cellpadding="4" border="0">
+<tr>
+<td style="WIDTH: 25%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15"><font style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold">Meeting Date:</font> 02/28/2017</div>
+</td>
+<td style="WIDTH: 25%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15"><font style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold">Country:</font> Switzerland</div>
+</td>
+<td style="WIDTH: 50%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15"><font style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold">Primary Security ID:</font> H5820Q150</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 25%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Record Date:</div>
+</td>
+<td style="WIDTH: 25%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15"><font style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold">Meeting Type: </font>Annual</div>
+</td>
+<td style="WIDTH: 50%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15"><font style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold">Ticker:</font> NOVN</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 25%; VERTICAL-ALIGN: top">&#160;</td>
+<td style="WIDTH: 25%; VERTICAL-ALIGN: top">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15"><font style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold">Shares Voted:</font> 6,656</div>
+</td>
+<td style="WIDTH: 50%; VERTICAL-ALIGN: top">&#160;</td>
+</tr>
+</div>
+
+<table id="z3f0593c3bf6048d1bca0a9e4cdcae307" style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; WIDTH: 100%" cellspacing="0" cellpadding="4" border="0">
+<tr>
+<td style="WIDTH: 10%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Proposal Number</div>
+</td>
+<td style="WIDTH: 40%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Proposal Text</div>
+</td>
+<td style="WIDTH: 10%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Proponent</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Mgmt Rec</div>
+</td>
+<td style="WIDTH: 10%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Voting Policy Rec</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Vote Instruction</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 10%; VERTICAL-ALIGN: top; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">1</div>
+</td>
+<td style="WIDTH: 40%; VERTICAL-ALIGN: top; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Accept Financial Statements and Statutory Reports</div>
+</td>
+<td style="WIDTH: 10%; VERTICAL-ALIGN: top; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Mgmt</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: top; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 10%; VERTICAL-ALIGN: top; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: top; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+</tr>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Mgmt</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 10%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: top; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 10%; VERTICAL-ALIGN: top; BACKGROUND-COLOR: #ffffff">&#160;</td>
+<td style="VERTICAL-ALIGN: top; BACKGROUND-COLOR: #ffffff" colspan="5">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-STYLE: italic; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Voting Policy Rationale: Votes FOR the proposed nominees are warranted in light of the prospective composition of the board and Compensation Committee, as well as a lack of significant controversies or governance concerns. However, some shareholders may wish to vote against the reelection of the four incumbent Compensation Committee members in Items 7.1-7.4 in light of certain pay decisions taken in the past year.</div>
+</td>
+</tr>
+</table>
+
+<div style="LINE-HEIGHT: 1.15">&#160;</div>
+
+<div style="LINE-HEIGHT: 1.15"><img src="fp0027600_01.jpg"></div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Vote Summary Report</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Reporting Period: 02/14/2017 to 06/30/2017</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Location(s): Acadian Asset Management</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Institution Account(s): Aspiriant Risk-Managed Global Equity Fund (GMV)</div>
+
+<div style="LINE-HEIGHT: 1.15">&#160;</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Novartis AG</div>
+
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">&#160;</div>
+
+<table id="z6d72188d93074f58bcb7ce3f1571d655" style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; WIDTH: 100%" cellspacing="0" cellpadding="4" border="0">
+<tr>
+<td style="WIDTH: 10%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Proposal Number</div>
+</td>
+<td style="WIDTH: 40%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Proposal Text</div>
+</td>
+<td style="WIDTH: 10%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Proponent</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Mgmt Rec</div>
+</td>
+<td style="WIDTH: 10%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Voting Policy Rec</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Vote Instruction</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 10%; VERTICAL-ALIGN: bottom; PADDING-BOTTOM: 2px; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">6.3</div>
+</td>
+<td style="WIDTH: 40%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Reelect Dimitri Azar as Director</div>
+</td>
+<td style="WIDTH: 10%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Mgmt</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 10%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 15%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+</tr>

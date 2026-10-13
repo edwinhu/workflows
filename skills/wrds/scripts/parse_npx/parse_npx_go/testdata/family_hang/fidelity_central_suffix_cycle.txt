@@ -1,0 +1,79 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ GWouNvHWo+nnEyGche+OEYLc32D1V9Lw7o1YHUK9u9pYEPVcYzYxTSv/mLyXaI60
+ Sz8YMivG2uoMXlF3+nx6tw==
+
+<SEC-DOCUMENT>0000878467-07-000113.txt : 20070830
+<SEC-HEADER>0000878467-07-000113.hdr.sgml : 20070830
+<ACCEPTANCE-DATETIME>20070830145032
+ACCESSION NUMBER:		0000878467-07-000113
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20070630
+FILED AS OF DATE:		20070830
+DATE AS OF CHANGE:		20070830
+EFFECTIVENESS DATE:		20070830
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Fidelity Central Investment Portfolios LLC
+		CENTRAL INDEX KEY:			0001303459
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			0930
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-21667
+		FILM NUMBER:		071090933
+
+	BUSINESS ADDRESS:	
+		STREET 1:		82 DEVONSHIRE STREET
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02109
+		BUSINESS PHONE:		617-563-7000
+
+	MAIL ADDRESS:	
+		STREET 1:		82 DEVONSHIRE STREET
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02109
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001303459
+<SERIES-ID>S000008405
+<SERIES-NAME>Fidelity High Income Central Investment Portfolio 1
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000023056
+<CLASS-CONTRACT-NAME>Fidelity High Income Central Investment Portfolio 1
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>fidhighinccen1.htm
+<TEXT>
+<html>
+   <body><FONT size="2" face="arial">
+         <p align="center" style="font-weight: bold">FORM N-PX
+
+         </p>
+         <p align="center" style="font-weight: bold">ANNUAL REPORT OF PROXY VOTING RECORD OF						REGISTERED MANAGEMENT INVESTMENT COMPANY</p><br><br><p>INVESTMENT COMPANY ACT FILE NUMBER:							811-21667</p>
+         <p align="center">VOTE SUMMARY REPORT						<br>Fidelity High Income Central Fund 1<br>07/01/2006-						06/30/2007<br></p>
+         <table cellSpacing="0" width="100%" border="1" cellPadding="2">
+            <tr>
+               <td style="font-size:10pt;font-weight:bold;">There is no proxy voting activity for the fund because the fund did not hold any voting securities during the reporting period.</td>
+            </tr>
+         </table></FONT>

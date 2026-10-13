@@ -1,0 +1,109 @@
+ACCESSION NUMBER:		0000910472-06-000321
+CONFORMED SUBMISSION TYPE:	N-PX
+CONFORMED PERIOD OF REPORT:	20060816
+FILED AS OF DATE:		20060816
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			NEW RIVER FUNDS
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001228431
+<SERIES-ID>S000011049
+<SERIES-NAME>New River Small Cap Fund
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001228431
+<SERIES-ID>S000011050
+<SERIES-NAME>New River Core Equity Fund
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SEQUENCE>1
+<FILENAME>signaturepage.htm
+<DESCRIPTION>NEW RIVER FUNDS
+<TEXT>
+<!doctype html public "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>New River Funds</TITLE>
+<TABLE style="font-size:10pt" cellspacing=0 id="table1"><TR><TD width=259.45></TD><TD width=71.55></TD><TD width=77.95></TD><TD width=118.5></TD><TD width=21.8></TD><TD width=225.8></TD><TD width=68.25></TD><TD width=56></TD><TD width=56></TD><TD width=83></TD></TR>
+<TR><TD valign=bottom width=1033.4 colspan=6><P style="margin:0pt; "><B>
+	<font size="2">Registrant: NEW RIVER FUNDS: &nbsp;NEW RIVER CORE EQUITY FUND
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></B></P>
+</TD><TD valign=bottom width=91>&nbsp;</TD><TD valign=bottom width=74.667>&nbsp;</TD>
+	<TD valign=bottom width=184 colspan="2"><P style="margin:0pt" align=right>
+	<font size="2">Item 1, Exhibit A1 </font> </P>
+	</TD></TR>
+<TR><TD valign=bottom width=544 colspan=3><P style="margin:0pt; "><B>
+	<font size="2">Investment Company Act file number: &nbsp;811-21384</font></B></P>
+</TD><TD valign=bottom width=158>&nbsp;</TD><TD valign=top width=29.067>&nbsp;</TD><TD valign=top width=301.067>&nbsp;</TD><TD valign=bottom width=91>&nbsp;</TD><TD valign=bottom width=74.667>&nbsp;</TD><TD valign=bottom width=74.667>&nbsp;</TD><TD valign=bottom width=110.667>&nbsp;</TD></TR>
+<TR><TD valign=bottom width=544 colspan=3><P style="margin:0pt; "><B>
+	<font size="2">Reporting Period: </font> </B><font size="2">July 1, 2005 through June 30, 2006</font></P>
+</TD><TD valign=bottom width=158>&nbsp;</TD><TD valign=top width=29.067>&nbsp;</TD><TD valign=top width=301.067>&nbsp;</TD><TD valign=bottom width=91>&nbsp;</TD><TD valign=bottom width=74.667>&nbsp;</TD><TD valign=bottom width=74.667>&nbsp;</TD><TD valign=bottom width=110.667>&nbsp;</TD></TR>
+<TR><TD valign=bottom width=345.933>&nbsp;</TD><TD valign=bottom width=95.4>&nbsp;</TD><TD valign=bottom width=103.933>&nbsp;</TD><TD valign=bottom width=158>&nbsp;</TD><TD valign=top width=29.067>&nbsp;</TD><TD valign=top width=301.067>&nbsp;</TD><TD valign=bottom width=91>&nbsp;</TD><TD valign=bottom width=74.667>&nbsp;</TD><TD valign=bottom width=74.667>&nbsp;</TD><TD valign=bottom width=110.667>&nbsp;</TD></TR>
+<TR><TD style="border:0.5pt solid #000000" width=345.933><P style="margin:0pt" align=center><B>
+	<font size="2">(a) Issuer's Name</font></B></P>
+</TD><font size="2"><TD style="border-top:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" width=95.4><P style="margin:0pt" align=center><B>(b) Exchange Ticker Symbol</B></P>
+</TD><TD style="border-top:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" width=103.933><P style="margin:0pt" align=center><B>(c)&quot;CUSIP&quot; #</B></P>
+</TD><TD style="border-top:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" width=158><P style="margin:0pt" align=center><B>(d) Shareholder Meeting Date</B></P>
+</TD><TD style="border-top:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" width=330.133 colspan=2><P style="margin:0pt" align=center><B>(e) &nbsp;Item Description</B></P>
+</TD><TD style="border-top:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" width=91><P style="margin:0pt" align=center><B>(f) Proposal Type</B></P>
+</TD><TD style="border-top:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" width=74.667><P style="margin:0pt" align=center><B>(g) Voted</B></P>
+</TD><TD style="border-top:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" width=74.667><P style="margin:0pt" align=center><B>(h) Vote Cast</B></P>
+</TD></font><TD style="border-top:0.5pt solid #000000; border-right:0.5pt solid #000000; border-bottom:0.5pt solid #000000" width=110.667><P style="margin:0pt" align=center><B>
+	<font size="2">(i) For/Against Management</font></B></P>
+</TD></TR>
+<TR><TD style="border-left:0.5pt solid #000000; border-right:0.5pt solid #000000" valign=bottom width=345.933>
+	<P style="margin:0pt; "><B><font size="2">AFFLIATED</font><font size="2"> COMPUTER SERVICES</font></B></P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=bottom width=95.4>
+	<P style="margin:0pt; " align=center><font size="2">ACS</font></P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=bottom width=103.933>
+	<P style="margin:0pt; " align=center><font size="2">08190100</font></P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=bottom width=158>
+	<P style="margin:0pt; " align=center><font size="2">10/27/2005 Annual</font></P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=top width=29.067>
+	<P style="margin:0pt; " align=center><font size="2">1</font></P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=top width=301.067>
+	<P style="margin:0pt; "><font size="2">ELECTION OF DIRECTORS</font></P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=top width=91>
+	<P style="margin:0pt; " align=center><font size="2">Management</font></P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=top width=74.667>
+	<P style="margin:0pt; " align=center><font size="2">Yes</font></P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=top width=74.667>
+	<P style="margin:0pt; " align=center><font size="2">For</font></P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=top width=110.667>
+	<P style="margin:0pt; " align=center><font size="2">For</font></P>
+</TD></TR>
+<TR><TD style="border-left:0.5pt solid #000000; border-right:0.5pt solid #000000" valign=bottom width=345.933><P style="margin:0pt; font-size:11pt">&nbsp;</P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=bottom width=95.4><P style="margin:0pt; font-size:11pt" align=center>&nbsp;</P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=bottom width=103.933><P style="margin:0pt; font-size:11pt" align=center>&nbsp;</P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=bottom width=158><P style="margin:0pt; font-size:11pt" align=center>&nbsp;</P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=top width=29.067><P style="margin:0pt; font-size:11pt" align=center>&nbsp;</P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=top width=301.067>
+	<P style="margin:0pt; "><font size="2">1.1 Darwin Deason</font></P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=top width=91>
+	<P style="margin:0pt; " align=center><font size="2">Management</font></P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=top width=74.667>
+	<P style="margin:0pt; " align=center><font size="2">Yes</font></P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=top width=74.667>
+	<P style="margin:0pt; " align=center><font size="2">For</font></P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=top width=110.667>
+	<P style="margin:0pt; " align=center><font size="2">For</font></P>
+</TD></TR>
+<TR><TD style="border-left:0.5pt solid #000000; border-right:0.5pt solid #000000" valign=bottom width=345.933><P style="margin:0pt; font-size:11pt">&nbsp;</P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=bottom width=95.4><P style="margin:0pt; font-size:11pt" align=center>&nbsp;</P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=bottom width=103.933><P style="margin:0pt; font-size:11pt" align=center>&nbsp;</P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=bottom width=158><P style="margin:0pt; font-size:11pt" align=center>&nbsp;</P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=top width=29.067><P style="margin:0pt; font-size:11pt" align=center>&nbsp;</P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=top width=301.067>
+	<P style="margin:0pt; "><font size="2">1.2 Mark A. King</font></P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=top width=91>
+	<P style="margin:0pt; " align=center><font size="2">Management</font></P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=top width=74.667>
+	<P style="margin:0pt; " align=center><font size="2">Yes</font></P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=top width=74.667>
+	<P style="margin:0pt; " align=center><font size="2">For</font></P>
+</TD><TD style="border-right:0.5pt solid #000000" valign=top width=110.667>
+	<P style="margin:0pt; " align=center><font size="2">For</font></P>
+</TD></TR>

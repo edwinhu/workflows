@@ -1,0 +1,65 @@
+<SEC-DOCUMENT>0001206774-04-001312.txt : 20040831
+<SEC-HEADER>0001206774-04-001312.hdr.sgml : 20040831
+<ACCEPTANCE-DATETIME>20040831161250
+ACCESSION NUMBER:		0001206774-04-001312
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040831
+DATE AS OF CHANGE:		20040831
+EFFECTIVENESS DATE:		20040831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			METROPOLITAN SERIES FUND INC
+		CENTRAL INDEX KEY:			0000710826
+		IRS NUMBER:				833164113
+		STATE OF INCORPORATION:			MD
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>ms020_0000710826.txt
+<DESCRIPTION>FORM N-PX
+<TEXT>
+<TABLE>
+<S>    <C>                                                           <C>         <C>        <C>
+Capital Guardian US Equity Portfolio                                                         0000710826
+
+- -------------------------------------------------------------------------------------------------------
+ALLERGAN, INC.                                                                Agenda: 932104918
+     CUSIP: 018490102                         Meeting Type: Annual
+    Ticker: AGN                               Meeting Date: 4/28/2004           ISIN:
+                                                                                            For/Against
+Proposal                                                             Type        Vote        Management
+- -------------------------------------------------------------------------------------------------------
+01     STEPHEN J. RYAN                                                Mgmt          For           For
+       HANDEL E. EVANS                                                Mgmt          For           For
+       GAVIN S. HERBERT                                               Mgmt          For           For
+       MICHAEL R. GALLAGHER                                           Mgmt          For           For
+02     PROPOSAL TO RATIFY THE APPOINTMENT OF                          Mgmt          For           For
+       KPMG LLP AS INDEPENDENT AUDITOR.
+
+<PAGE>
+
+03     PROPOSAL RELATING TO THE ADOPTION OF A                          Shr          For         Against
+       POLICY OF EXPENSING THE COST OF ALL
+       FUTURE STOCK OPTIONS.
+04     PROPOSAL TO BIFURCATE THE ROLES OF                              Shr        Against         For
+       CHAIRMAN OF THE BOARD OF DIRECTORS AND
+       CHIEF EXECUTIVE OFFICER.
+
+- -------------------------------------------------------------------------------------------------------
+ALTERA CORPORATION                                                            Agenda: 932126813
+     CUSIP: 021441100                         Meeting Type: Annual
+    Ticker: ALTR                              Meeting Date: 5/11/2004           ISIN:
+                                                                                            For/Against
+Proposal                                                             Type        Vote        Management
+- -------------------------------------------------------------------------------------------------------
+01     JOHN P. DAANE                                                  Mgmt          For           For
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

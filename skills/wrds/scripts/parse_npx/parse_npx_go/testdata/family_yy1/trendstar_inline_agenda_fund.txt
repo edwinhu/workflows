@@ -1,0 +1,45 @@
+CONFORMED SUBMISSION TYPE:	N-PX/A
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040825
+DATE AS OF CHANGE:		20040825
+EFFECTIVENESS DATE:		20040825
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			TRENDSTAR INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0001252867
+<PAGE>
+
+INVESTMENT COMPANY REPORT
+
+Meeting Date Range:  01-Jul-2003 - 30-Jun-2004    Report Date:  18-Aug-2004
+                                                         Page:  Page 1 of 88
+
+TrendStar American Endeavor                            Agenda Number:  932116026
+
+ AFLAC INCORPORATED
+
+       Security:  001055102                     Meeting Type:  Contested Consent
+         Ticker:  AFL                           Meeting Date:  03-May-04
+           ISIN:
+
+<TABLE>
+<CAPTION>
+                                                   PROPOSAL   PROPOSAL   FOR/AGAINST
+PROP. #    PROPOSAL                                  TYPE       VOTE      MANAGEMENT
+- ------------------------------------------------------------------------------------
+<S>        <C>                                       <C>      <C>          <C>
+01         DIRECTOR
+
+           1     DANIEL P. AMOS                      Mgmt        For         For
+
+           2     JOHN SHELBY AMOS II                 Mgmt        For         For
+
+           3     MICHAEL H. ARMACOST                 Mgmt     Withheld     Against
+
+           4     KRISS CLONINGER, III                Mgmt        For         For
+
+           5     JOE FRANK HARRIS                    Mgmt        For         For
+

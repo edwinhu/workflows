@@ -1,0 +1,15 @@
+
+ACE LIMITED
+
+Ticker:       ACE            Security ID:  H0023R105
+Meeting Date: OCT 22, 2015   Meeting Type: Special
+Record Date:  SEP 10, 2015
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1.    Approve Charter Amendment               For       Management   Management
+2.    Approve Company Name Change             For       Management   Management
+3.    Stock Issuance                          For       Management   Management
+4A.   Election of Directors (Majority Voting) For       Management   Management
+4B.   Election of Directors (Majority Voting) For       Management   Management
+4C.   Election of Directors (Majority Voting) For       Management   Management
+4D.   Election of Directors (Majority Voting) For       Management   Management

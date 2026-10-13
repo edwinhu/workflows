@@ -1,0 +1,31 @@
+<SEC-DOCUMENT>0001438934-23-000218.txt : 20230825
+		COMPANY CONFORMED NAME:			JOHN HANCOCK INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0000022370
+2C9L JHF Mid Cap Growth Fund
+--------------------------------------------------------------------------------------------------------------------------
+ JOHN HANCOCK COLLATERAL TRUST                                                               Agenda Number:  100001321
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  926EMC902
+    Meeting Type:  Special
+    Meeting Date:  09-Sep-2022
+          Ticker:
+            ISIN:
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1      DIRECTOR
+       Andrew G. Arnott                                          Mgmt          For                            For
+       Marianne Harrison                                         Mgmt          For                            For
+       Paul Lorentz                                              Mgmt          For                            For
+       Frances G. Rathke                                         Mgmt          For                            For
+       Noni L. Ellison                                           Mgmt          For                            For
+       Dean Garfield                                             Mgmt          For                            For
+       Patricia Lizarraga                                        Mgmt          For                            For
+--------------------------------------------------------------------------------------------------------------------------
+ ABIOMED, INC.                                                                               Agenda Number:  935680670
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  003654100
+    Meeting Type:  Annual
+    Meeting Date:  10-Aug-2022

@@ -1,0 +1,59 @@
+<SEC-DOCUMENT>0001081400-10-000095.txt : 20100826
+<SEC-HEADER>0001081400-10-000095.hdr.sgml : 20100826
+<ACCEPTANCE-DATETIME>20100826154947
+ACCESSION NUMBER:		0001081400-10-000095
+CONFORMED SUBMISSION TYPE:	N-PX
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			WELLS FARGO FUNDS TRUST
+		CENTRAL INDEX KEY:			0001081400
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001081400
+<SERIES-ID>S000007339
+<SERIES-NAME>Common Stock Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001081400
+<SERIES-ID>S000007344
+<SERIES-NAME>Opportunity Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001081400
+<SERIES-ID>S000007345
+<SERIES-NAME>Discovery Fund
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>smallmidcapnpx2010.htm
+<DESCRIPTION>SMALL MID CAP NPX 2010
+<TEXT>
+<html>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">=============
+Wells Fargo Advantage Opportunity Fund&lt;sup&gt;SM&lt;/sup&gt;
+==============</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">ACCENTURE
+PLC</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Ticker:&#160;&#160;&#160;&#160;&#160;&#160;&#160;ACN&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Security
+ID:&#160;&#160;G1150G111</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">Meeting
+Date: AUG 5, 2009&#160;&#160;&#160;&#160;Meeting Type: Special</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">#&#160;&#160;&#160;&#160;&#160;Proposal&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Mgt
+Rec&#160;&#160;&#160;Vote Cast&#160;&#160;&#160;&#160;Sponsor</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="left"><font style="DISPLAY: inline; FONT-SIZE: 10pt; FONT-FAMILY: Times New Roman">2&#160;&#160;&#160;&#160;&#160;Adjourn
+Meeting&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;For&#160;&#160;&#160;&#160;&#160;&#160;&#160;For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Management</font></div>
+    <div style="DISPLAY: block; MARGIN-LEFT: 0pt; TEXT-INDENT: 0pt; MARGIN-RIGHT: 0pt" align="justify">&#160;</div>
+  </body>
+</html>
+
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

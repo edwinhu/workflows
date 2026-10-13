@@ -1,0 +1,366 @@
+<SEC-DOCUMENT>0000051931-15-000689.txt : 20150827
+<SEC-HEADER>0000051931-15-000689.hdr.sgml : 20150827
+<ACCEPTANCE-DATETIME>20150827163736
+ACCESSION NUMBER:		0000051931-15-000689
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20150630
+FILED AS OF DATE:		20150827
+DATE AS OF CHANGE:		20150827
+EFFECTIVENESS DATE:		20150827
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			CAPITAL GROUP PRIVATE CLIENT SERVICES FUNDS
+		CENTRAL INDEX KEY:			0001474365
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1031
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22349
+		FILM NUMBER:		151079166
+
+	BUSINESS ADDRESS:	
+		STREET 1:		6455 IRVINE CENTER DRIVE
+		CITY:			IRVINE
+		STATE:			CA
+		ZIP:			92618
+		BUSINESS PHONE:		213-486-9200
+
+	MAIL ADDRESS:	
+		STREET 1:		333 SOUTH HOPE STREET
+		CITY:			LOS ANGELES
+		STATE:			CA
+		ZIP:			90071
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	CAPITAL PRIVATE CLIENT SERVICES FUNDS
+		DATE OF NAME CHANGE:	20100323
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PERSONAL INVESTMENT MANAGEMENT PORTFOLIO SERIES
+		DATE OF NAME CHANGE:	20091014
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001474365
+<SERIES-ID>S000027394
+<SERIES-NAME>Capital Group Core Municipal Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082662
+<CLASS-CONTRACT-NAME>Share class
+<CLASS-CONTRACT-TICKER-SYMBOL>CCMPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001474365
+<SERIES-ID>S000027395
+<SERIES-NAME>Capital Group Short-Term Municipal Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082663
+<CLASS-CONTRACT-NAME>Share class
+<CLASS-CONTRACT-TICKER-SYMBOL>CSTMX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001474365
+<SERIES-ID>S000027396
+<SERIES-NAME>Capital Group California Core Municipal Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082664
+<CLASS-CONTRACT-NAME>Share class
+<CLASS-CONTRACT-TICKER-SYMBOL>CCCMX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001474365
+<SERIES-ID>S000027397
+<SERIES-NAME>Capital Group California Short-Term Municipal Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082665
+<CLASS-CONTRACT-NAME>Share class
+<CLASS-CONTRACT-TICKER-SYMBOL>CCSTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001474365
+<SERIES-ID>S000027398
+<SERIES-NAME>Capital Group Core Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000082666
+<CLASS-CONTRACT-NAME>Share class
+<CLASS-CONTRACT-TICKER-SYMBOL>CCBPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001474365
+<SERIES-ID>S000031199
+<SERIES-NAME>Capital Group Global Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000096877
+<CLASS-CONTRACT-NAME>Share class
+<CLASS-CONTRACT-TICKER-SYMBOL>CGLOX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001474365
+<SERIES-ID>S000031200
+<SERIES-NAME>Capital Group Non-U.S. Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000096878
+<CLASS-CONTRACT-NAME>Share class
+<CLASS-CONTRACT-TICKER-SYMBOL>CNUSX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001474365
+<SERIES-ID>S000031201
+<SERIES-NAME>Capital Group U.S. Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000096879
+<CLASS-CONTRACT-NAME>Share class
+<CLASS-CONTRACT-TICKER-SYMBOL>CUSEX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>cgpcs_npx.txt
+<DESCRIPTION>N-PX
+<TEXT>
+                                  UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                              WASHINGTON, D.C. 20549
+
+                                   FORM N-PX
+
+    ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT
+                                     COMPANY
+
+ INVESTMENT COMPANY ACT FILE NUMBER:     811-22349
+
+ NAME OF REGISTRANT:                     Capital Private Client Services
+                                         Funds
+
+
+
+ ADDRESS OF PRINCIPAL EXECUTIVE OFFICES: 6455 Irvine Center Drive
+                                         Irvine, CA 92618
+
+ NAME AND ADDRESS OF AGENT FOR SERVICE:  Courtney R. Taylor
+                                         6455 Irvine Center Drive
+                                         Irvine, CA 92618
+
+ REGISTRANT'S TELEPHONE NUMBER:          949-975-5000
+
+ DATE OF FISCAL YEAR END:                10/31
+
+ DATE OF REPORTING PERIOD:               07/01/2014 - 06/30/2015
+
+
+<PAGE>
+
+<TABLE>
+<S>    <C>                                                       <C>           <C>                            <C>
+
+70455000
+--------------------------------------------------------------------------------------------------------------------------
+ The fund held no voting securities during the reporting period and did not vote any securities or have
+ any securities that were subject to a vote during the reporting period.
+
+
+70455100
+--------------------------------------------------------------------------------------------------------------------------
+ The fund held no voting securities during the reporting period and did not vote any securities or have
+ any securities that were subject to a vote during the reporting period.
+
+
+70455200
+--------------------------------------------------------------------------------------------------------------------------
+ The fund held no voting securities during the reporting period and did not vote any securities or have
+ any securities that were subject to a vote during the reporting period.
+
+
+70455300
+--------------------------------------------------------------------------------------------------------------------------
+ The fund held no voting securities during the reporting period and did not vote any securities or have
+ any securities that were subject to a vote during the reporting period.
+
+
+70455400
+--------------------------------------------------------------------------------------------------------------------------
+ The fund held no voting securities during the reporting period and did not vote any securities or have
+ any securities that were subject to a vote during the reporting period.
+
+
+70455500
+--------------------------------------------------------------------------------------------------------------------------
+ 3M COMPANY                                                                                  Agenda Number:  934147162
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  88579Y101
+    Meeting Type:  Annual
+    Meeting Date:  12-May-2015
+          Ticker:  MMM
+            ISIN:  US88579Y1010
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1A.    ELECTION OF DIRECTOR: LINDA G. ALVARADO                   Mgmt          For                            For
+
+1B.    ELECTION OF DIRECTOR: SONDRA L. BARBOUR                   Mgmt          For                            For
+
+1C.    ELECTION OF DIRECTOR: THOMAS "TONY" K.                    Mgmt          For                            For
+       BROWN
+
+1D.    ELECTION OF DIRECTOR: VANCE D. COFFMAN                    Mgmt          For                            For
+
+1E.    ELECTION OF DIRECTOR: MICHAEL L. ESKEW                    Mgmt          For                            For
+
+1F.    ELECTION OF DIRECTOR: HERBERT L. HENKEL                   Mgmt          For                            For
+
+1G.    ELECTION OF DIRECTOR: MUHTAR KENT                         Mgmt          For                            For
+
+1H.    ELECTION OF DIRECTOR: EDWARD M. LIDDY                     Mgmt          For                            For
+
+1I.    ELECTION OF DIRECTOR: INGE G. THULIN                      Mgmt          For                            For
+
+1J.    ELECTION OF DIRECTOR: ROBERT J. ULRICH                    Mgmt          For                            For
+
+2.     TO RATIFY THE APPOINTMENT OF                              Mgmt          For                            For
+       PRICEWATERHOUSECOOPERS LLP AS 3M'S
+       INDEPENDENT REGISTERED PUBLIC ACCOUNTING
+       FIRM.
+
+3.     ADVISORY APPROVAL OF EXECUTIVE                            Mgmt          For                            For
+       COMPENSATION.
+
+
+
+
+70455600
+--------------------------------------------------------------------------------------------------------------------------
+ AA PUBLIC LIMITED COMPANY, BASINGSTOKE                                                      Agenda Number:  706078296
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  G0013T104
+    Meeting Type:  AGM
+    Meeting Date:  09-Jun-2015
+          Ticker:
+            ISIN:  GB00BMSKPJ95
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1      TO RECEIVE AND ADOPT THE REPORT AND                       Mgmt          For                            For
+       ACCOUNTS
+
+2      TO RE-APPOINT ERNST AND YOUNG LLP AS                      Mgmt          For                            For
+       AUDITORS
+
+3      TO AUTHORISE THE AUDIT COMMITTEE OF THE                   Mgmt          For                            For
+       BOARD OF DIRECTORS TO DETERMINE THE
+       AUDITORS' REMUNERATION
+
+4      TO RE-ELECT BOB MACKENZIE AS A DIRECTOR OF                Mgmt          For                            For
+       THE COMPANY
+
+5      TO RE-ELECT MARTIN CLARKE AS A DIRECTOR OF                Mgmt          For                            For
+       THE COMPANY
+
+6      TO RE-ELECT NICK HEWITT AS A DIRECTOR OF                  Mgmt          For                            For
+       THE COMPANY
+
+7      TO RE-ELECT JOHN LEACH AS A DIRECTOR OF THE               Mgmt          For                            For
+       COMPANY
+
+8      TO RE-ELECT ANDREW MILLER AS A DIRECTOR OF                Mgmt          For                            For
+       THE COMPANY
+
+9      TO ELECT ANDREW BLOWERS AS A DIRECTOR OF                  Mgmt          For                            For
+       THE COMPANY
+
+10     TO ELECT SIMON BREAKWELL AS A DIRECTOR OF                 Mgmt          For                            For
+       THE COMPANY
+
+11     TO APPROVE THE ANNUAL REPORT ON DIRECTORS'                Mgmt          For                            For
+       REMUNERATION
+
+12     TO RECEIVE AND ADOPT THE DIRECTORS'                       Mgmt          For                            For
+       REMUNERATION POLICY
+
+13     TO AUTHORISE THE COMPANY TO MAKE POLITICAL                Mgmt          For                            For
+       DONATIONS
+
+14     TO AUTHORISE THE DIRECTORS TO ALLOT SHARES                Mgmt          Against                        Against
+
+15     TO DISAPPLY PRE-EMPTION RIGHTS                            Mgmt          For                            For
+
+16     TO AUTHORISE THE COMPANY TO PURCHASE ITS                  Mgmt          For                            For
+       OWN SHARES
+
+17     TO APPROVE GENERAL MEETINGS (OTHER THAN                   Mgmt          For                            For
+       ANNUAL GENERAL MEETINGS) BEING CALLED ON 14
+       CLEAR DAYS' NOTICE
+
+70455700
+--------------------------------------------------------------------------------------------------------------------------
+ ABBVIE INC.                                                                                 Agenda Number:  934142249
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  00287Y109
+    Meeting Type:  Annual
+    Meeting Date:  08-May-2015
+          Ticker:  ABBV
+            ISIN:  US00287Y1091
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1.     DIRECTOR
+       ROXANNE S. AUSTIN                                         Mgmt          For                            For
+       RICHARD A. GONZALEZ                                       Mgmt          For                            For
+       GLENN F. TILTON                                           Mgmt          For                            For
+
+2.     RATIFICATION OF ERNST & YOUNG LLP AS                      Mgmt          For                            For
+       ABBVIE'S INDEPENDENT REGISTERED PUBLIC
+       ACCOUNTING FIRM FOR 2015.
+
+3.     SAY ON PAY - AN ADVISORY VOTE ON THE                      Mgmt          For                            For
+       APPROVAL OF EXECUTIVE COMPENSATION.
+
+
+
+
+
+
+
+* Management position unknown
+
+</TABLE>
+
+<PAGE>
+
+SIGNATURES
+
+Pursuant to the requirements of the Investment Company Act of 1940, the
+registrant has duly caused this report to be signed on its behalf by the
+undersigned, thereunto duly authorized.
+
+(Registrant)         Capital Private Client Services Funds
+By (Signature)       /s/ John S. Armour
+Name                 John S. Armour
+Title                President
+Date                 08/05/2015
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

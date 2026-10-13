@@ -1,0 +1,24 @@
+--------------------------------------------------------------------------------------------------------------------------
+ JOHN HANCOCK INVESTMENT TRUST                                                               Agenda Number:  100001321
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  47803N489, 47803P419, and 47803P450
+    Meeting Type:  Special
+    Meeting Date:  09-Sep-2022
+          Ticker:
+            ISIN:
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1      DIRECTOR
+       Andrew G. Arnott                                          Mgmt          For                            For
+       Marianne Harrison                                         Mgmt          For                            For
+       Paul Lorentz                                              Mgmt          For                            For
+       Frances G. Rathke                                         Mgmt          For                            For
+       Noni L. Ellison                                           Mgmt          For                            For
+       Dean Garfield                                             Mgmt          For                            For
+       Patricia Lizarraga                                        Mgmt          For                            For
+
+
+

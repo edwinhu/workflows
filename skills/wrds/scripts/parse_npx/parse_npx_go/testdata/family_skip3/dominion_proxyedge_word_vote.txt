@@ -1,0 +1,79 @@
+<ACCEPTANCE-DATETIME>20100825123103
+ACCESSION NUMBER:		0000910472-10-000841
+CONFORMED SUBMISSION TYPE:	N-PX
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			DOMINION FUNDS INC
+		CENTRAL INDEX KEY:			0000889392
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000889392
+<SERIES-ID>S000011294
+<SERIES-NAME>Foxhall Global Trends Fund
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>npxcover.htm
+<DESCRIPTION>FOXHALL GLOBAL TRENDS FUND
+<TEXT>
+<TR><TD style="margin-top:0px" valign=bottom width=796.4 colspan=7><P style="margin:0px; font-size:12pt"><B>Registrant:<U>&nbsp;Dominion Funds, Inc. - Foxhall Global Trends Fund &nbsp;&nbsp;Item 1, Exhibit A</U></B></P>
+<TABLE border=0 cellspacing=0 width="984">
+<TR valign="bottom">
+     <TD bgcolor="#004f75" align=left colspan=2> <B><FONT color="#ffffff" size=2 face="Arial Unicode MS,Bold,Arial,Helvetica,sans-serif">HARMAN INTERNATIONAL INDUSTRIES, INC.</FONT></B></TD>
+     <TD bgcolor="#004f75" align=left> &nbsp;</TD>
+     <TD bgcolor="#004f75" align=left> &nbsp;</TD> </TR>
+<TR valign="bottom">
+     <TD align=left> <B><FONT size=2 face="Arial Unicode MS,Bold,Arial,Helvetica,sans-serif">Security</FONT></B></TD>
+     <TD align=left> <FONT size=1 face="Arial Unicode MS,Arial,Helvetica,sans-serif">413086109</FONT></TD>
+     <TD align=left> <B><FONT size=2 face="Arial Unicode MS,Bold,Arial,Helvetica,sans-serif">Meeting Type</FONT></B></TD>
+     <TD align=left> <FONT size=1 face="Arial Unicode MS,Arial,Helvetica,sans-serif">Annual</FONT></TD> </TR>
+<TR valign="bottom">
+     <TD align=left> <B><FONT size=2 face="Arial Unicode MS,Bold,Arial,Helvetica,sans-serif">Ticker Symbol</FONT></B></TD>
+     <TD align=left> <FONT size=1 face="Arial Unicode MS,Arial,Helvetica,sans-serif">HAR</FONT></TD>
+     <TD align=left> <B><FONT size=2 face="Arial Unicode MS,Bold,Arial,Helvetica,sans-serif">Meeting Date</FONT></B></TD>
+     <TD align=left> <FONT size=1 face="Arial Unicode MS,Arial,Helvetica,sans-serif">08-Dec-2009</FONT></TD> </TR>
+<TR valign="bottom">
+     <TD align=left> <B><FONT size=2 face="Arial Unicode MS,Bold,Arial,Helvetica,sans-serif">ISIN</FONT></B></TD>
+     <TD align=left> <FONT size=1 face="Arial Unicode MS,Arial,Helvetica,sans-serif">US4130861093</FONT></TD>
+     <TD align=left> <B><FONT size=2 face="Arial Unicode MS,Bold,Arial,Helvetica,sans-serif">Agenda</FONT></B></TD>
+     <TD align=left> <FONT size=1 face="Arial Unicode MS,Arial,Helvetica,sans-serif">933160222 - Management</FONT></TD> </TR>
+     <TD align=left> &nbsp;</TD> </TR> </TABLE><BR>
+<TABLE border=0 cellspacing=0 width="984">
+<TR valign="bottom">
+     <TD bgcolor="#004f75" align=left> <B><FONT color="#ffffff" size=2 face="Arial Unicode MS,Bold,Arial,Helvetica,sans-serif">Item</FONT></B></TD>
+     <TD bgcolor="#004f75" align=left colspan=2> <B><FONT color="#ffffff" size=2 face="Arial Unicode MS,Bold,Arial,Helvetica,sans-serif">Proposal</FONT></B></TD>
+     <TD bgcolor="#004f75" align=left> <B><FONT color="#ffffff" size=2 face="Arial Unicode MS,Bold,Arial,Helvetica,sans-serif">Type</FONT></B></TD>
+     <TD bgcolor="#004f75" align=left> <B><FONT color="#ffffff" size=2 face="Arial Unicode MS,Bold,Arial,Helvetica,sans-serif">Vote</FONT></B></TD>
+     <TD bgcolor="#004f75" align=left> <B><FONT color="#ffffff" size=2 face="Arial Unicode MS,Bold,Arial,Helvetica,sans-serif">For/Against</FONT></B></TD>
+</TR>
+<TR valign="bottom">
+     <TD bgcolor="#004f75" align=left> &nbsp;</TD>
+     <TD bgcolor="#004f75" align=left> &nbsp;</TD>
+     <TD bgcolor="#004f75" align=left> &nbsp;</TD>
+     <TD bgcolor="#004f75" align=left> &nbsp;</TD>
+     <TD bgcolor="#004f75" align=left> &nbsp;</TD>
+     <TD bgcolor="#004f75" align=left> <B><FONT color="#ffffff" size=2 face="Arial Unicode MS,Bold,Arial,Helvetica,sans-serif">Management</FONT></B></TD>
+</TR>
+<TR valign="bottom">
+     <TD align=left> <FONT size=1 face="Arial Unicode MS,Arial,Helvetica,sans-serif">01</FONT></TD>
+     <TD align=left colspan=2> <FONT size=1 face="Arial Unicode MS,Arial,Helvetica,sans-serif">DIRECTOR</FONT></TD>
+     <TD align=left> <FONT size=1 face="Arial Unicode MS,Arial,Helvetica,sans-serif">Management</FONT></TD>
+     <TD align=left> &nbsp;</TD>
+     <TD align=left> &nbsp;</TD>
+</TR>
+<TR valign="bottom">
+     <TD align=left> &nbsp;</TD>
+     <TD align=left> <FONT size=1 face="Arial Unicode MS,Arial,Helvetica,sans-serif">1</FONT></TD>
+     <TD align=left> <FONT size=1 face="Arial Unicode MS,Arial,Helvetica,sans-serif">DINESH C. PALIWAL</FONT></TD>
+     <TD align=left> &nbsp;</TD>
+     <TD align=left> <FONT size=1 face="Arial Unicode MS,Arial,Helvetica,sans-serif">For</FONT></TD>
+     <TD align=left> <FONT size=1 face="Arial Unicode MS,Arial,Helvetica,sans-serif">For</FONT></TD>
+</TR>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

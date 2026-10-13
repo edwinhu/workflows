@@ -1,0 +1,549 @@
+<SEC-DOCUMENT>0000950123-11-078900.txt : 20110819
+<SEC-HEADER>0000950123-11-078900.hdr.sgml : 20110819
+<ACCEPTANCE-DATETIME>20110819172333
+ACCESSION NUMBER:		0000950123-11-078900
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20110630
+FILED AS OF DATE:		20110819
+DATE AS OF CHANGE:		20110819
+EFFECTIVENESS DATE:		20110819
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			DIAMOND HILL FUNDS
+		CENTRAL INDEX KEY:			0001032423
+		IRS NUMBER:				316547095
+		STATE OF INCORPORATION:			OH
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08061
+		FILM NUMBER:		111048173
+
+	BUSINESS ADDRESS:	
+		STREET 1:		325 JOHN H. MCCONNELL BOULEVARD
+		STREET 2:		SUITE 200
+		CITY:			COLUMBUS
+		STATE:			OH
+		ZIP:			43215
+		BUSINESS PHONE:		614-255-3333
+
+	MAIL ADDRESS:	
+		STREET 1:		325 JOHN H. MCCONNELL BOULEVARD
+		STREET 2:		SUITE 200
+		CITY:			COLUMBUS
+		STATE:			OH
+		ZIP:			43215
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	BSG FUNDS
+		DATE OF NAME CHANGE:	19970206
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001032423
+<SERIES-ID>S000003154
+<SERIES-NAME>Diamond Hill Small Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000008530
+<CLASS-CONTRACT-NAME>Diamond Hill Small Cap Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>DHSCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000008531
+<CLASS-CONTRACT-NAME>Diamond Hill Small Cap Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>DHSMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000008532
+<CLASS-CONTRACT-NAME>Diamond Hill Small Cap Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>DHSIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001032423
+<SERIES-ID>S000003155
+<SERIES-NAME>Diamond Hill Large Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000008533
+<CLASS-CONTRACT-NAME>Diamond Hill Large Cap Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>DHLAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000008534
+<CLASS-CONTRACT-NAME>Diamond Hill Large Cap Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>DHLCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000008535
+<CLASS-CONTRACT-NAME>Diamond Hill Large Cap Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>DHLRX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001032423
+<SERIES-ID>S000003156
+<SERIES-NAME>Diamond Hill Long-Short Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000008536
+<CLASS-CONTRACT-NAME>Diamond Hill Long-Short Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>DIAMX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000008537
+<CLASS-CONTRACT-NAME>Diamond Hill Long-Short Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>DHFCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000008538
+<CLASS-CONTRACT-NAME>Diamond Hill Long-Short Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>DHLSX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001032423
+<SERIES-ID>S000003157
+<SERIES-NAME>Diamond Hill Financial Long-Short Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000008539
+<CLASS-CONTRACT-NAME>Diamond Hill Financial Long-Short Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>DHFSX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000008540
+<CLASS-CONTRACT-NAME>Diamond Hill Financial Long-Short Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>BANCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000008541
+<CLASS-CONTRACT-NAME>Diamond Hill Financial Long-Short Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>BSGCX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001032423
+<SERIES-ID>S000003158
+<SERIES-NAME>Diamond Hill Strategic Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000008542
+<CLASS-CONTRACT-NAME>Diamond Hill Strategic Income Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>DSIAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000008543
+<CLASS-CONTRACT-NAME>Diamond Hill Strategic Income Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>DSICX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000008544
+<CLASS-CONTRACT-NAME>Diamond Hill Strategic Income Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>DHSTX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001032423
+<SERIES-ID>S000012190
+<SERIES-NAME>Diamond Hill Small-Mid Cap Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000033256
+<CLASS-CONTRACT-NAME>Diamond Hill Small-Mid Cap Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>DHMAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000033257
+<CLASS-CONTRACT-NAME>Diamond Hill Small-Mid Cap Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>DHMCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000033258
+<CLASS-CONTRACT-NAME>Diamond Hill Small-Mid Cap Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>DHMIX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001032423
+<SERIES-ID>S000012191
+<SERIES-NAME>Diamond Hill Select Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000033259
+<CLASS-CONTRACT-NAME>Diamond Hill Select Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>DHTAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000033260
+<CLASS-CONTRACT-NAME>Diamond Hill Select Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>DHTCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000033261
+<CLASS-CONTRACT-NAME>Diamond Hill Select Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>DHLTX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>l43148nvpx.htm
+<DESCRIPTION>FORM N-PX
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE>nvpx</TITLE>
+</HEAD>
+<BODY bgcolor="#FFFFFF">
+<!-- PAGEBREAK -->
+
+<DIV style="font-family: Helvetica,Arial,sans-serif">
+
+<DIV style="width: 100%; border-bottom: 2pt solid black; font-size: 1pt">&nbsp;</DIV>
+<DIV style="width: 100%; border-bottom: 1pt solid black; font-size: 1pt">&nbsp;</DIV>
+
+<DIV align="center" style="font-size: 14pt; margin-top: 12pt"><B>UNITED STATES<BR>
+SECURITIES AND EXCHANGE COMMISSION</B>
+</DIV>
+
+<DIV align="center" style="font-size: 12pt"><B>Washington, DC 20549</B>
+</DIV>
+
+<DIV align="center" style="font-size: 18pt; margin-top: 12pt"><B>FORM N-PX</B>
+</DIV>
+
+
+<DIV align="center" style="font-size: 12pt; margin-top: 12pt"><B>ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT<BR>
+COMPANY</B>
+</DIV>
+
+
+<DIV align="center" style="font-size: 10pt; margin-top: 12pt"><B>Investment Company Act file number: <U>811-8061</U></B>
+</DIV>
+
+<DIV align="center" style="font-size: 24pt; margin-top: 12pt"><FONT style="border-bottom: 1px solid #000000"><B>Diamond Hill Funds</B></FONT>
+</DIV>
+
+<DIV align="center" style="font-size: 10pt">(Exact name of registrant as specified in charter)</DIV>
+
+
+
+<DIV align="Center" style="font-size: 10pt; margin-top: 6pt"><U>325 John H. McConnell Blvd., Suite&nbsp;200, Columbus, Ohio 43215</U>
+</DIV>
+
+<DIV align="center" style="font-size: 10pt">(Address of principal executive offices) (Zip code)</DIV>
+
+
+
+<DIV align="center" style="font-size: 10pt; margin-top: 18pt"><U>James F. Laird, Jr., 325 John H. McConnell Blvd., Suite&nbsp;200, Columbus, Ohio 43215</U>
+</DIV>
+
+<DIV align="center" style="font-size: 10pt">(Name and address of agent for service)</DIV>
+
+
+
+<DIV align="left" style="font-size: 10pt; margin-top: 12pt">Registrant&#146;s telephone number, including area code: <U>(614) 255-3333</U>
+</DIV>
+
+
+<DIV align="left" style="font-size: 10pt; margin-top: 6pt">Date of fiscal year end: <U>12/31</U>
+
+</DIV>
+
+<DIV align="left" style="font-size: 10pt; margin-top: 6pt">Date of
+reporting period: <U>7/1/10 &#150; 6/30/11</U>
+</DIV>
+
+<DIV align="left" style="font-size: 10pt; margin-top: 6pt">Form&nbsp;N-PX is to be used by a registered management investment company, other than a small business
+investment company registered on Form N-5 (&#167;&#167; 239.24 and 274.5 of this chapter), to file reports
+with the Commission, not later than August&nbsp;31 of each year, containing the registrant&#146;s proxy
+voting record for the most recent twelve-month period ended June&nbsp;30, pursuant to section 30 of the
+Investment Company Act of 1940 and rule 30b1-4 thereunder (17CFR 270.30b1-4). The Commission may
+use the information provided on Form N-PX in its regulatory, disclosure review, inspection, and
+policymaking roles.
+</DIV>
+
+<DIV align="left" style="font-size: 10pt; margin-top: 6pt">A registrant is required to disclose the information specified by Form N-PX, and the Commission
+will make this information public. A registrant is not required to respond to the collection of
+information contained in Form N-PX unless the Form displays a currently valid Office of Management
+and Budget (&#147;OMB&#148;) control number. Please direct comments concerning the accuracy of the
+information collection burden estimate and any suggestions for reducing the burden to the
+Secretary, Securities and Exchange Commission, 450 Fifth Street, N.W., Washington, DC 20549-0609.
+The OMB has reviewed this collection of information under the clearance requirements of 44 U.S.C.
+&#167;3507.
+</DIV>
+
+
+<DIV style="width: 100%; border-bottom: 1pt solid black; margin-top: 10pt; font-size: 1pt">&nbsp;</DIV>
+<DIV style="width: 100%; border-bottom: 2pt solid black; font-size: 1pt">&nbsp;</DIV>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<P align="center" style="font-size: 10pt"><!-- Folio --><!-- /Folio -->
+</DIV>
+
+
+
+
+<!-- PAGEBREAK -->
+<P><HR noshade><P>
+<H5 align="left" style="page-break-before:always">&nbsp;</H5><P>
+<DIV style="font-family: Helvetica,Arial,sans-serif">
+
+<!-- LANDSCAPE -->
+
+
+<DIV align="left" style="font-size: 10pt; margin-top: 12pt"><B>Diamond Hill Small Cap Fund</B>
+</DIV>
+
+<DIV align="center">
+<TABLE style="font-size: 8pt" cellspacing="0" border="0" cellpadding="0" width="100%">
+<!-- Begin Table Head -->
+<TR valign="bottom">
+    <TD width="17%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="3%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="1%">&nbsp;</TD>
+    <TD width="1%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="9%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="43%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="3%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="3%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="3%">&nbsp;</TD>
+    <TD width="2%">&nbsp;</TD>
+    <TD width="3%">&nbsp;</TD>
+</TR>
+<TR style="font-size: 8pt" valign="bottom">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Matter</B></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>For /</B></TD>
+</TR>
+<TR style="font-size: 8pt" valign="bottom">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left"><B>Meeting</B></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Proposed</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Matter</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Vote</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Against</B></TD>
+</TR>
+<TR style="font-size: 8pt" valign="bottom">
+    <TD nowrap align="center"><B>Issuer</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left"><B>Ticker</B></TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left" colspan="2"><B>CUSIP</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left"><B>Date</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="left"><B>Description of Vote</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>by</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Voted</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Cast</B></TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="center"><B>Mgmt</B></TD>
+</TR>
+
+<!-- End Table Head -->
+<!-- Begin Table Body -->
+<TR style="font-size: 1px">
+    <TD colspan="19" valign="top" align="left" style="border-top: 1px solid #000000">&nbsp;</TD>
+</TR>
+<TR valign="bottom" style="background: #cceeff">
+    <TD valign="top"><DIV style="margin-left:0px; text-indent:-0px">INVENTIV HEALTH, INC.
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">VTIV
+</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="right" valign="top">&nbsp;</TD>
+    <TD align="right" valign="top">46122E105</TD>
+    <TD nowrap valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">21-Jul-2010
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">A PROPOSAL TO ADOPT THE AGREEMENT AND PLAN OF MERGER, DATED AS OF MAY 6, 2010, AS IT MAY BE AMENDED
+FROM TIME TO TIME, BY AND AMONG COMPANY, PAPILLON HOLDINGS, INC., A DELAWARE CORPORATION, AND PAPILLON
+ACQUISITION, INC., A DELAWARE CORPORATION AND A WHOLLY-OWNED SUBSIDIARY OF PAPILLON HOLDINGS, INC., A
+COPY OF WHICH IS ATTACHED AS ANNEX A TO ACCOMPANYING PROXY STATEMENT.
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Issuer
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For</TD>
+</TR>
+<TR valign="bottom">
+    <TD valign="top"><DIV style="margin-left:0px; text-indent:-0px">INVENTIV HEALTH, INC.
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">VTIV
+</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="right" valign="top">&nbsp;</TD>
+    <TD align="right" valign="top">46122E105</TD>
+    <TD nowrap valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">21-Jul-2010
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">A PROPOSAL TO ADJOURN THE SPECIAL MEETING, IF NECESSARY OR APPROPRIATE, TO SOLICIT ADDITIONAL PROXIES
+IF THERE ARE INSUFFICIENT VOTES AT THE TIME OF THE SPECIAL MEETING TO APPROVE THE PROPOSAL TO ADOPT
+THE MERGER AGREEMENT.
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Issuer
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For</TD>
+</TR>
+<TR valign="bottom" style="background: #cceeff">
+    <TD valign="top"><DIV style="margin-left:0px; text-indent:-0px">STERIS CORPORATION
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">STE
+</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="right" valign="top">&nbsp;</TD>
+    <TD align="right" valign="top">859152100</TD>
+    <TD nowrap valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">29-Jul-2010
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">DIRECTOR RICHARD C. BREEDEN
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Issuer
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For</TD>
+</TR>
+<TR valign="bottom">
+    <TD valign="top"><DIV style="margin-left:0px; text-indent:-0px">STERIS CORPORATION
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">STE
+</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="right" valign="top">&nbsp;</TD>
+    <TD align="right" valign="top">859152100</TD>
+    <TD nowrap valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">29-Jul-2010
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">DIRECTOR CYNTHIA L. FELDMANN
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Issuer
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For</TD>
+</TR>
+<TR valign="bottom" style="background: #cceeff">
+    <TD valign="top"><DIV style="margin-left:0px; text-indent:-0px">STERIS CORPORATION
+</DIV></TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">STE
+</TD>
+    <TD>&nbsp;</TD>
+    <TD nowrap align="right" valign="top">&nbsp;</TD>
+    <TD align="right" valign="top">859152100</TD>
+    <TD nowrap valign="top">&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">29-Jul-2010
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="left" valign="top">DIRECTOR JACQUELINE B. KOSECOFF
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Issuer
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">Yes
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For
+</TD>
+    <TD>&nbsp;</TD>
+    <TD align="center" valign="top">For</TD>
+</TR>

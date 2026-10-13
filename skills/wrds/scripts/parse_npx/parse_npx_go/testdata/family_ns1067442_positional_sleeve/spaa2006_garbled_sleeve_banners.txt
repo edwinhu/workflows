@@ -1,0 +1,1888 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ PDVjD9maDNhR9a2/8qNNWMQKqnrQ2E/fZT4FuD0ehSm4DlqF/Tv7jr5DJBu81HhW
+ BSfRyAjloIGuhhjfL6ZUCg==
+
+<SEC-DOCUMENT>0000067590-06-000172.txt : 20060829
+<SEC-HEADER>0000067590-06-000172.hdr.sgml : 20060829
+<ACCEPTANCE-DATETIME>20060829093644
+ACCESSION NUMBER:		0000067590-06-000172
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20060630
+FILED AS OF DATE:		20060829
+DATE AS OF CHANGE:		20060829
+EFFECTIVENESS DATE:		20060829
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			STRATEGIC PARTNERS ASSET ALLOCATION FUNDS
+		CENTRAL INDEX KEY:			0001067442
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			0731
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08915
+		FILM NUMBER:		061060534
+
+	BUSINESS ADDRESS:	
+		STREET 1:		GATEWAY CENTER THREE, 4TH FLOOR
+		STREET 2:		100 MULBERRY STREET
+		CITY:			NEWARK
+		STATE:			NJ
+		ZIP:			07102
+		BUSINESS PHONE:		9738026469
+
+	MAIL ADDRESS:	
+		STREET 1:		GATEWAY CENTER THREE, 4TH FLOOR
+		STREET 2:		100 MULBERRY STREET
+		CITY:			NEWARK
+		STATE:			NJ
+		ZIP:			07102
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PRUDENTIAL DIVERSIFIED FUNDS
+		DATE OF NAME CHANGE:	19980930
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	PRUDENTIAL DIVERSIFIED SERIES
+		DATE OF NAME CHANGE:	19980803
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001067442
+<SERIES-ID>S000004703
+<SERIES-NAME>STRATEGIC PARTNERS CONSERVATIVE ALLOCATION FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000012790
+<CLASS-CONTRACT-NAME>Class M
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000012791
+<CLASS-CONTRACT-NAME>Class X
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000012792
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>PCLRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000012793
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>PCGAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000012794
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>PBCFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000012795
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>PCCFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000012796
+<CLASS-CONTRACT-NAME>Class Z
+<CLASS-CONTRACT-TICKER-SYMBOL>PDCZX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001067442
+<SERIES-ID>S000004704
+<SERIES-NAME>STRATEGIC PARTNERS MODERATE ALLOCATION FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000012797
+<CLASS-CONTRACT-NAME>Class M
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000012798
+<CLASS-CONTRACT-NAME>Class X
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000012799
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>SPMRX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000012800
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>PAMGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000012801
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>DMGBX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000012802
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>PIMGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000012803
+<CLASS-CONTRACT-NAME>Class Z
+<CLASS-CONTRACT-TICKER-SYMBOL>PDMZX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001067442
+<SERIES-ID>S000004705
+<SERIES-NAME>STRATEGIC PARTNERS GROWTH ALLOCATION FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000012804
+<CLASS-CONTRACT-NAME>Class M
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000012805
+<CLASS-CONTRACT-NAME>Class X
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000012806
+<CLASS-CONTRACT-NAME>Class R
+<CLASS-CONTRACT-TICKER-SYMBOL>PGARX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000012807
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>PHGAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000012808
+<CLASS-CONTRACT-NAME>Class B
+<CLASS-CONTRACT-TICKER-SYMBOL>PIHGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000012809
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>PHGCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000012810
+<CLASS-CONTRACT-NAME>Class Z
+<CLASS-CONTRACT-TICKER-SYMBOL>PDHZX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>spaanpx2006final.txt
+<DESCRIPTION>SPAA N-PX
+<TEXT>
+                                    FORM N-PX
+
+                     ANNUAL REPORT OF PROXY VOTING RECORD OF
+                    REGISTERED MANAGEMENT INVESTMENT COMPANY
+
+                  Investment Company Act file number 811-08915
+
+                    Strategic Partners Asset Allocation Fund
+
+               (Exact name of registrant as specified in charter)
+
+
+     100 Mulberry Street, Gateway Center Three, 4 th Floor, Newark, NJ 07102
+
+               (Address of principal executive offices) (Zip Code)
+
+
+                             Jonathan D. Shain, Esq.
+     100 Mulberry Street, Gateway Center Three, 4 th Floor, Newark, NJ 07102
+
+                     (Name and address of agent for service)
+
+
+        Registrant's telephone number, including area code: 973-802-6469
+
+                        Date of fiscal year-end: July 31
+
+                     Date of reporting period: June 30, 2006
+
+
+
+
+
+Item 1. Proxy Voting Record
+
+In determining votes against management, any ballot that management did not
+make a recommendation is considered to be "FOR" regardless of the vote cast.
+Any "Abstain" vote cast is considered as voted, and to be against the
+management recommendation.
+
+
+
+
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-08915
+Reporting Period: 07/01/2005 - 06/30/2006
+Strategic Partners Asset Allocation Funds
+
+
+
+
+
+
+
+
+
+========== STRATEGIC PARTNERS CONSERVATIVE ALLOCATION FUND - ADVISOR: ==========
+==========                          JENNISON                          ==========
+
+
+DELL INC
+
+Ticker:       DELL           Security ID:  24702R101
+Meeting Date: JUL 15, 2005   Meeting Type: A
+Record Date:  MAY 20, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.01  Elect Donald J. Carty                     For       For        Management
+1.02  Elect Michael S. Dell                     For       For        Management
+1.03  Elect William H. Gray III                 For       For        Management
+1.04  Elect Judy C. Lewent                      For       For        Management
+1.05  Elect Thomas W. Luce III                  For       For        Management
+1.06  Elect Klaus S. Luft                       For       For        Management
+1.07  Elect Alex J. Mandl                       For       For        Management
+1.08  Elect Michael A. Miles                    For       For        Management
+1.09  Elect Samuel A. Nunn Jr.                  For       For        Management
+1.10  Elect Kevin B. Rollins                    For       For        Management
+2     Ratify selection of auditors              For       For        Management
+3     SP-Majority vote to elect directors       Against   Against    Shareholder
+4     SP-Expense stock options                  Against   Against    Shareholder
+
+
+- --------------------------------------------------------------------------------
+
+ELECTRONIC ARTS INC
+
+Ticker:       ERTS           Security ID:  285512109
+Meeting Date: JUL 28, 2005   Meeting Type: A
+Record Date:  JUN 6, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.01  Elect M. Richard Asher                    For       For        Management
+1.02  Elect Leonard S. Coleman Jr.              For       For        Management
+1.03  Elect Gary M. Kusin                       For       For        Management
+1.04  Elect Gregory B. Maffei                   For       For        Management
+1.05  Elect Timothy Mott                        For       For        Management
+1.06  Elect Vivek Paul                          For       For        Management
+1.07  Elect Robert W. Pittman                   For       For        Management
+1.08  Elect Lawrence F. Probst III              For       For        Management
+1.09  Elect Linda J. Srere                      For       For        Management
+2     Add shares to the 2000 Equity Incentive   For       Against    Management
+      Plan
+3     Add shares to the 2000 Employee Stock     For       Against    Management
+      Purchase Plan
+4     Ratify selection of auditors              For       For        Management
+
+
+
+
+========= STRATEGIC PARTNERS CONSERVATIVE ALLOCATION FUND - HIGH YIELD =========
+=========                BOND - ADVISOR: GOLDMAN SACHS                 =========
+
+
+GENTEK INC.
+
+Ticker:       GETI           Security ID:  37245X203
+Meeting Date: MAY 9, 2006    Meeting Type: Annual
+Record Date:  MAR 30, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Amend Charter to Declassify Board of      For       For        Management
+      Directors and Remove Certain Transfer
+      Restrictions
+2     Elect Director William E. Redmond, Jr.    For       For        Management
+3     Elect Director Kathleen R. Flaherty       For       For        Management
+4     Elect Director John F. McGovern           For       For        Management
+5     Elect Director John G. Johnson            For       For        Management
+6     Elect Director Dugald K. Campbell         For       For        Management
+7     Elect Director Henry L. Druker            For       For        Management
+
+
+- --------------------------------------------------------------------------------
+
+GRAND CASINOS, INC.
+
+Ticker:                      Security ID:  700690AH3
+Meeting Date: JUL 22, 2005   Meeting Type: Written Consent
+Record Date:  JUL 8, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     PROPOSED AMENDMENTS TO THE INDENTURES AND For       Did Not    Management
+      THE ISSUANCE OF THE GUARANTEES                      Vote
+
+
+
+
+========= STRATEGIC PARTNERS CONSERVATIVE ALLOCATION FUND - LARGE CAP ==========
+=========                  GROWTH - ADVISOR: MARSICO                  ==========
+
+
+AMYLIN PHARMACEUTICALS, INC.
+
+Ticker:       AMLN           Security ID:  032346108
+Meeting Date: MAY 17, 2006   Meeting Type: Annual
+Record Date:  MAR 24, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Steven R. Altman           For       For        Management
+1.2   Elect Director Vaughn D. Bryson           For       For        Management
+1.3   Elect Director Joseph C. Cook, Jr.        For       For        Management
+1.4   Elect Director Karin Eastham              For       For        Management
+1.5   Elect Director James R. Gavin III         For       For        Management
+1.6   Elect Director Ginger L. Graham           For       For        Management
+1.7   Elect Director Howard E. Greene, Jr.      For       For        Management
+1.8   Elect Director Jay S. Skyler              For       For        Management
+1.9   Elect Director Joseph P. Sullivan         For       For        Management
+1.10  Elect Director Thomas R. Testman          For       For        Management
+1.11  Elect Director James N. Wilson            For       For        Management
+2     Amend Omnibus Stock Plan                  For       For        Management
+3     Amend Qualified Employee Stock Purchase   For       For        Management
+      Plan
+4     Ratify Auditors                           For       For        Management
+
+
+- --------------------------------------------------------------------------------
+
+APPLE COMPUTER, INC.
+
+Ticker:       AAPL           Security ID:  037833100
+Meeting Date: APR 27, 2006   Meeting Type: Annual
+Record Date:  FEB 28, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Fred D. Anderson           For       Did Not    Management
+                                                          Vote
+1.2   Elect Director William V. Campbell        For       Did Not    Management
+                                                          Vote
+1.3   Elect Director Millard S. Drexler         For       Did Not    Management
+                                                          Vote
+1.4   Elect Director Albert A. Gore, Jr.        For       Did Not    Management
+                                                          Vote
+1.5   Elect Director Steven P. Jobs             For       Did Not    Management
+                                                          Vote
+1.6   Elect Director Arthur D. Levinson, Ph.D.  For       Did Not    Management
+                                                          Vote
+1.7   Elect Director Jerome B. York             For       Did Not    Management
+                                                          Vote
+2     Ratify Auditors                           For       Did Not    Management
+                                                          Vote
+3     Report on Computer Recycling Policy       Against   Did Not    Shareholder
+                                                          Vote
+
+
+
+
+========= STRATEGIC PARTNERS CONSERVATIVE ALLOCATION FUND - LARGE CAP ==========
+=========           GROWTH SLEEVE - ADVISOR: GOLDMAN SACHS            ==========
+
+
+3M CO
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 9, 2006    Meeting Type: Annual
+Record Date:  MAR 10, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Linda G. Alvarado          For       For        Management
+1.2   Elect Director Edward M. Liddy            For       For        Management
+1.3   Elect Director Robert S. Morrison         For       For        Management
+1.4   Elect Director Aulana L. Peters           For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Declassify the Board of Directors         For       For        Management
+4     Performance-Based                         Against   For        Shareholder
+5     Adopt Animal Welfare Policy               Against   Against    Shareholder
+6     Implement China Principles                Against   Against    Shareholder
+
+
+- --------------------------------------------------------------------------------
+
+ADOBE SYSTEMS INC.
+
+Ticker:       ADBE           Security ID:  00724F101
+Meeting Date: AUG 24, 2005   Meeting Type: Special
+Record Date:  JUL 19, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Issue Shares in Connection with an        For       For        Management
+      Acquisition
+2     Adjourn Meeting                           For       For        Management
+
+
+
+
+========= STRATEGIC PARTNERS CONSERVATIVE ALLOCATION FUND - LARGE CAP ==========
+=========          VALUE SLEEVE - ADVISOR: HOTCHKIS & WILEY           ==========
+
+
+ALBERTSON
+
+Ticker:       ABS            Security ID:  013104104
+Meeting Date: MAY 30, 2006   Meeting Type: Special
+Record Date:  APR 24, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Approve Merger Agreement                  For       For        Management
+2     Amend Articles/Bylaws/Charter-Non-Routine For       For        Management
+3     Adjourn Meeting                           For       For        Management
+
+
+- --------------------------------------------------------------------------------
+
+ALCOA INC.
+
+Ticker:       AA             Security ID:  013817101
+Meeting Date: APR 21, 2006   Meeting Type: Annual
+Record Date:  JAN 23, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Kathryn S. Fuller          For       For        Management
+1.2   Elect Director Judith M. Gueron           For       For        Management
+1.3   Elect Director Ernesto Zedillo            For       For        Management
+2     Ratify Auditors                           For       For        Management
+
+
+
+
+========= STRATEGIC PARTNERS CONSERVATIVE ALLOCATION FUND - LARGE CAP ==========
+=========             VALUE SLEEVE - ADVISOR: J.P. MORGAN             ==========
+
+
+ABBOTT LABORATORIES
+
+Ticker:       ABT            Security ID:  002824100
+Meeting Date: APR 28, 2006   Meeting Type: Annual
+Record Date:  MAR 1, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Roxanne S. Austin          For       For        Management
+1.2   Elect Director William M. Daley           For       For        Management
+1.3   Elect Director W. James Farrell           For       For        Management
+1.4   Elect Director H. Laurance Fuller         For       For        Management
+1.5   Elect Director Richard A. Gonzalez        For       For        Management
+1.6   Elect Director Jack M. Greenberg          For       For        Management
+1.7   Elect Director Lord Owen                  For       For        Management
+1.8   Elect Director Boone Powell, Jr.          For       For        Management
+1.9   Elect Director W. Ann Reynolds, Ph.D.     For       For        Management
+1.10  Elect Director Roy S. Roberts             For       For        Management
+1.11  Elect Director William D. Smithburg       For       For        Management
+1.12  Elect Director John R. Walter             For       For        Management
+1.13  Elect Director Miles D. White             For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Performance-Based Equity Awards           Against   For        Shareholder
+4     Report on Political Contributions         Against   Against    Shareholder
+5     Separate Chairman and CEO Positions       Against   For        Shareholder
+
+
+- --------------------------------------------------------------------------------
+
+ABERCROMBIE & FITCH CO.
+
+Ticker:       ANF            Security ID:  002896207
+Meeting Date: JUN 14, 2006   Meeting Type: Annual
+Record Date:  APR 17, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director James B. Bachmann          For       For        Management
+1.2   Elect Director Lauren J. Brisky           For       For        Management
+1.3   Elect Director Michael S. Jeffries        For       For        Management
+1.4   Elect Director John W. Kessler            For       Withhold   Management
+2     Ratify Auditors                           For       For        Management
+
+
+
+
+========= STRATEGIC PARTNERS CONSERVATIVE ALLOCATION FUND - SMALL CAP ==========
+=========           GROWTH SLEEVE - ADVISOR: RS INVESTMENTS           ==========
+
+
+ADEZA BIOMEDICAL CORP.
+
+Ticker:       ADZA           Security ID:  006864102
+Meeting Date: JUN 6, 2006    Meeting Type: Annual
+Record Date:  APR 17, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Andrew E. Senyei, M.D.     For       For        Management
+1.2   Elect Director Michael P. Downey          For       For        Management
+2     Ratify Auditors                           For       For        Management
+
+
+- --------------------------------------------------------------------------------
+
+ADOLOR CORP
+
+Ticker:       ADLR           Security ID:  00724X102
+Meeting Date: MAY 18, 2006   Meeting Type: Annual
+Record Date:  MAR 20, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director David M. Madden            For       For        Management
+1.2   Elect Director Robert T. Nelsen           For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Amend Omnibus Stock Plan                  For       Against    Management
+
+
+
+
+========= STRATEGIC PARTNERS CONSERVATIVE ALLOCATION FUND - SMALL CAP ==========
+=========          VALUE SLEEVE - ADVISOR: EARNEST PARTNERS           ==========
+
+
+ACCREDITED HOME LENDERS HOLDING CO.
+
+Ticker:       LEND           Security ID:  00437P107
+Meeting Date: JUN 8, 2006    Meeting Type: Annual
+Record Date:  APR 21, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Jody A. Gunderson          For       For        Management
+1.2   Elect Director Richard T. Pratt           For       For        Management
+2     Approve Executive Incentive Bonus Plan    For       Against    Management
+3     Ratify Auditors                           For       For        Management
+
+
+- --------------------------------------------------------------------------------
+
+ADMINISTAFF, INC.
+
+Ticker:       ASF            Security ID:  007094105
+Meeting Date: MAY 3, 2006    Meeting Type: Annual
+Record Date:  MAR 6, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Paul J. Sarvadi            For       Withhold   Management
+1.2   Elect Director Austin P. Young            For       For        Management
+2     Amend Omnibus Stock Plan                  For       Against    Management
+3     Ratify Auditors                           For       Against    Management
+
+
+
+
+========= STRATEGIC PARTNERS CONSERVATIVE ALLOCATION FUND - SMALL CAP ==========
+=========            VALUE SLEEVE - ADVISOR: VAUGHN NELSON            ==========
+
+
+AMEDISYS, INC.
+
+Ticker:       AMED           Security ID:  023436108
+Meeting Date: JUN 8, 2006    Meeting Type: Annual
+Record Date:  APR 10, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director William F. Borne           For       For        Management
+1.2   Elect Director Ronald A. LaBorde          For       For        Management
+1.3   Elect Director Jake L. Netterville        For       For        Management
+1.4   Elect Director David R. Pitts             For       For        Management
+1.5   Elect Director Peter F. Ricchiuti         For       For        Management
+1.6   Elect Director Donald A. Washburn         For       For        Management
+2     Amend Omnibus Stock Plan                  For       For        Management
+
+
+- --------------------------------------------------------------------------------
+
+ARLINGTON TANKERS LTD
+
+Ticker:       ATB            Security ID:  G04899103
+Meeting Date: JUN 12, 2006   Meeting Type: Annual
+Record Date:  APR 5, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Dr. E. Grant Gibbons      For       For        Management
+2     THE APPROVAL OF AMENDMENTS TO OUR         For       For        Management
+      BYE-LAWS TO ALLOW THE NUMBER OF DIRECTORS
+      TO BE DETERMINED BY OUR BOARD OF
+      DIRECTORS AND FOR THE QUORUM TO BE A
+      MAJORITY OF THE DIRECTORS.
+3     APPOINTMENT OF MOORE STEPHENS P.C. AS     For       For        Management
+      INDEPENDENT REGISTERED PUBLIC ACCOUNTING
+      FIRM FOR FISCAL YEAR ENDING DECEMBER 31,
+      2006 AND THE AUTHORIZATION OF THE BOARD
+      OF DIRECTORS, ACTING THROUGH THE AUDIT
+      COMMITTEE, TO DETERMINE THE INDEPENDENT
+      REGISTERED PUBL
+
+
+
+
+========= STRATEGIC PARTNERS CONSERVATIVE ALLOCATION FUND - TRB SLEEVE =========
+=========                       - ADVISOR: PIMCO                       =========
+
+
+The STRATEGIC PARTNERS CONSERVATIVE ALLOCATION FUND - TRB SLEEVE - ADVISOR:
+PIMCO fund held no voting securities during the period covered by this report.
+No records are attached.
+
+
+
+
+
+
+
+=========== STRATEGIC PARTNERS CONSERVATIVE GROWTH ALLOCATION FUND - ===========
+===========          SMALL CAP VALUE SLEEVE - ADVISOR: NFJ           ===========
+
+
+3M COMPANY
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 9, 2006    Meeting Type: Annual
+Record Date:  MAR 10, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+01    ELECTION OF DIRECTORS                     FOR       FOR        Management
+02    RATIFY APPOINTMENT OF INDEPENDENT         FOR       FOR        Management
+      AUDITORS
+03    DECLASSIFY BOARD                          FOR       FOR        Management
+04    S/H PROPOSAL - EXECUTIVE COMPENSATION     AGAINST   FOR        Shareholder
+05    S/H PROPOSAL - ANIMAL RIGHTS              AGAINST   FOR        Shareholder
+06    MISCELLANEOUS SHAREHOLDER PROPOSAL        AGAINST   FOR        Shareholder
+
+
+- --------------------------------------------------------------------------------
+
+ALCOA INC.
+
+Ticker:       AA             Security ID:  013817101
+Meeting Date: APR 21, 2006   Meeting Type: Annual
+Record Date:  JAN 23, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+01    ELECTION OF DIRECTORS                     FOR       FOR        Management
+02    RATIFY APPOINTMENT OF INDEPENDENT         FOR       FOR        Management
+      AUDITORS
+
+
+
+
+============= STRATEGIC PARTNERS GROWTH ALLOCATION FUND - ADVISOR: =============
+=============                       JENNISON                       =============
+
+
+DELL INC
+
+Ticker:       DELL           Security ID:  24702R101
+Meeting Date: JUL 15, 2005   Meeting Type: A
+Record Date:  MAY 20, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.01  Elect Donald J. Carty                     For       For        Management
+1.02  Elect Michael S. Dell                     For       For        Management
+1.03  Elect William H. Gray III                 For       For        Management
+1.04  Elect Judy C. Lewent                      For       For        Management
+1.05  Elect Thomas W. Luce III                  For       For        Management
+1.06  Elect Klaus S. Luft                       For       For        Management
+1.07  Elect Alex J. Mandl                       For       For        Management
+1.08  Elect Michael A. Miles                    For       For        Management
+1.09  Elect Samuel A. Nunn Jr.                  For       For        Management
+1.10  Elect Kevin B. Rollins                    For       For        Management
+2     Ratify selection of auditors              For       For        Management
+3     SP-Majority vote to elect directors       Against   Against    Shareholder
+4     SP-Expense stock options                  Against   Against    Shareholder
+
+
+- --------------------------------------------------------------------------------
+
+ELECTRONIC ARTS INC
+
+Ticker:       ERTS           Security ID:  285512109
+Meeting Date: JUL 28, 2005   Meeting Type: A
+Record Date:  JUN 6, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.01  Elect M. Richard Asher                    For       For        Management
+1.02  Elect Leonard S. Coleman Jr.              For       For        Management
+1.03  Elect Gary M. Kusin                       For       For        Management
+1.04  Elect Gregory B. Maffei                   For       For        Management
+1.05  Elect Timothy Mott                        For       For        Management
+1.06  Elect Vivek Paul                          For       For        Management
+1.07  Elect Robert W. Pittman                   For       For        Management
+1.08  Elect Lawrence F. Probst III              For       For        Management
+1.09  Elect Linda J. Srere                      For       For        Management
+2     Add shares to the 2000 Equity Incentive   For       Against    Management
+      Plan
+3     Add shares to the 2000 Employee Stock     For       Against    Management
+      Purchase Plan
+4     Ratify selection of auditors              For       For        Management
+
+
+
+
+========== STRATEGIC PARTNERS GROWTH ALLOCATION FUND - INTL SLEEVE - ===========
+==========                       ADVISOR: LSV                        ===========
+
+
+ABN AMRO HOLDING NV
+
+Ticker:       ABNHF          Security ID:  N0030P459
+Meeting Date: APR 27, 2006   Meeting Type: Annual
+Record Date:  APR 20, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Approve Minutes of Previous Meeting       None      None       Management
+2     Receive Report of Management Board        None      None       Management
+3a    Approve Financial Statements and          For       For        Management
+      Statutory Reports
+3b    Approve Dividends of EUR 1.10 Per Share   For       For        Management
+3c    Approve Discharge of Management Board     For       For        Management
+3d    Approve Discharge of Supervisory Board    For       For        Management
+4     Approve Remuneration Report Containing    For       For        Management
+      Remuneration Policy for Management Board
+      Members
+5     Approve Amendments to Remuneration of     For       For        Management
+      Supervisory Board
+6     Approve Company's Corporate Governance    For       For        Management
+      Structure
+7a    Elect G.J. Kramer to Supervisory Board    For       For        Management
+7b    Elect G. Randa to Supervisory Board       For       For        Management
+7c    Reelect A.C. Martinez to Supervisory      For       For        Management
+      Board
+8     Authorize Repurchase of Up to Ten Percent For       For        Management
+      of Issued Share Capital
+9a    Grant Board Authority to Issue Ordinary   For       For        Management
+      Shares, Convertible Preference Shares and
+      Preference Financing Shares Up To 20
+      Percent of Issued Capital
+9b    Authorize Board to Exclude Preemptive     For       For        Management
+      Rights from Issuance Under Item 9a
+10    Any Other Business (Non-Voting)           None      None       Management
+
+
+- --------------------------------------------------------------------------------
+
+AEGON NV
+
+Ticker:       AEG            Security ID:  N0089J123
+Meeting Date: APR 25, 2006   Meeting Type: Annual
+Record Date:  APR 18, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Open Meeting                              None      None       Management
+2     Approve Financial Statements              For       For        Management
+3     Approve Total Dividends of EUR 0.45 per   For       For        Management
+      Share
+4     Approve Discharge of Management Board     For       For        Management
+5     Approve Discharge of Supervisory Board    For       For        Management
+6     Ratify Ernst & Young as Auditors          For       For        Management
+7     Amend Articles to Reflect the Abolition   For       For        Management
+      of Bearer Shares (K and CF Certificates)
+      and Changes in Dutch Law
+8     Extend Remuneration Policy for Management For       For        Management
+      Board Members
+9     Reelect Johan G. van der Werf to          For       For        Management
+      Management Board
+10    Elect Clifford M. Sobel to Supervisory    For       For        Management
+      Board
+11    Reelect Kees J. Storm to Supervisory      For       For        Management
+      Board
+12    Grant Board Authority to Issue Common     For       For        Management
+      Shares Up To 10 Percent of Issued Capital
+      Plus Additional 10 Percent in Case of
+      Takeover/Merger
+13    Authorize Board to Exclude Preemptive     For       For        Management
+      Rights from Issuance Under Item 12
+14    Authorize Board to Issue Common Shares up For       For        Management
+      to 1 Percent of Issued Share Capital for
+      Incentive Plans
+15    Authorize Repurchase of Up to Ten Percent For       For        Management
+      of Issued Share Capital
+16    Other Business (Non-Voting)               None      None       Management
+17    Close Meeting                             None      None       Management
+
+
+
+
+========== STRATEGIC PARTNERS GROWTH ALLOCATION FUND - INTL SLEEVE - ===========
+==========                    ADVISOR: THORNBURG                     ===========
+
+
+AMDOCS LIMITED
+
+Ticker:       DOX            Security ID:  G02602103
+Meeting Date: JAN 19, 2006   Meeting Type: Annual
+Record Date:  NOV 30, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Bruce K. Anderson         For       For        Management
+1.2   Elect  Director Adrian Gardner            For       For        Management
+1.3   Elect  Director Charles E. Foster         For       For        Management
+1.4   Elect  Director James S. Kahan            For       For        Management
+1.5   Elect  Director Dov Baharav               For       For        Management
+1.6   Elect  Director Julian A. Brodsky         For       For        Management
+1.7   Elect  Director Eli Gelman                For       For        Management
+1.8   Elect  Director Nehemia Lemelbaum         For       For        Management
+1.9   Elect  Director John T. Mclennan          For       For        Management
+1.10  Elect  Director Robert A. Minicucci       For       For        Management
+1.11  Elect  Director Simon Olswang             For       For        Management
+1.12  Elect  Director Mario Segal               For       For        Management
+2     APPROVAL OF AMENDMENT OF THE 1998 STOCK   For       For        Management
+      OPTION AND INCENTIVE PLAN TO INCREASE THE
+      NUMBER OF SHARES AUTHORIZED FOR ISSUANCE
+      THEREUNDER, TO CONTINUE THE TERM OF THE
+      PLAN FOR AN ADDITIONAL 10-YEAR TERM AND
+      TO MAKE OTHER CHANGES AS DESCRIBED IN THE
+      ACCOMPANY
+3     APPROVAL OF SPECIAL RESOLUTION TO PERMIT  For       For        Management
+      DIRECT REPURCHASE BY THE COMPANY OF
+      UNVESTED SHARES OF RESTRICTED STOCK
+      GRANTED UNDER THE 1998 STOCK OPTION AND
+      INCENTIVE PLAN UPON TERMINATION OF
+      EMPLOYMENT OR SERVICE.
+4     APPROVAL OF CONSOLIDATED FINANCIAL        For       For        Management
+      STATEMENTS FOR FISCAL YEAR 2005.
+5     RATIFICATION AND APPROVAL OF ERNST &      For       For        Management
+      YOUNG LLP AND AUTHORIZATION OF AUDIT
+      COMMITTEE OF BOARD TO FIX REMUNERATION.
+
+
+- --------------------------------------------------------------------------------
+
+BANK OF IRELAND GROUP
+
+Ticker:       IRLBF          Security ID:  G49374146
+Meeting Date: JUL 6, 2005    Meeting Type: Annual
+Record Date:  JUL 4, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Accept Financial Statements and Statutory For       For        Management
+      Reports
+2     Approve Final Dividends                   For       For        Management
+3.1   Elect Paul Haran as Director              For       For        Management
+3.2a  Re-elect Richard Burrows as Director      For       For        Management
+3.2b  Re-elect Brian Goggin as Director         For       For        Management
+3.2c  Re-elect Dennis O'Brien as Director       For       For        Management
+3.2d  Re-elect John O'Donovan as Director       For       For        Management
+3.2e  Re-elect Mary Redmond as Director         For       For        Management
+4     Authorize Board to Fix Remuneration of    For       For        Management
+      Auditors
+5     Authorize up to 95,732,060 Ordinary Stock For       For        Management
+      Units and 1,876,090 Sterling Preference
+      Stock Units and 3,026,598 Euro Preference
+      Stock Units for Share Repurchase Program
+6     Authorize Reissuance of Repurchased       For       For        Management
+      Shares
+7     Authorize Board to Allot Up to EUR        For       For        Management
+      30,900,000 in Equity Securities for Cash
+      without Preemptive Rights
+8     Authorize Board to Allot Equity           For       For        Management
+      Securities Representing 15 Percent of the
+      Issued Share Capital, without Preemptive
+      Rights, For Purposes Other Than Cash
+9     Amend Company Bye-Laws Re: Preference     For       For        Management
+      Stock
+
+
+
+
+========= STRATEGIC PARTNERS GROWTH ALLOCATION FUND - LARGE CAP GROWTH =========
+=========                      - ADVISOR: MARSICO                      =========
+
+
+AMYLIN PHARMACEUTICALS, INC.
+
+Ticker:       AMLN           Security ID:  032346108
+Meeting Date: MAY 17, 2006   Meeting Type: Annual
+Record Date:  MAR 24, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Steven R. Altman           For       For        Management
+1.2   Elect Director Vaughn D. Bryson           For       For        Management
+1.3   Elect Director Joseph C. Cook, Jr.        For       For        Management
+1.4   Elect Director Karin Eastham              For       For        Management
+1.5   Elect Director James R. Gavin III         For       For        Management
+1.6   Elect Director Ginger L. Graham           For       For        Management
+1.7   Elect Director Howard E. Greene, Jr.      For       For        Management
+1.8   Elect Director Jay S. Skyler              For       For        Management
+1.9   Elect Director Joseph P. Sullivan         For       For        Management
+1.10  Elect Director Thomas R. Testman          For       For        Management
+1.11  Elect Director James N. Wilson            For       For        Management
+2     Amend Omnibus Stock Plan                  For       For        Management
+3     Amend Qualified Employee Stock Purchase   For       For        Management
+      Plan
+4     Ratify Auditors                           For       For        Management
+
+
+- --------------------------------------------------------------------------------
+
+APPLE COMPUTER, INC.
+
+Ticker:       AAPL           Security ID:  037833100
+Meeting Date: APR 27, 2006   Meeting Type: Annual
+Record Date:  FEB 28, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Fred D. Anderson           For       Did Not    Management
+                                                          Vote
+1.2   Elect Director William V. Campbell        For       Did Not    Management
+                                                          Vote
+1.3   Elect Director Millard S. Drexler         For       Did Not    Management
+                                                          Vote
+1.4   Elect Director Albert A. Gore, Jr.        For       Did Not    Management
+                                                          Vote
+1.5   Elect Director Steven P. Jobs             For       Did Not    Management
+                                                          Vote
+1.6   Elect Director Arthur D. Levinson, Ph.D.  For       Did Not    Management
+                                                          Vote
+1.7   Elect Director Jerome B. York             For       Did Not    Management
+                                                          Vote
+2     Ratify Auditors                           For       Did Not    Management
+                                                          Vote
+3     Report on Computer Recycling Policy       Against   Did Not    Shareholder
+                                                          Vote
+
+
+
+
+========= STRATEGIC PARTNERS GROWTH ALLOCATION FUND - LARGE CAP GROWTH =========
+=========               SLEEVE - ADVISOR: GOLDMAN SACHS                =========
+
+
+3M CO
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 9, 2006    Meeting Type: Annual
+Record Date:  MAR 10, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Linda G. Alvarado          For       For        Management
+1.2   Elect Director Edward M. Liddy            For       For        Management
+1.3   Elect Director Robert S. Morrison         For       For        Management
+1.4   Elect Director Aulana L. Peters           For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Declassify the Board of Directors         For       For        Management
+4     Performance-Based                         Against   For        Shareholder
+5     Adopt Animal Welfare Policy               Against   Against    Shareholder
+6     Implement China Principles                Against   Against    Shareholder
+
+
+- --------------------------------------------------------------------------------
+
+ADOBE SYSTEMS INC.
+
+Ticker:       ADBE           Security ID:  00724F101
+Meeting Date: AUG 24, 2005   Meeting Type: Special
+Record Date:  JUL 19, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Issue Shares in Connection with an        For       For        Management
+      Acquisition
+2     Adjourn Meeting                           For       For        Management
+
+
+
+
+========= STRATEGIC PARTNERS GROWTH ALLOCATION FUND - LARGE CAP VALUE ==========
+=========             SLEEVE - ADVISOR: HOTCHKIS & WILEY              ==========
+
+
+ALBERTSON
+
+Ticker:       ABS            Security ID:  013104104
+Meeting Date: MAY 30, 2006   Meeting Type: Special
+Record Date:  APR 24, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Approve Merger Agreement                  For       For        Management
+2     Amend Articles/Bylaws/Charter-Non-Routine For       For        Management
+3     Adjourn Meeting                           For       For        Management
+
+
+- --------------------------------------------------------------------------------
+
+ALCOA INC.
+
+Ticker:       AA             Security ID:  013817101
+Meeting Date: APR 21, 2006   Meeting Type: Annual
+Record Date:  JAN 23, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Kathryn S. Fuller          For       For        Management
+1.2   Elect Director Judith M. Gueron           For       For        Management
+1.3   Elect Director Ernesto Zedillo            For       For        Management
+2     Ratify Auditors                           For       For        Management
+
+
+
+
+========= STRATEGIC PARTNERS GROWTH ALLOCATION FUND - LARGE CAP VALUE ==========
+=========                SLEEVE - ADVISOR: J.P. MORGAN                ==========
+
+
+ABBOTT LABORATORIES
+
+Ticker:       ABT            Security ID:  002824100
+Meeting Date: APR 28, 2006   Meeting Type: Annual
+Record Date:  MAR 1, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Roxanne S. Austin          For       For        Management
+1.2   Elect Director William M. Daley           For       For        Management
+1.3   Elect Director W. James Farrell           For       For        Management
+1.4   Elect Director H. Laurance Fuller         For       For        Management
+1.5   Elect Director Richard A. Gonzalez        For       For        Management
+1.6   Elect Director Jack M. Greenberg          For       For        Management
+1.7   Elect Director Lord Owen                  For       For        Management
+1.8   Elect Director Boone Powell, Jr.          For       For        Management
+1.9   Elect Director W. Ann Reynolds, Ph.D.     For       For        Management
+1.10  Elect Director Roy S. Roberts             For       For        Management
+1.11  Elect Director William D. Smithburg       For       For        Management
+1.12  Elect Director John R. Walter             For       For        Management
+1.13  Elect Director Miles D. White             For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Performance-Based Equity Awards           Against   For        Shareholder
+4     Report on Political Contributions         Against   Against    Shareholder
+5     Separate Chairman and CEO Positions       Against   For        Shareholder
+
+
+- --------------------------------------------------------------------------------
+
+ABERCROMBIE & FITCH CO.
+
+Ticker:       ANF            Security ID:  002896207
+Meeting Date: JUN 14, 2006   Meeting Type: Annual
+Record Date:  APR 17, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director James B. Bachmann          For       For        Management
+1.2   Elect Director Lauren J. Brisky           For       For        Management
+1.3   Elect Director Michael S. Jeffries        For       For        Management
+1.4   Elect Director John W. Kessler            For       Withhold   Management
+2     Ratify Auditors                           For       For        Management
+
+
+
+
+========= STRATEGIC PARTNERS GROWTH ALLOCATION FUND - SMALL CAP GROWTH =========
+=========               SLEEVE - ADVISOR: RS INVESTMENTS               =========
+
+
+ADEZA BIOMEDICAL CORP.
+
+Ticker:       ADZA           Security ID:  006864102
+Meeting Date: JUN 6, 2006    Meeting Type: Annual
+Record Date:  APR 17, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Andrew E. Senyei, M.D.     For       For        Management
+1.2   Elect Director Michael P. Downey          For       For        Management
+2     Ratify Auditors                           For       For        Management
+
+
+- --------------------------------------------------------------------------------
+
+ADOLOR CORP
+
+Ticker:       ADLR           Security ID:  00724X102
+Meeting Date: MAY 18, 2006   Meeting Type: Annual
+Record Date:  MAR 20, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director David M. Madden            For       For        Management
+1.2   Elect Director Robert T. Nelsen           For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Amend Omnibus Stock Plan                  For       Against    Management
+
+
+
+
+========= STRATEGIC PARTNERS GROWTH ALLOCATION FUND - SMALL CAP VALUE ==========
+=========             SLEEVE - ADVISOR: EARNEST PARTNERS              ==========
+
+
+ACCREDITED HOME LENDERS HOLDING CO.
+
+Ticker:       LEND           Security ID:  00437P107
+Meeting Date: JUN 8, 2006    Meeting Type: Annual
+Record Date:  APR 21, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Jody A. Gunderson          For       For        Management
+1.2   Elect Director Richard T. Pratt           For       For        Management
+2     Approve Executive Incentive Bonus Plan    For       Against    Management
+3     Ratify Auditors                           For       For        Management
+
+
+- --------------------------------------------------------------------------------
+
+ADMINISTAFF, INC.
+
+Ticker:       ASF            Security ID:  007094105
+Meeting Date: MAY 3, 2006    Meeting Type: Annual
+Record Date:  MAR 6, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Paul J. Sarvadi            For       Withhold   Management
+1.2   Elect Director Austin P. Young            For       For        Management
+2     Amend Omnibus Stock Plan                  For       Against    Management
+3     Ratify Auditors                           For       Against    Management
+
+
+
+
+========= STRATEGIC PARTNERS GROWTH ALLOCATION FUND - SMALL CAP VALUE ==========
+=========                    SLEEVE - ADVISOR: NFJ                    ==========
+
+
+3M COMPANY
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 9, 2006    Meeting Type: Annual
+Record Date:  MAR 10, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     ELECTION OF DIRECTORS                     FOR       FOR        Management
+2     RATIFY APPOINTMENT OF INDEPENDENT         FOR       FOR        Management
+      AUDITORS
+3     DECLASSIFY BOARD                          FOR       FOR        Management
+4     S/H PROPOSAL - EXECUTIVE COMPENSATION     FOR       AGAINST    Shareholder
+5     S/H PROPOSAL - ANIMAL RIGHTS              FOR       AGAINST    Shareholder
+6     MISCELLANEOUS SHAREHOLDER PROPOSAL        FOR       AGAINST    Shareholder
+
+
+- --------------------------------------------------------------------------------
+
+ALCOA INC.
+
+Ticker:       AA             Security ID:  013817101
+Meeting Date: APR 21, 2006   Meeting Type: Annual
+Record Date:  JAN 23, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     ELECTION OF DIRECTORS                     FOR       FOR        Management
+2     RATIFY APPOINTMENT OF INDEPENDENT         FOR       FOR        Management
+      AUDITORS
+
+
+
+
+========= STRATEGIC PARTNERS GROWTH ALLOCATION FUND - SMALL CAP VALUE ==========
+=========               SLEEVE - ADVISOR: VAUGHN NELSON               ==========
+
+
+AMEDISYS, INC.
+
+Ticker:       AMED           Security ID:  023436108
+Meeting Date: JUN 8, 2006    Meeting Type: Annual
+Record Date:  APR 10, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director William F. Borne           For       For        Management
+1.2   Elect Director Ronald A. LaBorde          For       For        Management
+1.3   Elect Director Jake L. Netterville        For       For        Management
+1.4   Elect Director David R. Pitts             For       For        Management
+1.5   Elect Director Peter F. Ricchiuti         For       For        Management
+1.6   Elect Director Donald A. Washburn         For       For        Management
+2     Amend Omnibus Stock Plan                  For       For        Management
+
+
+- --------------------------------------------------------------------------------
+
+ARLINGTON TANKERS LTD
+
+Ticker:       ATB            Security ID:  G04899103
+Meeting Date: JUN 12, 2006   Meeting Type: Annual
+Record Date:  APR 5, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Dr. E. Grant Gibbons      For       For        Management
+2     THE APPROVAL OF AMENDMENTS TO OUR         For       For        Management
+      BYE-LAWS TO ALLOW THE NUMBER OF DIRECTORS
+      TO BE DETERMINED BY OUR BOARD OF
+      DIRECTORS AND FOR THE QUORUM TO BE A
+      MAJORITY OF THE DIRECTORS.
+3     APPOINTMENT OF MOORE STEPHENS P.C. AS     For       For        Management
+      INDEPENDENT REGISTERED PUBLIC ACCOUNTING
+      FIRM FOR FISCAL YEAR ENDING DECEMBER 31,
+      2006 AND THE AUTHORIZATION OF THE BOARD
+      OF DIRECTORS, ACTING THROUGH THE AUDIT
+      COMMITTEE, TO DETERMINE THE INDEPENDENT
+      REGISTERED PUBL
+
+
+
+
+============= STRATEGIC PARTNERS LARGE CAPITALIZATION VALUE FUND - =============
+=============                     ADVISOR: NFJ                     =============
+
+
+3M COMPANY
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 9, 2006    Meeting Type: Annual
+Record Date:  MAR 10, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     ELECTION OF DIRECTORS                     FOR       FOR        Management
+2     RATIFY APPOINTMENT OF INDEPENDENT         FOR       FOR        Management
+      AUDITORS
+3     DECLASSIFY BOARD                          FOR       FOR        Management
+4     S/H PROPOSAL - EXECUTIVE COMPENSATION     FOR       AGAINST    Shareholder
+5     S/H PROPOSAL - ANIMAL RIGHTS              FOR       AGAINST    Shareholder
+6     MISCELLANEOUS SHAREHOLDER PROPOSAL        FOR       AGAINST    Shareholder
+
+
+- --------------------------------------------------------------------------------
+
+ALCOA INC.
+
+Ticker:       AA             Security ID:  013817101
+Meeting Date: APR 21, 2006   Meeting Type: Annual
+Record Date:  JAN 23, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     ELECTION OF DIRECTORS                     FOR       FOR        Management
+2     RATIFY APPOINTMENT OF INDEPENDENT         FOR       FOR        Management
+      AUDITORS
+
+
+
+
+========= STRATEGIC PARTNERS MODERATE ALLOC. FUND - HIGH YIELD BOND - ==========
+=========                   ADVISOR: GOLDMAN SACHS                    ==========
+
+
+GENTEK INC.
+
+Ticker:       GETI           Security ID:  37245X203
+Meeting Date: MAY 9, 2006    Meeting Type: Annual
+Record Date:  MAR 30, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Amend Charter to Declassify Board of      For       For        Management
+      Directors and Remove Certain Transfer
+      Restrictions
+2     Elect Director William E. Redmond, Jr.    For       For        Management
+3     Elect Director Kathleen R. Flaherty       For       For        Management
+4     Elect Director John F. McGovern           For       For        Management
+5     Elect Director John G. Johnson            For       For        Management
+6     Elect Director Dugald K. Campbell         For       For        Management
+7     Elect Director Henry L. Druker            For       For        Management
+
+
+- --------------------------------------------------------------------------------
+
+GRAND CASINOS, INC.
+
+Ticker:                      Security ID:  700690AH3
+Meeting Date: JUL 22, 2005   Meeting Type: Written Consent
+Record Date:  JUL 8, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     PROPOSED AMENDMENTS TO THE INDENTURES AND For       Did Not    Management
+      THE ISSUANCE OF THE GUARANTEES                      Vote
+
+
+
+
+========== STRATEGIC PARTNERS MODERATE ALLOC. FUND - SMALL CAP VALUE ===========
+==========              SLEEVE - ADVISOR: VAUGHN NELSON              ===========
+
+
+AMEDISYS, INC.
+
+Ticker:       AMED           Security ID:  023436108
+Meeting Date: JUN 8, 2006    Meeting Type: Annual
+Record Date:  APR 10, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director William F. Borne           For       For        Management
+1.2   Elect Director Ronald A. LaBorde          For       For        Management
+1.3   Elect Director Jake L. Netterville        For       For        Management
+1.4   Elect Director David R. Pitts             For       For        Management
+1.5   Elect Director Peter F. Ricchiuti         For       For        Management
+1.6   Elect Director Donald A. Washburn         For       For        Management
+2     Amend Omnibus Stock Plan                  For       For        Management
+
+
+- --------------------------------------------------------------------------------
+
+ARLINGTON TANKERS LTD
+
+Ticker:       ATB            Security ID:  G04899103
+Meeting Date: JUN 12, 2006   Meeting Type: Annual
+Record Date:  APR 5, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Dr. E. Grant Gibbons      For       For        Management
+2     THE APPROVAL OF AMENDMENTS TO OUR         For       For        Management
+      BYE-LAWS TO ALLOW THE NUMBER OF DIRECTORS
+      TO BE DETERMINED BY OUR BOARD OF
+      DIRECTORS AND FOR THE QUORUM TO BE A
+      MAJORITY OF THE DIRECTORS.
+3     APPOINTMENT OF MOORE STEPHENS P.C. AS     For       For        Management
+      INDEPENDENT REGISTERED PUBLIC ACCOUNTING
+      FIRM FOR FISCAL YEAR ENDING DECEMBER 31,
+      2006 AND THE AUTHORIZATION OF THE BOARD
+      OF DIRECTORS, ACTING THROUGH THE AUDIT
+      COMMITTEE, TO DETERMINE THE INDEPENDENT
+      REGISTERED PUBL
+
+
+
+
+============ STRATEGIC PARTNERS MODERATE ALLOCATION FUND - ADVISOR: ============
+============                        JENNISON                        ============
+
+
+DELL INC
+
+Ticker:       DELL           Security ID:  24702R101
+Meeting Date: JUL 15, 2005   Meeting Type: A
+Record Date:  MAY 20, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.01  Elect Donald J. Carty                     For       For        Management
+1.02  Elect Michael S. Dell                     For       For        Management
+1.03  Elect William H. Gray III                 For       For        Management
+1.04  Elect Judy C. Lewent                      For       For        Management
+1.05  Elect Thomas W. Luce III                  For       For        Management
+1.06  Elect Klaus S. Luft                       For       For        Management
+1.07  Elect Alex J. Mandl                       For       For        Management
+1.08  Elect Michael A. Miles                    For       For        Management
+1.09  Elect Samuel A. Nunn Jr.                  For       For        Management
+1.10  Elect Kevin B. Rollins                    For       For        Management
+2     Ratify selection of auditors              For       For        Management
+3     SP-Majority vote to elect directors       Against   Against    Shareholder
+4     SP-Expense stock options                  Against   Against    Shareholder
+
+
+- --------------------------------------------------------------------------------
+
+ELECTRONIC ARTS INC
+
+Ticker:       ERTS           Security ID:  285512109
+Meeting Date: JUL 28, 2005   Meeting Type: A
+Record Date:  JUN 6, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.01  Elect M. Richard Asher                    For       For        Management
+1.02  Elect Leonard S. Coleman Jr.              For       For        Management
+1.03  Elect Gary M. Kusin                       For       For        Management
+1.04  Elect Gregory B. Maffei                   For       For        Management
+1.05  Elect Timothy Mott                        For       For        Management
+1.06  Elect Vivek Paul                          For       For        Management
+1.07  Elect Robert W. Pittman                   For       For        Management
+1.08  Elect Lawrence F. Probst III              For       For        Management
+1.09  Elect Linda J. Srere                      For       For        Management
+2     Add shares to the 2000 Equity Incentive   For       Against    Management
+      Plan
+3     Add shares to the 2000 Employee Stock     For       Against    Management
+      Purchase Plan
+4     Ratify selection of auditors              For       For        Management
+
+
+
+
+========= STRATEGIC PARTNERS MODERATE ALLOCATION FUND - INTL SLEEVE - ==========
+=========                        ADVISOR: LSV                         ==========
+
+
+ABN AMRO HOLDING NV
+
+Ticker:       ABNHF          Security ID:  N0030P459
+Meeting Date: APR 27, 2006   Meeting Type: Annual
+Record Date:  APR 20, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Approve Minutes of Previous Meeting       None      None       Management
+2     Receive Report of Management Board        None      None       Management
+3a    Approve Financial Statements and          For       For        Management
+      Statutory Reports
+3b    Approve Dividends of EUR 1.10 Per Share   For       For        Management
+3c    Approve Discharge of Management Board     For       For        Management
+3d    Approve Discharge of Supervisory Board    For       For        Management
+4     Approve Remuneration Report Containing    For       For        Management
+      Remuneration Policy for Management Board
+      Members
+5     Approve Amendments to Remuneration of     For       For        Management
+      Supervisory Board
+6     Approve Company's Corporate Governance    For       For        Management
+      Structure
+7a    Elect G.J. Kramer to Supervisory Board    For       For        Management
+7b    Elect G. Randa to Supervisory Board       For       For        Management
+7c    Reelect A.C. Martinez to Supervisory      For       For        Management
+      Board
+8     Authorize Repurchase of Up to Ten Percent For       For        Management
+      of Issued Share Capital
+9a    Grant Board Authority to Issue Ordinary   For       For        Management
+      Shares, Convertible Preference Shares and
+      Preference Financing Shares Up To 20
+      Percent of Issued Capital
+9b    Authorize Board to Exclude Preemptive     For       For        Management
+      Rights from Issuance Under Item 9a
+10    Any Other Business (Non-Voting)           None      None       Management
+
+
+- --------------------------------------------------------------------------------
+
+AEGON NV
+
+Ticker:       AEG            Security ID:  N0089J123
+Meeting Date: APR 25, 2006   Meeting Type: Annual
+Record Date:  APR 18, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Open Meeting                              None      None       Management
+2     Approve Financial Statements              For       For        Management
+3     Approve Total Dividends of EUR 0.45 per   For       For        Management
+      Share
+4     Approve Discharge of Management Board     For       For        Management
+5     Approve Discharge of Supervisory Board    For       For        Management
+6     Ratify Ernst & Young as Auditors          For       For        Management
+7     Amend Articles to Reflect the Abolition   For       For        Management
+      of Bearer Shares (K and CF Certificates)
+      and Changes in Dutch Law
+8     Extend Remuneration Policy for Management For       For        Management
+      Board Members
+9     Reelect Johan G. van der Werf to          For       For        Management
+      Management Board
+10    Elect Clifford M. Sobel to Supervisory    For       For        Management
+      Board
+11    Reelect Kees J. Storm to Supervisory      For       For        Management
+      Board
+12    Grant Board Authority to Issue Common     For       For        Management
+      Shares Up To 10 Percent of Issued Capital
+      Plus Additional 10 Percent in Case of
+      Takeover/Merger
+13    Authorize Board to Exclude Preemptive     For       For        Management
+      Rights from Issuance Under Item 12
+14    Authorize Board to Issue Common Shares up For       For        Management
+      to 1 Percent of Issued Share Capital for
+      Incentive Plans
+15    Authorize Repurchase of Up to Ten Percent For       For        Management
+      of Issued Share Capital
+16    Other Business (Non-Voting)               None      None       Management
+17    Close Meeting                             None      None       Management
+
+
+
+
+========= STRATEGIC PARTNERS MODERATE ALLOCATION FUND - INTL SLEEVE - ==========
+=========                     ADVISOR: THORNBURG                      ==========
+
+
+AMDOCS LIMITED
+
+Ticker:       DOX            Security ID:  G02602103
+Meeting Date: JAN 19, 2006   Meeting Type: Annual
+Record Date:  NOV 30, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect  Director Bruce K. Anderson         For       For        Management
+1.2   Elect  Director Adrian Gardner            For       For        Management
+1.3   Elect  Director Charles E. Foster         For       For        Management
+1.4   Elect  Director James S. Kahan            For       For        Management
+1.5   Elect  Director Dov Baharav               For       For        Management
+1.6   Elect  Director Julian A. Brodsky         For       For        Management
+1.7   Elect  Director Eli Gelman                For       For        Management
+1.8   Elect  Director Nehemia Lemelbaum         For       For        Management
+1.9   Elect  Director John T. Mclennan          For       For        Management
+1.10  Elect  Director Robert A. Minicucci       For       For        Management
+1.11  Elect  Director Simon Olswang             For       For        Management
+1.12  Elect  Director Mario Segal               For       For        Management
+2     APPROVAL OF AMENDMENT OF THE 1998 STOCK   For       For        Management
+      OPTION AND INCENTIVE PLAN TO INCREASE THE
+      NUMBER OF SHARES AUTHORIZED FOR ISSUANCE
+      THEREUNDER, TO CONTINUE THE TERM OF THE
+      PLAN FOR AN ADDITIONAL 10-YEAR TERM AND
+      TO MAKE OTHER CHANGES AS DESCRIBED IN THE
+      ACCOMPANY
+3     APPROVAL OF SPECIAL RESOLUTION TO PERMIT  For       For        Management
+      DIRECT REPURCHASE BY THE COMPANY OF
+      UNVESTED SHARES OF RESTRICTED STOCK
+      GRANTED UNDER THE 1998 STOCK OPTION AND
+      INCENTIVE PLAN UPON TERMINATION OF
+      EMPLOYMENT OR SERVICE.
+4     APPROVAL OF CONSOLIDATED FINANCIAL        For       For        Management
+      STATEMENTS FOR FISCAL YEAR 2005.
+5     RATIFICATION AND APPROVAL OF ERNST &      For       For        Management
+      YOUNG LLP AND AUTHORIZATION OF AUDIT
+      COMMITTEE OF BOARD TO FIX REMUNERATION.
+
+
+- --------------------------------------------------------------------------------
+
+BANK OF IRELAND GROUP
+
+Ticker:       IRLBF          Security ID:  G49374146
+Meeting Date: JUL 6, 2005    Meeting Type: Annual
+Record Date:  JUL 4, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Accept Financial Statements and Statutory For       For        Management
+      Reports
+2     Approve Final Dividends                   For       For        Management
+3.1   Elect Paul Haran as Director              For       For        Management
+3.2a  Re-elect Richard Burrows as Director      For       For        Management
+3.2b  Re-elect Brian Goggin as Director         For       For        Management
+3.2c  Re-elect Dennis O'Brien as Director       For       For        Management
+3.2d  Re-elect John O'Donovan as Director       For       For        Management
+3.2e  Re-elect Mary Redmond as Director         For       For        Management
+4     Authorize Board to Fix Remuneration of    For       For        Management
+      Auditors
+5     Authorize up to 95,732,060 Ordinary Stock For       For        Management
+      Units and 1,876,090 Sterling Preference
+      Stock Units and 3,026,598 Euro Preference
+      Stock Units for Share Repurchase Program
+6     Authorize Reissuance of Repurchased       For       For        Management
+      Shares
+7     Authorize Board to Allot Up to EUR        For       For        Management
+      30,900,000 in Equity Securities for Cash
+      without Preemptive Rights
+8     Authorize Board to Allot Equity           For       For        Management
+      Securities Representing 15 Percent of the
+      Issued Share Capital, without Preemptive
+      Rights, For Purposes Other Than Cash
+9     Amend Company Bye-Laws Re: Preference     For       For        Management
+      Stock
+
+
+
+
+=========== STRATEGIC PARTNERS MODERATE ALLOCATION FUND - LARGE CAP ============
+===========                GROWTH - ADVISOR: MARSICO                ============
+
+
+AMYLIN PHARMACEUTICALS, INC.
+
+Ticker:       AMLN           Security ID:  032346108
+Meeting Date: MAY 17, 2006   Meeting Type: Annual
+Record Date:  MAR 24, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Steven R. Altman           For       For        Management
+1.2   Elect Director Vaughn D. Bryson           For       For        Management
+1.3   Elect Director Joseph C. Cook, Jr.        For       For        Management
+1.4   Elect Director Karin Eastham              For       For        Management
+1.5   Elect Director James R. Gavin III         For       For        Management
+1.6   Elect Director Ginger L. Graham           For       For        Management
+1.7   Elect Director Howard E. Greene, Jr.      For       For        Management
+1.8   Elect Director Jay S. Skyler              For       For        Management
+1.9   Elect Director Joseph P. Sullivan         For       For        Management
+1.10  Elect Director Thomas R. Testman          For       For        Management
+1.11  Elect Director James N. Wilson            For       For        Management
+2     Amend Omnibus Stock Plan                  For       For        Management
+3     Amend Qualified Employee Stock Purchase   For       For        Management
+      Plan
+4     Ratify Auditors                           For       For        Management
+
+
+- --------------------------------------------------------------------------------
+
+APPLE COMPUTER, INC.
+
+Ticker:       AAPL           Security ID:  037833100
+Meeting Date: APR 27, 2006   Meeting Type: Annual
+Record Date:  FEB 28, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Fred D. Anderson           For       Did Not    Management
+                                                          Vote
+1.2   Elect Director William V. Campbell        For       Did Not    Management
+                                                          Vote
+1.3   Elect Director Millard S. Drexler         For       Did Not    Management
+                                                          Vote
+1.4   Elect Director Albert A. Gore, Jr.        For       Did Not    Management
+                                                          Vote
+1.5   Elect Director Steven P. Jobs             For       Did Not    Management
+                                                          Vote
+1.6   Elect Director Arthur D. Levinson, Ph.D.  For       Did Not    Management
+                                                          Vote
+1.7   Elect Director Jerome B. York             For       Did Not    Management
+                                                          Vote
+2     Ratify Auditors                           For       Did Not    Management
+                                                          Vote
+3     Report on Computer Recycling Policy       Against   Did Not    Shareholder
+                                                          Vote
+
+
+
+
+=========== STRATEGIC PARTNERS MODERATE ALLOCATION FUND - LARGE CAP ============
+===========         GROWTH SLEEVE - ADVISOR: GOLDMAN SACHS          ============
+
+
+3M CO
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 9, 2006    Meeting Type: Annual
+Record Date:  MAR 10, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Linda G. Alvarado          For       For        Management
+1.2   Elect Director Edward M. Liddy            For       For        Management
+1.3   Elect Director Robert S. Morrison         For       For        Management
+1.4   Elect Director Aulana L. Peters           For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Declassify the Board of Directors         For       For        Management
+4     Performance-Based                         Against   For        Shareholder
+5     Adopt Animal Welfare Policy               Against   Against    Shareholder
+6     Implement China Principles                Against   Against    Shareholder
+
+
+- --------------------------------------------------------------------------------
+
+ADOBE SYSTEMS INC.
+
+Ticker:       ADBE           Security ID:  00724F101
+Meeting Date: AUG 24, 2005   Meeting Type: Special
+Record Date:  JUL 19, 2005
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Issue Shares in Connection with an        For       For        Management
+      Acquisition
+2     Adjourn Meeting                           For       For        Management
+
+
+
+
+=========== STRATEGIC PARTNERS MODERATE ALLOCATION FUND - LARGE CAP ============
+===========        VALUE SLEEVE - ADVISOR: HOTCHKIS & WILEY         ============
+
+
+ALBERTSON
+
+Ticker:       ABS            Security ID:  013104104
+Meeting Date: MAY 30, 2006   Meeting Type: Special
+Record Date:  APR 24, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Approve Merger Agreement                  For       For        Management
+2     Amend Articles/Bylaws/Charter-Non-Routine For       For        Management
+3     Adjourn Meeting                           For       For        Management
+
+
+- --------------------------------------------------------------------------------
+
+ALCOA INC.
+
+Ticker:       AA             Security ID:  013817101
+Meeting Date: APR 21, 2006   Meeting Type: Annual
+Record Date:  JAN 23, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Kathryn S. Fuller          For       For        Management
+1.2   Elect Director Judith M. Gueron           For       For        Management
+1.3   Elect Director Ernesto Zedillo            For       For        Management
+2     Ratify Auditors                           For       For        Management
+
+
+
+
+=========== STRATEGIC PARTNERS MODERATE ALLOCATION FUND - LARGE CAP ============
+===========           VALUE SLEEVE - ADVISOR: J.P. MORGAN           ============
+
+
+ABBOTT LABORATORIES
+
+Ticker:       ABT            Security ID:  002824100
+Meeting Date: APR 28, 2006   Meeting Type: Annual
+Record Date:  MAR 1, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Roxanne S. Austin          For       For        Management
+1.2   Elect Director William M. Daley           For       For        Management
+1.3   Elect Director W. James Farrell           For       For        Management
+1.4   Elect Director H. Laurance Fuller         For       For        Management
+1.5   Elect Director Richard A. Gonzalez        For       For        Management
+1.6   Elect Director Jack M. Greenberg          For       For        Management
+1.7   Elect Director Lord Owen                  For       For        Management
+1.8   Elect Director Boone Powell, Jr.          For       For        Management
+1.9   Elect Director W. Ann Reynolds, Ph.D.     For       For        Management
+1.10  Elect Director Roy S. Roberts             For       For        Management
+1.11  Elect Director William D. Smithburg       For       For        Management
+1.12  Elect Director John R. Walter             For       For        Management
+1.13  Elect Director Miles D. White             For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Performance-Based Equity Awards           Against   For        Shareholder
+4     Report on Political Contributions         Against   Against    Shareholder
+5     Separate Chairman and CEO Positions       Against   For        Shareholder
+
+
+- --------------------------------------------------------------------------------
+
+ABERCROMBIE & FITCH CO.
+
+Ticker:       ANF            Security ID:  002896207
+Meeting Date: JUN 14, 2006   Meeting Type: Annual
+Record Date:  APR 17, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director James B. Bachmann          For       For        Management
+1.2   Elect Director Lauren J. Brisky           For       For        Management
+1.3   Elect Director Michael S. Jeffries        For       For        Management
+1.4   Elect Director John W. Kessler            For       Withhold   Management
+2     Ratify Auditors                           For       For        Management
+
+
+
+
+=========== STRATEGIC PARTNERS MODERATE ALLOCATION FUND - SMALL CAP ============
+===========         GROWTH SLEEVE - ADVISOR: RS INVESTMENTS         ============
+
+
+ADEZA BIOMEDICAL CORP.
+
+Ticker:       ADZA           Security ID:  006864102
+Meeting Date: JUN 6, 2006    Meeting Type: Annual
+Record Date:  APR 17, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Andrew E. Senyei, M.D.     For       For        Management
+1.2   Elect Director Michael P. Downey          For       For        Management
+2     Ratify Auditors                           For       For        Management
+
+
+- --------------------------------------------------------------------------------
+
+ADOLOR CORP
+
+Ticker:       ADLR           Security ID:  00724X102
+Meeting Date: MAY 18, 2006   Meeting Type: Annual
+Record Date:  MAR 20, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director David M. Madden            For       For        Management
+1.2   Elect Director Robert T. Nelsen           For       For        Management
+2     Ratify Auditors                           For       For        Management
+3     Amend Omnibus Stock Plan                  For       Against    Management
+
+
+
+
+=========== STRATEGIC PARTNERS MODERATE ALLOCATION FUND - SMALL CAP ============
+===========        VALUE SLEEVE - ADVISOR: EARNEST PARTNERS         ============
+
+
+ACCREDITED HOME LENDERS HOLDING CO.
+
+Ticker:       LEND           Security ID:  00437P107
+Meeting Date: JUN 8, 2006    Meeting Type: Annual
+Record Date:  APR 21, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Jody A. Gunderson          For       For        Management
+1.2   Elect Director Richard T. Pratt           For       For        Management
+2     Approve Executive Incentive Bonus Plan    For       Against    Management
+3     Ratify Auditors                           For       For        Management
+
+
+- --------------------------------------------------------------------------------
+
+ADMINISTAFF, INC.
+
+Ticker:       ASF            Security ID:  007094105
+Meeting Date: MAY 3, 2006    Meeting Type: Annual
+Record Date:  MAR 6, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.1   Elect Director Paul J. Sarvadi            For       Withhold   Management
+1.2   Elect Director Austin P. Young            For       For        Management
+2     Amend Omnibus Stock Plan                  For       Against    Management
+3     Ratify Auditors                           For       Against    Management
+
+
+
+
+=========== STRATEGIC PARTNERS MODERATE ALLOCATION FUND - SMALL CAP ============
+===========               VALUE SLEEVE - ADVISOR: NFJ               ============
+
+
+3M COMPANY
+
+Ticker:       MMM            Security ID:  88579Y101
+Meeting Date: MAY 9, 2006    Meeting Type: Annual
+Record Date:  MAR 10, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     ELECTION OF DIRECTORS                     FOR       FOR        Management
+2     RATIFY APPOINTMENT OF INDEPENDENT         FOR       FOR        Management
+      AUDITORS
+3     DECLASSIFY BOARD                          FOR       FOR        Management
+4     S/H PROPOSAL - EXECUTIVE COMPENSATION     FOR       AGAINST    Shareholder
+5     S/H PROPOSAL - ANIMAL RIGHTS              FOR       AGAINST    Shareholder
+6     MISCELLANEOUS SHAREHOLDER PROPOSAL        FOR       AGAINST    Shareholder
+
+
+- --------------------------------------------------------------------------------
+
+ALCOA INC.
+
+Ticker:       AA             Security ID:  013817101
+Meeting Date: APR 21, 2006   Meeting Type: Annual
+Record Date:  JAN 23, 2006
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     ELECTION OF DIRECTORS                     FOR       FOR        Management
+2     RATIFY APPOINTMENT OF INDEPENDENT         FOR       FOR        Management
+      AUDITORS
+
+
+
+
+========== STRATEGIC PARTNERS MODERATE ALLOCATION FUND - TRB SLEEVE - ==========
+==========                       ADVISOR: PIMCO                       ==========
+
+
+The STRATEGIC PARTNERS MODERATE ALLOCATION FUND - TRB SLEEVE - ADVISOR: PIMCO
+fund held no voting securities during the period covered by this report.
+No records are attached.
+
+
+
+
+========== END NPX REPORT
+
+
+                                   SIGNATURES
+
+Pursuant to the requirements of the Investment Company Act of 1940, the
+registrant has duly caused this report to be signed on its
+behalf by the undersigned, thereunto duly authorized.
+
+
+
+
+Strategic Partners Asset Allocation Fund
+
+
+By
+
+
+
+
+/s/ Judy R. Rice*
+      (Jonathan D. Shain)
+
+
+
+
+
+Judy R. Rice, President
+
+*  By Power of Attorney.  Filed on June 30, 2006.  Incorporated by reference
+to Exhibit (q) to Post-Effective Amendment No. 28 to the filing on Form N-1A
+for Dryden Municipal Bond Fund (File No. 33-10649) filed via EDGAR on
+June 30, 2006.
+
+
+Date: August 29, 2006
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

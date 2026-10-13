@@ -1,0 +1,147 @@
+<Table>
+<Caption>
+- ------------------------------------------------------------------------------------------------------------------------------------
+                  = = = = = = = = = = MFS INSTITUTIONAL REAL ESTATE INVESTMENT FUND = = = = = = = = =
+- ------------------------------------------------------------------------------------------------------------------------------------
+<S>                       <C>                                          <C>              <C>             <C>
+AMERICAN FINANCIAL REALTY TRUST
+
+
+Ticker: AFR               Security ID: 02607P305
+Meeting Date:  SEP 25,    Meeting Type: ANNUAL
+2003
+
+
+#                         Proposal:                                    Mgt Rec          Vost Cast       Sponsor
+1                         Elect Directors                              FOR              FOR             MANAGEMENT
+2                         De-stagger Board, annual election            FOR              AGAINST         MANAGEMENT
+3                         Increase of common shares under 2002         FOR              AGAINST         MANAGEMENT
+                          Equity Incentive Plan
+
+REGENCY CENTERS CORPORATION
+
+Ticker: REG               Security ID: 758849103
+Meeting Date:  APR 28,    Meeting Type: ANNUAL
+2004
+
+#                         Proposal:                                    Mgt Rec          Vost Cast       Sponsor
+1                         Elect Directors                              FOR              FOR             MANAGEMENT
+2                         Eliminate Classification of Directors        FOR              FOR             MANAGEMENT
+3                         Increase No. of Shares of Preferred Stock    FOR              FOR             MANAGEMENT
+4                         Delete Security Capital Ownership Limit      FOR              FOR             MANAGEMENT
+
+CARRAMERICA REALTY CORPORATION
+
+Ticker: CRE               Security ID: 144418100
+Meeting Date:  APR 29,    Meeting Type: ANNUAL
+2004
+
+#                         Proposal:                                    Mgt Rec          Vost Cast       Sponsor
+1                         Elect Directors                              FOR              FOR             MANAGEMENT
+2                         Limit Director Service to 6 Years            AGAINST          AGAINST         SHAREHOLDER
+
+AVALONBAY COMMUNITIES, INC.
+- ------------------------------------------------------------------------------------------------------------------------------------
+</Table>
+
+
+<PAGE>
+
+
+<Table>
+- ------------------------------------------------------------------------------------------------------------------------------------
+<S>                       <C>                                          <C>              <C>             <C>
+Ticker: AVB               Security ID: 053484101
+Meeting Date:  MAY 05,    Meeting Type: ANNUAL
+2004
+
+#                         Proposal:                                    Mgt Rec          Vost Cast       Sponsor
+1                         Elect Directors                              FOR              FOR             MANAGEMENT
+2                         S/H Input on Poison Pills                    AGAINST          AGAINST         SHAREHOLDER
+
+FEDERAL REALTY INVESTMENT TRUST
+
+Ticker: FRT               Security ID: 313747206
+Meeting Date:  MAY 05,    Meeting Type: ANNUAL
+2004
+
+#                         Proposal:                                    Mgt Rec          Vost Cast       Sponsor
+1                         Elect Directors                              FOR              FOR             MANAGEMENT
+2                         Change Size of Board of Trustees             FOR              FOR             MANAGEMENT
+3                         Decrease Vote Required by S/H to remove a    FOR              FOR             MANAGEMENT
+                          Trustee
+4                         Ratify Independent Auditors                  FOR              FOR             MANAGEMENT
+
+GENERAL GROWTH PROPERTIES, INC.
+
+Ticker: GGP               Security ID: 370021107
+Meeting Date:  MAY 05,    Meeting Type: ANNUAL
+2004
+
+#                         Proposal:                                    Mgt Rec          Vost Cast       Sponsor
+1                         Elect Directors                              FOR              FOR             MANAGEMENT
+2                         Ratify Independent Auditors                  FOR              FOR             MANAGEMENT
+
+SIMON PROPERTY GROUP, INC.
+
+Ticker: SPG               Security ID: 828806109
+Meeting Date:  MAY 05,    Meeting Type: ANNUAL
+2004
+
+#                         Proposal:                                    Mgt Rec          Vost Cast       Sponsor
+1                         Elect Directors                              FOR              FOR             MANAGEMENT
+2                         Ratify Independent Auditors                  FOR              FOR             MANAGEMENT
+3                         Independent Chairman of Board                AGAINST          AGAINST         SHAREHOLDER
+- ------------------------------------------------------------------------------------------------------------------------------------
+</Table>
+
+
+<PAGE>
+
+
+<Table>
+- ------------------------------------------------------------------------------------------------------------------------------------
+<S>                       <C>                                          <C>              <C>             <C>
+PUBLIC STORAGE, INC.
+
+Ticker: PSA               Security ID: 74460D109
+Meeting Date:  MAY 06,    Meeting Type: ANNUAL
+2004
+
+#                         Proposal:                                    Mgt Rec          Vost Cast       Sponsor
+1                         Elect Directors                              FOR              FOR             MANAGEMENT
+2                         Ratify Independent Auditors                  FOR              FOR             MANAGEMENT
+
+CBL & ASSOCIATES PROPERTIES, INC.
+
+Ticker: CBL               Security ID:  124830100
+Meeting Date:  MAY 10,    Meeting Type: ANNUAL
+2004
+
+#                         Proposal:                                    Mgt Rec          Vost Cast       Sponsor
+1                         Elect Directors                              FOR              FOR             MANAGEMENT
+2                         Ratify Independent Auditors                  FOR              FOR             MANAGEMENT
+
+ALEXANDRIA REAL ESTATE EQUITIES, INC.
+
+Ticker: ARE               Security ID:  015271109
+Meeting Date:  MAY 12,    Meeting Type: ANNUAL
+2004
+
+#                         Proposal:                                    Mgt Rec          Vost Cast       Sponsor
+1                         Elect Directors                              FOR              FOR             MANAGEMENT
+2                         Ratify Independent Auditors                  FOR              FOR             MANAGEMENT
+
+DILLARDS, INC.
+
+Ticker: DDS               Security ID:  254067101
+Meeting Date:  MAY 15,    Meeting Type: ANNUAL
+2004
+
+#                         Proposal:                                    Mgt Rec          Vost Cast       Sponsor
+1                         Elect Directors                              FOR              FOR             MANAGEMENT
+2                         Ratify Independent Auditors                  FOR              FOR             MANAGEMENT
+3                         Global Human Rights Standards                AGAINST          AGAINST         SHAREHOLDER
+- ------------------------------------------------------------------------------------------------------------------------------------
+</Table>
+

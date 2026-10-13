@@ -1,0 +1,56 @@
+<SEC-DOCUMENT>0001271631-05-000098.txt : 20050825
+<SEC-HEADER>0001271631-05-000098.hdr.sgml : 20050825
+<ACCEPTANCE-DATETIME>20050825164450
+ACCESSION NUMBER:		0001271631-05-000098
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050825
+DATE AS OF CHANGE:		20050825
+EFFECTIVENESS DATE:		20050825
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			MANAGERS AMG FUNDS
+		CENTRAL INDEX KEY:			0001089951
+		IRS NUMBER:				061555943
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1130
+
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>adp006_0001089951.txt
+<DESCRIPTION>MANAGERS AMG FUND
+<TEXT>
+                                  UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                              WASHINGTON, D.C. 20549
+<PAGE>
+
+<TABLE>
+<S>    <C>                                                       <C>           <C>                            <C>
+
+Essex LC Growth Fund
+- --------------------------------------------------------------------------------------------------------------------------
+ APPLIED MATERIALS, INC.                                                                     Agenda Number:  932263623
+- --------------------------------------------------------------------------------------------------------------------------
+        Security:  038222105
+    Meeting Type:  Annual
+    Meeting Date:  23-Mar-2005
+          Ticker:  AMAT
+            ISIN:
+- --------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+01     DIRECTOR
+       MICHAEL H. ARMACOST                                       Mgmt          For                            For
+       DEBORAH A. COLEMAN                                        Mgmt          For                            For
+       HERBERT M. DWIGHT, JR.                                    Mgmt          For                            For
+       PHILIP V. GERDINE                                         Mgmt          For                            For
+       PAUL R. LOW                                               Mgmt          For                            For
+       DAN MAYDAN                                                Mgmt          For                            For

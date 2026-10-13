@@ -1,0 +1,52 @@
+<SEC-DOCUMENT>0000950135-05-004942.txt : 20050824
+<SEC-HEADER>0000950135-05-004942.hdr.sgml : 20050824
+<ACCEPTANCE-DATETIME>20050824140116
+ACCESSION NUMBER:		0000950135-05-004942
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20050630
+FILED AS OF DATE:		20050824
+DATE AS OF CHANGE:		20050824
+EFFECTIVENESS DATE:		20050824
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			HARTFORD SERIES FUND INC
+		CENTRAL INDEX KEY:			0001053425
+<SEQUENCE>1
+<FILENAME>b56385hsnvpx.txt
+<DESCRIPTION>HARTFORD SERIES FUND, INC.
+<TEXT>
+<PAGE>
+       ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT
+                            Investment Company
+   Item 1. Proxy Voting Record
+   Account Name: Hartford Advisers HLS Fund
+
+   ISSUER NAME TICKER CUSIP MTG DATE MTG TYPE
+           Proposal Type Voted? Vote For/Agnst Mgmt
+   3M Co MMM  88579Y101  5/10/05  Annual
+   1.01   Elect Vance D. Coffman MGMT YES FOR FOR
+   1.02   Elect Rozanne L. Ridgway MGMT YES FOR FOR
+   1.03   Elect Louis W. Sullivan MGMT YES FOR FOR
+   2.00   Ratify selection of auditors MGMT YES FOR FOR
+   3.00   Adopt Stock Incentive Plan MGMT YES AGNST AGNST
+   4.00   Review or promote animal welfare SHLDR YES AGNST FOR
+   5.00   China--adopt code of conduct SHLDR YES AGNST FOR
+
+   Item 1. Proxy Voting Record
+   Account Name: Hartford Capital Appreciation HLS Fund
+
+   ISSUER NAME TICKER CUSIP MTG DATE MTG TYPE
+           Proposal Type Voted? Vote For/Agnst Mgmt
+   ACE Ltd   G0070K103  5/26/05  Annual
+   1.01   Elect Evan G. Greenberg MGMT YES FOR FOR
+   1.02   Elect John A. Krol MGMT YES FOR FOR
+   2.00   Ratify selection of auditors MGMT YES FOR FOR
+
+   Air China 00753  Y002A6104  5/30/05  Annual
+   1.00   Authorize legal formalities MGMT YES FOR FOR
+   2.00   Authorize legal formalities MGMT YES FOR FOR
+   3.00   Approve financial statements MGMT YES FOR FOR
+   4.00   Set Final Dividend at 0.00 MGMT YES FOR FOR

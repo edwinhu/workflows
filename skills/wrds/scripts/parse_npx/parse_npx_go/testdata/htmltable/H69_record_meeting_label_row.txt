@@ -1,0 +1,76 @@
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">AGAINST</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">WITH</FONT></TD></TR>
+<TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD STYLE="padding-left: 0in"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black"><B>5</B></FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">Stockholder prop regarding ind
+    board chair</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">AGAINST</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">SHAREHO</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">AGAINST</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">WITH</FONT></TD></TR>
+<TR STYLE="vertical-align: top; background-color: White">
+    <TD COLSPAN="2" STYLE="padding-left: 0in"><FONT STYLE="font: 11pt Times New Roman, Times, Serif; color: Black"><B>Pfizer Inc.</B></FONT></TD>
+    <TD><FONT STYLE="color: Black">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="color: Black">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="color: Black">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="color: Black">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD STYLE="padding-left: 0in"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black"><B><I>Ticker</I></B></FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black"><B>PFE</B></FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black"><B><I>CUSIP:</I></B></FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black"><B>717081103</B></FONT></TD>
+    <TD><FONT STYLE="color: Black">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="color: Black">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top; background-color: White">
+    <TD STYLE="padding-left: 0in"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black"><B><I>Symbol:</I></B></FONT></TD>
+    <TD><FONT STYLE="color: Black">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="color: Black">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="color: Black">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="color: Black">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="color: Black">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD STYLE="padding-left: 0in"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black"><B><I>Record</I></B></FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black"><B><I>Meeting</I></B></FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black"><B>4/23/2020</B></FONT></TD>
+    <TD><FONT STYLE="color: Black">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="color: Black">&nbsp;</FONT></TD>
+    <TD><FONT STYLE="color: Black">&nbsp;</FONT></TD></TR>
+<TR STYLE="vertical-align: top; background-color: White">
+    <TD STYLE="padding-left: 0in"><FONT STYLE="font-family: Times New Roman, Times, Serif; color: Black"><B><U>Proposal #</U></B></FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; color: Black"><B><I><U>Proposal</U></I></B></FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; color: Black"><B><I><U>Vote</U></I></B></FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; color: Black"><B><I><U>Author</U></I></B></FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; color: Black"><B><I><U>MRV</U></I></B></FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; color: Black"><B><I><U>Vs&nbsp;&nbsp;Mgmt</U></I></B></FONT></TD></TR>
+<TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD STYLE="padding-left: 0in"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black"><B>1a</B></FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">Elect director Blaylock</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">FOR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">ISSUER</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">FOR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">WITH</FONT></TD></TR>
+<TR STYLE="vertical-align: top; background-color: White">
+    <TD STYLE="padding-left: 0in"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black"><B>1b</B></FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">Elect director Bourla</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">FOR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">ISSUER</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">FOR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">WITH</FONT></TD></TR>
+<TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD STYLE="padding-left: 0in"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black"><B>1c</B></FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">Elect director Cornwell</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">FOR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">ISSUER</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">FOR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">WITH</FONT></TD></TR>
+<TR STYLE="vertical-align: top; background-color: White">
+    <TD STYLE="padding-left: 0in"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black"><B>1d</B></FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">Elect director Echevarria</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">FOR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">ISSUER</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">FOR</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">WITH</FONT></TD></TR>
+<TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD STYLE="padding-left: 0in"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black"><B>1e</B></FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">Elect director Gorrlieb</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt; color: Black">FOR</FONT></TD>

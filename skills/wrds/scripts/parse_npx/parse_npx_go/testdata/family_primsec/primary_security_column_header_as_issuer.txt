@@ -1,0 +1,473 @@
+<TABLE cellSpacing=0 width="100%" border=0>
+<TR>
+     <TD width="7%"></TD>
+     <TD width="15%"></TD>
+     <TD width="19%"></TD>
+     <TD width="2%"></TD>
+     <TD width="7%"></TD>
+     <TD width="7%"></TD>
+     <TD width="8%"></TD>
+     <TD width="11%"></TD>
+     <TD width="13%"></TD>
+     <TD width="6%"></TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=3><B><FONT face=sans-serif size=4>Vote Summary Report</FONT></B>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=10>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=3><FONT face=sans-serif size=1>Report was run from: 7/1/09 to 6/30/10</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=5><FONT face=sans-serif size=1>Institutional Account(s): Principal Investors International Emerging Markets Fund</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=10>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>13</FONT>&nbsp;</TD>
+     <TD align=left colSpan=3><FONT face=sans-serif size=1>Approve Reappointment and Remuneration of V. Nowal, Director</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>and CEO (Vijayanagar Works)</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>14</FONT>&nbsp;</TD>
+     <TD align=left colSpan=3><FONT face=sans-serif size=1>Approve Increase in Remuneration of S. Rao, Director (Finance)</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=10>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>15</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Approve Reappointment and Remuneration of S. Rao, Jt.</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Managing Director and Group CFO</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>16</FONT>&nbsp;</TD>
+     <TD align=left colSpan=3><FONT face=sans-serif size=1>Approve Issuance of Equity or Equity-Linked Securities without</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left colSpan=3><FONT face=sans-serif size=1>Preemptive Rights up to an Aggregate Amount of $1 Billion to</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Qualified Institutional Buyers</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>17</FONT>&nbsp;</TD>
+     <TD align=left colSpan=3><FONT face=sans-serif size=1>Approve Issuance of Equity or Equity-Linked Securities without</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Against</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Preemptive Rights up to an Aggregate Amount of $1 Billion</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=10>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=2>&nbsp;<B><FONT face=sans-serif size=2>TOTVS SA</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Meeting Country</FONT></B>&nbsp;</TD>
+     <TD align=left colSpan=2><B><FONT face=sans-serif size=1>Primary Security</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Meeting</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Record</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Shares</FONT></B>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=right><B><FONT face=sans-serif size=1>Shares on</FONT></B>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Date</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>ID</FONT></B>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Type</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Date</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Voted</FONT></B>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=right><B><FONT face=sans-serif size=1>Loan *</FONT></B>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>07-Jul-09 Brazil</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>P92184103</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Special</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>100,500</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>0</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=2>&nbsp;<B><FONT face=sans-serif size=1>Ticker: </FONT></B><FONT face=sans-serif size=1>N/A</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=10>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Vote</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Proponent</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt Rec</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Instruction</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>1</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Amend Article 3 to Include Outsourcing Activities in the</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Company's Business Description</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>2</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Amend Articles 21 and 24 Re: Executive Officer Board</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>3</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Consolidate Articles</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=2>&nbsp;<B><FONT face=sans-serif size=2>Bank Of India Ltd</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Meeting Country</FONT></B>&nbsp;</TD>
+     <TD align=left colSpan=2><B><FONT face=sans-serif size=1>Primary Security</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Meeting</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Record</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Shares</FONT></B>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=right><B><FONT face=sans-serif size=1>Shares on</FONT></B>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Date</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>ID</FONT></B>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Type</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Date</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Voted</FONT></B>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=right><B><FONT face=sans-serif size=1>Loan *</FONT></B>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>11-Jul-09 India</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Y06949112</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>04-Jul-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>813,800</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>0</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=2>&nbsp;<B><FONT face=sans-serif size=1>Ticker: </FONT></B><FONT face=sans-serif size=1>N/A</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=10>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Vote</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Proponent</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt Rec</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Instruction</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>1</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Accept Financial Statements and Statutory Reports</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>2</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Confirm Interim Dividend of INR 3.00 Per Share and Approve</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Final Dividend of INR 5.00 Per Share</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=2>&nbsp;<B><FONT face=sans-serif size=2>Reliance Infrastructure</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Meeting Country</FONT></B>&nbsp;</TD>
+     <TD align=left colSpan=2><B><FONT face=sans-serif size=1>Primary Security</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Meeting</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Record</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Shares</FONT></B>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=right><B><FONT face=sans-serif size=1>Shares on</FONT></B>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;<B><FONT face=sans-serif size=2>Limited</FONT></B>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Date</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>ID</FONT></B>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Type</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Date</FONT></B>&nbsp;</TD>
+     <TD align=left><B><FONT face=sans-serif size=1>Voted</FONT></B>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=right><B><FONT face=sans-serif size=1>Loan *</FONT></B>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>21-Jul-09 India</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Y09789150</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Annual</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>06-Jul-09</FONT>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>167,475</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=right><FONT face=sans-serif size=1>0</FONT>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left colSpan=2>&nbsp;<B><FONT face=sans-serif size=1>Ticker: </FONT></B><FONT face=sans-serif size=1>N/A</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR>
+     <TD colSpan=10>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Vote</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Proponent</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt Rec</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Instruction</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>1</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Accept Financial Statements and Statutory Reports</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>2</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Approve Dividend of INR 7.00 Per Share</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>3</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Reappoint S. Seth as Director</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>4</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Reappoint S.C. Gupta as Director</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>5</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Reappoint V.R. Galkar as Director</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<FONT face=sans-serif size=1>6</FONT>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Approve Price Waterhouse and Chaturvedi &amp; Shah as Joint</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>Mgmt</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left><FONT face=sans-serif size=1>For</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR>
+<TR vAlign=bottom>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left colSpan=2><FONT face=sans-serif size=1>Auditors and Authorize Board to Fix Their Remuneration</FONT>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD>
+     <TD align=left>&nbsp;</TD></TR></TABLE><BR>

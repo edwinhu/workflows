@@ -1,0 +1,76 @@
+CONFORMED PERIOD OF REPORT:	20040630
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PENN STREET FUND INC
+		CENTRAL INDEX KEY:			0000948666
+<DIV><font size="1">Form N-PX Sector<br>
+  7/1/03 through 6/30/04<br>
+  <BR>
+  </font>
+  <DIV align=left>
+    <TABLE width="100%" border=0 cellPadding=0 cellSpacing=2>
+      <TR>
+        <TD  vAlign=top align=middle> <div align="center"><FONT size="1"><STRONG>Issuer</STRONG></FONT></div></TD>
+        <TD  vAlign=top align=middle> <div align="center"><FONT size="1"><STRONG>Ticker</STRONG></FONT></div></TD>
+        <TD  vAlign=top align=middle> <div align="center"><FONT size="1"><STRONG>Cusip</STRONG></FONT></div></TD>
+        <TD  vAlign=top align=middle> <div align="center"><FONT size="1"><STRONG>Meeting
+            Date</STRONG></FONT></div></TD>
+        <TD  vAlign=top align=middle> <div align="center"><FONT size="1"><STRONG>Description
+            of the Matter Voted On</STRONG></FONT></div></TD>
+        <TD  vAlign=top align=center> <div align="center"><FONT size="1"><STRONG>Proposed
+            by (Issuer/MGMT or security holder)</STRONG></FONT></div></TD>
+        <TD  vAlign=top align=middle> <div align="center"><FONT size="1"><STRONG>Was
+            the vote casted?(yes or no)</STRONG></FONT></div></TD>
+        <TD  vAlign=top align=middle> <div align="center"><FONT size="1"><STRONG>Vote<br>
+            (For, Against or Abstain)<br>
+            (For or Withold re: election of directors)</STRONG></FONT></div></TD>
+        <TD  vAlign=top align=middle> <div align="center"><FONT size="1"><STRONG>Was
+            Vote For or Against Management?</STRONG></FONT></div></TD>
+      </TR>
+      <TR>
+        <TD colspan="9" align=middle vAlign=top> <hr align="center" size="1" noshade></TD>
+      </TR>
+      <TR>
+        <TD vAlign=top align=left><div align="center"></div></TD>
+        <TD vAlign=top align=left><div align="center"></div></TD>
+        <TD vAlign=top align=left><div align="center"></div></TD>
+        <TD vAlign=top align=left><div align="center"></div></TD>
+        <TD vAlign=top align=left><div align="left"></div></TD>
+        <TD vAlign=top align=center><div align="center"></div></TD>
+        <TD vAlign=top align=left><div align="center"></div></TD>
+        <TD vAlign=top align=left><div align="center"></div></TD>
+        <TD vAlign=top align=left><div align="center"></div></TD>
+      </TR>
+      <TR>
+        <TD vAlign=top align=left> <div align="center"><FONT size="1">Lear Corporation</FONT></div></TD>
+        <TD vAlign=top align=left> <div align="center"><FONT size="1">LEA</FONT></div></TD>
+        <TD vAlign=top align=left> <div align="center"><FONT size="1">521865105</FONT></div></TD>
+        <TD vAlign=top align=left> <div align="center"><FONT size="1">05/13/04</FONT></div></TD>
+        <TD vAlign=top align=left> <div align="left"><FONT size="1">Director</FONT></div></TD>
+        <TD vAlign=top align=center> <div align="center"><FONT size="1">Management</FONT></div></TD>
+        <TD vAlign=top align=left> <div align="center"><FONT size="1">No</FONT></div></TD>
+        <TD vAlign=top align=left> <div align="center"><FONT size="1">Not Voted</FONT></div></TD>
+        <TD vAlign=top align=left> <div align="center"><FONT size="1">Not Voted</FONT></div></TD>
+      </TR>
+      <TR>
+        <TD vAlign=top align=left> <div align="center"><FONT size="1">Lear Corporation</FONT></div></TD>
+        <TD vAlign=top align=left> <div align="center"><FONT size="1">LEA</FONT></div></TD>
+        <TD vAlign=top align=left> <div align="center"><FONT size="1">521865105</FONT></div></TD>
+        <TD vAlign=top align=left> <div align="center"><FONT size="1">05/13/04</FONT></div></TD>
+        <TD vAlign=top align=left> <div align="left"><FONT size="1">Ratification
+            of appointment of Ernst &amp; Young LLP as independent auditors </FONT></div></TD>
+        <TD vAlign=top align=center> <div align="center"><FONT size="1">Management</FONT></div></TD>
+        <TD vAlign=top align=left> <div align="center"><FONT size="1">No</FONT></div></TD>
+        <TD vAlign=top align=left> <div align="center"><FONT size="1">Not Voted</FONT></div></TD>
+        <TD vAlign=top align=left> <div align="center"><FONT size="1">Not Voted</FONT></div></TD>
+      </TR>
+      <TR>
+        <TD vAlign=top align=left> <div align="center"><FONT size="1">Lear Corporation</FONT></div></TD>
+        <TD vAlign=top align=left> <div align="center"><FONT size="1">LEA</FONT></div></TD>
+        <TD vAlign=top align=left> <div align="center"><FONT size="1">521865105</FONT></div></TD>
+        <TD vAlign=top align=left> <div align="center"><FONT size="1">05/13/04</FONT></div></TD>
+        <TD vAlign=top align=left> <div align="left"><FONT size="1">Stockholder
+            Proposal - Shareholder Rights Plan</FONT></div></TD>
+        <TD vAlign=top align=center> <div align="center"><FONT size="1">Shareholder</FONT></div></TD>
+        <TD vAlign=top align=left> <div align="center"><FONT size="1">No</FONT></div></TD>
+        <TD vAlign=top align=left> <div align="center"><FONT size="1">Not Voted</FONT></div></TD>
+        <TD vAlign=top align=left> <div align="center"><FONT size="1">Not Voted</FONT></div></TD>

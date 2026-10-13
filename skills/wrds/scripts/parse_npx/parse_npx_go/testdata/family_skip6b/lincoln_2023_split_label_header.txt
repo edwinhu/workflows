@@ -1,0 +1,81 @@
+<SEC-DOCUMENT>0001193125-23-221492.txt : 20230825
+<SEC-HEADER>0001193125-23-221492.hdr.sgml : 20230825
+<ACCEPTANCE-DATETIME>20230825161108
+ACCESSION NUMBER:		0001193125-23-221492
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20230630
+FILED AS OF DATE:		20230825
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			LINCOLN VARIABLE INSURANCE PRODUCTS TRUST
+		CENTRAL INDEX KEY:			0000914036
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000914036
+<SERIES-ID>S000042336
+<SERIES-NAME>LVIP American Century Select Mid Cap Managed Volatility Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000914036
+<SERIES-ID>S000042337
+<SERIES-NAME>LVIP ClearBridge Franklin Select Large Cap Managed Volatility Fund
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>d532878dnpx.txt
+<DESCRIPTION>LINCOLN VARIABLE INSURANCE PRODUCTS TRUST
+<TEXT>
+LVIP American Century Select Mid Cap Managed Volatility Fund
+
+<TABLE>
+<CAPTION>
+
+
+                                                                                           Who Proposed
+                          Exchange                                                           Matter:
+Issuer of                 Ticker               Shareholder     Summary of Matter Voted      Issuer /        Whether Fund
+Portfolio Security        Symbol     CUSIP #   Meeting Date               On               Shareholder   Cast Vote on Matter
+------------------        --------  ---------- ------------  ----------------------------- ------------  -------------------
+<S>                       <C>       <C>        <C>           <C>                           <C>           <C>
+Chewy, Inc.                CHWY     16679L109   14-Jul-22    Elect Director James Kim      Management           Yes
+Chewy, Inc.                CHWY     16679L109   14-Jul-22    Elect Director David Leland   Management           Yes
+Chewy, Inc.                CHWY     16679L109   14-Jul-22    Elect Director Lisa Sibenac   Management           Yes
+Chewy, Inc.                CHWY     16679L109   14-Jul-22    Elect Director Sumit Singh    Management           Yes
+Chewy, Inc.                                                  Ratify Deloitte & Touche LLP
+                           CHWY     16679L109   14-Jul-22    as Auditors                   Management           Yes
+Chewy, Inc.                                                  Advisory Vote to Ratify
+                                                             Named Executive Officers'
+                           CHWY     16679L109   14-Jul-22    Compensation                  Management           Yes
+Chewy, Inc.                CHWY     16679L109   14-Jul-22    Approve Omnibus Stock Plan    Management           Yes
+</TABLE>
+<TABLE>
+<CAPTION>
+                          Fund's Vote For or
+                          Against Proposal, or
+                            Abstain; For or
+                          Withhold Regarding
+Issuer of                     Election of       Vote Against
+Portfolio Security             Directors        Management
+------------------        --------------------  ------------
+<S>                       <C>                   <C>
+Chewy, Inc.                    Withhold             Yes
+Chewy, Inc.                    Withhold             Yes
+Chewy, Inc.                    Withhold             Yes
+Chewy, Inc.                    Withhold             Yes
+Chewy, Inc.
+                               For                  No
+Chewy, Inc.
+
+                               For                  No
+Chewy, Inc.                    For                  No
+</TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

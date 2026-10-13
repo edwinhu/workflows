@@ -1,0 +1,155 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ SQuUYq43BOVGFXuuqvlx9Q0aEp6wn5Teqtcct17TbOeOEKGWJ4rzksukty/44/ue
+ xXXDyg1mez6IzYXqjCnQ2g==
+
+<SEC-DOCUMENT>0000950124-04-004152.txt : 20040902
+<SEC-HEADER>0000950124-04-004152.hdr.sgml : 20040902
+<ACCEPTANCE-DATETIME>20040902144406
+ACCESSION NUMBER:		0000950124-04-004152
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040902
+DATE AS OF CHANGE:		20040902
+EFFECTIVENESS DATE:		20040902
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SELECT ASSET FUND III
+		CENTRAL INDEX KEY:			0001122481
+		IRS NUMBER:				311727803
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-10081
+		FILM NUMBER:		041013548
+
+	BUSINESS ADDRESS:	
+		STREET 1:		C/O COMERICA BANK & TRUST NATIONAL ASSOC
+		STREET 2:		411 W LAFAYETTE BLVD MAIL CODE 3460
+		CITY:			DETROIT
+		STATE:			MI
+		ZIP:			48225
+		BUSINESS PHONE:		48226
+</SEC-HEADER>
+Date of reporting period: July 1, 2003 to June 30, 2004
+                         ------------------------------
+
+         Form N-PX is to be used by a registered management investment company,
+other than a small business investment company registered on Form N-5 (Sections
+239.24 and 274.5 of this chapter), to file reports with the Commission, not
+later than August 31 of each year, containing the registrant's proxy voting
+record for the most recent twelve-month period ended June 30, pursuant to
+section 30 of the Investment Company Act of 1940 and rule 30b1-4 thereunder
+(17 CFR 270.30b1-4). The Commission may use the information provided on Form
+N-PX in its regulatory, disclosure review, inspection, and policymaking roles.
+
+         A registrant is required to disclose the information specified by Form
+ N-PX, and the Commission will make this information public. A registrant is not
+ required to respond to the collection of information contained in Form N-PX
+ unless the Form displays a currently valid Office of Management and Budget
+ ("OMB") control number. Please direct comments concerning the accuracy of the
+ information collection burden estimate and any suggestions for reducing the
+ burden to the Secretary, Securities and Exchange Commission, 450 Fifth Street,
+ NW, Washington, DC 20549-0609. The OMB has reviewed this collection of
+ information under the clearance requirements of 44 U.S.C. Section 3507.
+
+Item 1. Proxy Voting Record
+
+
+ADC Telecommunications, Inc.
+<TABLE>
+<S><C>
+
+Ticker:           ADCT              Cusip:            000886101
+Meeting Date:     Mar 02 2004       MeetingType:      Annual
+
+Record Date:      Jan 07 2004
+
+#            Proposal                                              Mgt Rec         Vote Cast       Sponsor
+
+1.1          Elect  Director Robert Annunziata                       For             For           Management
+
+1.2          Elect  Director John J. Boyle III                       For             For           Management
+
+1.3          Elect  Director Larry W. Wangberg                       For             For           Management
+
+1.4          Elect  Director Robert E. Switz                         For             For           Management
+
+2            Amend Omnibus Stock Plan                                For             For           Management
+
+3            Increase Authorized Common Stock                        For             For           Management
+
+4            Ratify Auditors                                         For             For           Management
+
+
+AFLAC Incorporated
+
+Ticker:           AFL               Cusip:            001055102
+Meeting Date:     May 03 2004       MeetingType:      Annual
+Record Date:      Feb 25 2004
+
+
+#            Proposal                                              Mgt Rec         Vote Cast       Sponsor
+1.1          Elect  Director Daniel P. Amos                          For             For           Management
+
+1.10         Elect  Director Charles B. Knapp                        For             For           Management
+
+1.11         Elect  Director Hidefumi Matsui                         For             For           Management
+
+1.12         Elect  Director Nobuhiro Mori                           For             For           Management
+
+1.13         Elect  Director E. Stephen Purdom, M.D.                 For             For           Management
+
+1.14         Elect  Director Barbara K. Rimer, Ph.D.                 For             For           Management
+
+1.15         Elect  Director Marvin R. Schuster                      For             For           Management
+
+1.16         Elect  Director Glenn Vaughn, Jr.                       For             For           Management
+
+1.17         Elect  Director Robert L. Wright                        For             For           Management
+
+1.2          Elect  Director John Shelby Amos II                     For             For           Management
+
+1.3          Elect  Director Michael H. Armacost                     For           Withhold        Management
+
+1.4          Elect  Director Kriss Cloninger III                     For             For           Management
+
+1.5          Elect  Director Joe Frank Harris                        For             For           Management
+
+1.6          Elect  Director Elizabeth J. Hudson                     For             For           Management
+
+1.7          Elect  Director Kenneth S. Janke, Sr.                   For             For           Management
+
+1.8          Elect  Director Douglas W. Johnson                      For             For           Management
+
+1.9          Elect  Director Robert B. Johnson                       For             For           Management
+
+2            Approve Omnibus Stock Plan                              For             For           Management
+
+3            Ratify Auditors                                         For             For           Management
+
+
+
+
+The AES Corp.
+
+Ticker:           AES               Cusip:            00130H105
+Meeting Date:     Apr 28 2004       MeetingType:      Annual
+
+Record Date:      Mar 03 2004
+
+#            Proposal                                              Mgt Rec         Vote Cast       Sponsor
+
+1.1          Elect  Director Richard Darman                          For             For           Management
+

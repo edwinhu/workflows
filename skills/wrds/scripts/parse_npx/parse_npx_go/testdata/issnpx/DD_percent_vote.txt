@@ -1,0 +1,10 @@
+Ticker:       IMCDX          Security ID:  449812304
+Meeting Date: MAY 13, 2013   Meeting Type: Special
+Record Date:  FEB 12, 2013
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Approve Investment Advisory Agreement   For       F=85.71%     Management
+                                                        A=4.83%
+                                                        AB=9.46%
+3     Approve Sub-Advisory Agreement          For       F=83.95%     Management
+                                                        A=6.04%

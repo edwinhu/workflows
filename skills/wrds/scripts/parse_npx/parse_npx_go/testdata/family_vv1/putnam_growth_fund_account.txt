@@ -1,0 +1,40 @@
+CONFORMED PERIOD OF REPORT:	20040630
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PUTNAM FUNDS TRUST
+		CENTRAL INDEX KEY:			0001005942
+Account Number: Putnam Small Cap Growth Fund
+Date of Fiscal year-end: 6/30
+
+
+<TABLE>
+<CAPTION>
+
+ISSUER NAME                                                 TICKER   CUSIP      MTG DATE       MTG TYPE
+                                                                                Proposal Type  Voted?     Vote   For/Agnst Mgmt
+- -------------------------------------------------------------------------------------------------------------------------------
+<S>    <C>                                                  <C>      <C>        <C>            <C>        <C>    <C>
+
+3D Systems Corp.                                            TDSC     88554D205  8/26/03        Annual
+1.10   Elect Director Richard C. Spalding                                       MGMT           YES        FOR    FOR
+       Elect Director Richard C. Spalding
+1.20   Elect Director Jim D. Kever                                              MGMT           YES        AGNST  AGNST
+       Elect Director Jim D. Kever
+<CAPTION>
+
+Account Number: Putnam Growth Fund
+Date of Fiscal year-end: 4/30
+
+ISSUER NAME                                                 TICKER   CUSIP      MTG DATE       MTG TYPE
+                                                                                Proposal Type  Voted?     Vote   For/Agnst Mgmt
+<S>    <C>                                                  <C>      <C>        <C>            <C>        <C>    <C>
+
+3M CO                                                       MMM      88579Y101  5/11/04        Annual
+1.10   Elect Director Edward A. Brennan                                         MGMT           YES        FOR    FOR
+       Elect Director Edward A. Brennan
+1.20   Elect Director Michael L. Eskew                                          MGMT           YES        FOR    FOR
+       Elect Director Michael L. Eskew
+1.30   Elect Director W. James McNerney, Jr.                                    MGMT           YES        FOR    FOR
+       Elect Director W. James McNerney, Jr.
+1.40   Elect Director Kevin W. Sharer                                           MGMT           YES        FOR    FOR
+       Elect Director Kevin W. Sharer
+2.00   Ratify Auditors                                                          MGMT           YES        FOR    FOR

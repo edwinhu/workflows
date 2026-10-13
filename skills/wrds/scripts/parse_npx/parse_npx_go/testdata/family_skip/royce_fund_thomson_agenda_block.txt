@@ -1,0 +1,37 @@
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			ROYCE FUND
+		CENTRAL INDEX KEY:			0000709364
+		IRS NUMBER:				133139046
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-03599
+		FILM NUMBER:		041003583
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>rf5u1_0000709364.txt
+<DESCRIPTION>FORM N-PX
+<TEXT>
+<PAGE>
+
+<TABLE>
+<S>                                                                  <C>         <C>        <C>
+PENNSYLVANIA MUTUAL FUND                                                                     ROYCE FUND
+
+- -------------------------------------------------------------------------------------------------------
+AAON, INC.                                                                    Agenda: 932150915
+     CUSIP: 000360206                         Meeting Type: Annual
+    Ticker: AAON                              Meeting Date: 5/25/2004           ISIN:
+                                                                                            For/Against
+Proposal                                                             Type        Vote        Management
+- -------------------------------------------------------------------------------------------------------
+01     THOMAS E. NAUGLE                                               Mgmt          For           For
+       JERRY E. RYAN                                                  Mgmt          For           For
+</TABLE>

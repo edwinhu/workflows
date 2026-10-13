@@ -1,0 +1,55 @@
+
+<TABLE>
+<CAPTION>
+COMPANY NAME         TICKER             SECURITY ID ON      MEETING DATE        MEETING TYPE
+                                        BALLOT
+<S>                  <C>                <C>                 <C>                 <C>
+Analog Devices, Inc.    ADI             032654105           20-Jul-09           Special
+
+                    ITEM NUMBER         PROPOSAL CODE       PROPONENT           MANAGEMENT          VOTE INSTRUCTION
+                                        DESCRIPTION                             RECOMMENDATION
+                          1             Approve Repricing   Management              For                 For
+                                        of Options
+
+
+COMPANY NAME         TICKER             SECURITY ID ON      MEETING DATE        MEETING TYPE
+                                        BALLOT
+Citigroup Inc.            C             172967101           24-Jul-09           Written Consent
+
+                    ITEM NUMBER         PROPOSAL CODE       PROPONENT           MANAGEMENT          VOTE INSTRUCTION
+                                        DESCRIPTION                             RECOMMENDATION
+                          1             Amend               Management              For                 For
+                                        Art/Bylaws/Chartr
+                                        Non-Routine
+                          2             Amend               Management              For                 For
+                                        Art/Bylaws/Chartr
+                                        Non-Routine
+                          3             Amend               Management              For             Against
+                                        Art/Bylaws/Chartr
+                                        Non-Routine
+                          4             Increase            Management              For             Against
+                                        Authorized
+                                        Preferred Stock
+
+
+COMPANY NAME         TICKER             SECURITY ID ON      MEETING DATE        MEETING TYPE
+                                        BALLOT
+Medtronic, Inc.         MDT             585055106           27-Aug-09            Annual
+
+                    ITEM NUMBER         PROPOSAL CODE       PROPONENT           MANAGEMENT          VOTE INSTRUCTION
+                                        DESCRIPTION                             RECOMMENDATION
+                        1.1             Elect Directors     Management              For                 For
+                        1.2             Elect Directors     Management              For                 For
+                        1.3             Elect Directors     Management              For             Withhold
+                        1.4             Elect Directors     Management              For             Withhold
+                        1.5             Elect Directors     Management              For                 For
+                        1.6             Elect Directors     Management              For                 For
+                        1.7             Elect Directors     Management              For             Withhold
+                        1.8             Elect Directors     Management              For             Withhold
+                          2             Ratify Auditors     Management              For             Against
+                          3             Amend Employee      Management              For                 For
+                                        Stock Purchase Plan
+                          4             Amend Omnibus       Management              For             Against
+                                        Compensation Plan
+
+

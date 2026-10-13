@@ -2,9 +2,11 @@ package main
 
 import (
 	"bufio"
+	"encoding/base64"
 	"encoding/xml"
 	"fmt"
 	"io"
+	"sort"
 	"strings"
 	"unicode/utf8"
 )
@@ -485,12 +487,23 @@ func (rec *proxyRecord) addManager(d *xml.Decoder, se xml.StartElement) error {
 	return nil
 }
 
+// sortedKeys returns a map's keys in order, so a stamp is the same string on
+// every run.
+func sortedKeys(m map[string][]string) []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
 // emitRows hands one VoteRow per <voteRecord> to emit, each carrying the whole
 // enclosing <proxyTable>. The record-level fields are only complete once the
 // element has closed — voteManager, voteSeries and voteOtherInfo follow the
 // votes in real filings — so the votes of one proxyTable, and only those, are
 // held until then.
-func (rec *proxyRecord) emitRows(meta *FilingMeta, classes map[string][]string, emit func(VoteRow) error) (int, error) {
+func (rec *proxyRecord) emitRows(meta *FilingMeta, classes map[string][]string, reported map[string]bool, emit func(VoteRow) error) (int, error) {
 	base := VoteRow{
 		FilePath:             meta.FilePath,
 		SeriesID:             rec.VoteSeries,
@@ -518,6 +531,22 @@ func (rec *proxyRecord) emitRows(meta *FilingMeta, classes map[string][]string, 
 		if ids := classes[rec.VoteSeries]; len(ids) > 0 {
 			base.ClassIDs = strings.Join(ids, MultiValueSep)
 		}
+	} else if len(classes) >= 2 || len(reported) == 1 {
+		// The form omits <voteSeries> when the vote applies to every series
+		// the report covers (Natixis Funds Trust IV 2024: 52,482 of 59,609
+		// proxy tables; 435,489 rows in 90 multi-series XML filings had no
+		// series on run71). Those rows are every series of the report,
+		// joined as the text layouts' consolidated filings are and fanned
+		// out at conversion. A report whose seriesPage names exactly ONE series
+		// is the same evidence in its simplest form (Forester Funds 2025:
+		// <seriesCount>1</seriesCount> over S000004887, while the SGML header
+		// declares two series so the chassis's single-series stamp never
+		// fires); all 564 rows left series_id blank.
+		ids := sortedKeys(classes)
+		if len(classes) < 2 {
+			ids = sortedBoolKeys(reported)
+		}
+		base.SeriesID = strings.Join(ids, MultiValueSep)
 	}
 
 	// An agenda item with no <voteRecord> is still an agenda item: the fund held
@@ -552,19 +581,57 @@ func (rec *proxyRecord) emitRows(meta *FilingMeta, classes map[string][]string, 
 // Payload parsers
 // ---------------------------------------------------------------------------
 
-// parsePrimaryDoc reads periodOfReport and the seriesId-to-classId registry.
-// The elements are matched wherever they sit, because filers nest seriesClass
-// under headerData in some schema revisions and flat in others.
-func parsePrimaryDoc(r io.Reader, meta *FilingMeta, classes map[string][]string) error {
+// noticeReportTypes are the two reportType declarations that mark a filing as a
+// notice report: the filer states it has no votes of its own to report, so the
+// filing carries primary_doc.xml and no vote table by design. The set is closed
+// and matched exactly. Over the 90,661-filing corpus the only other spellings
+// seen on vote-table-less filings are FUND VOTING REPORT and INSTITUTIONAL
+// MANAGER COMBINATION REPORT, both of which promise a vote table and so remain
+// errors when one is absent.
+var noticeReportTypes = map[string]bool{
+	"FUND NOTICE REPORT":                  true,
+	"INSTITUTIONAL MANAGER NOTICE REPORT": true,
+}
+
+// maxReportTypeLen bounds the raw reportType value this parser will normalise.
+// The longest declaration that really occurs is "INSTITUTIONAL MANAGER
+// COMBINATION REPORT", 40 bytes; the headroom covers the surrounding and
+// internal whitespace filers wrap the element with. The bound is semantic, not
+// merely defensive: a reportType orders of magnitude longer than any real one is
+// not a report type, and must not be read as one.
+const maxReportTypeLen = 128
+
+// isNoticeReportType decides whether a raw reportType value is one of the two
+// notice declarations, tolerating the case and internal whitespace filers vary.
+//
+// The length is checked FIRST, on the raw string, because normalisation is the
+// cost being guarded: strings.Fields allocates a slice, Join a copy and ToUpper
+// another, several times the size of a value a filer controls end to end. An
+// oversized value is rejected on sight, so nothing proportional to it is ever
+// allocated -- including one whose prefix happens to be a valid spelling.
+func isNoticeReportType(v string) bool {
+	if len(v) > maxReportTypeLen {
+		return false
+	}
+	return noticeReportTypes[strings.ToUpper(strings.Join(strings.Fields(v), " "))]
+}
+
+// parsePrimaryDoc reads periodOfReport, the seriesId-to-classId registry, and
+// reportType, reporting whether the filing declares itself a notice report. The
+// elements are matched wherever they sit, because filers nest seriesClass under
+// headerData in some schema revisions and flat in others; the SEC schema places
+// reportType at formData/coverPage/reportInfo/reportType.
+func parsePrimaryDoc(r io.Reader, meta *FilingMeta, classes map[string][]string, reported map[string]bool) (bool, error) {
 	d := newXMLDecoder(r)
 	series := ""
+	isNotice := false
 	for {
 		tok, err := d.Token()
 		if err != nil {
 			if err == io.EOF {
-				return nil
+				return isNotice, nil
 			}
-			return err
+			return isNotice, err
 		}
 		se, ok := tok.(xml.StartElement)
 		if !ok {
@@ -574,18 +641,33 @@ func parsePrimaryDoc(r io.Reader, meta *FilingMeta, classes map[string][]string)
 		case "periodOfReport":
 			v, err := elemText(d, se)
 			if err != nil {
-				return err
+				return isNotice, err
 			}
 			if v != "" {
 				meta.PeriodOfReport = xmlDate(v)
 			}
-		case "seriesId":
+		case "reportType":
 			v, err := elemText(d, se)
 			if err != nil {
-				return err
+				return isNotice, err
+			}
+			if isNoticeReportType(v) {
+				isNotice = true
+			}
+		// `idOfSeries` is the seriesPage spelling of the same registry
+		// (seriesDetails/seriesReports), used by the 2024 vintage. It carries no
+		// class contracts, so the value stays nil exactly as a seriesId without
+		// a classId beneath it does.
+		case "seriesId", "idOfSeries":
+			v, err := elemText(d, se)
+			if err != nil {
+				return isNotice, err
 			}
 			if v != "" {
 				series = v
+				if se.Name.Local == "idOfSeries" {
+					reported[series] = true
+				}
 				if _, seen := classes[series]; !seen {
 					classes[series] = nil
 				}
@@ -593,7 +675,7 @@ func parsePrimaryDoc(r io.Reader, meta *FilingMeta, classes map[string][]string)
 		case "classId":
 			v, err := elemText(d, se)
 			if err != nil {
-				return err
+				return isNotice, err
 			}
 			if series != "" && v != "" {
 				classes[series] = append(classes[series], v)
@@ -602,28 +684,259 @@ func parsePrimaryDoc(r io.Reader, meta *FilingMeta, classes map[string][]string)
 	}
 }
 
+// siblingKey identifies the agenda items of one meeting: an issuer name and a
+// meeting date already normalised by xmlDate, so that 05/23/2024 and 5/23/2024
+// are the same meeting rather than two.
+type siblingKey struct {
+	issuer string
+	date   string
+}
+
+// xmlSiblingIssuer normalises only the lookup key, not the printed issuer name.
+// Keep the full name and fold only terminal corporate suffixes, never prefixes.
+func xmlSiblingIssuer(name string) string {
+	name = strings.TrimRight(strings.ToUpper(strings.TrimSpace(name)), ".,;:!?")
+	if i := strings.LastIndexByte(name, ' '); i >= 0 {
+		switch name[i+1:] {
+		case "CO":
+			name = name[:i+1] + "COMPANY"
+		case "INC":
+			name = name[:i+1] + "CORPORATION"
+		}
+	}
+	return name
+}
+
+// siblingIDs is the set of distinct identifiers the votes of one meeting print.
+// Only sets, not counts: a donor value is usable exactly when the meeting prints
+// one of it, and repeats of the same value are one donor.
+type siblingIDs struct {
+	cusips map[string]struct{}
+	isins  map[string]struct{}
+}
+
+func (s *siblingIDs) add(cusip, isin string) {
+	if s.cusips == nil {
+		s.cusips = map[string]struct{}{}
+		s.isins = map[string]struct{}{}
+	}
+	s.cusips[cusip] = struct{}{}
+	// The empty isin is a member like any other: a donor printing none
+	// disagrees with a donor printing one, so the set stays larger than one and
+	// nothing is borrowed. Skipping it would let a single isin among silent
+	// donors pass for agreement.
+	s.isins[isin] = struct{}{}
+}
+
+// xmlIsCUSIPShape reads the nine-character alphanumeric body of a CUSIP.
+func xmlIsCUSIPShape(s string) bool {
+	if len(s) != 9 {
+		return false
+	}
+	for i := 0; i < 9; i++ {
+		c := s[i]
+		if !(c >= '0' && c <= '9') && !(c >= 'A' && c <= 'Z') && !(c >= 'a' && c <= 'z') {
+			return false
+		}
+	}
+	return true
+}
+
+// xmlIsISINShape reads the twelve characters of an ISIN: a two-letter country
+// code, a nine-character national number, and a numeric check digit.
+func xmlIsISINShape(s string) bool {
+	if len(s) != 12 {
+		return false
+	}
+	for i := 0; i < 2; i++ {
+		c := s[i]
+		if !(c >= 'A' && c <= 'Z') && !(c >= 'a' && c <= 'z') {
+			return false
+		}
+	}
+	if !xmlIsCUSIPShape(s[2:11]) {
+		return false
+	}
+	return s[11] >= '0' && s[11] <= '9'
+}
+
+// unrotateIdentity repairs an identity block printed one element too far right.
+// Symmetry Panoramic Trust 2024 (0001135428-24-000106) prints a sibling series'
+// copy of an agenda item with the meeting date fallen off the front: the
+// spreadsheet serial for the date lands in cusip, the CUSIP in isin and the ISIN
+// in figi, and meetingDate is empty (7,951 of 35,019 rows). All four conditions
+// must hold together — an empty date alone, or a five-digit cusip alone, is an
+// ordinary shape and is left exactly as printed.
+func (rec *proxyRecord) unrotateIdentity() {
+	if rec.MeetingDate != "" || rec.FIGI == "" {
+		return
+	}
+	if !xmlIsCUSIPShape(rec.ISIN) || !xmlIsISINShape(rec.FIGI) {
+		return
+	}
+	date := htmlExcelSerialDate(rec.CUSIP)
+	if date == "" {
+		return
+	}
+	rec.MeetingDate = date
+	rec.CUSIP = rec.ISIN
+	rec.ISIN = rec.FIGI
+	rec.FIGI = ""
+}
+
+// only returns the single member of set, or "" when the set is empty or holds
+// two or more.
+func only(set map[string]struct{}) string {
+	if len(set) != 1 {
+		return ""
+	}
+	for v := range set {
+		return v
+	}
+	return ""
+}
+
+// xmlContentReader is an io.Reader over one element's character data, taken
+// from a decoder already positioned just past that element's start tag. It
+// reports EOF at the matching end tag and leaves the decoder positioned past it.
+type xmlContentReader struct {
+	d     *xml.Decoder
+	name  xml.Name
+	buf   []byte
+	off   int
+	depth int
+	done  bool
+}
+
+func (c *xmlContentReader) Read(p []byte) (int, error) {
+	for c.off >= len(c.buf) {
+		if c.done {
+			return 0, io.EOF
+		}
+		tok, err := c.d.Token()
+		if err != nil {
+			c.done = true
+			return 0, io.EOF
+		}
+		switch t := tok.(type) {
+		case xml.CharData:
+			c.buf, c.off = append(c.buf[:0], t...), 0
+		case xml.StartElement:
+			c.depth++
+		case xml.EndElement:
+			if c.depth == 0 && t.Name == c.name {
+				c.done = true
+				return 0, io.EOF
+			}
+			c.depth--
+		}
+	}
+	n := copy(p, c.buf[c.off:])
+	c.off += n
+	return n, nil
+}
+
+// drain consumes whatever the caller left unread, so the enclosing walk resumes
+// after the element rather than inside it.
+func (c *xmlContentReader) drain() {
+	var sink [4096]byte
+	for !c.done {
+		if _, err := c.Read(sink[:]); err != nil {
+			return
+		}
+	}
+}
+
 // parseVoteTable streams <proxyTable> elements, decoding and releasing each one
 // before the next is read.
-func parseVoteTable(r io.Reader, meta *FilingMeta, classes map[string][]string, emit func(VoteRow) error) (int, error) {
+//
+// One exception to the stream-and-release rule: a vote printing no cusip, no
+// isin and no figi at all is held back, because a sibling later in the same
+// document may carry the identifier for the same issuer and meeting (Northern
+// Lights Fund Trust II 2024 prints all three empty on 6,096 of 9,474 votes whose
+// siblings identify the security). Held rows are emitted in their original order
+// once the section closes. Only the id-less share is buffered, so the cost is
+// bounded by how many votes arrive without an identifier, not by filing size,
+// and a filing where every vote is identified buffers nothing.
+func parseVoteTable(r io.Reader, meta *FilingMeta, classes map[string][]string, reported map[string]bool, emit func(VoteRow) error) (int, error) {
 	d := newXMLDecoder(r)
 	total := 0
+
+	donors := map[siblingKey]*siblingIDs{}
+	var held []proxyRecord
+
+	flush := func() (int, error) {
+		n := 0
+		for i := range held {
+			rec := &held[i]
+			if ids := donors[siblingKey{xmlSiblingIssuer(rec.IssuerName), rec.MeetingDate}]; ids != nil {
+				// A meeting whose votes disagree about the security offers no
+				// value to borrow: the row stays as printed rather than take a
+				// coin flip between two identifiers.
+				rec.CUSIP = only(ids.cusips)
+				if rec.CUSIP != "" {
+					rec.ISIN = only(ids.isins)
+				}
+			}
+			k, err := rec.emitRows(meta, classes, reported, emit)
+			n += k
+			if err != nil {
+				return n, err
+			}
+		}
+		return n, nil
+	}
+
 	for {
 		tok, err := d.Token()
 		if err != nil {
-			if err == io.EOF {
-				return total, nil
+			if err != io.EOF {
+				return total, err
 			}
-			return total, err
+			n, ferr := flush()
+			return total + n, ferr
 		}
 		se, ok := tok.(xml.StartElement)
-		if !ok || se.Name.Local != "proxyTable" {
+		if !ok {
+			continue
+		}
+		if se.Name.Local == "contents" {
+			// Some filer agents ship the vote table base64-encoded inside a
+			// <com:contents> element of a nested edgarSubmission rather than as
+			// the payload itself (Vanguard Personalized Indexing Management
+			// 2024, 3,095 records). The encoded bytes are another
+			// proxyVoteTable, so the same walk reads them; streaming the
+			// element's character data through the base64 decoder keeps the
+			// stream-and-release property. A malformed embedded payload ends
+			// that nested walk without sinking the filing.
+			cr := &xmlContentReader{d: d, name: se.Name}
+			n, _ := parseVoteTable(base64.NewDecoder(base64.StdEncoding, cr), meta, classes, reported, emit)
+			total += n
+			cr.drain()
+			continue
+		}
+		if se.Name.Local != "proxyTable" {
 			continue
 		}
 		var rec proxyRecord
 		if err := rec.decode(d); err != nil {
 			return total, err
 		}
-		n, err := rec.emitRows(meta, classes, emit)
+		rec.unrotateIdentity()
+		if rec.CUSIP == "" && rec.ISIN == "" && rec.FIGI == "" {
+			held = append(held, rec)
+			continue
+		}
+		if rec.CUSIP != "" {
+			key := siblingKey{xmlSiblingIssuer(rec.IssuerName), rec.MeetingDate}
+			ids := donors[key]
+			if ids == nil {
+				ids = &siblingIDs{}
+				donors[key] = ids
+			}
+			ids.add(rec.CUSIP, rec.ISIN)
+		}
+		n, err := rec.emitRows(meta, classes, reported, emit)
 		total += n
 		if err != nil {
 			return total, err
@@ -646,16 +959,22 @@ const (
 // parseNPXXML streams the modern XML era off r, calling emit once per
 // <voteRecord>, and fills meta from primary_doc.xml. It returns the row count.
 //
-// A filing carrying no PROXY VOTING RECORD document is an error, not zero rows.
-// Zero-rows-and-nil is the manifest's encoding for a fund that genuinely had
-// nothing to vote; a modern filing whose vote table is absent, misnamed or
-// unreachable is a parser or feed failure, and collapsing the two would destroy
-// the one distinction the manifest exists to preserve.
+// A filing carrying no PROXY VOTING RECORD document is an error, not zero rows,
+// UNLESS its primary_doc.xml positively declares a notice report. Notice reports
+// carry no vote table by design — the N-PX analogue of 13F-NT — so they are the
+// one case where zero-rows-and-nil is correct. Zero-rows-and-nil is otherwise
+// the manifest's encoding for a fund that genuinely had nothing to vote; a
+// modern filing whose vote table is absent, misnamed or unreachable and which
+// declares no notice is a parser or feed failure, and collapsing the two would
+// destroy the one distinction the manifest exists to preserve. Detection is
+// positive only: the absence of a vote table never on its own means ok.
 func parseNPXXML(r io.Reader, meta *FilingMeta, emit func(VoteRow) error) (int, error) {
 	src := newLineSrc(r)
 	classes := map[string][]string{}
+	reported := map[string]bool{}
 	total := 0
 	sawVoteTable := false
+	isNotice := false
 
 	for {
 		docType, ok := nextDocument(src)
@@ -670,10 +989,12 @@ func parseNPXXML(r io.Reader, meta *FilingMeta, emit func(VoteRow) error) (int, 
 		case strings.Contains(up, docTypeVoteTable):
 			sawVoteTable = true
 			var n int
-			n, err = parseVoteTable(sec, meta, classes, emit)
+			n, err = parseVoteTable(sec, meta, classes, reported, emit)
 			total += n
 		case strings.HasPrefix(up, docTypePrimary):
-			err = parsePrimaryDoc(sec, meta, classes)
+			var notice bool
+			notice, err = parsePrimaryDoc(sec, meta, classes, reported)
+			isNotice = isNotice || notice
 		}
 
 		sec.drain()
@@ -685,7 +1006,7 @@ func parseNPXXML(r io.Reader, meta *FilingMeta, emit func(VoteRow) error) (int, 
 	if meta.ParseMode == "" || meta.ParseMode == "none" {
 		meta.ParseMode = "xml"
 	}
-	if !sawVoteTable {
+	if !sawVoteTable && !isNotice {
 		return total, fmt.Errorf("no <DOCUMENT> with <TYPE>%s found", docTypeVoteTable)
 	}
 	return total, nil
@@ -720,6 +1041,12 @@ func xmlDate(s string) string {
 	if len(parts) != 3 {
 		return ""
 	}
+	// `05-Jul-2023`: day, spelt month, year (Empower Advisory Group 2024 and
+	// its filer agent's siblings, 5,150 undated rows on r156).
+	if mon, ok := xmlMonths[strings.ToUpper(parts[1])]; ok {
+		parts[1] = mon
+		parts[0], parts[1] = parts[1], parts[0]
+	}
 	for _, p := range parts {
 		if p == "" || !allDigits(p) {
 			return ""
@@ -740,10 +1067,21 @@ func xmlDate(s string) string {
 			y = "19" + y
 		}
 	}
+	// `06/12/20244`, `10/10/20233`: a five-digit year with its last digit
+	// doubled (filer agent 0001580642's 2024 filings, 8,568 undated rows on
+	// r156). The first four digits must be a year a proxy season can carry.
+	if len(y) == 5 && y[:4] >= "1990" && y[:4] <= "2035" {
+		y = y[:4]
+	}
 	if len(y) != 4 || len(m) > 2 || len(dd) > 2 {
 		return ""
 	}
 	return y + pad2(m) + pad2(dd)
+}
+
+var xmlMonths = map[string]string{
+	"JAN": "01", "FEB": "02", "MAR": "03", "APR": "04", "MAY": "05", "JUN": "06",
+	"JUL": "07", "AUG": "08", "SEP": "09", "OCT": "10", "NOV": "11", "DEC": "12",
 }
 
 func allDigits(s string) bool {
@@ -760,4 +1098,14 @@ func pad2(s string) string {
 		return "0" + s
 	}
 	return s
+}
+
+// sortedBoolKeys is sortedKeys for a set.
+func sortedBoolKeys(m map[string]bool) []string {
+	out := make([]string, 0, len(m))
+	for k := range m {
+		out = append(out, k)
+	}
+	sort.Strings(out)
+	return out
 }

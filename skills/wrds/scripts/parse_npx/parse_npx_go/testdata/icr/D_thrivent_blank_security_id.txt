@@ -1,0 +1,44 @@
+
+07/01/2008 - 06/30/2009
+
+- ------------------------------------------------------------------------------------------------------------------
+
+Thrivent Equity Income Plus Portfolio
+
+Ticker              Security ID:                            Meeting Date               Meeting Status
+VTEQINV                                                     05/15/2009                 Voted
+Meeting Type        Country of Trade
+Special             United States
+
+Issue No.           Description                             Proponent     Mgmt Rec     Vote Cast    For/Agnst Mgmt
+1.1                 Elect Russell W. Swansen as             Mgmt          For          For          For
+                    Director
+1.2                 Elect F. Gregory Campbell as            Mgmt          For          For          For
+                    Director
+1.3                 Elect Herbert F. Eggerding, Jr. as      Mgmt          For          For          For
+                    Director
+1.4                 Elect Noel K. Estenson as Director      Mgmt          For          For          For
+1.5                 Elect Richard L. Gady as Director       Mgmt          For          For          For
+1.6                 Elect Richard A. Hauser as Director     Mgmt          For          For          For
+1.7                 Elect Paul R. Laubscher as Director     Mgmt          For          For          For
+1.8                 Elect Connie M. Levi as Director        Mgmt          For          For          For
+1.9                 Elect Douglas D. Sims as Director       Mgmt          For          For          For
+1.10                Elect Constance L. Souders as           Mgmt          For          For          For
+                    Director
+- ------------------------------------------------------------------------------------------------------------------
+
+3Par Inc.
+
+Ticker              Security ID:                            Meeting Date               Meeting Status
+PAR                 CUSIP 88580F109                         09/10/2008                 Voted
+Meeting Type        Country of Trade
+Annual              United States
+
+Issue No.           Description                             Proponent     Mgmt Rec     Vote Cast    For/Agnst Mgmt
+1.1                 Elect Director Kevin Fong               Mgmt          For          For          For
+1.2                 Elect Director Jeffrey A. Price         Mgmt          For          For          For
+1.3                 Elect Director Mark A. Siegel           Mgmt          For          For          For
+2                   Ratify Auditors                         Mgmt          For          For          For
+3                   Amend Omnibus Stock Plan                Mgmt          For          For          For
+
+- ------------------------------------------------------------------------------------------------------------------

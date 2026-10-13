@@ -1,0 +1,968 @@
+<SEC-DOCUMENT>0001398344-17-010475.txt : 20170817
+<SEC-HEADER>0001398344-17-010475.hdr.sgml : 20170817
+<ACCEPTANCE-DATETIME>20170817095908
+ACCESSION NUMBER:		0001398344-17-010475
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20170630
+FILED AS OF DATE:		20170817
+DATE AS OF CHANGE:		20170817
+EFFECTIVENESS DATE:		20170817
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			M FUND INC
+		CENTRAL INDEX KEY:			0000948258
+		IRS NUMBER:				000000000
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-09082
+		FILM NUMBER:		171037839
+
+	BUSINESS ADDRESS:	
+		STREET 1:		1125 NW COUCH STREET
+		STREET 2:		SUITE 900
+		CITY:			PORTLAND
+		STATE:			OR
+		ZIP:			97209
+		BUSINESS PHONE:		5032326960
+
+	MAIL ADDRESS:	
+		STREET 1:		1125 NW COUCH STREET
+		STREET 2:		SUITE 900
+		CITY:			PORTLAND
+		STATE:			OR
+		ZIP:			97209
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000948258
+<SERIES-ID>S000006151
+<SERIES-NAME>M International Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016958
+<CLASS-CONTRACT-NAME>M International Equity Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>MBEQX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000948258
+<SERIES-ID>S000006152
+<SERIES-NAME>M Large Cap Value Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016959
+<CLASS-CONTRACT-NAME>M Large Cap Value Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>MBOVX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000948258
+<SERIES-ID>S000006153
+<SERIES-NAME>M Capital Appreciation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016960
+<CLASS-CONTRACT-NAME>M Capital Appreciation Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>MFCPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000948258
+<SERIES-ID>S000006154
+<SERIES-NAME>M Large Cap Growth Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000016961
+<CLASS-CONTRACT-NAME>M Large Cap Growth Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>MTCGX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>fp0027471_npx.htm
+<TEXT>
+<html>
+<head>
+<table id="zea7df0be47904f9abe4b65552cbb5775" style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; WIDTH: 100%" cellspacing="0" cellpadding="4" border="0">
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Company Name</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Meeting Date</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">SEDOL</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Ticker</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">GREAT PORTLAND ESTATES PLC R.E.I.T., LONDON</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">07-Jul-2016</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">&#160;</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">BZ0XJR3</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">GPOR LN</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">&#160;</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">&#160;</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">&#160;</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">&#160;</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">&#160;</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Vote</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">MRV</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Item</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Proposal</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Proposed by Issuer or Security Holder</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">1</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RECEIVE AND ADOPT THE AUDITED FINANCIAL STATEMENTS TOGETHER WITH THE DIRECTORS' AND AUDITORS' REPORTS FOR THE YEAR ENDED 31 MARCH 2016</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">2</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO AUTHORISE THE PAYMENT OF A FINAL DIVIDEND FOR THE YEAR ENDED 31 MARCH 2016</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">3</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO APPROVE THE DIRECTORS' REMUNERATION REPORT</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">4</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RE-ELECT TOBY COURTAULD AS A DIRECTOR OF THE COMPANY</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">5</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RE-ELECT NICK SANDERSON AS A DIRECTOR OF THE COMPANY</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">6</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RE-ELECT NEIL THOMPSON AS A DIRECTOR OF THE COMPANY</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">7</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RE-ELECT MARTIN SCICLUNA AS A DIRECTOR OF THE COMPANY</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">8</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RE-ELECT ELIZABETH HOLDEN AS A DIRECTOR OF THE COMPANY</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">9</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RE-ELECT CHARLES PHILIPPS AS A DIRECTOR OF THE COMPANY</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">10</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RE-ELECT JONATHAN SHORT AS A DIRECTOR OF THE COMPANY</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">11</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO REAPPOINT DELOITTE LLP AS AUDITORS</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">12</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO AUTHORISE THE AUDIT COMMITTEE TO AGREE THE REMUNERATION OF THE AUDITORS</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">13</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RENEW THE DIRECTORS' AUTHORITY TO ALLOT SHARES</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">14</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RENEW THE DIRECTORS' LIMITED AUTHORITY TO ALLOT SHARES FOR CASH</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">15</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO GIVE THE DIRECTORS ADDITIONAL LIMITED AUTHORITY TO ALLOT SHARES FOR CASH IN CONNECTION WITH AN ACQUISITION ON SPECIFIED CAPITAL INVESTMENT, AND INCLUDING DEVELOPMENT AND/OR REFURBISHMENT EXPENDITURE</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">16</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RENEW THE AUTHORITY ENABLING THE COMPANY TO BUY ITS OWN SHARES</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">17</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO AUTHORISE THE CALLING OF GENERAL MEETINGS (OTHER THAN AN ANNUAL GENERAL MEETING) ON NOT LESS THAN 14 CLEAR DAYS' NOTICE</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Company Name</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Meeting Date</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">&#160;</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">SEDOL</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Ticker</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">BRITISH LAND CO PLC R.E.I.T., LONDON</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">19-Jul-2016</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">&#160;</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">0136701</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">BLND LN</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">&#160;</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">&#160;</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">&#160;</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">&#160;</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">&#160;</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Vote</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">MRV</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Item</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Proposal</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BORDER-BOTTOM: #000000 2px solid; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; FONT-WEIGHT: bold; TEXT-ALIGN: center; LINE-HEIGHT: 1.15">Proposed by Issuer or Security Holder</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">1</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RECEIVE THE ANNUAL REPORT AND ACCOUNTS FOR THE YEAR ENDED 31 MARCH 2016</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">2</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO APPROVE THE DIRECTORS REMUNERATION REPORT OTHER THAN THE REMUNERATION POLICY</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">3</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO APPROVE THE DIRECTORS REMUNERATION POLICY</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">4</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RE-ELECT AUBREY ADAMS AS A DIRECTOR</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">5</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RE-ELECT LUCINDA BELL AS A DIRECTOR</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">6</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RE-ELECT SIMON BORROWS AS A DIRECTOR</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">7</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RE-ELECT JOHN GILDERSLEEVE AS A DIRECTOR</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">8</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RE-ELECT LYNN GLADDEN AS A DIRECTOR</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">9</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RE-ELECT CHRIS GRIGG AS A DIRECTOR</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">10</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RE-ELECT WILLIAM JACKSON AS A DIRECTOR</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">11</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RE-ELECT CHARLES MAUDSLEY AS A DIRECTOR</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">12</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RE-ELECT TIM ROBERTS AS A DIRECTOR</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">13</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RE-ELECT TIM SCORE AS A DIRECTOR</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">14</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RE-ELECT LORD TURNBULL AS A DIRECTOR</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">15</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RE-ELECT LAURA WADE-GERY AS A DIRECTOR</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">16</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO RE-APPOINT PRICEWATERHOUSECOOPERS LLP AS THE AUDITOR OF THE COMPANY</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">17</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO AUTHORISE THE DIRECTORS TO AGREE THE AUDITORS REMUNERATION</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">18</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO AUTHORISE THE PAYMENT OF SCRIP DIVIDENDS</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">19</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO AUTHORISE THE COMPANY TO MAKE LIMITED POLITICAL DONATIONS AND POLITICAL EXPENDITURE OF NOT MORE THAN 20,000 POUNDS IN TOTAL</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">20</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO AUTHORISE AMENDMENTS TO THE LONG-TERM INCENTIVE PLAN</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">21</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO AUTHORISE THE DIRECTORS TO ALLOT SHARES UP TO A LIMITED AMOUNT</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">22</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO AUTHORISE THE DIRECTORS TO ALLOT SHARES AND SELL TREASURY SHARES FOR CASH, WITHOUT MAKING A PRE-EMPTIVE OFFER TO SHAREHOLDERS</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">23</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">AUTHORISE ISSUE OF EQUITY WITHOUT PRE-EMPTIVE RIGHTS</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">24</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO AUTHORISE THE COMPANY TO PURCHASE ITS OWN SHARES</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #ffffff">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+
+<tr>
+<td style="WIDTH: 14.99%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 14.33%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">For</div>
+</td>
+<td style="WIDTH: 7.09%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">25</div>
+</td>
+<td style="WIDTH: 47%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">TO AUTHORISE THE CALLING OF GENERAL MEETINGS NOT BEING AN ANNUAL GENERAL MEETING BY NOTICE OF NOT LESS THAN 14 CLEAR DAYS</div>
+</td>
+<td style="WIDTH: 16.58%; VERTICAL-ALIGN: bottom; BACKGROUND-COLOR: #dcdcdc">
+<div style="FONT-SIZE: 11pt; FONT-FAMILY: 'Times New Roman', Times, serif; COLOR: #000000; TEXT-ALIGN: left; LINE-HEIGHT: 1.15">Management</div>
+</td>
+</tr>
+

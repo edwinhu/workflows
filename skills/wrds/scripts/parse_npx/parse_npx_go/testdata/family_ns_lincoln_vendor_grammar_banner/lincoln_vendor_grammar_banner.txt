@@ -1,0 +1,224 @@
+<SEC-DOCUMENT>0001193125-22-231315.txt : 20220826
+<SEC-HEADER>0001193125-22-231315.hdr.sgml : 20220826
+<ACCEPTANCE-DATETIME>20220826161426
+ACCESSION NUMBER:		0001193125-22-231315
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20220630
+FILED AS OF DATE:		20220826
+DATE AS OF CHANGE:		20220826
+EFFECTIVENESS DATE:		20220826
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			LINCOLN VARIABLE INSURANCE PRODUCTS TRUST
+		CENTRAL INDEX KEY:			0000914036
+		IRS NUMBER:				521835648
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08090
+		FILM NUMBER:		221205330
+
+	BUSINESS ADDRESS:	
+		STREET 1:		1301 SOUTH HARRISON STREET
+		CITY:			FORT WAYNE
+		STATE:			IN
+		ZIP:			46802
+		BUSINESS PHONE:		260-455-2000
+
+	MAIL ADDRESS:	
+		STREET 1:		1301 SOUTH HARRISON STREET
+		CITY:			FORT WAYNE
+		STATE:			IN
+		ZIP:			46802
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	AGGRESSIVE GROWTH FUND /
+		DATE OF NAME CHANGE:	20031001
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	LINCOLN VARIABLE INSURANCE PRODUCTS TRUST
+		DATE OF NAME CHANGE:	20030910
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	LINCOLN NATIONAL AGGRESSIVE GROWTH FUND INC
+		DATE OF NAME CHANGE:	19931025
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000914036
+<SERIES-ID>S000015976
+<SERIES-NAME>LVIP Franklin Templeton Global Equity Managed Volatility Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000043867
+<CLASS-CONTRACT-NAME>Standard Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000043868
+<CLASS-CONTRACT-NAME>Service Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000914036
+<SERIES-ID>S000031867
+<SERIES-NAME>LVIP Dimensional U.S. Equity Managed Volatility Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099222
+<CLASS-CONTRACT-NAME>Standard Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000099223
+<CLASS-CONTRACT-NAME>Service Class
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000914036
+<SERIES-ID>S000040169
+<SERIES-NAME>LVIP Fidelity Institutional AM(R) Select Core Equity Managed Volatility Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000124878
+<CLASS-CONTRACT-NAME>Standard Class
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000124879
+<CLASS-CONTRACT-NAME>Service Class
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>d357272dnpx.htm
+<DESCRIPTION>LINCOLN VARIABLE INSURANCE PRODUCTS TRUST
+<TEXT>
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER"><DIV ALIGN="LEFT">
+<PRE>
+
+LVIP Dimensional U.S. Equity Managed Volatility Fund
+
+
+
+                   Exchange                                                      Who Proposed
+Issuer of          Ticker               Shareholder   Summary of Matter Voted   Matter: Issuer /  Whether Fund Cast
+Portfolio Security Symbol     CUSIP #   Meeting Date             On               Shareholder      Vote on Matter
+------------------ --------  ---------- ------------- ------------------------- ----------------  -----------------
+Dimensional                                           1. To elect the members
+Retail Funds                                          of the Board of
+                                                      Directors or the Board
+                                                      of Trustees of a Fund
+                                                      Company, as applicable;
+                                                      and
+                                                      2. To provide voting
+                                                      instructions to each
+                                                      Feeder Fund to vote for
+                                                      the election of a Board
+                                                      of Trustees for the Fund
+                                                      Company that oversees
+                                                      the Feeder Fund's
+                                        December 29,  corresponding Master
+                    DFUSX    25434D823  2021          Fund.                         Issuer              Yes
+                    Fund's Vote For or
+                   Against Proposal, or
+                     Abstain; For or       Whether Vote Was
+Issuer of           Withhold Regarding     For or Against
+Portfolio Security Election of Directors     Management
+------------------ ---------------------   ----------------
+Dimensional
+Retail Funds
+
+
+
+
+
+
+
+
+
+
+
+
+                       Mirror Voted         Mirror Voted
+
+* Complete for each series of the Registrant, as applicable.
+</PRE>
+ </DIV>
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER"><DIV ALIGN="LEFT">
+<PRE>
+
+LVIP Fidelity Institutional AM(R) Select Core Equity Managed Volatility Fund
+
+There is no proxy voting activity for the fund, as the fund did not hold any
+votable positions during the reporting period.
+</PRE>
+ </DIV>
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER"><DIV ALIGN="LEFT">
+<PRE>
+
+LVIP Franklin Templeton Global Equity Managed Volatility Fund
+
+                            Provider                                                                 Vote      Vote Against
+Company Name       Ticker  Security ID  Meeting Date       Proposal Text       Proponent   Voted  Instruction  Management
+------------       ------  -----------  ------------  ------------------------ ----------- -----  -----------  ------------
+Snowflake, Inc.                                       Elect Director Benoit
+                   SNOW    833445109     7/8/2021     Dageville                Management  Yes       For           No
+Snowflake, Inc.                                       Elect Director Mark S.
+                   SNOW    833445109     7/8/2021     Garrett                  Management  Yes       For           No
+Snowflake, Inc.                                       Elect Director Jayshree
+                   SNOW    833445109     7/8/2021     V. Ullal                 Management  Yes       For           No
+Snowflake, Inc.                                       Ratify
+                                                      PricewaterhouseCoopers
+                   SNOW    833445109     7/8/2021     LLP as Auditors          Management  Yes       For           No
+Burberry Group Plc                                    Accept Financial
+                                                      Statements and
+                   BRBY    G1700D105     7/14/2021    Statutory Reports        Management  Yes       For           No
+Burberry Group Plc                                    Approve Remuneration
+                   BRBY    G1700D105     7/14/2021    Report                   Management  Yes       For           No
+Burberry Group Plc BRBY    G1700D105     7/14/2021    Approve Final Dividend   Management  Yes       For           No
+Burberry Group Plc                                    Re-elect Dr Gerry
+                   BRBY    G1700D105     7/14/2021    Murphy as Director       Management  Yes       For           No
+Burberry Group Plc                                    Re-elect Marco Gobbetti
+                   BRBY    G1700D105     7/14/2021    as Director              Management  Yes       For           No
+Burberry Group Plc                                    Re-elect Julie Brown as
+                   BRBY    G1700D105     7/14/2021    Director                 Management  Yes       For           No
+</PRE>
+ </DIV>
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER"><DIV ALIGN="LEFT">
+<PRE>
+
+Burberry Group Plc                             Re-elect Fabiola
+                   BRBY  G1700D105  7/14/2021  Arredondo as Director    Management  Yes  For  No
+Burberry Group Plc                             Re-elect Sam Fischer as
+                   BRBY  G1700D105  7/14/2021  Director                 Management  Yes  For  No
+Burberry Group Plc                             Re-elect Ron Frasch as
+                   BRBY  G1700D105  7/14/2021  Director                 Management  Yes  For  No
+Burberry Group Plc                             Re-elect Matthew Key
+                   BRBY  G1700D105  7/14/2021  as Director              Management  Yes  For  No
+Burberry Group Plc                             Re-elect Debra Lee as
+                   BRBY  G1700D105  7/14/2021  Director                 Management  Yes  For  No
+Burberry Group Plc                             Re-elect Dame Carolyn
+                   BRBY  G1700D105  7/14/2021  McCall as Director       Management  Yes  For  No
+Burberry Group Plc                             Re-elect Orna
+                   BRBY  G1700D105  7/14/2021  NiChionna as Director    Management  Yes  For  No
+Burberry Group Plc                             Elect Antoine de Saint-
+                   BRBY  G1700D105  7/14/2021  Affrique as Director     Management  Yes  For  No
+Burberry Group Plc                             Reappoint Ernst &amp;
+                   BRBY  G1700D105  7/14/2021  Young LLP as Auditors    Management  Yes  For  No
+Burberry Group Plc                             Authorise the Audit
+                                               Committee to Fix
+                                               Remuneration of
+                   BRBY  G1700D105  7/14/2021  Auditors                 Management  Yes  For  No
+</PRE>
+ </DIV>
+</TEXT>
+</DOCUMENT>

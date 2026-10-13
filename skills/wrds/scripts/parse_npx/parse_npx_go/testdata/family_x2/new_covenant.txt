@@ -1,0 +1,28 @@
+		COMPANY CONFORMED NAME:			NEW COVENANT FUNDS
+		CENTRAL INDEX KEY:			0001070222
+   New Covenant Growth Fund
+
+   Account Number: NCF-2 NCF- NCGFX Capital Guardian
+
+   ISSUER NAME TICKER CUSIP MTG DATE MTG TYPE
+           Proposal Type Voted? Vote For/Agnst Mgmt
+
+   ABN Amro Holdings NV   N0030P459  4/25/05  Annual
+   1   NV Receive statutory reports MGMT NO TAKE NO ACTION
+   2.01   Approve financial statements MGMT NO TAKE NO ACTION
+   2.02   Set dividend/allocate profits MGMT NO TAKE NO ACTION
+   2.03   Ratify management acts-legal MGMT NO TAKE NO ACTION
+   2.04   Ratify board acts-legal MGMT NO TAKE NO ACTION
+   3   Approve remuneration policy MGMT NO TAKE NO ACTION
+   4.01   Elect supervisory board/corporate assembly MGMT NO TAKE NO
+   ACTION
+   4.02   Elect supervisory board/corporate assembly MGMT NO TAKE NO
+   ACTION
+   5.01   NV Misc non-U.S. mgt. non-voting MGMT NO TAKE NO ACTION
+   5.02   Amend articles to reflect regulatory changes MGMT NO TAKE NO
+   ACTION
+   6   Authorize share repurchase MGMT NO TAKE NO ACTION
+   7.01   Issue stock w/ preemptive rights MGMT NO TAKE NO ACTION
+   7.02   Issue stock w/o preemptive rights MGMT NO TAKE NO ACTION
+   8   Consider other business MGMT NO TAKE NO ACTION
+

@@ -1,0 +1,54 @@
+<SEC-HEADER>0000754915-04-000013.hdr.sgml : 20040813
+<ACCEPTANCE-DATETIME>20040813114047
+ACCESSION NUMBER:		0000754915-04-000013
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040813
+EFFECTIVENESS DATE:		20040813
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PRICE T ROWE HIGH YIELD FUND INC
+		CENTRAL INDEX KEY:			0000754915
+		FISCAL YEAR END:			0531
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+<TEXT>
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-04119
+Reporting Period: 07/01/2003 - 06/30/2004
+T. Rowe Price High Yield Fund, Inc.
+
+=============================== HIGH YIELD FUND ================================
+
+
+ALAMOSA DELAWARE, INC 12.50%
+
+Ticker:                      Security ID:  011588AB6
+Meeting Date: SEP 30, 2003   Meeting Type: Bondholders
+Record Date:
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Accept the prepackaged plan and vote for  For       For        Management
+      the release provisions contained in
+      section 10.5 of the prepackaged plan.
+
+
+- --------------------------------------------------------------------------------
+
+ALAMOSA DELAWARE, INC 13.625%
+
+Ticker:                      Security ID:  011588AD2
+Meeting Date: SEP 30, 2003   Meeting Type: Bondholders
+Record Date:
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Accept the prepackaged plan and vote for  For       For        Management
+      the release provisions contained in
+      section 10.5 of the prepackaged plan.
+

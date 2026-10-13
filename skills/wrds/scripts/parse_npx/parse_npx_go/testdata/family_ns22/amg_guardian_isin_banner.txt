@@ -1,0 +1,105 @@
+<SEC-DOCUMENT>0001438934-17-000531.txt : 20170831
+<SEC-HEADER>0001438934-17-000531.hdr.sgml : 20170831
+<ACCEPTANCE-DATETIME>20170831171524
+ACCESSION NUMBER:		0001438934-17-000531
+CONFORMED SUBMISSION TYPE:	N-PX/A
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20170630
+FILED AS OF DATE:		20170831
+DATE AS OF CHANGE:		20170831
+EFFECTIVENESS DATE:		20170831
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			AMG Funds IV
+		CENTRAL INDEX KEY:			0000912036
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1031
+
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000912036
+<SERIES-ID>S000044915
+<SERIES-NAME>AMG Managers Guardian Capital Global Dividend Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000912036
+<SERIES-ID>S000044916
+<SERIES-NAME>AMG Managers Pictet International Fund
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX/A
+<SEQUENCE>1
+<FILENAME>BRD006_0000912036_2017.txt
+<DESCRIPTION>BRD006_0000912036_2017
+<TEXT>
+ DATE OF FISCAL YEAR END:                10/31
+
+ DATE OF REPORTING PERIOD:               07/01/2016 - 06/30/2017
+
+
+<PAGE>
+
+<TABLE>
+<S>    <C>                                                       <C>           <C>                            <C>
+
+
+AMG Managers Guardian Capital Global Divdend Fund
+--------------------------------------------------------------------------------------------------------------------------
+ AUTOMATIC DATA PROCESSING, INC.                                                             Agenda Number:  934482340
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  053015103
+    Meeting Type:  Annual
+    Meeting Date:  08-Nov-2016
+          Ticker:  ADP
+            ISIN:  US0530151036
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1.     DIRECTOR
+       PETER BISSON                                              Mgmt          For                            For
+       RICHARD T. CLARK                                          Mgmt          For                            For
+
+2.     ADVISORY VOTE ON EXECUTIVE COMPENSATION.                  Mgmt          For                            For
+
+3.     RATIFICATION OF THE APPOINTMENT OF                        Mgmt          For                            For
+       AUDITORS.
+
+--------------------------------------------------------------------------------------------------------------------------
+ THE DOW CHEMICAL COMPANY                                                                    Agenda Number:  934450317
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  260543103
+    Meeting Type:  Special
+    Meeting Date:  20-Jul-2016
+          Ticker:  DOW
+            ISIN:  US2605431038
+--------------------------------------------------------------------------------------------------------------------------
+ ABBVIE INC.                                                                                 Agenda Number:  934548821
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  00287Y109
+    Meeting Type:  Annual
+    Meeting Date:  05-May-2017
+          Ticker:  ABBV
+            ISIN:  US00287Y1091
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1.     DIRECTOR
+       ROBERT J. ALPERN                                          Mgmt          For                            For
+       EDWARD M. LIDDY                                           Mgmt          For                            For
+       MELODY B. MEYER                                           Mgmt          For                            For
+       FREDERICK H. WADDELL                                      Mgmt          For                            For
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

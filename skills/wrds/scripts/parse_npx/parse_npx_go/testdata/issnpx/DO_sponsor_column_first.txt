@@ -1,0 +1,12 @@
+A.G. EDWARDS, INC.
+Ticker: AGE                    Security ID: 281760108
+Meeting Date:   06/21/2007     Meeting Type: Annual
+<TABLE>
+<S>     <C>          <C>                                                                  <C>         <C>
+
+#     Sponsor        Proposal                                                             Vote Cast   For/Against Mgmt.
+
+01.1  Management     DIRECTOR - ROBERT L. BAGBY                                            For         For
+01.2  Management     DIRECTOR - E. EUGENE CARTER                                           For         For
+01.3  Management     DIRECTOR - PETER B. MADOFF                                            For         For
+02    Management     TO RATIFY THE APPOINTMENT OF DELOITTE & TOUCHE LLP AS INDEPENDENT     For         For

@@ -1,0 +1,411 @@
+<SEC-DOCUMENT>0001111178-15-000032.txt : 20150820
+<SEC-HEADER>0001111178-15-000032.hdr.sgml : 20150820
+<ACCEPTANCE-DATETIME>20150820150813
+ACCESSION NUMBER:		0001111178-15-000032
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20150630
+FILED AS OF DATE:		20150820
+DATE AS OF CHANGE:		20150820
+EFFECTIVENESS DATE:		20150820
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			DREYFUS OPPORTUNITY FUNDS
+		CENTRAL INDEX KEY:			0001111178
+		IRS NUMBER:				134193975
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-09891
+		FILM NUMBER:		151066190
+
+	BUSINESS ADDRESS:	
+		STREET 1:		200 PARK AVENUE
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10166
+		BUSINESS PHONE:		2129226806
+
+	MAIL ADDRESS:	
+		STREET 1:		200 PARK AVENUE
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10166
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	DREYFUS PREMIER OPPORTUNITY FUNDS
+		DATE OF NAME CHANGE:	20000405
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001111178
+<SERIES-ID>S000001720
+<SERIES-NAME>Dreyfus Natural Resources Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000004623
+<CLASS-CONTRACT-NAME>Dreyfus Natural Resources Fund - Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>DNLAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000004625
+<CLASS-CONTRACT-NAME>Dreyfus Natural Resources Fund - Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>DLDCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000004626
+<CLASS-CONTRACT-NAME>Dreyfus Natural Resources Fund - Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>DLDRX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001111178
+<SERIES-ID>S000045827
+<SERIES-NAME>Dreyfus Strategic Beta Emerging Markets Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142852
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>DOFAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142853
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>DOFCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142854
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>DOFIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142855
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>DOFYX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001111178
+<SERIES-ID>S000045828
+<SERIES-NAME>Dreyfus Strategic Beta Global Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142856
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>DBGAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142857
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>DBGCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142858
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>DBGIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142859
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>DBGYX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001111178
+<SERIES-ID>S000045829
+<SERIES-NAME>Dreyfus Strategic Beta U.S. Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142860
+<CLASS-CONTRACT-NAME>Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>DOUCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142861
+<CLASS-CONTRACT-NAME>Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>DOUIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142862
+<CLASS-CONTRACT-NAME>Class Y
+<CLASS-CONTRACT-TICKER-SYMBOL>DOUYX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142863
+<CLASS-CONTRACT-NAME>Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>DOUAX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>lp1.htm
+<DESCRIPTION>FORM N-PX
+<TEXT>
+
+<HTML>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&nbsp;</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">--------------------------------------------------------------------------------</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&nbsp;</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">AES TIETE
+SA&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&nbsp;</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">Ticker:&#160;&#160;&#160;&#160;&#160;&#160;
+GETI4&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Security ID:&#160; P4991B101&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">Meeting Date: APR
+23, 2015&#160;&#160; Meeting Type: Annual&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">Record
+Date:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&nbsp;</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">#&#160;&#160;&#160;&#160; Proposal&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+Mgt Rec&#160;&#160; Vote Cast&#160;&#160;&#160; Sponsor&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">1&#160;&#160;&#160;&#160; Elect
+Fiscal Council Member Nominated&#160;&#160; None&#160;&#160;&#160;&#160;&#160; Abstain&#160;&#160;&#160;&#160;&#160; Shareholder</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160; by
+Preferred Shareholders&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&nbsp;</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&nbsp;</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">--------------------------------------------------------------------------------</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&nbsp;</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">AFRICAN RAINBOW
+MINERALS LTD&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&nbsp;</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">Ticker:&#160;&#160;&#160;&#160;&#160;&#160;
+ARI&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Security ID:&#160; S01680107&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">Meeting Date: DEC
+05, 2014&#160;&#160; Meeting Type: Annual&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">Record Date:&#160; NOV
+28, 2014&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&nbsp;</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">#&#160;&#160;&#160;&#160;
+Proposal&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Mgt Rec&#160;&#160; Vote Cast&#160;&#160;&#160; Sponsor&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">1&#160;&#160;&#160;&#160; Re-elect
+Joaquim Chissano as Director&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">2&#160;&#160;&#160;&#160; Re-elect Dr
+Rejoice Simelane as&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160;
+Director&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">3&#160;&#160;&#160;&#160; Re-elect
+Bernard Swanepoel as Director&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">4&#160;&#160;&#160;&#160; Reappoint
+Ernst &amp; Young Inc as&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160; Auditors of
+the Company and Ernest&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160; Botha as
+the Designated Auditor&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">5.1&#160;&#160; Re-elect
+Tom Boardman as Member of the&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160; Audit and
+Risk Committee&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">5.2&#160;&#160; Re-elect Dr
+Manana Bakane-Tuoane as&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160; Member of
+the Audit and Risk Committee&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">5.3&#160;&#160; Re-elect
+Anton Botha as Member of the&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160; Audit and
+Risk Committee&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">5.4&#160;&#160; Re-elect
+Alex Maditsi as Member of the&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160; Audit and
+Risk Committee&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">5.5&#160;&#160; Re-elect Dr
+Rejoice Simelane as Member &#160;For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160; of the
+Audit and Risk Committee&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">6&#160;&#160;&#160;&#160; Approve
+Remuneration Report including&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160; the
+Remuneration Policy&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">7&#160;&#160;&#160;&#160; Amend The
+African Rainbow Minerals&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; Against&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160; Share
+Incentive Scheme&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">8&#160;&#160;&#160;&#160; Amend The
+African Rainbow Minerals&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; Against&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160; Limited
+2008 Share Plan&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">9&#160;&#160;&#160;&#160; Approve
+Increase in the Annual&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160; Retainer
+Fees for Non-executive&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160;
+Directors&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">10&#160;&#160;&#160; Approve
+Increase in the Per Board&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160; Meeting
+Attendance Fees for&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160; &#160;&#160;Non-executive
+Directors&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">11&#160;&#160;&#160; Approve
+Increase in the Per Committee&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160; Meeting
+Attendance Fees for&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160; Non-executive
+Directors&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">12&#160;&#160;&#160; Approve
+Increase in the Annual&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160; Retainer
+Fee for the Lead Independent&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+
+<a name="_bclFooter29"></a><DIV>
+
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face=Calibri,sans-serif lang=EN-US style="font-size:11.0pt;">&nbsp;</font></p>
+
+
+</DIV>
+</DIV><HR noshade align="center" width="100%" size=2><DIV STYLE="page-break-before: always">&nbsp;</div><a name="page_30"></a><a name="_bclPageBorder30"></a><DIV STYLE="WIDTH: 100%; PADDING-RIGHT: 0%; PADDING-LEFT: 0%">
+
+<a name="_bclHeader30"></a><DIV>
+
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face=Calibri,sans-serif lang=EN-US style="font-size:11.0pt;">&nbsp;</font></p>
+
+
+</DIV>
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160;
+Non-executive Director&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&nbsp;</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&nbsp;</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">--------------------------------------------------------------------------------</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&nbsp;</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">AGILE PROPERTY
+HOLDINGS LTD.&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&nbsp;</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">Ticker:&#160;&#160;&#160;&#160;&#160;&#160;
+03383&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;Security ID:&#160; G01198103&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">Meeting Date: JUN
+12, 2015&#160;&#160; Meeting Type: Annual&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">Record Date:&#160; JUN
+08, 2015&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&nbsp;</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">#&#160;&#160;&#160;&#160;
+Proposal&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Mgt Rec&#160;&#160; Vote Cast&#160;&#160;&#160; Sponsor&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">1&#160;&#160;&#160;&#160; Accept
+Financial Statements and&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160; Statutory
+Reports&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">2&#160;&#160;&#160;&#160; Approve
+Final Dividend&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">3&#160;&#160;&#160;&#160; Elect Chen
+Zhuo Lin as Director&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">4&#160;&#160;&#160;&#160; Elect Luk
+Sin Fong, Fion as Director&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">5&#160;&#160;&#160;&#160; Elect Cheng
+Hon Kwan as Director&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">6&#160;&#160;&#160;&#160; Elect Hui
+Chiu Chung, Stephen as&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; Against&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160;
+Director&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">7&#160;&#160;&#160;&#160; Elect Wong
+Shiu Hoi, Peter as Director&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">8&#160;&#160;&#160;&#160; Authorize
+Board to Fix Remuneration of&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160;
+Directors&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">9&#160;&#160;&#160;&#160; Approve
+PricewaterhouseCoopers as&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160; Auditors
+and Authorize Board to Fix&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160; Their
+Remuneration&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">10A&#160;&#160; Authorize
+Repurchase of Issued Share&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160;
+Capital&#160;&#160;&#160;&#160;&#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">10B&#160;&#160; Approve
+Issuance of Equity or&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; For&#160;&#160;&#160;&#160;&#160;&#160; Against&#160;&#160;&#160;&#160;&#160; Management </font></p>
+
+<p style="margin:0in;margin-bottom:.0001pt;"><font face="courier new" lang=EN-US style="font-size:10.5pt;">&#160;&#160;&#160;&#160;&#160;
+Equity-Linked Securities without&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; </font></p>
+

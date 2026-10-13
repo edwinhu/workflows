@@ -1,0 +1,217 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ Gq/U/hcskZHUnDxII7vpNC2Tvo8bVL2wihzODhnvnVKnmWtFszZikTt7RYjtm2jk
+ +uKnfsmnN1tjLqIupq45qQ==
+
+<SEC-DOCUMENT>0000002230-06-000041.txt : 20060713
+<SEC-HEADER>0000002230-06-000041.hdr.sgml : 20060713
+<ACCEPTANCE-DATETIME>20060713144542
+ACCESSION NUMBER:		0000002230-06-000041
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20060630
+FILED AS OF DATE:		20060713
+DATE AS OF CHANGE:		20060713
+EFFECTIVENESS DATE:		20060713
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			ADAMS EXPRESS CO
+		CENTRAL INDEX KEY:			0000002230
+		IRS NUMBER:				134912740
+		STATE OF INCORPORATION:			MD
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-00248
+		FILM NUMBER:		06960365
+
+	BUSINESS ADDRESS:	
+		STREET 1:		SEVEN ST PAUL ST STE 1140
+		CITY:			BALTIMORE
+		STATE:			MD
+		ZIP:			21202
+		BUSINESS PHONE:		4107525900
+
+	MAIL ADDRESS:	
+		STREET 1:		7 ST PAUL STREET SUITE 1140
+		CITY:			BALTIMORE
+		STATE:			MD
+		ZIP:			21202
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>adxnpx06302006.htm
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE>FORM N-PX</TITLE>
+</HEAD>
+<BODY>
+
+<B><FONT FACE="Arial"><P ALIGN="CENTER">FORM N-PX</P>
+</B>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<B><P ALIGN="CENTER">ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT COMPANY<BR>
+Investment Company Act file number: 811-00248<BR>
+</B>-------------------------------------------------------------------------</P>
+
+<P>&nbsp;</P>
+<B><P ALIGN="CENTER">THE ADAMS EXPRESS COMPANY<BR>
+</B>-------------------------------------------------------------------------<BR>
+(Exact name of registrant as specified in charter)</P>
+
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<B><P ALIGN="CENTER">7 Saint Paul Street, Suite 1140, Baltimore, Maryland 21202<BR>
+</B>-------------------------------------------------------------------------<BR>
+(Address of principal executive offices)</P>
+
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<B><P ALIGN="CENTER">Lawrence L. Hooper, Jr.<BR>
+The Adams Express Company<BR>
+7 Saint Paul Street, Suite 1140<BR>
+Baltimore, Maryland  21202<BR>
+</B>-------------------------------------------------------------------------<BR>
+(Name and address of agent for service)</P>
+
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<B><P>Registrant's telephone number, including area code:</B> 410-752-5900<BR>
+<B>Date of fiscal year end:</B>  December 31, 2006<BR>
+<B>Date of reporting period:</B> July 1, 2005 - June 30, 2006</P>
+
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<B><P>Item 1. Proxy Voting Record</P>
+</B></FONT>
+<TABLE CELLSPACING=0 WIDTH=843>
+<TR><TD WIDTH="57%" VALIGN="TOP" HEIGHT=37>
+<B><FONT FACE="Arial" SIZE=2><P>Description</B></FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=37>
+<B><FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">Proposal<BR>
+Type<BR>
+(Mgmt<BR>
+or Shldr)</B></FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=37>
+<B><FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">Voted<BR>
+(Yes or No)</B></FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=37>
+<B><FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">Vote<BR>
+(For, Agnst, Abstain,<BR>
+For All - Dirs., Withheld<BR>
+Elec Of Dirs.)</B></FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=37>
+<B><FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">For/<BR>
+Agnst<BR>
+Mgmt</B></FONT></TD>
+</TR>
+<TR><TD WIDTH="57%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+</TR>
+<TR><TD WIDTH="57%" VALIGN="TOP" HEIGHT=9>
+<B><FONT FACE="Arial" SIZE=2><P>Issuer:  Abbott Laboratories</B></FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+</TR>
+<TR><TD WIDTH="57%" VALIGN="TOP" HEIGHT=9>
+<B><FONT FACE="Arial" SIZE=2><P>Ticker:  ABT</B></FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+</TR>
+<TR><TD WIDTH="57%" VALIGN="TOP" HEIGHT=9>
+<B><FONT FACE="Arial" SIZE=2><P>CUSIP:  002824-10-0</B></FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+</TR>
+<TR><TD WIDTH="57%" VALIGN="TOP" HEIGHT=9>
+<B><FONT FACE="Arial" SIZE=2><P>Meeting Date:  04/28/2006 </B></FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+</TR>
+<TR><TD WIDTH="57%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P>Election of Directors</FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">MGMT</FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">YES</FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">FOR ALL-DIRS</FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">FOR</FONT></TD>
+</TR>
+<TR><TD WIDTH="57%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P>Ratification of appt. of Ind. Auditors</FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">MGMT</FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">YES</FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">FOR</FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">FOR</FONT></TD>
+</TR>
+<TR><TD WIDTH="57%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P>Proposal on Pay-for-Superior-Performance </FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">SHLDR</FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">YES</FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">AGNST</FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">FOR</FONT></TD>
+</TR>
+<TR><TD WIDTH="57%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P>Proposal on Corporate Political Contributions</FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">SHLDR</FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">YES</FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">AGNST</FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">FOR</FONT></TD>
+</TR>
+<TR><TD WIDTH="57%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P>Proposal on the Roles of Chair and CEO</FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">SHLDR</FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">YES</FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">AGNST</FONT></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9>
+<FONT FACE="Arial" SIZE=2><P ALIGN="CENTER">FOR</FONT></TD>
+</TR>
+<TR><TD WIDTH="57%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+<TD WIDTH="11%" VALIGN="TOP" HEIGHT=9><P></P></TD>
+</TR>
+</TABLE>
+</TEXT>
+</DOCUMENT>

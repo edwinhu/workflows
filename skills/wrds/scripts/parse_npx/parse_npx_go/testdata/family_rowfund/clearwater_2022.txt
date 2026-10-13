@@ -1,0 +1,3246 @@
+<SEC-DOCUMENT>0001193125-22-229562.txt : 20220825
+<SEC-HEADER>0001193125-22-229562.hdr.sgml : 20220825
+<ACCEPTANCE-DATETIME>20220825104835
+ACCESSION NUMBER:		0001193125-22-229562
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20220630
+FILED AS OF DATE:		20220825
+DATE AS OF CHANGE:		20220825
+EFFECTIVENESS DATE:		20220825
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			CLEARWATER INVESTMENT TRUST
+		CENTRAL INDEX KEY:			0000811161
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-05038
+		FILM NUMBER:		221194214
+
+	BUSINESS ADDRESS:	
+		STREET 1:		2000 WELLS FARGO PLACE
+		STREET 2:		30 EAST 7TH STREET
+		CITY:			ST PAUL
+		STATE:			MN
+		ZIP:			55101-4930
+		BUSINESS PHONE:		6122280935
+
+	MAIL ADDRESS:	
+		STREET 1:		2000 WELLS FARGO PLACE
+		STREET 2:		30 EAST 7TH STREET
+		CITY:			ST PAUL
+		STATE:			MN
+		ZIP:			55101
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000000697
+<SERIES-NAME>Clearwater Core Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002050
+<CLASS-CONTRACT-NAME>Clearwater Core Equity Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>QWVPX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000000698
+<SERIES-NAME>Clearwater Select Equity Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002051
+<CLASS-CONTRACT-NAME>Clearwater Select Equity Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>QWVOX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000000699
+<SERIES-NAME>Clearwater Tax-Exempt Bond Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000002052
+<CLASS-CONTRACT-NAME>Clearwater Tax-Exempt Bond Fund
+<CLASS-CONTRACT-TICKER-SYMBOL>QWVQX
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000811161
+<SERIES-ID>S000024756
+<SERIES-NAME>CLEARWATER INTERNATIONAL FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000073549
+<CLASS-CONTRACT-NAME>CLEARWATER INTERNATIONAL FUND
+<CLASS-CONTRACT-TICKER-SYMBOL>QCVAX
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>d372122dnpx.htm
+<DESCRIPTION>CLEARWATER INVESTMENT TRUST
+<TEXT>
+<HTML><HEAD>
+<TITLE>Clearwater Investment Trust</TITLE>
+</HEAD>
+ <BODY BGCOLOR="WHITE">
+ <P STYLE="line-height:1.0pt;margin-top:0pt;margin-bottom:0pt;border-bottom:1px solid #000000">&nbsp;</P>
+<P STYLE="line-height:3.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1px solid #000000">&nbsp;</P> <P STYLE="margin-top:4pt; margin-bottom:0pt; font-size:18pt; font-family:ARIAL" ALIGN="center"><B>UNITED STATES </B></P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:18pt; font-family:ARIAL" ALIGN="center"><B>SECURITIES AND EXCHANGE COMMISSION </B></P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:12pt; font-family:ARIAL" ALIGN="center"><B>Washington, DC 20549 </B></P> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P><center>
+<P STYLE="line-height:6.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1.00pt solid #000000;width:21%">&nbsp;</P></center> <P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:18pt; font-family:ARIAL" ALIGN="center"><B>FORM <FONT
+STYLE="white-space:nowrap">N-PX</FONT> </B></P> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P><center>
+<P STYLE="line-height:6.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1.00pt solid #000000;width:21%">&nbsp;</P></center> <P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:12pt; font-family:ARIAL" ALIGN="center"><B>ANNUAL REPORT OF PROXY
+VOTING RECORD OF REGISTERED MANAGEMENT </B></P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:12pt; font-family:ARIAL" ALIGN="center"><B>INVESTMENT COMPANY </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL" ALIGN="center"><B>Investment Company Act file number <FONT STYLE="white-space:nowrap">811-05038</FONT><U></U> </B></P>
+<P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P><center> <P STYLE="line-height:6.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1.00pt solid #000000;width:21%">&nbsp;</P></center>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:24pt; font-family:ARIAL" ALIGN="center"><B>Clearwater Investment Trust </B></P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL" ALIGN="center"><B>(Exact name of
+registrant as specified in charter) </B></P> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P><center> <P STYLE="line-height:6.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1.00pt solid #000000;width:21%">&nbsp;</P></center>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL" ALIGN="center"><B>2000 Wells Fargo Place, 30 East 7<SUP STYLE="font-size:75%; vertical-align:top">th</SUP> Street </B></P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL" ALIGN="center"><B>St. Paul, Minnesota 55101-4930 </B></P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:8pt; font-family:ARIAL" ALIGN="center"><B>(Address of
+principal executive offices) (Zip code) </B></P> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P><center>
+<P STYLE="line-height:6.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1.00pt solid #000000;width:21%">&nbsp;</P></center> <P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL" ALIGN="center"><B>Jason K. Mitchell
+</B></P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL" ALIGN="center"><B>Secretary and Chief Compliance Officer </B></P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL" ALIGN="center"><B>Fiduciary Counselling, Inc. </B></P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL" ALIGN="center"><B>2000 Wells Fargo
+Place, 30 East 7<SUP STYLE="font-size:75%; vertical-align:top">th</SUP> Street </B></P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL" ALIGN="center"><B>St. Paul, Minnesota 55101-4930 </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL" ALIGN="center"><B>With a copy to: </B></P> <P STYLE="margin-top:6pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL" ALIGN="center"><B>John V. O&#146;Hanlon, Esq.
+</B></P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL" ALIGN="center"><B>Dechert LLP </B></P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL" ALIGN="center"><B>One International
+Place, 40<SUP STYLE="font-size:75%; vertical-align:top">th</SUP> Floor </B></P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL" ALIGN="center"><B>Boston, Massachusetts 02110 </B></P>
+<P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:8pt; font-family:ARIAL" ALIGN="center"><B>(Name and address of agent for service) </B></P> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P><center>
+<P STYLE="line-height:6.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1.00pt solid #000000;width:21%">&nbsp;</P></center> <P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL" ALIGN="center"><B>Registrant&#146;s
+telephone number, including area code: (651) <FONT STYLE="white-space:nowrap">228-0935</FONT> </B></P> <P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL" ALIGN="center"><B>Date of fiscal year end: 12/31 </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL" ALIGN="center"><B>Date of reporting period: 07/01/21 - 06/30/22 </B></P> <P STYLE="font-size:10pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<P STYLE="line-height:1.0pt;margin-top:0pt;margin-bottom:0pt;border-bottom:1px solid #000000">&nbsp;</P> <P STYLE="line-height:3.0pt;margin-top:0pt;margin-bottom:2pt;border-bottom:1px solid #000000">&nbsp;</P>
+
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL"><B>Item&nbsp;1. Proxy Voting Record. </B></P>
+
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL"><B>Clearwater Core Equity Fund: AQR Capital Management, LLC </B></P>
+<P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:ARIAL; font-size:8pt" ALIGN="center">
+
+
+<TR>
+
+<TD WIDTH="13%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="12%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="9%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="3%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="3%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="4%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="3%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="4%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="4%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="5%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="3%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="11%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="6%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="4%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="3%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="4%"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="bottom"><B>Location Name</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Institutional Account Name</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Company Name</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Ticker</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Country</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Provider<BR>Security ID</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Meeting<BR>Type</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Meeting<BR>Date</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Record<BR>Date</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Proponent</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Proposal<BR>Number</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Proposal Text</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Management<BR>Recommendation</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Vote<BR>Instruction</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Voted</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><B>Vote Against<BR>Management</B></TD></TR>
+
+
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Credit Acceptance Corporation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CACC</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">225310101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">21-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">27-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1.1</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Director Kenneth S. Booth</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Credit Acceptance Corporation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CACC</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">225310101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">21-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">27-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1.2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Director Glenda J. Flanagan</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Credit Acceptance Corporation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CACC</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">225310101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">21-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">27-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1.3</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Director Vinayak R. Hegde</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Credit Acceptance Corporation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CACC</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">225310101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">21-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">27-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1.4</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Director Thomas N. Tryforos</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Credit Acceptance Corporation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CACC</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">225310101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">21-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">27-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1.5</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Director Scott J. Vassalluzzo</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Credit Acceptance Corporation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CACC</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">225310101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">21-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">27-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Amend Omnibus Stock Plan</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Credit Acceptance Corporation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CACC</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">225310101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">21-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">27-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">3</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Advisory Vote to Ratify Named Executive Officers&#146; Compensation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Credit Acceptance Corporation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CACC</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">225310101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">21-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">27-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Ratify Grant Thornton LLP as Auditors</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">McKesson Corporation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">MCK</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">58155Q103</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">23-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">28-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1a</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Director Dominic J. Caruso</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">McKesson Corporation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">MCK</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">58155Q103</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">23-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">28-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1b</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Director Donald R. Knauss</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">McKesson Corporation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">MCK</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">58155Q103</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">23-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">28-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1c</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Director Bradley E. Lerman</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">McKesson Corporation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">MCK</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">58155Q103</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">23-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">28-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1d</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Director Linda P. Mantia</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">McKesson Corporation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">MCK</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">58155Q103</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">23-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">28-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1e</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Director Maria Martinez</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">McKesson Corporation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">MCK</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">58155Q103</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">23-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">28-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1f</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Director Edward A. Mueller</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">McKesson Corporation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">MCK</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">58155Q103</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">23-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">28-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1g</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Director Susan R. Salka</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">McKesson Corporation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">MCK</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">58155Q103</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">23-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">28-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1h</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Director Brian S. Tyler</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">McKesson Corporation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">MCK</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">58155Q103</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">23-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">28-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1i</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Director Kenneth E. Washington</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">McKesson Corporation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">MCK</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">58155Q103</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">23-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">28-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Ratify Deloitte&nbsp;&amp; Touche LLP as Auditors</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">McKesson Corporation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">MCK</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">58155Q103</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">23-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">28-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">3</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Advisory Vote to Ratify Named Executive Officers&#146; Compensation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">McKesson Corporation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">MCK</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">58155Q103</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">23-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">28-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Share Holder</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Provide Right to Act by Written Consent</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">VMware, Inc.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">VMW</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">928563402</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">23-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">24-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1a</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Director Kenneth Denman</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">VMware, Inc.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">VMW</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">928563402</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">23-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">24-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Advisory Vote to Ratify Named Executive Officers&#146; Compensation</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">No</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">VMware, Inc.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">VMW</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">928563402</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">23-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">24-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">3</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Amend Omnibus Stock Plan</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="top">AQR Capital Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Clearwater Core Equity Fund</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">VMware, Inc.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">VMW</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">USA</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">928563402</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">23-Jul-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">24-May-21</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Amend Qualified Employee Stock Purchase Plan</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Yes</TD></TR></TABLE>
+
+
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL"><B>Clearwater Select Equity Fund: Cooke&nbsp;&amp; Bieler, L.P. </B></P>
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL"><B>SCHWEITZER-MAUDUIT INTERNATIONAL, INC. &nbsp;&nbsp;&nbsp;&nbsp; </B></P>
+<P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:ARIAL; font-size:10pt" ALIGN="center">
+
+
+<TR>
+
+<TD WIDTH="14%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="14%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="7%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="18%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="21%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="21%"></TD></TR>
+
+
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top"><B>Security</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" COLSPAN="3">808541106</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"><B>Meeting Type</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Special</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top"><B>Ticker&nbsp;Symbol</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" COLSPAN="3">SWM</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"><B>Meeting Date</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">29-Jun-2022</FONT></FONT></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top"><B>ISIN</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" COLSPAN="3">US8085411069</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"><B>Agenda</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">935662937&nbsp;-&nbsp;Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top"><B>Record Date</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top" COLSPAN="3"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">20-May-2022</FONT></FONT></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"><B>Holding&nbsp;Recon&nbsp;Date</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">20-May-2022</FONT></FONT></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top"><B>City / Country</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">/&nbsp;United&nbsp;States</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"><B>Vote&nbsp;Deadline&nbsp;Date</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"><FONT STYLE="white-space:nowrap"><FONT STYLE="white-space:nowrap">28-Jun-2022</FONT></FONT></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top" COLSPAN="5"><B>SEDOL(s)</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"><B>Quick Code</B></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top"></TD></TR>
+</TABLE> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:ARIAL; font-size:10pt" ALIGN="center">
+
+
+<TR>
+
+<TD WIDTH="9%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="38%"></TD>
+
+<TD VALIGN="bottom"></TD>
+<TD WIDTH="15%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="15%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="15%"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="bottom"> <P STYLE=" margin-top:0pt ; margin-bottom:0pt; border-bottom:1.00pt solid #000000; display:table-cell; font-size:8pt; font-family:ARIAL; "><B>Item</B></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:ARIAL"><B>Proposal</B></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:ARIAL"><B>Proposed&nbsp;by</B></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:ARIAL"><B>Vote</B></P></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom" STYLE="border-bottom:1.00pt solid #000000"> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:8pt; font-family:ARIAL"><B>For/Against<BR>Management</B></P></TD></TR>
+
+
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">1.</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Proposal to approve the issuance of SWM voting common stock, par value $0.10 per share, of SWM (which we refer to as the &#147;SWM common stock&#148;), pursuant to the terms of the merger agreement, in an amount necessary to
+complete the merger and the other transactions contemplated by the merger agreement (which we refer to as the &#147;SWM share issuance proposal&#148;).</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Enhanced Proposal Category: Issue Shares in Connection with Acquisition</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">2.</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Proposal to approve one or more adjournments of the SWM special meeting, if necessary or appropriate, including adjournments to permit further solicitation of proxies in favor of the SWM share issuance proposal (which we refer to as
+the &#147;SWM adjournment proposal&#148;).</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Enhanced Proposal Category: Adjourn Meeting</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD></TR>
+</TABLE>
+
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL"><B>Clearwater International Fund: Artisan Partners Limited Partnership </B></P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL" ALIGN="center">======================== Clearwater International Fund ========================= </P>
+<P STYLE="margin-top:12pt; margin-bottom:0pt; font-size:10pt; font-family:ARIAL">ABB LTD. </P> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:ARIAL; font-size:10pt" ALIGN="center">
+
+
+<TR>
+
+<TD WIDTH="12%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="16%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="13%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="56%"></TD></TR>
+
+
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">Ticker:</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">ABBN</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Security&nbsp;ID:</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">H0010V101</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">Meeting&nbsp;Date:</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">MAR 24, 2022</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Meeting&nbsp;Type:</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Annual</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">Record&nbsp;Date:</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top"></TD></TR>
+</TABLE> <P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:ARIAL; font-size:10pt" ALIGN="center">
+
+
+<TR>
+
+<TD WIDTH="9%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="46%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="13%"></TD>
+
+<TD VALIGN="bottom"></TD>
+<TD WIDTH="11%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="15%"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:8pt">
+<TD VALIGN="bottom">#</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Proposal</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Mgt&nbsp;Rec</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Vote&nbsp;Cast</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="bottom">Sponsor</TD></TR>
+
+
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">1</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Accept Financial Statements and Statutory Reports</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">2</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Approve Remuneration Report <FONT STYLE="white-space:nowrap">(Non-Binding)</FONT></TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">3</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Approve Discharge of Board and Senior Management</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">4</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Approve Allocation of Income and Dividends of CHF 0.82 per Share</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">5</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Approve CHF 10.6 Million Reduction in Share Capital as Part of the Share Buyback Program via Cancellation of Repurchased Shares</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">6.1</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Approve Remuneration of Directors in the Amount of CHF 4.4 Million</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">6.2</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Approve Remuneration of Executive Committee in the Amount of CHF 45.9 Million</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">7.1</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reelect Gunnar Brock as Director</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">7.2</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reelect David Constable as Director</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">7.3</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reelect Frederico Curado as Director</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">7.4</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reelect Lars Foerberg as Director</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">7.5</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reelect Jennifer Xin-Zhe Li as Director</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">7.6</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reelect Geraldine Matchett as Director</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">7.7</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reelect David Meline as Director</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">7.8</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reelect Satish Pai as Director</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">7.9</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reelect Jacob Wallenberg as Director</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">7.10</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reelect Peter Voser as Director and Board Chairman</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">8.1</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reappoint David Constable as Member of the Compensation Committee</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">8.2</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reappoint Frederico Curado as Member of the Compensation Committee</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">8.3</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Reappoint Jennifer Xin-Zhe Li as Member of the Compensation Committee</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">9</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Designate Zehnder Bolliger&nbsp;&amp; Partner as Independent Proxy</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">10</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Ratify KPMG AG as Auditors</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:10pt">
+<TD VALIGN="top">11</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Transact Other Business (Voting)</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">For</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Against</TD>
+<TD VALIGN="bottom">&nbsp;&nbsp;</TD>
+<TD VALIGN="top">Management</TD></TR>
+</TABLE>
+
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+ <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:10pt; font-family:Arial Narrow"><B>Clearwater International Fund: LSV Asset Management </B></P>
+<P STYLE="font-size:12pt;margin-top:0pt;margin-bottom:0pt">&nbsp;</P>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:ARIAL; font-size:7pt" ALIGN="center">
+
+
+<TR>
+
+<TD WIDTH="13%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="13%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="8%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="6%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="6%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="3%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="6%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="3%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="6%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="3%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="3%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="12%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="3%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="2%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="3%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="2%"></TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:6pt">
+<TD VALIGN="bottom">Subadvisor</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Fund&nbsp;Name</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Issuer&nbsp;Name</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Country</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Meeting&nbsp;Date</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:6pt; font-family:ARIAL">Meeting</P> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:6pt; font-family:ARIAL">Type</P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Record&nbsp;Date</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Ticker</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Security&nbsp;ID</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:6pt; font-family:ARIAL">Symbol</P> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:6pt; font-family:ARIAL">Type</P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:6pt; font-family:ARIAL">Ballot</P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:6pt; font-family:ARIAL">Issue</P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:6pt; font-family:ARIAL">Number</P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Proposal&nbsp;Text</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Proponent</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:6pt; font-family:ARIAL">Mgmt</P> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:6pt; font-family:ARIAL">Reco</P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:6pt; font-family:ARIAL">Vote</P> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:6pt; font-family:ARIAL">Cast</P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:6pt; font-family:ARIAL">Logical</P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:6pt; font-family:ARIAL">Ballot</P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:6pt; font-family:ARIAL">Status</P></TD></TR>
+
+
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A S.p.A.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Italy</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4/28/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4/19/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">T0579B105</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap">Non-Voting</FONT> Meeting Note</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A S.p.A.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Italy</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4/28/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4/19/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">T0579B105</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap">Non-Voting</FONT> Meeting Note</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A S.p.A.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Italy</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4/28/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4/19/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">T0579B105</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">3</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Accounts and Reports</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A S.p.A.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Italy</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4/28/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4/19/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">T0579B105</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Allocation of Profits/Dividends</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A S.p.A.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Italy</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4/28/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4/19/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">T0579B105</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">5</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Remuneration Policy</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A S.p.A.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Italy</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4/28/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4/19/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">T0579B105</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">6</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Remuneration Report</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A S.p.A.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Italy</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4/28/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4/19/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">T0579B105</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">7</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Authority to Repurchase and Reissue Shares</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A S.p.A.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Italy</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4/28/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4/19/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">T0579B105</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">8</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap">Non-Voting</FONT> Meeting Note</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A S.p.A.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Italy</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4/28/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4/19/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">T0579B105</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">9</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap">Non-Voting</FONT> Meeting Note</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A S.p.A.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Italy</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4/28/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4/19/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">T0579B105</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap">Non-Voting</FONT> Meeting Note</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A S.p.A.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Italy</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10/8/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Special</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">9/29/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">T0579B105</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap">Non-Voting</FONT> Meeting Note</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A S.p.A.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Italy</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10/8/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Special</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">9/29/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">T0579B105</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap">Non-Voting</FONT> Meeting Note</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A S.p.A.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Italy</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10/8/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Special</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">9/29/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">T0579B105</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">3</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap">Non-Voting</FONT> Meeting Note</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A S.p.A.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Italy</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10/8/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Special</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">9/29/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">T0579B105</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Merger by Absorption</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A S.p.A.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Italy</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10/8/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Special</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">9/29/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">T0579B105</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">5</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap">Non-Voting</FONT> Meeting Note</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A S.p.A.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Italy</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10/8/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Special</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">9/29/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">A2A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">T0579B105</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">6</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap">Non-Voting</FONT> Meeting Note</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adairs Limited</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Australia</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10/20/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10/18/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">ADH</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Q0146Y151</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap">Non-Voting</FONT> Meeting Note</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adairs Limited</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Australia</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10/20/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10/18/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">ADH</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Q0146Y151</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap">Re-elect</FONT> Michael Cherubino</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adairs Limited</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Australia</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10/20/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10/18/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">ADH</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Q0146Y151</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">3</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Brett D. Chenoweth</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adairs Limited</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Australia</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10/20/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10/18/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">ADH</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Q0146Y151</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Remuneration Report</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adairs Limited</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Australia</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10/20/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10/18/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">ADH</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Q0146Y151</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">5</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Equity Grant (MD/CEO Mark Ronan)</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adairs Limited</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Australia</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10/20/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10/18/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">ADH</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Q0146Y151</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">6</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Equity Grant (Executive Director Michael Cherubino)</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adairs Limited</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Australia</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10/20/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10/18/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">ADH</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Q0146Y151</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">7</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Approve Amendments to Existing Option Terms</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adairs Limited</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Australia</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10/20/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10/18/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">ADH</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Q0146Y151</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">8</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Approve Increase in NEDs&#146; Fee Cap</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adaptive Plasma Technology Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Korea, Republic of</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">3/28/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">12/31/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">089970</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Y0R19S101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Financial Statements and Allocation of Profits/Dividends</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR></TABLE>
+
+<p style="margin-top:1em; margin-bottom:0em; page-break-before:always">
+<HR SIZE="3" style="COLOR:#999999" WIDTH="100%" ALIGN="CENTER">
+
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%" BORDER="0" STYLE="BORDER-COLLAPSE:COLLAPSE; font-family:ARIAL; font-size:7pt" ALIGN="center">
+
+
+<TR>
+
+<TD WIDTH="13%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="13%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="8%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="6%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="6%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="3%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="6%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="3%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="6%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="3%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="3%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="12%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="3%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="2%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="3%"></TD>
+
+<TD VALIGN="bottom" WIDTH="1%"></TD>
+<TD WIDTH="2%"></TD></TR>
+
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:6pt">
+<TD VALIGN="bottom">Subadvisor</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Fund&nbsp;Name</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Issuer&nbsp;Name</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Country</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Meeting&nbsp;Date</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:6pt; font-family:ARIAL">Meeting</P> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:6pt; font-family:ARIAL">Type</P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Record&nbsp;Date</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Ticker</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Security&nbsp;ID</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:6pt; font-family:ARIAL">Symbol</P> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:6pt; font-family:ARIAL">Type</P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:6pt; font-family:ARIAL">Ballot</P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:6pt; font-family:ARIAL">Issue</P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:6pt; font-family:ARIAL">Number</P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Proposal&nbsp;Text</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Proponent</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:6pt; font-family:ARIAL">Mgmt</P> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:6pt; font-family:ARIAL">Reco</P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:6pt; font-family:ARIAL">Vote</P> <P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:6pt; font-family:ARIAL">Cast</P></TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:6pt; font-family:ARIAL">Logical</P> <P STYLE="margin-top:0pt; margin-bottom:0pt; font-size:6pt; font-family:ARIAL">Ballot</P>
+<P STYLE="margin-top:0pt; margin-bottom:1pt; font-size:6pt; font-family:ARIAL">Status</P></TD></TR>
+
+
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adaptive Plasma Technology Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Korea, Republic of</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">3/28/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">12/31/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">089970</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Y0R19S101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect KIM Seong Joo</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adaptive Plasma Technology Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Korea, Republic of</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">3/28/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">12/31/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">089970</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Y0R19S101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">3</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect KANG Young Soo</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adaptive Plasma Technology Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Korea, Republic of</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">3/28/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">12/31/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">089970</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Y0R19S101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Directors&#146; Fees</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adaptive Plasma Technology Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Korea, Republic of</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">3/28/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">12/31/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">089970</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Y0R19S101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">5</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Corporate Auditors&#146; Fees</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adaptive Plasma Technology Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Korea, Republic of</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">3/28/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">12/31/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">089970</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Y0R19S101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">6</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Amendments to Articles</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adaptive Plasma Technology Corp.</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Korea, Republic of</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">3/28/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">12/31/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">089970</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Y0R19S101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">7</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Share Option Grant</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adcock Ingram Holdings Limited</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>South Africa</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/23/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/12/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">AIP</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">S00358101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap">Re-elect</FONT> Matthias Haus</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adcock Ingram Holdings Limited</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>South Africa</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/23/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/12/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">AIP</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">S00358101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap">Re-elect</FONT> Sibongile Gumbi</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adcock Ingram Holdings Limited</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>South Africa</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/23/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/12/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">AIP</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">S00358101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">3</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap">Re-elect</FONT> Nompumelelo T. Madisa</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adcock Ingram Holdings Limited</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>South Africa</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/23/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/12/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">AIP</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">S00358101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Audit Committee Chair (Debbie Ransby)</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adcock Ingram Holdings Limited</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>South Africa</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/23/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/12/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">AIP</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">S00358101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">5</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Audit Committee Member (Matthias Haus)</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adcock Ingram Holdings Limited</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>South Africa</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/23/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/12/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">AIP</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">S00358101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">6</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Audit Committee Member (Claudia E. Manning)</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adcock Ingram Holdings Limited</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>South Africa</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/23/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/12/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">AIP</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">S00358101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">7</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Appointment of Auditor and Authority to Set Fees</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adcock Ingram Holdings Limited</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>South Africa</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/23/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/12/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">AIP</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">S00358101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">8</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Authorisation of Legal Formalities</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adcock Ingram Holdings Limited</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>South Africa</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/23/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/12/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">AIP</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">S00358101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">9</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Approve Remuneration Policy</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adcock Ingram Holdings Limited</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>South Africa</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/23/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/12/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">AIP</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">S00358101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">10</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Approve Remuneration Implementation Report</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adcock Ingram Holdings Limited</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>South Africa</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/23/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/12/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">AIP</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">S00358101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Approve Financial Assistance</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adcock Ingram Holdings Limited</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>South Africa</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/23/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/12/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">AIP</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">S00358101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">12</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Approve NEDs&#146; Fees</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adcock Ingram Holdings Limited</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>South Africa</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/23/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/12/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">AIP</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">S00358101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">13</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Authority to Repurchase Shares</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Adcock Ingram Holdings Limited</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>South Africa</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/23/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">11/12/2021</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">AIP</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">S00358101</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">14</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap">Non-Voting</FONT> Meeting Note</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">ADEKA CORPORATION</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Japan</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">6/24/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">3/31/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4401</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">J0011Q109</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">1</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom"><FONT STYLE="white-space:nowrap">Non-Voting</FONT> Meeting Note</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">N/A</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">ADEKA CORPORATION</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Japan</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">6/24/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">3/31/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4401</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">J0011Q109</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">2</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Allocation of Profits/Dividends</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">ADEKA CORPORATION</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Japan</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">6/24/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">3/31/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4401</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">J0011Q109</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">3</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Amendments to Articles</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">ADEKA CORPORATION</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Japan</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">6/24/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">3/31/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4401</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">J0011Q109</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Hidetaka Shirozume</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Against</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR>
+<TR STYLE="page-break-inside:avoid ; font-family:ARIAL; font-size:7pt">
+<TD VALIGN="top">LSV Asset Management</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="top">Clearwater Investment Trust</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">ADEKA CORPORATION</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom" NOWRAP>Japan</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">6/24/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Annual</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">3/31/2022</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">4401</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">J0011Q109</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">CINS</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">5</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Elect Haruhiko Tomiyasu</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Mgmt</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">For</TD>
+<TD VALIGN="bottom">&nbsp;</TD>
+<TD VALIGN="bottom">Voted</TD></TR></TABLE>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

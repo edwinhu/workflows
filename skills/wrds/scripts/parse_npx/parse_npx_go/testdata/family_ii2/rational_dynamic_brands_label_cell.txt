@@ -1,0 +1,147 @@
+		COMPANY CONFORMED NAME:			Mutual Fund & Variable Insurance Trust
+		CENTRAL INDEX KEY:			0000810695
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000810695
+<SERIES-ID>S000005856
+<SERIES-NAME>Rational Equity Armor Fund
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000810695
+<SERIES-ID>S000005874
+<SERIES-NAME>Rational Dynamic Brands Fund
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>mfvitnpx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<TABLE STYLE="width: 100%; border-collapse: collapse; font: 10pt Arial, Helvetica, Sans-Serif">
+<TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="2" STYLE="font-weight: bold">Registrant:&nbsp;&nbsp;Mutual Fund &amp; Variable Insurance Trust</TD>
+    <TD STYLE="font-weight: bold">Fund Name -&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="font-weight: bold">Rational Dynamic Brands Fund</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="font-weight: bold">Investment Company 1940 Act File # 811-05010</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="font-weight: bold">Reporting Period:&nbsp;&nbsp;July 1, 2019 - June 30, 2020</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-top: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: Black 1pt solid">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="font-size: 12pt; font-weight: bold; border-top: Black 1pt solid; text-align: left">N-PX Form Requirements</TD>
+    <TD STYLE="border-top: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: Black 1pt solid; border-bottom: Black 1pt solid">&nbsp;</TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: middle">
+    <TD STYLE="font-weight: bold; border-top: Black 1pt solid; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; width: 21%">(a) Issuer's Name</TD>
+    <TD STYLE="font-weight: bold; border-top: Black 1pt solid; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; width: 6%">(b) Exchange Ticker Symbol</TD>
+    <TD STYLE="font-weight: bold; border-top: Black 1pt solid; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; width: 7%">(c)&quot;CUSIP&quot; #</TD>
+    <TD STYLE="font-weight: bold; border-top: Black 1pt solid; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; width: 10%">(d) Shareholder Meeting Type &amp; Date</TD>
+    <TD STYLE="font-weight: bold; border-top: Black 1pt solid; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; width: 38%">(e) Matter Identification</TD>
+    <TD STYLE="font-weight: bold; border-top: Black 1pt solid; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; width: 5%">(f) Proposal Type</TD>
+    <TD STYLE="font-weight: bold; border-top: Black 1pt solid; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; width: 2%">(g) Voted</TD>
+    <TD STYLE="font-weight: bold; border-right: Black 0.5pt solid; border-left: Black 0.5pt solid; text-align: center; width: 5%">(h) Vote Cast</TD>
+    <TD STYLE="font-weight: bold; border-top: Black 1pt solid; border-right: Black 1pt solid; text-align: center; width: 6%">(i) For or Against Management</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border: Black 0.5pt solid">Alibaba Group Holding Limited</TD>
+    <TD STYLE="border: Black 0.5pt solid">BABA</TD>
+    <TD STYLE="border: Black 0.5pt solid; text-align: left">01609W102</TD>
+    <TD STYLE="border: Black 0.5pt solid">Annual 07.15.19</TD>
+    <TD STYLE="border: Black 0.5pt solid">5928 6004 4682 0956</TD>
+    <TD STYLE="border: Black 0.5pt solid">&nbsp;</TD>
+    <TD STYLE="border: Black 0.5pt solid">&nbsp;</TD>
+    <TD STYLE="border: Black 0.5pt solid">&nbsp;</TD>
+    <TD STYLE="border: Black 0.5pt solid">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: bottom; border: Black 0.5pt solid">Alibaba Group Holding Limited</TD>
+    <TD STYLE="vertical-align: bottom; border: Black 0.5pt solid">BABA</TD>
+    <TD STYLE="vertical-align: bottom; border: Black 0.5pt solid; text-align: left">01609W102</TD>
+    <TD STYLE="vertical-align: bottom; border: Black 0.5pt solid">Annual Meeting 07.15.19</TD>
+    <TD STYLE="vertical-align: middle; border: Black 0.5pt solid">Effect an increase in the number of authorized Ordinary Shares to 32,000,000,000 and effect a one-to-eight share subdivision of the Company's Ordinary Shares.</TD>
+    <TD STYLE="vertical-align: bottom; border: Black 0.5pt solid">Mgmt</TD>
+    <TD STYLE="vertical-align: bottom; border: Black 0.5pt solid">Y&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; border: Black 0.5pt solid">For</TD>
+    <TD STYLE="vertical-align: bottom; border: Black 0.5pt solid">For</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border: Black 0.5pt solid">Alibaba Group Holding Limited</TD>
+    <TD STYLE="border: Black 0.5pt solid">BABA</TD>
+    <TD STYLE="border: Black 0.5pt solid; text-align: left">01609W102</TD>
+    <TD STYLE="border: Black 0.5pt solid">Annual Meeting 07.15.19</TD>
+    <TD STYLE="border: Black 0.5pt solid">Election of Director for a three year term: DANIEL ZHANG</TD>
+    <TD STYLE="border: Black 0.5pt solid">Mgmt</TD>
+    <TD STYLE="border: Black 0.5pt solid">Y&nbsp;</TD>
+    <TD STYLE="border: Black 0.5pt solid">For</TD>
+    <TD STYLE="border: Black 0.5pt solid">For</TD></TR>
+<TR>
+    <TD STYLE="vertical-align: bottom; border: Black 0.5pt solid">Alibaba Group Holding Limited</TD>
+    <TD STYLE="vertical-align: bottom; border: Black 0.5pt solid">BABA</TD>
+    <TD STYLE="vertical-align: bottom; border: Black 0.5pt solid; text-align: left">01609W102</TD>
+    <TD STYLE="vertical-align: bottom; border: Black 0.5pt solid">Annual Meeting 07.15.19</TD>
+    <TD STYLE="vertical-align: middle; border: Black 0.5pt solid; text-align: left">Election of Director for a three year term: CHEE HWA TUNG</TD>
+    <TD STYLE="vertical-align: bottom; border: Black 0.5pt solid">Mgmt</TD>
+    <TD STYLE="vertical-align: bottom; border: Black 0.5pt solid">Y&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom; border: Black 0.5pt solid">For</TD>
+    <TD STYLE="vertical-align: bottom; border: Black 0.5pt solid">For</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border: Black 0.5pt solid">Alibaba Group Holding Limited</TD>
+    <TD STYLE="border: Black 0.5pt solid">BABA</TD>
+    <TD STYLE="border: Black 0.5pt solid; text-align: left">01609W102</TD>
+    <TD STYLE="border: Black 0.5pt solid">Annual Meeting 07.15.19</TD>
+    <TD STYLE="border: Black 0.5pt solid">Election of Director for a three year term: JERRY YANG</TD>
+    <TD STYLE="border: Black 0.5pt solid">Mgmt</TD>
+    <TD STYLE="border: Black 0.5pt solid">Y&nbsp;</TD>
+    <TD STYLE="border: Black 0.5pt solid">For</TD>
+    <TD STYLE="border: Black 0.5pt solid">For</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border: Black 0.5pt solid">Alibaba Group Holding Limited</TD>
+    <TD STYLE="border: Black 0.5pt solid">BABA</TD>
+    <TD STYLE="border: Black 0.5pt solid; text-align: left">01609W102</TD>
+    <TD STYLE="border: Black 0.5pt solid">Annual Meeting 07.15.19</TD>
+    <TD STYLE="border: Black 0.5pt solid">Election of Director for a three year term: WAN LING MARTELLO</TD>
+    <TD STYLE="border: Black 0.5pt solid">Mgmt</TD>
+    <TD STYLE="border: Black 0.5pt solid">Y&nbsp;</TD>
+    <TD STYLE="border: Black 0.5pt solid">For</TD>
+    <TD STYLE="border: Black 0.5pt solid">For</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border: Black 0.5pt solid">Alibaba Group Holding Limited</TD>
+    <TD STYLE="border: Black 0.5pt solid">BABA</TD>
+    <TD STYLE="border: Black 0.5pt solid; text-align: left">01609W102</TD>

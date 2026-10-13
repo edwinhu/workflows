@@ -1,0 +1,55 @@
+<SEC-DOCUMENT>0000950123-04-010142.txt : 20040825
+<SEC-HEADER>0000950123-04-010142.hdr.sgml : 20040825
+<ACCEPTANCE-DATETIME>20040825112141
+ACCESSION NUMBER:		0000950123-04-010142
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040825
+DATE AS OF CHANGE:		20040825
+EFFECTIVENESS DATE:		20040825
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			PHOENIX MULTI PORTFOLIO FUND
+		CENTRAL INDEX KEY:			0000826737
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>y00960nvpx.txt
+<DESCRIPTION>PHOENIX MULTI-PORTFOLIO FUND
+<TEXT>
+<PAGE>
+<PAGE>
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-05436
+Reporting Period: 07/01/2003 - 06/30/2004
+Phoenix Multi-Portfolio Fund
+
+
+
+
+
+
+
+
+
+======================== PHOENIX-ABERDEEN INTERNATIONAL ========================
+
+
+ALPINE ELECTRONICS INC
+
+Ticker:       6816 JP        Security ID:  JP3126200009
+Meeting Date: JUN 25, 2004   Meeting Type: AGM
+Record Date:  MAR 31, 2004
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1     Approve Allocation of Income, Including   *         For        Management
+      the Following Dividends: Interim JY7.5,
+      Final JY 10, Special JY 0
+2     Amend Articles to: Authorize Share        *         Against    Management
+      Repurchases at Board s Discretion
+3     Elect Director                            *         For        Management
+4     Elect Director                            *         For        Management

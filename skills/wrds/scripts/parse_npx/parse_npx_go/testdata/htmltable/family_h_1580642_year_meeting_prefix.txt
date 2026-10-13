@@ -1,0 +1,155 @@
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 10pt Calibri, Helvetica, Sans-Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Registrant:</B></FONT></TD>
+    <TD COLSPAN="4" STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt"><FONT STYLE="font: 10pt Times New Roman, Times, Serif"><B>Advisors Preferred Trust -OnTrack Core Fund</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt; text-align: right; vertical-align: bottom"><FONT STYLE="font: 10pt Times New Roman, Times, Serif"><B>Item 1</B></FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD COLSPAN="4" STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font: 10pt Times New Roman, Times, Serif"><B>Investment Company Act file number: 811-22756</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    </TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>Reporting Period: </B></FONT></TD>
+    <TD COLSPAN="4" STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font: 10pt Times New Roman, Times, Serif"><B>July 1, 2017 through June 30, 2018</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    </TR>
+<TR STYLE="vertical-align: bottom">
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding: 0.75pt 5.4pt; width: 16%">&nbsp;</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt; width: 11%">&nbsp;</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt; width: 6%">&nbsp;</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt; width: 9%">&nbsp;</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt; width: 39%">&nbsp;</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt; width: 6%">&nbsp;</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt; width: 2%">&nbsp;</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt; width: 4%">&nbsp;</TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt; width: 7%">&nbsp;</TD>
+    </TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="9" STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(a) Issuer's Name</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(b) Exchange Ticker Symbol</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(c)&quot;CUSIP&quot; #</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(d) Shareholder Meeting Date</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(e) Matter Identification</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(f) Proposal Type</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(g) Voted</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(h) Vote Cast</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 10pt"><B>(i) For/Against Management</B></FONT></TD>
+    </TR>
+<TR>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">2U INC. </TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">TWOU</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">90214J</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">2018 Annual&nbsp;Meeting<BR>
+June 26, 2018</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Director Paul A. Maeder</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Issuer</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Y</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+    </TR>
+<TR>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">2U INC. </TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">TWOU</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">90214J</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">2018 Annual&nbsp;Meeting<BR>
+&nbsp;June 26, 2018</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Director Robert M. Stavis</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Issuer</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Y</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+    </TR>
+<TR>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">2U INC. </TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">TWOU</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">90214J</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">2018 Annual&nbsp;Meeting<BR>
+June 26, 2018</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Director Christopher J. Paucek</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Issuer</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Y</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+    </TR>
+<TR>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">2U INC. </TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">TWOU</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">90214J</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">2018 Annual&nbsp;Meeting<BR>
+June 26, 2018</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Director Gregory K. Peters</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Issuer</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Y</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+    </TR>
+<TR>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">2U INC. </TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">TWOU</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">90214J</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">2018 Annual&nbsp;Meeting<BR>
+June 26, 2018</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Ratification of the appointment of KPMG LLP as the Company's independent registered public accounting firm for the 2018 fiscal year.</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Issuer</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Y</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+    </TR>
+<TR>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">2U INC. </TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">TWOU</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">90214J</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">2018 Annual&nbsp;Meeting<BR>
+June 26, 2018</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Approval, on a non-binding advisory basis, of the compensation of the Company's Named Executive Officers.</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Issuer</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Y</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+    </TR>
+<TR>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">2U INC. </TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">TWOU</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">90214J</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">2018 Annual&nbsp;Meeting<BR>
+June 26, 2018</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Stockholder proposal regarding a director election majority vote standard, if properly presented at the meeting.</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Shareholder</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Y</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Against</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Against</TD>
+    </TR>
+<TR>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">AFLAC INCORPORATED </TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">AFL</TD>
+    <TD STYLE="vertical-align: bottom; border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">001055 10 2</FONT></TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">2018 Annual&nbsp;Meeting<BR>
+May 7, 2018</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Election of Director: Daniel P. Amos</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Issuer</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Y</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+    </TR>
+<TR>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">AFLAC INCORPORATED </TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">AFL</TD>
+    <TD STYLE="vertical-align: bottom; border-right: black 1pt solid; border-bottom: black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">001055 10 2</FONT></TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">2018 Annual&nbsp;Meeting<BR>
+May 7, 2018</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Election of Director: W. Paul Bowers</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Issuer</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">Y</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt">For</TD>
+    </TR>

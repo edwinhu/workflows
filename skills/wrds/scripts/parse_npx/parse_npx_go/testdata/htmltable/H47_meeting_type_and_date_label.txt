@@ -1,0 +1,540 @@
+<SEC-DOCUMENT>0001580642-18-004117.txt : 20180827
+<SEC-HEADER>0001580642-18-004117.hdr.sgml : 20180827
+<ACCEPTANCE-DATETIME>20180827171402
+ACCESSION NUMBER:		0001580642-18-004117
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20180630
+FILED AS OF DATE:		20180827
+DATE AS OF CHANGE:		20180827
+EFFECTIVENESS DATE:		20180827
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			MUTUAL FUND SERIES TRUST
+		CENTRAL INDEX KEY:			0001355064
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			OH
+		FISCAL YEAR END:			0630
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-21872
+		FILM NUMBER:		181039529
+
+	BUSINESS ADDRESS:	
+		STREET 1:		C/O GEMINI FUND SERVICES LLC
+		STREET 2:		4020 SOUTH 147TH STREET  STE 2
+		CITY:			OMAHA
+		STATE:			NE
+		ZIP:			68137
+		BUSINESS PHONE:		631 549 1859
+
+	MAIL ADDRESS:	
+		STREET 1:		C/O GEMINI FUND SERVICES LLC
+		STREET 2:		4020 SOUTH 147TH STREET  STE 2
+		CITY:			OMAHA
+		STATE:			NE
+		ZIP:			68137
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	CATALYST FUNDS
+		DATE OF NAME CHANGE:	20060303
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000022378
+<SERIES-NAME>Catalyst/SMH Total Return Income Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000064377
+<CLASS-CONTRACT-NAME>Catalyst/SMH Total Return Income Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>TRIFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000064378
+<CLASS-CONTRACT-NAME>Catalyst/SMH Total Return Income Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>TRICX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000128970
+<CLASS-CONTRACT-NAME>Catalyst/SMH Total Return Income Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>TRIIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189545
+<CLASS-CONTRACT-NAME>Catalyst/SMH Total Return Income Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000022598
+<SERIES-NAME>Eventide Gilead Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000065340
+<CLASS-CONTRACT-NAME>Eventide Gilead Fund Class N
+<CLASS-CONTRACT-TICKER-SYMBOL>ETGLX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080457
+<CLASS-CONTRACT-NAME>Eventide Gilead Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>ETAGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080458
+<CLASS-CONTRACT-NAME>Eventide Gilead Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>ETCGX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000080459
+<CLASS-CONTRACT-NAME>Eventide Gilead Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>ETILX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000182346
+<CLASS-CONTRACT-NAME>Eventide Gilead Fund Class T Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000039514
+<SERIES-NAME>Eventide Healthcare & Life Sciences Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121707
+<CLASS-CONTRACT-NAME>Eventide Healthcare & Life Sciences Fund Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ETAHX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121708
+<CLASS-CONTRACT-NAME>Eventide Healthcare & Life Sciences Fund Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ETCHX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121709
+<CLASS-CONTRACT-NAME>Eventide Healthcare & Life Sciences Fund Class N Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ETNHX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000121710
+<CLASS-CONTRACT-NAME>Eventide Healthcare & Life Sciences Fund Class I Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ETIHX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000182347
+<CLASS-CONTRACT-NAME>Eventide Healthcare & Life Sciences Fund Class T Shares
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000045780
+<SERIES-NAME>AlphaCentric Asset Rotation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142725
+<CLASS-CONTRACT-NAME>AlphaCentric Asset Rotation Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>ROTAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142726
+<CLASS-CONTRACT-NAME>AlphaCentric Asset Rotation Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>ROTCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000142727
+<CLASS-CONTRACT-NAME>AlphaCentric Asset Rotation Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>ROTIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189860
+<CLASS-CONTRACT-NAME>AlphaCentric Asset Rotation Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000045922
+<SERIES-NAME>Catalyst Systematic Alpha Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000143112
+<CLASS-CONTRACT-NAME>Catalyst Systematic Alpha Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>ATRAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000143113
+<CLASS-CONTRACT-NAME>Catalyst Systematic Alpha Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>ATRCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000143114
+<CLASS-CONTRACT-NAME>Catalyst Systematic Alpha Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>ATRFX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189553
+<CLASS-CONTRACT-NAME>Catalyst Systematic Alpha Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000047217
+<SERIES-NAME>Catalyst Time Value Trading Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000147956
+<CLASS-CONTRACT-NAME>Catalyst Time Value Trading Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>TVTAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000147957
+<CLASS-CONTRACT-NAME>Catalyst Time Value Trading Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>TVTCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000147958
+<CLASS-CONTRACT-NAME>Catalyst Time Value Trading Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>TVTIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189555
+<CLASS-CONTRACT-NAME>Catalyst Time Value Trading Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000048681
+<SERIES-NAME>AlphaCentric Bond Rotation Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000153408
+<CLASS-CONTRACT-NAME>AlphaCentric Bond Rotation Fund Class A
+<CLASS-CONTRACT-TICKER-SYMBOL>BDRAX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000153409
+<CLASS-CONTRACT-NAME>AlphaCentric Bond Rotation Fund Class C
+<CLASS-CONTRACT-TICKER-SYMBOL>BDRCX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000153410
+<CLASS-CONTRACT-NAME>AlphaCentric Bond Rotation Fund Class I
+<CLASS-CONTRACT-TICKER-SYMBOL>BDRIX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000189862
+<CLASS-CONTRACT-NAME>AlphaCentric Bond Rotation Fund Class T
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001355064
+<SERIES-ID>S000059102
+<SERIES-NAME>Eventide Global Dividend Opportunities Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000193764
+<CLASS-CONTRACT-NAME>Eventide Global Dividend Opportunities Fund Class A Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ETADX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000193765
+<CLASS-CONTRACT-NAME>Eventide Global Dividend Opportunities Fund Class C Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ETCDX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000193766
+<CLASS-CONTRACT-NAME>Eventide Global Dividend Opportunities Fund Class I Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ETIDX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000193767
+<CLASS-CONTRACT-NAME>Eventide Global Dividend Opportunities Fund Class N Shares
+<CLASS-CONTRACT-TICKER-SYMBOL>ETNDX
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000193768
+<CLASS-CONTRACT-NAME>Eventide Global Dividend Opportunities Fund Class T Shares
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>mfstnpx4.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font-size: 10pt; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="2" STYLE="font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font: 10pt Arial, Helvetica, Sans-Serif"><B>Registrant:&nbsp;&nbsp;Mutual Fund Series Trust</B></FONT></TD>
+    <TD NOWRAP STYLE="font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Fund Name - </B></FONT></TD>
+    <TD NOWRAP COLSPAN="3" STYLE="font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font: 10pt Arial, Helvetica, Sans-Serif"><B>AlphaCentric Asset Rotation Fund</B></FONT></TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="3" STYLE="font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font: 10pt Arial, Helvetica, Sans-Serif"><B>Investment Company 1940 Act File # 811-21872</B></FONT></TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="3" STYLE="font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font: 10pt Arial, Helvetica, Sans-Serif"><B>Reporting Period:&nbsp;&nbsp;July 1, 2017 - June 30, 2018</B></FONT></TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="width: 27%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 8%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 9%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 12%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 19%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 6%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 4%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 7%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 8%; padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP COLSPAN="2" STYLE="border-top: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 12pt"><B>N-PX Form Requirements</B></FONT></TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="border: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(a) Issuer's Name</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(b) Exchange Ticker Symbol</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(c)&quot;CUSIP&quot; #</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(d) Shareholder Meeting Type &amp; Date</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(e) Matter Identification</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(f) Proposal Type</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(g) Voted</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(h) Vote Cast</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(i) For or Against Management</B></FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-left: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Vanguard</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">VWO</FONT></TD>
+    <TD NOWRAP STYLE="font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">922042858</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-left: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: right"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">11/15/2017</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Directors</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Board</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For all</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+</TABLE>
+<P STYLE="font: 11pt Calibri, Helvetica, Sans-Serif; margin: 0 0 8pt">&nbsp;</P>
+
+<P STYLE="font: 11pt Calibri, Helvetica, Sans-Serif; margin: 0 0 8pt">&nbsp;</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font-size: 10pt; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Registrant:&nbsp;&nbsp;Mutual Fund Series Trust</B></FONT></TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Fund Name - </B></FONT></TD>
+    <TD NOWRAP COLSPAN="4" STYLE="font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font: 10pt Arial, Helvetica, Sans-Serif"><B>Catalyst Systematic Alpha Fund</B></FONT></TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="2" STYLE="font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Investment Company 1940 Act File # 811-21872</B></FONT></TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="2" STYLE="font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Reporting Period:&nbsp;&nbsp;July 1, 2017 - June 30, 2018</B></FONT></TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="width: 30%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 8%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 9%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 12%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 18%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 6%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 3%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 6%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 8%; padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP COLSPAN="2" STYLE="border-top: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 12pt"><B>N-PX Form Requirements</B></FONT></TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; border-bottom: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR>
+    <TD STYLE="border: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(a) Issuer's Name</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(b) Exchange Ticker Symbol</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(c)&quot;CUSIP&quot; #</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(d) Shareholder Meeting Date</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(e) Matter Identification</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(f) Proposal Type</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(g) Voted</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(h) Vote Cast</B></FONT></TD>
+    <TD STYLE="border-top: Black 1pt solid; border-right: Black 1pt solid; border-bottom: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(i) For or Against Management</B></FONT></TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-left: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-left: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="3" STYLE="border-right: Black 1pt solid; border-left: Black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font: 10pt Arial, Helvetica, Sans-Serif">There were no proxies voted for the reporting period.</FONT></TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; border-left: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="border-right: Black 1pt solid; padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+</TABLE>
+<P STYLE="font: 11pt Calibri, Helvetica, Sans-Serif; margin: 0 0 8pt">&nbsp;</P>
+
+<P STYLE="font: 11pt Calibri, Helvetica, Sans-Serif; margin: 0 0 8pt">&nbsp;</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 10pt Calibri, Helvetica, Sans-Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Registrant:&nbsp;&nbsp;Mutual Fund Series Trust</B></FONT></TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP COLSPAN="4" STYLE="padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Fund Name - Eventide Gilead Fund</B></FONT></TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="width: 24%; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Investment Company 1940 Act File # 811-21872</B></FONT></TD>
+    <TD NOWRAP STYLE="width: 8%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 6%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 11%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="width: 29%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 5%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 4%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 7%; padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 6%; padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>Reporting Period:&nbsp;&nbsp;July 1, 2017 - June 30, 2018</B></FONT></TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD>
+    <TD NOWRAP STYLE="padding: 0.75pt 5.4pt">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP COLSPAN="9" STYLE="border-top: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding: 0.75pt 5.4pt; text-align: center; vertical-align: bottom"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 12pt"><B>N-PX Form Requirements</B></FONT></TD></TR>
+<TR>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(a) Issuer's Name</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(b) Exchange Ticker Symbol</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(c)&quot;CUSIP&quot; #</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(d) Shareholder Meeting Type &amp; Date</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(e) Matter Identification</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(f) Proposal Type</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(g) Voted</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(h) Vote Cast</B></FONT></TD>
+    <TD STYLE="border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt; text-align: center"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt"><B>(i) For or Against Management</B></FONT></TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">The Trade Desk, Inc.</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">TTD</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">88339J105</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Annual; 07/20/2017</FONT></TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">&nbsp;&nbsp;&nbsp;1a. Elect Director Jeff T. Green</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Mgmt</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Withhold</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Against</FONT></TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">The Trade Desk, Inc.</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">TTD</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">88339J105</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Annual; 07/20/2017</FONT></TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">&nbsp;&nbsp;&nbsp;1b. Elect Director Eric B. Paley</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Mgmt</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Withhold</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Against</FONT></TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">The Trade Desk, Inc.</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">TTD</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">88339J105</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Annual; 07/20/2017</FONT></TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">&nbsp;&nbsp;&nbsp;2. Ratify PricewaterhouseCoopers LLP as Auditors</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Mgmt</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Cirrus Logic, Inc.</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">CRUS</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">172755100</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Annual; 07/28/2017</FONT></TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">&nbsp;&nbsp;&nbsp;1.1. Elect Director John C. Carter</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Mgmt</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Cirrus Logic, Inc.</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">CRUS</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">172755100</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Annual; 07/28/2017</FONT></TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">&nbsp;&nbsp;&nbsp;1.2. Elect Director Alexander M. Davern</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Mgmt</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; border-left: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Cirrus Logic, Inc.</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">CRUS</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">172755100</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Annual; 07/28/2017</FONT></TD>
+    <TD STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">&nbsp;&nbsp;&nbsp;1.3. Elect Director Timothy R. Dehne</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Mgmt</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">Y</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; border-right: Black 1pt solid; border-bottom: Black 1pt solid; padding-top: 0.75pt; padding-right: 5.4pt; padding-left: 5.4pt"><FONT STYLE="font-family: Arial, Helvetica, Sans-Serif; font-size: 10pt">For</FONT></TD></TR>

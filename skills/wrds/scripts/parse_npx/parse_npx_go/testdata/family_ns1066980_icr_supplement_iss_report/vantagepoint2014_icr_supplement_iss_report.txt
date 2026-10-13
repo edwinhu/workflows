@@ -1,0 +1,78 @@
+Fund Name : Vantagepoint Discovery Fund
+
+________________________________________________________________________________
+Xenoport, Inc.
+Ticker     Security ID:             Meeting Date          Meeting Status
+XNPT       CUSIP 98411C100          06/11/2014            Take No Action
+Meeting Type                        Country of Trade
+Proxy Contest                       United States
+Issue No.  Description              Proponent  Mgmt Rec   Vote Cast  For/Against
+                                                                      Mgmt
+
+1.1        KEVIN J. CAMERON         Mgmt       N/A        TNA        N/A
+1.2        RAEL MAZANSKY, M.D.      Mgmt       N/A        TNA        N/A
+1.3        CHARLES A. ROWLAND, JR.  Mgmt       N/A        TNA        N/A
+
+<PAGE>
+
+                               INTERNATIONAL FUND
+
+ARTISAN PARTNERS LIMITED PARTNERSHIP
+
+******************************* FORM N-Px REPORT *******************************
+
+ICA File Number: 811-08941
+Reporting Period: 07/01/2013 - 06/30/2014
+The VantagePoint Funds
+
+
+
+
+
+
+
+
+
+============================ The VantagePoint Funds ============================
+
+
+ACTELION LTD.
+
+Ticker:       ATLN           Security ID:  H0032X135
+Meeting Date: MAY 08, 2014   Meeting Type: Annual
+Record Date:
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Accept Financial Statements and         For       For          Management
+      Statutory Reports
+2     Approve Allocation of Income and        For       For          Management
+      Dividends of CHF 1.20 per Share
+3     Approve Remuneration Report             For       For          Management
+      (Non-Binding)
+4     Approve Discharge of Board and Senior   For       For          Management
+      Management
+5     Approve CHF 3.1 Million Reduction in    For       For          Management
+      Share Capital via Cancellation of
+      Repurchased Shares
+6.1a  Reelect Jean-Pierre Garnier as Director For       For          Management
+6.1b  Reelect Jean-Paul Clozel as Director    For       For          Management
+6.1c  Reelect Juhani Anttila as Director      For       For          Management
+6.1d  Reelect Robert Bertolini as Director    For       For          Management
+6.1e  Reelect Carl Feldbaum as Director       For       For          Management
+6.1f  Reelect John J. Greisch as Director     For       For          Management
+6.1g  Reelect Peter Gruss as Director         For       For          Management
+6.1h  Reelect Werner Henrich as Director      For       For          Management
+6.1i  Reelect Michael Jacobi as Director      For       For          Management
+6.1j  Reelect Jean Malo as Director           For       For          Management
+6.2   Elect Jean-Pierre Garnier as Board      For       For          Management
+      Chairman
+6.3.1 Appoint Werner Henrich as Member of     For       For          Management
+      the Compensation Committee
+6.3.2 Appoint Jean-Pierre Garnier as Member   For       For          Management
+      of the Compensation Committee
+6.3.3 Appoint John Greisch as Member and      For       For          Management
+      Chairman of the Compensation Committee
+7     Designate Marc Schaffner as             For       For          Management
+      Independent Proxy
+8     Ratify Ernst & Young AG as Auditors     For       For          Management
+9.1   Amend Articles Re: Ordinance Against    For       For          Management

@@ -1,0 +1,49 @@
+		COMPANY CONFORMED NAME:			LEUTHOLD FUNDS INC
+		CENTRAL INDEX KEY:			0001000351
+<TEXT>
+
+Investment Company Report
+
+MEETING DATE RANGE:        REPORT DATE: 01-jul-2004  -  30-jun-2005  09-Aug-2005
+
+                                                                    Page 1 of 90
+
+LEUTHOLD CORE INVESTMENT FUND
+
+
+ ACXIOM CORPORATION
+
+     SECURITY:  005125109                              AGENDA NUMBER:  932202978
+
+       TICKER:  ACXM                                    MEETING TYPE:  Annual
+
+         ISIN:                                          MEETING DATE:  04-Aug-04
+
+
+<TABLE>
+<CAPTION>
+PROP. #   PROPOSAL                                          PROPOSED  PROPOSAL VOTE    FOR/AGAINST
+                                                               BY                      MANAGEMENT
+<S>     <C>                                                 <C>       <C>              <C>
+ 01      DIRECTOR
+
+        1     DR. MARY L. GOOD                                 Mgmt        For            For
+
+
+
+        2     RODGER S. KLINE                                  Mgmt        For            For
+
+
+
+        3     STEPHEN M. PATTERSON                             Mgmt        For            For
+
+
+
+        4     JAMES T. WOMBLE                                  Mgmt        For            For
+
+
+
+ 02      APPROVAL OF AN INCREASE IN THE                        Mgmt        For            For
+         NUMBER OF SHARES AVAILABLE UNDER
+         THE 2000 STOCK OPTION PLAN.
+</TABLE>

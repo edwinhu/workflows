@@ -1,0 +1,131 @@
+
+YPF SA
+
+Ticker:       YPFD           Security ID:  984245100
+Meeting Date: APR 26, 2019   Meeting Type: Annual/Special
+Record Date:  APR 01, 2019
+
+#     Proposal                                Mgt Rec   Vote Cast    Sponsor
+1     Designate Two Shareholders to Sign      For       For          Management
+      Minutes of Meeting
+2     Approve Exemption from Preemptive       For       For          Management
+      Offer of Shares to Shareholders
+      Pursuant to Article 67 of Law No.
+      26,831 in Relation to Repurchase of
+      Company's Shares Related to Creation
+      of Long Term Compensation Plan
+3     Consider Individual and Consolidated    For       For          Management
+      Financial Statements and Statutory
+      Reports
+4     Approve Allocation of Income;           For       For          Management
+      Constitution of Reserves; Dividend
+      Distribution
+5     Approve Remuneration of Auditors for    For       For          Management
+      FY 2018
+6     Approve Auditors for FY 2019 and Fix    For       For          Management
+      Their Remuneration
+7     Consider Discharge of Directors and     For       For          Management
+      Members of Internal Statutory Auditors
+      Committee (Comision Fiscalizadora)
+8     Approve Remuneration of Directors       For       For          Management
+9     Approve Remuneration of Internal        For       For          Management
+      Statutory Auditors Committee (Comision
+      Fiscalizadora)
+10    Fix Number of Members of Internal       For       For          Management
+      Statutory Auditors Committee (Comision
+      Fiscalizadora) and Alternates
+11    Elect One Member of Internal Statutory  None      None         Management
+      Auditors Committee (Comision
+      Fiscalizadora) and Alternate for Class
+      A Shares
+12    Elect One Member of Internal Statutory  For       For          Management
+      Auditors Committee (Comision
+      Fiscalizadora) and Alternate for Class
+      D Shares
+13    Fix Number of Directors and Alternates  For       For          Management
+14    Elect One Director and Alternate for    None      None         Management
+      Class A Shares and Determination of
+      their Tenure
+15    Elect Directors and Their Alternates    For       For          Management
+      for Class D Shares and Determination
+      of their Tenure
+16    Authorize Remuneration of Directors     For       For          Management
+      and Members of Internal Statutory
+      Auditors Committee (Comision
+      Fiscalizadora) for FY 2019
+17    Consider Absorption of Bajo del Toro I  For       For          Management
+      SRL and Bajo del Toro II SRL
+18    Consider Absorption Balance Sheet of    For       For          Management
+      YPF SA and Consolidated Balance Sheet
+      of YPF SA, Bajo del Toro I SRL and
+      Bajo del Toro II SRL
+19    Consider Preliminary Absorption         For       For          Management
+      Agreement and Absorption Prospectus
+20    Authorize to Sign Definitive Agreement  For       For          Management
+      of Absorption in Name and
+      Representation of Company
+
+========== END NPX REPORT
+
+</PRE>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0"><B></B></P>
+
+<!-- Field: Page; Sequence: 4; Value: 2 -->
+    <DIV STYLE="margin-top: 6pt; margin-bottom: 6pt"><TABLE CELLPADDING="0" CELLSPACING="0" STYLE="border-collapse: collapse; width: 100%; font-size: 9pt"><TR STYLE="vertical-align: top; text-align: left"><TD STYLE="width: 33%">&nbsp;</TD><TD STYLE="width: 34%; text-align: center">-<!-- Field: Sequence; Type: Arabic; Name: PageNo -->4<!-- Field: /Sequence -->-</TD><TD STYLE="width: 33%; text-align: right">&nbsp;</TD></TR></TABLE></DIV>
+    <DIV STYLE="page-break-before: always; margin-top: 6pt"><P STYLE="margin: 0pt">&nbsp;</P></DIV>
+    <!-- Field: /Page -->
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0"></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0"><B>ALPS/RED ROCKS LISTED PRIVATE EQUITY FUND</B></P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="font: 11pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+    <TD NOWRAP STYLE="width: 100%; font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B>ALPS/Red Rocks Listed Private Equity Fund</B></FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD NOWRAP STYLE="font-size: 11pt"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Red Rocks Capital, LLC</FONT></TD></TR>
+<TR STYLE="vertical-align: top">
+    <TD NOWRAP STYLE="font-size: 11pt; border-bottom: Black 1pt solid"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Period: 7/1/2018 - 6/30/2019</FONT></TD></TR>
+</TABLE>
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<P STYLE="font: 11pt Times New Roman, Times, Serif; margin: 0">&nbsp;</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="2" STYLE="font: 11pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+<TR STYLE="vertical-align: top">
+    <TD STYLE="width: 25%; text-align: left; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B><I>Issuer Name</I></B></FONT></TD>
+    <TD STYLE="width: 5%; text-align: left; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B><I>Ticker</I></B></FONT></TD>
+    <TD STYLE="width: 5%; text-align: left; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B><I>Meeting Date</I></B></FONT></TD>
+    <TD STYLE="width: 5%; text-align: left; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B><I>Primary Security ID</I></B></FONT></TD>
+    <TD STYLE="width: 5%; text-align: left; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B><I>Meeting Type</I></B></FONT></TD>
+    <TD STYLE="width: 5%; text-align: left; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B><I>Record Date</I></B></FONT></TD>
+    <TD STYLE="width: 5%; text-align: left; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B><I>Proposal Number</I></B></FONT></TD>
+    <TD STYLE="width: 30%; text-align: left; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B><I>Proposal Text</I></B></FONT></TD>
+    <TD STYLE="width: 5%; text-align: left; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B><I>Proponent</I></B></FONT></TD>
+    <TD STYLE="width: 5%; text-align: left; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B><I>Mgmt Rec</I></B></FONT></TD>
+    <TD STYLE="width: 5%; text-align: left; vertical-align: bottom"><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt"><B><I>Vote Instruction</I></B></FONT></TD></TR>
+<TR STYLE="vertical-align: top; background-color: Gainsboro">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">3i Infrastructure plc</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">3IN</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">07/05/2018</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">G8873L178</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Annual</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">07/03/2018</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;&nbsp;&nbsp;1</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Accept Financial Statements and Statutory Reports</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Mgmt</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">For</FONT></TD></TR>
+<TR STYLE="vertical-align: top; background-color: White">
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">3i Infrastructure plc</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">3IN</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">07/05/2018</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">G8873L178</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">Annual</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">07/03/2018</FONT></TD>
+    <TD><FONT STYLE="font-family: Times New Roman, Times, Serif; font-size: 11pt">&nbsp;&nbsp;&nbsp;2</FONT></TD>

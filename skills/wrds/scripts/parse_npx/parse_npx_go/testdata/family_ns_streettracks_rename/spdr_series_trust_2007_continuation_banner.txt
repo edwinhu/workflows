@@ -1,0 +1,533 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ Kd3674oJZhy3hXkRdKxIG6RzRxcMn8U+e3/OYexBJaK4ZF2KriG9l3b/7dI/Msgo
+ kvtc976n4w0+SDT8BRcsdg==
+
+<SEC-DOCUMENT>0000950135-07-005301.txt : 20070827
+<SEC-HEADER>0000950135-07-005301.hdr.sgml : 20070827
+<ACCEPTANCE-DATETIME>20070827170822
+ACCESSION NUMBER:		0000950135-07-005301
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20070630
+FILED AS OF DATE:		20070827
+DATE AS OF CHANGE:		20070827
+EFFECTIVENESS DATE:		20070827
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SPDR SERIES TRUST
+		CENTRAL INDEX KEY:			0001064642
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			MA
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-08839
+		FILM NUMBER:		071081365
+
+	BUSINESS ADDRESS:	
+		STREET 1:		ONE LINCOLN STREET
+		STREET 2:		LCC6
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02111
+		BUSINESS PHONE:		617-662-3909
+
+	MAIL ADDRESS:	
+		STREET 1:		ONE LINCOLN STREET
+		STREET 2:		LCC6
+		CITY:			BOSTON
+		STATE:			MA
+		ZIP:			02111
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	STREETTRACKS SERIES TRUST
+		DATE OF NAME CHANGE:	20000925
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	INDEX EXCHANGE LISTED SECURITIES TRUST
+		DATE OF NAME CHANGE:	19980622
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000006973
+<SERIES-NAME>SPDR(R) DJ Wilshire Total Market ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019026
+<CLASS-CONTRACT-NAME>SPDR(R) DJ Wilshire Total Market ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>TMW
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000006974
+<SERIES-NAME>SPDR(R) DJ Wilshire Small Cap Value ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019027
+<CLASS-CONTRACT-NAME>SPDR(R) DJ Wilshire Small Cap Value ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>DSV
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000006975
+<SERIES-NAME>SPDR(R) DJ Global Titans ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019028
+<CLASS-CONTRACT-NAME>SPDR(R) DJ Global Titans ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>DGT
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000006976
+<SERIES-NAME>DJ Wilshire REIT ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019029
+<CLASS-CONTRACT-NAME>DJ Wilshire REIT ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>RWR
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000006977
+<SERIES-NAME>KBW Bank ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019030
+<CLASS-CONTRACT-NAME>KBW Bank ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>KBE
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000006978
+<SERIES-NAME>KBW Capital Markets ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019031
+<CLASS-CONTRACT-NAME>KBW Capital Markets ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>KCE
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000006979
+<SERIES-NAME>KBW Insurance ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019032
+<CLASS-CONTRACT-NAME>KBW Insurance ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>KIE
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000006980
+<SERIES-NAME>Morgan Stanley Technology ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019033
+<CLASS-CONTRACT-NAME>Morgan Stanley Technology ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>MTK
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000006981
+<SERIES-NAME>SPDR(R) S&P(R) Dividend ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019034
+<CLASS-CONTRACT-NAME>SPDR(R) S&P(R) Dividend ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>SDY
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000006982
+<SERIES-NAME>SPDR O-Strip ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019035
+<CLASS-CONTRACT-NAME>SPDR O-Strip ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>OOO
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000006983
+<SERIES-NAME>SPDR(R) DJ Wilshire Large Cap ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019036
+<CLASS-CONTRACT-NAME>SPDR(R) DJ Wilshire Large Cap ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>ELR
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000006984
+<SERIES-NAME>SPDR(R) DJ Wilshire Large Cap Growth ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019037
+<CLASS-CONTRACT-NAME>SPDR(R) DJ Wilshire Large Cap Growth ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>ELG
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000006985
+<SERIES-NAME>SPDR(R) DJ Wilshire Large Cap Value ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019038
+<CLASS-CONTRACT-NAME>SPDR(R) DJ Wilshire Large Cap Value ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>ELV
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000006986
+<SERIES-NAME>SPDR(R) DJ Wilshire Mid Cap ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019039
+<CLASS-CONTRACT-NAME>SPDR(R) DJ Wilshire Mid Cap ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>EMM
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000006987
+<SERIES-NAME>SPDR(R) DJ Wilshire Mid Cap Growth ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019040
+<CLASS-CONTRACT-NAME>SPDR(R) DJ Wilshire Mid Cap Growth ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>EMG
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000006988
+<SERIES-NAME>SPDR(R) DJ Wilshire Mid Cap Value ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019041
+<CLASS-CONTRACT-NAME>SPDR(R) DJ Wilshire Mid Cap Value ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>EMV
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000006989
+<SERIES-NAME>SPDR(R) DJ Wilshire Small Cap ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019042
+<CLASS-CONTRACT-NAME>SPDR(R) DJ Wilshire Small Cap ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>DSC
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000006990
+<SERIES-NAME>SPDR(R) DJ Wilshire Small Cap Growth ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000019043
+<CLASS-CONTRACT-NAME>SPDR(R) DJ Wilshire Small Cap Growth ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>DSG
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000010018
+<SERIES-NAME>SPDR(R) S&P(R) Biotech ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000027706
+<CLASS-CONTRACT-NAME>SPDR(R) S&P(R) Biotech ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>XBI
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000010019
+<SERIES-NAME>SPDR(R) S&P(R) Homebuilders ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000027707
+<CLASS-CONTRACT-NAME>SPDR(R) S&P(R) Homebuilders ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>XHB
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000010020
+<SERIES-NAME>SPDR(R) S&P(R) Semiconductor ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000027708
+<CLASS-CONTRACT-NAME>SPDR(R) S&P(R) Semiconductor ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>XSD
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000012319
+<SERIES-NAME>SPDR(R) S&P(R) Oil & Gas Exploration & Production ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000033535
+<CLASS-CONTRACT-NAME>SPDR(R) S&P(R) Oil & Gas Exploration & Production ETF
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000012321
+<SERIES-NAME>SPDR(R) S&P(R) Pharmaceuticals ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000033537
+<CLASS-CONTRACT-NAME>SPDR(R) S&P(R) Pharmaceuticals ETF
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000012322
+<SERIES-NAME>SPDR(R) S&P(R) Retail ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000033538
+<CLASS-CONTRACT-NAME>SPDR(R) S&P(R) Retail ETF
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000012325
+<SERIES-NAME>KBW Regional Banking(SM) ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000033541
+<CLASS-CONTRACT-NAME>KBW Regional Banking(SM) ETF
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000012333
+<SERIES-NAME>SPDR(R) S&P(R) Metals & Mining ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000033549
+<CLASS-CONTRACT-NAME>SPDR(R) S&P(R) Metals & Mining ETF
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000012334
+<SERIES-NAME>SPDR(R) S&P(R) Oil & Gas Equipment & Services ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000033550
+<CLASS-CONTRACT-NAME>SPDR(R) S&P(R) Oil & Gas Equipment & Services ETF
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000017326
+<SERIES-NAME>SPDR(R) Lehman 1-3 Month T-Bill ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000047963
+<CLASS-CONTRACT-NAME>SPDR(R) Lehman 1-3 Month T-Bill ETF
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000017328
+<SERIES-NAME>SPDR(R) Lehman Intermediate Term Treasury ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000047965
+<CLASS-CONTRACT-NAME>SPDR(R) Lehman Intermediate Term Treasury ETF
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000017329
+<SERIES-NAME>SPDR(R) Lehman Long Term Treasury ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000047966
+<CLASS-CONTRACT-NAME>SPDR(R) Lehman Long Term Treasury ETF
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000017330
+<SERIES-NAME>SPDR(R) Barclays Capital TIPS ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000047967
+<CLASS-CONTRACT-NAME>SPDR(R) Barclays Capital TIPS ETF
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001064642
+<SERIES-ID>S000017334
+<SERIES-NAME>SPDR(R) Lehman Aggregate Bond ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000047971
+<CLASS-CONTRACT-NAME>SPDR(R) Lehman Aggregate Bond ETF
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>b66608a1nvpx.txt
+<DESCRIPTION>SPDR SERIES TRUST
+<TEXT>
+<PAGE>
+
+                                  UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                              WASHINGTON, DC 20549
+
+                                    FORM N-PX
+
+          ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT
+                               INVESTMENT COMPANY
+
+                  Investment Company Act file number 811-08839
+
+                              SPDR(R) Series Trust
+               (Exact name of registrant as specified in charter)
+
+                      One Lincoln Street, Boston, MA 02111
+               (Address of principal executive offices) (Zip code)
+
+           Ryan M. Louvar, Esq., State Street Bank and Trust Company,
+                   One Lincoln Street /LCC6, Boston, MA 02111
+                     (Name and address of agent for service)
+
+Registrant's telephone number, including area code: (866) 787-2257
+
+Date of fiscal year end: June 30
+
+Date of reporting period: June 30, 2007
+<PAGE>
+
+Item 1. Proxy Voting Record.
+
+<PAGE>
+
+                               VOTE SUMMARY REPORT
+
+                          July 01, 2006 - June 30, 2007
+
+SPDR(R) DJ WILSHIRE LARGE CAP ETF
+
+<PAGE>
+
+                               VOTE SUMMARY REPORT
+                           Jul 01, 2006 - Jun 30, 2007
+
+<TABLE>
+<CAPTION>
+Mtg                          Company/                           Mgmt        Vote      Record               Shares
+Date/Type                 Ballot Issues            Security     Rec         Cast       Date     Prpnent     Voted
+- ---------------  -------------------------------  ---------  ---------  -----------  --------  --------  ----------
+<S>              <C>                              <C>        <C>        <C>          <C>       <C>       <C>
+05/08/07 - A     3M CO *MMM*                      88579Y101                          03/09/07                   471
+                 1     Elect Directors                       For        For                    Mgmt
+                 2     Ratify Auditors                       For        For                    Mgmt
+                 3     Reduce Supermajority Vote             For        For                    Mgmt
+                       Requirement
+                 4     Rescind Fair Price Provision          For        For                    Mgmt
+                 5     Approve Executive Incentive Bonus     For        For                    Mgmt
+                       Plan
+                 6     Approve Executive Incentive Bonus     For        For                    Mgmt
+                       Plan
+                 7     Pay For Superior Performance          Against    Against                ShrHoldr
+
+06/21/07 - A     A.G. EDWARDS, INC. *AGE*         281760108                          05/01/07                    54
+                 1     Elect Directors                       For        For                    Mgmt
+                 2     Ratify Auditors                       For        For                    Mgmt
+
+04/27/07 - A     ABBOTT LABORATORIES *ABT*        002824100                          02/28/07                 1,073
+                 1     Elect Directors                       For        For                    Mgmt
+                 2     Ratify Auditors                       For        For                    Mgmt
+                 3     Advisory Vote to Ratify Named         Against    Against                ShrHoldr
+                       Executive Officers' Compensation
+                 4     Separate Chairman and CEO Positions   Against    Against                ShrHoldr
+
+06/13/07 - A     ABERCROMBIE & FITCH CO. *ANF*    002896207                          04/17/07                    60
+                 1     Elect Directors                       For        For                    Mgmt
+                 2     Amend Executive Incentive Bonus Plan  For        For                    Mgmt
+                 3     Approve Omnibus Stock Plan            For        Against                Mgmt
+                 4     Ratify Auditors                       For        For                    Mgmt
+
+02/07/07 - A     ACCENTURE LTD BERMUDA *ACN*      G1150G111                          12/11/06                   520
+                       MEETING FOR ADR HOLDERS
+                 1     APPOINTMENT OF THE FOLLOWING          For        For                    Mgmt
+                       NOMINEE TO THE BOARD OF DIRECTORS:
+                       NOBUYUKI IDEI.
+                 2     APPOINTMENT OF THE FOLLOWING          For        For                    Mgmt
+                       NOMINEE TO THE BOARD OF DIRECTORS:
+                       MARJORIE MAGNER.
+                 3     APPOINTMENT OF THE FOLLOWING          For        For                    Mgmt
+                       NOMINEE TO THE BOARD OF DIRECTORS:
+                       DENNIS F. HIGHTOWER.
+                 4     APPOINTMENT OF THE FOLLOWING          For        For                    Mgmt
+                       NOMINEE TO THE BOARD OF DIRECTORS:
+                       WILLIAM L. KIMSEY.
+</TABLE>
+
+
+                                                                          Page 1
+
+<PAGE>
+
+                               VOTE SUMMARY REPORT
+                           Jul 01, 2006 - Jun 30, 2007
+
+<TABLE>
+<CAPTION>
+Mtg                          Company/                           Mgmt        Vote      Record               Shares
+Date/Type                 Ballot Issues            Security     Rec         Cast       Date     Prpnent     Voted
+- ---------------  -------------------------------  ---------  ---------  -----------  --------  --------  ----------
+<S>              <C>                              <C>        <C>        <C>          <C>       <C>       <C>
+                 5     APPOINTMENT OF THE FOLLOWING          For        For                    Mgmt
+                       NOMINEE TO THE BOARD OF DIRECTORS:
+                       ROBERT I. LIPP.
+                 6     APPOINTMENT OF THE FOLLOWING          For        Against                Mgmt
+                       NOMINEE TO THE BOARD OF DIRECTORS:
+                       WULF VON SCHIMMELMANN.
+                 7     Ratify Auditors                       For        For                    Mgmt
+
+05/17/07 - A     ACE LTD. *ACE*                   G0070K103                          03/30/07                   225
+                       MEETING FOR HOLDERS OF ADRS
+                 1     ELECTION OF DIRECTOR: BRIAN           For        For                    Mgmt
+                       DUPERREAULT
+                 2     ELECTION OF DIRECTOR: ROBERT M.       For        For                    Mgmt
+                       HERNANDEZ
+                 3     ELECTION OF DIRECTOR: PETER MENIKOFF  For        For                    Mgmt
+                 4     ELECTION OF DIRECTOR: ROBERT RIPP     For        For                    Mgmt
+                 5     ELECTION OF DIRECTOR: DERMOT F.       For        For                    Mgmt
+                       SMURFIT
+                 6     RATIFICATION OF THE APPOINTMENT OF    For        For                    Mgmt
+                       PRICEWATERHOUSECOOPERS LLP AS THE
+                       INDEPENDENT REGISTERED PUBLIC
+                       ACCOUNTING FIRM OF ACE LIMITED FOR
+                       THE FISCAL YEAR ENDING DECEMBER 31,
+                       2007
+
+09/14/06 - A     ACTIVISION, INC. *ATVI*          004930202                          07/17/06                   116
+                 1     Elect Directors                       For        For                    Mgmt
+                 2     Ratify Auditors                       For        For                    Mgmt
+                 3     Increase Board Diversity              Against    Against                ShrHoldr
+                 4     Other Business                        For        Against                Mgmt
+
+04/05/07 - A     ADOBE SYSTEMS INC. *ADBE*        00724F101                          02/12/07                   545
+                 1     Elect Directors                       For        For                    Mgmt
+                 2     Amend Stock Option Plan               For        For                    Mgmt
+                 3     Stock Retention/Holding Period        Against    Against                ShrHoldr
+                 4     Ratify Auditors                       For        For                    Mgmt
+
+05/16/07 - A     ADVANCE AUTO PARTS INC *AAP*     00751Y106                          03/28/07                    80
+                 1     Elect Directors                       For        For                    Mgmt
+                 2     Ratify Auditors                       For        For                    Mgmt
+</TABLE>
+Date: August 24, 2007
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+-----END PRIVACY-ENHANCED MESSAGE-----

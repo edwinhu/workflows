@@ -1,0 +1,3037 @@
+<SEC-DOCUMENT>0000716792-12-000017.txt : 20120824
+<SEC-HEADER>0000716792-12-000017.hdr.sgml : 20120824
+<ACCEPTANCE-DATETIME>20120824094354
+ACCESSION NUMBER:		0000716792-12-000017
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20120630
+FILED AS OF DATE:		20120824
+DATE AS OF CHANGE:		20120824
+EFFECTIVENESS DATE:		20120824
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			FIRST INVESTORS LIFE SERIES FUNDS
+		CENTRAL INDEX KEY:			0000770906
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-04325
+		FILM NUMBER:		121053314
+
+	BUSINESS ADDRESS:	
+		STREET 1:		110 WALL ST
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10005
+		BUSINESS PHONE:		1-212-858-8000
+
+	MAIL ADDRESS:	
+		STREET 1:		RARITAN PLAZA 1
+		STREET 2:		9TH FLOOR
+		CITY:			EDISON
+		STATE:			NJ
+		ZIP:			08837-3620
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	FIRST INVESTORS LIFE SERIES FUND
+		DATE OF NAME CHANGE:	19920703
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0000770906
+<SERIES-ID>S000010189
+<SERIES-NAME>FIRST INVESTORS LIFE SERIES BLUE CHIP FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028229
+<CLASS-CONTRACT-NAME>FIRST INVESTORS LIFE SERIES BLUE CHIP FUND
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000770906
+<SERIES-ID>S000010190
+<SERIES-NAME>FIRST INVESTORS LIFE SERIES DISCOVERY FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028230
+<CLASS-CONTRACT-NAME>FIRST INVESTORS LIFE SERIES DISCOVERY FUND
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000770906
+<SERIES-ID>S000010191
+<SERIES-NAME>FIRST INVESTORS LIFE SERIES GOVERNMENT FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028231
+<CLASS-CONTRACT-NAME>FIRST INVESTORS LIFE SERIES GOVERNMENT FUND
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000770906
+<SERIES-ID>S000010192
+<SERIES-NAME>FIRST INVESTORS LIFE SERIES INVESTMENT GRADE FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028232
+<CLASS-CONTRACT-NAME>FIRST INVESTORS LIFE SERIES INVESTMENT GRADE FUND
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000770906
+<SERIES-ID>S000010193
+<SERIES-NAME>FIRST INVESTORS LIFE SERIES VALUE FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028233
+<CLASS-CONTRACT-NAME>FIRST INVESTORS LIFE SERIES VALUE FUND
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000770906
+<SERIES-ID>S000010196
+<SERIES-NAME>FIRST INVESTORS LIFE SERIES TARGET MATURITY 2015 FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028236
+<CLASS-CONTRACT-NAME>FIRST INVESTORS LIFE SERIES TARGET MATURITY 2015 FUND
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000770906
+<SERIES-ID>S000010197
+<SERIES-NAME>FIRST INVESTORS LIFE SERIES SELECT GROWTH FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028237
+<CLASS-CONTRACT-NAME>FIRST INVESTORS LIFE SERIES SELECT GROWTH FUND
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000770906
+<SERIES-ID>S000010198
+<SERIES-NAME>FIRST INVESTORS LIFE SERIES HIGH YIELD FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028238
+<CLASS-CONTRACT-NAME>FIRST INVESTORS LIFE SERIES HIGH YIELD FUND
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000770906
+<SERIES-ID>S000010199
+<SERIES-NAME>FIRST INVESTORS LIFE SERIES CASH MANAGEMENT FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028239
+<CLASS-CONTRACT-NAME>FIRST INVESTORS LIFE SERIES CASH MANAGEMENT FUND
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000770906
+<SERIES-ID>S000010200
+<SERIES-NAME>FIRST INVESTORS LIFE SERIES INTERNATIONAL FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028240
+<CLASS-CONTRACT-NAME>FIRST INVESTORS LIFE SERIES INTERNATIONAL FUND
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0000770906
+<SERIES-ID>S000010201
+<SERIES-NAME>FIRST INVESTORS LIFE SERIES GROWTH & INCOME FUND
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000028241
+<CLASS-CONTRACT-NAME>FIRST INVESTORS LIFE SERIES GROWTH & INCOME FUND
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>LifeNPX06302012.htm
+<DESCRIPTION>FIRST INVESTORS LIFE SERIES FUNDS
+<TEXT>
+<p><b>First Investors Life Series Funds - Government Fund</p>
+</b>
+<p>None</p>
+<p></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><b>First Investors Life Series Funds - Growth &amp; Income Fund</p>
+</b>
+<table CELLSPACING="0" BORDER="0" CELLPADDING="7" WIDTH="698" DIR="LTR">
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="64"><font FACE="Arial" SIZE="1">Varian
+    Semiconductor<br>
+    Equipment Associates,<br>
+    Inc.</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="64"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="64"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="64"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="64"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="64"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Ticker
+    VSEA</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    <br>
+    Type</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Record
+    <br>
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    11-Aug-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Special</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    <p ALIGN="RIGHT">27-Jun-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="2">CUSIP:
+    922207105</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">
+    Proponent</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Mgmt
+    Rec</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Vote
+    <br>
+    Instruction</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Approve
+    Merger Agreement</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Adjourn
+    Meeting</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Advisory Vote on Golden Parachutes</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Medtronic, Inc.</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Ticker
+    MDT</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    <br>
+    Type</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Record
+    <br>
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    25-Aug-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Annual</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    <p ALIGN="RIGHT">27-Jun-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="2">CUSIP:
+    585055106</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">
+    Proponent</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Mgmt
+    Rec</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Vote
+    <br>
+    Instruction</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.1</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Director Richard H. Anderson</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Director David L. Calhoun</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Withhold</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Victor J. Dzau</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.4</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Omar Ishrak</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.5</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Shirley Ann Jackson</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.6</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director James T. Lenehan</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.7</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Denise M. O'Leary</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.8</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Kendall J. Powell</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.9</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Robert C. Pozen</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.10</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Jean-Pierre Rosso</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.11</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Jack W. Schuler</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Ratify
+    Auditors</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">
+    Advisory Vote to Ratify Named Executive <br>
+    Officers' Compensation</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Against</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">4</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Advisory Vote on Say on Pay Frequency</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">One
+    Year</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">One
+    Year</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">RPM
+    International Inc.</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Ticker
+    RPM</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    <br>
+    Type</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Record
+    <br>
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    06-Oct-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Annual</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    <p ALIGN="RIGHT">12-Aug-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="2">CUSIP:
+    749685103</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">
+    Proponent</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Mgmt
+    Rec</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Vote
+    <br>
+    Instruction</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.1</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Frederick R. Nance</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Withhold</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Charles A. Ratner</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director William B. Summers, Jr.</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.4</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Jerry Sue Thornton</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">
+    Advisory Vote to Ratify Named Executive <br>
+    Officers' Compensation</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Advisory Vote on Say on Pay Frequency</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">None</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">One
+    Year</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">4</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Ratify
+    Auditors</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">The
+    Procter &amp; Gamble<br>
+    Company</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Ticker
+    PG</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    <br>
+    Type</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Record
+    <br>
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    11-Oct-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Annual</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    <p ALIGN="RIGHT">12-Aug-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="2">CUSIP:
+    742718109</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">
+    Proponent</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Mgmt
+    Rec</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Vote
+    <br>
+    Instruction</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Angela F. Braly</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Kenneth I. Chenault</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Scott D. Cook</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">4</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Susan Desmond-Hellmann</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">5</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Robert A. McDonald</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">6</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director W. James McNerney, Jr.</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">7</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Johnathan A. Rodgers</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">8</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Margaret C. Whitman</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">9</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Mary Agnes Wilderotter</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">10</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Patricia A. Woertz</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">11</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Ernesto Zedillo</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">12</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Ratify
+    Auditors</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">13</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">
+    Advisory Vote to Ratify Named Executive <br>
+    Officers' Compensation</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">14</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Advisory Vote on Say on Pay Frequency</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">One
+    Year</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">One
+    Year</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">15</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Amend
+    Articles of Incorporation</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">16</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Provide
+    for Cumulative Voting</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">SH</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Against</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">17</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Phase
+    Out Use of Laboratory Animals in Pet <br>
+    Food Product Testing</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">SH</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Against</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Against</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">18</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Report
+    on Political Contributions and Provide <br>
+    Advisory Vote</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">SH</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Against</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Against</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Symantec Corporation</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Ticker
+    SYMC</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    <br>
+    Type</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Record
+    <br>
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    25-Oct-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Annual</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    <p ALIGN="RIGHT">26-Aug-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="2">CUSIP:
+    871503108</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">
+    Proponent</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Mgmt
+    Rec</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Vote
+    <br>
+    Instruction</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Stephen M. Bennett</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Michael A. Brown</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Frank E. Dangeard</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">4</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Geraldine B. Laybourne</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">5</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director David L. Mahoney</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">6</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Robert S. Miller</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">7</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Enrique Salem</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">8</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Daniel H. Schulman</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">9</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director V. Paul Unruh</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">10</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Ratify
+    Auditors</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">11</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Amend
+    Outside Director Stock Awards/Options <br>
+    in Lieu of Cash</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">12</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">
+    Advisory Vote to Ratify Named Executive <br>
+    Officers' Compensation</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">13</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Advisory Vote on Say on Pay Frequency</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">One
+    Year</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">One
+    Year</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">14</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Amend
+    Articles/Bylaws/Charter -- Call Special <br>
+    Meetings</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">SH</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Against</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">
+    Parker-Hannifin<br>
+    Corporation</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Ticker
+    PH</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    <br>
+    Type</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Record
+    <br>
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    26-Oct-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Annual</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    <p ALIGN="RIGHT">31-Aug-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="2">CUSIP:
+    701094104</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">
+    Proponent</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Mgmt
+    Rec</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Vote
+    <br>
+    Instruction</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.1</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Robert G. Bohn</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Linda S. Harty</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director William E. Kassling</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.4</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Robert J. Kohlhepp</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.5</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Klaus-Peter Muller</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.6</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Candy M. Obourn</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.7</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Joseph M. Scaminace</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.8</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Wolfgang R. Schmitt</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.9</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Ake Svensson</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.10</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director James L. Wainscott</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.11</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Donald E. Washkewicz</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Ratify
+    Auditors</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">
+    Advisory Vote to Ratify Named Executive <br>
+    Officers' Compensation</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">4</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Advisory Vote on Say on Pay Frequency</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">One
+    Year</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">One
+    Year</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">5</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Require
+    Independent Board Chairman</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">SH</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Against</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Against</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Buckeye<br>
+    Technologies Inc.</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Ticker
+    BKI</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    <br>
+    Type</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Record
+    <br>
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    03-Nov-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Annual</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    <p ALIGN="RIGHT">09-Sep-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="2">CUSIP:
+    118255108</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">
+    Proponent</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Mgmt
+    Rec</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Vote
+    <br>
+    Instruction</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.1</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director George W. Bryan</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director R. Howard Cannon</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Katherine Buckman Gibson</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Ratify
+    Auditors</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Approve
+    Executive Incentive Bonus Plan</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">4</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">
+    Advisory Vote to Ratify Named Executive <br>
+    Officers' Compensation</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">5</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Advisory Vote on Say on Pay Frequency</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">One
+    Year</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">One
+    Year</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Coach,
+    Inc.</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Ticker
+    COH</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    <br>
+    Type</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Record
+    <br>
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    03-Nov-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Annual</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    <p ALIGN="RIGHT">06-Sep-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="2">CUSIP:
+    189754104</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">
+    Proponent</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Mgmt
+    Rec</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Vote
+    <br>
+    Instruction</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.1</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Lew Frankfort</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Susan Kropf</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Gary Loveman</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.4</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Ivan Menezes</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.5</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Irene Miller</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.6</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Michael Murphy</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.7</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Jide Zeitlin</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Ratify
+    Auditors</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">
+    Advisory Vote to Ratify Named Executive <br>
+    Officers' Compensation</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">4</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Advisory Vote on Say on Pay Frequency</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">One
+    Year</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">One
+    Year</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Microsoft Corporation</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Ticker
+    MSFT</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    <br>
+    Type</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Record
+    <br>
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    15-Nov-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Annual</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    <p ALIGN="RIGHT">02-Sep-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="2">CUSIP:
+    594918104</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">
+    Proponent</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Mgmt
+    Rec</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Vote
+    <br>
+    Instruction</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Steven A. Ballmer</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Dina Dublon</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director William H. Gates, III</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">4</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Raymond V. Gilmartin</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">5</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Reed Hastings</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">6</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Maria M. Klawe</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">7</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director David F. Marquardt</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">8</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Charles H. Noski</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">9</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Helmut Panke</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">10</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">
+    Advisory Vote to Ratify Named Executive <br>
+    Officers' Compensation</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">11</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Advisory Vote on Say on Pay Frequency</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">One
+    Year</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">One
+    Year</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">12</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Ratify
+    Auditors</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">13</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Amend
+    Bylaws to Establish a Board <br>
+    Committee on Environmental Sustainability</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">SH</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Against</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Against</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">CACI
+    International, Inc.</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Ticker
+    CACI</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    <br>
+    Type</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Record
+    <br>
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    17-Nov-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Annual</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    <p ALIGN="RIGHT">19-Sep-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="2">CUSIP:
+    127190304</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">
+    Proponent</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Mgmt
+    Rec</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Vote
+    <br>
+    Instruction</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.1</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Paul M. Cofoni</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director James S. Gilmore, III</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Gregory G. Johnson</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.4</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Richard L. Leatherwood</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.5</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director J. Phillip London</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.6</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director James L. Pavitt</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.7</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Warren R. Phillips</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.8</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Charles P. Revoile</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.9</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director William S. Wallace</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">
+    Advisory Vote to Ratify Named Executive <br>
+    Officers' Compensation</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Advisory Vote on Say on Pay Frequency</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">One
+    Year</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">One
+    Year</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">4</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Amend
+    Omnibus Stock Plan</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Against</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">5</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Adjourn
+    Meeting</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Against</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">6</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Ratify
+    Auditors</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Sasol
+    Ltd</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Ticker
+    SOL</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    <br>
+    Type</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Record
+    <br>
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    25-Nov-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Annual</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    <p ALIGN="RIGHT">11-Oct-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="2">CUSIP:
+    803866102</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">
+    Proponent</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Mgmt
+    Rec</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Vote
+    <br>
+    Instruction</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Meeting
+    for ADR Holders</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.1</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Re-elect Jurgen Schrempp as Director</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Re-elect Colin Beggs as Director</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Re-elect Johnson Njeke as Director</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1.4</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Re-elect Nolitha Fakude as Director</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">2.1</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Re-elect Hixonia Nyasulu as Director</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">2.2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Re-elect Christine Ramon as Director</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">2.3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Re-elect Henk Dijkgraaf as Director</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    David Constable as Director</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">4</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">
+    Reappoint KPMG Inc as Auditors of the <br>
+    Company</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">5.1</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">
+    Re-elect Colin Beggs as Member of the Audit <br>
+    Committee</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">5.2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">
+    Re-elect Mandla Gantsho as Member of the <br>
+    Audit Committee</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">5.3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">
+    Re-elect Henk Dijkgraaf as Member of the <br>
+    Audit Committee</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">5.4</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">
+    Re-elect Johnson Njeke as Member of the <br>
+    Audit Committee</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="48"><font FACE="Arial" SIZE="1">6</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="48"><font FACE="Arial" SIZE="1">Approve
+    Remuneration of Non-Executive <br>
+    Directors for the Period 1 July 2011 Until the Date of the Next Annual
+    General Meeting</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="48"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="48"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="48"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="48"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">7</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Approve
+    Remuneration Policy</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Against</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="48"><font FACE="Arial" SIZE="1">8</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="48"><font FACE="Arial" SIZE="1">Approve
+    Financial Assistance to Subsidiaries <br>
+    and Juristic Persons That the Company Directly or Indirectly Controls</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="48"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="48"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="48"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="48"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">9</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Approve
+    Financial Assistance to Related or <br>
+    Inter-related Company or Corporation</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">10</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Approve
+    Financial Assistance to the Sasol <br>
+    Inzalo Public Facilitation Trust</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">11</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">
+    Authorise Repurchase of Up to Ten Percent of <br>
+    Issued Share Capital</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="48"><font FACE="Arial" SIZE="1">12</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="48"><font FACE="Arial" SIZE="1">
+    Authorise Repurchase of Up to Five Percent of <br>
+    Issued Share Capital from a Director and/or a Prescribed Officer of the
+    Company</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="48"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="48"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="48"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="48"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">13</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Amend
+    Sasol Inzalo Foundation Trust Deed</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Cisco
+    Systems, Inc.</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Ticker
+    CSCO</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    <br>
+    Type</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Record
+    <br>
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    07-Dec-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Annual</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    <p ALIGN="RIGHT">10-Oct-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="2">CUSIP:
+    17275R102</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">
+    Proponent</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Mgmt
+    Rec</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Vote
+    <br>
+    Instruction</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Carol A. Bartz</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director M. Michele Burns</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Michael D. Capellas</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">4</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Larry R. Carter</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">5</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director John T. Chambers</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">6</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Brian L. Halla</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">7</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director John L. Hennessy</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">8</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Richard M. Kovacevich</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">9</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Roderick C. McGeary</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">10</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Arun Sarin</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">11</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Steven M. West</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">12</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Jerry Yang</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">13</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Amend
+    Omnibus Stock Plan</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">14</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">
+    Advisory Vote to Ratify Named Executive <br>
+    Officers' Compensation</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">15</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Advisory Vote on Say on Pay Frequency</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">One
+    Year</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">One
+    Year</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">16</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Ratify
+    Auditors</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">17</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Amend
+    Bylaws to Establish a Board <br>
+    Committee on Environmental Sustainability</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">SH</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Against</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Against</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">18</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Report
+    on Internet Fragmentation</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">SH</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Against</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">19</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Stock
+    Retention/Holding Period</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">SH</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Against</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Temple-Inland Inc.</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Ticker
+    TIN</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    <br>
+    Type</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Record
+    <br>
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    07-Dec-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Special</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    <p ALIGN="RIGHT">14-Oct-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="2">CUSIP:
+    879868107</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">
+    Proponent</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Mgmt
+    Rec</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Vote
+    <br>
+    Instruction</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Approve
+    Merger Agreement</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Advisory Vote on Golden Parachutes</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Against</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Adjourn
+    Meeting</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Medco
+    Health<br>
+    Solutions, Inc.</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Ticker
+    MHS</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    <br>
+    Type</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Record
+    <br>
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    21-Dec-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Special</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    <p ALIGN="RIGHT">04-Nov-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="2">CUSIP:
+    58405U102</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">
+    Proponent</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Mgmt
+    Rec</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Vote
+    <br>
+    Instruction</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Approve
+    Merger Agreement</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Adjourn
+    Meeting</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Advisory Vote on Golden Parachutes</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Walgreen Co.</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Ticker
+    WAG</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Meeting
+    <br>
+    Type</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Record
+    <br>
+    Date</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    11-Jan-12</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Annual</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    <p ALIGN="RIGHT">14-Nov-11</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="2">CUSIP:
+    931422109</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">
+    Proponent</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Mgmt
+    Rec</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="34"><font FACE="Arial" SIZE="2">Vote
+    <br>
+    Instruction</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">1</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director David J. Brailer</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">2</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Steven A. Davis</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">3</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director William C. Foote</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">4</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Mark P. Frissora</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">5</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Ginger L. Graham</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">6</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Alan G. McNally</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">7</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Nancy M. Schlichting</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">8</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director David Y. Schwartz</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">9</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Alejandro Silva</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">10</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director James A. Skinner</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">11</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Elect
+    Director Gregory D. Wasson</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">12</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Ratify
+    Auditors</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">13</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Approve
+    Executive Incentive Bonus Plan</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">14</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">
+    Advisory Vote to Ratify Named Executive <br>
+    Officers' Compensation</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="32"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">15</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">
+    Advisory Vote on Say on Pay Frequency</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Mgmt</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">One
+    Year</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">One
+    Year</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="19%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">16</font></td>
+    <td WIDTH="38%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Adopt
+    Retention Ratio for Executives</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">SH</font></td>
+    <td WIDTH="10%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">Against</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="17"><font FACE="Arial" SIZE="1">For</font></td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<table BORDER CELLSPACING="1" BORDERCOLOR="#000000" CELLPADDING="7" WIDTH="926" DIR="LTR">
+  <tr>
+    <td WIDTH="70%" VALIGN="TOP" COLSPAN="8" BGCOLOR="#007f7f" HEIGHT="32">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1" COLOR="#ffffff"><b>APPLE
+    INC.</b></font></td>
+    <td WIDTH="4%" VALIGN="BOTTOM" BGCOLOR="#007f7f" HEIGHT="32">
+    <font FACE="Arial" SIZE="2">&nbsp;</font></td>
+    <td WIDTH="8%" VALIGN="BOTTOM" BGCOLOR="#007f7f" HEIGHT="32">
+    <font FACE="Arial" SIZE="2">&nbsp;</font></td>
+    <td WIDTH="11%" VALIGN="BOTTOM" BGCOLOR="#007f7f" HEIGHT="32">
+    <font FACE="Arial" SIZE="2">&nbsp;</font></td>
+    <td WIDTH="6%" VALIGN="BOTTOM" BGCOLOR="#007f7f" HEIGHT="32">
+    <font FACE="Arial" SIZE="2">&nbsp;</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="11%" VALIGN="TOP" COLSPAN="2" HEIGHT="24">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1"><b>Security:</b></font></td>
+    <td WIDTH="44%" VALIGN="TOP" COLSPAN="3" HEIGHT="24">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">037833100</font></td>
+    <td WIDTH="3%" VALIGN="BOTTOM" HEIGHT="24"></td>
+    <td WIDTH="16%" VALIGN="TOP" COLSPAN="3" HEIGHT="24">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1"><b>Meeting Type:</b></font></td>
+    <td WIDTH="19%" VALIGN="TOP" COLSPAN="2" HEIGHT="24">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">Annual</font></td>
+    <td WIDTH="6%" VALIGN="BOTTOM" HEIGHT="24"></td>
+  </tr>
+  <tr>
+    <td WIDTH="11%" VALIGN="TOP" COLSPAN="2" HEIGHT="26">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1"><b>Ticker:</b></font></td>
+    <td WIDTH="44%" VALIGN="TOP" COLSPAN="3" HEIGHT="26">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">AAPL</font></td>
+    <td WIDTH="3%" VALIGN="BOTTOM" HEIGHT="26"></td>
+    <td WIDTH="16%" VALIGN="TOP" COLSPAN="3" HEIGHT="26">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1"><b>Meeting Date:</b></font></td>
+    <td WIDTH="19%" VALIGN="TOP" COLSPAN="2" HEIGHT="26">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">23-Feb-2012</font></td>
+    <td WIDTH="6%" VALIGN="BOTTOM" HEIGHT="26"></td>
+  </tr>
+  <tr>
+    <td WIDTH="11%" VALIGN="TOP" COLSPAN="2" HEIGHT="25">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1"><b>ISIN</b></font></td>
+    <td WIDTH="44%" VALIGN="TOP" COLSPAN="3" HEIGHT="25">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">US0378331005</font></td>
+    <td WIDTH="3%" VALIGN="BOTTOM" HEIGHT="25"></td>
+    <td WIDTH="16%" VALIGN="TOP" COLSPAN="3" HEIGHT="25">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1"><b>Vote Deadline Date:</b></font></td>
+    <td WIDTH="19%" VALIGN="TOP" COLSPAN="2" HEIGHT="25">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">22-Feb-2012</font></td>
+    <td WIDTH="6%" VALIGN="BOTTOM" HEIGHT="25"></td>
+  </tr>
+  <tr>
+    <td WIDTH="11%" VALIGN="TOP" COLSPAN="2" HEIGHT="24">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1"><b>Agenda</b></font></td>
+    <td WIDTH="14%" VALIGN="TOP" HEIGHT="24">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">933542474</font></td>
+    <td WIDTH="17%" VALIGN="TOP" HEIGHT="24">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">Management</font></td>
+    <td WIDTH="14%" VALIGN="BOTTOM" HEIGHT="24"></td>
+    <td WIDTH="3%" VALIGN="BOTTOM" HEIGHT="24"></td>
+    <td WIDTH="16%" VALIGN="TOP" COLSPAN="3" HEIGHT="24">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1"><b>Total Ballot Shares:</b></font></td>
+    <td WIDTH="19%" VALIGN="TOP" COLSPAN="2" HEIGHT="24">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">60425</font></td>
+    <td WIDTH="6%" VALIGN="BOTTOM" HEIGHT="24"></td>
+  </tr>
+  <tr>
+    <td WIDTH="11%" VALIGN="TOP" COLSPAN="2" HEIGHT="21">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1"><b>Last Vote Date:</b></font></td>
+    <td WIDTH="31%" VALIGN="TOP" COLSPAN="2" HEIGHT="21">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">01-Mar-2012</font></td>
+    <td WIDTH="14%" VALIGN="BOTTOM" HEIGHT="21"></td>
+    <td WIDTH="3%" VALIGN="BOTTOM" HEIGHT="21"></td>
+    <td WIDTH="2%" VALIGN="BOTTOM" HEIGHT="21"></td>
+    <td WIDTH="9%" VALIGN="BOTTOM" HEIGHT="21"></td>
+    <td WIDTH="4%" VALIGN="BOTTOM" HEIGHT="21"></td>
+    <td WIDTH="8%" VALIGN="BOTTOM" HEIGHT="21"></td>
+    <td WIDTH="11%" VALIGN="BOTTOM" HEIGHT="21"></td>
+    <td WIDTH="6%" VALIGN="BOTTOM" HEIGHT="21"></td>
+  </tr>
+  <tr>
+    <td WIDTH="8%" VALIGN="TOP" BGCOLOR="#007f7f" HEIGHT="32">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1" COLOR="#ffffff"><b>Item</b></font></td>
+    <td WIDTH="34%" VALIGN="TOP" COLSPAN="3" BGCOLOR="#007f7f" HEIGHT="32">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1" COLOR="#ffffff"><b>Proposal</b></font></td>
+    <td WIDTH="14%" VALIGN="TOP" BGCOLOR="#007f7f" HEIGHT="32">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1" COLOR="#ffffff"><b>
+    Recommendation</b></font></td>
+    <td WIDTH="5%" VALIGN="TOP" COLSPAN="2" BGCOLOR="#007f7f" HEIGHT="32">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1" COLOR="#ffffff"><b>For</b></font></td>
+    <td WIDTH="9%" VALIGN="TOP" BGCOLOR="#007f7f" HEIGHT="32">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1" COLOR="#ffffff"><b>Against</b></font></td>
+    <td WIDTH="12%" VALIGN="TOP" COLSPAN="2" BGCOLOR="#007f7f" HEIGHT="32">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1" COLOR="#ffffff"><b>Abstain</b></font></td>
+    <td WIDTH="11%" VALIGN="TOP" BGCOLOR="#007f7f" HEIGHT="32">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1" COLOR="#ffffff"><b>Take No
+    Action</b></font></td>
+    <td WIDTH="6%" VALIGN="BOTTOM" BGCOLOR="#007f7f" HEIGHT="32">
+    <font FACE="Arial" SIZE="2">&nbsp;</font></td>
+  </tr>
+  <tr>
+    <td WIDTH="8%" VALIGN="TOP" HEIGHT="20">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">1</font></td>
+    <td WIDTH="34%" VALIGN="TOP" COLSPAN="3" HEIGHT="20">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">DIRECTOR</font></td>
+    <td WIDTH="14%" VALIGN="TOP" HEIGHT="20">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">
+    <p ALIGN="CENTER">For</font></td>
+    <td WIDTH="3%" VALIGN="BOTTOM" HEIGHT="20"></td>
+    <td WIDTH="2%" VALIGN="BOTTOM" HEIGHT="20"></td>
+    <td WIDTH="9%" VALIGN="BOTTOM" HEIGHT="20"></td>
+    <td WIDTH="4%" VALIGN="BOTTOM" HEIGHT="20"></td>
+    <td WIDTH="8%" VALIGN="BOTTOM" HEIGHT="20"></td>
+    <td WIDTH="11%" VALIGN="BOTTOM" HEIGHT="20"></td>
+    <td WIDTH="6%" VALIGN="BOTTOM" HEIGHT="20"></td>
+  </tr>
+  <tr>
+    <td WIDTH="8%" VALIGN="BOTTOM" HEIGHT="20"></td>
+    <td WIDTH="3%" VALIGN="TOP" HEIGHT="20">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">1</font></td>
+    <td WIDTH="31%" VALIGN="TOP" COLSPAN="2" HEIGHT="20">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">WILLIAM V. CAMPBELL</font></td>
+    <td WIDTH="14%" VALIGN="BOTTOM" HEIGHT="20"></td>
+    <td WIDTH="5%" VALIGN="TOP" COLSPAN="2" HEIGHT="20">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">12400</font></td>
+    <td WIDTH="9%" VALIGN="TOP" HEIGHT="20">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">0</font></td>
+    <td WIDTH="12%" VALIGN="TOP" COLSPAN="2" HEIGHT="20">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">0</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="20">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">0</font></td>
+    <td WIDTH="6%" VALIGN="BOTTOM" HEIGHT="20"></td>
+  </tr>
+  <tr>
+    <td WIDTH="8%" VALIGN="BOTTOM" HEIGHT="20"></td>
+    <td WIDTH="3%" VALIGN="TOP" HEIGHT="20">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">2</font></td>
+    <td WIDTH="31%" VALIGN="TOP" COLSPAN="2" HEIGHT="20">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">TIMOTHY D. COOK</font></td>
+    <td WIDTH="14%" VALIGN="BOTTOM" HEIGHT="20"></td>
+    <td WIDTH="5%" VALIGN="TOP" COLSPAN="2" HEIGHT="20">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">12400</font></td>
+    <td WIDTH="9%" VALIGN="TOP" HEIGHT="20">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">0</font></td>
+    <td WIDTH="12%" VALIGN="TOP" COLSPAN="2" HEIGHT="20">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">0</font></td>
+    <td WIDTH="11%" VALIGN="TOP" HEIGHT="20">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">0</font></td>
+    <td WIDTH="6%" VALIGN="BOTTOM" HEIGHT="20"></td>
+  </tr>
+  <tr>
+    <td WIDTH="8%" VALIGN="BOTTOM" HEIGHT="20"></td>
+    <td WIDTH="3%" VALIGN="TOP" HEIGHT="20">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">3</font></td>
+    <td WIDTH="31%" VALIGN="TOP" COLSPAN="2" HEIGHT="20">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">MILLARD S. DREXLER</font></td>
+    <td WIDTH="14%" VALIGN="BOTTOM" HEIGHT="20"></td>
+    <td WIDTH="5%" VALIGN="TOP" COLSPAN="2" HEIGHT="20">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">12400</font></td>
+    <td WIDTH="9%" VALIGN="TOP" HEIGHT="20">
+    <font FACE="Arial Unicode MS" LANG="JA" SIZE="1">0</font></td>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

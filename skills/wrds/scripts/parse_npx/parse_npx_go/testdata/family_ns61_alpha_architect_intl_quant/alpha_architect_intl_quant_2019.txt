@@ -1,0 +1,295 @@
+<SEC-DOCUMENT>0000894189-19-005405.txt : 20190821
+<SEC-HEADER>0000894189-19-005405.hdr.sgml : 20190821
+<ACCEPTANCE-DATETIME>20190821144821
+ACCESSION NUMBER:		0000894189-19-005405
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20190630
+FILED AS OF DATE:		20190821
+DATE AS OF CHANGE:		20190821
+EFFECTIVENESS DATE:		20190821
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Alpha Architect ETF Trust
+		CENTRAL INDEX KEY:			0001592900
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			0930
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-22961
+		FILM NUMBER:		191042887
+
+	BUSINESS ADDRESS:	
+		STREET 1:		213 FOXCROFT ROAD
+		CITY:			BROOMALL
+		STATE:			PA
+		ZIP:			19008
+		BUSINESS PHONE:		1.215.882.9983
+
+	MAIL ADDRESS:	
+		STREET 1:		213 FOXCROFT ROAD
+		CITY:			BROOMALL
+		STATE:			PA
+		ZIP:			19008
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	Empowered Funds ETF Trust
+		DATE OF NAME CHANGE:	20131125
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001592900
+<SERIES-ID>S000046016
+<SERIES-NAME>Alpha Architect U.S. Quantitative Value ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000143786
+<CLASS-CONTRACT-NAME>Alpha Architect U.S. Quantitative Value ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>QVAL
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001592900
+<SERIES-ID>S000046017
+<SERIES-NAME>Alpha Architect International Quantitative Value ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000143787
+<CLASS-CONTRACT-NAME>Alpha Architect International Quantitative Value ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>IVAL
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001592900
+<SERIES-ID>S000046018
+<SERIES-NAME>Alpha Architect U.S. Quantitative Momentum ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000143788
+<CLASS-CONTRACT-NAME>Alpha Architect U.S. Quantitative Momentum ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>QMOM
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001592900
+<SERIES-ID>S000046019
+<SERIES-NAME>Alpha Architect International Quantitative Momentum ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000143789
+<CLASS-CONTRACT-NAME>Alpha Architect International Quantitative Momentum ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>IMOM
+</CLASS-CONTRACT>
+</SERIES>
+<SERIES>
+<OWNER-CIK>0001592900
+<SERIES-ID>S000057372
+<SERIES-NAME>Alpha Architect Value Momentum Trend ETF
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000183146
+<CLASS-CONTRACT-NAME>Alpha Architect Value Momentum Trend ETF
+<CLASS-CONTRACT-TICKER-SYMBOL>VMOT
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>aaet_npx.txt
+<DESCRIPTION>ANNUAL REPORT OF PROXY VOTING
+<TEXT>
+                                  UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                              WASHINGTON, D.C. 20549
+
+                                   FORM N-PX
+
+    ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT
+                                     COMPANY
+
+ INVESTMENT COMPANY ACT FILE NUMBER:     811-22961
+
+ NAME OF REGISTRANT:                     Alpha Architect ETF Trust
+
+
+
+ ADDRESS OF PRINCIPAL EXECUTIVE OFFICES: 213 Foxcroft Road
+                                         Broomall, PA 19008
+
+ NAME AND ADDRESS OF AGENT FOR SERVICE:  Wesley R. Gray
+                                         213 Foxcroft Road
+                                         Broomall, PA 19008
+
+ REGISTRANT'S TELEPHONE NUMBER:          215-882-9983
+
+ DATE OF FISCAL YEAR END:                09/30
+
+ DATE OF REPORTING PERIOD:               07/01/2018 - 06/30/2019
+
+
+<PAGE>
+
+<TABLE>
+<S>    <C>                                                       <C>           <C>                            <C>
+
+Alpha Architect Value Momentum Trend ETF
+--------------------------------------------------------------------------------------------------------------------------
+ The fund held no voting securities during the reporting period and did not vote any securities or have
+ any securities that were subject to a vote during the reporting period.
+
+
+Alpha Architect International Quantitative Momentum ETF
+--------------------------------------------------------------------------------------------------------------------------
+ CI:Z HOLDINGS CO.,LTD.                                                                      Agenda Number:  709996738
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  J0841P107
+    Meeting Type:  AGM
+    Meeting Date:  26-Oct-2018
+          Ticker:
+            ISIN:  JP3638700009
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+       Please reference meeting materials.                       Non-Voting
+
+1      Approve Appropriation of Surplus                          Mgmt          For                            For
+
+
+
+
+Alpha Architect US Quantitative Value ETF
+--------------------------------------------------------------------------------------------------------------------------
+ ALLISON TRANSMISSION HOLDINGS, INC.                                                         Agenda Number:  934962209
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  01973R101
+    Meeting Type:  Annual
+    Meeting Date:  08-May-2019
+          Ticker:  ALSN
+            ISIN:  US01973R1014
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+1a.    Election of Director: Judy L. Altmaier                    Mgmt          For                            For
+
+1b.    Election of Director: Stan A. Askren                      Mgmt          For                            For
+
+1c.    Election of Director: Lawrence E. Dewey                   Mgmt          For                            For
+
+1d.    Election of Director: David C. Everitt                    Mgmt          For                            For
+
+1e.    Election of Director: Alvaro Garcia-Tunon                 Mgmt          For                            For
+
+1f.    Election of Director: David S. Graziosi                   Mgmt          For                            For
+
+1g.    Election of Director: William R. Harker                   Mgmt          For                            For
+
+1h.    Election of Director: Carolann I. Haznedar                Mgmt          For                            For
+
+1i.    Election of Director: Richard P. Lavin                    Mgmt          For                            For
+
+1j.    Election of Director: Thomas W. Rabaut                    Mgmt          For                            For
+
+1k.    Election of Director: Richard V. Reynolds                 Mgmt          For                            For
+
+2.     To ratify the appointment of                              Mgmt          For                            For
+       PricewaterhouseCoopers LLP as our
+       independent registered public accounting
+       firm for 2019.
+
+3.     An advisory non-binding vote to approve the               Mgmt          For                            For
+       compensation paid to our named executive
+       officers.
+
+4.     An advisory non-binding vote on the                       Mgmt          1 Year                         For
+       frequency of future advisory votes on the
+       compensation paid to our named executive
+       officers.
+
+
+
+
+Alpha Architect International Quantitative ETF
+--------------------------------------------------------------------------------------------------------------------------
+ ADVANTEST CORPORATION                                                                       Agenda Number:  711270760
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  J00210104
+    Meeting Type:  AGM
+    Meeting Date:  26-Jun-2019
+          Ticker:
+            ISIN:  JP3122400009
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+       Please reference meeting materials.                       Non-Voting
+
+1.1    Appoint a Director who is not Audit and                   Mgmt          For                            For
+       Supervisory Committee Member Yoshida,
+       Yoshiaki
+
+1.2    Appoint a Director who is not Audit and                   Mgmt          For                            For
+       Supervisory Committee Member Karatsu, Osamu
+
+1.3    Appoint a Director who is not Audit and                   Mgmt          For                            For
+       Supervisory Committee Member Urabe,
+       Toshimitsu
+
+1.4    Appoint a Director who is not Audit and                   Mgmt          For                            For
+       Supervisory Committee Member Nicholas Benes
+
+1.5    Appoint a Director who is not Audit and                   Mgmt          For                            For
+       Supervisory Committee Member Hans-Juergen
+       Wagner
+
+1.6    Appoint a Director who is not Audit and                   Mgmt          For                            For
+       Supervisory Committee Member Tsukakoshi,
+       Soichi
+
+1.7    Appoint a Director who is not Audit and                   Mgmt          For                            For
+       Supervisory Committee Member Fujita,
+       Atsushi
+
+2.1    Appoint a Director who is Audit and                       Mgmt          For                            For
+       Supervisory Committee Member Kurita, Yuichi
+
+2.2    Appoint a Director who is Audit and                       Mgmt          For                            For
+       Supervisory Committee Member Namba, Koichi
+
+3      Appoint a Substitute Director who is Audit                Mgmt          For                            For
+       and Supervisory Committee Member Karatsu,
+       Osamu
+
+
+
+
+
+
+* Management position unknown
+
+</TABLE>
+
+<PAGE>
+
+SIGNATURES
+
+Pursuant to the requirements of the Investment Company Act of 1940, the
+registrant has duly caused this report to be signed on its behalf by the
+undersigned, thereunto duly authorized.
+
+(Registrant)         Alpha Architect ETF Trust
+By (Signature)       /s/ Wesley R. Gray
+Name                 Wesley R. Gray
+Title                President
+Date                 08/19/2019
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

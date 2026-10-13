@@ -1,0 +1,10 @@
+
+CATELLUS DEVELOPMENT
+
+Ticker:       CDX            Security ID:  149113102
+Meeting Date: MAY 4, 2004    Meeting Type: Annual
+Record Date:
+
+#     Proposal                                  Mgt Rec   Vote Cast  Sponsor
+1.01  Elect Stephen F. Bollenbach               For       WHOLD      Management
+1.02  Elect Daryl J. Carter                     For       WHOLD      Management

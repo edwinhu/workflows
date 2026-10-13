@@ -1,0 +1,194 @@
+<SEC-DOCUMENT>0001580642-16-010708.txt : 20160830
+<SEC-HEADER>0001580642-16-010708.hdr.sgml : 20160830
+ACCESSION NUMBER:		0001580642-16-010708
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20160630
+FILED AS OF DATE:		20160830
+DATE AS OF CHANGE:		20160830
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			AMERICAFIRST QUANTITATIVE FUNDS
+		CENTRAL INDEX KEY:			0001539996
+<SERIES>
+<OWNER-CIK>0001539996
+<SERIES-ID>S000036986
+<SERIES-NAME>AmericaFirst Defensive Growth Fund
+<SERIES>
+<OWNER-CIK>0001539996
+<SERIES-ID>S000036987
+<SERIES-NAME>AmericaFirst Income Trends Fund
+<SERIES>
+<OWNER-CIK>0001539996
+<SERIES-ID>S000036988
+<SERIES-NAME>AmericaFirst Tactical Alpha Fund
+<SERIES>
+<OWNER-CIK>0001539996
+<SERIES-ID>S000036989
+<SERIES-NAME>AmericaFirst Quantitative Strategies Fund
+<SERIES>
+<OWNER-CIK>0001539996
+<SERIES-ID>S000042712
+<SERIES-NAME>AmericaFirst Seasonal Trends Fund
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>americafirstnpx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<HTML>
+<HEAD>
+<TITLE>Blu Giant, LLC</TITLE>
+</HEAD>
+<BODY>
+
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="6" STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt"><B><I>Registrant: AmericaFirst Quantitative Strategies Fund</I></B></FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt"><B><I>Investment Company Act file number:&nbsp;&nbsp;811-22669</I></B></FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt"><B><I>Reporting Period: July 1, 2015 through June 30, 2016</I></B></FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt"><B><I>FORM N-PX - PROXY VOTING RECORD REQUIREMENTS</I></B></FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt"><B><I>&nbsp;01-Jul-2015 To 30-Jun-2016</I></B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-top: black 1pt solid; border-bottom: black 1pt solid; border-left: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75">&nbsp;</TD>
+    <TD COLSPAN="11" STYLE="vertical-align: top; border-top: black 1pt solid; border-bottom: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt; color: white"><B>CATAMARAN CORPORATION</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-top: black 1pt solid; border-bottom: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-top: black 1pt solid; border-right: black 1pt solid; border-bottom: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75">&nbsp;</TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt"><B>Security</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">148887102</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt"><B>Meeting Type</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">Special </FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt"><B>Ticker Symbol</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">CTRX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt"><B>Meeting Date</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">14-Jul-2015</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt"><B>ISIN</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">CA1488871023</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt"><B>Agenda</B></FONT></TD>
+    <TD STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">934250553 - Management</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR STYLE="vertical-align: bottom">
+    <TD NOWRAP STYLE="width: 3%">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 1%; border-top: black 1pt solid; border-left: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 7%; border-top: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 1%; border-top: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 1%; border-top: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 1%; border-top: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 18%; border-top: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 10%; border-top: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 1%; border-top: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 1%; border-top: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 12%; border-top: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 1%; border-top: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 8%; border-top: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 33%; border-top: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75">&nbsp;</TD>
+    <TD NOWRAP STYLE="width: 2%; border-top: black 1pt solid; border-right: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75">&nbsp;</TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-bottom: black 1pt solid; border-left: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; border-bottom: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt; color: white"><B>Item</B></FONT></TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; border-bottom: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt; color: white"><B>Proposal</B></FONT></TD>
+    <TD STYLE="vertical-align: top; border-bottom: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75; text-align: center"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt; color: white"><B>Proposed</B></FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt; color: white"><B>by</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-bottom: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; border-bottom: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75; text-align: center"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt; color: white"><B>Vote</B></FONT></TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; border-bottom: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75; text-align: center"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt; color: white"><B>For/Against</B></FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt; color: white"><B>Management</B></FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-bottom: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom; border-right: black 1pt solid; border-bottom: black 1pt solid; font: 11pt Calibri, Helvetica, Sans-Serif; background-color: #004F75">&nbsp;</TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">1.&nbsp;&nbsp;&nbsp;</FONT></TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">TO CONSIDER AND VOTE UPON A PROPOSAL TO</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">APPROVE THE SPECIAL RESOLUTION SET FORTH</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">IN THE PROXY CIRCULAR AND PROXY STATEMENT</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">(THE &quot;ARRANGEMENT RESOLUTION&quot;) APPROVING</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">AN ARRANGEMENT UNDER SECTION 195 OF THE</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">BUSINESS CORPORATIONS ACT (YUKON) (THE</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">&quot;ARRANGEMENT&quot;), CONTEMPLATED BY THE</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">ARRANGEMENT AGREEMENT, DATED AS OF</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">MARCH 29, 2015, BY AND AMONG CATAMARAN</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">CORPORATION (&quot;CATAMARAN&quot;), UNITEDHEALTH</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">GROUP INCORPORATED, A CORPORATION</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">INCORPORATED UNDER THE LAWS OF THE STATE</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">OF MINNESOTA, USA ...(DUE TO SPACE LIMITS, SEE</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">PROXY STATEMENT FOR FULL PROPOSAL).</FONT></TD>
+    <TD NOWRAP COLSPAN="2" STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">Management</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif; text-align: center"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">For</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif; text-align: center"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">For</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">2.&nbsp;&nbsp;&nbsp;</FONT></TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">TO CONSIDER AND VOTE ON A PROPOSAL TO</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">APPROVE, ON A NON-BINDING, ADVISORY BASIS,</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">CERTAIN COMPENSATION THAT MAY BE PAID OR</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">BECOME PAYABLE TO CATAMARAN'S NAMED</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">EXECUTIVE OFFICERS THAT IS BASED ON OR</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">OTHERWISE RELATES TO THE ARRANGEMENT.</FONT></TD>
+    <TD NOWRAP COLSPAN="2" STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">Management</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif; text-align: center"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">For</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif; text-align: center"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">For</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">3.&nbsp;&nbsp;&nbsp;</FONT></TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">TO CONSIDER AND VOTE ON A PROPOSAL TO</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">ADJOURN THE SPECIAL MEETING TO ANOTHER</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">PLACE, DATE OR TIME IF NECESSARY OR</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">APPROPRIATE, TO THE EXTENT PERMITTED BY THE</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">ARRANGEMENT AGREEMENT, INCLUDING TO</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">SOLICIT ADDITIONAL PROXIES IN FAVOR OF THE</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">PROPOSAL TO APPROVE THE ARRANGEMENT</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">RESOLUTION IF THERE ARE INSUFFICIENT VOTES</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">AT THE TIME OF THE SPECIAL MEETING TO</FONT><BR>
+<FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">APPROVE THE ARRANGEMENT RESOLUTION.</FONT></TD>
+    <TD NOWRAP COLSPAN="2" STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">Management</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif; text-align: center"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">For</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: top; font: 11pt Calibri, Helvetica, Sans-Serif; text-align: center"><FONT STYLE="font-family: Arial Unicode MS,sans-serif; font-size: 9pt">For</FONT></TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD NOWRAP STYLE="vertical-align: bottom">&nbsp;</TD>

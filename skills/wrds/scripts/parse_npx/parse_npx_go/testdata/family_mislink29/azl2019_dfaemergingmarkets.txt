@@ -1,0 +1,224 @@
+<SEC-DOCUMENT>0001438934-19-000067.txt : 20190809
+<SEC-HEADER>0001438934-19-000067.hdr.sgml : 20190809
+<ACCEPTANCE-DATETIME>20190809111141
+ACCESSION NUMBER:		0001438934-19-000067
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20190630
+FILED AS OF DATE:		20190809
+DATE AS OF CHANGE:		20190809
+EFFECTIVENESS DATE:		20190809
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			ALLIANZ VARIABLE INSURANCE PRODUCTS TRUST
+		CENTRAL INDEX KEY:			0001091439
+		IRS NUMBER:				000000000
+		STATE OF INCORPORATION:			DE
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-09491
+		FILM NUMBER:		191011880
+
+	BUSINESS ADDRESS:	
+		STREET 1:		5701 GOLDEN HILLS DRIVE
+		CITY:			MINNEAPOLIS
+		STATE:			MN
+		ZIP:			55416
+		BUSINESS PHONE:		763-765-6551
+
+	MAIL ADDRESS:	
+		STREET 1:		5701 GOLDEN HILLS DRIVE
+		CITY:			MINNEAPOLIS
+		STATE:			MN
+		ZIP:			55416
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	USALLIANZ VARIABLE INSURANCE PRODUCTS TRUST
+		DATE OF NAME CHANGE:	19990721
+<SERIES-AND-CLASSES-CONTRACTS-DATA>
+<EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+<SERIES>
+<OWNER-CIK>0001091439
+<SERIES-ID>S000009945
+<SERIES-NAME>AZL MSCI Emerging Markets Equity Index Fund
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000027525
+<CLASS-CONTRACT-NAME>AZL MSCI Emerging Markets Equity Index Fund Class 2
+</CLASS-CONTRACT>
+<CLASS-CONTRACT>
+<CLASS-CONTRACT-ID>C000048321
+<CLASS-CONTRACT-NAME>AZL MSCI Emerging Markets Equity Index Fund Class 1
+</CLASS-CONTRACT>
+</SERIES>
+</EXISTING-SERIES-AND-CLASSES-CONTRACTS>
+</SERIES-AND-CLASSES-CONTRACTS-DATA>
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>BRDWE2_0001091439_2019.txt
+<TEXT>
+                                  UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                              WASHINGTON, D.C. 20549
+
+                                   FORM N-PX
+
+    ANNUAL REPORT OF PROXY VOTING RECORD OF REGISTERED MANAGEMENT INVESTMENT
+                                     COMPANY
+
+ INVESTMENT COMPANY ACT FILE NUMBER:     333-83423
+
+ NAME OF REGISTRANT:                     Allianz Variable Insurance
+                                         Products Trust
+
+
+
+ ADDRESS OF PRINCIPAL EXECUTIVE OFFICES: 5701 Golden Hills Drive
+                                         Minneapolis, MN 55416
+
+ NAME AND ADDRESS OF AGENT FOR SERVICE:  Erik T. Nelson
+                                         Allianz Investment Management,
+                                         LLC
+                                         5701 Golden Hills Drive
+                                         Minneapolis, MN 55416
+
+ REGISTRANT'S TELEPHONE NUMBER:          763-765-7453
+
+ DATE OF FISCAL YEAR END:                12/31
+
+ DATE OF REPORTING PERIOD:               07/01/2018 - 06/30/2019
+
+
+<PAGE>
+
+<TABLE>
+<S>    <C>                                                       <C>           <C>                            <C>
+AZL DFA EMERGING MARKETS CORE EQUITY FUND
+--------------------------------------------------------------------------------------------------------------------------
+ 3M INDIA LIMITED                                                                            Agenda Number:  709684939
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  Y0904K113
+    Meeting Type:  OTH
+    Meeting Date:  26-Jul-2018
+          Ticker:
+            ISIN:  INE470A01017
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+CMMT   PLEASE NOTE THAT THIS IS A POSTAL MEETING                 Non-Voting
+       ANNOUNCEMENT. A PHYSICAL MEETING IS NOT
+       BEING HELD FOR THIS COMPANY. THEREFORE,
+       MEETING ATTENDANCE REQUESTS ARE NOT VALID
+       FOR THIS MEETING. IF YOU WISH TO VOTE, YOU
+       MUST RETURN YOUR INSTRUCTIONS BY THE
+       INDICATED CUTOFF DATE. PLEASE ALSO NOTE
+       THAT ABSTAIN IS NOT A VALID VOTE OPTION AT
+       POSTAL BALLOT MEETINGS. THANK YOU
+
+1      APPROVE INVESTMENT IN THE EQUITY SHARE                    Mgmt          For                            For
+       CAPITAL OF 3M ELECTRO & COMMUNICATION INDIA
+       PRIVATE LIMITED
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------
+ 3M INDIA LIMITED                                                                            Agenda Number:  709740585
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  Y0904K113
+    Meeting Type:  AGM
+    Meeting Date:  10-Aug-2018
+          Ticker:
+            ISIN:  INE470A01017
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+CMMT   PLEASE NOTE THAT SHAREHOLDERS ARE ALLOWED                 Non-Voting
+       TO VOTE 'IN FAVOR' OR 'AGAINST' FOR ALL
+       RESOLUTIONS, ABSTAIN IS NOT A VOTING OPTION
+       ON THIS MEETING
+
+1      ADOPTION OF FINANCIAL STATEMENTS FOR THE                  Mgmt          For                            For
+       FINANCIAL YEAR ENDED MARCH 31, 2018
+
+2      RE-APPOINTMENT OF MR. ALBERT C WANG (DIN:                 Mgmt          Against                        Against
+       05234667), WHO RETIRES BY ROTATION
+
+3      RATIFICATION OF REMUNERATION PAYABLE TO                   Mgmt          For                            For
+       MESSRS. RAO, MURTHY & ASSOCIATES, COST
+       AUDITORS FOR THE FINANCIAL YEAR 2018-19
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------
+ AARTI INDUSTRIES LIMITED                                                                    Agenda Number:  709881999
+--------------------------------------------------------------------------------------------------------------------------
+        Security:  Y0000F133
+    Meeting Type:  AGM
+    Meeting Date:  21-Sep-2018
+          Ticker:
+            ISIN:  INE769A01020
+--------------------------------------------------------------------------------------------------------------------------
+
+Prop.# Proposal                                                  Proposal      Proposal Vote                  For/Against
+                                                                 Type                                         Management
+
+CMMT   PLEASE NOTE THAT SHAREHOLDERS ARE ALLOWED                 Non-Voting
+       TO VOTE 'IN FAVOR' OR 'AGAINST' FOR ALL
+       RESOLUTIONS, ABSTAIN IS NOT A VOTING OPTION
+       ON THIS MEETING
+
+1      ADOPTION OF FINANCIAL STATEMENTS FOR THE                  Mgmt          For                            For
+       YEAR ENDED MARCH 31, 2018
+
+2      DECLARE DIVIDEND FOR THE FINANCIAL YEAR                   Mgmt          For                            For
+       ENDED MARCH 31, 2018: RECOMMEND A DIVIDEND
+       OF INR 1 (@20%) PER SHARE (OF INR 5/-EACH)
+       AMOUNTING TO DIVIDEND PAY OUT OF INR 8.13
+       CRORES FOR THE FINANCIAL YEAR 2017-18
+
+3      RE-APPOINTMENT OF SHRI PARIMAL H. DESAI,                  Mgmt          Against                        Against
+       WHO RETIRES BY ROTATION AND BEING ELIGIBLE,
+       SEEKS REAPPOINTMENT
+
+4      APPOINTMENT OF M/S KIRTANE & PANDIT LLP,                  Mgmt          For                            For
+       CHARTERED ACCOUNTANTS AS STATUTORY AUDITORS
+       FOR A PERIOD OF 4 (FOUR) YEARS
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------
+* Management position unknown
+
+</TABLE>
+
+<PAGE>
+
+SIGNATURES
+
+Pursuant to the requirements of the Investment Company Act of 1940, the
+registrant has duly caused this report to be signed on its behalf by the
+undersigned, thereunto duly authorized.
+
+(Registrant)         Allianz Variable Insurance Products Trust
+By (Signature)       /s/ Brian Muench
+Name                 Brian Muench
+Title                President
+Date                 08/07/2019
+
+
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

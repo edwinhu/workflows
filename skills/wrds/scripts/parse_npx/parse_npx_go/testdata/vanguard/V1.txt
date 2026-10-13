@@ -1,0 +1,23 @@
+  FUND:    VANGUARD INFORMATION TECHNOLOGY INDEX FUND
+
+- -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  ISSUER:                3COM CORPORATION
+  TICKER:                COMS            CUSIP:     885535104
+  MEETING DATE:          9/22/2004                                                                                    FOR/AGAINST
+  PROPOSAL:                                                              PROPOSED BY      VOTED?      VOTE CAST           MGMT
+
+ELECTION OF DIRECTOR: ERIC A. BENHAMOU                                     ISSUER          YES          FOR               FOR
+
+ELECTION OF DIRECTOR: GARY T. DICAMILLO                                    ISSUER          YES          FOR               FOR
+
+ELECTION OF DIRECTOR: JAMES R. LONG                                        ISSUER          YES          FOR               FOR
+
+ELECTION OF DIRECTOR: RAJ REDDY                                            ISSUER          YES          FOR               FOR
+
+ELECTION OF DIRECTOR: DAVID C. WAJSGRAS                                    ISSUER          YES          FOR               FOR
+
+PROPOSAL #02: TO RATIFY THE APPOINTMENT OF DELOITTE &amp;                      ISSUER          YES          FOR               FOR
+TOUCHE LLP AS THE COMPANY'S INDEPENDENT PUBLIC
+ACCOUNTANTS FOR THE FISCAL YEAR ENDING JUNE 3, 2005.
+
+- -------------------------------------------------------------------------------------------------------------------------------------------------------------------------

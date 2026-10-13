@@ -1,0 +1,76 @@
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			CULLEN FUNDS TRUST
+		CENTRAL INDEX KEY:			0001109957
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>v473398_npx.htm
+<DESCRIPTION>N-PX
+<TEXT>
+<P STYLE="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0"><B>Cullen High Dividend Equity Fund</B></P>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" STYLE="width: 100%; border-collapse: collapse; font: 10pt Times New Roman, Times, Serif">
+<TR>
+    <TD COLSPAN="16" STYLE="font-weight: bold; vertical-align: top; text-align: left">Meeting Date Range: 01-Jul-2016 To 30-Jun-2017</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="16" STYLE="font-weight: bold; vertical-align: top; text-align: left">Selected Accounts</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR STYLE="background-color: #004F75">
+    <TD COLSPAN="12" STYLE="color: white; font-weight: bold; vertical-align: top; border-top: black 0.5pt solid; border-bottom: black 0.5pt solid; border-left: black 0.5pt solid; text-align: left">3M COMPANY</TD>
+    <TD STYLE="vertical-align: bottom; border-top: black 0.5pt solid; border-right: black 0.5pt solid; border-bottom: black 0.5pt solid">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="3" STYLE="font-weight: bold; vertical-align: top; text-align: left">Security:</TD>
+    <TD COLSPAN="5" STYLE="vertical-align: top; text-align: left">88579Y101</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="font-weight: bold; vertical-align: top; text-align: left">Meeting Type:</TD>
+    <TD COLSPAN="5" STYLE="vertical-align: top; text-align: left">Annual</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="3" STYLE="font-weight: bold; vertical-align: top; text-align: left">Ticker:</TD>
+    <TD COLSPAN="5" STYLE="vertical-align: top; text-align: left">MMM</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="font-weight: bold; vertical-align: top; text-align: left">Meeting Date:</TD>
+    <TD COLSPAN="5" STYLE="vertical-align: top; text-align: left">09-May-2017</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="3" STYLE="font-weight: bold; vertical-align: top; text-align: left">ISIN</TD>
+    <TD COLSPAN="5" STYLE="vertical-align: top; text-align: left">US88579Y1010</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="font-weight: bold; vertical-align: top; text-align: left">Vote Deadline Date:</TD>
+    <TD COLSPAN="5" STYLE="vertical-align: top; text-align: left">08-May-2017</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR>
+    <TD COLSPAN="3" STYLE="font-weight: bold; vertical-align: top; text-align: left">Agenda</TD>
+    <TD STYLE="vertical-align: top; text-align: left">934547968</TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; text-align: left">Management</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD>
+    <TD COLSPAN="4" STYLE="font-weight: bold; vertical-align: top; text-align: left">Total Ballot Shares:</TD>
+    <TD COLSPAN="5" STYLE="vertical-align: top; text-align: left">1077888.3205</TD>
+    <TD STYLE="vertical-align: bottom">&nbsp;</TD></TR>
+<TR STYLE="background-color: #004F75">
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border-top: black 0.5pt solid; border-left: black 0.5pt solid; text-align: left">Item</TD>
+    <TD COLSPAN="5" STYLE="color: white; font-weight: bold; vertical-align: top; border-top: black 0.5pt solid; text-align: left">Proposal</TD>
+    <TD COLSPAN="2" STYLE="color: white; font-weight: bold; vertical-align: top; border-top: black 0.5pt solid; text-align: left">Recommendation</TD>
+    <TD COLSPAN="2" STYLE="color: white; font-weight: bold; vertical-align: top; border-top: black 0.5pt solid; text-align: left">Default Vote</TD>
+    <TD STYLE="color: white; font-weight: bold; vertical-align: top; border-top: black 0.5pt solid; text-align: center">For</TD>
+    <TD STYLE="vertical-align: bottom; border-top: black 0.5pt solid">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="color: white; font-weight: bold; vertical-align: top; border-top: black 0.5pt solid; text-align: center">Against</TD>
+    <TD STYLE="vertical-align: bottom; border-top: black 0.5pt solid">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="color: white; font-weight: bold; vertical-align: top; border-top: black 0.5pt solid; text-align: center">Abstain</TD>
+    <TD COLSPAN="2" STYLE="color: white; font-weight: bold; vertical-align: top; border-top: black 0.5pt solid; border-right: black 0.5pt solid; text-align: center">Take No Action</TD></TR>
+<TR STYLE="background-color: #004F75">
+    <TD STYLE="vertical-align: top; border-bottom: black 0.5pt solid; border-left: black 0.5pt solid; text-align: left">1</TD>
+    <TD COLSPAN="4" STYLE="vertical-align: top; border-bottom: black 0.5pt solid; text-align: left">Election of Directors (Majority Voting)</TD>
+    <TD STYLE="vertical-align: bottom; border-bottom: black 0.5pt solid">&nbsp;</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; border-bottom: black 0.5pt solid; text-align: left">For</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; border-bottom: black 0.5pt solid; text-align: left">None</TD>
+    <TD STYLE="vertical-align: top; border-bottom: black 0.5pt solid; text-align: right">309700</TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; border-bottom: black 0.5pt solid; text-align: right">0</TD>
+    <TD COLSPAN="2" STYLE="vertical-align: top; border-bottom: black 0.5pt solid; text-align: right">0</TD>
+    <TD COLSPAN="3" STYLE="vertical-align: top; border-right: black 0.5pt solid; border-bottom: black 0.5pt solid; text-align: right">0</TD></TR>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

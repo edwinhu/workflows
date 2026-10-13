@@ -1,0 +1,72 @@
+H&R BLOCK, INC.
+
+SECURITY         093671105         MEETING TYPE    Annual
+TICKER SYMBOL    HRB               MEETING DATE    30-Sep-2010
+ISIN             US0936711052      AGENDA          933319065 - Management
+
+<TABLE>
+<CAPTION>
+                                                                                                               FOR/AGAINST
+ITEM     PROPOSAL                                                                 TYPE            VOTE         MANAGEMENT
+------   -----------------------------------------------------------------------  -----------     --------     ------------
+<S>      <C>                                                                      <C>             <C>          <C>
+1A       ELECTION OF DIRECTOR: ALAN M. BENNETT                                    Management      For          For
+1B       ELECTION OF DIRECTOR: RICHARD C. BREEDEN                                 Management      For          For
+1C       ELECTION OF DIRECTOR: WILLIAM C. COBB                                    Management      For          For
+1D       ELECTION OF DIRECTOR: ROBERT A. GERARD                                   Management      For          For
+1E       ELECTION OF DIRECTOR: LEN J. LAUER                                       Management      For          For
+1F       ELECTION OF DIRECTOR: DAVID B. LEWIS                                     Management      For          For
+</TABLE>
+
+<PAGE>
+
+ProxyEdge
+Meeting Date Range: 07/01/2010 to 06/30/2011            Report Date: 07/08/2011
+The Gabelli Global Multimedia Trust Inc.                                      4
+
+<TABLE>
+<CAPTION>
+                                                                                                               FOR/AGAINST
+ITEM     PROPOSAL                                                                 TYPE            VOTE         MANAGEMENT
+------   -----------------------------------------------------------------------  -----------     --------     ------------
+<S>      <C>                                                                      <C>             <C>          <C>
+1G       ELECTION OF DIRECTOR: BRUCE C. ROHDE                                     Management      For          For
+1H       ELECTION OF DIRECTOR: TOM D. SEIP                                        Management      For          For
+1I       ELECTION OF DIRECTOR: L. EDWARD SHAW, JR.                                Management      For          For
+1J       ELECTION OF DIRECTOR: CHRISTIANNA WOOD                                   Management      For          For
+02       THE APPROVAL OF AN ADVISORY PROPOSAL ON THE                              Management      For          For
+         COMPANY'S EXECUTIVE PAY-FOR-PERFORMANCE
+         COMPENSATION POLICIES AND PROCEDURES.
+03       THE APPROVAL OF AN AMENDMENT TO THE 2003 LONG-                           Management      For          For
+         TERM EXECUTIVE COMPENSATION PLAN TO INCREASE THE
+         AGGREGATE NUMBER OF SHARES OF COMMON STOCK
+         ISSUABLE UNDER THE PLAN BY 10,000,000 SHARES (FROM
+         14,000,000 SHARES TO 24,000,000 SHARES).
+04       THE APPROVAL OF THE MATERIAL TERMS OF                                    Management      For          For
+         PERFORMANCE GOALS UNDER THE EXECUTIVE
+         PERFORMANCE PLAN.
+05       A SHAREHOLDER PROPOSAL TO ADOPT A SIMPLE                                 Management      For          For
+         MAJORITY VOTING STANDARD.
+06       THE APPROVAL OF AN AMENDMENT TO THE COMPANY'S                            Management      For          For
+         AMENDED AND RESTATED ARTICLES OF INCORPORATION
+         TO REDUCE THE SUPERMAJORITY VOTING REQUIREMENT
+         TO CALL A SPECIAL MEETING OF THE COMPANY'S
+         SHAREHOLDERS.
+07       THE APPROVAL OF AN AMENDMENT TO THE COMPANY'S                            Management      For          For
+         AMENDED AND RESTATED ARTICLES OF INCORPORATION
+         TO REDUCE THE SUPERMAJORITY VOTING REQUIREMENT
+         RELATED TO THE REMOVAL OF DIRECTORS.
+08       THE APPROVAL OF AN AMENDMENT TO THE COMPANY'S                            Management      For          For
+         AMENDED AND RESTATED ARTICLES OF INCORPORATION
+         TO REDUCE THE SUPERMAJORITY VOTING REQUIREMENT
+         RELATED TO AMENDMENTS TO THE COMPANY'S ARTICLES
+         OF INCORPORATION AND BYLAWS.
+09       THE APPROVAL OF AN AMENDMENT TO THE COMPANY'S                            Management      For          For
+         AMENDED AND RESTATED ARTICLES OF INCORPORATION
+         TO REDUCE THE SUPERMAJORITY VOTING REQUIREMENT
+         REGARDING THE RELATED PERSON TRANSACTION
+         PROVISION.
+10       THE RATIFICATION OF THE APPOINTMENT OF DELOITTE &                        Management      For          For
+         TOUCHE LLP AS THE COMPANY'S INDEPENDENT
+         ACCOUNTANTS FOR THE FISCAL YEAR ENDING APRIL 30,
+         2011.

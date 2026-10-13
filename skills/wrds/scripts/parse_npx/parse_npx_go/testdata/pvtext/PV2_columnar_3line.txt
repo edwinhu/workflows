@@ -1,0 +1,106 @@
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 2001,MIC-CLEAR
+Originator-Name: webmaster@www.sec.gov
+Originator-Key-Asymmetric:
+ MFgwCgYEVQgBAQICAf8DSgAwRwJAW2sNKK9AVtBzYZmr6aGjlWyK3XmZv3dTINen
+ TWSM7vrzLADbmYQaionwg5sDW3P6oaM5D3tdezXMm7z1T+B+twIDAQAB
+MIC-Info: RSA-MD5,RSA,
+ ElxFgi3MPICL3/j+gT+LFrjRwWzIZS/D0qobafi8/UikUMIhUq5vD1kh4JARiBef
+ qPzjBxYv78fS6eeCBEARMQ==
+
+<SEC-DOCUMENT>0001145443-04-001300.txt : 20040823
+<SEC-HEADER>0001145443-04-001300.hdr.sgml : 20040823
+<ACCEPTANCE-DATETIME>20040823163929
+ACCESSION NUMBER:		0001145443-04-001300
+CONFORMED SUBMISSION TYPE:	N-PX
+PUBLIC DOCUMENT COUNT:		1
+CONFORMED PERIOD OF REPORT:	20040630
+FILED AS OF DATE:		20040823
+DATE AS OF CHANGE:		20040823
+EFFECTIVENESS DATE:		20040823
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			CIGNA FUNDS GROUP
+		CENTRAL INDEX KEY:			0000022828
+		STATE OF INCORPORATION:			MA
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		N-PX
+		SEC ACT:		1940 Act
+		SEC FILE NUMBER:	811-01646
+		FILM NUMBER:		04992256
+
+	BUSINESS ADDRESS:	
+		STREET 1:		2223 WASHINGTON STREET
+		STREET 2:		3 NEWTON EXECUTIVE PARK, SUITE 200
+		CITY:			NEWTON
+		STATE:			MA
+		ZIP:			02462
+		BUSINESS PHONE:		860.534.4700
+
+	MAIL ADDRESS:	
+		STREET 1:		C/O TIMESSQUARE CAPITAL MANAGEMENT, INC.
+		STREET 2:		280 TRUMBULL STREET, H16C
+		CITY:			HARTFORD
+		STATE:			CT
+		ZIP:			06103
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	CIGNA ANNUITY FUNDS GROUP
+		DATE OF NAME CHANGE:	19920703
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	COMPANION FUND INC
+		DATE OF NAME CHANGE:	19860227
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>N-PX
+<SEQUENCE>1
+<FILENAME>d15227.txt
+<TEXT>
+ISSUER NAME                       TICKER      CUSIP           MTG DATE    MTG TYPE
+                                                              Proposal    Voted?    Vote      For/Agnst
+                                                              Type                            Mgmt
+<S>        <C>                    <C>         <C>             <C>         <C>       <C>       <C>
+3M Co                             MMM         88579Y101       5/11/04     Annual
+1.01       Elect Edward A. Brennan                            MGMT        YES       FOR       FOR
+1.02       Elect Michael L. Eskew                             MGMT        YES       FOR       FOR
+1.03       Elect W. James McNerney Jr.                        MGMT        YES       FOR       FOR
+1.04       Elect Kevin W. Sharer                              MGMT        YES       FOR       FOR
+2.00       Ratify Selection of Auditors                       MGMT        YES       FOR       FOR
+3.00       Increase Authorized Common Stock                   MGMT        YES       FOR       FOR
+4.00       Independent Board Chairman                         SHLDR       YES       AGNST     FOR
+
+Abbott Laboratories               ABT         002824100       4/23/04     Annual
+1.01       Elect Roxanne S. Austin                            MGMT        YES       FOR       FOR
+1.02       Elect H. Laurance Fuller                           MGMT        YES       FOR       FOR
+1.03       Elect Richard A. Gonzalez                          MGMT        YES       FOR       FOR
+1.04       Elect Jack M. Greenberg                            MGMT        YES       FOR       FOR
+1.05       Elect Jeffrey M. Leiden                            MGMT        YES       FOR       FOR
+1.06       Elect David Owen                                   MGMT        YES       FOR       FOR
+1.07       Elect Boone Powell Jr.                             MGMT        YES       FOR       FOR
+0001.08       Elect Addison Barry Rand                           MGMT        YES       FOR       FOR
+1.09       Elect W. Ann Reynolds                              MGMT        YES       FOR       FOR
+1.10       Elect Roy S. Roberts                               MGMT        YES       FOR       FOR
+1.11       Elect William D. Smithburg                         MGMT        YES       FOR       FOR
+1.12       Elect John R. Walter                               MGMT        YES       FOR       FOR
+1.13       Elect Miles D. White                               MGMT        YES       FOR       FOR
+2.00       Ratify Selection of Auditors                       MGMT        YES       FOR       FOR
+3.00       Review Drug Pricing or Distribution                SHLDR       YES       AGNST     FOR
+4.00       Review Political Spending                          SHLDR       YES       AGNST     FOR
+5.00       Restrict Executive Compensation                    SHLDR       YES       AGNST     FOR
+6.00       Review AIDS Pandemic's Impact on Company           SHLDR       YES       AGNST     FOR
+
+Ace Ltd                           ACE         G0070K103       5/27/04     Annual
+1.01       Elect Brian Duperreault                            MGMT        YES       FOR       FOR
+1.02       Elect Robert M. Hernandez                          MGMT        YES       FOR       FOR
+1.03       Elect Peter Menikoff                               MGMT        YES       FOR       FOR
+1.04       Elect Robert Ripp                                  MGMT        YES       FOR       FOR
+1.05       Elect Dermot F. Smurfit                            MGMT        YES       FOR       FOR
+2.00       Adopt Stock Option Plan                            MGMT        YES       FOR       FOR
+3.00       Ratify Selection of Auditors                       MGMT        YES       FOR       FOR
+</TEXT>
+</DOCUMENT>
