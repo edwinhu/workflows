@@ -767,6 +767,46 @@ test('A1: a sibling package whose one hop reaches some other module still does n
   expect(state.n_unconnected_sibling_package_files_dropped).toBe(1);
 });
 
+// the reverse direction: the touched file imports a module, or a package whose __init__ re-exports, that
+// imports the sibling-package file holding the check; still exactly one hop, never two
+test('A1: the touched file importing a module that imports a sibling package satisfies it (reverse one hop)', async () => {
+  const { root } = a1Project({
+    'src/models/curve.py': 'from src.pipeline import run\n' + BUILD,
+    'src/pipeline/run.py': 'from src.robustness import drops\n',
+    'src/robustness/drops.py': VERIFY,
+  });
+  const { res, a1, state } = await a1Run([join(root, 'src/models/curve.py')]);
+  expect(a1.verdict).toBe('MET');
+  expect(res.exitCode).toBe(0);
+  expect(state.robustness_check_sites.map((c: any) => c.file)).toEqual(['src/robustness/drops.py']);
+});
+
+test('A1: the touched file importing a name a sibling package __init__ re-exports satisfies it', async () => {
+  const { root } = a1Project({
+    'src/models/curve.py': 'from src.robustness import refit\n' + BUILD,
+    'src/robustness/__init__.py': 'from .drops import refit\n',
+    'src/robustness/drops.py': 'def refit(df):\n    return df\n\n' + VERIFY,
+  });
+  const { res, a1, state } = await a1Run([join(root, 'src/models/curve.py')]);
+  expect(a1.verdict).toBe('MET');
+  expect(res.exitCode).toBe(0);
+  expect(state.robustness_check_sites.map((c: any) => c.file)).toEqual(['src/robustness/drops.py']);
+});
+
+test('A1: two module hops from the touched file to a sibling package do not connect it', async () => {
+  const { root } = a1Project({
+    'src/models/curve.py': 'from src.pipeline import run\n' + BUILD,
+    'src/pipeline/run.py': 'from src.stages import fit\n',
+    'src/stages/fit.py': 'from src.robustness import drops\n',
+    'src/robustness/drops.py': VERIFY,
+  });
+  const { res, a1, state } = await a1Run([join(root, 'src/models/curve.py')]);
+  expect(a1.verdict).toBe('VIOLATED');
+  expect(res.exitCode).toBe(2);
+  expect(state.robustness_check_sites).toEqual([]);
+  expect(state.n_unconnected_sibling_package_files_dropped).toBe(1);
+});
+
 // a one-component absolute import names any file of that name: it counts only when unambiguous or resolvable
 test('A1: a one-component import of a module name only the touched file carries connects', async () => {
   const { root } = a1Project({ 'src/models/curve.py': BUILD, 'src/rpt/build.py': 'import curve\n' + VERIFY });
