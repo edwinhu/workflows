@@ -153,3 +153,59 @@ test('evidence.py labels files relative to --root', async () => {
     const a1State = JSON.parse(stdout.toString())['A1'].state;
     expect(a1State.files.some((f: any) => f.path === 'data/output/x.py')).toBe(true);
 });
+
+// siblings(): untouched files nearest first (own dir, parent's files, the parent's other subdirectories),
+// capped at MAX_SIBLINGS, never above root, never hidden or NOISE_DIRS. Called through python -c.
+async function siblingLabels(root: string, touched: string[]): Promise<{ max: number; labels: string[] }> {
+    const code = 'import sys, json; sys.path.insert(0, sys.argv[1]); import evidence as e; ' +
+        'r = e.siblings([(f, f) for f in sys.argv[3:]], sys.argv[2]); print(json.dumps({"max": e.MAX_SIBLINGS, "labels": [l for l, _ in r]}))';
+    const { stdout } = await $`python3 -c ${code} ${join(BASE_DIR, 'checks/_jev')} ${root} ${touched}`.quiet();
+    return JSON.parse(stdout.toString());
+}
+
+function touch(dir: string, names: string[]) {
+    fs.mkdirSync(dir, { recursive: true });
+    for (const n of names) fs.writeFileSync(join(dir, n), 'x = 1\n');
+}
+
+test('siblings() fills the cap own dir first, then parent files, then sibling packages, each tier sorted', async () => {
+    const root = fs.realpathSync(mkTmp('jev-siblings-cap-'));
+    const outside = fs.realpathSync(mkTmp('jev-siblings-outside-'));
+    const top = join(root, 'top');
+    const num = (p: string, n: number) => Array.from({ length: n }, (_, i) => `${p}${String(i).padStart(2, '0')}.py`);
+    touch(join(top, 'own'), [...num('o', 60), 'touched.py']);
+    touch(top, num('p', 30));
+    for (const pkg of ['pkgA', 'pkgB', 'pkgC']) touch(join(top, pkg), num(`${pkg}_`, 20));
+    // contribute nothing: a NOISE_DIRS dir, a hidden dir, a symlinked dir pointing outside root
+    touch(join(top, 'node_modules'), ['n.py']);
+    touch(join(top, 'scratch'), ['s.py']);
+    touch(join(top, '.hidden'), ['h.py']);
+    touch(outside, ['escape.py']);
+    fs.symlinkSync(outside, join(top, 'zlink'));
+    fs.symlinkSync(outside, join(top, 'alink'));
+    // a parent-level file symlinked outside root, and hidden files in the own and parent dirs
+    fs.symlinkSync(join(outside, 'escape.py'), join(top, 'p15_escape.py'));
+    touch(join(top, 'own'), ['.o_hidden.py']);
+    touch(top, ['.p_hidden.py']);
+
+    const { max, labels } = await siblingLabels(root, [join(top, 'own', 'touched.py')]);
+    expect(max).toBe(100);
+    expect(labels.length).toBe(max);
+    const own = num('o', 60).map(n => `top/own/${n}`);
+    const parent = num('p', 30).map(n => `top/${n}`);
+    const pkgA = num('pkgA_', 20).slice(0, 10).map(n => `top/pkgA/${n}`);
+    expect(labels).toEqual([...own, ...parent, ...pkgA]);
+    expect(labels.some(l => l.includes('touched'))).toBe(false);
+    for (const bad of ['node_modules', 'scratch', '.hidden', '.o_hidden', '.p_hidden', 'p15_escape', 'zlink', 'alink', 'escape', 'pkgB', 'pkgC'])
+        expect(labels.some(l => l.includes(bad))).toBe(false);
+});
+
+test('siblings() reaches every package, in name order, once the cap leaves room', async () => {
+    const root = fs.realpathSync(mkTmp('jev-siblings-room-'));
+    const top = join(root, 'top');
+    touch(join(top, 'own'), ['a.py', 'touched.py']);
+    touch(top, ['top.py']);
+    for (const pkg of ['pkgB', 'pkgA']) touch(join(top, pkg), ['m.py']);
+    const { labels } = await siblingLabels(root, [join(top, 'own', 'touched.py')]);
+    expect(labels).toEqual(['top/own/a.py', 'top/top.py', 'top/pkgA/m.py', 'top/pkgB/m.py']);
+});
