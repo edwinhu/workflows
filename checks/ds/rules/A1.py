@@ -81,21 +81,27 @@ def _iterables(src, loop):
 
 
 def _sibling_checks(siblings):
-    """Robustness check sites in the touched files' untouched package siblings, and the lines read: the
-    check a module keeps in verify.py stands beside the curve its build.py runs."""
-    out, n_lines = [], 0
-    for rel, lines in sources(siblings):
-        tree = parse(lines) if is_py(rel) else None
-        if tree is None:
-            continue
-        n_lines += len(lines)
-        code, _ = split_comments(lines)
-        docs = _docstring_lines(tree)
-        for n, t in enumerate(code, 1):
-            kinds = [k for k, rx in CHECKS if n not in docs and t.strip() and rx.search(t)]
-            if kinds:
-                out.append({'file': rel, 'line': n, 'kinds': kinds, 'text': clip(lines[n - 1]), 'sibling': True})
-    return out, n_lines
+    """Robustness check sites in the untouched files of the touched files' package tree, the files read and
+    their lines: the check a module keeps in verify.py, its parent package or a sibling package stands beside
+    the curve its build.py runs. Only .py files, nearest first, stopping after the first file with a check:
+    one settles the question, and the rest would only grow the judge's state."""
+    out, read, n_lines = [], [], 0
+    for rel, path in py_files(siblings):
+        for _, lines in sources([(rel, path)]):
+            tree = parse(lines)
+            if tree is None:
+                continue
+            read.append(rel)
+            n_lines += len(lines)
+            code, _ = split_comments(lines)
+            docs = _docstring_lines(tree)
+            for n, t in enumerate(code, 1):
+                kinds = [k for k, rx in CHECKS if n not in docs and t.strip() and rx.search(t)]
+                if kinds:
+                    out.append({'file': rel, 'line': n, 'kinds': kinds, 'text': clip(lines[n - 1]), 'sibling': True})
+        if out:
+            break
+    return out, read, n_lines
 
 
 def evidence(files, plan_lines=None, siblings=None):
@@ -134,7 +140,8 @@ def evidence(files, plan_lines=None, siblings=None):
             curves.append({'file': rel, 'line': node.lineno, 'estimator': name,
                            'text': clip(lines[node.lineno - 1]), 'grid': looped[:6],
                            'why': 'estimator called inside a loop over specification choices'})
-    sib_checks, n_sib_lines = _sibling_checks(siblings or [])
+    # the package tree can only decide a curve the touched files leave unchecked; read it for nothing else
+    sib_checks, sib_read, n_sib_lines = _sibling_checks(siblings or []) if curves and not checks else ([], [], 0)
     checks += sib_checks
     for c in curves:
         c['robustness_check_in_files'] = bool(checks)
@@ -158,11 +165,11 @@ def evidence(files, plan_lines=None, siblings=None):
         'n_lines_searched': n_lines,
         'robustness_check_kinds': sorted({k for c in checks for k in c['kinds']}),
     }
-    # only when the package has siblings, so a lone file's state is what it was when A1 was calibrated
+    # only when the package tree has siblings, so a lone file's state is what it was when A1 was calibrated
     if n_sib_lines:
-        inventory['sites_note'] += ('. A robustness check site may sit in an untouched sibling module of the same '
-                                    'package directory (sibling true): it stands beside the curve; '
-                                    'specification curve sites come from the touched files only')
-        inventory['sibling_files_read'] = sorted({rel for rel, _ in py_files(siblings)})[:MAX_ITEMS]
+        inventory['sites_note'] += ('. A robustness check site may sit in an untouched module of the same package, '
+                                    'its parent package or a sibling package (sibling true): it stands beside the '
+                                    'curve; specification curve sites come from the touched files only')
+        inventory['sibling_files_read'] = sib_read[:MAX_ITEMS]
         inventory['n_sibling_lines_searched'] = n_sib_lines
     return render_json('A1', py_files(files), inventory, [])

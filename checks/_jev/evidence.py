@@ -24,14 +24,36 @@ def spans(state, spec):
 
 
 MAX_SIBLINGS = 100
+# never evidence: VCS, environments, caches, data and scratch trees
+NOISE_DIRS = {'.git', 'node_modules', '__pycache__', '.pixi', 'data', 'scratch'}
+
+
+def _within(path, root):
+    return os.path.commonpath([path, root]) == root
 
 
 def siblings(files, root_dir):
-    """[(label, path)] of the untouched files in each touched file's directory: the package a presence
-    rule reads for evidence. Never recursive, never hidden; capped at MAX_SIBLINGS, sorted by path."""
+    """[(label, path)] of the untouched files a presence rule reads for evidence, nearest first: each touched
+    file's own directory, then its parent's files, then that parent's other subdirectories (sibling packages,
+    one level). The climb stops at root_dir and nothing resolving outside it is read; with no root_dir only
+    the own directory is. Never recursive, never hidden or NOISE_DIRS; capped at MAX_SIBLINGS in that order."""
     touched = {os.path.realpath(f) for _, f in files}
-    out, seen = [], set()
-    for d in sorted({os.path.dirname(os.path.abspath(f)) for _, f in files}):
+    root = os.path.realpath(root_dir) if root_dir else None
+    own = sorted({os.path.dirname(os.path.abspath(f)) for _, f in files})
+    parents = sorted({os.path.dirname(d) for d in own
+                      if root and _within(os.path.realpath(d), root) and os.path.realpath(d) != root})
+    packages = []
+    for p in parents:
+        try:
+            names = sorted(os.listdir(p))
+        except OSError:
+            continue
+        packages += [os.path.join(p, n) for n in names
+                     if not n.startswith('.') and n not in NOISE_DIRS and os.path.isdir(os.path.join(p, n))]
+    out, seen = [], set(touched)
+    for d in own + parents + [d for d in packages if d not in own]:
+        if root and not _within(os.path.realpath(d), root) and d not in own:
+            continue
         try:
             names = sorted(os.listdir(d))
         except OSError:
@@ -39,12 +61,16 @@ def siblings(files, root_dir):
         for name in names:
             path = os.path.join(d, name)
             real = os.path.realpath(path)
-            if name.startswith('.') or not os.path.isfile(path) or real in touched or real in seen:
+            if name.startswith('.') or not os.path.isfile(path) or real in seen:
+                continue
+            if root and d not in own and not _within(real, root):
                 continue
             seen.add(real)
             label = os.path.relpath(path, os.path.abspath(root_dir)) if root_dir else name
             out.append((label, path))
-    return out[:MAX_SIBLINGS]
+            if len(out) == MAX_SIBLINGS:
+                return out
+    return out
 
 
 def main(my_dir=None):
@@ -112,7 +138,7 @@ def main(my_dir=None):
         mod = importlib.import_module(mod_name)
         
         # only a rule that takes `changed` is diff-scoped, and only one that takes `siblings` reads the
-        # touched files' package; every other rule sees exactly what it did before. A sibling is evidence,
+        # touched files' package tree; every other rule sees exactly what it did before. A sibling is evidence,
         # never a finding: a rule files only against `files`.
         params = inspect.signature(mod.evidence).parameters
         kw = {}
