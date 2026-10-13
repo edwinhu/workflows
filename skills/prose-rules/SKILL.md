@@ -1,6 +1,6 @@
 ---
 name: prose-rules
-description: "The writing agent's rule skills (writing-general, ai-anti-patterns) loaded on its main thread, where a skills: preload never lands. Named by that agent's initialPrompt; the registers themselves are agent-internal."
+description: "The writing agent's rule skills (writing-general, ai-anti-patterns) loaded through one skill on either launch path. Named by that agent's skills: and initialPrompt:; the registers themselves are agent-internal."
 ---
 
 # prose-rules — the writing agent's rules on the main thread

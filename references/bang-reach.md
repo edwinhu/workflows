@@ -83,6 +83,9 @@ carrying a hand-written list of rules (`workshop-reviewer` said "the fifteen can
 modules" while the corpus declared 21) cannot fix that in its own file. Name the skill whose index
 is computed.
 
+An agent that loads rules names exactly one rules skill R, as `skills: [R]` (subagent launch) and
+`initialPrompt: /R` (main-thread launch), R is user-invocable, and R's bangs print every rule the agent needs.
+
 ## Failure modes
 
 - **No backtick may appear inside the command, escaped or not.** The parser ends the span at the

@@ -13,7 +13,6 @@ model: inherit
 color: purple
 tools: ["Read", "Grep", "Glob", "Edit", "Write", "Bash", "Skill"]
 skills:
-  - typst:typst
   - typst:deck-rules
 initialPrompt: /typst:deck-rules
 ---

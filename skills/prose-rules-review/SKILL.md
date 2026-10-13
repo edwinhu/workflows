@@ -1,6 +1,6 @@
 ---
 name: prose-rules-review
-description: "The writing-reviewer agent's rule skills (writing-general, writing-legal, writing-econ, ai-anti-patterns) loaded on its main thread, where a skills: preload never lands. Named by that agent's initialPrompt; the registers themselves are agent-internal."
+description: "The writing-reviewer agent's rule skills (writing-general, writing-legal, writing-econ, ai-anti-patterns) loaded through one skill on either launch path. Named by that agent's skills: and initialPrompt:; the registers themselves are agent-internal."
 ---
 
 # prose-rules-review — the writing-reviewer agent's rules on the main thread

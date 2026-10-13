@@ -4009,7 +4009,23 @@ export function checkRuleSkillPreload(
     onRead(agentFile)
     const agentText = readTextOrNull(agentFile)
     const fm = agentText === null ? null : frontmatterData(agentText)
-    const listed = Array.isArray(fm?.skills) ? (fm!.skills as unknown[]).map(x => norm(String(x))) : []
+    // A rule skill is preloaded when `skills:` lists it or lists a user-invocable skill whose
+    // `load-skills.ts` bangs print it (the one-rules-skill form, `prose-rules-*`).
+    const bangNames = (cmd: string): string[] => {
+      const [cp, cn] = cmd.includes(':') ? cmd.split(':') : [pluginName, cmd]
+      const cmdFile = cp === pluginName ? join(pluginRoot ?? '', 'skills', cn, 'SKILL.md') : join(home, '.claude', 'skills', cp ?? '', 'skills', cn, 'SKILL.md')
+      const cmdText = readTextOrNull(cmdFile)
+      if (cmdText === null || frontmatterData(cmdText)?.['user-invocable'] === false) return []
+      onRead(cmdFile)
+      const out: string[] = []
+      for (const l of cmdText.split('\n').filter(l => l.includes('load-skills.ts'))) {
+        const args = /exec bun \S+ ([^;`]+);/.exec(l)?.[1] ?? ''
+        for (const n of args.trim().split(/\s+/).filter(Boolean)) out.push(norm(n.includes(':') ? n : `${cp}:${n}`))
+      }
+      return out
+    }
+    const listedRaw = Array.isArray(fm?.skills) ? (fm!.skills as unknown[]).map(x => String(x)) : []
+    const listed = [...listedRaw.map(norm), ...listedRaw.flatMap(bangNames)]
     const missing = decl.skills.filter(s => !listed.includes(norm(s)))
     if (missing.length) {
       findings.push({
