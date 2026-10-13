@@ -38,7 +38,9 @@
  * reads each tick alone and let nevada e83fb488 answer eight hourly ticks with "no change" (2026-10-12).
  * Its budget is STALE_BLOCKS_PER_TICK per tick, not the per-turn cap: ticks are meta and never rotate the
  * turn, so a per-turn budget would run dry in the first idle hour. Rules 1, 3 and 4 hold unchanged, and
- * any live owned run, watched or not, means the tick is waiting on it and is not idle.
+ * any live owned run, watched or not, means the tick is waiting on it and is not idle. So does a job the
+ * session launched by hand (`progressingJobs`), but only while it is alive AND has written since the
+ * previous tick: a silent live job is a hang, which is what the nudge is for.
  *
  * The judge is the one `work-hold.ts` already uses — Jev, through the Decisions API — reached
  * through that file's exported `decisionsCall`/`parseNoul`. There is exactly one Decisions transport
@@ -48,10 +50,10 @@
  * answer from the luna fallback is held to at least 0.95 (`decisionThreshold`, applied in `parseNoul`).
  */
 
-import { appendFileSync, existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
+import { appendFileSync, existsSync, readdirSync, readFileSync, readlinkSync, statSync, writeFileSync } from 'node:fs'
 import { createHash } from 'node:crypto'
-import { join } from 'node:path'
-import { tmpdir } from 'node:os'
+import { basename, join, resolve } from 'node:path'
+import { homedir, tmpdir } from 'node:os'
 import { ceilingReached, decisionsCall, lastLedgerEntry, ledgerPath, parseNoul, statePath } from './work-hold.ts'
 import {
   BEACON, beaconFresh, classify, dirname, parseEvents, wakeable, WAKE_HORIZON_MS, type Facts, type Run,
@@ -359,8 +361,8 @@ const NEWS_ORIGINS = new Set(['human', 'peer', 'plugin', 'task-notification'])
  * ACTING_BASH and its result was not an error: a failed commit or an unanswered question moved
  * nothing. A stop outside a tick turn has a run of 0.
  */
-export function idleTicks(jsonl: string): { run: number; tick: string | null } {
-  type T = { uuid: string; acted: boolean }
+export function idleTicks(jsonl: string): { run: number; tick: string | null; since?: string | null } {
+  type T = { uuid: string; at: string; acted: boolean }
   const turns: T[] = []
   let cur: T | null = null
   const pending = new Map<string, T>()
@@ -377,7 +379,7 @@ export function idleTicks(jsonl: string): { run: number; tick: string | null } {
     if (e.type === 'user' && typeof content === 'string' && (e.toolUseResult === undefined || e.toolUseResult === null)) {
       const kind = (e.origin as { kind?: unknown } | undefined)?.kind
       if (isScheduled(e, content)) {
-        cur = { uuid: typeof e.uuid === 'string' ? e.uuid : '', acted: false }
+        cur = { uuid: typeof e.uuid === 'string' ? e.uuid : '', at: typeof e.timestamp === 'string' ? e.timestamp : '', acted: false }
         // Another scheduled job neither counts nor resets: its turn is held apart from the run.
         if (HEARTBEAT.test(content)) turns.push(cur)
       } else if (!e.isMeta || (typeof kind === 'string' && NEWS_ORIGINS.has(kind))) {
@@ -405,7 +407,342 @@ export function idleTicks(jsonl: string): { run: number; tick: string | null } {
   if (!cur || turns.at(-1) !== cur) return { run: 0, tick: null }
   let run = 0
   for (let i = turns.length - 1; i >= 0 && !turns[i].acted; i--) run++
-  return { run, tick: run ? cur.uuid : null }
+  return { run, tick: run ? cur.uuid : null, since: run >= 2 ? turns.at(-2)!.at || null : null }
+}
+
+/**
+ * A job the session started itself outside farm.sh: a `setsid`/`nohup` launch (argv and redirect
+ * targets parsed from the command) or a `run_in_background` call (its harness output file) whose task
+ * has not reported done. `outs` are the files the transcript names as the job's output.
+ */
+export type Launch =
+  | { kind: 'setsid'; argv: string[]; outs: string[] }
+  | { kind: 'bg'; cmd: string; outs: string[] }
+
+type Word = { w: string; bad?: boolean; op?: string }
+
+/**
+ * Shell words, enough to read a launch line: quotes, `$NAME`/`${NAME}` from `vars`, `~`, operators and
+ * redirections. Any other expansion (`$(…)`, backticks, `$!`) marks the word unresolvable. A generator,
+ * so a `NAME=value` segment the consumer applies is seen by the words after it.
+ */
+function* shellWords(cmd: string, vars: Map<string, string>): Generator<Word> {
+  let w = ''
+  let bad = false
+  let has = false
+  const word = (): Word | null => {
+    const t = has ? (bad ? { w, bad } : { w }) : null
+    w = ''
+    bad = false
+    has = false
+    return t
+  }
+  const dollar = (i: number): number => {
+    const m = /^\$(?:\{(\w+)\}|([A-Za-z_]\w*))/.exec(cmd.slice(i))
+    if (m) {
+      const name = m[1] ?? m[2]
+      const v = vars.get(name) ?? (name === 'HOME' ? homedir() : undefined)
+      if (v === undefined) bad = true
+      else w += v
+      return i + m[0].length
+    }
+    bad = true
+    if (cmd[i + 1] === '(') {
+      let depth = 0
+      for (let j = i + 1; j < cmd.length; j++) {
+        if (cmd[j] === '(') depth++
+        else if (cmd[j] === ')' && --depth === 0) return j + 1
+      }
+      return cmd.length
+    }
+    return i + 2
+  }
+  let i = 0
+  while (i < cmd.length) {
+    const c = cmd[i]
+    if (c === ' ' || c === '\t') {
+      const t = word()
+      if (t) yield t
+      i++
+      continue
+    }
+    if (c === '#' && !has) {
+      while (i < cmd.length && cmd[i] !== '\n') i++
+      continue
+    }
+    const op = /^(?:\d*(?:>>|>\||>&|>|<<<|<<|<&|<)|&>>?|&&|\|\||[;&|()\n])/.exec(cmd.slice(i))
+    if (op && !(has && /^\d/.test(op[0]))) {
+      const t = word()
+      if (t) yield t
+      yield { w: '', op: op[0] === '\n' ? ';' : op[0] }
+      i += op[0].length
+      continue
+    }
+    has = true
+    if (c === "'") {
+      const j = cmd.indexOf("'", i + 1)
+      w += cmd.slice(i + 1, j < 0 ? cmd.length : j)
+      i = j < 0 ? cmd.length : j + 1
+    } else if (c === '"') {
+      i++
+      while (i < cmd.length && cmd[i] !== '"') {
+        if (cmd[i] === '\\' && '"\\$`'.includes(cmd[i + 1] ?? '')) {
+          w += cmd[i + 1]
+          i += 2
+        } else if (cmd[i] === '$') i = dollar(i)
+        else if (cmd[i] === '`') {
+          bad = true
+          i++
+        } else w += cmd[i++]
+      }
+      i++
+    } else if (c === '\\') {
+      w += cmd[i + 1] ?? ''
+      i += 2
+    } else if (c === '$') {
+      i = dollar(i)
+    } else if (c === '`') {
+      bad = true
+      const j = cmd.indexOf('`', i + 1)
+      i = j < 0 ? cmd.length : j + 1
+    } else if (c === '~' && w === '' && (i + 1 === cmd.length || cmd[i + 1] === '/' || cmd[i + 1] === ' ')) {
+      w += homedir()
+      i++
+    } else {
+      w += c
+      i++
+    }
+  }
+  const t = word()
+  if (t) yield t
+}
+
+const ASSIGN = /^([A-Za-z_]\w*)=(.*)$/s
+
+/** The setsid/nohup launches in one Bash command, with `NAME=value` and `cd` segments applied in order. */
+function setsidLaunches(cmd: string, cwd: string): Launch[] {
+  const vars = new Map<string, string>([['PWD', cwd]])
+  const found: Launch[] = []
+  let seg: Word[] = []
+  const segment = () => {
+    const plain: Word[] = []
+    const outs: string[] = []
+    for (let k = 0; k < seg.length; k++) {
+      const t = seg[k]
+      if (!t.op) {
+        plain.push(t)
+        continue
+      }
+      const target = seg[++k]
+      // Only a write to a named file: not an input, not a dup like `2>&1`, not /dev/null.
+      if (!target || target.bad || target.op || !t.op.includes('>') || t.op.endsWith('&') || target.w === '/dev/null') continue
+      outs.push(resolve(cwd, target.w))
+    }
+    seg = []
+    if (!plain.length) return
+    if (plain.every((t) => ASSIGN.test(t.w))) {
+      for (const t of plain) {
+        const m = ASSIGN.exec(t.w)!
+        if (t.bad) vars.delete(m[1])
+        else vars.set(m[1], m[2])
+      }
+      return
+    }
+    if (plain[0].w === 'cd' && plain[1] && !plain[1].bad) {
+      cwd = resolve(cwd, plain[1].w)
+      vars.set('PWD', cwd)
+      return
+    }
+    let k = 0
+    while (k < plain.length && ASSIGN.test(plain[k].w)) k++
+    let launched = false
+    for (;;) {
+      const w = plain[k]?.w
+      if (w === 'setsid') {
+        launched = true
+        k++
+        while (plain[k]?.w.startsWith('-')) k++
+      } else if (w === 'nohup') {
+        launched = true
+        k++
+      } else if (w === 'exec') k++
+      else break
+    }
+    const argv = plain.slice(k)
+    if (launched && argv.length && argv.every((t) => !t.bad)) found.push({ kind: 'setsid', argv: argv.map((t) => t.w), outs })
+  }
+  for (const t of shellWords(cmd, vars)) {
+    if (t.op && !/[<>]/.test(t.op)) segment()
+    else seg.push(t)
+  }
+  segment()
+  return found
+}
+
+/** The harness's output file for a backgrounded Bash call, from its tool_result. */
+const BG_OUTPUT = /Output is being written to: (\S+?)\.?(?:\s|$)/
+const TASK_DONE = /<tool-use-id>([^<]+)<\/tool-use-id>[\s\S]*?<status>(completed|failed|killed|stopped)<\/status>/
+
+/**
+ * Every job the transcript shows this session launching by hand. Read from the transcript because it is
+ * the only record of what was launched, where its output goes, and (for a background call) whether the
+ * harness has already reported it done; `/proc` then says whether it is alive and writing.
+ */
+export function handLaunches(jsonl: string, fallbackCwd = process.cwd()): Launch[] {
+  const calls = new Map<string, { cmd: string; bg: boolean; cwd: string }>()
+  const order: string[] = []
+  const bgOut = new Map<string, string>()
+  const done = new Set<string>()
+  for (const line of jsonl.split('\n')) {
+    if (!line.trim()) continue
+    if (line.includes('<tool-use-id>')) for (const m of line.replace(/\\n/g, '\n').matchAll(new RegExp(TASK_DONE, 'g'))) done.add(m[1])
+    if (!line.includes('"Bash"') && !line.includes('Output is being written to')) continue
+    let e: Record<string, unknown>
+    try {
+      e = JSON.parse(line)
+    } catch {
+      continue
+    }
+    if (e.isSidechain) continue
+    const content = (e.message as { content?: unknown } | undefined)?.content
+    if (!Array.isArray(content)) continue
+    for (const b of content as Array<Record<string, unknown>>) {
+      if (e.type === 'assistant' && b?.type === 'tool_use' && b.name === 'Bash') {
+        const input = (b.input ?? {}) as { command?: unknown; run_in_background?: unknown }
+        const cmd = typeof input.command === 'string' ? input.command : ''
+        const bg = input.run_in_background === true
+        if (!bg && !/(^|[\s;&|(])(setsid|nohup)\s/.test(cmd)) continue
+        const id = String(b.id ?? '')
+        calls.set(id, { cmd, bg, cwd: typeof e.cwd === 'string' ? e.cwd : fallbackCwd })
+        order.push(id)
+      } else if (e.type === 'user' && b?.type === 'tool_result') {
+        const text = typeof b.content === 'string' ? b.content
+          : Array.isArray(b.content) ? (b.content as Array<{ text?: unknown }>).map((x) => String(x?.text ?? '')).join('\n') : ''
+        const m = BG_OUTPUT.exec(text)
+        if (m) bgOut.set(String(b.tool_use_id ?? ''), m[1])
+      }
+    }
+  }
+  const found: Launch[] = []
+  for (const id of order) {
+    const c = calls.get(id)!
+    found.push(...setsidLaunches(c.cmd, c.cwd))
+    if (c.bg && !done.has(id)) found.push({ kind: 'bg', cmd: c.cmd, outs: bgOut.has(id) ? [bgOut.get(id)!] : [] })
+  }
+  return found
+}
+
+/** What `progressingJobs` reads from the system: injectable so a replay can stand in for a past `/proc`. */
+export interface JobProbe {
+  procs(): Array<{ pid: number; ppid: number; argv: string[] }>
+  /** The process's `CLAUDE_CODE_SESSION_ID`, which the harness exports into every Bash tool process. */
+  owner(pid: number): string | null
+  /** Regular files the process holds open for writing. */
+  writing(pid: number): string[]
+  /** Null for a missing or EMPTY file: the harness creates a background task's output file at launch, so a
+   *  fresh mtime on 0 bytes is a creation, not progress. */
+  mtimeMs(path: string): number | null
+}
+
+const SNAPSHOT_EVAL = "&& eval '"
+
+/** The command a harness snapshot shell evals, as the model wrote it (`bgjobs.py shown`); else null. */
+function evalBody(argv: string[]): string | null {
+  const s = argv.join(' ')
+  if (!s.includes('shell-snapshots/snapshot-')) return null
+  const at = s.indexOf(SNAPSHOT_EVAL)
+  const end = s.lastIndexOf("' < /dev/null")
+  if (at < 0 || end <= at) return null
+  return s.slice(at + SNAPSHOT_EVAL.length, end).replaceAll(`'"'"'`, "'")
+}
+
+export const PROC_PROBE: JobProbe = {
+  procs() {
+    const out: Array<{ pid: number; ppid: number; argv: string[] }> = []
+    for (const d of readdirSync('/proc')) {
+      if (!/^\d+$/.test(d)) continue
+      try {
+        const rest = readFileSync(`/proc/${d}/stat`, 'utf8').split(') ').at(-1)!.split(' ')
+        if (rest[0] === 'Z') continue
+        const argv = readFileSync(`/proc/${d}/cmdline`, 'utf8').split('\0')
+        if (argv.at(-1) === '') argv.pop()
+        out.push({ pid: Number(d), ppid: Number(rest[1]), argv })
+      } catch {}
+    }
+    return out
+  },
+  owner(pid) {
+    try {
+      const env = readFileSync(`/proc/${pid}/environ`, 'utf8').split('\0')
+      return env.find((x) => x.startsWith('CLAUDE_CODE_SESSION_ID='))?.slice(23) ?? null
+    } catch {
+      return null
+    }
+  },
+  writing(pid) {
+    const out: string[] = []
+    let fds: string[] = []
+    try {
+      fds = readdirSync(`/proc/${pid}/fd`)
+    } catch {
+      return out
+    }
+    for (const fd of fds) {
+      try {
+        const target = readlinkSync(`/proc/${pid}/fd/${fd}`)
+        if (!target.startsWith('/') || /^\/(dev|proc|sys)\//.test(target) || target.endsWith(' (deleted)')) continue
+        const flags = /flags:\s*([0-7]+)/.exec(readFileSync(`/proc/${pid}/fdinfo/${fd}`, 'utf8'))?.[1]
+        if (flags && (parseInt(flags, 8) & 3) !== 0) out.push(target)
+      } catch {}
+    }
+    return out
+  },
+  mtimeMs(path) {
+    try {
+      const st = statSync(path)
+      return st.isFile() && st.size > 0 ? st.mtimeMs : null
+    } catch {
+      return null
+    }
+  },
+}
+
+/**
+ * The hand-launched jobs (`handLaunches`) that are this session's, alive, and wrote since `sinceMs`.
+ *
+ * Alive: a live process whose argv is the launch's (a `setsid`/`nohup` argv, argv[0] compared by
+ * basename) or whose snapshot shell evals the launch's command, and whose `CLAUDE_CODE_SESSION_ID` is this
+ * session — the same command run by another session is not this one's job. Progress: the newest mtime
+ * over the files the transcript names and every regular file the process or a descendant holds open for
+ * writing. The second set is what makes the check work: e83fb488's `> driver2.out` stayed 0 bytes for the
+ * whole run while the job's own `>> lookup.log` grew.
+ */
+export function progressingJobs(jsonl: string, session: string, sinceMs: number, probe: JobProbe = PROC_PROBE): string[] {
+  const launches = handLaunches(jsonl)
+  if (!launches.length || !Number.isFinite(sinceMs)) return []
+  const procs = probe.procs().filter((p) => p.pid !== process.pid)
+  const kids = new Map<number, number[]>()
+  for (const p of procs) kids.set(p.ppid, [...(kids.get(p.ppid) ?? []), p.pid])
+  const sameArgv = (a: string[], b: string[]) =>
+    a.length === b.length && a.length > 0 && basename(a[0]) === basename(b[0]) && a.every((x, i) => i === 0 || x === b[i])
+  const found: string[] = []
+  for (const l of launches) {
+    const roots = procs.filter((p) => (l.kind === 'bg' ? evalBody(p.argv) === l.cmd : sameArgv(l.argv, p.argv)) && probe.owner(p.pid) === session)
+    if (!roots.length) continue
+    const files = new Set(l.outs)
+    const stack = roots.map((p) => p.pid)
+    const seen = new Set<number>()
+    while (stack.length) {
+      const pid = stack.pop()!
+      if (seen.has(pid)) continue
+      seen.add(pid)
+      for (const f of probe.writing(pid)) files.add(f)
+      stack.push(...(kids.get(pid) ?? []))
+    }
+    if ([...files].some((f) => (probe.mtimeMs(f) ?? -Infinity) > sinceMs))
+      found.push(l.kind === 'bg' ? `bg: ${l.cmd.slice(0, 60)}` : l.argv.join(' ').slice(0, 80))
+  }
+  return found
 }
 
 /**
@@ -738,9 +1075,10 @@ function main(): void {
   const transcriptPath = typeof payload.transcript_path === 'string' ? payload.transcript_path : ''
   let turn: Turn | null = null
   let ctx: JudgeContext | undefined
-  let idle: { run: number; tick: string | null } = { run: 0, tick: null }
+  let idle: ReturnType<typeof idleTicks> = { run: 0, tick: null }
+  let jsonl = ''
   try {
-    const jsonl = transcriptPath ? readFileSync(transcriptPath, 'utf8') : ''
+    jsonl = transcriptPath ? readFileSync(transcriptPath, 'utf8') : ''
     turn = jsonl ? latestUserTurn(jsonl) : null
     if (turn) {
       try {
@@ -777,8 +1115,16 @@ function main(): void {
   }
 
   // Stale ticks: its own per-tick budget, checked before the per-turn cap, which ticks never rotate.
-  // A live owned run is not idle even without a watcher: the tick is waiting on it.
-  if (idle.tick !== null && idle.run >= STALE_TICKS && live.length === 0 && tickSpent < STALE_BLOCKS_PER_TICK) {
+  // A live owned run is not idle even without a watcher: the tick is waiting on it. Nor is a hand-launched
+  // job that wrote since the previous tick; one that cannot be checked fails open, like the rest.
+  const handJobs = (): string[] => {
+    try {
+      return progressingJobs(jsonl, session, Date.parse(idle.since ?? ''))
+    } catch {
+      return ['(check failed)']
+    }
+  }
+  if (idle.tick !== null && idle.run >= STALE_TICKS && live.length === 0 && tickSpent < STALE_BLOCKS_PER_TICK && handJobs().length === 0) {
     if (!record(spent, tickSpent + 1)) return allowNow(session, turn.marker, 'counter unwritable: cannot cap, so not blocking')
     audit(session, turn.marker, '-', 'block', `stale ticks: ${idle.run} idle in a row, ${tickSpent + 1}/${STALE_BLOCKS_PER_TICK} this tick`)
     process.stdout.write(JSON.stringify({ decision: 'block', reason: staleTickReason(idle.run, !!afk) }))
