@@ -15,7 +15,7 @@
  */
 import { describe, expect, setDefaultTimeout, test } from 'bun:test'
 import { spawnSync } from 'node:child_process'
-import { existsSync, mkdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, symlinkSync, utimesSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import * as hold from '../hooks/work-hold.ts'
 import { HERMETIC_ENV } from './helpers/hermetic-env'
@@ -56,6 +56,12 @@ function loopEvents(w: W, pid: number, out: string, done = false) {
     join(w.tmp, 'farm-events', SID, `${pid}.ndjson`),
     `farm: START work-loop cwd=/x out=${out} expect=1 t=1\n` + (done ? 'farm: DONE work-loop rc=0\n' : ''),
   )
+}
+
+/** Set a file's mtime `secs` seconds into the past: an artifact left by an earlier loop. */
+function backdate(p: string, secs: number) {
+  const t = Date.now() / 1000 - secs
+  utimesSync(p, t, t)
 }
 
 const env = (w: W) => ({ ...HERMETIC_ENV, TMPDIR: w.tmp, CLAUDE_CODE_SESSION_ID: SID, WORK_HOLD_COMPACT_WINDOW: '0' })
@@ -110,12 +116,49 @@ describe('runDied', () => {
     expect(hold.runDied({ run: join(link, 'A') }, SID, w.tmp)).not.toBeNull()
   })
 
+  // A hand `work-redispatch.sh --dispatch` after the loop exited rewrites args.json and rotates
+  // result.json, but nothing removes the dead loop's loop.exit. When the new round dies, that code
+  // is the previous loop's, not this round's.
+  test("a loop.exit older than args.json is an earlier loop's, never this round's exit code", () => {
+    const w = world()
+    const a = runDir(w, 'A')
+    writeFileSync(join(a, 'loop.exit'), '7\n')
+    backdate(join(a, 'loop.exit'), 120)
+    writeFileSync(
+      join(w.tmp, 'farm-events', SID, `${deadPid()}.ndjson`),
+      `farm: START work-round cwd=/x out=${join(a, 'result.json')} expect=1 t=1\n`,
+    )
+    const why = hold.runDied({ run: a }, SID, w.tmp)
+    expect(why).not.toContain('exited 7')
+    expect(why).toContain('no loop.exit')
+  })
+
   test('a sibling run whose name extends this one is not this run', () => {
     const w = world()
     const a = runDir(w, 'A')
     const ab = runDir(w, 'A-b')
     loopEvents(w, deadPid(), join(ab, 'loop.exit'))
     expect(hold.runDied({ run: a }, SID, w.tmp)).toBeNull()
+  })
+})
+
+describe('verdictReached reads only a loop.exit written after the round was dispatched', () => {
+  const readOnlyRun = (w: W) => {
+    const r = runDir(w, 'RO')
+    writeFileSync(join(r, 'args.json'), JSON.stringify({ readOnly: true, tasks: [] }))
+    writeFileSync(join(r, 'result.json'), '{"overallPass":true,"verdict":"PASS"}')
+    writeFileSync(join(r, 'loop.exit'), '8\n')
+    return r
+  }
+
+  test('fresh: the loop exited after args.json was written, so 8 is this run\'s verdict', () => {
+    expect(hold.verdictReached({ run: readOnlyRun(world()) })).toBe('FAIL, loop.exit 8')
+  })
+
+  test('stale: args.json was rewritten by a later dispatch, so the old 8 is no verdict of this round', () => {
+    const r = readOnlyRun(world())
+    backdate(join(r, 'loop.exit'), 120)
+    expect(hold.verdictReached({ run: r })).toBeNull()
   })
 })
 
